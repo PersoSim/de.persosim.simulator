@@ -376,7 +376,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 			
 			if (result.length < expectedLength){
 				byte [] padding = new byte [expectedLength - result.length];
-				result = Utils.concatByteArrays(result, padding);
+				result = Utils.concatByteArrays(padding, result);
 			} 
 			return result;
 		}
