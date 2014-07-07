@@ -80,6 +80,32 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Positive test case: get byte array compressed (TR-03110) encoding of public ECDH key, key is padded with 0-bytes.
+	 */
+	@Test
+	public void testCompShortEcdhKey() throws Exception {	
+		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		
+		byte[] xArray = HexString.toByteArray("0015A12C49DC3F2985AE44E5EF75AA0A1862527CD9D5B03D17CD1E2FC0290DB7");
+		byte[] yArray = HexString.toByteArray("0AF39509F439220E7EEA61D15668BB5D63DD256BD7F4E9E1F9753866C4A6BD59");
+				
+		// point coordinates originate from successful PACE test run, i.e. have been verified to be on the curve
+		BigInteger publicPointX = new BigInteger(1, xArray);
+		BigInteger publicPointY = new BigInteger(1, yArray);
+		
+		ECPoint point = new ECPoint(publicPointX, publicPointY);
+		
+		KeySpec publicKeySpec = new ECPublicKeySpec(point, domParamsEcdh.getKeySpec());
+		
+		KeyFactory keyFactory = KeyFactory.getInstance("ECDH");
+		ECPublicKey ecdhPublicKeyExpected = (ECPublicKey) keyFactory.generatePublic(publicKeySpec);
+		
+		byte[] publicKeyEncodingPlain = domParamsEcdh.comp(ecdhPublicKeyExpected);
+		
+		assertArrayEquals("reconstructed encoding", xArray, publicKeyEncodingPlain);
+	}
+	
+	/**
 	 * Positive test case: reconstruct public key from byte array encoding (uncompressed encoding according to ANSI X9.62).
 	 */
 	@Test
