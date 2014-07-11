@@ -285,4 +285,24 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 		assertEquals("public key cofactor", domParamsEcdh.getCofactor(), keySpecPublicMapped.getParams().getCofactor());
 	}
 	
+	/**
+	 * Positive test case: test standardized domain parameters for base points/generators being on the curve.
+	 */
+	@Test
+	public void testCheckCurveMatchingGenerator() {
+		DomainParameterSet domParams;
+		DomainParameterSetEcdh domParamsEcdh;
+		
+		for(int i = 0; i < StandardizedDomainParameters.NO_OF_STANDARDIZED_DOMAIN_PARAMETERS; i++) {
+			domParams = StandardizedDomainParameters.getDomainParameterSetById(i);
+			
+			if(domParams instanceof DomainParameterSetEcdh) {
+				domParamsEcdh = (DomainParameterSetEcdh) domParams;
+				
+				assertTrue(domParamsEcdh.isOnCurve(domParamsEcdh.getGenerator()));
+				System.out.println("domain parameter set " + i + " passed check");
+			}
+		}
+	}
+	
 }

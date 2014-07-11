@@ -101,8 +101,7 @@ public class TR03110Test extends PersoSimTestCase {
 		publicKeyDataEcNoDomainParameters.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_06, TaOid.id_TA_ECDSA_SHA_1.toByteArray()));
 		publicKeyDataEcNoDomainParameters.addTlvDataObject(publicPointData);
 		
-		// build rsa public key
-		
+		// define domain parameters
 		oid1 = Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_256;
 		oidIdentifier1 = new OidIdentifier(oid1);
 		oid2 = Pace.OID_id_PACE_DH_IM_3DES_CBC_CBC;
@@ -115,7 +114,6 @@ public class TR03110Test extends PersoSimTestCase {
 		domainparameterSetIdentifier13 = new DomainParameterSetIdentifier(13);
 		domainParameters13 = new DomainParameterSetCardObject(StandardizedDomainParameters.getDomainParameterSetById(13), domainparameterSetIdentifier13);
 		domainParameters13.addOidIdentifier(oidIdentifier1);
-		
 	}
 	
 	/**
