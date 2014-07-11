@@ -1,12 +1,9 @@
 package de.persosim.simulator.crypto;
 
 import java.math.BigInteger;
-import java.security.spec.ECParameterSpec;
-
-import org.bouncycastle.asn1.nist.NISTNamedCurves;
-import org.bouncycastle.asn1.teletrust.TeleTrusTNamedCurves;
-import org.bouncycastle.asn1.x9.X9ECParameters;
-import org.bouncycastle.jcajce.provider.asymmetric.util.EC5Util;
+import java.security.spec.ECFieldFp;
+import java.security.spec.ECPoint;
+import java.security.spec.EllipticCurve;
 
 /**
  * This class provides static access to PACE standardized domain parameters.
@@ -31,9 +28,102 @@ public class StandardizedDomainParameters {
 	static final BigInteger MODP_2048_256_ORDER = new BigInteger("8CF83642A709A097B447997640129DA299B1A47D1EB3750BA308B0FE64F5FBD3",16);
 	// END DH
 	
+	
+	
 	// START ECDH
-	// TODO define ECDH parameters here as part of replacement of BC dependency
-	// END DH
+	
+	// parameters of TeleTrust named ec curves taken from
+	// http://www.ecc-brainpool.org/download/draft-lochter-pkix-brainpool-ecc-00.txt
+	static final BigInteger BRAINPOOLP192R1_P = new BigInteger("C302F41D932A36CDA7A3463093D18DB78FCE476DE1A86297",16);
+	static final BigInteger BRAINPOOLP192R1_A = new BigInteger("6A91174076B1E0E19C39C031FE8685C1CAE040E5C69A28EF",16);
+	static final BigInteger BRAINPOOLP192R1_B = new BigInteger("469A28EF7C28CCA3DC721D044F4496BCCA7EF4146FBF25C9",16);
+	static final BigInteger BRAINPOOLP192R1_X = new BigInteger("C0A0647EAAB6A48753B033C56CB0F0900A2F5C4853375FD6",16);
+	static final BigInteger BRAINPOOLP192R1_Y = new BigInteger("14B690866ABD5BB88B5F4828C1490002E6773FA2FA299B8F",16);
+	static final BigInteger BRAINPOOLP192R1_Q = new BigInteger("C302F41D932A36CDA7A3462F9E9E916B5BE8F1029AC4ACC1",16);
+	static final BigInteger BRAINPOOLP192R1_H = new BigInteger("01",16);
+	
+	static final BigInteger BRAINPOOLP224R1_P = new BigInteger("D7C134AA264366862A18302575D1D787B09F075797DA89F57EC8C0FF",16);
+	static final BigInteger BRAINPOOLP224R1_A = new BigInteger("68A5E62CA9CE6C1C299803A6C1530B514E182AD8B0042A59CAD29F43",16);
+	static final BigInteger BRAINPOOLP224R1_B = new BigInteger("2580F63CCFE44138870713B1A92369E33E2135D266DBB372386C400B",16);
+	static final BigInteger BRAINPOOLP224R1_X = new BigInteger("D9029AD2C7E5CF4340823B2A87DC68C9E4CE3174C1E6EFDEE12C07D",16);
+	static final BigInteger BRAINPOOLP224R1_Y = new BigInteger("58AA56F772C0726F24C6B89E4ECDAC24354B9E99CAA3F6D3761402CD",16);
+	static final BigInteger BRAINPOOLP224R1_Q = new BigInteger("D7C134AA264366862A18302575D0FB98D116BC4B6DDEBCA3A5A7939F",16);
+	static final BigInteger BRAINPOOLP224R1_H = new BigInteger("01",16);
+	
+	static final BigInteger BRAINPOOLP256R1_P = new BigInteger("A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377",16);
+	static final BigInteger BRAINPOOLP256R1_A = new BigInteger("7D5A0975FC2C3057EEF67530417AFFE7FB8055C126DC5C6CE94A4B44F330B5D9",16);
+	static final BigInteger BRAINPOOLP256R1_B = new BigInteger("26DC5C6CE94A4B44F330B5D9BBD77CBF958416295CF7E1CE6BCCDC18FF8C07B6",16);
+	static final BigInteger BRAINPOOLP256R1_X = new BigInteger("8BD2AEB9CB7E57CB2C4B482FFC81B7AFB9DE27E1E3BD23C23A4453BD9ACE3262",16);
+	static final BigInteger BRAINPOOLP256R1_Y = new BigInteger("547EF835C3DAC4FD97F8461A14611DC9C27745132DED8E545C1D54C72F046997",16);
+	static final BigInteger BRAINPOOLP256R1_Q = new BigInteger("A9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A7",16);
+	static final BigInteger BRAINPOOLP256R1_H = new BigInteger("01",16);
+	
+	static final BigInteger BRAINPOOLP320R1_P = new BigInteger("D35E472036BC4FB7E13C785ED201E065F98FCFA6F6F40DEF4F92B9EC7893EC28FCD412B1F1B32E27",16);
+	static final BigInteger BRAINPOOLP320R1_A = new BigInteger("3EE30B568FBAB0F883CCEBD46D3F3BB8A2A73513F5EB79DA66190EB085FFA9F492F375A97D860EB4",16);
+	static final BigInteger BRAINPOOLP320R1_B = new BigInteger("520883949DFDBC42D3AD198640688A6FE13F41349554B49ACC31DCCD884539816F5EB4AC8FB1F1A6",16);
+	static final BigInteger BRAINPOOLP320R1_X = new BigInteger("43BD7E9AFB53D8B85289BCC48EE5BFE6F20137D10A087EB6E7871E2A10A599C710AF8D0D39E20611",16);
+	static final BigInteger BRAINPOOLP320R1_Y = new BigInteger("14FDD05545EC1CC8AB4093247F77275E0743FFED117182EAA9C77877AAAC6AC7D35245D1692E8EE1",16);
+	static final BigInteger BRAINPOOLP320R1_Q = new BigInteger("D35E472036BC4FB7E13C785ED201E065F98FCFA5B68F12A32D482EC7EE8658E98691555B44C59311",16);
+	static final BigInteger BRAINPOOLP320R1_H = new BigInteger("01",16);
+	
+	static final BigInteger BRAINPOOLP384R1_P = new BigInteger("8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B412B1DA197FB71123ACD3A729901D1A71874700133107EC53",16);
+	static final BigInteger BRAINPOOLP384R1_A = new BigInteger("7BC382C63D8C150C3C72080ACE05AFA0C2BEA28E4FB22787139165EFBA91F90F8AA5814A503AD4EB04A8C7DD22CE2826",16);
+	static final BigInteger BRAINPOOLP384R1_B = new BigInteger("04A8C7DD22CE28268B39B55416F0447C2FB77DE107DCD2A62E880EA53EEB62D57CB4390295DBC9943AB78696FA504C11",16);
+	static final BigInteger BRAINPOOLP384R1_X = new BigInteger("1D1C64F068CF45FFA2A63A81B7C13F6B8847A3E77EF14FE3DB7FCAFE0CBD10E8E826E03436D646AAEF87B2E247D4AF1E",16);
+	static final BigInteger BRAINPOOLP384R1_Y = new BigInteger("8ABE1D7520F9C2A45CB1EB8E95CFD55262B70B29FEEC5864E19C054FF99129280E4646217791811142820341263C5315",16);
+	static final BigInteger BRAINPOOLP384R1_Q = new BigInteger("8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B31F166E6CAC0425A7CF3AB6AF6B7FC3103B883202E9046565",16);
+	static final BigInteger BRAINPOOLP384R1_H = new BigInteger("01",16);
+	
+	static final BigInteger BRAINPOOLP512R1_P = new BigInteger("AADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C9D20ED6639CCA703308717D4D9B009BC66842AECDA12AE6A380E62881FF2F2D82C68528AA6056583A48F3",16);
+	static final BigInteger BRAINPOOLP512R1_A = new BigInteger("7830A3318B603B89E2327145AC234CC594CBDD8D3DF91610A83441CAEA9863BC2DED5D5AA8253AA10A2EF1C98B9AC8B57F1117A72BF2C7B9E7C1AC4D77FC94CA",16);
+	static final BigInteger BRAINPOOLP512R1_B = new BigInteger("3DF91610A83441CAEA9863BC2DED5D5AA8253AA10A2EF1C98B9AC8B57F1117A72BF2C7B9E7C1AC4D77FC94CADC083E67984050B75EBAE5DD2809BD638016F723",16);
+	static final BigInteger BRAINPOOLP512R1_X = new BigInteger("81AEE4BDD82ED9645A21322E9C4C6A9385ED9F70B5D916C1B43B62EEF4D0098EFF3B1F78E2D0D48D50D1687B93B97D5F7C6D5047406A5E688B352209BCB9F822",16);
+	static final BigInteger BRAINPOOLP512R1_Y = new BigInteger("7DDE385D566332ECC0EABFA9CF7822FDF209F70024A57B1AA000C55B881F8111B2DCDE494A5F485E5BCA4BD88A2763AED1CA2B2FA8F0540678CD1E0F3AD80892",16);
+	static final BigInteger BRAINPOOLP512R1_Q = new BigInteger("AADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C9D20ED6639CCA70330870553E5C414CA92619418661197FAC10471DB1D381085DDADDB58796829CA90069",16);
+	static final BigInteger BRAINPOOLP512R1_H = new BigInteger("01",16);
+	
+	// parameters of NIST named ec curves extracted from Bouncy Castle objects returned by
+	// calling e.g. NISTNamedCurves.getByName("P-192") or TeleTrusTNamedCurves.getByName("brainpoolp192r1")
+	static final BigInteger P192_P = new BigInteger("00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFF",16);
+	static final BigInteger P192_A = new BigInteger("00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFC",16);
+	static final BigInteger P192_B = new BigInteger("64210519E59C80E70FA7E9AB72243049FEB8DEECC146B9B1",16);
+	static final BigInteger P192_X = new BigInteger("188DA80EB03090F67CBF20EB43A18800F4FF0AFD82FF1012",16);
+	static final BigInteger P192_Y = new BigInteger("07192B95FFC8DA78631011ED6B24CDD573F977A11E794811",16);
+	static final BigInteger P192_Q = new BigInteger("00FFFFFFFFFFFFFFFFFFFFFFFF99DEF836146BC9B1B4D22831",16);
+	static final BigInteger P192_H = new BigInteger("01",16);
+	
+	static final BigInteger P224_P = new BigInteger("00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000001",16);
+	static final BigInteger P224_A = new BigInteger("00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFE",16);
+	static final BigInteger P224_B = new BigInteger("00B4050A850C04B3ABF54132565044B0B7D7BFD8BA270B39432355FFB4",16);
+	static final BigInteger P224_X = new BigInteger("00B70E0CBD6BB4BF7F321390B94A03C1D356C21122343280D6115C1D21",16);
+	static final BigInteger P224_Y = new BigInteger("00BD376388B5F723FB4C22DFE6CD4375A05A07476444D5819985007E34",16);
+	static final BigInteger P224_Q = new BigInteger("00FFFFFFFFFFFFFFFFFFFFFFFFFFFF16A2E0B8F03E13DD29455C5C2A3D",16);
+	static final BigInteger P224_H = new BigInteger("01",16);
+	
+	static final BigInteger P256_P = new BigInteger("00FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF",16);
+	static final BigInteger P256_A = new BigInteger("00FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFC",16);
+	static final BigInteger P256_B = new BigInteger("5AC635D8AA3A93E7B3EBBD55769886BC651D06B0CC53B0F63BCE3C3E27D2604B",16);
+	static final BigInteger P256_X = new BigInteger("6B17D1F2E12C4247F8BCE6E563A440F277037D812DEB33A0F4A13945D898C296",16);
+	static final BigInteger P256_Y = new BigInteger("4FE342E2FE1A7F9B8EE7EB4A7C0F9E162BCE33576B315ECECBB6406837BF51F5",16);
+	static final BigInteger P256_Q = new BigInteger("00FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551",16);
+	static final BigInteger P256_H = new BigInteger("01",16);
+	
+	static final BigInteger P384_P = new BigInteger("00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFF0000000000000000FFFFFFFF",16);
+	static final BigInteger P384_A = new BigInteger("00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFF0000000000000000FFFFFFFC",16);
+	static final BigInteger P384_B = new BigInteger("00B3312FA7E23EE7E4988E056BE3F82D19181D9C6EFE8141120314088F5013875AC656398D8A2ED19D2A85C8EDD3EC2AEF",16);
+	static final BigInteger P384_X = new BigInteger("00AA87CA22BE8B05378EB1C71EF320AD746E1D3B628BA79B9859F741E082542A385502F25DBF55296C3A545E3872760AB7",16);
+	static final BigInteger P384_Y = new BigInteger("3617DE4A96262C6F5D9E98BF9292DC29F8F41DBD289A147CE9DA3113B5F0B8C00A60B1CE1D7E819D7A431D7C90EA0E5F",16);
+	static final BigInteger P384_Q = new BigInteger("00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F4372DDF581A0DB248B0A77AECEC196ACCC52973",16);
+	static final BigInteger P384_H = new BigInteger("01",16);
+	
+	static final BigInteger P521_P = new BigInteger("01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",16);
+	static final BigInteger P521_A = new BigInteger("01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC",16);
+	static final BigInteger P521_B = new BigInteger("51953EB9618E1C9A1F929A21A0B68540EEA2DA725B99B315F3B8B489918EF109E156193951EC7E937B1652C0BD3BB1BF073573DF883D2C34F1EF451FD46B503F00",16);
+	static final BigInteger P521_X = new BigInteger("00C6858E06B70404E9CD9E3ECB662395B4429C648139053FB521F828AF606B4D3DBAA14B5E77EFE75928FE1DC127A2FFA8DE3348B3C1856A429BF97E7E31C2E5BD66",16);
+	static final BigInteger P521_Y = new BigInteger("011839296A789A3BC0045C8A5FB42C7D1BD998F54449579B446817AFBD17273E662C97EE72995EF42640C550B9013FAD0761353C7086A272C24088BE94769FD16650",16);
+	static final BigInteger P521_Q = new BigInteger("01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409",16);
+	static final BigInteger P521_H = new BigInteger("01",16);
+	// END ECDH
 	
 	/*--------------------------------------------------------------------------------*/
 	
@@ -49,27 +139,27 @@ public class StandardizedDomainParameters {
 		case 7:
 			return null; //IMPL add missing standardized domain parameters
 		case 8:
-			return convertBcnamedCurveToDomainParameterSet(NISTNamedCurves.getByName("P-192"));
+			return new DomainParameterSetEcdh(generateCurveFrom(P192_P, P192_A, P192_B), new ECPoint(P192_X, P192_Y), P192_Q, P192_H.intValue());
 		case 9:
-			return convertBcnamedCurveToDomainParameterSet(TeleTrusTNamedCurves.getByName("brainpoolp192r1"));
+			return new DomainParameterSetEcdh(generateCurveFrom(BRAINPOOLP192R1_P, BRAINPOOLP192R1_A, BRAINPOOLP192R1_B), new ECPoint(BRAINPOOLP192R1_X, BRAINPOOLP192R1_Y), BRAINPOOLP192R1_Q, BRAINPOOLP192R1_H.intValue());
 		case 10:
-			return convertBcnamedCurveToDomainParameterSet(NISTNamedCurves.getByName("P-224"));
+			return new DomainParameterSetEcdh(generateCurveFrom(P224_P, P224_A, P224_B), new ECPoint(P224_X, P224_Y), P224_Q, P224_H.intValue());
 		case 11:
-			return convertBcnamedCurveToDomainParameterSet(TeleTrusTNamedCurves.getByName("brainpoolp224r1"));
+			return new DomainParameterSetEcdh(generateCurveFrom(BRAINPOOLP224R1_P, BRAINPOOLP224R1_A, BRAINPOOLP224R1_B), new ECPoint(BRAINPOOLP224R1_X, BRAINPOOLP224R1_Y), BRAINPOOLP224R1_Q, BRAINPOOLP224R1_H.intValue());
 		case 12:
-			return convertBcnamedCurveToDomainParameterSet(NISTNamedCurves.getByName("P-256"));
+			return new DomainParameterSetEcdh(generateCurveFrom(P256_P, P256_A, P256_B), new ECPoint(P256_X, P256_Y), P256_Q, P256_H.intValue());
 		case 13:
-			return convertBcnamedCurveToDomainParameterSet(TeleTrusTNamedCurves.getByName("brainpoolp256r1"));
+			return new DomainParameterSetEcdh(generateCurveFrom(BRAINPOOLP256R1_P, BRAINPOOLP256R1_A, BRAINPOOLP256R1_B), new ECPoint(BRAINPOOLP256R1_X, BRAINPOOLP256R1_Y), BRAINPOOLP256R1_Q, BRAINPOOLP256R1_H.intValue());
 		case 14:
-			return convertBcnamedCurveToDomainParameterSet(TeleTrusTNamedCurves.getByName("brainpoolp320r1"));
+			return new DomainParameterSetEcdh(generateCurveFrom(BRAINPOOLP320R1_P, BRAINPOOLP320R1_A, BRAINPOOLP320R1_B), new ECPoint(BRAINPOOLP320R1_X, BRAINPOOLP320R1_Y), BRAINPOOLP320R1_Q, BRAINPOOLP320R1_H.intValue());
 		case 15:
-			return convertBcnamedCurveToDomainParameterSet(NISTNamedCurves.getByName("P-384"));
+			return new DomainParameterSetEcdh(generateCurveFrom(P384_P, P384_A, P384_B), new ECPoint(P384_X, P384_Y), P384_Q, P384_H.intValue());
 		case 16:
-			return convertBcnamedCurveToDomainParameterSet(TeleTrusTNamedCurves.getByName("brainpoolp384r1"));
+			return new DomainParameterSetEcdh(generateCurveFrom(BRAINPOOLP384R1_P, BRAINPOOLP384R1_A, BRAINPOOLP384R1_B), new ECPoint(BRAINPOOLP384R1_X, BRAINPOOLP384R1_Y), BRAINPOOLP384R1_Q, BRAINPOOLP384R1_H.intValue());
 		case 17:
-			return convertBcnamedCurveToDomainParameterSet(TeleTrusTNamedCurves.getByName("brainpoolp512r1"));
+			return new DomainParameterSetEcdh(generateCurveFrom(BRAINPOOLP512R1_P, BRAINPOOLP512R1_A, BRAINPOOLP512R1_B), new ECPoint(BRAINPOOLP512R1_X, BRAINPOOLP512R1_Y), BRAINPOOLP512R1_Q, BRAINPOOLP512R1_H.intValue());
 		case 18:
-			return convertBcnamedCurveToDomainParameterSet(NISTNamedCurves.getByName("P-521"));
+			return new DomainParameterSetEcdh(generateCurveFrom(P521_P, P521_A, P521_B), new ECPoint(P521_X, P521_Y), P521_Q, P521_H.intValue());
 		case 19:  // fallthrough
 		case 20:  // fallthrough
 		case 21:  // fallthrough
@@ -90,42 +180,14 @@ public class StandardizedDomainParameters {
 	}
 	
 	/**
-	 * This method converts Bouncy Castle named EC curves to objects usable with standard Java crypto API.
-	 * @param namedCurve a Bouncy Castle named EC curve
-	 * @return EC curve parameter specification usable with standard Java crypto API
+	 * This method creates an object of {@link EllipticCurve} from its basic parameters.
+	 * @param p prime p specifying the base field
+	 * @param a coefficient A defining the curve
+	 * @param b coefficient B defining the curve
+	 * @return the corresponding {@link EllipticCurve} object
 	 */
-	static private ECParameterSpec convertBcNamedCurve(X9ECParameters namedCurve) {
-		/* import org.bouncycastle.jce.spec.ECParameterSpec; */
-		org.bouncycastle.jce.spec.ECParameterSpec bcECParameterSpec = new org.bouncycastle.jce.spec.ECParameterSpec(namedCurve.getCurve(), namedCurve.getG(), namedCurve.getN(), namedCurve.getH());
-		
-		/* import java.security.spec.ECParameterSpec; */
-		/* 
-		 * byte[] seed is set to null for the following reasons
-		 * 1) the information is not available for the used named curves
-		 * 2) seed data is not necessarily needed and the constructor
-		 * EllipticCurve(ECField field, BigInteger a, BigInteger b)
-		 * just calls this(field, a, b, null); itself
-		 */
-		return EC5Util.convertSpec(EC5Util.convertCurve(namedCurve.getCurve(), null), bcECParameterSpec);
-	}
-	
-	/**
-	 * This method converts EC parameter specifications to EC domain parameter sets.
-	 * @param ecParameterSpec the EC parameter specification
-	 * @return the corresponding EC domain parameter set
-	 */
-	static private DomainParameterSetEcdh convertEcParameterSpec(ECParameterSpec ecParameterSpec){
-		return new DomainParameterSetEcdh(ecParameterSpec.getCurve(), ecParameterSpec.getGenerator(), ecParameterSpec.getOrder(), ecParameterSpec.getCofactor());
-	}
-	
-	/**
-	 * This method converts Bouncy Castle named EC curves to EC domain parameter sets.
-	 * @param namedCurve the Bouncy Castle named EC curve
-	 * @return the corresponding EC domain parameter set
-	 */
-	static private DomainParameterSetEcdh convertBcnamedCurveToDomainParameterSet(X9ECParameters namedCurve) {
-		ECParameterSpec ecParameterSpec = convertBcNamedCurve(namedCurve);
-		return convertEcParameterSpec(ecParameterSpec);
+	static private EllipticCurve generateCurveFrom(BigInteger p, BigInteger a, BigInteger b) {
+		return new EllipticCurve(new ECFieldFp(p), a, b);
 	}
 	
 }
