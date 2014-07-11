@@ -4,9 +4,10 @@
 	<classpathentry kind="src" path="gtTests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/de.persosim.simulator"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/jmockit-coverage.jar"/>
-	<classpathentry kind="lib" path="lib/jmockit.jar"/>
-	<classpathentry kind="lib" path="/de.persosim.simulator/lib/bcprov-jdk15on-150.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jmockit-coverage.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jmockit.jar"/>
+	<classpathentry exported="true" kind="lib" path="/de.persosim.simulator/lib/bcprov-jdk15on-150.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

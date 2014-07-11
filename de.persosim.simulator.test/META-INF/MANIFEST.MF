@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PersoSim Simulator Test
+Bundle-SymbolicName: de.persosim.simulator.test
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: HJP Consulting GmbH
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: de.persosim.simulator;bundle-version="1.0.0"
+Export-Package: de.persosim.simulator.protocols,
+ de.persosim.simulator.test,
+ de.persosim.simulator.test.globaltester,
+ de.persosim.simulator.test.globaltester.perso,
+ mockit
