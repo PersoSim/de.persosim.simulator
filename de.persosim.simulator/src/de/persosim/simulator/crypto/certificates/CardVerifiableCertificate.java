@@ -1,9 +1,7 @@
 package de.persosim.simulator.crypto.certificates;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -100,12 +98,12 @@ public class CardVerifiableCertificate {
 		//public key
 		try {
 			ConstructedTlvDataObject publicKeyData = (ConstructedTlvDataObject) certificateBodyData.getTagField(TR03110.TAG_7F49);
-			publicKeyOid = TR03110.getOidFromPublicKey(publicKeyData);
-			publicKey = TR03110.parsePublicKey(publicKeyData, currentPublicKey);
+			publicKeyOid = new TaOid(publicKeyData.getTagField(TR03110.TAG_06).getValueField());
+			publicKey = TR03110.parseCertificatePublicKey(publicKeyData, currentPublicKey);
 			if (publicKey == null){
 				throw new CertificateNotParseableException("The public key data could not be parsed");
 			}
-		} catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchProviderException e) {
+		} catch (GeneralSecurityException e) {
 			throw new CertificateNotParseableException("The public key data could not be parsed");
 		}
 		//certificate holder reference

@@ -2,6 +2,9 @@ package de.persosim.simulator.protocols.ta;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.Signature;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,6 +13,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
@@ -148,6 +152,43 @@ public class TaOid extends Oid {
 			return "SHA-512";
 		}
 		throw new IllegalArgumentException("unknown or invalid algorithm");
+	}
+
+
+
+	/**
+	 * This method finds a signature object fitting this Oid as defined in
+	 * TR-03110 v2.10.
+	 * 
+	 * @return an instance of a {@link Signature} object
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchProviderException
+	 */	
+	public Signature getSignature() throws NoSuchAlgorithmException, NoSuchProviderException {
+		if (equals(TaOid.id_TA_RSA_v1_5_SHA_1)){
+			return Signature.getInstance("SHA1withRSA", Crypto.getCryptoProvider());
+		} else if (equals(TaOid.id_TA_RSA_v1_5_SHA_256)){
+			return Signature.getInstance("SHA256withRSA", Crypto.getCryptoProvider());
+		} else if (equals(TaOid.id_TA_RSA_v1_5_SHA_512)){
+			return Signature.getInstance("SHA512withRSA", Crypto.getCryptoProvider());
+		} else if (equals(TaOid.id_TA_RSA_PSS_SHA_1)){
+			return Signature.getInstance("SHA1withRSA/PSS", Crypto.getCryptoProvider());
+		} else if (equals(TaOid.id_TA_RSA_PSS_SHA_256)){
+			return Signature.getInstance("SHA256withRSA/PSS", Crypto.getCryptoProvider());
+		} else if (equals(TaOid.id_TA_RSA_PSS_SHA_512)){
+			return Signature.getInstance("SHA512withRSA/PSS", Crypto.getCryptoProvider());
+		} else if (equals(TaOid.id_TA_ECDSA_SHA_1)){
+			return Signature.getInstance("SHA1withECDSA", Crypto.getCryptoProvider());
+		} else if (equals(TaOid.id_TA_ECDSA_SHA_224)){
+			return Signature.getInstance("SHA224withECDSA", Crypto.getCryptoProvider());
+		} else if (equals(TaOid.id_TA_ECDSA_SHA_256)){
+			return Signature.getInstance("SHA256withECDSA", Crypto.getCryptoProvider());
+		} else if (equals(TaOid.id_TA_ECDSA_SHA_384)){
+			return Signature.getInstance("SHA384withECDSA", Crypto.getCryptoProvider());
+		} else if (equals(TaOid.id_TA_ECDSA_SHA_512)){
+			return Signature.getInstance("SHA512withECDSA", Crypto.getCryptoProvider());
+		}
+		return null;
 	}
 	
 }

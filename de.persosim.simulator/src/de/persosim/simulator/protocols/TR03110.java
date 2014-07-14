@@ -3,24 +3,13 @@ package de.persosim.simulator.protocols;
 import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 
-import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.security.Key;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PublicKey;
-import java.security.Signature;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.ECField;
-import java.security.spec.ECFieldFp;
 import java.security.spec.ECParameterSpec;
-import java.security.spec.ECPoint;
-import java.security.spec.ECPublicKeySpec;
-import java.security.spec.EllipticCurve;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.RSAPublicKeySpec;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -29,7 +18,7 @@ import org.ietf.jgss.GSSException;
 
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
-import de.persosim.simulator.crypto.Crypto;
+import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
@@ -38,10 +27,9 @@ import de.persosim.simulator.exception.NotParseableException;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
-import de.persosim.simulator.tlv.TlvDataObject;
+import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
-import de.persosim.simulator.utils.Utils;
 
 /**
  * XXX MBK replace TaOid with OID according to our own OID class hierarchy 
@@ -50,83 +38,8 @@ import de.persosim.simulator.utils.Utils;
  * @author mboonk
  *
  */
-public class TR03110 {
+public class TR03110 implements TlvConstants {
 	public static final int ACCESS_RIGHTS_AT_CAN_ALLOWED_BIT = 4;
-	
-	// data objects
-
-	public static final TlvTag TAG_06 = new TlvTag(new byte []{0x06});
-	public static final TlvTag TAG_42 = new TlvTag(new byte []{0x42});
-	public static final TlvTag TAG_53 = new TlvTag(new byte []{0x53});
-	public static final TlvTag TAG_65 = new TlvTag(new byte []{0x65});
-	public static final TlvTag TAG_67 = new TlvTag(new byte []{0x67});
-	public static final TlvTag TAG_73 = new TlvTag(new byte []{0x73});
-	public static final TlvTag TAG_80 = new TlvTag(new byte []{(byte) 0x80});
-	public static final TlvTag TAG_81 = new TlvTag(new byte []{(byte) 0x81});
-	public static final TlvTag TAG_82 = new TlvTag(new byte []{(byte) 0x82});
-	public static final TlvTag TAG_83 = new TlvTag(new byte []{(byte) 0x83});
-	public static final TlvTag TAG_84 = new TlvTag(new byte []{(byte) 0x84});
-	public static final TlvTag TAG_85 = new TlvTag(new byte []{(byte) 0x85});
-	public static final TlvTag TAG_86 = new TlvTag(new byte []{(byte) 0x86});
-	public static final TlvTag TAG_87 = new TlvTag(new byte []{(byte) 0x87});
-	public static final TlvTag TAG_91 = new TlvTag(new byte []{(byte) 0x91});
-	public static final TlvTag TAG_5F20 = new TlvTag(new byte []{0x5F, 0x20});
-	public static final TlvTag TAG_5F24 = new TlvTag(new byte []{0x5F, 0x24});
-	public static final TlvTag TAG_5F25 = new TlvTag(new byte []{0x5F, 0x25});
-	public static final TlvTag TAG_5F29 = new TlvTag(new byte []{0x5F, 0x29});
-	public static final TlvTag TAG_5F37 = new TlvTag(new byte []{0x5F, 0x37});
-	public static final TlvTag TAG_7F21 = new TlvTag(new byte []{0x7F, 0x21});
-	public static final TlvTag TAG_7F49 = new TlvTag(new byte []{0x7F, 0x49});
-	public static final TlvTag TAG_7F4C = new TlvTag(new byte []{0x7F, 0x4C});
-	public static final TlvTag TAG_7F4E = new TlvTag(new byte []{0x7F, 0x4E});
-
-	/**
-	 * This method finds a signature object according to OIDs as defined in
-	 * TR-03110 v2.10.
-	 * 
-	 * @param oid
-	 *            to search for
-	 * @return an instance of a {@link Signature} object
-	 * @throws NoSuchAlgorithmException
-	 * @throws NoSuchProviderException
-	 */
-	public static Signature getSignatureForOid(TaOid oid) throws NoSuchAlgorithmException, NoSuchProviderException{
-		if (oid.equals(TaOid.id_TA_RSA_v1_5_SHA_1)){
-			return Signature.getInstance("SHA1withRSA", Crypto.getCryptoProvider());
-		} else if (oid.equals(TaOid.id_TA_RSA_v1_5_SHA_256)){
-			return Signature.getInstance("SHA256withRSA", Crypto.getCryptoProvider());
-		} else if (oid.equals(TaOid.id_TA_RSA_v1_5_SHA_512)){
-			return Signature.getInstance("SHA512withRSA", Crypto.getCryptoProvider());
-		} else if (oid.equals(TaOid.id_TA_RSA_PSS_SHA_1)){
-			return Signature.getInstance("SHA1withRSA/PSS", Crypto.getCryptoProvider());
-		} else if (oid.equals(TaOid.id_TA_RSA_PSS_SHA_256)){
-			return Signature.getInstance("SHA256withRSA/PSS", Crypto.getCryptoProvider());
-		} else if (oid.equals(TaOid.id_TA_RSA_PSS_SHA_512)){
-			return Signature.getInstance("SHA512withRSA/PSS", Crypto.getCryptoProvider());
-		} else if (oid.equals(TaOid.id_TA_ECDSA_SHA_1)){
-			return Signature.getInstance("SHA1withECDSA", Crypto.getCryptoProvider());
-		} else if (oid.equals(TaOid.id_TA_ECDSA_SHA_224)){
-			return Signature.getInstance("SHA224withECDSA", Crypto.getCryptoProvider());
-		} else if (oid.equals(TaOid.id_TA_ECDSA_SHA_256)){
-			return Signature.getInstance("SHA256withECDSA", Crypto.getCryptoProvider());
-		} else if (oid.equals(TaOid.id_TA_ECDSA_SHA_384)){
-			return Signature.getInstance("SHA384withECDSA", Crypto.getCryptoProvider());
-		} else if (oid.equals(TaOid.id_TA_ECDSA_SHA_512)){
-			return Signature.getInstance("SHA512withECDSA", Crypto.getCryptoProvider());
-		}
-		return null;
-	}
-	
-	/**
-	 * Extract the OID from a TLV public key data object.
-	 * 
-	 * @param publicKeyData
-	 *            to parse
-	 * @return an {@link Oid} object as read from the publicKeyData
-	 */
-	public static TaOid getOidFromPublicKey(ConstructedTlvDataObject publicKeyData) {
-		return new TaOid(publicKeyData.getTagField(TR03110.TAG_06).getValueField());
-	}
 	
 	/**
 	 * The given public key data will be parsed and if needed filled in with the
@@ -137,59 +50,38 @@ public class TR03110 {
 	 * @param trustPointPublicKey
 	 *            or null
 	 * @return the created {@link PublicKey} object
+	 * @throws GeneralSecurityException
 	 * @throws GSSException
-	 * @throws InvalidKeySpecException
-	 * @throws NoSuchAlgorithmException
-	 * @throws NoSuchProviderException
 	 */
-	public static PublicKey parsePublicKey(
+	public static PublicKey parseCertificatePublicKey(
 			ConstructedTlvDataObject publicKeyData,
-			PublicKey trustPointPublicKey) throws InvalidKeySpecException,
-			NoSuchAlgorithmException, NoSuchProviderException {
-		TaOid oid = getOidFromPublicKey(publicKeyData);
-		
-		if (oid.getIdString().contains("RSA")){
-			TlvDataObject modulusData = publicKeyData.getTagField(TAG_81);
-			TlvDataObject publicExponentData = publicKeyData.getTagField(TAG_82);
-			RSAPublicKeySpec keySpec = new RSAPublicKeySpec(Utils.getBigIntegerFromUnsignedByteArray(modulusData.getValueField()), Utils.getBigIntegerFromUnsignedByteArray(publicExponentData.getValueField()));
-			if (trustPointPublicKey instanceof RSAPublicKey && ((RSAPublicKey)trustPointPublicKey).getModulus().bitLength() != keySpec.getModulus().bitLength()){
-				throw new InvalidKeySpecException("The trust points bit length does not match");
-			}
-			return KeyFactory.getInstance("RSA", Crypto.getCryptoProvider()).generatePublic(keySpec);
-		} else if (oid.getIdString().contains("ECDSA")){
-			TlvDataObject publicPointData = publicKeyData.getTagField(TAG_86);
-			ECPoint publicPoint = DomainParameterSetEcdh.reconstructPoint(publicPointData.getValueField());
-			
-			TlvDataObject modulusData = publicKeyData.getTagField(TAG_81);
-			TlvDataObject firstCoefficientData = publicKeyData.getTagField(TAG_82);
-			TlvDataObject secondCoefficientData = publicKeyData.getTagField(TAG_83);
-			TlvDataObject basePointData = publicKeyData.getTagField(TAG_84);
-			TlvDataObject orderOfBasePointData = publicKeyData.getTagField(TAG_85);
-			TlvDataObject cofactorData = publicKeyData.getTagField(TAG_87);
+			PublicKey trustPointPublicKey) throws GeneralSecurityException {
+		TaOid oid = new TaOid(publicKeyData.getTagField(TAG_06)
+				.getValueField());
 
-			if (!Utils.isAnyNull(modulusData, firstCoefficientData, secondCoefficientData, basePointData, orderOfBasePointData, cofactorData)){
-				//in this case complete domain parameters are given and used
-				ECField field = new ECFieldFp(new BigInteger(1, modulusData.getValueField()));				
-				EllipticCurve curve = new EllipticCurve(field, new BigInteger(1, firstCoefficientData.getValueField()), new BigInteger(1, secondCoefficientData.getValueField()));
-				ECPoint basePoint = DomainParameterSetEcdh.reconstructPoint(basePointData.getValueField());
-				ECParameterSpec paramSpec = new ECParameterSpec(curve, basePoint, new BigInteger(1, orderOfBasePointData.getValueField()), Utils.getIntFromUnsignedByteArray(cofactorData.getValueField()));
-				ECPublicKeySpec keySpec = new ECPublicKeySpec(publicPoint, paramSpec);
-				return KeyFactory.getInstance("EC", Crypto.getCryptoProvider()).generatePublic(keySpec);
-			}
-			
-			//the trust points domain parameters are used
-			if (trustPointPublicKey != null && trustPointPublicKey instanceof ECPublicKey){
-				ECPublicKey trustPointEcPublicKey = (ECPublicKey) trustPointPublicKey;
-				
-				//check if the given points x coordinates length fits the trust points field size
-				if (trustPointEcPublicKey.getParams().getCurve().getField().getFieldSize() / 8 != ((publicPointData.getLengthValue()-1)/2)){
-					throw new InvalidKeySpecException("The trust points field bit length does not match");
+		if (oid.getIdString().contains("ECDSA")) {
+			ECParameterSpec paramSpec = null;
+			ECPublicKey trustPointEcPublicKey = (ECPublicKey) trustPointPublicKey;
+			if (publicKeyData.containsTagField(TAG_81)&&
+					publicKeyData.containsTagField(TAG_82)&&
+					publicKeyData.containsTagField(TAG_83)&&
+					publicKeyData.containsTagField(TAG_84)&&
+					publicKeyData.containsTagField(TAG_85)&&
+					publicKeyData.containsTagField(TAG_87)) {
+				paramSpec = CryptoUtil.parseParameterSpecEc(publicKeyData);
+			} else {
+				if (trustPointEcPublicKey.getParams().getCurve().getField()
+						.getFieldSize() / 8 != ((publicKeyData.getTagField(
+						TlvConstants.TAG_86).getLengthValue() - 1) / 2)) {
+					throw new InvalidKeySpecException(
+							"The trust points field bit length does not match");
 				}
-				
-				ECPublicKeySpec keySpec = new ECPublicKeySpec(publicPoint, trustPointEcPublicKey.getParams());
-				return KeyFactory.getInstance("EC", Crypto.getCryptoProvider()).generatePublic(keySpec);
+				paramSpec = trustPointEcPublicKey.getParams();
 			}
+
+			return CryptoUtil.parsePublicKeyEc(publicKeyData, paramSpec);
 		}
+
 		return null;
 	}
 	

@@ -17,6 +17,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
+import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECField;
 import java.security.spec.ECFieldFp;
 import java.security.spec.ECParameterSpec;
@@ -308,18 +309,31 @@ public class CryptoUtil {
 		return signatureObject;
 	}
 
-	//XXX these two methods rely on BouncyCastle (but work for now), maybe compare to PublicKeyAdapter and see to find a more portable solution
 	/**
 	 * Restore a public key object from its ASN.1 representation.
 	 * @param publicKeyData the ASN.1 encoded key
+	 * @param paramSpec the {@link ECParameterSpec} to use
 	 * @return the {@link PublicKey} object
 	 * @throws GeneralSecurityException
 	 */
-	public static PublicKey parsePublicKeyEc(ConstructedTlvDataObject publicKeyData) throws GeneralSecurityException {
+	public static ECPublicKey parsePublicKeyEc(ConstructedTlvDataObject publicKeyData, ECParameterSpec paramSpec) throws GeneralSecurityException {
 		TlvDataObject publicPointData = publicKeyData.getTagField(TlvConstants.TAG_86);
 		ECPoint publicPoint = DomainParameterSetEcdh
 				.reconstructPoint(publicPointData.getValueField());
 
+
+		ECPublicKeySpec keySpec = new ECPublicKeySpec(publicPoint, paramSpec);
+		return (ECPublicKey) KeyFactory.getInstance("EC", Crypto.getCryptoProvider())
+				.generatePublic(keySpec);
+	}
+
+	/**
+	 * Restore the domain parameters form their ASN.1 representation.
+	 * @param publicKeyData the ASN.1 encoded key
+	 * @return the {@link ECParameterSpec} object
+	 * @throws GeneralSecurityException
+	 */
+	public static ECParameterSpec parseParameterSpecEc(ConstructedTlvDataObject publicKeyData){
 		TlvDataObject modulusData = publicKeyData.getTagField(TlvConstants.TAG_81);
 		TlvDataObject firstCoefficientData = publicKeyData.getTagField(TlvConstants.TAG_82);
 		TlvDataObject secondCoefficientData = publicKeyData.getTagField(TlvConstants.TAG_83);
@@ -334,12 +348,9 @@ public class CryptoUtil {
 				secondCoefficientData.getValueField()));
 		ECPoint basePoint = DomainParameterSetEcdh
 				.reconstructPoint(basePointData.getValueField());
-		ECParameterSpec paramSpec = new ECParameterSpec(curve, basePoint,
+		return new ECParameterSpec(curve, basePoint,
 				new BigInteger(1, orderOfBasePointData.getValueField()),
 				Utils.getIntFromUnsignedByteArray(cofactorData.getValueField()));
-		ECPublicKeySpec keySpec = new ECPublicKeySpec(publicPoint, paramSpec);
-		return KeyFactory.getInstance("EC", Crypto.getCryptoProvider())
-				.generatePublic(keySpec);
 	}
 	
 }

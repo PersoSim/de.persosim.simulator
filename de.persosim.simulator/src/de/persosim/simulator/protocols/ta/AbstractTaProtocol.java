@@ -77,10 +77,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 	public static final byte MASK_SFI_BYTE = (byte) 0x80;
 	
 	private SecureRandom secureRandom = new SecureRandom();
-	private PublicKeyReference currentCertificateKeyReference;
 	private CardVerifiableCertificate currentCertificate;
-	
-	private PublicKeyReference mostRecentTemporaryPublicKeyReference;
 	private CardVerifiableCertificate mostRecentTemporaryCertificate;
 
 	private byte [] challenge;
@@ -124,9 +121,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 	@Override
 	public void reset(){
 		super.reset();
-		currentCertificateKeyReference = null;
 		currentCertificate = null;
-		mostRecentTemporaryPublicKeyReference = null;
 		mostRecentTemporaryCertificate = null;
 		auxiliaryData = null;
 		challenge = null;
@@ -157,15 +152,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 
 
 			// reset the currently set key
-			currentCertificateKeyReference = null;
 			currentCertificate = null;
 
 			// get the next certificate to verify against
-			if (mostRecentTemporaryPublicKeyReference != null) {
+			if (mostRecentTemporaryCertificate != null && mostRecentTemporaryCertificate.getCertificateHolderReference() != null) {
 				// the temporary imported key is to be used
 				if (Arrays.equals(publicKeyReference.getValueField(),
-						mostRecentTemporaryPublicKeyReference.getBytes())) {
-					currentCertificateKeyReference = mostRecentTemporaryPublicKeyReference;
+						mostRecentTemporaryCertificate.getCertificateHolderReference().getBytes())) {
 					currentCertificate = mostRecentTemporaryCertificate;
 					
 					// create and propagate response APDU
@@ -182,12 +175,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 					Scope.FROM_MF);
 			if (trustPointCandidate instanceof TrustPointCardObject) {
 				trustPoint = (TrustPointCardObject) trustPointCandidate;
-				if (trustPoint.getCurrentPublicKeyReference() != null
+				if (trustPoint.getCurrentCertificate().getCertificateHolderReference() != null
 						&& Arrays.equals(trustPoint
-								.getCurrentPublicKeyReference().getBytes(),
+								.getCurrentCertificate().getCertificateHolderReference().getBytes(),
 								publicKeyReference.getValueField())) {
-					currentCertificateKeyReference = trustPoint
-							.getCurrentPublicKeyReference();
 					currentCertificate = trustPoint.getCurrentCertificate();
 					
 					currentEffectiveAuthorization = currentCertificate.getCertificateHolderAuthorizationTemplate().getRelativeAuthorization();
@@ -201,13 +192,11 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 					this.processingData.updateResponseAPDU(this,
 							"Command SetDST successfully processed, public key found in first trust anchor", resp);
 					return;
-				} else if (trustPoint.getPreviousPublicKeyReference() != null
+				} else if (trustPoint.getPreviousCertificate().getCertificateHolderReference() != null
 						&& Arrays.equals(
-								trustPoint.getPreviousPublicKeyReference()
+								trustPoint.getPreviousCertificate().getCertificateHolderReference()
 										.getBytes(), publicKeyReference
 										.getValueField())) {
-					currentCertificateKeyReference = trustPoint
-							.getPreviousPublicKeyReference();
 					currentCertificate = trustPoint.getPreviousCertificate();
 					currentEffectiveAuthorization = currentCertificate.getCertificateHolderAuthorizationTemplate().getRelativeAuthorization();
 					
@@ -267,7 +256,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 			try {
 				PublicKeyReference keyReference = new PublicKeyReference(publicKeyReferenceData);
 
-				if (!currentCertificateKeyReference.equals(keyReference)){
+				if (!currentCertificate.getCertificateHolderReference().equals(keyReference)){
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
 					this.processingData.updateResponseAPDU(this,
@@ -380,7 +369,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 	 */
 	private boolean checkSignature(TaOid taOid, PublicKey publicKey, byte [] dataToVerify, byte [] signatureData) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoSuchProviderException{
 		log(this, "Verifing signature:");
-		Signature signature = TR03110.getSignatureForOid(taOid); //XXX MBK in Pace/Ca protocols we query the (custom) oid to return such objects
+		Signature signature = taOid.getSignature();
 		if (signature != null){
 			signature.initVerify(publicKey);
 			signature.update(dataToVerify);
@@ -417,7 +406,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 		
 		try {
 			CardVerifiableCertificate certificate = new CardVerifiableCertificate(certificateBodyData, currentCertificate.getPublicKey());
-			if (certificate.getCertificateAuthorityReference().equals(currentCertificateKeyReference)){
+			if (certificate.getCertificateAuthorityReference().equals(currentCertificate.getCertificateHolderReference())){
 				if (!isCertificateIssuerValid(certificate, currentCertificate)){
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
@@ -622,9 +611,6 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 	 */
 	private void temporaryImport(CardVerifiableCertificate certificate) {
 		mostRecentTemporaryCertificate = certificate;
-		mostRecentTemporaryPublicKeyReference = certificate
-				.getCertificateHolderReference();
-		currentCertificateKeyReference = mostRecentTemporaryPublicKeyReference;
 		currentCertificate = mostRecentTemporaryCertificate;
 	}
 

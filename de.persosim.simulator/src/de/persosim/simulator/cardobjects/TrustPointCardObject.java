@@ -21,12 +21,6 @@ import de.persosim.simulator.exception.CertificateUpdateException;
 @XmlRootElement
 public class TrustPointCardObject extends AbstractCardObject {
 	
-	//FIXME MBK why are the publicKeyReferences duplicated here? They are accessible through the certificates
-	@XmlElement
-	PublicKeyReference currentPublicKeyReference;
-	@XmlElement
-	PublicKeyReference previousPublicKeyReference;
-	
 	@XmlElement
 	CardVerifiableCertificate currentCertificate;
 	@XmlElement
@@ -40,11 +34,9 @@ public class TrustPointCardObject extends AbstractCardObject {
 	}
 
 	public TrustPointCardObject(TrustPointIdentifier identifier,
-			PublicKeyReference currentReference,
 			CardVerifiableCertificate currentCertificate) {
 		this.identifier = identifier;
 		this.currentCertificate = currentCertificate;
-		this.currentPublicKeyReference = currentReference;
 	}
 
 	@Override
@@ -55,26 +47,10 @@ public class TrustPointCardObject extends AbstractCardObject {
 	}
 
 	/**
-	 * @return the reference, that binds a holder to this trustpoints current
-	 *         certificate
-	 */
-	public PublicKeyReference getCurrentPublicKeyReference() {
-		return currentPublicKeyReference;
-	}
-
-	/**
 	 * @return the current certificate that defines this trustpoint
 	 */
 	public CardVerifiableCertificate getCurrentCertificate() {
 		return currentCertificate;
-	}
-
-	/**
-	 * @return the reference, that binds a holder to this trustpoints previous
-	 *         certificate
-	 */
-	public PublicKeyReference getPreviousPublicKeyReference() {
-		return previousPublicKeyReference;
 	}
 
 	/**
@@ -85,13 +61,15 @@ public class TrustPointCardObject extends AbstractCardObject {
 	}
 
 	/**
-	 * Update the trustpoint using a new certificate.
-	 * 
-	 * XXX MBK add documentation
+	 * Update the trustpoint using a new certificate. This method moves the
+	 * current certificate to the previous position and sets the given input as
+	 * the new current certificate. Due to the certificate scheduling described
+	 * in TR-03110 v2.10 Part 3 2.4 holding two certificates provides for
+	 * seamless certificate roll-over.
 	 * 
 	 * @param newReference
 	 * @param newCertificate
-	 * @throws CertificateUpdateException 
+	 * @throws CertificateUpdateException
 	 */
 	public void updateTrustpoint(PublicKeyReference newReference,
 			CardVerifiableCertificate newCertificate) throws CertificateUpdateException {
@@ -103,9 +81,7 @@ public class TrustPointCardObject extends AbstractCardObject {
 		//}
 		
 		previousCertificate = currentCertificate;
-		previousPublicKeyReference = currentPublicKeyReference;
 		currentCertificate = newCertificate;
-		currentPublicKeyReference = newReference;
 	}
 
 }
