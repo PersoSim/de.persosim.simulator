@@ -1,7 +1,7 @@
 package de.persosim.simulator.tlv;
 
-import java.util.Collection;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class represents a path that can be used to navigate within any
@@ -34,7 +34,7 @@ import java.util.Vector;
  * @author slutters
  * 
  */
-public class TlvPath extends Vector<TlvTag> {
+public class TlvPath extends ArrayList<TlvTag> {
 	
 	/* Default serialVersionUID */
 	private static final long serialVersionUID = 1L;
@@ -48,10 +48,10 @@ public class TlvPath extends Vector<TlvTag> {
 	
 	/**
 	 * Basic constructor for constructing this object from a collection representation.
-	 * @param collection a collection representation of this object
+	 * @param tagList a collection representation of this object
 	 */
-	public TlvPath(Collection<TlvTag> collection) {
-		super(collection);
+	public TlvPath(List<TlvTag> tagList) {
+		super(tagList);
 	}
 	
 	/**
@@ -69,33 +69,6 @@ public class TlvPath extends Vector<TlvTag> {
 	}
 	
 	/*--------------------------------------------------------------------------------*/
-	
-	/**
-	 * Adds a tag to the path.
-	 * @param tag the tag to add
-	 * @return true iff add successful, false otherwise
-	 */
-	public boolean add(byte[] tag) {
-		return this.add(new TlvTag(tag));
-	}
-	
-	/**
-	 * Adds a tag to the path.
-	 * @param tag the tag to add
-	 * @return true iff add successful, false otherwise
-	 */
-	public boolean add(byte tag) {
-		return this.add(new TlvTag(tag));
-	}
-	
-	/**
-	 * Adds a tag to the path.
-	 * @param tag the tag to add
-	 * @return true iff add successful, false otherwise
-	 */
-	public boolean add(short tag) {
-		return this.add(new TlvTag(tag));
-	}
 	
 	@Override
 	public TlvPath clone() {
@@ -115,7 +88,7 @@ public class TlvPath extends Vector<TlvTag> {
 		if(size() != anotherTlvPath.size()) {return false;};
 		
 		for(int i = 0; i < size(); i++) {
-			if(!(this.elementAt(i).equals(anotherTlvPath.elementAt(i)))) {return false;}
+			if(!(this.get(i).equals(anotherTlvPath.get(i)))) {return false;}
 		}
 		
 		return true;
@@ -125,27 +98,23 @@ public class TlvPath extends Vector<TlvTag> {
 	public int hashCode() {
 		int hash = 1;
 		for(int i = 0; i < size(); i++) {
-			hash *= elementAt(i).hashCode();
+			hash *= get(i).hashCode();
 		}
 		return hash;
 	}
 	
 	/**
-	 * Returns a Vector analogous to this path using byte arrays instead of TlvTags.
-	 * @return a Vector analogous to this path using byte arrays instead of TlvTags
+	 * This method returns the last object of the path.
+	 * If the path is empty, null will be returned.
+	 * @return the last object of the path
 	 */
-	/* XXX AMY Scheduled for removal - requires non-trivial restructuring within {@link ExtendedTagSpecification} */
-	@Deprecated
-	public Vector<byte[]> toVector() {
-		Vector<byte[]> vector;
-		
-		vector = new Vector<byte[]>();
-		
-		for(TlvTag tlvTag : this) {
-			vector.add(tlvTag.toByteArray());
+	public TlvTag getLastElement() {
+		int size = size();
+		if(size == 0) {
+			return null;
+		} else{
+			return get(size - 1);
 		}
-		
-		return vector;
 	}
 	
 }

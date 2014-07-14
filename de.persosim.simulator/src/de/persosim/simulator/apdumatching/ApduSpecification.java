@@ -1,19 +1,21 @@
 package de.persosim.simulator.apdumatching;
 
-import java.util.Vector;
-
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.InterindustryCommandApdu;
 import de.persosim.simulator.exception.CommandParameterUndefinedException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvPath;
+import de.persosim.simulator.tlv.TlvTag;
 
 /**
+ * This class specifies requirements that must be met by an APDU to positively match.
+ * 
  * @author slutters
  *
  */
-public class ApduSpecification implements Iso7816, ApduSpecificationIf {
+//FIXME AMY review this class after rename based on the last master version)
+public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 	/* The id, e.g. the name of the resembled APDU */
 	protected String id;
 	
@@ -23,12 +25,6 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 	/* ISO format as defined in ISO7816 interface */
 	protected byte isoFormat;
 	
-	/*
-	 * The content of the following variables may be widely and especially
-	 * dynamically determined by the card or the active protocol.
-	 * 
-	 * START
-	 */
 	/* Indicates whether the resembled APDU is expected to use chaining as
 	 * defined in ISO7816 interface (CHAINING_X)*/
 	protected boolean chaining;
@@ -38,9 +34,6 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 	/* Indicates which channel the resembled APDU is expected to use as
 	 * defined in ISO7816 interface (CH_X) */
 	protected byte channel;
-	/*
-	 * END
-	 */
 	
 	protected byte isoCase;
 	protected boolean isExtendedLengthLCLE;
@@ -49,7 +42,7 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 	protected byte p1;
 	protected byte p2;
 	
-	protected ExtendedTagSpecification tags;
+	protected TlvSpecificationContainer tags;
 	
 	
 	
@@ -68,27 +61,7 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 	public ApduSpecification(String id) {
 		this.id = id;
 		this.isInitialAPDU = false;
-		this.tags = new ExtendedTagSpecification();
-	}
-	
-	/*--------------------------------------------------------------------------------*/
-	
-	public void setDefaultRequirement(byte defaultValue, boolean recursive) {
-		this.reqIsoFormat = defaultValue;
-		this.reqChaining = defaultValue;
-		this.reqSecureMessaging = defaultValue;
-		this.reqChannel = defaultValue;
-		this.reqIsoCase = defaultValue;
-		this.reqIsExtendedLengthLCLE = defaultValue;
-		this.reqIns = defaultValue;
-		this.reqP1 = defaultValue;
-		this.reqP2 = defaultValue;
-		
-		this.tags.setRequired(defaultValue, recursive);
-	}
-	
-	public void setDefaultRequirement(byte defaultValue) {
-		this.setDefaultRequirement(defaultValue, RECURSIVE);
+		this.tags = new TlvSpecificationContainer();
 	}
 	
 	/*--------------------------------------------------------------------------------*/
@@ -132,6 +105,7 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 	}
 	
 	//XXX let this method return only boolean and simplify several common blocks extract comparison with parameter REQ_(MIS)MATCH
+	//throw custom exceptions instead that are implicitly associated with the status word explicitly set here
 	public ApduMatchResult matchesFullAPDU(CommandApdu apdu) {
 		byte isoCase;
 		
@@ -168,7 +142,6 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 			}
 		}
 		
-		
 		if(reqSecureMessaging != REQ_OPTIONAL) {
 			CommandApdu curApdu = apdu;
 			while (curApdu != null) {
@@ -201,7 +174,6 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 			}
 			
 		}
-		
 		
 		if(this.ins == apdu.getIns()) {
 			if(this.reqIns == REQ_MISMATCH) {
@@ -279,7 +251,7 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 			try {
 				constructedDataField = new TlvDataObjectContainer(commandDataBytes, 0, commandDataBytes.length);
 				
-				TagMatchResult tagMatchResult = this.tags.matches(constructedDataField, STRICT_ORDER);
+				TagMatchResult tagMatchResult = this.tags.matches(constructedDataField);
 				
 				if(!tagMatchResult.isMatch()) {
 					return new ApduMatchResult(tagMatchResult.getProposedStatusWord(), tagMatchResult.getAdditionalInfo());
@@ -490,91 +462,22 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 	/**
 	 * @return the tags
 	 */
-	public ExtendedTagSpecification getTags() {
+	public TlvSpecificationContainer getTags() {
 		return tags;
-	}
-
-	/**
-	 * @param tags the tags to set
-	 */
-	public void setTags(ExtendedTagSpecification tags) {
-		this.tags = tags;
 	}
 	
 	/*--------------------------------------------------------------------------------*/
 	
-	public void addTag(Vector<byte[]> path, ExtendedTagSpecification eTagSpec) {
-		this.tags.addSubTag(path, eTagSpec);
+	public void addTag(TlvPath path, PrimitiveTlvSpecification eTagSpec) {
+		this.tags.add(path.clone(), eTagSpec);
 	}
 	
-	public void addTag(TlvPath path, ExtendedTagSpecification eTagSpec) {
-		this.tags.addSubTag(path.clone(), eTagSpec);
+	public void addTag(PrimitiveTlvSpecification eTagSpec) {
+		this.tags.add(eTagSpec);
 	}
 	
-	public void addTag(ExtendedTagSpecification eTagSpec) {
-		this.tags.addSubTag(eTagSpec);
-	}
-	
-	
-	
-	public void addTag(Vector<byte[]> path, byte[] tag, byte req) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag, req));
-	}
-
-	public void addTag(Vector<byte[]> path, byte[] tag) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag));
-	}
-	
-	public void addTag(byte[] tag, byte req) {
-		this.tags.addSubTag(new SimpleTagSpecification(tag, req));
-	}
-	
-	public void addTag(byte[] tag) {
-		this.tags.addSubTag(new SimpleTagSpecification(tag));
-	}
-	
-	
-	
-	public void addTag(Vector<byte[]> path, short tag, byte req) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag, req));
-	}
-	
-	public void addTag(Vector<byte[]> path, short tag) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag));
-	}
-	
-	public void addTag(TlvPath path, short tag) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag));
-	}
-	
-	public void addTag(short tag, byte req) {
-		this.tags.addSubTag(new SimpleTagSpecification(tag, req));
-	}
-	
-	public void addTag(short tag) {
-		this.tags.addSubTag(new SimpleTagSpecification(tag));
-	}
-	
-	
-	
-	public void addTag(Vector<byte[]> path, byte tag, byte req) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag, req));
-	}
-	
-	public void addTag(Vector<byte[]> path, byte tag) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag));
-	}
-	
-	public void addTag(TlvPath path, byte tag) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag));
-	}
-	
-	public void addTag(byte tag, byte req) {
-		this.tags.addSubTag(new SimpleTagSpecification(tag, req));
-	}
-	
-	public void addTag(byte tag) {
-		this.tags.addSubTag(new SimpleTagSpecification(tag));
+	public void addTag(TlvTag tag) {
+		addTag(new ConstructedTlvSpecification(tag));
 	}
 
 	/*--------------------------------------------------------------------------------*/

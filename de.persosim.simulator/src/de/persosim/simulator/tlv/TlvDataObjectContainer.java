@@ -251,7 +251,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 		if(path == null) {throw new NullPointerException("path must not be null");};
 		if(path.size() < 1) {throw new IllegalArgumentException("path must not be empty");};
 		
-		TlvTag tagToBeRemoved = path.lastElement();
+		TlvTag tagToBeRemoved = path.getLastElement();
 		
 		if(path.size() == 1) {
 			removeTlvDataObject(tagToBeRemoved);

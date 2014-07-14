@@ -1,0 +1,239 @@
+package de.persosim.simulator.apdumatching;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import de.persosim.simulator.platform.Iso7816;
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+import de.persosim.simulator.tlv.TlvDataObject;
+import de.persosim.simulator.tlv.TlvDataObjectContainer;
+import de.persosim.simulator.tlv.TlvPath;
+import de.persosim.simulator.tlv.TlvTag;
+
+/**
+ * This class provides a container for specifications of TLV elements. Its
+ * primary function is to serve as root element of the specified TLV structure.
+ * 
+ * @author slutters
+ * 
+ */
+public class TlvSpecificationContainer extends ArrayList<PrimitiveTlvSpecification> implements Iso7816, ApduSpecificationConstants {
+	
+	private static final long serialVersionUID = 1L;
+	protected boolean allowUnspecifiedSubTags;
+	protected boolean isStrictOrder;
+	
+	public TlvSpecificationContainer(boolean allowUnspecifiedSubTags, boolean isStrictOrder) {
+		this.allowUnspecifiedSubTags = allowUnspecifiedSubTags;
+		this.isStrictOrder = isStrictOrder;
+	}
+	
+	public TlvSpecificationContainer(boolean allowUnspecifiedSubTags) {
+		this(allowUnspecifiedSubTags, STRICT_ORDER);
+	}
+	
+	public TlvSpecificationContainer() {
+		this(DO_NOT_ALLOW_FURTHER_TAGS);
+	}
+	
+	/**
+	 * This method adds TLV data object specifications to an existing hierarchy
+	 * according to the provided path and path offset. The path (offset) is
+	 * relative to the object on which it is applied.
+	 * 
+	 * @param path
+	 *            the path at which the provided specification is to be added
+	 * @param pathOffset
+	 *            the offset of the current position within the path
+	 * @param tlvSpec
+	 *            the TLV data object specifications to be added
+	 */
+	public void add(TlvPath path, int pathOffset, PrimitiveTlvSpecification tlvSpec) {
+		if(path == null) {throw new NullPointerException("path must not be null");}
+		
+		for(int i = 0; i < path.size(); i++) {
+			if(path.get(i) == null) {
+				throw new NullPointerException("subtag in path must not be null");
+			}
+		}
+		
+		if(pathOffset == path.size()) {
+			add(tlvSpec);
+			return;
+		} else{
+			PrimitiveTlvSpecification tagSpec;
+			int index = getFirstIndexOfSubTag(path.get(pathOffset));
+			
+			if(index >= 0) {
+				tagSpec = get(index);
+				
+				if(tagSpec instanceof ConstructedTlvSpecification) {
+					((ConstructedTlvSpecification) tagSpec).add(path, pathOffset + 1, tlvSpec);
+					return;
+				} else{
+					throw new IllegalArgumentException("path element must not be primitive");
+				}
+			} else{
+				throw new NullPointerException("path element not found");
+			}
+		}
+	}
+	
+	/**
+	 * This method inserts a TLV data object specification within an existing
+	 * hierarchy as child to the constructed TLV data object specification at
+	 * the provided path. The path is relative to the object on which it is
+	 * applied.
+	 * 
+	 * @param path
+	 *            the path at which the provided specification is to be added
+	 * @param tlvSpec
+	 *            the TLV data object specifications to be added
+	 */
+	public void add(TlvPath path, PrimitiveTlvSpecification tlvSpec) {
+		add(path, 0, tlvSpec);
+	}
+	
+	/**
+	 * This method returns the first index of an occurrence of a tag matching
+	 * the provided tag within the sub tags of this object. If no occurrence can
+	 * be found the returned index will be "-1".
+	 * 
+	 * @param tag
+	 *            the tag to be matched for
+	 * @return the first occurrence of the provided tag
+	 */
+	public int getFirstIndexOfSubTag(TlvTag tag) {
+		if(tag == null) {throw new NullPointerException("tag must not be null");}
+		
+		for(int i = 0; i < size(); i++) {
+			if(get(i).matches(tag)) {
+				return i;
+			}
+		}
+		
+		return -1;
+	}
+
+	
+	//FIXME SLS extract a common Interface for matching, with a consistent description of the matches() method, similar to Java.util.regex.matcher, in the end we are dcefining something very similar to Regex here  
+	// This should cover *TlvSpecification*.matches, as well as Tlv*.matches and ApduSpecification.matchesFullAPDU() 
+
+	
+	/**
+	 * This method returns whether the provided TLV data object container matches the hierarchy of specifications within this object.
+	 * @param tlvContainer a TLV data object container
+	 * @return the matching result
+	 */
+	public TagMatchResult matches(TlvDataObjectContainer tlvContainer) {
+		ConstructedTlvDataObject cBERTLVobj;
+		Iterator<TlvDataObject> tlvIterator;
+		int counter, diffCounter, currentWorkingIndex, highestAlreadyEncounteredIndex;;
+		TlvDataObject tlvDataObject;
+		PrimitiveTlvSpecification currentPrimitiveTlvSpecification;
+		TagMatchResult tagMatchResult;
+		
+		counter = 0;
+		highestAlreadyEncounteredIndex = 0;
+		
+		tlvIterator = tlvContainer.iterator();
+		
+		while(tlvIterator.hasNext()) {
+			tlvDataObject = tlvIterator.next();
+			
+			currentWorkingIndex = this.getFirstIndexOfSubTag(tlvDataObject.getTlvTag());
+			
+			if(currentWorkingIndex < 0) {
+				if(!this.allowUnspecifiedSubTags) {
+					/* we encountered an unknown (sub-) tag but these are implicitly forbidden at the specified place */
+					return new TagMatchResult(SW_6A80_WRONG_DATA, "unexpected tag " + tlvDataObject.getTlvTag());
+				}
+			} else{
+				currentPrimitiveTlvSpecification = get(currentWorkingIndex);
+				
+				if(currentPrimitiveTlvSpecification.getRequired() == REQ_MISMATCH) {
+					return new TagMatchResult(SW_6A80_WRONG_DATA, "tag " + tlvDataObject.getTlvTag() + " not allowed");
+				}
+				
+				if(currentPrimitiveTlvSpecification.getRequired() == REQ_MATCH) {
+					counter++;
+				}
+				
+				if(isStrictOrder) {
+					if(currentWorkingIndex < highestAlreadyEncounteredIndex) {
+						/* we encountered a known (sub-) tag but out of the specified order */
+						return new TagMatchResult(SW_6A80_WRONG_DATA, "tag " + tlvDataObject.getTlvTag() + " is out of order");
+					} else{
+						highestAlreadyEncounteredIndex = currentWorkingIndex;
+					}
+				}
+				
+				//FIXME SLS why is currentPrimitiveTlvSpecification.matches() not called here?
+				if(tlvDataObject.isConstructedTLVObject()) {
+					ConstructedTlvSpecification currentConstructedTlvSpecification = (ConstructedTlvSpecification) currentPrimitiveTlvSpecification;
+					cBERTLVobj = (ConstructedTlvDataObject) tlvDataObject;
+					
+					//FIXME SLS MATCH repair this
+					tagMatchResult = currentConstructedTlvSpecification.getSubTags().matches(cBERTLVobj.getTlvDataObjectContainer());
+					
+					if(!tagMatchResult.isMatch()) {
+						/* forward error message */
+						return tagMatchResult;
+					}	
+				}
+			}
+		}
+		
+		//FIXME SLS why is a counter sufficient here? Shouldn't the algorithm iterate ofer the list of specification instead of the input? Imagine a specification that should match A,B and an input A,A, this might also lead to a counter of 2 instead of a mismatch
+		diffCounter = this.getNoOfTagsMatchingRequirement(REQ_MATCH) - counter;
+		
+		if(diffCounter > 0) {
+			/* tlv object failed to satisfy all required matches */
+			/* "missing tags" */
+			if(diffCounter == 1) {
+				return new TagMatchResult(SW_6A80_WRONG_DATA, "missing " + diffCounter + " more mandatory tag");
+			} else{
+				return new TagMatchResult(SW_6A80_WRONG_DATA, "missing " + diffCounter + " more mandatory tags");
+			}
+		}
+		
+		return new TagMatchResult();
+	}
+	
+	/**
+	 * This methods sets the expectations for unspecified sub tags.
+	 * @param allowUnspecifiedSubTags whether unspecified sub tags are to be tolerated
+	 */
+	public void setAllowUnspecifiedSubTags(boolean allowUnspecifiedSubTags) {
+		this.allowUnspecifiedSubTags = allowUnspecifiedSubTags;
+	}
+
+	/**
+	 * This method returns the number of immediate child specifications matching the provided requirement state.
+	 * @param req the requirement state to match against
+	 * @return number of immediate child specifications matching the provided requirement state
+	 */
+	//FIXME SLS i dont see any need for this method
+	public int getNoOfTagsMatchingRequirement(byte req) {
+		int counter;
+		
+		counter = 0;
+		
+		for(int i = 0; i < size(); i++) {
+			if(get(i).getRequired() == req) {
+				counter++;
+			}
+		}
+		
+		return counter;
+	}
+	
+	/**
+	 * This method sets whether sub tags are to be expected exactly in the provided order.
+	 * @param strictOrder the order in which sub tags are evaluated
+	 */
+	public void setStrictOrder(boolean strictOrder) {
+		isStrictOrder = strictOrder;
+	}
+
+}

@@ -8,6 +8,7 @@ import de.persosim.simulator.platform.Iso7816Lib;
  * @author slutters
  *
  */
+//FIXME SLS when cleaning up apdumatching package, why not remove this class?
 public class MatchResult implements Iso7816 {
 	protected short proposedStatusWord;
 	protected String additionalInfo;

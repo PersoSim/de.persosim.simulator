@@ -2,6 +2,7 @@ package de.persosim.simulator.tlv;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import mockit.Deencapsulation;
 
 import org.junit.Test;
 
@@ -223,7 +224,7 @@ public class ConstructedTlvDataObjectTest {
 		/* set arbitrary but valid constructed tag different from the one defined before */
 		byte[] tagExpected2 = new byte[] { (byte) 0x24 };
 		
-		tag.setTagField(tagExpected2);
+		Deencapsulation.setField(tag, "tagField", tagExpected2);
 
 		boolean isEqual = tag.equals(tlvObject.getTlvTag());
 		assertEquals("Provided tag must not be imported directly", isEqual,
@@ -254,7 +255,7 @@ public class ConstructedTlvDataObjectTest {
 		byte[] tagExpected2 = new byte[] { (byte) 0x24 };
 		
 		TlvTag tagMod = tlvObject.getTlvTag();
-		tagMod.setTagField(tagExpected2);
+		Deencapsulation.setField(tagMod, "tagField", tagExpected2);
 		
 		boolean isEqual = tagMod.equals(tlvObject.getTlvTag());
 		assertEquals("Stored tag must not be returned directly", isEqual, false);
