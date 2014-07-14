@@ -32,7 +32,6 @@ import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
-import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.platform.CardStateAccessor;
@@ -171,7 +170,7 @@ public class AbstractPaceProtocolTest extends PersoSimTestCase {
 	@Test
 	public void testSetAtWithChat() throws CarParameterInvalidException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException, GSSException, CertificateNotParseableException{
 		// prepare the mock
-		final TrustPointCardObject trustpoint = new TrustPointCardObject(new TrustPointIdentifier(TerminalType.IS), new PublicKeyReference(cvcaIsCarTlv), new CardVerifiableCertificate(cvcaIsTlv)); 
+		final TrustPointCardObject trustpoint = new TrustPointCardObject(new TrustPointIdentifier(TerminalType.IS), new CardVerifiableCertificate(cvcaIsTlv)); 
 		
 		new NonStrictExpectations() {
 			{

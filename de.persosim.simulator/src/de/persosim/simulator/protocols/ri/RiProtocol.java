@@ -244,7 +244,10 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationIf,
 				}
 
 				if (staticKeyPair == null){
-					// XXX MBK throw a 4Axx statusword when implemented
+					// create and propagate response APDU
+					ResponseApdu resp = new ResponseApdu(PlatformUtil.SW_4A80_WRONG_DATA);
+					processingData.updateResponseAPDU(this,
+							"The static key pair was not set correctly, probably because of missing setAT execution", resp);
 					return;
 				}
 				

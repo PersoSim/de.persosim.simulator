@@ -125,7 +125,7 @@ public class TR03110Test extends PersoSimTestCase {
 	@Test
 	public void testParsePublicKeyEcUsingTrustPointKey() throws Exception {
 		//call mut
-		assertArrayEquals(publicKeyEc.getEncoded(), TR03110.parsePublicKey(publicKeyDataEcNoDomainParameters, publicKeyEc).getEncoded());
+		assertArrayEquals(publicKeyEc.getEncoded(), TR03110.parseCertificatePublicKey(publicKeyDataEcNoDomainParameters, publicKeyEc).getEncoded());
 	}
 	
 	/**
@@ -137,7 +137,7 @@ public class TR03110Test extends PersoSimTestCase {
 	@Test
 	public void testParsePublicKeyEcNoTrustPointKey() throws Exception {
 		//call mut
-		assertArrayEquals(publicKeyEc.getEncoded(), TR03110.parsePublicKey(publicKeyDataEc, null).getEncoded());
+		assertArrayEquals(publicKeyEc.getEncoded(), TR03110.parseCertificatePublicKey(publicKeyDataEc, null).getEncoded());
 	}
 	
 	/**

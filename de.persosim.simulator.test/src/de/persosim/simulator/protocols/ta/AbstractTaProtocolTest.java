@@ -98,7 +98,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 
 		chr = new PublicKeyReference("DE", "JUNIT", "00000");
 
-		trustPoint = new TrustPointCardObject(null, chr, issuingCertificate);
+		trustPoint = new TrustPointCardObject(null, issuingCertificate);
 	}
 
 	/**
@@ -178,8 +178,6 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 
 		assertEquals(Deencapsulation.getField(taProtocol,
 				"mostRecentTemporaryCertificate"), certificate);
-		assertEquals(Deencapsulation.getField(taProtocol,
-				"mostRecentTemporaryPublicKeyReference"), chr);
 	}
 
 	/**

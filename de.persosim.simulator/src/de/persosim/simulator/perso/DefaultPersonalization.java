@@ -44,8 +44,6 @@ import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
-import de.persosim.simulator.crypto.certificates.PublicKeyReference;
-import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.TR03110;
@@ -276,24 +274,21 @@ public class DefaultPersonalization implements Personalization, Pace {
 			TlvDataObject cvcaIsTlv = ((ConstructedTlvDataObject)new TlvDataObjectContainer(cvcaIsData).getTagField(TR03110.TAG_7F21)).getTagField(TR03110.TAG_7F4E);
 			TlvDataObject cvcaAtTlv = ((ConstructedTlvDataObject)new TlvDataObjectContainer(cvcaAtData).getTagField(TR03110.TAG_7F21)).getTagField(TR03110.TAG_7F4E);
 			TlvDataObject cvcaStTlv = ((ConstructedTlvDataObject)new TlvDataObjectContainer(cvcaStData).getTagField(TR03110.TAG_7F21)).getTagField(TR03110.TAG_7F4E);
-			TlvDataObject cvcaIsChrTlv = ((ConstructedTlvDataObject)((ConstructedTlvDataObject)new TlvDataObjectContainer(cvcaIsData).getTagField(TR03110.TAG_7F21)).getTagField(TR03110.TAG_7F4E)).getTagField(TR03110.TAG_5F20);
-			TlvDataObject cvcaAtChrTlv = ((ConstructedTlvDataObject)((ConstructedTlvDataObject)new TlvDataObjectContainer(cvcaAtData).getTagField(TR03110.TAG_7F21)).getTagField(TR03110.TAG_7F4E)).getTagField(TR03110.TAG_5F20);
-			TlvDataObject cvcaStChrTlv = ((ConstructedTlvDataObject)((ConstructedTlvDataObject)new TlvDataObjectContainer(cvcaStData).getTagField(TR03110.TAG_7F21)).getTagField(TR03110.TAG_7F4E)).getTagField(TR03110.TAG_5F20);
 			
 			//TA trustpoints
 			TrustPointCardObject trustPointIs = new TrustPointCardObject(
 					new TrustPointIdentifier(TerminalType.IS),
-					new PublicKeyReference(cvcaIsChrTlv), new CardVerifiableCertificate((ConstructedTlvDataObject) cvcaIsTlv));
+					new CardVerifiableCertificate((ConstructedTlvDataObject) cvcaIsTlv));
 			mf.addChild(trustPointIs);
 
 			TrustPointCardObject trustPointAt = new TrustPointCardObject(
 					new TrustPointIdentifier(TerminalType.AT),
-					new PublicKeyReference(cvcaAtChrTlv), new CardVerifiableCertificate((ConstructedTlvDataObject) cvcaAtTlv));
+					new CardVerifiableCertificate((ConstructedTlvDataObject) cvcaAtTlv));
 			mf.addChild(trustPointAt);
 
 			TrustPointCardObject trustPointSt = new TrustPointCardObject(
 					new TrustPointIdentifier(TerminalType.ST),
-					new PublicKeyReference(cvcaStChrTlv), new CardVerifiableCertificate((ConstructedTlvDataObject) cvcaStTlv));
+					new CardVerifiableCertificate((ConstructedTlvDataObject) cvcaStTlv));
 			mf.addChild(trustPointSt);
 			
 			//Time store
@@ -549,7 +544,7 @@ public class DefaultPersonalization implements Personalization, Pace {
 			return mf;
 			
 			
-		} catch ( CarParameterInvalidException | CertificateNotParseableException | NoSuchAlgorithmException | NoSuchProviderException | IOException e) {
+		} catch ( CertificateNotParseableException | NoSuchAlgorithmException | NoSuchProviderException | IOException e) {
 			// don't care for the moment
 			e.printStackTrace();
 		}

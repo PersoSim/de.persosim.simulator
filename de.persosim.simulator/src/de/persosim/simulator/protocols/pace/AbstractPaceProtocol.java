@@ -601,15 +601,23 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			
 			//add CARs to response data if available
 			if (trustPoint != null) {
-				if (trustPoint.getCurrentPublicKeyReference() instanceof PublicKeyReference) {
-					constructed7C.addTlvDataObject(new PrimitiveTlvDataObject(
-							TAG_87, trustPoint.getCurrentPublicKeyReference().getBytes()));
-					if (trustPoint.getPreviousPublicKeyReference() instanceof PublicKeyReference) {
+				if (trustPoint.getCurrentCertificate() != null
+						&& trustPoint.getCurrentCertificate()
+								.getCertificateHolderReference() instanceof PublicKeyReference) {
+					constructed7C
+							.addTlvDataObject(new PrimitiveTlvDataObject(
+									TAG_87, trustPoint.getCurrentCertificate()
+											.getCertificateHolderReference()
+											.getBytes()));
+					if (trustPoint.getPreviousCertificate() != null
+							&& trustPoint.getPreviousCertificate()
+									.getCertificateHolderReference() instanceof PublicKeyReference) {
 						constructed7C
 								.addTlvDataObject(new PrimitiveTlvDataObject(
 										TAG_88,
 										trustPoint
-												.getPreviousPublicKeyReference()
+												.getPreviousCertificate()
+												.getCertificateHolderReference()
 												.getBytes()));
 					}
 				}

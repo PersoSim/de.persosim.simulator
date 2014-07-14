@@ -225,14 +225,13 @@ public class ObjectStore {
 	}
 
 	/**
-	 * Search for the first dedicated file parent of a given {@link CardObject}.
+	 * Search for the first dedicated file parent of a given {@link CardObject}
+	 * if it is not itself a {@link DedicatedFile}.
 	 * 
-	 * FIXME MBK method violates documentation
-	 * This method is to return "the first matching parent, _excluding_ the starting object itself".
-	 * If I start at MF why do I get MF in return if the starting object is to be excluded?
-	 * 
-	 * @param {@link CardObject} to start the search with
-	 * @return the first matching parent, excluding the starting object itself
+	 * @param currentObject
+	 *            {@link CardObject} to start the search with
+	 * @return the first matching parent, or the given object, if it is a
+	 *         {@link DedicatedFile}
 	 */
 	private DedicatedFile findFirstParentDedicatedFile(CardObject currentObject) {
 		while (!(currentObject instanceof DedicatedFile)) {

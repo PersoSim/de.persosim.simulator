@@ -152,7 +152,7 @@ public class RiOid extends Oid implements Ri, TlvConstants {
 	public PublicKey parsePublicKey(ConstructedTlvDataObject publicKeyData)
 			throws GeneralSecurityException {
 		if (getIdString().contains("ECDH")) {
-			return CryptoUtil.parsePublicKeyEc(publicKeyData);
+			return CryptoUtil.parsePublicKeyEc(publicKeyData, CryptoUtil.parseParameterSpecEc(publicKeyData));
 		}
 		return null;
 	}

@@ -19,7 +19,7 @@ public class CertificateExtension {
 	TlvDataObjectContainer dataObjects;
 
 	public CertificateExtension(ConstructedTlvDataObject extensionData) {
-		objectIdentifier = TR03110.getOidFromPublicKey(extensionData);
+		objectIdentifier = new TaOid(extensionData.getTagField(TR03110.TAG_06).getValueField());
 		dataObjects = new TlvDataObjectContainer();
 		boolean firstIgnored = false;
 		for (TlvDataObject object : extensionData.getTlvDataObjectContainer()){
