@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import de.persosim.simulator.platform.Iso7816;
-import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvPath;
@@ -17,7 +16,7 @@ import de.persosim.simulator.tlv.TlvTag;
  * @author slutters
  * 
  */
-public class TlvSpecificationContainer extends ArrayList<PrimitiveTlvSpecification> implements Iso7816, ApduSpecificationConstants {
+public class TlvSpecificationContainer extends ArrayList<TlvSpecification> implements Iso7816, ApduSpecificationConstants {
 	
 	private static final long serialVersionUID = 1L;
 	protected boolean allowUnspecifiedSubTags;
@@ -48,7 +47,7 @@ public class TlvSpecificationContainer extends ArrayList<PrimitiveTlvSpecificati
 	 * @param tlvSpec
 	 *            the TLV data object specifications to be added
 	 */
-	public void add(TlvPath path, int pathOffset, PrimitiveTlvSpecification tlvSpec) {
+	public void add(TlvPath path, int pathOffset, TlvSpecification tlvSpec) {
 		if(path == null) {throw new NullPointerException("path must not be null");}
 		
 		for(int i = 0; i < path.size(); i++) {
@@ -61,18 +60,12 @@ public class TlvSpecificationContainer extends ArrayList<PrimitiveTlvSpecificati
 			add(tlvSpec);
 			return;
 		} else{
-			PrimitiveTlvSpecification tagSpec;
+			TlvSpecification subTlvSpec;
 			int index = getFirstIndexOfSubTag(path.get(pathOffset));
 			
 			if(index >= 0) {
-				tagSpec = get(index);
-				
-				if(tagSpec instanceof ConstructedTlvSpecification) {
-					((ConstructedTlvSpecification) tagSpec).add(path, pathOffset + 1, tlvSpec);
-					return;
-				} else{
-					throw new IllegalArgumentException("path element must not be primitive");
-				}
+				subTlvSpec = get(index);
+				subTlvSpec.add(path, pathOffset + 1, tlvSpec);
 			} else{
 				throw new NullPointerException("path element not found");
 			}
@@ -90,7 +83,7 @@ public class TlvSpecificationContainer extends ArrayList<PrimitiveTlvSpecificati
 	 * @param tlvSpec
 	 *            the TLV data object specifications to be added
 	 */
-	public void add(TlvPath path, PrimitiveTlvSpecification tlvSpec) {
+	public void add(TlvPath path, TlvSpecification tlvSpec) {
 		add(path, 0, tlvSpec);
 	}
 	
@@ -116,7 +109,7 @@ public class TlvSpecificationContainer extends ArrayList<PrimitiveTlvSpecificati
 	}
 
 	
-	//FIXME SLS extract a common Interface for matching, with a consistent description of the matches() method, similar to Java.util.regex.matcher, in the end we are dcefining something very similar to Regex here  
+	// XXX extract a common Interface for matching, with a consistent description of the matches() method, similar to Java.util.regex.matcher, in the end we are dcefining something very similar to Regex here  
 	// This should cover *TlvSpecification*.matches, as well as Tlv*.matches and ApduSpecification.matchesFullAPDU() 
 
 	
@@ -126,12 +119,11 @@ public class TlvSpecificationContainer extends ArrayList<PrimitiveTlvSpecificati
 	 * @return the matching result
 	 */
 	public TagMatchResult matches(TlvDataObjectContainer tlvContainer) {
-		ConstructedTlvDataObject cBERTLVobj;
 		Iterator<TlvDataObject> tlvIterator;
 		int counter, diffCounter, currentWorkingIndex, highestAlreadyEncounteredIndex;;
 		TlvDataObject tlvDataObject;
-		PrimitiveTlvSpecification currentPrimitiveTlvSpecification;
-		TagMatchResult tagMatchResult;
+		TlvSpecification currentTlvSpecification;
+		boolean tagMatch;
 		
 		counter = 0;
 		highestAlreadyEncounteredIndex = 0;
@@ -149,13 +141,13 @@ public class TlvSpecificationContainer extends ArrayList<PrimitiveTlvSpecificati
 					return new TagMatchResult(SW_6A80_WRONG_DATA, "unexpected tag " + tlvDataObject.getTlvTag());
 				}
 			} else{
-				currentPrimitiveTlvSpecification = get(currentWorkingIndex);
+				currentTlvSpecification = get(currentWorkingIndex);
 				
-				if(currentPrimitiveTlvSpecification.getRequired() == REQ_MISMATCH) {
+				if(currentTlvSpecification.getRequired() == REQ_MISMATCH) {
 					return new TagMatchResult(SW_6A80_WRONG_DATA, "tag " + tlvDataObject.getTlvTag() + " not allowed");
 				}
 				
-				if(currentPrimitiveTlvSpecification.getRequired() == REQ_MATCH) {
+				if(currentTlvSpecification.getRequired() == REQ_MATCH) {
 					counter++;
 				}
 				
@@ -168,23 +160,14 @@ public class TlvSpecificationContainer extends ArrayList<PrimitiveTlvSpecificati
 					}
 				}
 				
-				//FIXME SLS why is currentPrimitiveTlvSpecification.matches() not called here?
-				if(tlvDataObject.isConstructedTLVObject()) {
-					ConstructedTlvSpecification currentConstructedTlvSpecification = (ConstructedTlvSpecification) currentPrimitiveTlvSpecification;
-					cBERTLVobj = (ConstructedTlvDataObject) tlvDataObject;
-					
-					//FIXME SLS MATCH repair this
-					tagMatchResult = currentConstructedTlvSpecification.getSubTags().matches(cBERTLVobj.getTlvDataObjectContainer());
-					
-					if(!tagMatchResult.isMatch()) {
-						/* forward error message */
-						return tagMatchResult;
-					}	
+				tagMatch = currentTlvSpecification.matches(tlvDataObject);
+				if(!tagMatch) {
+					return new TagMatchResult(SW_6A80_WRONG_DATA, "error");
 				}
 			}
 		}
 		
-		//FIXME SLS why is a counter sufficient here? Shouldn't the algorithm iterate ofer the list of specification instead of the input? Imagine a specification that should match A,B and an input A,A, this might also lead to a counter of 2 instead of a mismatch
+		// XXX why is a counter sufficient here? Shouldn't the algorithm iterate over the list of specifications instead of the input? Imagine a specification that should match A,B and an input A,A, this might also lead to a counter of 2 instead of a mismatch
 		diffCounter = this.getNoOfTagsMatchingRequirement(REQ_MATCH) - counter;
 		
 		if(diffCounter > 0) {
@@ -207,13 +190,12 @@ public class TlvSpecificationContainer extends ArrayList<PrimitiveTlvSpecificati
 	public void setAllowUnspecifiedSubTags(boolean allowUnspecifiedSubTags) {
 		this.allowUnspecifiedSubTags = allowUnspecifiedSubTags;
 	}
-
+	
 	/**
 	 * This method returns the number of immediate child specifications matching the provided requirement state.
 	 * @param req the requirement state to match against
 	 * @return number of immediate child specifications matching the provided requirement state
 	 */
-	//FIXME SLS i dont see any need for this method
 	public int getNoOfTagsMatchingRequirement(byte req) {
 		int counter;
 		

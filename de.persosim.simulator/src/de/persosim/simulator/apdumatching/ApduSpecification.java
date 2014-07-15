@@ -242,7 +242,7 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 			
 		}
 		
-		if (!this.tags.isEmpty()) {
+		if (!tags.isEmpty()) {
 			
 			TlvDataObjectContainer constructedDataField;
 			
@@ -251,7 +251,7 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 			try {
 				constructedDataField = new TlvDataObjectContainer(commandDataBytes, 0, commandDataBytes.length);
 				
-				TagMatchResult tagMatchResult = this.tags.matches(constructedDataField);
+				TagMatchResult tagMatchResult = tags.matches(constructedDataField);
 				
 				if(!tagMatchResult.isMatch()) {
 					return new ApduMatchResult(tagMatchResult.getProposedStatusWord(), tagMatchResult.getAdditionalInfo());
@@ -468,16 +468,16 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 	
 	/*--------------------------------------------------------------------------------*/
 	
-	public void addTag(TlvPath path, PrimitiveTlvSpecification eTagSpec) {
+	public void addTag(TlvPath path, TlvSpecification eTagSpec) {
 		this.tags.add(path.clone(), eTagSpec);
 	}
 	
-	public void addTag(PrimitiveTlvSpecification eTagSpec) {
+	public void addTag(TlvSpecification eTagSpec) {
 		this.tags.add(eTagSpec);
 	}
 	
 	public void addTag(TlvTag tag) {
-		addTag(new ConstructedTlvSpecification(tag));
+		addTag(new TlvSpecification(tag));
 	}
 
 	/*--------------------------------------------------------------------------------*/

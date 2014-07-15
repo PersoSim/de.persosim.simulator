@@ -12,7 +12,7 @@ import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
-import de.persosim.simulator.apdumatching.ConstructedTlvSpecification;
+import de.persosim.simulator.apdumatching.TlvSpecification;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
@@ -39,7 +39,7 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 	protected HashMap<String, ApduSpecification> apdus  = new HashMap<>();
 
 	protected ApduSpecification apduSpecification;
-	protected ConstructedTlvSpecification tagSpecification;
+	protected TlvSpecification tagSpecification;
 	protected TlvPath path;
 	
 	protected CardStateAccessor cardState;
@@ -191,7 +191,7 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 	}
 	
 	public void createNewTagSpecification(TlvTag tag) {
-		this.tagSpecification = new ConstructedTlvSpecification(tag);
+		this.tagSpecification = new TlvSpecification(tag);
 	}
 	
 	public void createNewPath() {

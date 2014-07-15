@@ -190,7 +190,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	public void testMatches_PresentRequiredConstructed() {
 		//FIXME SLS I think this testcase is redundant, whats the essential difference to testMatches_PresentRequiredPrimitive()?
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		containerSpec.add(new ConstructedTlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH));
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		containerTlv.addTlvDataObject(new ConstructedTlvDataObject(tagConstructed21));
@@ -206,7 +206,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		//FIXME SLS more complicated testcases are quite dificult to understand, mybe show the desired datastructres in comments
 		//FIXME AMY review testcases again, based on datastructure comments
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		ConstructedTlvSpecification constructedTlvSpecification1 = new ConstructedTlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
+		TlvSpecification constructedTlvSpecification1 = new TlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
 		containerSpec.add(constructedTlvSpecification1);
 		constructedTlvSpecification1.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_MATCH));
 		
@@ -224,7 +224,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	@Test
 	public void testMatches_PresentRequiredConstructedMissingNested() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		ConstructedTlvSpecification constructedTlvSpecification1 = new ConstructedTlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
+		TlvSpecification constructedTlvSpecification1 = new TlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
 		containerSpec.add(constructedTlvSpecification1);
 		constructedTlvSpecification1.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_MATCH));
 		
@@ -240,7 +240,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	@Test
 	public void testMatches_PresentRequiredConstructedUnexpectedNested() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		containerSpec.add(new ConstructedTlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH));
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		ConstructedTlvDataObject constructedTlvDataObject = new ConstructedTlvDataObject(tagConstructed21);
@@ -256,7 +256,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	@Test
 	public void testMatches_PresentRequiredConstructedPresentForbiddenNested() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		ConstructedTlvSpecification constructedTlvSpecification1 = new ConstructedTlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
+		TlvSpecification constructedTlvSpecification1 = new TlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
 		containerSpec.add(constructedTlvSpecification1);
 		constructedTlvSpecification1.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_MISMATCH));
 		
@@ -274,9 +274,9 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	@Test
 	public void testMatches_PresentRequiredConstructedMultipleNested() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		ConstructedTlvSpecification constructedTlvSpecification1 = new ConstructedTlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
+		TlvSpecification constructedTlvSpecification1 = new TlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
 		containerSpec.add(constructedTlvSpecification1);
-		ConstructedTlvSpecification constructedTlvSpecification2 = new ConstructedTlvSpecification(tagConstructed22, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
+		TlvSpecification constructedTlvSpecification2 = new TlvSpecification(tagConstructed22, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
 		constructedTlvSpecification1.add(constructedTlvSpecification2);
 		constructedTlvSpecification2.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_MATCH));
 		

@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
-import de.persosim.simulator.apdumatching.ConstructedTlvSpecification;
+import de.persosim.simulator.apdumatching.TlvSpecification;
 import de.persosim.simulator.cardobjects.AuxDataObject;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.OidIdentifier;
@@ -152,7 +152,7 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 		apduSpecification.setIns(INS_20_VERIFY);
 		apduSpecification.setP1((byte) 0x80);
 		apduSpecification.setP2((byte) 0x00);
-		ConstructedTlvSpecification tagSpecification = new ConstructedTlvSpecification(TAG_06);
+		TlvSpecification tagSpecification = new TlvSpecification(TAG_06);
 		apduSpecification.addTag(tagSpecification);
 		apduSpecification.setInitialApdu();
 		apdus.add(apduSpecification);
