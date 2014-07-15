@@ -104,15 +104,6 @@ public abstract class AbstractCardObject implements CardObject, Iso7816LifeCycle
 		lifeCycleState = state;
 	}
 	
-	/**
-	 * Build a Collection containing all children of the given
-	 * {@link CardObject} that matches all of the given {@link CardObjectIdentifier}.
-	 * 
-	 * @param cardObjectIdentifiers[]
-	 *            {@link CardObjectIdentifier} objects to match the {@link CardObject}s with
-	 * @return a {@link Collection} containing all children that match the given
-	 *         identifier. May be empty if no matching child was found.
-	 */
 	@Override
 	public Collection<CardObject> findChildren(CardObjectIdentifier... cardObjectIdentifiers) {
 		if(cardObjectIdentifiers.length == 0) {throw new IllegalArgumentException("must provide at least 1 identifier");}
