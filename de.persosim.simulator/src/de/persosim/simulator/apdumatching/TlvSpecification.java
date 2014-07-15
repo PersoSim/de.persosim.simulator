@@ -53,6 +53,18 @@ public class TlvSpecification extends TlvTag implements ApduSpecificationConstan
 	 * unknown sub tags allowed: false
 	 * matching requirements : required
 	 * @param tlvTag the TLV tag
+	 * @param required matching requirements (see class documentation)
+	 */
+	public TlvSpecification(TlvTag tlvTag, byte required) {
+		this(tlvTag, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, required);
+	}
+	
+	/**
+	 * This constructor constructs a {@link TlvSpecification} based on a tag.
+	 * Default settings are:
+	 * unknown sub tags allowed: false
+	 * matching requirements : required
+	 * @param tlvTag the TLV tag
 	 */
 	public TlvSpecification(TlvTag tlvTag) {
 		this(tlvTag, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
