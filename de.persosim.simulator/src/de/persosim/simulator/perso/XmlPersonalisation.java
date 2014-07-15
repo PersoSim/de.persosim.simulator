@@ -3,6 +3,7 @@ package de.persosim.simulator.perso;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
@@ -23,6 +24,10 @@ public class XmlPersonalisation implements Personalization {
 	@XmlAnyElement(lax=true)
 	protected MasterFile mf = new MasterFile();
 	
+	@XmlElementWrapper(name = "unmarshallerCallbacks")
+	@XmlAnyElement(lax=true)
+	protected List<PersoUnmarshallerCalback> unmarshallerCallbacks = new ArrayList<>();
+	
 	public List<Protocol> getProtocols() {
 		return protocols;
 	}
@@ -39,5 +44,20 @@ public class XmlPersonalisation implements Personalization {
 	@Override
 	public List<Protocol> getProtocolList() {
 		return protocols;
+	}
+	
+	/**
+	 * JAXB callback
+	 * <p/>
+	 * Used to fix the parent relation
+	 * @param u
+	 * @param parent
+	 */
+	protected void afterUnmarshal(Unmarshaller u, Object parent) {
+		if (unmarshallerCallbacks != null) {
+			for (PersoUnmarshallerCalback curPostProcessor : unmarshallerCallbacks) {
+				curPostProcessor.afterUnmarshall(this);	
+			}
+		}
 	}
 }
