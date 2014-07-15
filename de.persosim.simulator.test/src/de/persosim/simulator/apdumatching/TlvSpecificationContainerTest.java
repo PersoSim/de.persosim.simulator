@@ -21,10 +21,10 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	TlvTag tagConstructed22 = new TlvTag((byte) 0x22);
 	
 	/**
-	 * Positive test case: test matching of empty TLV data object container against empty specification.
+	 * Positive test case: test matching of empty TLV data object container against empty TLV specification.
 	 */
 	@Test
-	public void testMatches_Empty() {
+	public void testMatches_EmptySpec() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		
@@ -32,12 +32,12 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	}
 	
 	/**
-	 * Positive test case: test matching of TLV data object container with single primitive TLV data object against specification requiring the object.
+	 * Positive test case: test matching of TLV data object container with primitive/empty TLV data object against specification expecting object to be present.
 	 */
 	@Test
-	public void testMatches_PresentRequiredPrimitive() {
+	public void testMatches_PresentRequired() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		containerSpec.add(new PrimitiveTlvSpecification(TlvConstants.TAG_06, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(TlvConstants.TAG_06, REQ_MATCH));
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_06));
@@ -46,12 +46,39 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	}
 	
 	/**
-	 * Positive test case: test matching of empty TLV data object container against specification requiring absent object.
+	 * Negative test case: test matching of empty TLV data object container against specification expecting object to be present.
 	 */
 	@Test
-	public void testMatches_AbsentForbiddenPrimitive() {
+	public void testMatches_AbsentRequired() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		containerSpec.add(new PrimitiveTlvSpecification(TlvConstants.TAG_06, REQ_MISMATCH));
+		containerSpec.add(new TlvSpecification(TlvConstants.TAG_06, REQ_MATCH));
+		
+		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
+		
+		assertFalse(containerSpec.matches(containerTlv).isMatch());
+	}
+	
+	/**
+	 * Positive test case: test matching of TLV data object container with single primitive/empty TLV data object against specification expecting object to be optional.
+	 */
+	@Test
+	public void testMatches_PresentOptional() {
+		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
+		containerSpec.add(new TlvSpecification(tagPrimitive01, REQ_OPTIONAL));
+		
+		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
+		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive01));
+		
+		assertTrue(containerSpec.matches(containerTlv).isMatch());
+	}
+	
+	/**
+	 * Positive test case: test matching of empty TLV data object container against specification expecting object to be optional.
+	 */
+	@Test
+	public void testMatches_AbsentOptional() {
+		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
+		containerSpec.add(new TlvSpecification(tagPrimitive01, REQ_OPTIONAL));
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		
@@ -59,12 +86,12 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	}
 	
 	/**
-	 * Positive test case: test matching of TLV data object container with single primitive TLV data object against specification requiring absent object.
+	 * Positive test case: test matching of TLV data object container with single primitive/empty TLV data object against specification requiring object to be absent.
 	 */
 	@Test
-	public void testMatches_PresentForbiddenPrimitive() {
+	public void testMatches_PresentForbidden() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		containerSpec.add(new PrimitiveTlvSpecification(TlvConstants.TAG_06, REQ_MISMATCH));
+		containerSpec.add(new TlvSpecification(TlvConstants.TAG_06, REQ_MISMATCH));
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_06));
@@ -73,27 +100,27 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	}
 	
 	/**
-	 * Negative test case: test matching of empty TLV data object container against specification requiring object.
+	 * Positive test case: test matching of primitive/empty TLV data object container against specification requiring object to be absent.
 	 */
 	@Test
-	public void testMatches_AbsentRequiredPrimitive() {
+	public void testMatches_AbsentForbidden() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		containerSpec.add(new PrimitiveTlvSpecification(TlvConstants.TAG_06, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(TlvConstants.TAG_06, REQ_MISMATCH));
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		
-		assertFalse(containerSpec.matches(containerTlv).isMatch());
+		assertTrue(containerSpec.matches(containerTlv).isMatch());
 	}
 	
 	/**
-	 * Positive test case: test matching of TLV data object container with multiple primitive TLV data objects against specification requiring all objects in fixed order.
+	 * Positive test case: test matching of TLV data object container with multiple primitive/empty TLV data objects against specification requiring all objects to appear in fixed order.
 	 */
 	@Test
-	public void testMatches_MultiplePrimitivesMatchingStrictOrder() {
+	public void testMatches_ComplyingStrictOrder() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		containerSpec.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_MATCH));
-		containerSpec.add(new PrimitiveTlvSpecification(tagPrimitive02, REQ_MATCH));
-		containerSpec.add(new PrimitiveTlvSpecification(tagPrimitive03, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(tagPrimitive01, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(tagPrimitive02, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(tagPrimitive03, REQ_MATCH));
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive01));
@@ -104,14 +131,14 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	}
 	
 	/**
-	 * Negative test case: test matching of TLV data object container with multiple primitive TLV data objects against specification requiring all objects in different fixed order.
+	 * Negative test case: test matching of TLV data object container with multiple primitive/empty TLV data objects against specification requiring all objects to appear in different order.
 	 */
 	@Test
-	public void testMatches_MultiplePrimitivesMixedStrictOrder() {
+	public void testMatches_FailingStrictOrder() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		containerSpec.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_MATCH));
-		containerSpec.add(new PrimitiveTlvSpecification(tagPrimitive02, REQ_MATCH));
-		containerSpec.add(new PrimitiveTlvSpecification(tagPrimitive03, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(tagPrimitive01, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(tagPrimitive02, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(tagPrimitive03, REQ_MATCH));
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive02));
@@ -122,14 +149,14 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	}
 	
 	/**
-	 * Positive test case: test matching of TLV data object container with multiple primitive TLV data objects against specification requiring all objects in arbitrary order.
+	 * Positive test case: test matching of TLV data object container with multiple primitive/empty TLV data objects against specification requiring all objects to appear in arbitrary order.
 	 */
 	@Test
-	public void testMatches_MultiplePrimitivesMixedArbitraryOrder() {
+	public void testMatches_ComplyingArbitraryOrder() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, ARBITRARY_ORDER);
-		containerSpec.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_MATCH));
-		containerSpec.add(new PrimitiveTlvSpecification(tagPrimitive02, REQ_MATCH));
-		containerSpec.add(new PrimitiveTlvSpecification(tagPrimitive03, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(tagPrimitive01, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(tagPrimitive02, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(tagPrimitive03, REQ_MATCH));
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive02));
@@ -140,40 +167,13 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	}
 	
 	/**
-	 * Positive test case: test matching of TLV data object container with single primitive TLV data object against specification with object being optional.
-	 */
-	@Test
-	public void testMatches_PresentOptionalPrimitive() {
-		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		containerSpec.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_OPTIONAL));
-		
-		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
-		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive01));
-		
-		assertTrue(containerSpec.matches(containerTlv).isMatch());
-	}
-	
-	/**
-	 * Positive test case: test matching of empty TLV data object container against specification with optional object.
-	 */
-	@Test
-	public void testMatches_AbsentOptionalPrimitive() {
-		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		containerSpec.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_OPTIONAL));
-		
-		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
-		
-		assertTrue(containerSpec.matches(containerTlv).isMatch());
-	}
-	
-	/**
-	 * Negative test case: test matching of TLV data object container with multiple primitive TLV data objects against specification requiring only some objects in arbitrary order.
+	 * Negative test case: test matching of TLV data object container with multiple primitive/empty TLV data objects against specification requiring only some objects in arbitrary order.
 	 */
 	@Test
 	public void testMatches_MultiplePrimitiveMixedOrderWithUnallowed() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, ARBITRARY_ORDER);
-		containerSpec.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_MATCH));
-		containerSpec.add(new PrimitiveTlvSpecification(tagPrimitive02, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(tagPrimitive01, REQ_MATCH));
+		containerSpec.add(new TlvSpecification(tagPrimitive02, REQ_MATCH));
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive02));
@@ -184,49 +184,18 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	}
 	
 	/**
-	 * Positive test case: test matching of TLV data object container with single constructed TLV data object against specification requiring the object.
+	 * Negative test case: test matching of TLV data object container with empty constructed TLV data object against specification requiring missing nested object.
+	 * 
+	 * expected: 21(01)
+	 * received: 21()
 	 */
 	@Test
-	public void testMatches_PresentRequiredConstructed() {
-		//FIXME SLS I think this testcase is redundant, whats the essential difference to testMatches_PresentRequiredPrimitive()?
-		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		containerSpec.add(new TlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH));
-		
-		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
-		containerTlv.addTlvDataObject(new ConstructedTlvDataObject(tagConstructed21));
-		
-		assertTrue(containerSpec.matches(containerTlv).isMatch());
-	}
-	
-	/**
-	 * Positive test case: test matching of TLV data object container with single simply nested constructed TLV data object against specification requiring all (nested) objects.
-	 */
-	@Test
-	public void testMatches_PresentRequiredConstructedSimplyNested() {
-		//FIXME SLS more complicated testcases are quite dificult to understand, mybe show the desired datastructres in comments
+	public void testMatches_AbsentRequiredNested() {
 		//FIXME AMY review testcases again, based on datastructure comments
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
 		TlvSpecification constructedTlvSpecification1 = new TlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
 		containerSpec.add(constructedTlvSpecification1);
-		constructedTlvSpecification1.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_MATCH));
-		
-		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
-		ConstructedTlvDataObject constructedTlvDataObject = new ConstructedTlvDataObject(tagConstructed21);
-		containerTlv.addTlvDataObject(constructedTlvDataObject);
-		constructedTlvDataObject.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive01));
-		
-		assertTrue(containerSpec.matches(containerTlv).isMatch());
-	}
-	
-	/**
-	 * Negative test case: test matching of TLV data object container with empty constructed TLV data object against specification requiring missing nested object.
-	 */
-	@Test
-	public void testMatches_PresentRequiredConstructedMissingNested() {
-		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
-		TlvSpecification constructedTlvSpecification1 = new TlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
-		containerSpec.add(constructedTlvSpecification1);
-		constructedTlvSpecification1.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_MATCH));
+		constructedTlvSpecification1.add(new TlvSpecification(tagPrimitive01, REQ_MATCH));
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		containerTlv.addTlvDataObject(new ConstructedTlvDataObject(tagConstructed21));
@@ -236,6 +205,9 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	
 	/**
 	 * Negative test case: test matching of TLV data object container with single simply nested constructed TLV data object against specification not expecting nested object.
+	 * 
+	 * expected: 21()
+	 * received: 21(01)
 	 */
 	@Test
 	public void testMatches_PresentRequiredConstructedUnexpectedNested() {
@@ -251,14 +223,17 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	}
 	
 	/**
-	 * Negative test case: test matching of TLV data object container with single simply nested constructed TLV data object against specification forbidding nested object.
+	 * Negative test case: test matching of TLV data object container with single simply nested constructed TLV data object against specification expecting nested object to be absent.
+	 * 
+	 * expected: 21(!01)
+	 * received: 21(01)
 	 */
 	@Test
 	public void testMatches_PresentRequiredConstructedPresentForbiddenNested() {
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
 		TlvSpecification constructedTlvSpecification1 = new TlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
 		containerSpec.add(constructedTlvSpecification1);
-		constructedTlvSpecification1.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_MISMATCH));
+		constructedTlvSpecification1.add(new TlvSpecification(tagPrimitive01, REQ_MISMATCH));
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		ConstructedTlvDataObject constructedTlvDataObject = new ConstructedTlvDataObject(tagConstructed21);
@@ -270,6 +245,9 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	
 	/**
 	 * Positive test case: test matching of TLV data object container with multiple nested constructed TLV data object against specification requiring all (nested) objects.
+	 * 
+	 * expected: 21(22(01))
+	 * received: 21(22(01))
 	 */
 	@Test
 	public void testMatches_PresentRequiredConstructedMultipleNested() {
@@ -278,7 +256,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		containerSpec.add(constructedTlvSpecification1);
 		TlvSpecification constructedTlvSpecification2 = new TlvSpecification(tagConstructed22, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
 		constructedTlvSpecification1.add(constructedTlvSpecification2);
-		constructedTlvSpecification2.add(new PrimitiveTlvSpecification(tagPrimitive01, REQ_MATCH));
+		constructedTlvSpecification2.add(new TlvSpecification(tagPrimitive01, REQ_MATCH));
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		ConstructedTlvDataObject constructedTlvDataObject1 = new ConstructedTlvDataObject(tagConstructed21);
