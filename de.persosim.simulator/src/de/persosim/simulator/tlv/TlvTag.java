@@ -14,8 +14,7 @@ import de.persosim.simulator.utils.Utils;
  * @author slutters
  *
  */
-//FIXME SLS think about whether mutable subclasses should be allowed (especially in the context of implementing misbehavior)
-public class TlvTag extends TlvElement implements Asn1 {
+public final class TlvTag extends TlvElement implements Asn1 {
 	
 	private byte[] tagField;
 	

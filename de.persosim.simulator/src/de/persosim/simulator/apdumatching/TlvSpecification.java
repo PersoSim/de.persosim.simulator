@@ -30,7 +30,8 @@ import de.persosim.simulator.tlv.TlvValue;
  * @author slutters
  * 
  */
-public class TlvSpecification extends TlvTag implements ApduSpecificationConstants {
+public class TlvSpecification implements ApduSpecificationConstants {
+	protected TlvTag tlvTag;
 	protected byte required;
 	protected TlvSpecificationContainer subTags;
 	
@@ -42,7 +43,7 @@ public class TlvSpecification extends TlvTag implements ApduSpecificationConstan
 	 * @param required matching requirements (see class documentation)
 	 */
 	public TlvSpecification(TlvTag tlvTag, boolean allowUnspecifiedSubTags, boolean isStrictOrder, byte required) {
-		super(tlvTag);
+		this.tlvTag = tlvTag;
 		this.required = required;
 		this.subTags = new TlvSpecificationContainer(allowUnspecifiedSubTags, isStrictOrder);
 	}
@@ -105,10 +106,15 @@ public class TlvSpecification extends TlvTag implements ApduSpecificationConstan
 		return subTags.isEmpty();
 	}
 	
-	
+	/**
+	 * This method performs a matching against the provided {@link TlvDataObject}.
+	 * Matching is performed based on the {@link TlvTag} and the sub elements recursively.
+	 * @param tlvDataObject the {@link TlvDataObject} to match against
+	 * @return whether this object matches the provided {@link TlvDataObject}
+	 */
 	public boolean matches(TlvDataObject tlvDataObject) {
 		//FIXME SLS add testcases for this method
-		if(!this.matches(tlvDataObject.getTlvTag())) {return false;}
+		if(!matches(tlvDataObject.getTlvTag())) {return false;}
 		if(this.required == REQ_MISMATCH) {return false;}
 		
 		TlvValue value = tlvDataObject.getTlvValue();
@@ -123,6 +129,15 @@ public class TlvSpecification extends TlvTag implements ApduSpecificationConstan
 				return true;
 			}
 		}
+	}
+	
+	/**
+	 * This method returns whether the provided {@link TlvTag} matches the tag specified within this object.
+	 * @param anotherTlvTag the {@link TlvTag} to match against
+	 * @return whether the provided {@link TlvTag} matches the tag specified within this object
+	 */
+	public boolean matches(TlvTag anotherTlvTag) {
+		return tlvTag.matches(anotherTlvTag);
 	}
 	
 	/**
