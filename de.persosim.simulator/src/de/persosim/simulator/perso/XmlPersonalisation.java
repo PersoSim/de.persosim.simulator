@@ -1,5 +1,6 @@
 package de.persosim.simulator.perso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,25 +18,17 @@ public class XmlPersonalisation implements Personalization {
 
 	@XmlElementWrapper(name = "protocols")
 	@XmlAnyElement(lax=true)
-	private List<Protocol> protocols;
+	protected List<Protocol> protocols = new ArrayList<>();
 	
 	@XmlAnyElement(lax=true)
-	MasterFile mf;
-
-	public void setProtocolList(List<Protocol> protocolList) {
-		this.protocols = protocolList;
-	}
-
+	protected MasterFile mf = new MasterFile();
+	
 	public List<Protocol> getProtocols() {
 		return protocols;
 	}
 
 	public MasterFile getMf() {
 		return mf;
-	}
-
-	public void setMf(MasterFile mf) {
-		this.mf = mf;
 	}
 
 	@Override

@@ -8,8 +8,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -40,18 +40,16 @@ public class XmlPersonalisationTest extends PersoSimTestCase {
 	@Before
 	public void setUp() throws Exception {
 		//build/fill test perso
-		ArrayList<Protocol> protocolList = new ArrayList<Protocol>();
+
+		testPerso = new XmlPersonalisation();
+		List<Protocol> protocolList = testPerso.getProtocolList();
 		protocolList.add(new FileProtocol());
 		protocolList.add(new PaceProtocol());
 		protocolList.add(new TaProtocol());
 		protocolList.add(new CaProtocol());
 
-		testPerso = new XmlPersonalisation();
-		testPerso.setProtocolList(protocolList);
 		
-		MasterFile mf = new MasterFile();
-		testPerso.setMf(mf);
-
+		MasterFile mf = testPerso.getMf();
 		mf.addChild(new ElementaryFile(new FileIdentifier(0x1C),
 				null, new byte[] {}, Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet(), Collections

@@ -15,12 +15,7 @@ public class XmlDefaultPersoTest extends XmlPersonalisationTest {
 	public void setUp() throws Exception {
 		super.setUp();
 
-		// fill testPerso from defaultPerso
-		DefaultPersonalization defaultPerso = new DefaultPersonalization();
-
-		testPerso = new XmlPersonalisation();
-		testPerso.setProtocolList(defaultPerso.getProtocolList());
-		testPerso.setMf(defaultPerso.getObjectTree());
+		testPerso = new DefaultPersonalization();
 	}
 
 }

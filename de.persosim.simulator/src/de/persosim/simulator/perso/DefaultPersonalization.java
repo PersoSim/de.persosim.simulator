@@ -85,14 +85,12 @@ import de.persosim.simulator.utils.HexString;
  * @author amay
  * 
  */
-public class DefaultPersonalization implements Personalization, Pace {
-
-	protected List<Protocol> protocols = null;
+public class DefaultPersonalization extends XmlPersonalisation implements Pace {
 
 	@Override
 	public MasterFile getObjectTree() {
 		try {
-			MasterFile mf = new MasterFile(new FileIdentifier(0x3F00), new DedicatedFileIdentifier(new byte[] { (byte) 0xA0,
+			mf = new MasterFile(new FileIdentifier(0x3F00), new DedicatedFileIdentifier(new byte[] { (byte) 0xA0,
 							0x0, 0x0, 0x2, 0x47, 0x10, 0x03 }));
 			
 			

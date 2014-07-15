@@ -24,11 +24,7 @@ public class GtXmlDefaultPersoTest extends GtDefaultPersoTest {
 
 	@Override
 	public Personalization getPersonalization() {
-		DefaultPersonalization defaultPerso = new DefaultPersonalization();
-
-		XmlPersonalisation xmlPerso = new XmlPersonalisation();
-		xmlPerso.setProtocolList(defaultPerso.getProtocolList());
-		xmlPerso.setMf(defaultPerso.getObjectTree());
+		DefaultPersonalization xmlPerso = new DefaultPersonalization();
 
 		XmlPersonalisation unmarshalledPerso = null;
 		try {
