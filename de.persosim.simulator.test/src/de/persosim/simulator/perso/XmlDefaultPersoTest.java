@@ -4,7 +4,7 @@ import org.junit.Before;
 
 /**
  * Test the same tests as {@link XmlPersonalizationTest} but with the contents of
- * {@link DefaultPersonalization}
+ * {@link DefaultPersoTestPki}
  * 
  * @author amay
  * 
@@ -15,7 +15,7 @@ public class XmlDefaultPersoTest extends XmlPersonalizationTest {
 	public void setUp() throws Exception {
 		super.setUp();
 
-		testPerso = new DefaultPersonalization();
+		testPerso = new DefaultPersoTestPki();
 	}
 
 }

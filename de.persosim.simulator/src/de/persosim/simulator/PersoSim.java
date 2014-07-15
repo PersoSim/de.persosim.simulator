@@ -18,7 +18,7 @@ import javax.xml.bind.Unmarshaller;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
-import de.persosim.simulator.perso.DefaultPersonalization;
+import de.persosim.simulator.perso.DefaultPersoTestPki;
 import de.persosim.simulator.perso.Personalization;
 
 public class PersoSim implements Runnable {
@@ -134,7 +134,7 @@ public class PersoSim implements Runnable {
 		}
 		
 		System.out.println("Loading default personalization");
-		return new DefaultPersonalization();
+		return new DefaultPersoTestPki();
 	}
 
 	/**

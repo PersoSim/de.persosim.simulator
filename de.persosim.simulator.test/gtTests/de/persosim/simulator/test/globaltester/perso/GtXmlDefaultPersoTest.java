@@ -8,6 +8,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
+import de.persosim.simulator.perso.DefaultPersoGt;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.XmlPersonalization;
@@ -24,7 +25,7 @@ public class GtXmlDefaultPersoTest extends GtDefaultPersoTest {
 
 	@Override
 	public Personalization getPersonalization() {
-		DefaultPersonalization xmlPerso = new DefaultPersonalization();
+		DefaultPersonalization xmlPerso = new DefaultPersoGt();
 
 		XmlPersonalization unmarshalledPerso = null;
 		try {

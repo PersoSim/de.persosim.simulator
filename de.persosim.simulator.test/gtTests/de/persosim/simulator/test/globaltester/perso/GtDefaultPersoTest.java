@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import de.persosim.simulator.perso.DefaultPersonalization;
+import de.persosim.simulator.perso.DefaultPersoGt;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.test.globaltester.GlobalTesterTest;
 import de.persosim.simulator.test.globaltester.GtConstants;
@@ -31,7 +31,7 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 
 	@Override
 	public Personalization getPersonalization() {
-		return new DefaultPersonalization();
+		return new DefaultPersoGt();
 	}
 	
 	@Override

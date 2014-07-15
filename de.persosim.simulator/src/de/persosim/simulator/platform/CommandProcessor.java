@@ -3,7 +3,6 @@ package de.persosim.simulator.platform;
 
 import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.ObjectStore;
-import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.protocols.Protocol;
 
@@ -21,10 +20,6 @@ public class CommandProcessor extends CommandProcessorStateMachine {
 	public CommandProcessor(int id, Personalization newPerso) {
 		layerId = id;
 		perso = newPerso;
-	}
-
-	public CommandProcessor(int id) {
-		this(id, new DefaultPersonalization());
 	}
 
 	@Override
