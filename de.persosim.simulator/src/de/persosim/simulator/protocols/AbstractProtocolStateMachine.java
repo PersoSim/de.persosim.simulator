@@ -173,7 +173,7 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 			return false;
 		}
 		apdu = processingData.getCommandApdu();
-		boolean match = apduSpec.matchesFullAPDU(apdu).isMatch();
+		boolean match = apduSpec.matchesFullAPDU(apdu);
 		
 		if(match) {
 			log(this, "received APDU matches definition of command \"" + apduId + "\"", DEBUG);

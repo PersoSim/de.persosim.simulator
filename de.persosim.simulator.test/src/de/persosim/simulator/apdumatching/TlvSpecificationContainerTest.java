@@ -28,7 +28,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		
-		assertTrue(containerSpec.matches(containerTlv).isMatch());
+		assertTrue(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -42,7 +42,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_06));
 		
-		assertTrue(containerSpec.matches(containerTlv).isMatch());
+		assertTrue(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		
-		assertFalse(containerSpec.matches(containerTlv).isMatch());
+		assertFalse(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -69,7 +69,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive01));
 		
-		assertTrue(containerSpec.matches(containerTlv).isMatch());
+		assertTrue(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -82,7 +82,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		
-		assertTrue(containerSpec.matches(containerTlv).isMatch());
+		assertTrue(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -96,7 +96,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_06));
 		
-		assertFalse(containerSpec.matches(containerTlv).isMatch());
+		assertFalse(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -109,7 +109,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		
-		assertTrue(containerSpec.matches(containerTlv).isMatch());
+		assertTrue(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -127,7 +127,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive02));
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive03));
 		
-		assertTrue(containerSpec.matches(containerTlv).isMatch());
+		assertTrue(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -145,7 +145,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive01));
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive03));
 		
-		assertFalse(containerSpec.matches(containerTlv).isMatch());
+		assertFalse(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -163,7 +163,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive01));
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive03));
 		
-		assertTrue(containerSpec.matches(containerTlv).isMatch());
+		assertTrue(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -180,7 +180,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive01));
 		containerTlv.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive03));
 		
-		assertFalse(containerSpec.matches(containerTlv).isMatch());
+		assertFalse(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -200,7 +200,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		TlvDataObjectContainer containerTlv = new TlvDataObjectContainer();
 		containerTlv.addTlvDataObject(new ConstructedTlvDataObject(tagConstructed21));
 		
-		assertFalse(containerSpec.matches(containerTlv).isMatch());
+		assertFalse(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -219,7 +219,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		containerTlv.addTlvDataObject(constructedTlvDataObject);
 		constructedTlvDataObject.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive01));
 		
-		assertFalse(containerSpec.matches(containerTlv).isMatch());
+		assertFalse(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -240,7 +240,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		containerTlv.addTlvDataObject(constructedTlvDataObject);
 		constructedTlvDataObject.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive01));
 		
-		assertFalse(containerSpec.matches(containerTlv).isMatch());
+		assertFalse(containerSpec.matches(containerTlv));
 	}
 	
 	/**
@@ -265,7 +265,7 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 		constructedTlvDataObject1.addTlvDataObject(constructedTlvDataObject2);
 		constructedTlvDataObject2.addTlvDataObject(new PrimitiveTlvDataObject(tagPrimitive01));
 		
-		assertTrue(containerSpec.matches(containerTlv).isMatch());
+		assertTrue(containerSpec.matches(containerTlv));
 	}
 	
 }

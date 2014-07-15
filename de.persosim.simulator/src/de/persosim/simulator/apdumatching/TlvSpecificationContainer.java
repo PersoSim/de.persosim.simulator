@@ -1,5 +1,7 @@
 package de.persosim.simulator.apdumatching;
 
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -118,7 +120,7 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 	 * @param tlvContainer a TLV data object container
 	 * @return the matching result
 	 */
-	public TagMatchResult matches(TlvDataObjectContainer tlvContainer) {
+	public boolean matches(TlvDataObjectContainer tlvContainer) {
 		Iterator<TlvDataObject> tlvIterator;
 		int counter, diffCounter, currentWorkingIndex, highestAlreadyEncounteredIndex;;
 		TlvDataObject tlvDataObject;
@@ -138,13 +140,15 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 			if(currentWorkingIndex < 0) {
 				if(!this.allowUnspecifiedSubTags) {
 					/* we encountered an unknown (sub-) tag but these are implicitly forbidden at the specified place */
-					return new TagMatchResult(SW_6A80_WRONG_DATA, "unexpected tag " + tlvDataObject.getTlvTag());
+					log(ApduSpecification.class, "unexpected tag " + tlvDataObject.getTlvTag());
+					return false;
 				}
 			} else{
 				currentTlvSpecification = get(currentWorkingIndex);
 				
 				if(currentTlvSpecification.getRequired() == REQ_MISMATCH) {
-					return new TagMatchResult(SW_6A80_WRONG_DATA, "tag " + tlvDataObject.getTlvTag() + " not allowed");
+					log(ApduSpecification.class, "tag " + tlvDataObject.getTlvTag() + " not allowed");
+					return false;
 				}
 				
 				if(currentTlvSpecification.getRequired() == REQ_MATCH) {
@@ -154,7 +158,8 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 				if(isStrictOrder) {
 					if(currentWorkingIndex < highestAlreadyEncounteredIndex) {
 						/* we encountered a known (sub-) tag but out of the specified order */
-						return new TagMatchResult(SW_6A80_WRONG_DATA, "tag " + tlvDataObject.getTlvTag() + " is out of order");
+						log(ApduSpecification.class, "tag " + tlvDataObject.getTlvTag() + " is out of order");
+						return false;
 					} else{
 						highestAlreadyEncounteredIndex = currentWorkingIndex;
 					}
@@ -162,7 +167,8 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 				
 				tagMatch = currentTlvSpecification.matches(tlvDataObject);
 				if(!tagMatch) {
-					return new TagMatchResult(SW_6A80_WRONG_DATA, "error");
+					log(ApduSpecification.class, "error");
+					return false;
 				}
 			}
 		}
@@ -174,13 +180,15 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 			/* tlv object failed to satisfy all required matches */
 			/* "missing tags" */
 			if(diffCounter == 1) {
-				return new TagMatchResult(SW_6A80_WRONG_DATA, "missing " + diffCounter + " more mandatory tag");
+				log(ApduSpecification.class, "missing " + diffCounter + " more mandatory tag");
+				return false;
 			} else{
-				return new TagMatchResult(SW_6A80_WRONG_DATA, "missing " + diffCounter + " more mandatory tags");
+				log(ApduSpecification.class, "missing " + diffCounter + " more mandatory tags");
+				return false;
 			}
 		}
 		
-		return new TagMatchResult();
+		return true;
 	}
 	
 	/**

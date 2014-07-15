@@ -1,5 +1,7 @@
 package de.persosim.simulator.apdumatching;
 
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.InterindustryCommandApdu;
 import de.persosim.simulator.exception.CommandParameterUndefinedException;
@@ -104,39 +106,46 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 		return true;
 	}
 	
-	//XXX let this method return only boolean and simplify several common blocks extract comparison with parameter REQ_(MIS)MATCH
+	//XXX SLS let this method return only boolean and simplify several common blocks extract comparison with parameter REQ_(MIS)MATCH
 	//throw custom exceptions instead that are implicitly associated with the status word explicitly set here
-	public ApduMatchResult matchesFullAPDU(CommandApdu apdu) {
+	public boolean matchesFullAPDU(CommandApdu apdu) {
 		byte isoCase;
 		
 		if(this.isoFormat == apdu.getIsoFormat()) {
 			if(this.reqIsoFormat == REQ_MISMATCH) {
-				return new ApduMatchResult(SW_6800_FUNCTION_IN_CLA_NOT_SUPPORTED, "ISO format must not be 0x" + String.format("%02X", this.isoFormat));
+				log(ApduSpecification.class, "ISO format must not be 0x" + String.format("%02X", this.isoFormat));
+				return false;
 			}
 		} else{
 			if(this.reqIsoFormat == REQ_MATCH) {
-				return new ApduMatchResult(SW_6800_FUNCTION_IN_CLA_NOT_SUPPORTED, "ISO format is not 0x" + String.format("%02X", this.isoFormat));
+				log(ApduSpecification.class, "ISO format is not 0x" + String.format("%02X", this.isoFormat));
+				return false;
 			}
 		}
 		
 		if (reqChaining != REQ_OPTIONAL) {
 			if (!(apdu instanceof InterindustryCommandApdu)) { //XXX AMY: use a marker interface to check for channel abilities to provide more generic way
-				return new ApduMatchResult(SW_6F00_UNKNOWN, "apdu class does not support channels");
+				log(ApduSpecification.class, "apdu class does not support channels");
+				return false;
 			}
 			if(this.chaining == ((InterindustryCommandApdu) apdu).isChaining()) {
 				if(this.reqChaining == REQ_MISMATCH) {
 					if(this.chaining) {
-						return new ApduMatchResult(SW_6884_COMMAND_CHAINING_NOT_SUPPORTED, "chaining is not supported");
+						log(ApduSpecification.class, "chaining is not supported");
+						return false;
 					} else{
-						return new ApduMatchResult(SW_6883_LAST_COMMAND_EXPECTED, "chaining expected");
+						log(ApduSpecification.class, "chaining expected");
+						return false;
 					}
 				}
 			} else{
 				if(this.reqChaining == REQ_MATCH) {
 					if(this.chaining) {
-						return new ApduMatchResult(SW_6883_LAST_COMMAND_EXPECTED, "chaining expected");
+						log(ApduSpecification.class, "chaining expected");
+						return false;
 					} else{
-						return new ApduMatchResult(SW_6884_COMMAND_CHAINING_NOT_SUPPORTED, "chaining is not supported");
+						log(ApduSpecification.class, "chaining is not supported");
+						return false;
 					}
 				}
 			}
@@ -150,7 +159,8 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 					if(reqSecureMessaging == REQ_MATCH) {
 						break;
 					} else {
-						return new ApduMatchResult(SW_6F00_UNKNOWN, "SM mismatch not fulfilled");
+						log(ApduSpecification.class, "SM mismatch not fulfilled");
+						return false;
 					}
 				}
 				
@@ -161,15 +171,18 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 		
 		if (reqChannel != REQ_OPTIONAL) {
 			if (!(apdu instanceof InterindustryCommandApdu)) { //XXX use a marker interface to check for channel abilities to provide more generic way
-				return new ApduMatchResult(SW_6F00_UNKNOWN, "apdu class does not support channels");
+				log(ApduSpecification.class, "apdu class does not support channels");
+				return false;
 			}
 			if(this.channel == ((InterindustryCommandApdu) apdu).getChannel()) {
 				if(this.reqChannel == REQ_MISMATCH) {
-					return new ApduMatchResult(SW_6881_LOGICAL_CHANNEL_NOT_SUPPORTED, "channel must not be " + this.channel);
+					log(ApduSpecification.class, "channel must not be " + this.channel);
+					return false;
 				}
 			} else{
 				if(this.reqChannel == REQ_MATCH) {
-					return new ApduMatchResult(SW_6881_LOGICAL_CHANNEL_NOT_SUPPORTED, "channel expected to be " + this.channel);
+					log(ApduSpecification.class, "channel expected to be " + this.channel);
+					return false;
 				}
 			}
 			
@@ -177,31 +190,37 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 		
 		if(this.ins == apdu.getIns()) {
 			if(this.reqIns == REQ_MISMATCH) {
-				return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "INS byte must not be " + String.format("%02X", this.ins));
+				log(ApduSpecification.class, "INS byte must not be " + String.format("%02X", this.ins));
+				return false;
 			}
 		} else{
 			if(this.reqIns == REQ_MATCH) {
-				return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "INS byte expected to be " + String.format("%02X", this.ins));
+				log(ApduSpecification.class, "INS byte expected to be " + String.format("%02X", this.ins));
+				return false;
 			}
 		}
 		
 		if(this.p1 == apdu.getP1()) {
 			if(this.reqP1 == REQ_MISMATCH) {
-				return new ApduMatchResult(SW_6A86_INCORRECT_PARAMETERS_P1P2, "P1 byte must not be " + String.format("%02X", this.p1));
+				log(ApduSpecification.class, "P1 byte must not be " + String.format("%02X", this.p1));
+				return false;
 			}
 		} else{
 			if(this.reqP1 == REQ_MATCH) {
-				return new ApduMatchResult(SW_6A86_INCORRECT_PARAMETERS_P1P2, "P1 byte expected to be " + String.format("%02X", this.p1));
+				log(ApduSpecification.class, "P1 byte expected to be " + String.format("%02X", this.p1));
+				return false;
 			}
 		}
 		
 		if(this.p2 == apdu.getP2()) {
 			if(this.reqP2 == REQ_MISMATCH) {
-				return new ApduMatchResult(SW_6A86_INCORRECT_PARAMETERS_P1P2, "P2 byte must not be " + String.format("%02X", this.p2));
+				log(ApduSpecification.class, "P2 byte must not be " + String.format("%02X", this.p2));
+				return false;
 			}
 		} else{
 			if(this.reqP2 == REQ_MATCH) {
-				return new ApduMatchResult(SW_6A86_INCORRECT_PARAMETERS_P1P2, "P2 byte expected to be " + String.format("%02X", this.p2));
+				log(ApduSpecification.class, "P2 byte expected to be " + String.format("%02X", this.p2));
+				return false;
 			}
 		}
 		
@@ -209,33 +228,40 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 		
 		if(this.isoCase == isoCase) {
 			if(this.reqIsoCase == REQ_MISMATCH) {
-				return new ApduMatchResult(SW_6700_WRONG_LENGTH, "ISO case must not be " + String.format("%02X", this.isoCase));
+				log(ApduSpecification.class, "ISO case must not be " + String.format("%02X", this.isoCase));
+				return false;
 			}
 		} else{
 			if(this.reqIsoCase == REQ_MATCH) {
-				return new ApduMatchResult(SW_6700_WRONG_LENGTH, "ISO case expected to be " + String.format("%02X", this.isoCase));
+				log(ApduSpecification.class, "ISO case expected to be " + String.format("%02X", this.isoCase));
+				return false;
 			}
 		}
 		
 		if (reqIsExtendedLengthLCLE != REQ_OPTIONAL) {
 			if (isoCase == 1) {
-				return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "unable to determine extended length for iso case 1 apdu");
+				log(ApduSpecification.class, "unable to determine extended length for iso case 1 apdu");
+				return false;
 			}
 			
 			if(this.isExtendedLengthLCLE == apdu.isExtendedLength()) {
 				if(this.reqIsExtendedLengthLCLE == REQ_MISMATCH) {
 					if(this.isExtendedLengthLCLE) {
-						return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "extended length L_C/L_E fields must not be used");
+						log(ApduSpecification.class, "extended length L_C/L_E fields must not be used");
+						return false;
 					} else{
-						return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "extended length L_C/L_E fields expected");
+						log(ApduSpecification.class, "extended length L_C/L_E fields expected");
+						return false;
 					}
 				}
 			} else{
 				if(this.reqIsExtendedLengthLCLE == REQ_MATCH) {
 					if(this.isExtendedLengthLCLE) {
-						return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "extended length L_C/L_E fields expected");
+						log(ApduSpecification.class, "extended length L_C/L_E fields expected");
+						return false;
 					} else{
-						return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "extended length L_C/L_E fields must not be used");
+						log(ApduSpecification.class, "extended length L_C/L_E fields must not be used");
+						return false;
 					}
 				}
 			}
@@ -251,19 +277,15 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 			try {
 				constructedDataField = new TlvDataObjectContainer(commandDataBytes, 0, commandDataBytes.length);
 				
-				TagMatchResult tagMatchResult = tags.matches(constructedDataField);
-				
-				if(!tagMatchResult.isMatch()) {
-					return new ApduMatchResult(tagMatchResult.getProposedStatusWord(), tagMatchResult.getAdditionalInfo());
-				}
-				
+				return tags.matches(constructedDataField);
 			} catch (IllegalArgumentException e) {
-				return new ApduMatchResult(SW_6A80_WRONG_DATA, "command data field does not contain TLV constructed data");
+				log(ApduSpecification.class, "command data field does not contain TLV constructed data");
+				return false;
 			}
 					
 		}
 		
-		return new ApduMatchResult();
+		return true;
 	}
 	
 	/*--------------------------------------------------------------------------------*/

@@ -121,7 +121,7 @@ public class TlvSpecification implements ApduSpecificationConstants {
 		
 		// IMPL support for primitive TLV data objects containing further TLV data objects disguised as Octet Strings
 		if(value instanceof TlvDataObjectContainer) {
-			return subTags.matches((TlvDataObjectContainer) value).isMatch();
+			return subTags.matches((TlvDataObjectContainer) value);
 		} else{
 			if(subTags.size() > 0) {
 				return false;
