@@ -91,7 +91,6 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCalback 
 		ElementaryFile efChipSecurity = new ElementaryFile(new FileIdentifier(
 				0x011B), new ShortFileIdentifier(0x1B),
 				efChipSecurityContent.toByteArray(), 
-				
 				Arrays.asList(taWithIs, taWithAtPrivileged),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
