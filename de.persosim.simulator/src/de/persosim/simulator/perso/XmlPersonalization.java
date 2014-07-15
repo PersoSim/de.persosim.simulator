@@ -15,7 +15,7 @@ import de.persosim.simulator.protocols.Protocol;
 
 @XmlRootElement(name="Personalization")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XmlPersonalisation implements Personalization {
+public class XmlPersonalization implements Personalization {
 
 	@XmlElementWrapper(name = "protocols")
 	@XmlAnyElement(lax=true)

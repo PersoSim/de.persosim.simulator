@@ -18,7 +18,7 @@ import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
-import de.persosim.simulator.perso.XmlPersonalisation;
+import de.persosim.simulator.perso.XmlPersonalization;
 import de.persosim.simulator.protocols.ca.CaProtocol;
 import de.persosim.simulator.protocols.file.FileProtocol;
 import de.persosim.simulator.protocols.pace.PaceProtocol;
@@ -58,7 +58,7 @@ public class PersoSimJaxbContextProviderTest {
 		assertTrue(classes.contains(FileIdentifier.class));
 		assertTrue(classes.contains(ElementaryFile.class));
 		assertTrue(classes.contains(MasterFile.class));
-		assertTrue(classes.contains(XmlPersonalisation.class));
+		assertTrue(classes.contains(XmlPersonalization.class));
 
 		assertTrue(classes.contains(FileProtocol.class));
 		assertTrue(classes.contains(PaceProtocol.class));

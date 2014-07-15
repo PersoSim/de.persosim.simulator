@@ -38,7 +38,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 
 	/**
 	 * Instantiate and initialize the object under test
-	 * {@link #commandProcessor} with the mocked personalisation.
+	 * {@link #commandProcessor} with the mocked personalization.
 	 * 
 	 */
 	@Before

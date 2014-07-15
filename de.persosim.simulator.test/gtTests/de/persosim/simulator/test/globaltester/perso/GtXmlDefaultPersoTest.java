@@ -10,10 +10,10 @@ import javax.xml.bind.Unmarshaller;
 import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
-import de.persosim.simulator.perso.XmlPersonalisation;
+import de.persosim.simulator.perso.XmlPersonalization;
 
 /**
- * Marshall/unmarshall the DefaultPersonalisation and check it afterwards
+ * Marshall/unmarshall the {@link DefaultPersonalization} and check it afterwards
  * against the GlobalTester. This ensures that the serialization process does
  * not loose data.
  * 
@@ -26,7 +26,7 @@ public class GtXmlDefaultPersoTest extends GtDefaultPersoTest {
 	public Personalization getPersonalization() {
 		DefaultPersonalization xmlPerso = new DefaultPersonalization();
 
-		XmlPersonalisation unmarshalledPerso = null;
+		XmlPersonalization unmarshalledPerso = null;
 		try {
 			// instantiate marshaller
 			Marshaller m = PersoSimJaxbContextProvider.getContext()
@@ -41,7 +41,7 @@ public class GtXmlDefaultPersoTest extends GtDefaultPersoTest {
 			StringReader sr = new StringReader(strWriter.toString());
 			Unmarshaller um = PersoSimJaxbContextProvider.getContext()
 					.createUnmarshaller();
-			unmarshalledPerso = (XmlPersonalisation) um.unmarshal(sr);
+			unmarshalledPerso = (XmlPersonalization) um.unmarshal(sr);
 		} catch (JAXBException e) {
 			//forward the exception as RuntimeException to make the testcase fail
 			throw new RuntimeException(e);

@@ -3,13 +3,13 @@ package de.persosim.simulator.perso;
 import org.junit.Before;
 
 /**
- * Test the same tests as XmlPersonalisationTest but with the contents of
+ * Test the same tests as {@link XmlPersonalizationTest} but with the contents of
  * {@link DefaultPersonalization}
  * 
  * @author amay
  * 
  */
-public class XmlDefaultPersoTest extends XmlPersonalisationTest {
+public class XmlDefaultPersoTest extends XmlPersonalizationTest {
 
 	@Before
 	public void setUp() throws Exception {

@@ -86,7 +86,7 @@ import de.persosim.simulator.utils.HexString;
  * @author amay
  * 
  */
-public class DefaultPersonalization extends XmlPersonalisation {
+public class DefaultPersonalization extends XmlPersonalization {
 
 	public DefaultPersonalization() {
 		buildProtocolList();

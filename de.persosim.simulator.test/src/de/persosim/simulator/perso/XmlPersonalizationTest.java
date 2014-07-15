@@ -31,17 +31,17 @@ import de.persosim.simulator.protocols.ta.TaProtocol;
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.test.PersoSimTestCase;
 
-public class XmlPersonalisationTest extends PersoSimTestCase {
+public class XmlPersonalizationTest extends PersoSimTestCase {
 
 	public static final String XML_FILENAME = "./tmp/perso-jaxb.xml";
 
-	XmlPersonalisation testPerso;
+	XmlPersonalization testPerso;
 
 	@Before
 	public void setUp() throws Exception {
 		//build/fill test perso
 
-		testPerso = new XmlPersonalisation();
+		testPerso = new XmlPersonalization();
 		List<Protocol> protocolList = testPerso.getProtocolList();
 		protocolList.add(new FileProtocol());
 		protocolList.add(new PaceProtocol());
@@ -73,7 +73,7 @@ public class XmlPersonalisationTest extends PersoSimTestCase {
 
 		// get variables from our xml file, created before
 		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-		XmlPersonalisation unmarshalledPerso = (XmlPersonalisation) um
+		XmlPersonalization unmarshalledPerso = (XmlPersonalization) um
 				.unmarshal(new FileReader(xmlFile));
 		assertNotNull(unmarshalledPerso);
 	}
@@ -101,7 +101,7 @@ public class XmlPersonalisationTest extends PersoSimTestCase {
 		//unmarshall from string
 		StringReader sr = new StringReader(marshalledPerso);
 		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-		XmlPersonalisation unmarshalledPerso = (XmlPersonalisation) um
+		XmlPersonalization unmarshalledPerso = (XmlPersonalization) um
 				.unmarshal(sr);
 		
 		//marshall again
@@ -132,7 +132,7 @@ public class XmlPersonalisationTest extends PersoSimTestCase {
 		m.marshal(testPerso, strWriter);
 		StringReader sr = new StringReader(strWriter.toString());
 		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-		XmlPersonalisation unmarshalledPerso = (XmlPersonalisation) um
+		XmlPersonalization unmarshalledPerso = (XmlPersonalization) um
 				.unmarshal(sr);
 		
 		//check all CardObjects, their children and all Identifiers of the card objet tree
