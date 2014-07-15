@@ -14,7 +14,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ByteDataAuxObject;
@@ -87,8 +86,20 @@ import de.persosim.simulator.utils.HexString;
  */
 public class DefaultPersonalization extends XmlPersonalisation implements Pace {
 
-	@Override
-	public MasterFile getObjectTree() {
+	public DefaultPersonalization() {
+		buildProtocolList();
+		buildObjectTree();
+	}
+	
+	/**
+	 * Build the object tree.
+	 * <p/>
+	 * This contains default data groups an objects required for the protocols.
+	 * <p/>
+	 * Subclasses can modify the object tree from within their constructor right
+	 * after it is initialized. It can be accessed through the file #mf.
+	 */
+	public void buildObjectTree() {
 		try {
 			mf = new MasterFile(new FileIdentifier(0x3F00), new DedicatedFileIdentifier(new byte[] { (byte) 0xA0,
 							0x0, 0x0, 0x2, 0x47, 0x10, 0x03 }));
@@ -539,16 +550,10 @@ public class DefaultPersonalization extends XmlPersonalisation implements Pace {
 					emptySet);
 			ePassAppl.addChild(epassDg4);
 			
-			return mf;
-			
-			
 		} catch ( CertificateNotParseableException | NoSuchAlgorithmException | NoSuchProviderException | IOException e) {
 			// don't care for the moment
 			e.printStackTrace();
 		}
-		
-		return null;
-		
 	}
 
 	/**
@@ -608,55 +613,46 @@ public class DefaultPersonalization extends XmlPersonalisation implements Pace {
 		return efCardAccessContent;
 	}
 
-	@Override
-	public List<Protocol> getProtocolList() {
-		if (protocols == null) {
-			protocols = new ArrayList<>();
-			
-			/* load PACE protocol */
-			PaceProtocol paceProtocol = new PaceProtocol();
-			paceProtocol.init();
-			protocols.add(paceProtocol);
-	
-			/* load FM protocol */
-			FileProtocol fileManagementProtocol = new FileProtocol();
-			fileManagementProtocol.init();
-			protocols.add(fileManagementProtocol);
-	
-			/* load TA protocol */
-			TaProtocol taProtocol = new TaProtocol();
-			taProtocol.init();
-			protocols.add(taProtocol);
-			
-			/* load RI protocol */
-			RiProtocol riProtocol = new RiProtocol();
-			protocols.add(riProtocol);
-			
-			/* load CA protocol */
-			CaProtocol caProtocol = new CaProtocol();
-			caProtocol.init();
-			protocols.add(caProtocol);
-			
-			/* load AUX protocol */
-			protocols.add(new AuxProtocol());
-			
-			/* load PIN-Management protocol */
-			PinProtocol pinProtocol = new PinProtocol();
-			pinProtocol.init();
-			protocols.add(pinProtocol);
-			
-			/* let subclasses extend the protocol list */
-			extendProtocolList();
-		}
-		return protocols;
-	}
-
 	/**
-	 * This method is intended to be overriden by subclasses in order to extend the protocol list. 
+	 * Build the default protocolList.
 	 * <p/>
-	 * It is called immediately after the list of protocols (in {@link #protocols}) is created and before it is returned the first time.
+	 * This contains all required protocols. Subclasses can modify the protocol
+	 * list from within their constructor right after it is initialized.
 	 */
-	protected void extendProtocolList() {
+	private void buildProtocolList() {
+		protocols = new ArrayList<>();
+		
+		/* load PACE protocol */
+		PaceProtocol paceProtocol = new PaceProtocol();
+		paceProtocol.init();
+		protocols.add(paceProtocol);
+
+		/* load FM protocol */
+		FileProtocol fileManagementProtocol = new FileProtocol();
+		fileManagementProtocol.init();
+		protocols.add(fileManagementProtocol);
+
+		/* load TA protocol */
+		TaProtocol taProtocol = new TaProtocol();
+		taProtocol.init();
+		protocols.add(taProtocol);
+		
+		/* load RI protocol */
+		RiProtocol riProtocol = new RiProtocol();
+		protocols.add(riProtocol);
+		
+		/* load CA protocol */
+		CaProtocol caProtocol = new CaProtocol();
+		caProtocol.init();
+		protocols.add(caProtocol);
+		
+		/* load AUX protocol */
+		protocols.add(new AuxProtocol());
+		
+		/* load PIN-Management protocol */
+		PinProtocol pinProtocol = new PinProtocol();
+		pinProtocol.init();
+		protocols.add(pinProtocol);
 	}
 
 }
