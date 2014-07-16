@@ -1,7 +1,6 @@
 package de.persosim.simulator.apdumatching;
 
 import static de.persosim.simulator.utils.PersoSimLogger.log;
-
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.InterindustryCommandApdu;
 import de.persosim.simulator.exception.CommandParameterUndefinedException;
@@ -68,44 +67,94 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 	
 	/*--------------------------------------------------------------------------------*/
 	
-	public boolean equals(ApduSpecification otherAPDUSpecification) {
-		//XXX class implements equals but not hashCode 
-		if(!this.id.equals(otherAPDUSpecification.getId())) {return false;}
-		
-		if(this.isInitialAPDU != otherAPDUSpecification.isInitialAPDU) {return false;}
-		
-		if(this.isoFormat != otherAPDUSpecification.getIsoFormat()) {return false;};
-		if(this.reqIsoFormat != otherAPDUSpecification.getReqIsoFormat()) {return false;};
-		
-		if(this.chaining != otherAPDUSpecification.isChaining()) {return false;};
-		if(this.reqChaining != otherAPDUSpecification.getReqChaining()) {return false;};
-		
-		if(this.secureMessaging != otherAPDUSpecification.getSecureMessaging()) {return false;};
-		if(this.reqSecureMessaging != otherAPDUSpecification.getReqSecureMessaging()) {return false;};
-		
-		if(this.channel != otherAPDUSpecification.getChannel()) {return false;};
-		if(this.reqChannel != otherAPDUSpecification.getReqChannel()) {return false;};
-		
-		if(this.isoCase != otherAPDUSpecification.getIsoCase()) {return false;};
-		if(this.reqIsoCase != otherAPDUSpecification.getReqIsoCase()) {return false;};
-		
-		if(this.isExtendedLengthLCLE != otherAPDUSpecification.isExtendedLengthLCLE()) {return false;};
-		if(this.reqIsExtendedLengthLCLE != otherAPDUSpecification.getReqIsExtendedLengthLCLE()) {return false;};
-		
-		if(this.ins != otherAPDUSpecification.getIns()) {return false;};
-		if(this.reqIns != otherAPDUSpecification.getReqIns()) {return false;};
-		
-		if(this.p1 != otherAPDUSpecification.getP1()) {return false;};
-		if(this.reqP1 != otherAPDUSpecification.getReqP1()) {return false;};
-		
-		if(this.p2 != otherAPDUSpecification.getP2()) {return false;};
-		if(this.reqP2 != otherAPDUSpecification.getReqP2()) {return false;};
-		
-		if(!this.tags.equals(otherAPDUSpecification.getTags())) {return false;}
-		
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (chaining ? 1231 : 1237);
+		result = prime * result + channel;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ins;
+		result = prime * result + (isExtendedLengthLCLE ? 1231 : 1237);
+		result = prime * result + (isInitialAPDU ? 1231 : 1237);
+		result = prime * result + isoCase;
+		result = prime * result + isoFormat;
+		result = prime * result + p1;
+		result = prime * result + p2;
+		result = prime * result + reqChaining;
+		result = prime * result + reqChannel;
+		result = prime * result + reqIns;
+		result = prime * result + reqIsExtendedLengthLCLE;
+		result = prime * result + reqIsoCase;
+		result = prime * result + reqIsoFormat;
+		result = prime * result + reqP1;
+		result = prime * result + reqP2;
+		result = prime * result + reqSecureMessaging;
+		result = prime * result + secureMessaging;
+		result = prime * result + ((tags == null) ? 0 : tags.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ApduSpecification other = (ApduSpecification) obj;
+		if (chaining != other.chaining)
+			return false;
+		if (channel != other.channel)
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (ins != other.ins)
+			return false;
+		if (isExtendedLengthLCLE != other.isExtendedLengthLCLE)
+			return false;
+		if (isInitialAPDU != other.isInitialAPDU)
+			return false;
+		if (isoCase != other.isoCase)
+			return false;
+		if (isoFormat != other.isoFormat)
+			return false;
+		if (p1 != other.p1)
+			return false;
+		if (p2 != other.p2)
+			return false;
+		if (reqChaining != other.reqChaining)
+			return false;
+		if (reqChannel != other.reqChannel)
+			return false;
+		if (reqIns != other.reqIns)
+			return false;
+		if (reqIsExtendedLengthLCLE != other.reqIsExtendedLengthLCLE)
+			return false;
+		if (reqIsoCase != other.reqIsoCase)
+			return false;
+		if (reqIsoFormat != other.reqIsoFormat)
+			return false;
+		if (reqP1 != other.reqP1)
+			return false;
+		if (reqP2 != other.reqP2)
+			return false;
+		if (reqSecureMessaging != other.reqSecureMessaging)
+			return false;
+		if (secureMessaging != other.secureMessaging)
+			return false;
+		if (tags == null) {
+			if (other.tags != null)
+				return false;
+		} else if (!tags.equals(other.tags))
+			return false;
 		return true;
 	}
-	
+
 	//XXX SLS simplify several common blocks extract comparison with parameter REQ_(MIS)MATCH
 	public boolean matchesFullAPDU(CommandApdu apdu) {
 		byte isoCase;
