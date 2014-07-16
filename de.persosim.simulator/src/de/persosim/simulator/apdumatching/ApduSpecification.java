@@ -180,7 +180,7 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 	}
 
 	//XXX SLS simplify several common blocks extract comparison with parameter REQ_(MIS)MATCH
-	public boolean matchesFullAPDU(CommandApdu apdu) {
+	public boolean matchesFullApdu(CommandApdu apdu) {
 		byte isoCaseReceived;
 		boolean elementMatch;
 		
