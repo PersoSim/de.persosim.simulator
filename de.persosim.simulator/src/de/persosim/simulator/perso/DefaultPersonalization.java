@@ -188,7 +188,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				.toByteArray("61 32 4F 0F E8 28 BD 08 0F A0 00 00 01 67 45 53 49 47 4E 50 0F 43 49 41 20 7A 75 20 44 46 2E 65 53 69 67 6E 51 00 73 0C 4F 0A A0 00 00 01 67 45 53 49 47 4E");
 		
 		ElementaryFile efCardAccess = new ElementaryFile(new FileIdentifier(
-				0x2F00), new ShortFileIdentifier(0x30),
+				0x2F00), new ShortFileIdentifier(0x1E),
 				content,
 				Arrays.asList((SecCondition) new NullSecurityCondition()),
 				Collections.<SecCondition> emptySet(),
