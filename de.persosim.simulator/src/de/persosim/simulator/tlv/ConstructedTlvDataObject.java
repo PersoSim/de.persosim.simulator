@@ -71,6 +71,10 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 		tlvDataObjectContainer = new TlvDataObjectContainer(byteArray, minOffsetSub, maxOffsetSub);
 	}
 	
+	public ConstructedTlvDataObject(byte[] byteArray) {
+		this(byteArray, 0, byteArray.length);
+	}
+	
 	/**
 	 * Constructs an object from pre-fabricated elements explicitly setting a length field.
 	 * Length fields only need to be explicitly set if their encoding complies with BER but
@@ -148,7 +152,7 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	}
 	
 	/*--------------------------------------------------------------------------------*/
-	
+
 	@Override
 	public void setTag(TlvTag tlvTagInput, boolean performValidityChecksInput) {
 		if(tlvTagInput == null) {throw new NullPointerException("tag must not be null");}
