@@ -154,22 +154,38 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 			return false;
 		return true;
 	}
-
-	//XXX SLS simplify several common blocks extract comparison with parameter REQ_(MIS)MATCH
-	public boolean matchesFullAPDU(CommandApdu apdu) {
-		byte isoCase;
-		
-		if(this.isoFormat == apdu.getIsoFormat()) {
-			if(this.reqIsoFormat == REQ_MISMATCH) {
-				log(ApduSpecification.class, "ISO format must not be 0x" + String.format("%02X", this.isoFormat));
+	
+	/**
+	 * This method performs a matching for a single provided parameter
+	 * @param name the name of the matching parameter
+	 * @param expected the expected value
+	 * @param received the received value
+	 * @param required whether this parameter is required
+	 * @return whether the provided parameter matches
+	 */
+	private boolean matchByteParameter(String name, byte expected, byte received, byte required) {
+		if(expected == received) {
+			if(required == REQ_MISMATCH) {
+				log(ApduSpecification.class, name + " must not be " + String.format("%02X", received));
 				return false;
 			}
 		} else{
-			if(this.reqIsoFormat == REQ_MATCH) {
-				log(ApduSpecification.class, "ISO format is not 0x" + String.format("%02X", this.isoFormat));
+			if(required == REQ_MATCH) {
+				log(ApduSpecification.class, name + " expected to be " + String.format("%02X", expected));
 				return false;
 			}
 		}
+		
+		return true;
+	}
+
+	//XXX SLS simplify several common blocks extract comparison with parameter REQ_(MIS)MATCH
+	public boolean matchesFullAPDU(CommandApdu apdu) {
+		byte isoCaseReceived;
+		boolean elementMatch;
+		
+		elementMatch = matchByteParameter("ISO format", isoFormat, apdu.getIsoFormat(), reqIsoFormat);
+		if(!elementMatch) {return false;}
 		
 		if (reqChaining != REQ_OPTIONAL) {
 			if (!(apdu instanceof InterindustryCommandApdu)) { //XXX AMY: use a marker interface to check for channel abilities to provide more generic way
@@ -222,72 +238,28 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 				log(ApduSpecification.class, "apdu class does not support channels");
 				return false;
 			}
-			if(this.channel == ((InterindustryCommandApdu) apdu).getChannel()) {
-				if(this.reqChannel == REQ_MISMATCH) {
-					log(ApduSpecification.class, "channel must not be " + this.channel);
-					return false;
-				}
-			} else{
-				if(this.reqChannel == REQ_MATCH) {
-					log(ApduSpecification.class, "channel expected to be " + this.channel);
-					return false;
-				}
-			}
+			
+			elementMatch = matchByteParameter("channel", channel, ((InterindustryCommandApdu) apdu).getChannel(), reqChannel);
+			if(!elementMatch) {return false;}
 			
 		}
 		
-		if(this.ins == apdu.getIns()) {
-			if(this.reqIns == REQ_MISMATCH) {
-				log(ApduSpecification.class, "INS byte must not be " + String.format("%02X", this.ins));
-				return false;
-			}
-		} else{
-			if(this.reqIns == REQ_MATCH) {
-				log(ApduSpecification.class, "INS byte expected to be " + String.format("%02X", this.ins));
-				return false;
-			}
-		}
+		elementMatch = matchByteParameter("INS byte", ins, apdu.getIns(), reqIns);
+		if(!elementMatch) {return false;}
 		
-		if(this.p1 == apdu.getP1()) {
-			if(this.reqP1 == REQ_MISMATCH) {
-				log(ApduSpecification.class, "P1 byte must not be " + String.format("%02X", this.p1));
-				return false;
-			}
-		} else{
-			if(this.reqP1 == REQ_MATCH) {
-				log(ApduSpecification.class, "P1 byte expected to be " + String.format("%02X", this.p1));
-				return false;
-			}
-		}
+		elementMatch = matchByteParameter("P1 byte", p1, apdu.getP1(), reqP1);
+		if(!elementMatch) {return false;}
 		
-		if(this.p2 == apdu.getP2()) {
-			if(this.reqP2 == REQ_MISMATCH) {
-				log(ApduSpecification.class, "P2 byte must not be " + String.format("%02X", this.p2));
-				return false;
-			}
-		} else{
-			if(this.reqP2 == REQ_MATCH) {
-				log(ApduSpecification.class, "P2 byte expected to be " + String.format("%02X", this.p2));
-				return false;
-			}
-		}
+		elementMatch = matchByteParameter("P2 byte", p2, apdu.getP2(), reqP2);
+		if(!elementMatch) {return false;}
 		
-		isoCase = apdu.getIsoCase();
+		isoCaseReceived = apdu.getIsoCase();
 		
-		if(this.isoCase == isoCase) {
-			if(this.reqIsoCase == REQ_MISMATCH) {
-				log(ApduSpecification.class, "ISO case must not be " + String.format("%02X", this.isoCase));
-				return false;
-			}
-		} else{
-			if(this.reqIsoCase == REQ_MATCH) {
-				log(ApduSpecification.class, "ISO case expected to be " + String.format("%02X", this.isoCase));
-				return false;
-			}
-		}
+		elementMatch = matchByteParameter("ISO case", isoCase, isoCaseReceived, reqIsoCase);
+		if(!elementMatch) {return false;}
 		
 		if (reqIsExtendedLengthLCLE != REQ_OPTIONAL) {
-			if (isoCase == 1) {
+			if (isoCaseReceived == 1) {
 				log(ApduSpecification.class, "unable to determine extended length for iso case 1 apdu");
 				return false;
 			}
