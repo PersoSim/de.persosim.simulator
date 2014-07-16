@@ -8,13 +8,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
+import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.NullSecurityCondition;
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.secstatus.TaSecurityCondition;
+import de.persosim.simulator.tlv.Asn1;
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
+import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 
@@ -48,14 +52,16 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCalback 
 	}
 
 	private void createEfCardAccess(Personalization perso) {
-		byte[] efCardAccessContentPlain = HexString
-				.toByteArray("31 81 80 30 0D 06 08 04 00 7F 00 07 02 02 02 02 01 02 30 0F 06 0A 04 00 7F 00 07 02 02 03 02 02 02 01 02 30 12 06 0A 04 00 7F 00 07 02 02 04 02 02 02 01 02 02 01 0D 30 19 06 09 04 00 7F 00 07 02 02 03 02 30 0C 06 07 04 00 7F 00 07 01 02 02 01 0D 30 2F 06 08 04 00 7F 00 07 02 02 06 16 23 68 74 74 70 73 3A 2F 2F 77 77 77 2E 68 6A 70 2D 63 6F 6E 73 75 6C 74 69 6E 67 2E 63 6F 6D 2F 68 6F 6D 65");
-		TlvDataObjectContainer efCardAccessContent = new TlvDataObjectContainer(
-				efCardAccessContentPlain);
+		// collect SecInfos from protocols
+		ConstructedTlvDataObject secInfos = new ConstructedTlvDataObject(new TlvTag(Asn1.SET));
+		for (Protocol curProtocol : perso.getProtocolList()) {
+			secInfos.addAll(curProtocol.getSecInfos());
+		}
 
+		// add file to object tree
 		ElementaryFile efCardAccess = new ElementaryFile(new FileIdentifier(
 				0x011C), new ShortFileIdentifier(0x1C),
-				efCardAccessContent.toByteArray(),
+				secInfos.toByteArray(),
 				Arrays.asList((SecCondition) new NullSecurityCondition()),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());

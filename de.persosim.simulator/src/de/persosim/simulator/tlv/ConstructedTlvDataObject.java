@@ -1,5 +1,6 @@
 package de.persosim.simulator.tlv;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 
@@ -282,6 +283,16 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 		if(!super.isValidBerEncoding()) {return false;}
 		
 		return isConstructedTLVObject();
+	}
+
+	/**
+	 * Add all provided {@link TlvDataObject}s to this container.
+	 * @param newTlvDataObjects
+	 */
+	public void addAll(Collection<TlvDataObject> newTlvDataObjects) {
+		for (TlvDataObject curTlvDataObject : newTlvDataObjects) {
+			addTlvDataObject(curTlvDataObject);
+		}
 	}
 	
 }
