@@ -318,22 +318,25 @@ public final class TlvTag extends TlvElement implements Asn1 {
 	}
 	
 	@Override
-	public boolean equals(Object anotherTlvTag) {
-		if (!(anotherTlvTag instanceof TlvTag)) {
-			return false;
-		}
-		
-		//TlvTags are considered equal iff they encode the same tag value in the same way
-		return Arrays.equals(tagField, ((TlvTag) anotherTlvTag).tagField);
-	}
-	
-	@Override
 	public int hashCode() {
-		int hash = 1;
-		for (int i = 0; i < tagField.length; i++) {
-			hash *= tagField[i];
-		}
-		return hash;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(tagField);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TlvTag other = (TlvTag) obj;
+		if (!Arrays.equals(tagField, other.tagField))
+			return false;
+		return true;
 	}
 
 	public byte getEncodedClass() {
