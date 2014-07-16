@@ -154,5 +154,39 @@ public class TlvSpecification implements ApduSpecificationConstants {
 	public void setRequired(byte required) {
 		this.required = required;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + required;
+		result = prime * result + ((subTags == null) ? 0 : subTags.hashCode());
+		result = prime * result + ((tlvTag == null) ? 0 : tlvTag.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TlvSpecification other = (TlvSpecification) obj;
+		if (required != other.required)
+			return false;
+		if (subTags == null) {
+			if (other.subTags != null)
+				return false;
+		} else if (!subTags.equals(other.subTags))
+			return false;
+		if (tlvTag == null) {
+			if (other.tlvTag != null)
+				return false;
+		} else if (!tlvTag.equals(other.tlvTag))
+			return false;
+		return true;
+	}
 	
 }
