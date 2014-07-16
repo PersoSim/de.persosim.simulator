@@ -106,8 +106,7 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 		return true;
 	}
 	
-	//XXX SLS let this method return only boolean and simplify several common blocks extract comparison with parameter REQ_(MIS)MATCH
-	//throw custom exceptions instead that are implicitly associated with the status word explicitly set here
+	//XXX SLS simplify several common blocks extract comparison with parameter REQ_(MIS)MATCH
 	public boolean matchesFullAPDU(CommandApdu apdu) {
 		byte isoCase;
 		
