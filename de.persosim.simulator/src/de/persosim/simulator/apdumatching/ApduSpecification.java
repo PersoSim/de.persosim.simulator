@@ -179,6 +179,13 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 		return true;
 	}
 	
+	/**
+	 * This method performs a matching of the specification defined within this object against the provided {@link CommandApdu}.
+	 * The matching is positive only iff all parameters match.
+	 * Parameters match iff the received parameters are optional, equal the expected ones or do not equal parameters expected to mismatch.
+	 * @param apdu the {@link CommandApdu} to match
+	 * @return whether the specification defined within this object matches against the provided {@link CommandApdu}
+	 */
 	public boolean matchesFullApdu(CommandApdu apdu) {
 		byte isoCaseReceived;
 		boolean elementMatch;
