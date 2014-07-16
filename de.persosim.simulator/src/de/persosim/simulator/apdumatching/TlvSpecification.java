@@ -113,7 +113,6 @@ public class TlvSpecification implements ApduSpecificationConstants {
 	 * @return whether this object matches the provided {@link TlvDataObject}
 	 */
 	public boolean matches(TlvDataObject tlvDataObject) {
-		//FIXME SLS add testcases for this method
 		if(!matches(tlvDataObject.getTlvTag())) {return false;}
 		if(this.required == REQ_MISMATCH) {return false;}
 		
