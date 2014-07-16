@@ -73,7 +73,6 @@ public interface Pace {
 	/*--------------------------------------------------------------------------------*/
 	/*--------------------------------------------------------------------------------*/
 	
-	// XXX SLS migrate uses of byte[] to PaceOid where possible
 	/* DH-GM */
 	public final static byte[] id_PACE_DH_GM_3DES_CBC_CBC          = Utils.appendBytes(id_PACE, DH_GM, DES3_CBC_CBC);
 	public final static byte[] id_PACE_DH_GM_AES_CBC_CMAC_128      = Utils.appendBytes(id_PACE, DH_GM, AES_CBC_CMAC_128);
