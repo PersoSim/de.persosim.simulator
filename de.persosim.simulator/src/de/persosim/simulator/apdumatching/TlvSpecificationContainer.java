@@ -19,7 +19,7 @@ import de.persosim.simulator.tlv.TlvTag;
  * 
  */
 public class TlvSpecificationContainer extends ArrayList<TlvSpecification> implements Iso7816, ApduSpecificationConstants {
-	
+
 	private static final long serialVersionUID = 1L;
 	protected boolean allowUnspecifiedSubTags;
 	protected boolean isStrictOrder;
@@ -224,6 +224,31 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 	 */
 	public void setStrictOrder(boolean strictOrder) {
 		isStrictOrder = strictOrder;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + (allowUnspecifiedSubTags ? 1231 : 1237);
+		result = prime * result + (isStrictOrder ? 1231 : 1237);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TlvSpecificationContainer other = (TlvSpecificationContainer) obj;
+		if (allowUnspecifiedSubTags != other.allowUnspecifiedSubTags)
+			return false;
+		if (isStrictOrder != other.isStrictOrder)
+			return false;
+		return true;
 	}
 
 }
