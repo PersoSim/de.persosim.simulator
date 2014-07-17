@@ -24,6 +24,7 @@ public interface TlvConstants {
 	public static final TlvTag TAG_87 = new TlvTag((byte) 0x87);
 	public static final TlvTag TAG_88 = new TlvTag((byte) 0x88);
 	public static final TlvTag TAG_91 = new TlvTag((byte) 0x91);
+	public static final TlvTag TAG_A0 = new TlvTag((byte) 0xA0);
 	public static final TlvTag TAG_5F20 = new TlvTag(new byte []{0x5F, 0x20});
 	public static final TlvTag TAG_5F24 = new TlvTag(new byte []{0x5F, 0x24});
 	public static final TlvTag TAG_5F25 = new TlvTag(new byte []{0x5F, 0x25});
@@ -34,7 +35,11 @@ public interface TlvConstants {
 	public static final TlvTag TAG_7F4C = new TlvTag(new byte []{0x7F, 0x4C});
 	public static final TlvTag TAG_7F4E = new TlvTag(new byte []{0x7F, 0x4E});
 
+	public static final TlvTag TAG_OID = new TlvTag(Asn1.OBJECT_IDENTIFIER);
+	public static final TlvTag TAG_SEQUENCE = new TlvTag(Asn1.SEQUENCE);
+	
 	public static final TlvValuePlain DER_BOOLEAN_TRUE = new TlvValuePlain(new byte [] {(byte) 0xFF});
 	public static final TlvValuePlain DER_BOOLEAN_FALSE = new TlvValuePlain(new byte [] {0});
+	
 	
 }
