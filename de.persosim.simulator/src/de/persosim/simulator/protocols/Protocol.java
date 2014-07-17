@@ -48,9 +48,17 @@ public interface Protocol {
 	 * of the Protocol. These can be used by the caller to create default
 	 * implementations of EF.CardAccess, EF.CardSecurity or DG14.
 	 * 
+	 * @param publicity defines which SecInfos should be included in the returned Collection
 	 * @return set of SecurityInfos. May be an immutable collection.
 	 */
-	public abstract Collection<TlvDataObject> getSecInfos();
+	public abstract Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity);
+	
+	public enum SecInfoPublicity {
+	    PUBLIC,
+	    AUTHENTICATED,
+	    PRIVILEGED
+	  }
+
 
 	/**
 	 * Implements handling of APDUs.

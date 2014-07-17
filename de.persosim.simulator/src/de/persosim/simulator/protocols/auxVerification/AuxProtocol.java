@@ -49,7 +49,7 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource {
 	}
 
 	@Override
-	public Collection<TlvDataObject> getSecInfos() {
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity) {
 		return Collections.emptySet();
 	}
 	

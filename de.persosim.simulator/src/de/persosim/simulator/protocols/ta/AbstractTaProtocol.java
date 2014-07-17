@@ -695,7 +695,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 	}
 
 	@Override
-	public Collection<TlvDataObject> getSecInfos() {
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity) {
 		// TAInfo
 		ConstructedTlvDataObject taInfo = new ConstructedTlvDataObject(
 				new TlvTag(Asn1.SEQUENCE));
@@ -710,7 +710,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 		taInfo.addTlvDataObject(protocol);
 		taInfo.addTlvDataObject(version);
 		
-		// XXX CaInfo should not be declared within AbstractTaProtocol
+		// FIXME CaInfo should not be declared within AbstractTaProtocol
 		ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(
 				new TlvTag(Asn1.SEQUENCE));
 
@@ -721,7 +721,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 		caInfo.addTlvDataObject(caProtocol);
 		caInfo.addTlvDataObject(version);
 		
-		// XXX CaDomainParameterInfo should not be declared within AbstractTaProtocol
+		// FIXME CaDomainParameterInfo should not be declared within AbstractTaProtocol
 		ConstructedTlvDataObject caDomainInfo = new ConstructedTlvDataObject(
 				new TlvTag(Asn1.SEQUENCE));
 

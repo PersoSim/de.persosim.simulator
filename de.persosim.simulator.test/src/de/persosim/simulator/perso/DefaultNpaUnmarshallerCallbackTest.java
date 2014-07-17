@@ -16,6 +16,7 @@ import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.protocols.Protocol;
+import de.persosim.simulator.protocols.Protocol.SecInfoPublicity;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.utils.HexString;
@@ -48,11 +49,17 @@ public class DefaultNpaUnmarshallerCallbackTest {
 				mockedPerso.getProtocolList();
 				result = Arrays.asList(mockedProtocol1, mockedProtocol2);
 				
-				mockedProtocol1.getSecInfos();
+				mockedProtocol1.getSecInfos(SecInfoPublicity.PUBLIC);
 				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("3103010101")));
 				
-				mockedProtocol2.getSecInfos();
+				mockedProtocol1.getSecInfos(withInstanceOf(SecInfoPublicity.class));
+				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("310301011F")));
+				
+				mockedProtocol2.getSecInfos(SecInfoPublicity.PUBLIC);
 				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("3103010102")));
+				
+				mockedProtocol2.getSecInfos(withInstanceOf(SecInfoPublicity.class));
+				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("310301012F")));
 				
 			}
 		};

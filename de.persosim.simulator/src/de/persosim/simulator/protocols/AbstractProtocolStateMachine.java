@@ -76,7 +76,7 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 	}
 
 	@Override
-	public Collection<TlvDataObject> getSecInfos() {
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity) {
 		return Collections.emptySet();
 	}
 	

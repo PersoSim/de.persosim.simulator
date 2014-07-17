@@ -41,7 +41,6 @@ import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.CertificateNotParseableException;
-import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.auxVerification.AuxProtocol;
 import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.protocols.ca.CaProtocol;
@@ -61,11 +60,6 @@ import de.persosim.simulator.secstatus.NullSecurityCondition;
 import de.persosim.simulator.secstatus.PaceSecurityCondition;
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.secstatus.TaSecurityCondition;
-import de.persosim.simulator.tlv.Asn1;
-import de.persosim.simulator.tlv.ConstructedTlvDataObject;
-import de.persosim.simulator.tlv.TlvDataObject;
-import de.persosim.simulator.tlv.TlvDataObjectContainer;
-import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 
@@ -570,33 +564,6 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				new RelativeAuthorization(CertificateRole.TERMINAL,
 						new BitField(38).flipBit(54 - dgNr))));
 		return retVal;
-	}
-
-	/**
-	 * Build the content of EF.CardAccess.
-	 * <p/>
-	 * The default implementation shall use the returned SecInfos from the
-	 * protocols and build EF.CardAccess accordingly. In order to provide a
-	 * different EF.CardAccess this method may be overriden.
-	 * 
-	 * @return
-	 */
-	protected TlvDataObjectContainer getEfCardAccessContent() {
-
-		// create EF.CardAccess
-		TlvDataObjectContainer efCardAccessContent = new TlvDataObjectContainer();
-		ConstructedTlvDataObject securityInfos = new ConstructedTlvDataObject(
-				new TlvTag(Asn1.SET));
-		efCardAccessContent.addTlvDataObject(securityInfos);
-
-		// add all SecInfos from Protocols
-		for (Protocol curProtocol : getProtocolList()) {
-			for (TlvDataObject curSecInfo : curProtocol.getSecInfos()) {
-				securityInfos.addTlvDataObject(curSecInfo);
-			}
-		}
-
-		return efCardAccessContent;
 	}
 
 	/**

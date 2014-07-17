@@ -9,6 +9,7 @@ import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.protocols.Protocol;
+import de.persosim.simulator.protocols.Protocol.SecInfoPublicity;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TerminalType;
@@ -55,7 +56,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCalback 
 		// collect SecInfos from protocols
 		ConstructedTlvDataObject secInfos = new ConstructedTlvDataObject(new TlvTag(Asn1.SET));
 		for (Protocol curProtocol : perso.getProtocolList()) {
-			secInfos.addAll(curProtocol.getSecInfos());
+			secInfos.addAll(curProtocol.getSecInfos(SecInfoPublicity.PUBLIC));
 		}
 
 		// add file to object tree
