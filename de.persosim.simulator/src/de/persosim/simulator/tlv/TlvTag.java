@@ -319,10 +319,7 @@ public final class TlvTag extends TlvElement implements Asn1 {
 	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + Arrays.hashCode(tagField);
-		return result;
+		return Arrays.hashCode(tagField);
 	}
 
 	@Override
