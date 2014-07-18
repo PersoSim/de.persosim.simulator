@@ -125,7 +125,6 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 		int counter, diffCounter, currentWorkingIndex, highestAlreadyEncounteredIndex;;
 		TlvDataObject tlvDataObject;
 		TlvSpecification currentTlvSpecification;
-		boolean tagMatch;
 		
 		counter = 0;
 		highestAlreadyEncounteredIndex = 0;
@@ -165,8 +164,7 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 					}
 				}
 				
-				tagMatch = currentTlvSpecification.matches(tlvDataObject);
-				if(!tagMatch) {
+				if(!currentTlvSpecification.matches(tlvDataObject)) {
 					log(ApduSpecification.class, "error");
 					return false;
 				}
