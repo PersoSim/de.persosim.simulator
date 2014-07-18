@@ -7,18 +7,18 @@ import de.persosim.simulator.utils.Utils;
 
 /**
  * This class implements the tag field of any TLV data object.
+ * Tag fields are immutable in order to prevent accidental corruption of existing data structures.
+ * In the field tags do not need to be changed for themselves. They may only need to be exchanged as part of another data structure, i.e. {@link PrimitiveTlvDataObject}.
+ * The preferred way of doing so is to provide/use an according unchecked setter method for/of respective data structures.
  * 
  * @author slutters
  *
  */
-public class TlvTag extends TlvElement implements Asn1 {
+public final class TlvTag extends TlvElement implements Asn1 {
 	
-	protected byte[] tagField;
+	private byte[] tagField;
 	
 	/*--------------------------------------------------------------------------------*/
-	
-	public TlvTag() {
-	}
 	
 	/**
 	 * Constructor for this object based on a range defined on an array of raw bytes.
@@ -39,7 +39,12 @@ public class TlvTag extends TlvElement implements Asn1 {
 		if(performValidityChecks == PERFORM_VALIDITY_CHECKS) {
 			this.setTagField(tagFieldInput, minOffset, maxOffset);
 		} else{
-			this.forceTagField(Arrays.copyOfRange(tagFieldInput, minOffset, maxOffset));
+			if(tagFieldInput == null) {throw new NullPointerException("tag field must not be null");}
+			if(minOffset < 0) {throw new IllegalArgumentException("min offset must not be less than 0");}
+			if(maxOffset < minOffset) {throw new IllegalArgumentException("max offset must not be smaller than min offset");}
+			if(maxOffset > tagFieldInput.length) {throw new IllegalArgumentException("selected array area must not lie outside of data array");}
+			
+			this.tagField = Arrays.copyOfRange(tagFieldInput, minOffset, maxOffset);
 		}
 	}
 	
@@ -121,6 +126,25 @@ public class TlvTag extends TlvElement implements Asn1 {
 		this(tagFieldInput, PERFORM_VALIDITY_CHECKS);
 	}
 	
+	/**
+	 * Constructor for this object based on an already existing object of this type.
+	 * 
+	 * @param tlvTag the existing {@link TlvTag} template
+	 * @param performValidityChecks true: perform validity checks, false: do not perform validity checks
+	 */
+	public TlvTag(TlvTag tlvTag, boolean performValidityChecks) {
+		this(tlvTag.toByteArray(), performValidityChecks);
+	}
+	
+	/**
+	 * Constructor for this object based on an already existing object of this type.
+	 * 
+	 * @param tlvTag the existing {@link TlvTag} template
+	 */
+	public TlvTag(TlvTag tlvTag) {
+		this(tlvTag.toByteArray(), PERFORM_VALIDITY_CHECKS);
+	}
+	
 	/*--------------------------------------------------------------------------------*/
 	
 	/**
@@ -138,8 +162,8 @@ public class TlvTag extends TlvElement implements Asn1 {
 	 * @param minOffset the first offset of the tag field (inclusive)
 	 * @param maxOffset the first offset no longer belonging to the range containing the tag field (exclusive)
 	 */
-	public void setTagField(byte[] tagFieldInput, int minOffset, int maxOffset) {
-		if(tagFieldInput == null) {throw new NullPointerException();}
+	private void setTagField(byte[] tagFieldInput, int minOffset, int maxOffset) {
+		if(tagFieldInput == null) {throw new NullPointerException("tag field must not be null");}
 		if(minOffset < 0) {throw new IllegalArgumentException("min offset must not be less than 0");}
 		if(maxOffset < minOffset) {throw new IllegalArgumentException("max offset must not be smaller than min offset");}
 		if(maxOffset > tagFieldInput.length) {throw new IllegalArgumentException("selected array area must not lie outside of data array");}
@@ -228,56 +252,6 @@ public class TlvTag extends TlvElement implements Asn1 {
 		return isValidBerEncoding();
 	}
 	
-	/**
-	 * Sets the tag field, validity checks will be performed
-	 * @param tagFieldInput the tag field that is supposed to represent the tag from first to last byte
-	 */
-	public void setTagField(byte[] tagFieldInput) {
-		this.setTagField(tagFieldInput, 0, tagFieldInput.length);
-	}
-
-	/**
-	 * Sets the tag field, validity checks will be performed
-	 * @param tagFieldInput the tag field that is supposed to represent the tag from first to last byte
-	 */
-	public void setTagField(byte tagFieldInput) {
-		this.setTagField(Utils.toUnsignedByteArray(tagFieldInput));
-	}
-	
-	/**
-	 * Sets the tag field, validity checks will be performed
-	 * @param tagFieldInput the tag field that is supposed to represent the tag from first to last byte
-	 */
-	public void setTagField(short tagFieldInput) {
-		this.setTagField(Utils.toUnsignedByteArray(tagFieldInput));
-	}
-	
-	/**
-	 * Sets the tag field, validity checks will be skipped
-	 * @param tagFieldInput the tag field that is supposed to represent the tag from first to last byte
-	 */
-	public void forceTagField(byte[] tagFieldInput) {
-		if(tagFieldInput == null) {throw new NullPointerException();}
-	
-		this.tagField = tagFieldInput;
-	}
-	
-	/**
-	 * Sets the tag field, validity checks will be skipped
-	 * @param tagFieldInput the tag field that is supposed to represent the tag from first to last byte
-	 */
-	public void forceTagField(byte tagFieldInput) {
-		this.forceTagField(Utils.toUnsignedByteArray(tagFieldInput));
-	}
-	
-	/**
-	 * Sets the tag field, validity checks will be skipped
-	 * @param tagFieldInput the tag field that is supposed to represent the tag from first to last byte
-	 */
-	public void forceTagField(short tagFieldInput) {
-		this.forceTagField(Utils.toUnsignedByteArray(tagFieldInput));
-	}
-	
 	/*--------------------------------------------------------------------------------*/
 	
 	/**
@@ -344,22 +318,22 @@ public class TlvTag extends TlvElement implements Asn1 {
 	}
 	
 	@Override
-	public boolean equals(Object anotherTlvTag) {
-		if (!(anotherTlvTag instanceof TlvTag)) {
-			return false;
-		}
-		
-		//TlvTags are considered equal iff they encode the same tag value in the same way
-		return Arrays.equals(tagField, ((TlvTag) anotherTlvTag).tagField);
-	}
-	
-	@Override
 	public int hashCode() {
-		int hash = 1;
-		for (int i = 0; i < tagField.length; i++) {
-			hash *= tagField[i];
-		}
-		return hash;
+		return Arrays.hashCode(tagField);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TlvTag other = (TlvTag) obj;
+		if (!Arrays.equals(tagField, other.tagField))
+			return false;
+		return true;
 	}
 
 	public byte getEncodedClass() {
@@ -373,7 +347,7 @@ public class TlvTag extends TlvElement implements Asn1 {
 	
 	@Override
 	public byte[] toByteArray() {
-		return tagField;
+		return Arrays.copyOf(tagField, tagField.length);
 	}
 	
 	@Override

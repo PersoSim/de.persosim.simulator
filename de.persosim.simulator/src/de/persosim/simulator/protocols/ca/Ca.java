@@ -59,7 +59,6 @@ public interface Ca {
 	/*--------------------------------------------------------------------------------*/
 	/*--------------------------------------------------------------------------------*/
 	
-	// XXX SLS migrate uses of byte[] to CaOid where possible
 	/* DH */
 	public final static byte[] id_CA_DH_3DES_CBC_CBC          = Utils.appendBytes(id_CA, DH, DES3_CBC_CBC);
 	public final static byte[] id_CA_DH_AES_CBC_CMAC_128      = Utils.appendBytes(id_CA, DH, AES_CBC_CMAC_128);

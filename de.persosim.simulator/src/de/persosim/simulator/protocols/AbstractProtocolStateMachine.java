@@ -11,8 +11,8 @@ import java.util.HashSet;
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
-import de.persosim.simulator.apdumatching.ApduSpecificationIf;
-import de.persosim.simulator.apdumatching.ExtendedTagSpecification;
+import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
+import de.persosim.simulator.apdumatching.TlvSpecification;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
@@ -20,6 +20,7 @@ import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.statemachine.AbstractStateMachine;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvPath;
+import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.InfoSource;
 
 /**
@@ -28,7 +29,7 @@ import de.persosim.simulator.utils.InfoSource;
  * @author amay
  * 
  */
-public abstract class AbstractProtocolStateMachine extends AbstractStateMachine implements ProtocolStateMachine, Iso7816, ApduSpecificationIf, InfoSource {
+public abstract class AbstractProtocolStateMachine extends AbstractStateMachine implements ProtocolStateMachine, Iso7816, ApduSpecificationConstants, InfoSource {
 
 	protected String protocolName;
 
@@ -38,7 +39,7 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 	protected HashMap<String, ApduSpecification> apdus  = new HashMap<>();
 
 	protected ApduSpecification apduSpecification;
-	protected ExtendedTagSpecification tagSpecification;
+	protected TlvSpecification tagSpecification;
 	protected TlvPath path;
 	
 	protected CardStateAccessor cardState;
@@ -172,7 +173,7 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 			return false;
 		}
 		apdu = processingData.getCommandApdu();
-		boolean match = apduSpec.matchesFullAPDU(apdu).isMatch();
+		boolean match = apduSpec.matchesFullApdu(apdu);
 		
 		if(match) {
 			log(this, "received APDU matches definition of command \"" + apduId + "\"", DEBUG);
@@ -189,12 +190,8 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 		this.apduSpecification = new ApduSpecification(id);
 	}
 	
-	public void createNewTagSpecification(byte tag) {
-		this.tagSpecification = new ExtendedTagSpecification(tag);
-	}
-	
-	public void createNewTagSpecification(short tag) {
-		this.tagSpecification = new ExtendedTagSpecification(tag);
+	public void createNewTagSpecification(TlvTag tag) {
+		this.tagSpecification = new TlvSpecification(tag);
 	}
 	
 	public void createNewPath() {

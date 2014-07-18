@@ -6,9 +6,9 @@ package de.persosim.simulator.protocols.pace;
  */
  @SuppressWarnings("all")//generated code 
 
-/* Command line options: -verbose -p EA -o DefaultPaceProtocol -l java -t PACE:paceclass C:\develop\eclipse-persosim\git\de.persosim.models\exported\protocol_pace.xml   */
+/* Command line options: -verbose -p EA -o DefaultPaceProtocol -l java -t PACE:paceclass C:\develop\wd\protocol_pace.xml   */
 /* This file is generated from protocol_pace.xml - do not edit manually  */
-/* Generated on: Sun Jun 15 21:41:21 CEST 2014 / version 3.52beta2 */
+/* Generated on: Thu Jul 03 14:56:23 CEST 2014 / version 3.52beta2 */
 
 
 
@@ -330,7 +330,7 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 						apduSpecification.setIns(INS_86_GENERAL_AUTHENTICATE);
 						apduSpecification.setP1((byte) 0x00);
 						apduSpecification.setP2((byte) 0x00);
-						apduSpecification.addTag((byte) 0x7C);
+						apduSpecification.addTag(TAG_7C);
 						registerApduSpecification(apduSpecification);
 
 
@@ -355,11 +355,11 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 						apduSpecification.setIns(INS_86_GENERAL_AUTHENTICATE);
 						apduSpecification.setP1((byte) 0x00);
 						apduSpecification.setP2((byte) 0x00);
-						createNewTagSpecification((byte) 0x7C);
+						createNewTagSpecification(TAG_7C);
 						apduSpecification.addTag(tagSpecification);
 						createNewPath();
-						path.add((byte) 0x7C);
-						createNewTagSpecification((byte) 0x81);
+						path.add(TAG_7C);
+						createNewTagSpecification(TAG_81);
 						apduSpecification.addTag(path, tagSpecification);
 						registerApduSpecification(apduSpecification);
 
@@ -385,11 +385,11 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 						apduSpecification.setIns(INS_86_GENERAL_AUTHENTICATE);
 						apduSpecification.setP1((byte) 0x00);
 						apduSpecification.setP2((byte) 0x00);
-						createNewTagSpecification((byte) 0x7C);
+						createNewTagSpecification(TAG_7C);
 						apduSpecification.addTag(tagSpecification);
 						createNewPath();
-						path.add((byte) 0x7C);
-						createNewTagSpecification((byte) 0x85);
+						path.add(TAG_7C);
+						createNewTagSpecification(TAG_85);
 						apduSpecification.addTag(path, tagSpecification);
 						registerApduSpecification(apduSpecification);
 
@@ -452,11 +452,11 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 						apduSpecification.setIns(INS_86_GENERAL_AUTHENTICATE);
 						apduSpecification.setP1((byte) 0x00);
 						apduSpecification.setP2((byte) 0x00);
-						createNewTagSpecification((byte) 0x7C);
+						createNewTagSpecification(TAG_7C);
 						apduSpecification.addTag(tagSpecification);
 						createNewPath();
-						path.add((byte) 0x7C);
-						createNewTagSpecification((byte) 0x83);
+						path.add(TAG_7C);
+						createNewTagSpecification(TAG_83);
 						apduSpecification.addTag(path, tagSpecification);
 						registerApduSpecification(apduSpecification);
 
@@ -482,15 +482,15 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 						apduSpecification.setIns(INS_22_MANAGE_SECURITY_ENVIRONMENT);
 						apduSpecification.setP1((byte) 0xC1);
 						apduSpecification.setP2((byte) 0xA4);
-						createNewTagSpecification((byte) 0x80);
+						createNewTagSpecification(TAG_80);
 						apduSpecification.addTag(tagSpecification);
-						createNewTagSpecification((byte) 0x83);
+						createNewTagSpecification(TAG_83);
 						apduSpecification.addTag(tagSpecification);
-						createNewTagSpecification((short) 0x7F4C);
+						createNewTagSpecification(TAG_7F4C);
 						tagSpecification.setRequired(REQ_OPTIONAL);
 						tagSpecification.setAllowUnspecifiedSubTags(true);
 						apduSpecification.addTag(tagSpecification);
-						createNewTagSpecification((byte) 0x84);
+						createNewTagSpecification(TAG_84);
 						tagSpecification.setRequired(REQ_OPTIONAL);
 						apduSpecification.addTag(tagSpecification);
 						apduSpecification.setInitialApdu();
