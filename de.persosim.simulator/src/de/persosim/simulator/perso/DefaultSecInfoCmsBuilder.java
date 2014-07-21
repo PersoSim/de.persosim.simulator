@@ -45,12 +45,7 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 		digestAlgorithms.addAll(getDigestAlgorithms());
 		
 		//encapContentInfo
-		TlvDataObject contentType = new PrimitiveTlvDataObject(HexString.toByteArray("06 08 04 00 7F 00 07 03 02 01"));
-		ConstructedTlvDataObject eContent = new ConstructedTlvDataObject(TAG_A0);
-		eContent.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OCTET_STRING, secInfos.toByteArray()));
-		ConstructedTlvDataObject encapContentInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-		encapContentInfo.addTlvDataObject(contentType);
-		encapContentInfo.addTlvDataObject(eContent);
+		ConstructedTlvDataObject encapContentInfo = getEncapContentInfo(secInfos);
 		
 		//certificates
 		ConstructedTlvDataObject certificates = new ConstructedTlvDataObject(TAG_A0);
@@ -58,7 +53,7 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 		
 		//signerInfos
 		ConstructedTlvDataObject signerInfos = new ConstructedTlvDataObject(TAG_SET);
-		certificates.addAll(getSignerInfos());
+		signerInfos.addAll(getSignerInfos(encapContentInfo));
 		
 		//signedData
 		ConstructedTlvDataObject signedData = new ConstructedTlvDataObject(TAG_SEQUENCE);
@@ -69,6 +64,22 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 		signedData.addTlvDataObject(signerInfos);
 		
 		return signedData;
+	}
+
+	/**
+	 * Build the encapContantInfo from the provided SecInfos
+	 * @param secInfos
+	 * @return
+	 */
+	protected ConstructedTlvDataObject getEncapContentInfo(
+			ConstructedTlvDataObject secInfos) {
+		TlvDataObject contentType = new PrimitiveTlvDataObject(HexString.toByteArray("06 08 04 00 7F 00 07 03 02 01"));
+		ConstructedTlvDataObject eContent = new ConstructedTlvDataObject(TAG_A0);
+		eContent.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OCTET_STRING, secInfos.toByteArray()));
+		ConstructedTlvDataObject encapContentInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+		encapContentInfo.addTlvDataObject(contentType);
+		encapContentInfo.addTlvDataObject(eContent);
+		return encapContentInfo;
 	}
 
 	/**
@@ -109,19 +120,21 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 	
 	/**
 	 * Return all used signerInfos, defaults to a Collection of the single signerInfo returned by {@link #getSignerInfo()}
+	 * @param eContent the encapContentInfo to be signed
 	 * @return
 	 */
-	protected Collection<? extends TlvDataObject> getSignerInfos() {
-		return Arrays.asList(getSignerInfo());
+	protected Collection<? extends TlvDataObject> getSignerInfos(ConstructedTlvDataObject eContent) {
+		return Arrays.asList(getSignerInfo(eContent));
 	}
 	
 	/**
 	 * Return the single used SignerInfo
 	 * <p/>
 	 * If more than one SignerInfo is used override {@link #getSignerInfos()} and ignore this method
+	 * @param eContent the encapContentInfo to be signed  
 	 * @return
 	 */
-	protected TlvDataObject getSignerInfo() {
+	protected TlvDataObject getSignerInfo(ConstructedTlvDataObject eContent) {
 		//version defaults to 1 in this implementation
 		TlvDataObject version = new PrimitiveTlvDataObject(new TlvTag(Asn1.INTEGER), new byte[]{0x01});
 				
@@ -132,13 +145,18 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 	    TlvDataObject digestAlgorithm = getDigestAlgorithm();
 	    
 	    //signedAttrs
-	    TlvDataObject signedAttrs = getSignedAttrs();
+	    TlvDataObject signedAttrs = getSignedAttrs(eContent);
 	    
 	    //signatureAlgorith
 	    TlvDataObject signatureAlgorithm = new ConstructedTlvDataObject(HexString.toByteArray("30 0A 06 08 2A 86 48 CE 3D 04 03 01"));
 	    
 	    //signature
-	    TlvDataObject signature = getSignature(signedAttrs);
+	    TlvDataObject signature;
+	    if (signedAttrs != null) {
+	    	signature = getSignature(signedAttrs);
+	    } else {
+	    	signature = getSignature(eContent);
+	    }
 	        
 	    ConstructedTlvDataObject signerInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 	    signerInfo.addTlvDataObject(version);
@@ -152,20 +170,31 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 
 	}
 
+	/**
+	 * Return the SignerIdentifier to be used within the SignerInfo returned by {@link #getSignerInfo()}
+	 * @return
+	 */
 	protected TlvDataObject getSid() {
 		return new ConstructedTlvDataObject(HexString.toByteArray("30 5A 30 55 31 0B 30 09 06 03 55 04 06 13 02 44 45 31 0D 30 0B 06 03 55 04 0A 0C 04 62 75 6E 64 31 0C 30 0A 06 03 55 04 0B 0C 03 62 73 69 31 0D 30 0B 06 03 55 04 05 13 04 30 30 30 33 31 1A 30 18 06 03 55 04 03 0C 11 54 45 53 54 20 63 73 63 61 2D 67 65 72 6D 61 6E 79 02 01 19"));
 	}
 
-	protected TlvDataObject getSignedAttrs() {
+	
+	
+	/**
+	 * Return the signed attributes to be used within the SignerInfo returned by {@link #getSignerInfo()}
+	 * @param eContent the encapContentInfo to be signed
+	 * @return
+	 */
+	protected TlvDataObject getSignedAttrs(ConstructedTlvDataObject eContent) {
 		return new ConstructedTlvDataObject(HexString.toByteArray("A0 64 30 17 06 09 2A 86 48 86 F7 0D 01 09 03 31 0A 06 08 04 00 7F 00 07 03 02 01 30 1C 06 09 2A 86 48 86 F7 0D 01 09 05 31 0F 17 0D 31 33 31 30 31 34 30 39 32 32 33 38 5A 30 2B 06 09 2A 86 48 86 F7 0D 01 09 04 31 1E 04 1C B1 1F DC 64 72 5A 6C 13 98 CD B8 13 A8 2B D7 C8 54 22 85 36 FC E6 DA 48 5D 1C CA E5"));
 	}
 
 	/**
-	 * 
-	 * @param signedAttrs
+	 * Return the signature to be used within the SignerInfo returned by {@link #getSignerInfo()}
+	 * @param sigInput input to the signature generation process 
 	 * @return
 	 */
-	protected TlvDataObject getSignature(TlvDataObject signedAttrs) {
+	protected TlvDataObject getSignature(TlvDataObject sigInput) {
 		return new PrimitiveTlvDataObject(HexString.toByteArray("04 40 30 3E 02 1D 00 B8 D9 89 5D F2 F7 02 39 0E 81 E9 03 6F F6 15 39 80 FB E8 53 09 D0 B0 ED 89 F2 67 66 02 1D 00 B4 68 A9 7C 15 27 0E 0D 06 E1 FE F0 10 97 0A D0 54 CD 61 28 BF 33 F1 9A 6C 0B 9C CA"));
 	}
 	
