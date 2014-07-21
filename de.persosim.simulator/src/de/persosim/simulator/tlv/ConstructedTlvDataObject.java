@@ -293,7 +293,7 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	 * Add all provided {@link TlvDataObject}s to this container.
 	 * @param newTlvDataObjects
 	 */
-	public void addAll(Collection<TlvDataObject> newTlvDataObjects) {
+	public void addAll(Collection<? extends TlvDataObject> newTlvDataObjects) {
 		for (TlvDataObject curTlvDataObject : newTlvDataObjects) {
 			addTlvDataObject(curTlvDataObject);
 		}
