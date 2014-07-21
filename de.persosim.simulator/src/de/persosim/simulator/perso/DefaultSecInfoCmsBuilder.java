@@ -72,11 +72,21 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 	}
 
 	/**
-	 * Return all used digestAlgorithms
+	 * Return all used digestAlgorithms, defaults to a Collection of the single digestAlgorithm returned by {@link #getDigestAlgorithm()}
 	 * @return
 	 */
 	protected Collection<? extends TlvDataObject> getDigestAlgorithms() {
-		return Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("30 0D 06 09 60 86 48 01 65 03 04 02 04 05 00")));
+		return Arrays.asList(getDigestAlgorithm());
+	}
+
+	/**
+	 * Return the single used digestAlgorithm
+	 * <p/>
+	 * If more than one digestAlgorithm is used override {@link #getDigestAlgorithms()} and ignore this method
+	 * @return
+	 */
+	protected TlvDataObject getDigestAlgorithm() {
+		return new ConstructedTlvDataObject(HexString.toByteArray("30 0D 06 09 60 86 48 01 65 03 04 02 04 05 00"));
 	}
 
 	/**
@@ -102,7 +112,7 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 	 * @return
 	 */
 	protected Collection<? extends TlvDataObject> getSignerInfos() {
-		return Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("30 82 01 22 02 01 01 30 5A 30 55 31 0B 30 09 06 03 55 04 06 13 02 44 45 31 0D 30 0B 06 03 55 04 0A 0C 04 62 75 6E 64 31 0C 30 0A 06 03 55 04 0B 0C 03 62 73 69 31 0D 30 0B 06 03 55 04 05 13 04 30 30 30 33 31 1A 30 18 06 03 55 04 03 0C 11 54 45 53 54 20 63 73 63 61 2D 67 65 72 6D 61 6E 79 02 01 19 30 0D 06 09 60 86 48 01 65 03 04 02 04 05 00 A0 64 30 17 06 09 2A 86 48 86 F7 0D 01 09 03 31 0A 06 08 04 00 7F 00 07 03 02 01 30 1C 06 09 2A 86 48 86 F7 0D 01 09 05 31 0F 17 0D 31 33 31 30 31 34 30 39 32 32 33 38 5A 30 2B 06 09 2A 86 48 86 F7 0D 01 09 04 31 1E 04 1C B1 1F DC 64 72 5A 6C 13 98 CD B8 13 A8 2B D7 C8 54 22 85 36 FC E6 DA 48 5D 1C CA E5 30 0A 06 08 2A 86 48 CE 3D 04 03 01 04 40 30 3E 02 1D 00 B8 D9 89 5D F2 F7 02 39 0E 81 E9 03 6F F6 15 39 80 FB E8 53 09 D0 B0 ED 89 F2 67 66 02 1D 00 B4 68 A9 7C 15 27 0E 0D 06 E1 FE F0 10 97 0A D0 54 CD 61 28 BF 33 F1 9A 6C 0B 9C CA")));
+		return Arrays.asList(getSignerInfo());
 	}
 	
 	/**
@@ -112,7 +122,51 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 	 * @return
 	 */
 	protected TlvDataObject getSignerInfo() {
-		return new ConstructedTlvDataObject(HexString.toByteArray("30 82 01 22 02 01 01 30 5A 30 55 31 0B 30 09 06 03 55 04 06 13 02 44 45 31 0D 30 0B 06 03 55 04 0A 0C 04 62 75 6E 64 31 0C 30 0A 06 03 55 04 0B 0C 03 62 73 69 31 0D 30 0B 06 03 55 04 05 13 04 30 30 30 33 31 1A 30 18 06 03 55 04 03 0C 11 54 45 53 54 20 63 73 63 61 2D 67 65 72 6D 61 6E 79 02 01 19 30 0D 06 09 60 86 48 01 65 03 04 02 04 05 00 A0 64 30 17 06 09 2A 86 48 86 F7 0D 01 09 03 31 0A 06 08 04 00 7F 00 07 03 02 01 30 1C 06 09 2A 86 48 86 F7 0D 01 09 05 31 0F 17 0D 31 33 31 30 31 34 30 39 32 32 33 38 5A 30 2B 06 09 2A 86 48 86 F7 0D 01 09 04 31 1E 04 1C B1 1F DC 64 72 5A 6C 13 98 CD B8 13 A8 2B D7 C8 54 22 85 36 FC E6 DA 48 5D 1C CA E5 30 0A 06 08 2A 86 48 CE 3D 04 03 01 04 40 30 3E 02 1D 00 B8 D9 89 5D F2 F7 02 39 0E 81 E9 03 6F F6 15 39 80 FB E8 53 09 D0 B0 ED 89 F2 67 66 02 1D 00 B4 68 A9 7C 15 27 0E 0D 06 E1 FE F0 10 97 0A D0 54 CD 61 28 BF 33 F1 9A 6C 0B 9C CA"));
+		//version defaults to 1 in this implementation
+		TlvDataObject version = new PrimitiveTlvDataObject(new TlvTag(Asn1.INTEGER), new byte[]{0x01});
+				
+		//SignerIdentifier
+	    TlvDataObject sid = getSid();
+	    
+	    //digestAlgorithm
+	    TlvDataObject digestAlgorithm = getDigestAlgorithm();
+	    
+	    //signedAttrs
+	    TlvDataObject signedAttrs = getSignedAttrs();
+	    
+	    //signatureAlgorith
+	    TlvDataObject signatureAlgorithm = new ConstructedTlvDataObject(HexString.toByteArray("30 0A 06 08 2A 86 48 CE 3D 04 03 01"));
+	    
+	    //signature
+	    TlvDataObject signature = getSignature(signedAttrs);
+	        
+	    ConstructedTlvDataObject signerInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+	    signerInfo.addTlvDataObject(version);
+	    signerInfo.addTlvDataObject(sid);
+	    signerInfo.addTlvDataObject(digestAlgorithm);
+	    signerInfo.addTlvDataObject(signedAttrs);
+	    signerInfo.addTlvDataObject(signatureAlgorithm);
+	    signerInfo.addTlvDataObject(signature);
+		        
+	    return signerInfo;
+
+	}
+
+	protected TlvDataObject getSid() {
+		return new ConstructedTlvDataObject(HexString.toByteArray("30 5A 30 55 31 0B 30 09 06 03 55 04 06 13 02 44 45 31 0D 30 0B 06 03 55 04 0A 0C 04 62 75 6E 64 31 0C 30 0A 06 03 55 04 0B 0C 03 62 73 69 31 0D 30 0B 06 03 55 04 05 13 04 30 30 30 33 31 1A 30 18 06 03 55 04 03 0C 11 54 45 53 54 20 63 73 63 61 2D 67 65 72 6D 61 6E 79 02 01 19"));
+	}
+
+	protected TlvDataObject getSignedAttrs() {
+		return new ConstructedTlvDataObject(HexString.toByteArray("A0 64 30 17 06 09 2A 86 48 86 F7 0D 01 09 03 31 0A 06 08 04 00 7F 00 07 03 02 01 30 1C 06 09 2A 86 48 86 F7 0D 01 09 05 31 0F 17 0D 31 33 31 30 31 34 30 39 32 32 33 38 5A 30 2B 06 09 2A 86 48 86 F7 0D 01 09 04 31 1E 04 1C B1 1F DC 64 72 5A 6C 13 98 CD B8 13 A8 2B D7 C8 54 22 85 36 FC E6 DA 48 5D 1C CA E5"));
+	}
+
+	/**
+	 * 
+	 * @param signedAttrs
+	 * @return
+	 */
+	protected TlvDataObject getSignature(TlvDataObject signedAttrs) {
+		return new PrimitiveTlvDataObject(HexString.toByteArray("04 40 30 3E 02 1D 00 B8 D9 89 5D F2 F7 02 39 0E 81 E9 03 6F F6 15 39 80 FB E8 53 09 D0 B0 ED 89 F2 67 66 02 1D 00 B4 68 A9 7C 15 27 0E 0D 06 E1 FE F0 10 97 0A D0 54 CD 61 28 BF 33 F1 9A 6C 0B 9C CA"));
 	}
 	
 }
