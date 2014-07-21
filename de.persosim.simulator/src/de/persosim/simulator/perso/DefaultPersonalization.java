@@ -90,7 +90,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 	 * Add required {@link PersoUnmarshallerCalback} to be serialized and used
 	 * after deserialization.
 	 */
-	private void addUnmarshallerCallbacks() {
+	protected void addUnmarshallerCallbacks() {
 		unmarshallerCallbacks.add(new DefaultNpaUnmarshallerCallback());
 
 	}
