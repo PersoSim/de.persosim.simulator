@@ -151,12 +151,16 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 	    TlvDataObject signatureAlgorithm = new ConstructedTlvDataObject(HexString.toByteArray("30 0A 06 08 2A 86 48 CE 3D 04 03 01"));
 	    
 	    //signature
-	    TlvDataObject signature;
+	    byte[] signatureBytes;
 	    if (signedAttrs != null) {
-	    	signature = getSignature(signedAttrs);
+	    	byte[] sigInput = signedAttrs.toByteArray();
+	    	sigInput[0] = Asn1.SEQUENCE;
+	    	signatureBytes = getSignature(sigInput);
 	    } else {
-	    	signature = getSignature(eContent);
+	    
+	    	signatureBytes = getSignature(eContent.toByteArray());
 	    }
+	    TlvDataObject signature = new PrimitiveTlvDataObject(TAG_OCTET_STRING, signatureBytes);
 	        
 	    ConstructedTlvDataObject signerInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 	    signerInfo.addTlvDataObject(version);
@@ -194,8 +198,8 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 	 * @param sigInput input to the signature generation process 
 	 * @return
 	 */
-	protected TlvDataObject getSignature(TlvDataObject sigInput) {
-		return new PrimitiveTlvDataObject(HexString.toByteArray("04 40 30 3E 02 1D 00 B8 D9 89 5D F2 F7 02 39 0E 81 E9 03 6F F6 15 39 80 FB E8 53 09 D0 B0 ED 89 F2 67 66 02 1D 00 B4 68 A9 7C 15 27 0E 0D 06 E1 FE F0 10 97 0A D0 54 CD 61 28 BF 33 F1 9A 6C 0B 9C CA"));
+	protected byte[] getSignature(byte[] sigInput) {
+		return HexString.toByteArray("30 3E 02 1D 00 B8 D9 89 5D F2 F7 02 39 0E 81 E9 03 6F F6 15 39 80 FB E8 53 09 D0 B0 ED 89 F2 67 66 02 1D 00 B4 68 A9 7C 15 27 0E 0D 06 E1 FE F0 10 97 0A D0 54 CD 61 28 BF 33 F1 9A 6C 0B 9C CA");
 	}
 	
 }
