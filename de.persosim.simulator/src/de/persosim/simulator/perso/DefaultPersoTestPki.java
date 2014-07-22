@@ -13,8 +13,6 @@ import de.persosim.simulator.utils.HexString;
 
 public class DefaultPersoTestPki extends DefaultPersonalization {
 
-	
-	
 	@Override
 	protected void addUnmarshallerCallbacks() {
 		unmarshallerCallbacks.add(new DefaultNpaUnmarshallerCallback(new TestPkiCmsBuilder()));
