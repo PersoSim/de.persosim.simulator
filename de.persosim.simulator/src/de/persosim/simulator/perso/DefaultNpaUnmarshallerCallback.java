@@ -39,6 +39,19 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCalback,
 	@XmlAnyElement(lax=true)
 	private SecInfoCmsBuilder cmsBuilder = new DefaultSecInfoCmsBuilder();
 
+	/**
+	 * Empty default constructor using defaults for all fields
+	 */
+	public DefaultNpaUnmarshallerCallback() {}
+	
+	/**
+	 * Constructor using a specific {@link SecInfoCmsBuilder}
+	 * @param cmsBuilder
+	 */
+	public DefaultNpaUnmarshallerCallback(SecInfoCmsBuilder cmsBuilder) {
+		this.cmsBuilder = cmsBuilder;
+	}
+
 	@Override
 	public void afterUnmarshall(Personalization perso) {
 		if (fileIsMissing(perso, 0x011C)) {
