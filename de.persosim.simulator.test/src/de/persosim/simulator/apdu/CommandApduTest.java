@@ -72,6 +72,18 @@ public class CommandApduTest extends PersoSimTestCase {
 	}
 	
 	@Test
+	public void testIsoCase2_MsbSet() {
+		String apduString = "00800000|80";
+		createAndCheck(apduString, false, false, 128);
+	}
+	
+	@Test
+	public void testIsoCase2_MsbSetMax() {
+		String apduString = "00800000|FF";
+		createAndCheck(apduString, false, false, 255);
+	}
+	
+	@Test
 	public void testIsoCase2_Le00() {
 		String apduString = "00800000|00";
 		createAndCheck(apduString, false, true, 256);
@@ -81,6 +93,18 @@ public class CommandApduTest extends PersoSimTestCase {
 	public void testIsoCase2Extended() {
 		String apduString = "00800000|000001";
 		createAndCheck(apduString, true, false, 1);
+	}
+	
+	@Test
+	public void testIsoCase2Extended_MsbSet() {
+		String apduString = "00800000|008000";
+		createAndCheck(apduString, true, false, 32768);
+	}
+	
+	@Test
+	public void testIsoCase2Extended_MsbSetMax() {
+		String apduString = "00800000|00FFFF";
+		createAndCheck(apduString, true, false, 65535);
 	}
 	
 	@Test
@@ -108,6 +132,18 @@ public class CommandApduTest extends PersoSimTestCase {
 	}
 	
 	@Test
+	public void testIsoCase4_MsbSet() {
+		String apduString = "00800000|01|FF|80";
+		createAndCheck(apduString, false, false, 128);
+	}
+	
+	@Test
+	public void testIsoCase4_MsbSetMax() {
+		String apduString = "00800000|01|FF|FF";
+		createAndCheck(apduString, false, false, 255);
+	}
+	
+	@Test
 	public void testIsoCase4_Le00() {
 		String apduString = "00800000|01|FF|00";
 		createAndCheck(apduString, false, true, 256);
@@ -117,6 +153,18 @@ public class CommandApduTest extends PersoSimTestCase {
 	public void testIsoCase4Extended() {
 		String apduString = "00800000|000001|FF|0001";
 		createAndCheck(apduString, true, false, 1);
+	}
+	
+	@Test
+	public void testIsoCase4Extended_MsbSet() {
+		String apduString = "00800000|000001|FF|8000";
+		createAndCheck(apduString, true, false, 32768);
+	}
+	
+	@Test
+	public void testIsoCase4Extended_MsbSetMax() {
+		String apduString = "00800000|000001|FF|FFFF";
+		createAndCheck(apduString, true, false, 65535);
 	}
 	
 	@Test
