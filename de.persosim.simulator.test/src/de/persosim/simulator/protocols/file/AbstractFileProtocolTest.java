@@ -199,11 +199,12 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	}
 
 	/**
-	 * Try to read to many bytes of a file and check for the correct status
+	 * Try to read too many bytes of a file and check for the correct status
 	 * word.
+	 * @throws FileNotFoundException 
 	 */
 	@Test
-	public void testReadBinaryToLong() {
+	public void testReadBinaryTooLong() throws FileNotFoundException {
 		// prepare the mock
 		new Expectations() {
 			{
@@ -215,6 +216,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 						return elementaryFile;
 					}
 				};
+				mockedCardStateAccessor.selectFile();
 			}
 		};
 		// read binary APDU
@@ -230,6 +232,11 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		assertTrue(
 				"Incorrect status word",
 				processingData.getResponseApdu().getStatusWord() == Iso7816.SW_6282_END_OF_FILE_REACHED_BEFORE_READING_NE_BYTES);
+		assertTrue("no file content", processingData.getResponseApdu().getData()
+				!= null);
+		assertArrayEquals("file content not as expected", processingData
+				.getResponseApdu().getData().toByteArray(),
+				elementaryFileContent);
 	}
 
 	/**
