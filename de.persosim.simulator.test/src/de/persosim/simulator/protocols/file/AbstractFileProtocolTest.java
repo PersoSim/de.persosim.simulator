@@ -646,7 +646,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	public void testGetFileContents() {
 		byte[] testDataSource = HexString.toByteArray("00 01 02 03 04 05 06 07 08 09");
 		
-		byte[] dataReceived = Deencapsulation.invoke(AbstractFileProtocol.class, "getFileContents", false, 2, 2, testDataSource);
+		byte[] dataReceived = Deencapsulation.invoke(AbstractFileProtocol.class, "getFileContents", 2, 2, testDataSource);
 		
 		byte[] dataExpected = HexString.toByteArray("02 03");
 		

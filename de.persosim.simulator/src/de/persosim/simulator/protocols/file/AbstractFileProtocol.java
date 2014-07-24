@@ -309,11 +309,8 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 	}
 	
 	/**
-	 * Utility method to read a part of a file. The NE field encoding is taken
-	 * into account.
+	 * Utility method to read a part of a file.
 	 * 
-	 * @param zeroEncoded
-	 *            the NE field encoding
 	 * @param offset
 	 *            the offset in the file contents
 	 * @param ne
@@ -324,17 +321,13 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 	 *         NE value bytes of the file
 	 * @throws FileToShortException
 	 */
-	private static byte [] getFileContents(boolean zeroEncoded, int offset, int ne, byte [] rawFileContents) throws FileToShortException{
-		int bytesToBeRead = ne;
+	private static byte [] getFileContents(int offset, int ne, byte [] rawFileContents) throws FileToShortException{
+		int bytesToBeRead = Math.min(ne, rawFileContents.length - offset);
 		
-		if (zeroEncoded && rawFileContents.length < ne){
-			bytesToBeRead = rawFileContents.length - offset;
-		}
-		
-		if (offset + bytesToBeRead > rawFileContents.length || bytesToBeRead < 0){
+		if (bytesToBeRead < 0) {
 			throw new FileToShortException();
 		}
-		
+
 		return Arrays.copyOfRange(rawFileContents, offset, offset + bytesToBeRead);
 	}
 	
@@ -356,7 +349,8 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 			ElementaryFile binaryFile = (ElementaryFile) file;
 
 			try {
-				byte [] data = getFileContents(zeroEncoded, offset, ne, binaryFile.getContent());
+				byte [] data = getFileContents(offset, ne, binaryFile.getContent());
+				boolean shortRead = !zeroEncoded && data.length < ne;
 				TlvValue toSend = null;
 
 				if (isOddInstruction) {
@@ -370,7 +364,9 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 				try {
 					cardState.selectFile();
 					ResponseApdu resp = new ResponseApdu(toSend,
-							Iso7816.SW_9000_NO_ERROR);
+							shortRead
+									? Iso7816.SW_6282_END_OF_FILE_REACHED_BEFORE_READING_NE_BYTES
+									: Iso7816.SW_9000_NO_ERROR);
 					this.processingData.updateResponseAPDU(this,
 							"binary file read successfully", resp);
 				} catch (FileNotFoundException e) {
