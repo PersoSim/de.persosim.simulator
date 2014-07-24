@@ -25,6 +25,7 @@ import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyObject;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.MasterFileIdentifier;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.Scope;
@@ -40,6 +41,7 @@ import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
 import de.persosim.simulator.securemessaging.SmDataProviderTr03110;
+import de.persosim.simulator.tlv.Asn1;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -48,6 +50,7 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvPath;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.tlv.TlvValue;
+import de.persosim.simulator.tlv.TlvValuePlain;
 import de.persosim.simulator.utils.HexString;
 
 /**
@@ -334,6 +337,51 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	//XXX SLS remove method from state machine
 	public void processCommandReset() {
 		log(this, "processed COMMAND_RESET", DEBUG);
+	}
+
+	@Override
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
+		
+		
+		PrimitiveTlvDataObject version = new PrimitiveTlvDataObject(new TlvTag(Asn1.INTEGER),
+				new TlvValuePlain(new byte[] { 2 }));
+		// FIXME CaInfo should not be declared within AbstractTaProtocol
+		ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(
+				new TlvTag(Asn1.SEQUENCE));
+
+		PrimitiveTlvDataObject caProtocol = new PrimitiveTlvDataObject(
+				new TlvTag(Asn1.OBJECT_IDENTIFIER),
+				new TlvValuePlain(HexString
+						.toByteArray("04 00 7F 00 07 02 02 03 02 02")));
+		caInfo.addTlvDataObject(caProtocol);
+		caInfo.addTlvDataObject(version);
+		
+		// FIXME CaDomainParameterInfo should not be declared within AbstractTaProtocol
+		ConstructedTlvDataObject caDomainInfo = new ConstructedTlvDataObject(
+				new TlvTag(Asn1.SEQUENCE));
+
+		PrimitiveTlvDataObject caDomainOid = new PrimitiveTlvDataObject(
+				new TlvTag(Asn1.OBJECT_IDENTIFIER),
+				new TlvValuePlain(HexString
+						.toByteArray("04 00 7F 00 07 02 02 03 02")));
+		
+		ConstructedTlvDataObject caDomainSeq = new ConstructedTlvDataObject(
+				new TlvTag(Asn1.SEQUENCE));
+		caDomainSeq.addTlvDataObject(new PrimitiveTlvDataObject(
+				new TlvTag(Asn1.OBJECT_IDENTIFIER),
+				new TlvValuePlain(HexString
+						.toByteArray("04 00 7F 00 07 01 02 "))));
+		caDomainSeq.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag(Asn1.INTEGER),
+				new TlvValuePlain(new byte[] { 0x0d })));
+		
+		
+		caDomainInfo.addTlvDataObject(caDomainOid);
+		caDomainInfo.addTlvDataObject(caDomainSeq);
+
+		HashSet<TlvDataObject> retVal = new HashSet<>();
+		retVal.add(caInfo);
+		retVal.add(caDomainInfo);
+		return retVal;
 	}
 	
 }

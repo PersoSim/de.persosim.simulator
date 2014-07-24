@@ -53,7 +53,7 @@ public interface Protocol {
 	 * @param mf the masterfile that contains the objecttree
 	 * @return set of SecurityInfos. May be an immutable collection.
 	 */
-	public abstract Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf);
+	public abstract Collection<? extends TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf);
 	
 	public enum SecInfoPublicity {
 	    PUBLIC,

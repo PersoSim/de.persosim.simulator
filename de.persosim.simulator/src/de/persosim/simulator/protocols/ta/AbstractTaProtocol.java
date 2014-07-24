@@ -696,7 +696,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 	}
 
 	@Override
-	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
+	public Collection<? extends TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 		// TAInfo
 		ConstructedTlvDataObject taInfo = new ConstructedTlvDataObject(
 				new TlvTag(Asn1.SEQUENCE));
@@ -711,44 +711,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 		taInfo.addTlvDataObject(protocol);
 		taInfo.addTlvDataObject(version);
 		
-		// FIXME CaInfo should not be declared within AbstractTaProtocol
-		ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(
-				new TlvTag(Asn1.SEQUENCE));
-
-		PrimitiveTlvDataObject caProtocol = new PrimitiveTlvDataObject(
-				new TlvTag(Asn1.OBJECT_IDENTIFIER),
-				new TlvValuePlain(HexString
-						.toByteArray("04 00 7F 00 07 02 02 03 02 02")));
-		caInfo.addTlvDataObject(caProtocol);
-		caInfo.addTlvDataObject(version);
-		
-		// FIXME CaDomainParameterInfo should not be declared within AbstractTaProtocol
-		ConstructedTlvDataObject caDomainInfo = new ConstructedTlvDataObject(
-				new TlvTag(Asn1.SEQUENCE));
-
-		PrimitiveTlvDataObject caDomainOid = new PrimitiveTlvDataObject(
-				new TlvTag(Asn1.OBJECT_IDENTIFIER),
-				new TlvValuePlain(HexString
-						.toByteArray("04 00 7F 00 07 02 02 03 02")));
-		
-		ConstructedTlvDataObject caDomainSeq = new ConstructedTlvDataObject(
-				new TlvTag(Asn1.SEQUENCE));
-		caDomainSeq.addTlvDataObject(new PrimitiveTlvDataObject(
-				new TlvTag(Asn1.OBJECT_IDENTIFIER),
-				new TlvValuePlain(HexString
-						.toByteArray("04 00 7F 00 07 01 02 "))));
-		caDomainSeq.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag(Asn1.INTEGER),
-				new TlvValuePlain(new byte[] { 0x0d })));
-		
-		
-		caDomainInfo.addTlvDataObject(caDomainOid);
-		caDomainInfo.addTlvDataObject(caDomainSeq);
-
-		HashSet<TlvDataObject> retVal = new HashSet<>();
-		retVal.add(taInfo);
-		retVal.add(caInfo);
-		retVal.add(caDomainInfo);
-		return retVal;
+		return Arrays.asList(taInfo);
 	}
 
 }

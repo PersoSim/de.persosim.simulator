@@ -78,7 +78,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationIf,
 	@Override
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 
-		// FIXME extract OIDs from Objectstore
+		// FIXME AMY extract OIDs from Objectstore
 
 		HashSet<TlvDataObject> result = new HashSet<>();
 
