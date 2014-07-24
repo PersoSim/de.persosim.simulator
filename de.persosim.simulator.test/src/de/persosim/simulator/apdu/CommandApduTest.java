@@ -40,8 +40,10 @@ public class CommandApduTest extends PersoSimTestCase {
 	 *            {@link CommandApdu#isExtendedLength()}
 	 * @param isNeZeroEncoded
 	 *            expected return value of {@link CommandApdu#isNeZeroEncoded()}
+	 * @param ne
+	 *            expected return value of {@link CommandApdu#getNe()}
 	 */
-	private void createAndCheck(String apduString, boolean isExtendedLength, boolean isNeZeroEncoded) {
+	private void createAndCheck(String apduString, boolean isExtendedLength, boolean isNeZeroEncoded, int ne) {
 		String inputStr = apduString;
 		inputStr = inputStr.replaceAll("\\(", "").replaceAll("\\)","");
 		inputStr = inputStr.replaceAll("\\[", "").replaceAll("\\]","");
@@ -60,67 +62,67 @@ public class CommandApduTest extends PersoSimTestCase {
 	@Test
 	public void testIsoCase1() {
 		String apduString = "00800000";
-		createAndCheck(apduString, false, false);
+		createAndCheck(apduString, false, false, 0);
 	}
 	
 	@Test
 	public void testIsoCase2() {
 		String apduString = "00800000|01";
-		createAndCheck(apduString, false, false);
+		createAndCheck(apduString, false, false, 1);
 	}
 	
 	@Test
 	public void testIsoCase2_Le00() {
 		String apduString = "00800000|00";
-		createAndCheck(apduString, false, true);
+		createAndCheck(apduString, false, true, 256);
 	}
 	
 	@Test
 	public void testIsoCase2Extended() {
 		String apduString = "00800000|000001";
-		createAndCheck(apduString, true, false);
+		createAndCheck(apduString, true, false, 1);
 	}
 	
 	@Test
 	public void testIsoCase2Extended_Le00() {
 		String apduString = "00800000|000000";
-		createAndCheck(apduString, true, true);
+		createAndCheck(apduString, true, true, 65536);
 	}
 	
 	@Test
 	public void testIsoCase3() {
 		String apduString = "00800000|01|FF";
-		createAndCheck(apduString, false, false);
+		createAndCheck(apduString, false, false, 0);
 	}
 	
 	@Test
 	public void testIsoCase3Extended() {
 		String apduString = "00800000|000001|FF";
-		createAndCheck(apduString, true, false);
+		createAndCheck(apduString, true, false, 0);
 	}
 	
 	@Test
 	public void testIsoCase4() {
 		String apduString = "00800000|01|FF|01";
-		createAndCheck(apduString, false, false);
+		createAndCheck(apduString, false, false, 1);
 	}
 	
 	@Test
 	public void testIsoCase4_Le00() {
 		String apduString = "00800000|01|FF|00";
-		createAndCheck(apduString, false, true);
+		createAndCheck(apduString, false, true, 256);
 	}
 	
 	@Test
 	public void testIsoCase4Extended() {
 		String apduString = "00800000|000001|FF|0001";
-		createAndCheck(apduString, true, false);
+		createAndCheck(apduString, true, false, 1);
 	}
 	
 	@Test
 	public void testIsoCase4Extended_Le00() {
 		String apduString = "00800000|000001|FF|0000";
-		createAndCheck(apduString, true, true);
+		createAndCheck(apduString, true, true, 65536);
 	}
 
 	@Test
