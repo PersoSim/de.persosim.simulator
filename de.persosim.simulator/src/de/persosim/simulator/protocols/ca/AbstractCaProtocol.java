@@ -23,6 +23,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyObject;
 import de.persosim.simulator.cardobjects.MasterFile;
@@ -342,21 +343,48 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	@Override
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 		
+		OidIdentifier caOidIdentifier = new OidIdentifier(CaOid.OID_id_CA);
 		
-		PrimitiveTlvDataObject version = new PrimitiveTlvDataObject(new TlvTag(Asn1.INTEGER),
-				new TlvValuePlain(new byte[] { 2 }));
-		// FIXME CaInfo should not be declared within AbstractTaProtocol
-		ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(
-				new TlvTag(Asn1.SEQUENCE));
-
-		PrimitiveTlvDataObject caProtocol = new PrimitiveTlvDataObject(
-				new TlvTag(Asn1.OBJECT_IDENTIFIER),
-				new TlvValuePlain(HexString
-						.toByteArray("04 00 7F 00 07 02 02 03 02 02")));
-		caInfo.addTlvDataObject(caProtocol);
-		caInfo.addTlvDataObject(version);
+		Collection<CardObject> caKeyCardObjects = mf.findChildren(
+				new KeyIdentifier(), caOidIdentifier);
 		
-		// FIXME CaDomainParameterInfo should not be declared within AbstractTaProtocol
+		HashSet<TlvDataObject> secInfos = new HashSet<TlvDataObject>();
+		
+		for (CardObject curKeym : caKeyCardObjects) {
+			Collection<CardObjectIdentifier> identifiers = curKeym.getAllIdentifiers();
+			
+			//extract domainParameterId
+			int keyRef = -1;
+			for (CardObjectIdentifier curIdentifier : identifiers) {
+				if (curIdentifier instanceof KeyIdentifier) {
+					keyRef = ((KeyIdentifier) curIdentifier).getKeyReference();
+					break;
+				}
+			}
+			if (keyRef == -1) continue;
+			
+			//construct and add CaInfo
+			for (CardObjectIdentifier curIdentifier : identifiers) {
+				if (caOidIdentifier.matches(curIdentifier)) {
+					byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
+					
+					ConstructedTlvDataObject paceInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
+					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{2}));
+					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyRef}));
+					
+					secInfos.add(paceInfo);					
+				}
+			}
+			
+			//TODO add CaDomainParameterInfo
+			//TODO add CaPublicKeyInfo
+			//TODO handle privilegedTerminalInfo
+			//TODO handle duplicates?
+		}
+		
+		
+		// FIXME CaDomainParameterInfo should not be declared static
 		ConstructedTlvDataObject caDomainInfo = new ConstructedTlvDataObject(
 				new TlvTag(Asn1.SEQUENCE));
 
@@ -378,10 +406,9 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		caDomainInfo.addTlvDataObject(caDomainOid);
 		caDomainInfo.addTlvDataObject(caDomainSeq);
 
-		HashSet<TlvDataObject> retVal = new HashSet<>();
-		retVal.add(caInfo);
-		retVal.add(caDomainInfo);
-		return retVal;
+		
+		secInfos.add(caDomainInfo);
+		return secInfos;
 	}
 	
 }

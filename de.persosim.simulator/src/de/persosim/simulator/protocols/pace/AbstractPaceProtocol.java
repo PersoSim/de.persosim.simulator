@@ -800,8 +800,10 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 
 	@Override
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
+		OidIdentifier paceOidIdentifier = new OidIdentifier(PaceOid.OID_id_PACE);
+		
 		Collection<CardObject> domainParameterCardObjects = mf.findChildren(
-				new DomainParameterSetIdentifier(), new OidIdentifier(PaceOid.OID_id_PACE));
+				new DomainParameterSetIdentifier(), paceOidIdentifier);
 		
 		HashSet<TlvDataObject> secInfos = new HashSet<TlvDataObject>();
 		
@@ -816,10 +818,11 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 					break;
 				}
 			}
+			if (parameterId == -1) continue;
 			
-			//add PaceSecInfos here
+			//construct and add PaceInfos
 			for (CardObjectIdentifier curIdentifier : identifiers) {
-				if (curIdentifier instanceof OidIdentifier) {
+				if (paceOidIdentifier.matches(curIdentifier)) {
 					byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
 					
 					ConstructedTlvDataObject paceInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
