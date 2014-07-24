@@ -20,6 +20,7 @@ import de.persosim.simulator.apdumatching.ExtendedTagSpecification;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyObject;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.exception.VerificationException;
@@ -75,7 +76,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationIf,
 	}
 
 	@Override
-	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity) {
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 
 		// FIXME extract OIDs from Objectstore
 

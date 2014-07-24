@@ -54,10 +54,10 @@ public class DefaultNpaUnmarshallerCallbackTest {
 				mockedPerso.getProtocolList();
 				result = Arrays.asList(mockedProtocol1, mockedProtocol2);
 				
-				mockedProtocol1.getSecInfos(withInstanceOf(SecInfoPublicity.class));
+				mockedProtocol1.getSecInfos(withInstanceOf(SecInfoPublicity.class), masterFile);
 				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("310301011F")));
 				
-				mockedProtocol2.getSecInfos(withInstanceOf(SecInfoPublicity.class));
+				mockedProtocol2.getSecInfos(withInstanceOf(SecInfoPublicity.class), masterFile);
 				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("310301012F")));
 				
 			}
@@ -73,10 +73,10 @@ public class DefaultNpaUnmarshallerCallbackTest {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedProtocol1.getSecInfos(SecInfoPublicity.PUBLIC);
+				mockedProtocol1.getSecInfos(SecInfoPublicity.PUBLIC, masterFile);
 				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("3103010101")));
 				
-				mockedProtocol2.getSecInfos(SecInfoPublicity.PUBLIC);
+				mockedProtocol2.getSecInfos(SecInfoPublicity.PUBLIC, masterFile);
 				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("3103010102")));
 				
 			}
@@ -103,10 +103,10 @@ public class DefaultNpaUnmarshallerCallbackTest {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedProtocol1.getSecInfos(SecInfoPublicity.AUTHENTICATED);
+				mockedProtocol1.getSecInfos(SecInfoPublicity.AUTHENTICATED, masterFile);
 				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("3103010101")), new ConstructedTlvDataObject(HexString.toByteArray("3103010103")));
 				
-				mockedProtocol2.getSecInfos(SecInfoPublicity.AUTHENTICATED);
+				mockedProtocol2.getSecInfos(SecInfoPublicity.AUTHENTICATED, masterFile);
 				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("3103010102")));
 				
 			}
@@ -139,10 +139,10 @@ public class DefaultNpaUnmarshallerCallbackTest {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedProtocol1.getSecInfos(SecInfoPublicity.AUTHENTICATED);
+				mockedProtocol1.getSecInfos(SecInfoPublicity.AUTHENTICATED, masterFile);
 				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("3103010101")));
 				
-				mockedProtocol2.getSecInfos(SecInfoPublicity.AUTHENTICATED);
+				mockedProtocol2.getSecInfos(SecInfoPublicity.AUTHENTICATED, masterFile);
 				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("3103010102")), new ConstructedTlvDataObject(HexString.toByteArray("3103010103")));
 				
 			}

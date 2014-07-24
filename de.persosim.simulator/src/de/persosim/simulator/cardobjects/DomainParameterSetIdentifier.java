@@ -7,7 +7,7 @@ package de.persosim.simulator.cardobjects;
  *
  */
 public class DomainParameterSetIdentifier extends IntegerIdentifier {
-
+	
 	public DomainParameterSetIdentifier(int domainParameterId) {
 		super(domainParameterId);
 	}

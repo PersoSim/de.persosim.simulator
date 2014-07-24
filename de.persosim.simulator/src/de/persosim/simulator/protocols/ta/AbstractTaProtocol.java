@@ -21,6 +21,7 @@ import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
 import de.persosim.simulator.cardobjects.DateTimeObjectIdentifier;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
@@ -695,7 +696,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
 	}
 
 	@Override
-	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity) {
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 		// TAInfo
 		ConstructedTlvDataObject taInfo = new ConstructedTlvDataObject(
 				new TlvTag(Asn1.SEQUENCE));

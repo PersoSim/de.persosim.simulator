@@ -30,7 +30,7 @@ public class GtDebugPersoTest extends GtDefaultPersoTest {
 		new ArrayList<JobDescriptor>();
 		
 		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_H_01"));
-		retVal.add(GtConstants.SUITE_EAC2_ISO7816_P);
+//		retVal.add(GtConstants.SUITE_EAC2_ISO7816_P);
 
 		return retVal;
 	}

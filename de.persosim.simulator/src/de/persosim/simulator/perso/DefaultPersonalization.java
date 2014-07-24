@@ -263,23 +263,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 
 		// register domain parameters for Pace
 		domainParameterSetCardObject13
-				.addOidIdentifier(Pace.OID_IDENTIFIER_id_PACE_ECDH_GM_3DES_CBC_CBC);
-		domainParameterSetCardObject13
 				.addOidIdentifier(Pace.OID_IDENTIFIER_id_PACE_ECDH_GM_AES_CBC_CMAC_128);
-		domainParameterSetCardObject13
-				.addOidIdentifier(Pace.OID_IDENTIFIER_id_PACE_ECDH_GM_AES_CBC_CMAC_192);
-		domainParameterSetCardObject13
-				.addOidIdentifier(Pace.OID_IDENTIFIER_id_PACE_ECDH_GM_AES_CBC_CMAC_256);
-
-		// register domain parameters for CA
-		domainParameterSetCardObject13
-				.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_3DES_CBC_CBC);
-		domainParameterSetCardObject13
-				.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128);
-		domainParameterSetCardObject13
-				.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_192);
-		domainParameterSetCardObject13
-				.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_256);
 	}
 
 	protected void addEpassDatagroups(DedicatedFile ePassAppl) {

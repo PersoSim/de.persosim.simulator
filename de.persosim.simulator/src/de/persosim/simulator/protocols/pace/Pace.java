@@ -1,6 +1,7 @@
 package de.persosim.simulator.protocols.pace;
 
 import de.persosim.simulator.cardobjects.OidIdentifier;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -99,6 +100,8 @@ public interface Pace {
 	public final static byte[] id_PACE_ECDH_IM_AES_CBC_CMAC_256    = Utils.appendBytes(id_PACE, ECDH_IM, AES_CBC_CMAC_256);
 	
 	/*--------------------------------------------------------------------------------*/
+	
+	public final static Oid OID_id_PACE          = new Oid(id_PACE);
 	
 	/* DH-GM */
 	public final static PaceOid OID_id_PACE_DH_GM_3DES_CBC_CBC          = new PaceOid(id_PACE_DH_GM_3DES_CBC_CBC);

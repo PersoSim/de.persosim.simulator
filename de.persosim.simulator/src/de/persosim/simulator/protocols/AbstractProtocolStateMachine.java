@@ -13,6 +13,7 @@ import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
 import de.persosim.simulator.apdumatching.ApduSpecificationIf;
 import de.persosim.simulator.apdumatching.ExtendedTagSpecification;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
@@ -76,7 +77,7 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 	}
 
 	@Override
-	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity) {
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 		return Collections.emptySet();
 	}
 	
