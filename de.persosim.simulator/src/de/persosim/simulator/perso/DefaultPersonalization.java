@@ -244,10 +244,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		KeyPair keyPair = new KeyPair(publicKey, privateKey);
 
 		KeyObject caKey = new KeyObject(keyPair, new KeyIdentifier(2));
-		caKey.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_3DES_CBC_CBC);
 		caKey.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128);
-		caKey.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_192);
-		caKey.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_256);
 		mf.addChild(caKey);
 	}
 
