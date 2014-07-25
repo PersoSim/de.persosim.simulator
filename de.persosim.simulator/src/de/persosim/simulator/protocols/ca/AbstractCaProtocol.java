@@ -405,9 +405,11 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 		caDomainInfo.addTlvDataObject(caDomainOid);
 		caDomainInfo.addTlvDataObject(caDomainSeq);
-
-		
 		secInfos.add(caDomainInfo);
+		
+		//FIXME CaPublicKeyInfo should not be static
+		ConstructedTlvDataObject caPublicKeyInfo = new ConstructedTlvDataObject(HexString.toByteArray("305F060904007F0007020201023052300C060704007F0007010202010D03420004A44EBE5451DF7AADB01E459B8C928A87746A57927C8C28A6775C97A7E1FE8D9A46FF4A1CC7E4D1389AEA19758E4F75C28C598FD734AEBEB135337CF95BE12E94"));
+		secInfos.add(caPublicKeyInfo);
 		return secInfos;
 	}
 	
