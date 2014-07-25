@@ -147,7 +147,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 	}
 
 	/**
-	 * Add auxiliray data to the object tree, used for AuxDataVerification protocol
+	 * Add auxiliary data to the object tree, used for AuxDataVerification protocol
 	 */
 	protected void addAuxData() {
 		// Aux data
@@ -182,7 +182,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 	}
 
 	/**
-	 * Add the available truspoint objects for terminal authentication.
+	 * Add the available trustpoint objects for terminal authentication.
 	 * @throws CertificateNotParseableException
 	 */
 	protected abstract void addTaTrustPoints() throws CertificateNotParseableException;
@@ -280,7 +280,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 	}
 
 	/**
-	 * Add somainparemeters to the personalized object tree
+	 * Add domainparameters to the personalized object tree
 	 * 
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchProviderException
