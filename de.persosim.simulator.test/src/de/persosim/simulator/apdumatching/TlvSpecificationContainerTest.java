@@ -191,7 +191,6 @@ public class TlvSpecificationContainerTest extends PersoSimTestCase implements A
 	 */
 	@Test
 	public void testMatches_AbsentRequiredNested() {
-		//FIXME AMY review testcases again, based on datastructure comments
 		TlvSpecificationContainer containerSpec = new TlvSpecificationContainer(DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER);
 		TlvSpecification constructedTlvSpecification1 = new TlvSpecification(tagConstructed21, DO_NOT_ALLOW_FURTHER_TAGS, STRICT_ORDER, REQ_MATCH);
 		containerSpec.add(constructedTlvSpecification1);

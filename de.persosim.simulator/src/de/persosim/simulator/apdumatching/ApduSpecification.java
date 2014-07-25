@@ -15,7 +15,6 @@ import de.persosim.simulator.tlv.TlvTag;
  * @author slutters
  *
  */
-//FIXME AMY review this class after rename based on the last master version)
 public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 	/* The id, e.g. the name of the resembled APDU */
 	protected String id;
