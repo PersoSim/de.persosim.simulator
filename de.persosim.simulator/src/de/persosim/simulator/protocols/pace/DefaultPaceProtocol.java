@@ -486,12 +486,12 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 						apduSpecification.addTag(tagSpecification);
 						createNewTagSpecification(TAG_83);
 						apduSpecification.addTag(tagSpecification);
+						createNewTagSpecification(TAG_84);
+						tagSpecification.setRequired(REQ_OPTIONAL);
+						apduSpecification.addTag(tagSpecification);
 						createNewTagSpecification(TAG_7F4C);
 						tagSpecification.setRequired(REQ_OPTIONAL);
 						tagSpecification.setAllowUnspecifiedSubTags(true);
-						apduSpecification.addTag(tagSpecification);
-						createNewTagSpecification(TAG_84);
-						tagSpecification.setRequired(REQ_OPTIONAL);
 						apduSpecification.addTag(tagSpecification);
 						apduSpecification.setInitialApdu();
 						registerApduSpecification(apduSpecification);
