@@ -146,6 +146,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		}
 	}
 
+	/**
+	 * Add auxiliray data to the object tree, used for AuxDataVerification protocol
+	 */
 	protected void addAuxData() {
 		// Aux data
 		byte[] communityId = HexString.toByteArray("02761100000000");
@@ -165,6 +168,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				validityDate));
 	}
 
+	/**
+	 * Configure the chips simulated time
+	 */
 	protected void addTime() {
 		// Time store
 		Calendar calendar = Calendar.getInstance();
@@ -175,8 +181,15 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		mf.addChild(curTime);
 	}
 
+	/**
+	 * Add the available truspoint objects for terminal authentication.
+	 * @throws CertificateNotParseableException
+	 */
 	protected abstract void addTaTrustPoints() throws CertificateNotParseableException;
 
+	/**
+	 * Add an EF.Dir below MF
+	 */
 	protected void addEfDir() {
 		byte[] content = HexString
 				.toByteArray("61324F0FE828BD080FA000000167455349474E500F434941207A752044462E655369676E5100730C4F0AA000000167455349474E61094F07A0000002471001610B4F09E80704007F00070302610C4F0AA000000167455349474E");
@@ -190,18 +203,31 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		mf.addChild(efCardAccess);
 	}
 	
+	/**
+	 * Add an EF.ChipSecurity below MF as described by TR03110
+	 */
 	protected void addEfChipSecurity() {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
+	/**
+	 * Add an EF.CardSecurity below MF as described by TR03110
+	 */
 	protected void addEfCardSecurity() {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
+	/**
+	 * Add an EF.CardAccess below MF as described by TR03110
+	 */
 	protected void addEfCardAccess() {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
+	/**
+	 * Add all required keyObjects for RestrictedIdentification to the personalized object tree
+	 * 
+	 */
 	protected void addRiKeys() {
 		DomainParameterSet domainParameterSet;
 		byte[] publicKeyMaterial;
@@ -228,6 +254,11 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		mf.addChild(riKey);
 	}
 
+	
+	/**
+	 * Add all required keyObjects for ChipAuthentication to the personalized object tree
+	 * 
+	 */
 	protected void addCaKeys() {
 		// CA static key pair PICC
 		DomainParameterSet domainParameterSet = StandardizedDomainParameters
@@ -248,6 +279,14 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		mf.addChild(caKey);
 	}
 
+	/**
+	 * Add somainparemeters to the personalized object tree
+	 * 
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchProviderException
+	 * @throws IOException
+	 * @throws UnsupportedEncodingException
+	 */
 	protected void addDomainParameters() {
 		// create domain parameters
 		DomainParameterSet domainParameterSet13 = StandardizedDomainParameters
@@ -309,6 +348,10 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		ePassAppl.addChild(epassDg4);
 	}
 
+	/**
+	 * Add data files to the eID application
+	 * 
+	 */
 	protected void addEidDatagroups(DedicatedFile eIdAppl) {
 		// eID DG1
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0101),
@@ -485,7 +528,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 	}
 
 	/**
-	 * Add all required authObjects to the // FIXME AMY please continue
+	 * Add all required authObjects to the personalized object tree
 	 * 
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchProviderException
