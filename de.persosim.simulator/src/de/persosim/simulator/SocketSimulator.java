@@ -9,7 +9,6 @@ import java.net.Socket;
 
 import org.bouncycastle.util.encoders.Hex;
 
-import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PersoSimKernel;
@@ -52,14 +51,6 @@ public class SocketSimulator implements Runnable {
 
 		kernel = new PersoSimKernel(perso);
 		kernel.init();
-	}
-
-	/**
-	 * 
-	 * @param simPort
-	 */
-	public SocketSimulator(int simPort) {
-		this(new DefaultPersonalization(), simPort);
 	}
 
 	/**

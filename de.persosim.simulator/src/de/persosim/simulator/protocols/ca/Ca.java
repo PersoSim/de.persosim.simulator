@@ -1,6 +1,7 @@
 package de.persosim.simulator.protocols.ca;
 
 import de.persosim.simulator.cardobjects.OidIdentifier;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -72,6 +73,8 @@ public interface Ca {
 	public final static byte[] id_CA_ECDH_AES_CBC_CMAC_256    = Utils.appendBytes(id_CA, ECDH, AES_CBC_CMAC_256);
 	
 	/*--------------------------------------------------------------------------------*/
+	
+	public final static Oid OID_id_CA                            = new Oid(id_CA);
 	
 	/* DH */
 	public final static CaOid OID_id_CA_DH_3DES_CBC_CBC          = new CaOid(id_CA_DH_3DES_CBC_CBC);

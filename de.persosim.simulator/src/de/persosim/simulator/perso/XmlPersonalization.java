@@ -1,7 +1,9 @@
 package de.persosim.simulator.perso;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
@@ -13,29 +15,25 @@ import de.persosim.simulator.protocols.Protocol;
 
 @XmlRootElement(name="Personalization")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XmlPersonalisation implements Personalization {
+public class XmlPersonalization implements Personalization {
 
 	@XmlElementWrapper(name = "protocols")
 	@XmlAnyElement(lax=true)
-	private List<Protocol> protocols;
+	protected List<Protocol> protocols = new ArrayList<>();
 	
 	@XmlAnyElement(lax=true)
-	MasterFile mf;
-
-	public void setProtocolList(List<Protocol> protocolList) {
-		this.protocols = protocolList;
-	}
-
+	protected MasterFile mf = new MasterFile();
+	
+	@XmlElementWrapper(name = "unmarshallerCallbacks")
+	@XmlAnyElement(lax=true)
+	protected List<PersoUnmarshallerCallback> unmarshallerCallbacks = new ArrayList<>();
+	
 	public List<Protocol> getProtocols() {
 		return protocols;
 	}
 
 	public MasterFile getMf() {
 		return mf;
-	}
-
-	public void setMf(MasterFile mf) {
-		this.mf = mf;
 	}
 
 	@Override
@@ -46,5 +44,20 @@ public class XmlPersonalisation implements Personalization {
 	@Override
 	public List<Protocol> getProtocolList() {
 		return protocols;
+	}
+	
+	/**
+	 * JAXB callback
+	 * <p/>
+	 * Used to fix the parent relation
+	 * @param u
+	 * @param parent
+	 */
+	protected void afterUnmarshal(Unmarshaller u, Object parent) {
+		if (unmarshallerCallbacks != null) {
+			for (PersoUnmarshallerCallback curPostProcessor : unmarshallerCallbacks) {
+				curPostProcessor.afterUnmarshall(this);	
+			}
+		}
 	}
 }

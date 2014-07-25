@@ -1,5 +1,6 @@
 package de.persosim.simulator.tlv;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 
@@ -68,6 +69,20 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 		int maxOffsetSub = (minOffsetSub + tlvLength.getIndicatedLength());
 		
 		tlvDataObjectContainer = new TlvDataObjectContainer(byteArray, minOffsetSub, maxOffsetSub);
+	}
+	
+	/**
+	 * Constructor for a TLV data object with constructed encoding based on a fixed array of raw bytes.
+	 * The defined byte array must contain exactly the whole TLV data object.
+	 * 
+	 * @param byteArray the array that contains the TLV data object
+	 */
+	public ConstructedTlvDataObject(byte[] byteArray) {
+		this(byteArray, 0, byteArray.length);
+		
+		if(this.getLength() != byteArray.length) {
+			throw new IllegalArgumentException("input data is longer than actual TLV data object");
+		}
 	}
 	
 	/**
@@ -147,7 +162,7 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	}
 	
 	/*--------------------------------------------------------------------------------*/
-	
+
 	@Override
 	public void setTag(TlvTag tlvTagInput, boolean performValidityChecksInput) {
 		if(tlvTagInput == null) {throw new NullPointerException("tag must not be null");}
@@ -282,6 +297,16 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 		if(!super.isValidBerEncoding()) {return false;}
 		
 		return isConstructedTLVObject();
+	}
+
+	/**
+	 * Add all provided {@link TlvDataObject}s to this container.
+	 * @param newTlvDataObjects
+	 */
+	public void addAll(Collection<? extends TlvDataObject> newTlvDataObjects) {
+		for (TlvDataObject curTlvDataObject : newTlvDataObjects) {
+			addTlvDataObject(curTlvDataObject);
+		}
 	}
 	
 }

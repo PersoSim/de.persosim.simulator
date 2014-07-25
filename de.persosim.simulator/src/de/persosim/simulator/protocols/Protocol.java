@@ -3,6 +3,7 @@ package de.persosim.simulator.protocols;
 import java.util.Collection;
 
 import de.persosim.simulator.apdumatching.ApduSpecification;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ObjectStore;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.CommandProcessor;
@@ -48,9 +49,18 @@ public interface Protocol {
 	 * of the Protocol. These can be used by the caller to create default
 	 * implementations of EF.CardAccess, EF.CardSecurity or DG14.
 	 * 
+	 * @param publicity defines which SecInfos should be included in the returned Collection
+	 * @param mf the masterfile that contains the objecttree
 	 * @return set of SecurityInfos. May be an immutable collection.
 	 */
-	public abstract Collection<TlvDataObject> getSecInfos();
+	public abstract Collection<? extends TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf);
+	
+	public enum SecInfoPublicity {
+	    PUBLIC,
+	    AUTHENTICATED,
+	    PRIVILEGED
+	  }
+
 
 	/**
 	 * Implements handling of APDUs.

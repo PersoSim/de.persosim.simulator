@@ -14,6 +14,7 @@ import de.persosim.simulator.apdumatching.ApduSpecification;
 import de.persosim.simulator.apdumatching.TlvSpecification;
 import de.persosim.simulator.cardobjects.AuxDataObject;
 import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.exception.VerificationException;
@@ -49,7 +50,7 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 	}
 
 	@Override
-	public Collection<TlvDataObject> getSecInfos() {
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 		return Collections.emptySet();
 	}
 	

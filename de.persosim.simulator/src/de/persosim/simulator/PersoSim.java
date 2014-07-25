@@ -18,7 +18,7 @@ import javax.xml.bind.Unmarshaller;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
-import de.persosim.simulator.perso.DefaultPersonalization;
+import de.persosim.simulator.perso.DefaultPersoTestPki;
 import de.persosim.simulator.perso.Personalization;
 
 public class PersoSim implements Runnable {
@@ -105,7 +105,7 @@ public class PersoSim implements Runnable {
 	 */
 	private void startSimulator() {
 		if (simulator == null) {
-			simulator = new SocketSimulator(getPersonalisation(), simPort);
+			simulator = new SocketSimulator(getPersonalization(), simPort);
 		}
 		
 		if (!simulator.isRunning()) {
@@ -114,7 +114,7 @@ public class PersoSim implements Runnable {
 
 	}
 
-	private Personalization getPersonalisation() {
+	private Personalization getPersonalization() {
 		// try to read perso from provided file
 		String persoFileName = "perso.xml";
 		File persoFile = new File(persoFileName);
@@ -134,7 +134,7 @@ public class PersoSim implements Runnable {
 		}
 		
 		System.out.println("Loading default personalization");
-		return new DefaultPersonalization();
+		return new DefaultPersoTestPki();
 	}
 
 	/**

@@ -3,24 +3,19 @@ package de.persosim.simulator.perso;
 import org.junit.Before;
 
 /**
- * Test the same tests as XmlPersonalisationTest but with the contents of
- * {@link DefaultPersonalization}
+ * Test the same tests as {@link XmlPersonalizationTest} but with the contents of
+ * {@link DefaultPersoTestPki}
  * 
  * @author amay
  * 
  */
-public class XmlDefaultPersoTest extends XmlPersonalisationTest {
+public class XmlDefaultPersoTest extends XmlPersonalizationTest {
 
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 
-		// fill testPerso from defaultPerso
-		DefaultPersonalization defaultPerso = new DefaultPersonalization();
-
-		testPerso = new XmlPersonalisation();
-		testPerso.setProtocolList(defaultPerso.getProtocolList());
-		testPerso.setMf(defaultPerso.getObjectTree());
+		testPerso = new DefaultPersoTestPki();
 	}
 
 }

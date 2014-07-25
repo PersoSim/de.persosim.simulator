@@ -6,6 +6,7 @@ import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import de.persosim.simulator.apdumatching.TlvSpecification;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyObject;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.exception.VerificationException;
@@ -31,14 +33,12 @@ import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
-import de.persosim.simulator.tlv.Asn1;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
-import de.persosim.simulator.tlv.TlvValuePlain;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.InfoSource;
 import de.persosim.simulator.utils.Utils;
@@ -75,56 +75,21 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 	}
 
 	@Override
-	public Collection<TlvDataObject> getSecInfos() {
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 
-		// XXX MBK store oids in object store
+		// FIXME RiInfo should be extracted from mf
 
-		HashSet<TlvDataObject> result = new HashSet<>();
+		ArrayList<TlvDataObject> secInfos = new ArrayList<>();
 
-		ConstructedTlvDataObject riInfo = new ConstructedTlvDataObject(
-				new TlvTag(Asn1.SEQUENCE));
+		// FIXME RiInfo should be extracted from mf
+		ConstructedTlvDataObject riInfo = new ConstructedTlvDataObject(HexString.toByteArray("3017060A04007F000702020502033009020101020101010100"));
+		secInfos.add(riInfo);
+				
+		//FIXME RiDomainParameterInfo should not be static
+		ConstructedTlvDataObject riDomainParameterInfo = new ConstructedTlvDataObject(HexString.toByteArray("3019060904007F000702020502300C060704007F0007010202010D"));
+		secInfos.add(riDomainParameterInfo);
 
-		PrimitiveTlvDataObject protocol = new PrimitiveTlvDataObject(
-				new TlvTag(Asn1.OBJECT_IDENTIFIER), new TlvValuePlain(
-						new RiOid(id_RI_ECDH).toByteArray()));
-
-		ConstructedTlvDataObject params = new ConstructedTlvDataObject(
-				new TlvTag(Asn1.SEQUENCE));
-
-		PrimitiveTlvDataObject version = new PrimitiveTlvDataObject(new TlvTag(
-				Asn1.INTEGER), new TlvValuePlain(HexString.toByteArray("01")));
-
-		PrimitiveTlvDataObject keyId = new PrimitiveTlvDataObject(new TlvTag(
-				Asn1.INTEGER), new TlvValuePlain(HexString.toByteArray("01")));
-
-		PrimitiveTlvDataObject authorizedOnly = new PrimitiveTlvDataObject(
-				new TlvTag(Asn1.UNIVERSAL_BOOLEAN),
-				TlvConstants.DER_BOOLEAN_FALSE);
-
-		params.addTlvDataObject(version);
-		params.addTlvDataObject(keyId);
-		params.addTlvDataObject(authorizedOnly);
-
-		riInfo.addTlvDataObject(protocol);
-		riInfo.addTlvDataObject(params);
-
-		result.add(riInfo);
-		riInfo = new ConstructedTlvDataObject(new TlvTag(Asn1.SEQUENCE));
-
-		protocol = new PrimitiveTlvDataObject(
-				new TlvTag(Asn1.OBJECT_IDENTIFIER), new TlvValuePlain(
-						new RiOid(RiOid.id_RI_ECDH).toByteArray()));
-
-		params.addTlvDataObject(version);
-		params.addTlvDataObject(keyId);
-		params.addTlvDataObject(authorizedOnly);
-
-		riInfo.addTlvDataObject(protocol);
-		riInfo.addTlvDataObject(params);
-
-		result.add(riInfo);
-
-		return result;
+		return secInfos;
 	}
 
 	@Override

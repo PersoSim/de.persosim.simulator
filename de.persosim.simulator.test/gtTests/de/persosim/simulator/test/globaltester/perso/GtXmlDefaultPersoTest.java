@@ -8,12 +8,13 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
+import de.persosim.simulator.perso.DefaultPersoGt;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
-import de.persosim.simulator.perso.XmlPersonalisation;
+import de.persosim.simulator.perso.XmlPersonalization;
 
 /**
- * Marshall/unmarshall the DefaultPersonalisation and check it afterwards
+ * Marshal/unmarshal the {@link DefaultPersonalization} and check it afterwards
  * against the GlobalTester. This ensures that the serialization process does
  * not loose data.
  * 
@@ -24,28 +25,24 @@ public class GtXmlDefaultPersoTest extends GtDefaultPersoTest {
 
 	@Override
 	public Personalization getPersonalization() {
-		DefaultPersonalization defaultPerso = new DefaultPersonalization();
+		DefaultPersonalization xmlPerso = new DefaultPersoGt();
 
-		XmlPersonalisation xmlPerso = new XmlPersonalisation();
-		xmlPerso.setProtocolList(defaultPerso.getProtocolList());
-		xmlPerso.setMf(defaultPerso.getObjectTree());
-
-		XmlPersonalisation unmarshalledPerso = null;
+		XmlPersonalization unmarshalledPerso = null;
 		try {
 			// instantiate marshaller
 			Marshaller m = PersoSimJaxbContextProvider.getContext()
 					.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-			// marshall the perso to StringWriter
+			// marshal the perso to StringWriter
 			StringWriter strWriter = new StringWriter();
 			m.marshal(xmlPerso, strWriter);
 
-			// unmarshall the perso from StringReader
+			// unmarshal the perso from StringReader
 			StringReader sr = new StringReader(strWriter.toString());
 			Unmarshaller um = PersoSimJaxbContextProvider.getContext()
 					.createUnmarshaller();
-			unmarshalledPerso = (XmlPersonalisation) um.unmarshal(sr);
+			unmarshalledPerso = (XmlPersonalization) um.unmarshal(sr);
 		} catch (JAXBException e) {
 			//forward the exception as RuntimeException to make the testcase fail
 			throw new RuntimeException(e);

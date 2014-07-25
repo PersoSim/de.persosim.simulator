@@ -21,6 +21,7 @@ import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
 import de.persosim.simulator.cardobjects.DateTimeObjectIdentifier;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
@@ -695,7 +696,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 
 	@Override
-	public Collection<TlvDataObject> getSecInfos() {
+	public Collection<? extends TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 		// TAInfo
 		ConstructedTlvDataObject taInfo = new ConstructedTlvDataObject(
 				new TlvTag(Asn1.SEQUENCE));
@@ -710,44 +711,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		taInfo.addTlvDataObject(protocol);
 		taInfo.addTlvDataObject(version);
 		
-		// XXX CaInfo should not be declared within AbstractTaProtocol
-		ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(
-				new TlvTag(Asn1.SEQUENCE));
-
-		PrimitiveTlvDataObject caProtocol = new PrimitiveTlvDataObject(
-				new TlvTag(Asn1.OBJECT_IDENTIFIER),
-				new TlvValuePlain(HexString
-						.toByteArray("04 00 7F 00 07 02 02 03 02 02")));
-		caInfo.addTlvDataObject(caProtocol);
-		caInfo.addTlvDataObject(version);
-		
-		// XXX CaDomainParameterInfo should not be declared within AbstractTaProtocol
-		ConstructedTlvDataObject caDomainInfo = new ConstructedTlvDataObject(
-				new TlvTag(Asn1.SEQUENCE));
-
-		PrimitiveTlvDataObject caDomainOid = new PrimitiveTlvDataObject(
-				new TlvTag(Asn1.OBJECT_IDENTIFIER),
-				new TlvValuePlain(HexString
-						.toByteArray("04 00 7F 00 07 02 02 03 02")));
-		
-		ConstructedTlvDataObject caDomainSeq = new ConstructedTlvDataObject(
-				new TlvTag(Asn1.SEQUENCE));
-		caDomainSeq.addTlvDataObject(new PrimitiveTlvDataObject(
-				new TlvTag(Asn1.OBJECT_IDENTIFIER),
-				new TlvValuePlain(HexString
-						.toByteArray("04 00 7F 00 07 01 02 "))));
-		caDomainSeq.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag(Asn1.INTEGER),
-				new TlvValuePlain(new byte[] { 0x0d })));
-		
-		
-		caDomainInfo.addTlvDataObject(caDomainOid);
-		caDomainInfo.addTlvDataObject(caDomainSeq);
-
-		HashSet<TlvDataObject> retVal = new HashSet<>();
-		retVal.add(taInfo);
-		retVal.add(caInfo);
-		retVal.add(caDomainInfo);
-		return retVal;
+		return Arrays.asList(taInfo);
 	}
 
 }
