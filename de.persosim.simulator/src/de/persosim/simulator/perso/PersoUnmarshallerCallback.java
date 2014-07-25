@@ -7,10 +7,8 @@ package de.persosim.simulator.perso;
  * 
  * @author amay
  * 
- * FIXME AMY please be generous and treat this class name to yet another "l"
- * 
  */
-public interface PersoUnmarshallerCalback {
+public interface PersoUnmarshallerCallback {
 
 	/**
 	 * JAXB callback

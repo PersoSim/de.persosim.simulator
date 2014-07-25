@@ -34,7 +34,7 @@ import de.persosim.simulator.utils.HexString;
  * 
  */
 @XmlRootElement
-public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCalback, TlvConstants {
+public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback, TlvConstants {
 
 	@XmlAnyElement(lax=true)
 	private SecInfoCmsBuilder cmsBuilder = new DefaultSecInfoCmsBuilder();

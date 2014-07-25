@@ -87,7 +87,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 	}
 
 	/**
-	 * Add required {@link PersoUnmarshallerCalback} to be serialized and used
+	 * Add required {@link PersoUnmarshallerCallback} to be serialized and used
 	 * after deserialization.
 	 */
 	protected void addUnmarshallerCallbacks() {

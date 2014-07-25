@@ -26,7 +26,7 @@ public class XmlPersonalization implements Personalization {
 	
 	@XmlElementWrapper(name = "unmarshallerCallbacks")
 	@XmlAnyElement(lax=true)
-	protected List<PersoUnmarshallerCalback> unmarshallerCallbacks = new ArrayList<>();
+	protected List<PersoUnmarshallerCallback> unmarshallerCallbacks = new ArrayList<>();
 	
 	public List<Protocol> getProtocols() {
 		return protocols;
@@ -55,7 +55,7 @@ public class XmlPersonalization implements Personalization {
 	 */
 	protected void afterUnmarshal(Unmarshaller u, Object parent) {
 		if (unmarshallerCallbacks != null) {
-			for (PersoUnmarshallerCalback curPostProcessor : unmarshallerCallbacks) {
+			for (PersoUnmarshallerCallback curPostProcessor : unmarshallerCallbacks) {
 				curPostProcessor.afterUnmarshall(this);	
 			}
 		}
