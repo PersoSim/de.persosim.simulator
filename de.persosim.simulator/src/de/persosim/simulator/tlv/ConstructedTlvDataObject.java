@@ -76,9 +76,6 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	 * The defined byte array must contain exactly the whole TLV data object.
 	 * 
 	 * @param byteArray the array that contains the TLV data object
-	 * @param minOffset the first offset of the range to contain the TLV data object (inclusive)
-	 * @param maxOffset the first offset of the range to not contain the TLV data object (exclusive).
-	 * This offset may no longer be part of the array.
 	 */
 	public ConstructedTlvDataObject(byte[] byteArray) {
 		this(byteArray, 0, byteArray.length);
