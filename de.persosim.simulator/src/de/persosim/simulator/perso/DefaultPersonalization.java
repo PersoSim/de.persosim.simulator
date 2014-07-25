@@ -179,7 +179,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 
 	protected void addEfDir() {
 		byte[] content = HexString
-				.toByteArray("61 32 4F 0F E8 28 BD 08 0F A0 00 00 01 67 45 53 49 47 4E 50 0F 43 49 41 20 7A 75 20 44 46 2E 65 53 69 67 6E 51 00 73 0C 4F 0A A0 00 00 01 67 45 53 49 47 4E");
+				.toByteArray("61324F0FE828BD080FA000000167455349474E500F434941207A752044462E655369676E5100730C4F0AA000000167455349474E61094F07A0000002471001610B4F09E80704007F00070302610C4F0AA000000167455349474E");
 		
 		ElementaryFile efCardAccess = new ElementaryFile(new FileIdentifier(
 				0x2F00), new ShortFileIdentifier(0x1E),

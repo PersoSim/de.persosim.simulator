@@ -745,8 +745,8 @@ public abstract class Iso7816Lib implements Iso7816 {
 			
 			if(isExtendedLengthLCLE(apdu)) {
 				short retVal = Utils.concatenate(apdu[apduLength - 2], apdu[apduLength - 1]);
-				if (retVal == 0) {
-					return 65536;
+				if (retVal <= 0) {
+					return 65536 + retVal;
 				} else {
 					return retVal;
 				}

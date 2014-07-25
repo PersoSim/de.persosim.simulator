@@ -16,8 +16,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
-import de.persosim.simulator.apdumatching.ApduSpecificationIf;
-import de.persosim.simulator.apdumatching.ExtendedTagSpecification;
+import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
+import de.persosim.simulator.apdumatching.TlvSpecification;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyObject;
@@ -51,8 +51,8 @@ import de.persosim.simulator.utils.Utils;
  * 
  */
 @XmlRootElement
-public class RiProtocol implements Protocol, Iso7816, ApduSpecificationIf,
-		InfoSource, Ri {
+public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants,
+		InfoSource, Ri, TlvConstants {
 
 	private HashSet<ApduSpecification> apdus = null;
 	private CardStateAccessor cardState;
@@ -353,10 +353,9 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationIf,
 		apduSpecification.setIns(INS_22_MANAGE_SECURITY_ENVIRONMENT);
 		apduSpecification.setP1((byte) 0xC1);
 		apduSpecification.setP2((byte) 0xA4);
-		ExtendedTagSpecification tagSpecification = new ExtendedTagSpecification(
-				(byte) 0x80);
+		TlvSpecification tagSpecification = new TlvSpecification(TAG_80);
 		apduSpecification.addTag(tagSpecification);
-		tagSpecification = new ExtendedTagSpecification((byte) 0x84);
+		tagSpecification = new TlvSpecification(TAG_84);
 		tagSpecification.setRequired(REQ_OPTIONAL);
 		apduSpecification.addTag(tagSpecification);
 		apduSpecification.setInitialApdu();
@@ -370,8 +369,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationIf,
 		apduSpecification.setIns(INS_86_GENERAL_AUTHENTICATE);
 		apduSpecification.setP1((byte) 0x00);
 		apduSpecification.setP2((byte) 0x00);
-		tagSpecification = new ExtendedTagSpecification(
-				(byte) 0x7C);
+		tagSpecification = new TlvSpecification(TAG_7C);
 		apduSpecification.addTag(tagSpecification);
 		apdus.add(apduSpecification);
 		return apdus;

@@ -6,9 +6,9 @@ package de.persosim.simulator.protocols.ca;
  */
  @SuppressWarnings("all")//generated code 
 
-/* Command line options: -verbose -p EA -o DefaultCaProtocol -l java -t CA:caclass C:\develop\eclipse-persosim\git\de.persosim.models\exported\protocol_ca.xml   */
+/* Command line options: -verbose -p EA -o DefaultCaProtocol -l java -t CA:caclass C:\develop\wd\protocol_ca.xml   */
 /* This file is generated from protocol_ca.xml - do not edit manually  */
-/* Generated on: Sun Jun 15 21:41:14 CEST 2014 / version 3.52beta2 */
+/* Generated on: Thu Jul 03 15:45:47 CEST 2014 / version 3.52beta2 */
 
 
 
@@ -244,11 +244,11 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 						apduSpecification.setIns(INS_86_GENERAL_AUTHENTICATE);
 						apduSpecification.setP1((byte) 0x00);
 						apduSpecification.setP2((byte) 0x00);
-						createNewTagSpecification((byte) 0x7C);
+						createNewTagSpecification(TAG_7C);
 						apduSpecification.addTag(tagSpecification);
 						createNewPath();
-						path.add((byte) 0x7C);
-						createNewTagSpecification((byte) 0x80);
+						path.add(TAG_7C);
+						createNewTagSpecification(TAG_80);
 						apduSpecification.addTag(path, tagSpecification);
 						registerApduSpecification(apduSpecification);
 
@@ -300,9 +300,9 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 						apduSpecification.setIns(INS_22_MANAGE_SECURITY_ENVIRONMENT);
 						apduSpecification.setP1((byte) 0x41);
 						apduSpecification.setP2((byte) 0xA4);
-						createNewTagSpecification((byte) 0x80);
+						createNewTagSpecification(TAG_80);
 						apduSpecification.addTag(tagSpecification);
-						createNewTagSpecification((byte) 0x84);
+						createNewTagSpecification(TAG_84);
 						tagSpecification.setRequired(REQ_OPTIONAL);
 						apduSpecification.addTag(tagSpecification);
 						apduSpecification.setInitialApdu();
@@ -463,6 +463,7 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 						
 							/* Action code for transition  */
 							logs("unable to process APDU - returning to previous state");
+
 							/* OnEntry code of state CA_IN_PROGRESS */
 							logs("CA_ANNOUNCED");
 							stateVar =  CA_IN_PROGRESS;/* entry chain  */

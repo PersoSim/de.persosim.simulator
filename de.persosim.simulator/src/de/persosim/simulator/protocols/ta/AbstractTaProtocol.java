@@ -54,7 +54,7 @@ import de.persosim.simulator.utils.Utils;
  * @author mboonk
  * 
  */
-public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine {
+public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine implements TlvConstants {
 
 	/*--------------------------------------------------------------------------------*/
 
