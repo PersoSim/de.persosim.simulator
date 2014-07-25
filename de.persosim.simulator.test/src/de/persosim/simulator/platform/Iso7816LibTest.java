@@ -14,11 +14,19 @@ public class Iso7816LibTest extends PersoSimTestCase implements Iso7816 {
 	byte[] iso2;
 	byte[] iso3;
 	byte[] iso4;
+	byte[] iso2MsbSet;
+	byte[] iso4MsbSet;
+	byte[] iso2MsbSetMax;
+	byte[] iso4MsbSetMax;
 	byte[] iso2ZeroEnc;
 	byte[] iso4ZeroEnc;
 	byte[] iso2Extended;
 	byte[] iso3Extended;
 	byte[] iso4Extended;
+	byte[] iso2ExtendedMsbSet;
+	byte[] iso4ExtendedMsbSet;
+	byte[] iso2ExtendedMsbSetMax;
+	byte[] iso4ExtendedMsbSetMax;
 	byte[] iso2ExtendedZeroEnc;
 	byte[] iso4ExtendedZeroEnc;
 
@@ -32,6 +40,16 @@ public class Iso7816LibTest extends PersoSimTestCase implements Iso7816 {
 		iso3 = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00, 0x01, (byte) 0xFF };
 		iso4 = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00, 0x01, (byte) 0xFF,
 				0x01 };
+
+		iso2MsbSet = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00, (byte) 0x80 };
+		iso4MsbSet = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00, 0x01,
+				(byte) 0xFF, (byte) 0x80 };
+
+		iso2MsbSetMax = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00,
+				(byte) 0xFF };
+		iso4MsbSetMax = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00, 0x01,
+				(byte) 0xFF, (byte) 0xFF };
+
 		iso2ZeroEnc = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00, 0x00 };
 		iso4ZeroEnc = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00, 0x01,
 				(byte) 0xFF, 0x00 };
@@ -42,6 +60,16 @@ public class Iso7816LibTest extends PersoSimTestCase implements Iso7816 {
 				0x01, (byte) 0xFF };
 		iso4Extended = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00, 0x00, 0x00,
 				0x01, (byte) 0xFF, 0x00, 0x01 };
+
+		iso2ExtendedMsbSet = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00, 0x00,
+				(byte) 0x80, 0x00 };
+		iso4ExtendedMsbSet = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00, 0x00,
+				0x00, 0x01, (byte) 0xFF, (byte) 0x80, 0x00 };
+
+		iso2ExtendedMsbSetMax = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00,
+				0x00, (byte) 0xFF, (byte) 0xFF };
+		iso4ExtendedMsbSetMax = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00,
+				0x00, 0x00, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF };
 
 		iso2ExtendedZeroEnc = new byte[] { 0x00, (byte) 0x80, 0x00, 0x00, 0x00,
 				0x00, 0x00 };
@@ -70,6 +98,26 @@ public class Iso7816LibTest extends PersoSimTestCase implements Iso7816 {
 	}
 
 	@Test
+	public void testGetNeIsoCase2MsbSet() {
+		assertEquals(128, Iso7816Lib.getNe(iso2MsbSet));
+	}
+
+	@Test
+	public void testGetNeIsoCase4MsbSet() {
+		assertEquals(128, Iso7816Lib.getNe(iso4MsbSet));
+	}
+
+	@Test
+	public void testGetNeIsoCase2MsbSetMax() {
+		assertEquals(255, Iso7816Lib.getNe(iso2MsbSetMax));
+	}
+
+	@Test
+	public void testGetNeIsoCase4MsbSetMax() {
+		assertEquals(255, Iso7816Lib.getNe(iso4MsbSetMax));
+	}
+
+	@Test
 	public void testGetNeIsoCase2ZeroEncoded() {
 		assertEquals(256, Iso7816Lib.getNe(iso2ZeroEnc));
 	}
@@ -92,6 +140,26 @@ public class Iso7816LibTest extends PersoSimTestCase implements Iso7816 {
 	@Test
 	public void testGetNeIsoCase4Extended() {
 		assertEquals(1, Iso7816Lib.getNe(iso4Extended));
+	}
+
+	@Test
+	public void testGetNeIsoCase2ExtendedMsbSet() {
+		assertEquals(32768, Iso7816Lib.getNe(iso2ExtendedMsbSet));
+	}
+
+	@Test
+	public void testGetNeIsoCase4ExtendedMsbSet() {
+		assertEquals(32768, Iso7816Lib.getNe(iso4ExtendedMsbSet));
+	}
+
+	@Test
+	public void testGetNeIsoCase2ExtendedMsbSetMax() {
+		assertEquals(65535, Iso7816Lib.getNe(iso2ExtendedMsbSetMax));
+	}
+
+	@Test
+	public void testGetNeIsoCase4ExtendedMsbSetMax() {
+		assertEquals(65535, Iso7816Lib.getNe(iso4ExtendedMsbSetMax));
 	}
 
 	@Test
