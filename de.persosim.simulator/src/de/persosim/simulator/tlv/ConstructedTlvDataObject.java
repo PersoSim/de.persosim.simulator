@@ -71,6 +71,7 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 		tlvDataObjectContainer = new TlvDataObjectContainer(byteArray, minOffsetSub, maxOffsetSub);
 	}
 	
+	// FIXME AMY missing documentation
 	public ConstructedTlvDataObject(byte[] byteArray) {
 		this(byteArray, 0, byteArray.length);
 	}

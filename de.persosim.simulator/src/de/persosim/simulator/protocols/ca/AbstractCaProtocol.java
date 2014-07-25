@@ -343,7 +343,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	@Override
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 		
-		OidIdentifier caOidIdentifier = new OidIdentifier(CaOid.OID_id_CA);
+		OidIdentifier caOidIdentifier = new OidIdentifier(OID_id_CA);
 		
 		Collection<CardObject> caKeyCardObjects = mf.findChildren(
 				new KeyIdentifier(), caOidIdentifier);

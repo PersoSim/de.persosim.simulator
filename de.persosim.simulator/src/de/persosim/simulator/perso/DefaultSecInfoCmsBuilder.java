@@ -20,9 +20,9 @@ import de.persosim.simulator.utils.HexString;
  * All required data is propagated with default values but can be overridden by
  * subclasses.
  * <p/>
- * The default values are choosen to provide a very simple
+ * The default values are chosen to provide a very simple
  * interface/implementation. For example it does not account for CRLs or multiple
- * signers/disgestAlgorithms etc. If this kind of flexibility is needed the
+ * signers/digestAlgorithms etc. If this kind of flexibility is needed the
  * interface {@link SecInfoCmsBuilder} needs to be implemented independently.
  * 
  * @author amay
@@ -109,7 +109,7 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 	}
 
 	/**
-	 * Return the single used certificates
+	 * Return the single used certificate
 	 * <p/>
 	 * If more than one certificate is used override {@link #getCertificates()} and ignore this method
 	 * @return

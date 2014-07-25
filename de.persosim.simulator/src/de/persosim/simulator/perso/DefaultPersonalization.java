@@ -70,7 +70,7 @@ import de.persosim.simulator.utils.HexString;
  * nPA as possible. During development the closest already supported
  * configuration is used.
  * <p/>
- * This class is abstract to force concrete subclasses to provide approriate
+ * This class is abstract to force concrete subclasses to provide appropriate
  * trust anchors for terminal authentication.
  * 
  * @author amay
@@ -485,7 +485,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 	}
 
 	/**
-	 * Add all required authObjects to the
+	 * Add all required authObjects to the // FIXME AMY please continue
 	 * 
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchProviderException

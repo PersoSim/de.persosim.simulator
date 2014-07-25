@@ -14,7 +14,7 @@ import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.XmlPersonalization;
 
 /**
- * Marshall/unmarshall the {@link DefaultPersonalization} and check it afterwards
+ * Marshal/unmarshal the {@link DefaultPersonalization} and check it afterwards
  * against the GlobalTester. This ensures that the serialization process does
  * not loose data.
  * 
@@ -34,11 +34,11 @@ public class GtXmlDefaultPersoTest extends GtDefaultPersoTest {
 					.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-			// marshall the perso to StringWriter
+			// marshal the perso to StringWriter
 			StringWriter strWriter = new StringWriter();
 			m.marshal(xmlPerso, strWriter);
 
-			// unmarshall the perso from StringReader
+			// unmarshal the perso from StringReader
 			StringReader sr = new StringReader(strWriter.toString());
 			Unmarshaller um = PersoSimJaxbContextProvider.getContext()
 					.createUnmarshaller();

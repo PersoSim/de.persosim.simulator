@@ -800,7 +800,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 
 	@Override
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
-		OidIdentifier paceOidIdentifier = new OidIdentifier(PaceOid.OID_id_PACE);
+		OidIdentifier paceOidIdentifier = new OidIdentifier(OID_id_PACE);
 		
 		Collection<CardObject> domainParameterCardObjects = mf.findChildren(
 				new DomainParameterSetIdentifier(), paceOidIdentifier);
