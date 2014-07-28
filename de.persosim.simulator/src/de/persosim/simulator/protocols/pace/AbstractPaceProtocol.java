@@ -26,9 +26,11 @@ import javax.crypto.spec.SecretKeySpec;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.DomainParameterSetCardObject;
 import de.persosim.simulator.cardobjects.DomainParameterSetIdentifier;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.MasterFileIdentifier;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
@@ -794,6 +796,49 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	public void processChainingInterrupted() {
 		ResponseApdu resp = new ResponseApdu(SW_6883_LAST_COMMAND_EXPECTED);
 		processingData.updateResponseAPDU(this, "chaining interrupted", resp);
+	}
+
+	@Override
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
+		OidIdentifier paceOidIdentifier = new OidIdentifier(OID_id_PACE);
+		
+		Collection<CardObject> domainParameterCardObjects = mf.findChildren(
+				new DomainParameterSetIdentifier(), paceOidIdentifier);
+		
+		HashSet<TlvDataObject> secInfos = new HashSet<TlvDataObject>();
+		
+		for (CardObject curDomainParam : domainParameterCardObjects) {
+			Collection<CardObjectIdentifier> identifiers = curDomainParam.getAllIdentifiers();
+			
+			//extract domainParameterId
+			int parameterId = -1;
+			for (CardObjectIdentifier curIdentifier : identifiers) {
+				if (curIdentifier instanceof DomainParameterSetIdentifier) {
+					parameterId = ((DomainParameterSetIdentifier) curIdentifier).getDomainParameterId();
+					break;
+				}
+			}
+			if (parameterId == -1) continue;
+			
+			//construct and add PaceInfos
+			for (CardObjectIdentifier curIdentifier : identifiers) {
+				if (paceOidIdentifier.matches(curIdentifier)) {
+					byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
+					
+					ConstructedTlvDataObject paceInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
+					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{2}));
+					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) parameterId}));
+					
+					secInfos.add(paceInfo);					
+				}
+			}
+			
+			//TODO add domainParameterInfo
+			//TODO handle duplicates?
+		}
+		
+		return secInfos;
 	}
 	
 }

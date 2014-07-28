@@ -71,8 +71,18 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 		tlvDataObjectContainer = new TlvDataObjectContainer(byteArray, minOffsetSub, maxOffsetSub);
 	}
 	
+	/**
+	 * Constructor for a TLV data object with constructed encoding based on a fixed array of raw bytes.
+	 * The defined byte array must contain exactly the whole TLV data object.
+	 * 
+	 * @param byteArray the array that contains the TLV data object
+	 */
 	public ConstructedTlvDataObject(byte[] byteArray) {
 		this(byteArray, 0, byteArray.length);
+		
+		if(this.getLength() != byteArray.length) {
+			throw new IllegalArgumentException("input data is longer than actual TLV data object");
+		}
 	}
 	
 	/**

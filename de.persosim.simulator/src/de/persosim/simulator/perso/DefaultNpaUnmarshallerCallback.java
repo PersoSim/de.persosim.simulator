@@ -34,7 +34,7 @@ import de.persosim.simulator.utils.HexString;
  * 
  */
 @XmlRootElement
-public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCalback, TlvConstants {
+public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback, TlvConstants {
 
 	@XmlAnyElement(lax=true)
 	private SecInfoCmsBuilder cmsBuilder = new DefaultSecInfoCmsBuilder();
@@ -75,7 +75,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCalback,
 		// collect SecInfos from protocols
 		ConstructedTlvDataObject secInfos = new ConstructedTlvDataObject(new TlvTag(Asn1.SET));
 		for (Protocol curProtocol : perso.getProtocolList()) {
-			secInfos.addAll(curProtocol.getSecInfos(SecInfoPublicity.PUBLIC));
+			secInfos.addAll(curProtocol.getSecInfos(SecInfoPublicity.PUBLIC, perso.getObjectTree()));
 		}
 
 		// add file to object tree
@@ -92,7 +92,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCalback,
 		// collect SecInfos from protocols
 		ConstructedTlvDataObject secInfos = new ConstructedTlvDataObject(new TlvTag(Asn1.SET));
 		for (Protocol curProtocol : perso.getProtocolList()) {
-			secInfos.addAll(curProtocol.getSecInfos(SecInfoPublicity.AUTHENTICATED));
+			secInfos.addAll(curProtocol.getSecInfos(SecInfoPublicity.AUTHENTICATED, perso.getObjectTree()));
 		}
 		
 		ConstructedTlvDataObject cmsSignedData = buildSignedDataFile(secInfos);
@@ -110,7 +110,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCalback,
 		// collect SecInfos from protocols
 		ConstructedTlvDataObject secInfos = new ConstructedTlvDataObject(new TlvTag(Asn1.SET));
 		for (Protocol curProtocol : perso.getProtocolList()) {
-			secInfos.addAll(curProtocol.getSecInfos(SecInfoPublicity.AUTHENTICATED));
+			secInfos.addAll(curProtocol.getSecInfos(SecInfoPublicity.PRIVILEGED, perso.getObjectTree()));
 		}
 		
 		SecCondition taWithIs = new TaSecurityCondition(TerminalType.IS, null);

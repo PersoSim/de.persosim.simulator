@@ -8,7 +8,7 @@ package de.persosim.simulator.perso;
  * @author amay
  * 
  */
-public interface PersoUnmarshallerCalback {
+public interface PersoUnmarshallerCallback {
 
 	/**
 	 * JAXB callback

@@ -3,7 +3,7 @@ package de.persosim.simulator.perso;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 
 /**
- * This interface allows autmatic greation of SignedData files liek
+ * This interface allows automatic creation of SignedData files like
  * EF.CardSecurity and EF.ChipSecurity.
  * 
  * @author amay

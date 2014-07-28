@@ -4,6 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
+import mockit.Deencapsulation;
 
 import org.junit.Test;
 
@@ -272,7 +273,7 @@ public class PrimitiveTlvDataObjectTest {
 		 */
 		byte[] tagExpectedNew = new byte[] { (byte) 0x08 };
 
-		tag.setTagField(tagExpectedNew);
+		Deencapsulation.setField(tag, "tagField", tagExpectedNew);
 
 		assertNotEquals(tag, tlvObject.getTlvTag());
 	}
@@ -308,7 +309,7 @@ public class PrimitiveTlvDataObjectTest {
 		 * above
 		 */
 		byte[] tagExpectedNew = new byte[] { (byte) 0x05 };
-		newTag.setTagField(tagExpectedNew);
+		Deencapsulation.setField(newTag, "tagField", tagExpectedNew);
 
 		assertNotEquals(newTag, tlvObject.getTlvTag());
 	}

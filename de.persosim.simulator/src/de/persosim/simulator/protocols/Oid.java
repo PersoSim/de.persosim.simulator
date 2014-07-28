@@ -2,7 +2,7 @@ package de.persosim.simulator.protocols;
 
 import java.util.Arrays;
 
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -16,8 +16,8 @@ import de.persosim.simulator.utils.HexString;
  * @author slutters
  *
  */
-@XmlTransient
-public abstract class Oid {
+@XmlRootElement
+public class Oid {
 	@XmlValue
 	@XmlJavaTypeAdapter(HexBinaryAdapter.class)
 	protected byte[] oidByteArray;
@@ -45,7 +45,9 @@ public abstract class Oid {
 	 * 
 	 * @return the oidString
 	 */
-	public abstract String getIdString();
+	public String getIdString() {
+		return HexString.encode(oidByteArray);
+	}
 	
 	@Override
 	public boolean equals(Object anotherOid) {

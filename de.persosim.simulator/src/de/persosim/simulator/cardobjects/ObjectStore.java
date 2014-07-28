@@ -131,8 +131,7 @@ public class ObjectStore {
 	 * @return the selected file
 	 */
 	public MasterFile selectMasterFile() {
-		//XXX this is used from within FileProtocol during selectFile and thus should not be restricted to personalization
-		selectFileForPersonalization(masterFile);
+		currentFile = masterFile;
 		return (MasterFile) currentFile;
 	}
 

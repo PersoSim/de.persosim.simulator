@@ -70,7 +70,7 @@ import de.persosim.simulator.utils.HexString;
  * nPA as possible. During development the closest already supported
  * configuration is used.
  * <p/>
- * This class is abstract to force concrete subclasses to provide approriate
+ * This class is abstract to force concrete subclasses to provide appropriate
  * trust anchors for terminal authentication.
  * 
  * @author amay
@@ -87,7 +87,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 	}
 
 	/**
-	 * Add required {@link PersoUnmarshallerCalback} to be serialized and used
+	 * Add required {@link PersoUnmarshallerCallback} to be serialized and used
 	 * after deserialization.
 	 */
 	protected void addUnmarshallerCallbacks() {
@@ -146,6 +146,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		}
 	}
 
+	/**
+	 * Add auxiliary data to the object tree, used for AuxDataVerification protocol
+	 */
 	protected void addAuxData() {
 		// Aux data
 		byte[] communityId = HexString.toByteArray("02761100000000");
@@ -165,6 +168,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				validityDate));
 	}
 
+	/**
+	 * Configure the chips simulated time
+	 */
 	protected void addTime() {
 		// Time store
 		Calendar calendar = Calendar.getInstance();
@@ -175,11 +181,18 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		mf.addChild(curTime);
 	}
 
+	/**
+	 * Add the available trustpoint objects for terminal authentication.
+	 * @throws CertificateNotParseableException
+	 */
 	protected abstract void addTaTrustPoints() throws CertificateNotParseableException;
 
+	/**
+	 * Add an EF.Dir below MF
+	 */
 	protected void addEfDir() {
 		byte[] content = HexString
-				.toByteArray("61 32 4F 0F E8 28 BD 08 0F A0 00 00 01 67 45 53 49 47 4E 50 0F 43 49 41 20 7A 75 20 44 46 2E 65 53 69 67 6E 51 00 73 0C 4F 0A A0 00 00 01 67 45 53 49 47 4E");
+				.toByteArray("61324F0FE828BD080FA000000167455349474E500F434941207A752044462E655369676E5100730C4F0AA000000167455349474E61094F07A0000002471001610B4F09E80704007F00070302610C4F0AA000000167455349474E");
 		
 		ElementaryFile efCardAccess = new ElementaryFile(new FileIdentifier(
 				0x2F00), new ShortFileIdentifier(0x1E),
@@ -190,18 +203,31 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		mf.addChild(efCardAccess);
 	}
 	
+	/**
+	 * Add an EF.ChipSecurity below MF as described by TR03110
+	 */
 	protected void addEfChipSecurity() {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
+	/**
+	 * Add an EF.CardSecurity below MF as described by TR03110
+	 */
 	protected void addEfCardSecurity() {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
+	/**
+	 * Add an EF.CardAccess below MF as described by TR03110
+	 */
 	protected void addEfCardAccess() {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
+	/**
+	 * Add all required keyObjects for RestrictedIdentification to the personalized object tree
+	 * 
+	 */
 	protected void addRiKeys() {
 		DomainParameterSet domainParameterSet;
 		byte[] publicKeyMaterial;
@@ -228,6 +254,11 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		mf.addChild(riKey);
 	}
 
+	
+	/**
+	 * Add all required keyObjects for ChipAuthentication to the personalized object tree
+	 * 
+	 */
 	protected void addCaKeys() {
 		// CA static key pair PICC
 		DomainParameterSet domainParameterSet = StandardizedDomainParameters
@@ -244,13 +275,18 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		KeyPair keyPair = new KeyPair(publicKey, privateKey);
 
 		KeyObject caKey = new KeyObject(keyPair, new KeyIdentifier(2));
-		caKey.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_3DES_CBC_CBC);
 		caKey.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128);
-		caKey.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_192);
-		caKey.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_256);
 		mf.addChild(caKey);
 	}
 
+	/**
+	 * Add domainparameters to the personalized object tree
+	 * 
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchProviderException
+	 * @throws IOException
+	 * @throws UnsupportedEncodingException
+	 */
 	protected void addDomainParameters() {
 		// create domain parameters
 		DomainParameterSet domainParameterSet13 = StandardizedDomainParameters
@@ -263,23 +299,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 
 		// register domain parameters for Pace
 		domainParameterSetCardObject13
-				.addOidIdentifier(Pace.OID_IDENTIFIER_id_PACE_ECDH_GM_3DES_CBC_CBC);
-		domainParameterSetCardObject13
 				.addOidIdentifier(Pace.OID_IDENTIFIER_id_PACE_ECDH_GM_AES_CBC_CMAC_128);
-		domainParameterSetCardObject13
-				.addOidIdentifier(Pace.OID_IDENTIFIER_id_PACE_ECDH_GM_AES_CBC_CMAC_192);
-		domainParameterSetCardObject13
-				.addOidIdentifier(Pace.OID_IDENTIFIER_id_PACE_ECDH_GM_AES_CBC_CMAC_256);
-
-		// register domain parameters for CA
-		domainParameterSetCardObject13
-				.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_3DES_CBC_CBC);
-		domainParameterSetCardObject13
-				.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128);
-		domainParameterSetCardObject13
-				.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_192);
-		domainParameterSetCardObject13
-				.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_256);
 	}
 
 	protected void addEpassDatagroups(DedicatedFile ePassAppl) {
@@ -328,6 +348,10 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		ePassAppl.addChild(epassDg4);
 	}
 
+	/**
+	 * Add data files to the eID application
+	 * 
+	 */
 	protected void addEidDatagroups(DedicatedFile eIdAppl) {
 		// eID DG1
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0101),
@@ -504,7 +528,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 	}
 
 	/**
-	 * Add all required authObjects to the
+	 * Add all required authObjects to the personalized object tree
 	 * 
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchProviderException

@@ -11,9 +11,10 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
-import de.persosim.simulator.apdumatching.ExtendedTagSpecification;
+import de.persosim.simulator.apdumatching.TlvSpecification;
 import de.persosim.simulator.cardobjects.AuxDataObject;
 import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.exception.VerificationException;
@@ -34,7 +35,7 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.InfoSource;
 
 @XmlRootElement
-public class AuxProtocol implements Protocol, Iso7816, InfoSource {
+public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants {
 	@XmlTransient
 	CardStateAccessor cardState;
 	
@@ -49,7 +50,7 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource {
 	}
 
 	@Override
-	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity) {
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 		return Collections.emptySet();
 	}
 	
@@ -152,8 +153,7 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource {
 		apduSpecification.setIns(INS_20_VERIFY);
 		apduSpecification.setP1((byte) 0x80);
 		apduSpecification.setP2((byte) 0x00);
-		ExtendedTagSpecification tagSpecification = new ExtendedTagSpecification(
-				(byte) 0x06);
+		TlvSpecification tagSpecification = new TlvSpecification(TAG_06);
 		apduSpecification.addTag(tagSpecification);
 		apduSpecification.setInitialApdu();
 		apdus.add(apduSpecification);

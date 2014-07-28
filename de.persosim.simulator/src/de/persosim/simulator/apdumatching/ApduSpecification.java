@@ -1,19 +1,21 @@
 package de.persosim.simulator.apdumatching;
 
-import java.util.Vector;
-
+import static de.persosim.simulator.utils.PersoSimLogger.log;
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.InterindustryCommandApdu;
 import de.persosim.simulator.exception.CommandParameterUndefinedException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvPath;
+import de.persosim.simulator.tlv.TlvTag;
 
 /**
+ * This class specifies requirements that must be met by an APDU to positively match.
+ * 
  * @author slutters
  *
  */
-public class ApduSpecification implements Iso7816, ApduSpecificationIf {
+public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 	/* The id, e.g. the name of the resembled APDU */
 	protected String id;
 	
@@ -23,12 +25,6 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 	/* ISO format as defined in ISO7816 interface */
 	protected byte isoFormat;
 	
-	/*
-	 * The content of the following variables may be widely and especially
-	 * dynamically determined by the card or the active protocol.
-	 * 
-	 * START
-	 */
 	/* Indicates whether the resembled APDU is expected to use chaining as
 	 * defined in ISO7816 interface (CHAINING_X)*/
 	protected boolean chaining;
@@ -38,9 +34,6 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 	/* Indicates which channel the resembled APDU is expected to use as
 	 * defined in ISO7816 interface (CH_X) */
 	protected byte channel;
-	/*
-	 * END
-	 */
 	
 	protected byte isoCase;
 	protected boolean isExtendedLengthLCLE;
@@ -49,7 +42,7 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 	protected byte p1;
 	protected byte p2;
 	
-	protected ExtendedTagSpecification tags;
+	protected TlvSpecificationContainer tags;
 	
 	
 	
@@ -68,106 +61,164 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 	public ApduSpecification(String id) {
 		this.id = id;
 		this.isInitialAPDU = false;
-		this.tags = new ExtendedTagSpecification();
+		this.tags = new TlvSpecificationContainer();
 	}
 	
 	/*--------------------------------------------------------------------------------*/
 	
-	public void setDefaultRequirement(byte defaultValue, boolean recursive) {
-		this.reqIsoFormat = defaultValue;
-		this.reqChaining = defaultValue;
-		this.reqSecureMessaging = defaultValue;
-		this.reqChannel = defaultValue;
-		this.reqIsoCase = defaultValue;
-		this.reqIsExtendedLengthLCLE = defaultValue;
-		this.reqIns = defaultValue;
-		this.reqP1 = defaultValue;
-		this.reqP2 = defaultValue;
-		
-		this.tags.setRequired(defaultValue, recursive);
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (chaining ? 1231 : 1237);
+		result = prime * result + channel;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ins;
+		result = prime * result + (isExtendedLengthLCLE ? 1231 : 1237);
+		result = prime * result + (isInitialAPDU ? 1231 : 1237);
+		result = prime * result + isoCase;
+		result = prime * result + isoFormat;
+		result = prime * result + p1;
+		result = prime * result + p2;
+		result = prime * result + reqChaining;
+		result = prime * result + reqChannel;
+		result = prime * result + reqIns;
+		result = prime * result + reqIsExtendedLengthLCLE;
+		result = prime * result + reqIsoCase;
+		result = prime * result + reqIsoFormat;
+		result = prime * result + reqP1;
+		result = prime * result + reqP2;
+		result = prime * result + reqSecureMessaging;
+		result = prime * result + secureMessaging;
+		result = prime * result + ((tags == null) ? 0 : tags.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ApduSpecification other = (ApduSpecification) obj;
+		if (chaining != other.chaining)
+			return false;
+		if (channel != other.channel)
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (ins != other.ins)
+			return false;
+		if (isExtendedLengthLCLE != other.isExtendedLengthLCLE)
+			return false;
+		if (isInitialAPDU != other.isInitialAPDU)
+			return false;
+		if (isoCase != other.isoCase)
+			return false;
+		if (isoFormat != other.isoFormat)
+			return false;
+		if (p1 != other.p1)
+			return false;
+		if (p2 != other.p2)
+			return false;
+		if (reqChaining != other.reqChaining)
+			return false;
+		if (reqChannel != other.reqChannel)
+			return false;
+		if (reqIns != other.reqIns)
+			return false;
+		if (reqIsExtendedLengthLCLE != other.reqIsExtendedLengthLCLE)
+			return false;
+		if (reqIsoCase != other.reqIsoCase)
+			return false;
+		if (reqIsoFormat != other.reqIsoFormat)
+			return false;
+		if (reqP1 != other.reqP1)
+			return false;
+		if (reqP2 != other.reqP2)
+			return false;
+		if (reqSecureMessaging != other.reqSecureMessaging)
+			return false;
+		if (secureMessaging != other.secureMessaging)
+			return false;
+		if (tags == null) {
+			if (other.tags != null)
+				return false;
+		} else if (!tags.equals(other.tags))
+			return false;
+		return true;
 	}
 	
-	public void setDefaultRequirement(byte defaultValue) {
-		this.setDefaultRequirement(defaultValue, RECURSIVE);
-	}
-	
-	/*--------------------------------------------------------------------------------*/
-	
-	public boolean equals(ApduSpecification otherAPDUSpecification) {
-		//XXX class implements equals but not hashCode 
-		if(!this.id.equals(otherAPDUSpecification.getId())) {return false;}
-		
-		if(this.isInitialAPDU != otherAPDUSpecification.isInitialAPDU) {return false;}
-		
-		if(this.isoFormat != otherAPDUSpecification.getIsoFormat()) {return false;};
-		if(this.reqIsoFormat != otherAPDUSpecification.getReqIsoFormat()) {return false;};
-		
-		if(this.chaining != otherAPDUSpecification.isChaining()) {return false;};
-		if(this.reqChaining != otherAPDUSpecification.getReqChaining()) {return false;};
-		
-		if(this.secureMessaging != otherAPDUSpecification.getSecureMessaging()) {return false;};
-		if(this.reqSecureMessaging != otherAPDUSpecification.getReqSecureMessaging()) {return false;};
-		
-		if(this.channel != otherAPDUSpecification.getChannel()) {return false;};
-		if(this.reqChannel != otherAPDUSpecification.getReqChannel()) {return false;};
-		
-		if(this.isoCase != otherAPDUSpecification.getIsoCase()) {return false;};
-		if(this.reqIsoCase != otherAPDUSpecification.getReqIsoCase()) {return false;};
-		
-		if(this.isExtendedLengthLCLE != otherAPDUSpecification.isExtendedLengthLCLE()) {return false;};
-		if(this.reqIsExtendedLengthLCLE != otherAPDUSpecification.getReqIsExtendedLengthLCLE()) {return false;};
-		
-		if(this.ins != otherAPDUSpecification.getIns()) {return false;};
-		if(this.reqIns != otherAPDUSpecification.getReqIns()) {return false;};
-		
-		if(this.p1 != otherAPDUSpecification.getP1()) {return false;};
-		if(this.reqP1 != otherAPDUSpecification.getReqP1()) {return false;};
-		
-		if(this.p2 != otherAPDUSpecification.getP2()) {return false;};
-		if(this.reqP2 != otherAPDUSpecification.getReqP2()) {return false;};
-		
-		if(!this.tags.equals(otherAPDUSpecification.getTags())) {return false;}
+	/**
+	 * This method performs a matching for a single provided parameter
+	 * @param name the name of the matching parameter
+	 * @param expected the expected value
+	 * @param received the received value
+	 * @param required whether this parameter is required
+	 * @return whether the provided parameter matches
+	 */
+	private boolean matchByteParameter(String name, byte expected, byte received, byte required) {
+		if(expected == received) {
+			if(required == REQ_MISMATCH) {
+				log(ApduSpecification.class, name + " must not be " + String.format("%02X", received));
+				return false;
+			}
+		} else{
+			if(required == REQ_MATCH) {
+				log(ApduSpecification.class, name + " expected to be " + String.format("%02X", expected));
+				return false;
+			}
+		}
 		
 		return true;
 	}
 	
-	//XXX let this method return only boolean and simplify several common blocks extract comparison with parameter REQ_(MIS)MATCH
-	public ApduMatchResult matchesFullAPDU(CommandApdu apdu) {
-		byte isoCase;
+	/**
+	 * This method performs a matching of the specification defined within this object against the provided {@link CommandApdu}.
+	 * The matching is positive only iff all parameters match.
+	 * Parameters match iff the received parameters are optional, equal the expected ones or do not equal parameters expected to mismatch.
+	 * @param apdu the {@link CommandApdu} to match
+	 * @return whether the specification defined within this object matches against the provided {@link CommandApdu}
+	 */
+	public boolean matchesFullApdu(CommandApdu apdu) {
+		byte isoCaseReceived;
+		boolean elementMatch;
 		
-		if(this.isoFormat == apdu.getIsoFormat()) {
-			if(this.reqIsoFormat == REQ_MISMATCH) {
-				return new ApduMatchResult(SW_6800_FUNCTION_IN_CLA_NOT_SUPPORTED, "ISO format must not be 0x" + String.format("%02X", this.isoFormat));
-			}
-		} else{
-			if(this.reqIsoFormat == REQ_MATCH) {
-				return new ApduMatchResult(SW_6800_FUNCTION_IN_CLA_NOT_SUPPORTED, "ISO format is not 0x" + String.format("%02X", this.isoFormat));
-			}
-		}
+		elementMatch = matchByteParameter("ISO format", isoFormat, apdu.getIsoFormat(), reqIsoFormat);
+		if(!elementMatch) {return false;}
 		
 		if (reqChaining != REQ_OPTIONAL) {
 			if (!(apdu instanceof InterindustryCommandApdu)) { //XXX AMY: use a marker interface to check for channel abilities to provide more generic way
-				return new ApduMatchResult(SW_6F00_UNKNOWN, "apdu class does not support channels");
+				log(ApduSpecification.class, "apdu class does not support channels");
+				return false;
 			}
 			if(this.chaining == ((InterindustryCommandApdu) apdu).isChaining()) {
 				if(this.reqChaining == REQ_MISMATCH) {
 					if(this.chaining) {
-						return new ApduMatchResult(SW_6884_COMMAND_CHAINING_NOT_SUPPORTED, "chaining is not supported");
+						log(ApduSpecification.class, "chaining is not supported");
+						return false;
 					} else{
-						return new ApduMatchResult(SW_6883_LAST_COMMAND_EXPECTED, "chaining expected");
+						log(ApduSpecification.class, "chaining expected");
+						return false;
 					}
 				}
 			} else{
 				if(this.reqChaining == REQ_MATCH) {
 					if(this.chaining) {
-						return new ApduMatchResult(SW_6883_LAST_COMMAND_EXPECTED, "chaining expected");
+						log(ApduSpecification.class, "chaining expected");
+						return false;
 					} else{
-						return new ApduMatchResult(SW_6884_COMMAND_CHAINING_NOT_SUPPORTED, "chaining is not supported");
+						log(ApduSpecification.class, "chaining is not supported");
+						return false;
 					}
 				}
 			}
 		}
-		
 		
 		if(reqSecureMessaging != REQ_OPTIONAL) {
 			CommandApdu curApdu = apdu;
@@ -177,7 +228,8 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 					if(reqSecureMessaging == REQ_MATCH) {
 						break;
 					} else {
-						return new ApduMatchResult(SW_6F00_UNKNOWN, "SM mismatch not fulfilled");
+						log(ApduSpecification.class, "SM mismatch not fulfilled");
+						return false;
 					}
 				}
 				
@@ -188,89 +240,60 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 		
 		if (reqChannel != REQ_OPTIONAL) {
 			if (!(apdu instanceof InterindustryCommandApdu)) { //XXX use a marker interface to check for channel abilities to provide more generic way
-				return new ApduMatchResult(SW_6F00_UNKNOWN, "apdu class does not support channels");
+				log(ApduSpecification.class, "apdu class does not support channels");
+				return false;
 			}
-			if(this.channel == ((InterindustryCommandApdu) apdu).getChannel()) {
-				if(this.reqChannel == REQ_MISMATCH) {
-					return new ApduMatchResult(SW_6881_LOGICAL_CHANNEL_NOT_SUPPORTED, "channel must not be " + this.channel);
-				}
-			} else{
-				if(this.reqChannel == REQ_MATCH) {
-					return new ApduMatchResult(SW_6881_LOGICAL_CHANNEL_NOT_SUPPORTED, "channel expected to be " + this.channel);
-				}
-			}
+			
+			elementMatch = matchByteParameter("channel", channel, ((InterindustryCommandApdu) apdu).getChannel(), reqChannel);
+			if(!elementMatch) {return false;}
 			
 		}
 		
+		elementMatch = matchByteParameter("INS byte", ins, apdu.getIns(), reqIns);
+		if(!elementMatch) {return false;}
 		
-		if(this.ins == apdu.getIns()) {
-			if(this.reqIns == REQ_MISMATCH) {
-				return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "INS byte must not be " + String.format("%02X", this.ins));
-			}
-		} else{
-			if(this.reqIns == REQ_MATCH) {
-				return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "INS byte expected to be " + String.format("%02X", this.ins));
-			}
-		}
+		elementMatch = matchByteParameter("P1 byte", p1, apdu.getP1(), reqP1);
+		if(!elementMatch) {return false;}
 		
-		if(this.p1 == apdu.getP1()) {
-			if(this.reqP1 == REQ_MISMATCH) {
-				return new ApduMatchResult(SW_6A86_INCORRECT_PARAMETERS_P1P2, "P1 byte must not be " + String.format("%02X", this.p1));
-			}
-		} else{
-			if(this.reqP1 == REQ_MATCH) {
-				return new ApduMatchResult(SW_6A86_INCORRECT_PARAMETERS_P1P2, "P1 byte expected to be " + String.format("%02X", this.p1));
-			}
-		}
+		elementMatch = matchByteParameter("P2 byte", p2, apdu.getP2(), reqP2);
+		if(!elementMatch) {return false;}
 		
-		if(this.p2 == apdu.getP2()) {
-			if(this.reqP2 == REQ_MISMATCH) {
-				return new ApduMatchResult(SW_6A86_INCORRECT_PARAMETERS_P1P2, "P2 byte must not be " + String.format("%02X", this.p2));
-			}
-		} else{
-			if(this.reqP2 == REQ_MATCH) {
-				return new ApduMatchResult(SW_6A86_INCORRECT_PARAMETERS_P1P2, "P2 byte expected to be " + String.format("%02X", this.p2));
-			}
-		}
+		isoCaseReceived = apdu.getIsoCase();
 		
-		isoCase = apdu.getIsoCase();
-		
-		if(this.isoCase == isoCase) {
-			if(this.reqIsoCase == REQ_MISMATCH) {
-				return new ApduMatchResult(SW_6700_WRONG_LENGTH, "ISO case must not be " + String.format("%02X", this.isoCase));
-			}
-		} else{
-			if(this.reqIsoCase == REQ_MATCH) {
-				return new ApduMatchResult(SW_6700_WRONG_LENGTH, "ISO case expected to be " + String.format("%02X", this.isoCase));
-			}
-		}
+		elementMatch = matchByteParameter("ISO case", isoCase, isoCaseReceived, reqIsoCase);
+		if(!elementMatch) {return false;}
 		
 		if (reqIsExtendedLengthLCLE != REQ_OPTIONAL) {
-			if (isoCase == 1) {
-				return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "unable to determine extended length for iso case 1 apdu");
+			if (isoCaseReceived == 1) {
+				log(ApduSpecification.class, "unable to determine extended length for iso case 1 apdu");
+				return false;
 			}
 			
 			if(this.isExtendedLengthLCLE == apdu.isExtendedLength()) {
 				if(this.reqIsExtendedLengthLCLE == REQ_MISMATCH) {
 					if(this.isExtendedLengthLCLE) {
-						return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "extended length L_C/L_E fields must not be used");
+						log(ApduSpecification.class, "extended length L_C/L_E fields must not be used");
+						return false;
 					} else{
-						return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "extended length L_C/L_E fields expected");
+						log(ApduSpecification.class, "extended length L_C/L_E fields expected");
+						return false;
 					}
 				}
 			} else{
 				if(this.reqIsExtendedLengthLCLE == REQ_MATCH) {
 					if(this.isExtendedLengthLCLE) {
-						return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "extended length L_C/L_E fields expected");
+						log(ApduSpecification.class, "extended length L_C/L_E fields expected");
+						return false;
 					} else{
-						return new ApduMatchResult(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "extended length L_C/L_E fields must not be used");
+						log(ApduSpecification.class, "extended length L_C/L_E fields must not be used");
+						return false;
 					}
 				}
 			}
 			
 		}
 		
-		if (!this.tags.isEmpty()) {
+		if (!tags.isEmpty()) {
 			
 			TlvDataObjectContainer constructedDataField;
 			
@@ -279,19 +302,15 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 			try {
 				constructedDataField = new TlvDataObjectContainer(commandDataBytes, 0, commandDataBytes.length);
 				
-				TagMatchResult tagMatchResult = this.tags.matches(constructedDataField, STRICT_ORDER);
-				
-				if(!tagMatchResult.isMatch()) {
-					return new ApduMatchResult(tagMatchResult.getProposedStatusWord(), tagMatchResult.getAdditionalInfo());
-				}
-				
+				return tags.matches(constructedDataField);
 			} catch (IllegalArgumentException e) {
-				return new ApduMatchResult(SW_6A80_WRONG_DATA, "command data field does not contain TLV constructed data");
+				log(ApduSpecification.class, "command data field does not contain TLV constructed data");
+				return false;
 			}
 					
 		}
 		
-		return new ApduMatchResult();
+		return true;
 	}
 	
 	/*--------------------------------------------------------------------------------*/
@@ -490,91 +509,22 @@ public class ApduSpecification implements Iso7816, ApduSpecificationIf {
 	/**
 	 * @return the tags
 	 */
-	public ExtendedTagSpecification getTags() {
+	public TlvSpecificationContainer getTags() {
 		return tags;
-	}
-
-	/**
-	 * @param tags the tags to set
-	 */
-	public void setTags(ExtendedTagSpecification tags) {
-		this.tags = tags;
 	}
 	
 	/*--------------------------------------------------------------------------------*/
 	
-	public void addTag(Vector<byte[]> path, ExtendedTagSpecification eTagSpec) {
-		this.tags.addSubTag(path, eTagSpec);
+	public void addTag(TlvPath path, TlvSpecification eTagSpec) {
+		this.tags.add(path.clone(), eTagSpec);
 	}
 	
-	public void addTag(TlvPath path, ExtendedTagSpecification eTagSpec) {
-		this.tags.addSubTag(path.clone(), eTagSpec);
+	public void addTag(TlvSpecification eTagSpec) {
+		this.tags.add(eTagSpec);
 	}
 	
-	public void addTag(ExtendedTagSpecification eTagSpec) {
-		this.tags.addSubTag(eTagSpec);
-	}
-	
-	
-	
-	public void addTag(Vector<byte[]> path, byte[] tag, byte req) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag, req));
-	}
-
-	public void addTag(Vector<byte[]> path, byte[] tag) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag));
-	}
-	
-	public void addTag(byte[] tag, byte req) {
-		this.tags.addSubTag(new SimpleTagSpecification(tag, req));
-	}
-	
-	public void addTag(byte[] tag) {
-		this.tags.addSubTag(new SimpleTagSpecification(tag));
-	}
-	
-	
-	
-	public void addTag(Vector<byte[]> path, short tag, byte req) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag, req));
-	}
-	
-	public void addTag(Vector<byte[]> path, short tag) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag));
-	}
-	
-	public void addTag(TlvPath path, short tag) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag));
-	}
-	
-	public void addTag(short tag, byte req) {
-		this.tags.addSubTag(new SimpleTagSpecification(tag, req));
-	}
-	
-	public void addTag(short tag) {
-		this.tags.addSubTag(new SimpleTagSpecification(tag));
-	}
-	
-	
-	
-	public void addTag(Vector<byte[]> path, byte tag, byte req) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag, req));
-	}
-	
-	public void addTag(Vector<byte[]> path, byte tag) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag));
-	}
-	
-	public void addTag(TlvPath path, byte tag) {
-		this.tags.addSubTag(path, new SimpleTagSpecification(tag));
-	}
-	
-	public void addTag(byte tag, byte req) {
-		this.tags.addSubTag(new SimpleTagSpecification(tag, req));
-	}
-	
-	public void addTag(byte tag) {
-		this.tags.addSubTag(new SimpleTagSpecification(tag));
+	public void addTag(TlvTag tag) {
+		addTag(new TlvSpecification(tag));
 	}
 
 	/*--------------------------------------------------------------------------------*/

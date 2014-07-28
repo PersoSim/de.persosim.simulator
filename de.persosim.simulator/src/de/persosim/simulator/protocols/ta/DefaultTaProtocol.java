@@ -6,9 +6,9 @@ package de.persosim.simulator.protocols.ta;
  */
  @SuppressWarnings("all")//generated code 
 
-/* Command line options: -verbose -p EA -o DefaultTaProtocol -l java -t TA:taclass C:\develop\eclipse-persosim\git\de.persosim.models\exported\protocol_ta.xml   */
+/* Command line options: -verbose -p EA -o DefaultTaProtocol -l java -t TA:taclass C:\develop\wd\protocol_ta.xml   */
 /* This file is generated from protocol_ta.xml - do not edit manually  */
-/* Generated on: Mon Jun 16 09:32:43 CEST 2014 / version 3.52beta2 */
+/* Generated on: Mon Jul 07 16:46:09 CEST 2014 / version 3.52beta2 */
 
 
 
@@ -266,10 +266,10 @@ public class DefaultTaProtocol extends AbstractTaProtocol
 						apduSpecification.setIns(INS_2A_PERFORM_SECURITY_OPERATION);
 						apduSpecification.setP1((byte) 0x00);
 						apduSpecification.setP2((byte) 0xBE);
-						createNewTagSpecification((short) 0x7F4E);
+						createNewTagSpecification(TAG_7F4E);
 						tagSpecification.setAllowUnspecifiedSubTags(true);
 						apduSpecification.addTag(tagSpecification);
-						createNewTagSpecification((short) 0x5F37);
+						createNewTagSpecification(TAG_5F37);
 						tagSpecification.setAllowUnspecifiedSubTags(true);
 						apduSpecification.addTag(tagSpecification);
 						registerApduSpecification(apduSpecification);
@@ -295,16 +295,16 @@ public class DefaultTaProtocol extends AbstractTaProtocol
 						apduSpecification.setIns(INS_22_MANAGE_SECURITY_ENVIRONMENT);
 						apduSpecification.setP1((byte) 0x81);
 						apduSpecification.setP2((byte) 0xA4);
-						createNewTagSpecification((byte) 0x80);
+						createNewTagSpecification(TAG_80);
 						apduSpecification.addTag(tagSpecification);
-						createNewTagSpecification((byte) 0x83);
+						createNewTagSpecification(TAG_83);
 						apduSpecification.addTag(tagSpecification);
-						createNewTagSpecification((byte) 0x67);
-						tagSpecification.setRequired(REQ_OPTIONAL ,false);
+						createNewTagSpecification(TAG_67);
+						tagSpecification.setRequired(REQ_OPTIONAL);
 						tagSpecification.setAllowUnspecifiedSubTags(true);
 						apduSpecification.addTag(tagSpecification);
-						createNewTagSpecification((byte) 0x91);
-						tagSpecification.setRequired(REQ_OPTIONAL,false);
+						createNewTagSpecification(TAG_91);
+						tagSpecification.setRequired(REQ_OPTIONAL);
 						apduSpecification.addTag(tagSpecification);
 						registerApduSpecification(apduSpecification);
 
@@ -329,7 +329,7 @@ public class DefaultTaProtocol extends AbstractTaProtocol
 						apduSpecification.setIns(INS_22_MANAGE_SECURITY_ENVIRONMENT);
 						apduSpecification.setP1((byte) 0x81);
 						apduSpecification.setP2((byte) 0xB6);
-						createNewTagSpecification((byte) 0x83);
+						createNewTagSpecification(TAG_83);
 						apduSpecification.addTag(tagSpecification);
 						registerApduSpecification(apduSpecification);
 
