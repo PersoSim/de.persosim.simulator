@@ -42,7 +42,6 @@ import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
 import de.persosim.simulator.securemessaging.SmDataProviderTr03110;
-import de.persosim.simulator.tlv.Asn1;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -51,7 +50,6 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvPath;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.tlv.TlvValue;
-import de.persosim.simulator.tlv.TlvValuePlain;
 import de.persosim.simulator.utils.HexString;
 
 /**
@@ -350,8 +348,11 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 		HashSet<TlvDataObject> secInfos = new HashSet<TlvDataObject>();
 		
-		for (CardObject curKeym : caKeyCardObjects) {
-			Collection<CardObjectIdentifier> identifiers = curKeym.getAllIdentifiers();
+		for (CardObject curKey : caKeyCardObjects) {
+			if (! (curKey instanceof KeyObject)) {
+				continue;
+			}
+			Collection<CardObjectIdentifier> identifiers = curKey.getAllIdentifiers();
 			
 			//extract key reference
 			int keyRef = -1;
@@ -363,10 +364,14 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			}
 			if (keyRef == -1) continue;
 			
-			//construct and add CaInfo
+			//cached values
+			byte[] genericCaOidBytes = null;
+			
+			//construct and add CaInfos
 			for (CardObjectIdentifier curIdentifier : identifiers) {
 				if (caOidIdentifier.matches(curIdentifier)) {
 					byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
+					genericCaOidBytes = Arrays.copyOfRange(oidBytes, 0, 9);
 					
 					ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
@@ -377,39 +382,32 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 				}
 			}
 			
-			//TODO add CaDomainParameterInfo
+			ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(((KeyObject) curKey).getKeyPair().getPublic().getEncoded());
+			ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTagField(TAG_SEQUENCE);
+			
+			//XXX AMY simplify algorithmIdentifer (using standardized domain parameters) if applicable
+			
+			// add CaDomainParameterInfo
+			ConstructedTlvDataObject caDomainInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+			caDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericCaOidBytes));
+			caDomainInfo.addTlvDataObject(algIdentifier);
+			secInfos.add(caDomainInfo);
+			
 			//TODO add CaPublicKeyInfo
+
+			ConstructedTlvDataObject caPublicKeyInfo = new ConstructedTlvDataObject(HexString.toByteArray("305F060904007F0007020201023052300C060704007F0007010202010D03420004A44EBE5451DF7AADB01E459B8C928A87746A57927C8C28A6775C97A7E1FE8D9A46FF4A1CC7E4D1389AEA19758E4F75C28C598FD734AEBEB135337CF95BE12E94"));
+			secInfos.add(caPublicKeyInfo);
+
+			//FIXME remove debuggig code below
+			System.out.println("aaa");
+			System.out.println(HexString.encode(caPublicKeyInfo.toByteArray()));
+			System.out.println(HexString.encode(((KeyObject) curKey).getKeyPair().getPublic().getEncoded()));
+			System.out.println("aaa");
+			
 			//TODO handle privilegedTerminalInfo
 			//TODO handle duplicates?
 		}
 		
-		
-		// FIXME CaDomainParameterInfo should not be declared static
-		ConstructedTlvDataObject caDomainInfo = new ConstructedTlvDataObject(
-				new TlvTag(Asn1.SEQUENCE));
-
-		PrimitiveTlvDataObject caDomainOid = new PrimitiveTlvDataObject(
-				new TlvTag(Asn1.OBJECT_IDENTIFIER),
-				new TlvValuePlain(HexString
-						.toByteArray("04 00 7F 00 07 02 02 03 02")));
-		
-		ConstructedTlvDataObject caDomainSeq = new ConstructedTlvDataObject(
-				new TlvTag(Asn1.SEQUENCE));
-		caDomainSeq.addTlvDataObject(new PrimitiveTlvDataObject(
-				new TlvTag(Asn1.OBJECT_IDENTIFIER),
-				new TlvValuePlain(HexString
-						.toByteArray("04 00 7F 00 07 01 02 "))));
-		caDomainSeq.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag(Asn1.INTEGER),
-				new TlvValuePlain(new byte[] { 0x0d })));
-		
-		
-		caDomainInfo.addTlvDataObject(caDomainOid);
-		caDomainInfo.addTlvDataObject(caDomainSeq);
-		secInfos.add(caDomainInfo);
-		
-		//FIXME CaPublicKeyInfo should not be static
-		ConstructedTlvDataObject caPublicKeyInfo = new ConstructedTlvDataObject(HexString.toByteArray("305F060904007F0007020201023052300C060704007F0007010202010D03420004A44EBE5451DF7AADB01E459B8C928A87746A57927C8C28A6775C97A7E1FE8D9A46FF4A1CC7E4D1389AEA19758E4F75C28C598FD734AEBEB135337CF95BE12E94"));
-		secInfos.add(caPublicKeyInfo);
 		return secInfos;
 	}
 	
