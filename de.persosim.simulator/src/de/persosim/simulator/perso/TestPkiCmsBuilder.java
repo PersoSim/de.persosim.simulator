@@ -1,5 +1,13 @@
 package de.persosim.simulator.perso;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+
+import javax.smartcardio.CardException;
+
+import de.persosim.cardsigner.CardSigner;
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
 
 /**
@@ -17,17 +25,40 @@ import de.persosim.simulator.tlv.TlvDataObject;
  * 
  */
 public class TestPkiCmsBuilder extends DefaultSecInfoCmsBuilder {
+	
+	private CardSigner cardSigner;
+		
+	public TestPkiCmsBuilder() {
+		cardSigner = new CardSigner();
+	}
 
 	@Override
 	protected TlvDataObject getCertificate() {
-		// TODO Auto-generated method stub
-		return super.getCertificate();
+		
+		try {
+			return new ConstructedTlvDataObject(cardSigner.getDSCertificate());
+		} catch (CardException | IOException e) {
+			return super.getCertificate();
+		}
+		
 	}
 
 	@Override
 	protected byte[] getSignature(byte[] sigInput) {
-		// TODO Auto-generated method stub
-		return super.getSignature(sigInput);
+		
+		
+		String algorithm = "SHA224"; //TODO Get digest algorithm by parsing getDigestAlgorithm()
+		byte[] signature = null;
+		
+		try {
+			signature = cardSigner.getSignature(sigInput);
+		} catch (CardException | NoSuchAlgorithmException | NoSuchProviderException e) {
+			super.getSignature(sigInput);
+		}
+		return signature;
+		
 	}
+	
+	
 
 }
