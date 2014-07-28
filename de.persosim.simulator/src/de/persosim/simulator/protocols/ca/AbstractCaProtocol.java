@@ -355,15 +355,15 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			}
 			Collection<CardObjectIdentifier> identifiers = curKey.getAllIdentifiers();
 			
-			//extract key reference
-			int keyRef = -1;
+			//extract keyId
+			int keyId = -1;
 			for (CardObjectIdentifier curIdentifier : identifiers) {
 				if (curIdentifier instanceof KeyIdentifier) {
-					keyRef = ((KeyIdentifier) curIdentifier).getKeyReference();
+					keyId = ((KeyIdentifier) curIdentifier).getKeyReference();
 					break;
 				}
 			}
-			if (keyRef == -1) continue;
+			if (keyId == -1) continue;
 			
 			//cached values
 			byte[] genericCaOidBytes = null;
@@ -377,7 +377,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 					ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
 					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{2}));
-					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyRef}));
+					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 					
 					secInfos.add(caInfo);					
 				}
@@ -406,7 +406,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 				ConstructedTlvDataObject caPublicKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Utils.concatByteArrays(TR03110.id_PK, new byte[] {genericCaOidBytes[8]})));
 				caPublicKeyInfo.addTlvDataObject(subjPubKeyInfo);
-				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyRef}));
+				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 				secInfos.add(caPublicKeyInfo);
 			}
 			
