@@ -353,7 +353,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		for (CardObject curKeym : caKeyCardObjects) {
 			Collection<CardObjectIdentifier> identifiers = curKeym.getAllIdentifiers();
 			
-			//extract domainParameterId
+			//extract key reference
 			int keyRef = -1;
 			for (CardObjectIdentifier curIdentifier : identifiers) {
 				if (curIdentifier instanceof KeyIdentifier) {
@@ -368,12 +368,12 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 				if (caOidIdentifier.matches(curIdentifier)) {
 					byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
 					
-					ConstructedTlvDataObject paceInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
-					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{2}));
-					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyRef}));
+					ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
+					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{2}));
+					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyRef}));
 					
-					secInfos.add(paceInfo);					
+					secInfos.add(caInfo);					
 				}
 			}
 			
