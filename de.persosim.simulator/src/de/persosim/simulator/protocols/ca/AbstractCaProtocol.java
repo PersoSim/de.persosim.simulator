@@ -401,14 +401,15 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			subjPubKeyInfo.addTlvDataObject(algIdentifier);
 			subjPubKeyInfo.addTlvDataObject(subjPubKey);
 			
-			//add CaPublicKeyInfo
-			ConstructedTlvDataObject caPublicKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-			caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Utils.concatByteArrays(TR03110.id_PK, new byte[] {genericCaOidBytes[8]})));
-			caPublicKeyInfo.addTlvDataObject(subjPubKeyInfo);
-			caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyRef}));
-			secInfos.add(caPublicKeyInfo);
+			if ((publicity == SecInfoPublicity.AUTHENTICATED) || (publicity == SecInfoPublicity.PRIVILEGED)) {
+				//add CaPublicKeyInfo
+				ConstructedTlvDataObject caPublicKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Utils.concatByteArrays(TR03110.id_PK, new byte[] {genericCaOidBytes[8]})));
+				caPublicKeyInfo.addTlvDataObject(subjPubKeyInfo);
+				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyRef}));
+				secInfos.add(caPublicKeyInfo);
+			}
 			
-			//FIXME handle param publicity correctly 
 			//TODO handle privilegedTerminalInfo
 			//TODO handle duplicates?
 		}
