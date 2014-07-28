@@ -6,7 +6,7 @@ import java.security.NoSuchProviderException;
 
 import javax.smartcardio.CardException;
 
-import de.persosim.cardsigner.CardSigner;
+import de.persosim.simulator.perso.dscardsigner.CardSigner;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
 
@@ -47,11 +47,11 @@ public class TestPkiCmsBuilder extends DefaultSecInfoCmsBuilder {
 	protected byte[] getSignature(byte[] sigInput) {
 		
 		
-		String algorithm = "SHA224"; //TODO Get digest algorithm by parsing getDigestAlgorithm()
+		String digestAlgorithm = "SHA224"; //TODO Get digest algorithm by parsing getDigestAlgorithm()
 		byte[] signature = null;
 		
 		try {
-			signature = cardSigner.getSignature(sigInput);
+			signature = cardSigner.getSignature(digestAlgorithm, sigInput);
 		} catch (CardException | NoSuchAlgorithmException | NoSuchProviderException e) {
 			super.getSignature(sigInput);
 		}
