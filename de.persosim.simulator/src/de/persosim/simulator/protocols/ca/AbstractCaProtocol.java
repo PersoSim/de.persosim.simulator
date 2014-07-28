@@ -51,6 +51,7 @@ import de.persosim.simulator.tlv.TlvPath;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 /**
  * This class is part of the implementation of the Chip Authentication (CA)
@@ -382,28 +383,32 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 				}
 			}
 			
+			//extract required data from curKey
 			ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(((KeyObject) curKey).getKeyPair().getPublic().getEncoded());
 			ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTagField(TAG_SEQUENCE);
+			TlvDataObject subjPubKey = encKey.getTagField(TAG_BIT_STRING);
 			
 			//XXX AMY simplify algorithmIdentifer (using standardized domain parameters) if applicable
 			
-			// add CaDomainParameterInfo
+			//add CaDomainParameterInfo
 			ConstructedTlvDataObject caDomainInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 			caDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericCaOidBytes));
 			caDomainInfo.addTlvDataObject(algIdentifier);
 			secInfos.add(caDomainInfo);
 			
-			//TODO add CaPublicKeyInfo
-
-			ConstructedTlvDataObject caPublicKeyInfo = new ConstructedTlvDataObject(HexString.toByteArray("305F060904007F0007020201023052300C060704007F0007010202010D03420004A44EBE5451DF7AADB01E459B8C928A87746A57927C8C28A6775C97A7E1FE8D9A46FF4A1CC7E4D1389AEA19758E4F75C28C598FD734AEBEB135337CF95BE12E94"));
-			secInfos.add(caPublicKeyInfo);
-
-			//FIXME remove debuggig code below
-			System.out.println("aaa");
-			System.out.println(HexString.encode(caPublicKeyInfo.toByteArray()));
-			System.out.println(HexString.encode(((KeyObject) curKey).getKeyPair().getPublic().getEncoded()));
-			System.out.println("aaa");
+			//build SubjectPublicKeyInfo
+			ConstructedTlvDataObject subjPubKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+			subjPubKeyInfo.addTlvDataObject(algIdentifier);
+			subjPubKeyInfo.addTlvDataObject(subjPubKey);
 			
+			//add CaPublicKeyInfo
+			ConstructedTlvDataObject caPublicKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+			caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Utils.concatByteArrays(TR03110.id_PK, new byte[] {genericCaOidBytes[8]})));
+			caPublicKeyInfo.addTlvDataObject(subjPubKeyInfo);
+			caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyRef}));
+			secInfos.add(caPublicKeyInfo);
+			
+			//FIXME handle param publicity correctly 
 			//TODO handle privilegedTerminalInfo
 			//TODO handle duplicates?
 		}

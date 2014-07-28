@@ -36,6 +36,7 @@ public interface TlvConstants {
 	public static final TlvTag TAG_7F4E = new TlvTag(new byte []{0x7F, 0x4E});
 
 	public static final TlvTag TAG_INTEGER = new TlvTag(Asn1.INTEGER);
+	public static final TlvTag TAG_BIT_STRING = new TlvTag(Asn1.BIT_STRING);
 	public static final TlvTag TAG_OCTET_STRING = new TlvTag(Asn1.OCTET_STRING);
 	public static final TlvTag TAG_OID = new TlvTag(Asn1.OBJECT_IDENTIFIER);
 	public static final TlvTag TAG_SEQUENCE = new TlvTag(Asn1.SEQUENCE);
