@@ -58,6 +58,7 @@ public interface Asn1 {
 
 	// Tags frequently used within PersoSim (this list should be extended when needed)
 	public static final byte INTEGER = UNIVERSAL_INTEGER;
+	public static final byte BIT_STRING = UNIVERSAL_BIT_STRING;
 	public static final byte OCTET_STRING = UNIVERSAL_OCTET_STRING;
 	public static final byte OBJECT_IDENTIFIER = UNIVERSAL_OBJECT_IDENTIFIER;
 	public static final byte SEQUENCE = ENCODING_CONSTRUCTED | UNIVERSAL_SEQUENCE;
