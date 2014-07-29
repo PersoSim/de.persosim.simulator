@@ -586,7 +586,19 @@ public class DefaultTaProtocol extends AbstractTaProtocol
 							break; /* end of case TA_PSO_RECEIVED  */
 
 							case TA_SET_AT_PROCESSED:
-								if(isAPDU("Get Challenge")){
+								if(hasChallenge()){
+									/* We already received a Get Challenge before the  MSE:Set DST. */
+									if(isAPDU("External Authenticate")){
+										/* Transition from TA_SET_AT_PROCESSED to TA_EXTERNAL_AUTHENTICATE_RECEIVED */
+										evConsumed=16;
+
+										/* OnEntry code of state TA_EXTERNAL_AUTHENTICATE_RECEIVED */
+										processCommandExternalAuthenticate();
+
+										/* adjust state variables  */
+										stateVarTA_IN_PROGRESS =  TA_EXTERNAL_AUTHENTICATE_RECEIVED;
+									}
+								}else if(isAPDU("Get Challenge")){
 									/* Transition from TA_SET_AT_PROCESSED to TA_GET_CHALLENGE_RECEIVED */
 									evConsumed=16;
 
