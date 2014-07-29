@@ -93,7 +93,6 @@ public class SigAnimaCardHandler {
     public byte[] getFile(short fid) throws IOException, CardException   {
 
         byte[] content = null;
-        // synchronized (getClass()) { // select and read (sync done in host)
             if (sendSelectFile(fid)) {
                 byte[] firstBytes = sendReadBinary((byte) 0, (byte) 0, (byte) 0x8);
                 if (firstBytes.length > 0) {
@@ -101,7 +100,6 @@ public class SigAnimaCardHandler {
                     content = readFile(fileLength);
                 }
             }
-        // }
         return content;
     }
 

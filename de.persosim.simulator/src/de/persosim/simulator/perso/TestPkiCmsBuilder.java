@@ -35,28 +35,30 @@ public class TestPkiCmsBuilder extends DefaultSecInfoCmsBuilder {
 	@Override
 	protected TlvDataObject getCertificate() {
 		
+		byte[] dsCertBytes = null;
+		
 		try {
-			return new ConstructedTlvDataObject(cardSigner.getDSCertificate());
+			dsCertBytes = cardSigner.getDSCertificate();
+			if (dsCertBytes==null) return super.getCertificate();
+			else return new ConstructedTlvDataObject(dsCertBytes);
 		} catch (CardException | IOException e) {
 			return super.getCertificate();
 		}
-		
 	}
 
 	@Override
-	protected byte[] getSignature(byte[] sigInput) {
-		
+	protected byte[] getSignature(byte[] sigInput) {	
 		
 		String digestAlgorithm = "SHA224"; //TODO Get digest algorithm by parsing getDigestAlgorithm()
 		byte[] signature = null;
 		
 		try {
 			signature = cardSigner.getSignature(digestAlgorithm, sigInput);
+			if (signature==null) signature = super.getSignature(sigInput);
 		} catch (CardException | NoSuchAlgorithmException | NoSuchProviderException e) {
-			super.getSignature(sigInput);
+			return super.getSignature(sigInput);
 		}
 		return signature;
-		
 	}
 	
 	

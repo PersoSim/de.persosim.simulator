@@ -133,7 +133,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 			ConstructedTlvDataObject secInfos) {
 		
 		TlvDataObject oidTlv = new PrimitiveTlvDataObject(TAG_OID, 
-		HexString.toByteArray("09 2A 86  48 86 F7 0D 01 07 02"));
+		HexString.toByteArray("2A 86  48 86 F7 0D 01 07 02"));
 		
 		ConstructedTlvDataObject cmsContainer = new ConstructedTlvDataObject(TAG_A0);
 		cmsContainer.addTlvDataObject(cmsBuilder.buildSignedData(secInfos));
