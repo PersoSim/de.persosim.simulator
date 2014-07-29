@@ -26,6 +26,7 @@ import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.HexString;
@@ -416,6 +417,13 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	@Override
 	public ECParameterSpec getKeySpec() {
 		return ecParameterSpec;
+	}
+
+	@Override
+	public ConstructedTlvDataObject getAlgorithmIdentifier() {
+		ConstructedTlvDataObject retVal = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
+		// FIXME AMY fill AlgorithmIdentifier with content 
+		return retVal;
 	}
 	
 }

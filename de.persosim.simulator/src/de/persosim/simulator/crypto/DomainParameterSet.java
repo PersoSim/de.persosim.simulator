@@ -8,6 +8,7 @@ import java.security.PublicKey;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.KeySpec;
 
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
 
 /**
@@ -89,5 +90,11 @@ public interface DomainParameterSet {
 	 * @return an {@link AlgorithmParameterSpec} representation of this object
 	 */
 	public abstract AlgorithmParameterSpec getKeySpec();
+
+	/**
+	 * Return an AlgorithmIdentifier ASN1 representation of this object. 
+	 * @return an AlgorithmIdentifier ASN1 representation of this object.
+	 */
+	public abstract ConstructedTlvDataObject getAlgorithmIdentifier();
 	
 }

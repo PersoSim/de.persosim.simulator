@@ -4,8 +4,11 @@ import java.math.BigInteger;
 import java.security.spec.ECFieldFp;
 import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
+import java.util.HashMap;
 
+import de.persosim.simulator.protocols.TR03110;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+import de.persosim.simulator.utils.Utils;
 
 /**
  * This class provides static access to PACE standardized domain parameters.
@@ -14,6 +17,8 @@ import de.persosim.simulator.tlv.ConstructedTlvDataObject;
  *
  */
 public class StandardizedDomainParameters {
+	public static final byte[] OID = Utils.appendBytes(TR03110.id_BSI, (byte) 0x01, (byte) 0x02);
+	
 	public static final int NO_OF_STANDARDIZED_DOMAIN_PARAMETERS = 32;
 	
 	// START DH
@@ -126,7 +131,7 @@ public class StandardizedDomainParameters {
 	static final BigInteger P521_Q = new BigInteger("01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409",16);
 	static final BigInteger P521_H = new BigInteger("01",16);
 	// END ECDH
-	
+
 	/*--------------------------------------------------------------------------------*/
 	
 	static public DomainParameterSet getDomainParameterSetById(int id){
@@ -192,6 +197,16 @@ public class StandardizedDomainParameters {
 		return new EllipticCurve(new ECFieldFp(p), a, b);
 	}
 
+	
+	private static HashMap<String, Integer> algIdentifierMapping = null;
+
+	private static void initAlgIdentifierMapping() {
+		algIdentifierMapping = new HashMap<>();
+		
+		algIdentifierMapping.put("", 0x13);//FIXME AMY add correct key here 
+	}
+	
+	
 	/**
 	 * Simplify the given AlgorithmIdentifier using standardized domain
 	 * parameters if possible
@@ -207,6 +222,9 @@ public class StandardizedDomainParameters {
 	 */
 	public static ConstructedTlvDataObject simplifyAlgorithmIdentifier(
 			ConstructedTlvDataObject algIdentifier) {
+		if (algIdentifierMapping == null) {
+			initAlgIdentifierMapping();
+		} 
 		// FIXME AMY Auto-generated method stub
 		return algIdentifier;
 	}
