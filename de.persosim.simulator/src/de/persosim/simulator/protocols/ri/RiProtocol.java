@@ -26,6 +26,7 @@ import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.crypto.Crypto;
+import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.VerificationException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
@@ -130,7 +131,9 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 				//extract required data from curKey
 				ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(((KeyObject) curKey).getKeyPair().getPublic().getEncoded());
 				ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTagField(TAG_SEQUENCE);
-				//XXX AMY simplify algorithmIdentifer (using standardized domain parameters) if applicable
+				
+				//using standardized domain parameters if possible
+				algIdentifier = StandardizedDomainParameters.simplifyAlgorithmIdentifier(algIdentifier);
 				
 				//add RiDomainParameterInfo
 				ConstructedTlvDataObject riDomainInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);

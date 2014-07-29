@@ -5,6 +5,8 @@ import java.security.spec.ECFieldFp;
 import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
 
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+
 /**
  * This class provides static access to PACE standardized domain parameters.
  * 
@@ -188,6 +190,25 @@ public class StandardizedDomainParameters {
 	 */
 	static private EllipticCurve generateCurveFrom(BigInteger p, BigInteger a, BigInteger b) {
 		return new EllipticCurve(new ECFieldFp(p), a, b);
+	}
+
+	/**
+	 * Simplify the given AlgorithmIdentifier using standardized domain
+	 * parameters if possible
+	 * <p/>
+	 * Returns a new AlgorithmIdentifer describing the povided input using OID
+	 * bsi-de 1 2 and an integer identifiing the used domain parameter set.
+	 * <p/>
+	 * If the provided input does not match any known standardized domain
+	 * parameters the input is returned without further checking.
+	 * 
+	 * @param algIdentifier
+	 * @return
+	 */
+	public static ConstructedTlvDataObject simplifyAlgorithmIdentifier(
+			ConstructedTlvDataObject algIdentifier) {
+		// FIXME AMY Auto-generated method stub
+		return algIdentifier;
 	}
 	
 }
