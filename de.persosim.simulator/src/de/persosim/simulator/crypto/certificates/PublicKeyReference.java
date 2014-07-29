@@ -127,6 +127,15 @@ public class PublicKeyReference {
 
 	@Override
 	public String toString() {
-		return "[" + getCountryCode() + "|" + getHolderMnemonic() + "|" + getSequenceNumber() +"]";
+		return toString("[", "|", "]");
 	}
+	
+	public String toUnformattedString() {
+		return toString("", "", "");
+	}
+	
+	public String toString(String deliminatorOpen, String separator, String deliminatorClose) {
+		return deliminatorOpen + getCountryCode() + separator + getHolderMnemonic() + separator + getSequenceNumber() + deliminatorClose;
+	}
+	
 }
