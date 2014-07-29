@@ -27,8 +27,21 @@ public class StandardizedDomainParametersTest extends PersoSimTestCase {
 			expectedAlgIdentifier.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OID, StandardizedDomainParameters.OID));
 			expectedAlgIdentifier.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, new byte[]{i}));
 			
-			assertEquals(expectedAlgIdentifier, StandardizedDomainParameters.simplifyAlgorithmIdentifier(domParams.getAlgorithmIdentifier()));
+			assertEquals("Standardized domainparameters " + i + " are not returned correctly" , expectedAlgIdentifier, StandardizedDomainParameters.simplifyAlgorithmIdentifier(domParams.getAlgorithmIdentifier()));
 		}
+	}
+	
+	/**
+	 * Negative test: check that an unknown AlgorithmIdentifier (syntactically correct) is returned without any modifications
+	 */
+	@Test
+	public void testSimplifyAlgorithmIdentifier_unkonwn() {
+	
+		ConstructedTlvDataObject unknownAlgIdentifier = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
+		unknownAlgIdentifier.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OID, new byte[]{0x00}));
+		unknownAlgIdentifier.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, new byte[]{0x00}));
+			
+		assertEquals(unknownAlgIdentifier, StandardizedDomainParameters.simplifyAlgorithmIdentifier(unknownAlgIdentifier));
 	}
 	
 }
