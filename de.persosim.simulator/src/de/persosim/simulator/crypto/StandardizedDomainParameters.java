@@ -8,6 +8,8 @@ import java.util.HashMap;
 
 import de.persosim.simulator.protocols.TR03110;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
+import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
@@ -204,7 +206,7 @@ public class StandardizedDomainParameters {
 	private static void initAlgIdentifierMapping() {
 		algIdentifierMapping = new HashMap<>();
 		
-		algIdentifierMapping.put("3081EC06072A8648CE3D02013081E0020101302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377304404207D5A0975FC2C3057EEF67530417AFFE7FB8055C126DC5C6CE94A4B44F330B5D9042026DC5C6CE94A4B44F330B5D9BBD77CBF958416295CF7E1CE6BCCDC18FF8C07B60441048BD2AEB9CB7E57CB2C4B482FFC81B7AFB9DE27E1E3BD23C23A4453BD9ACE3262547EF835C3DAC4FD97F8461A14611DC9C27745132DED8E545C1D54C72F046997022100A9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A7020101", 0x13);//FIXME AMY add correct key here 
+		algIdentifierMapping.put("3081EC06072A8648CE3D02013081E0020101302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377304404207D5A0975FC2C3057EEF67530417AFFE7FB8055C126DC5C6CE94A4B44F330B5D9042026DC5C6CE94A4B44F330B5D9BBD77CBF958416295CF7E1CE6BCCDC18FF8C07B60441048BD2AEB9CB7E57CB2C4B482FFC81B7AFB9DE27E1E3BD23C23A4453BD9ACE3262547EF835C3DAC4FD97F8461A14611DC9C27745132DED8E545C1D54C72F046997022100A9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A7020101", 0x08);//FIXME AMY add correct key here 
 	}
 	
 	
@@ -230,7 +232,10 @@ public class StandardizedDomainParameters {
 		//get DomainParameterId from HashMap
 		String algIdHexString = HexString.encode(algIdentifier.toByteArray());
 		if (algIdentifierMapping.containsKey(algIdHexString)) {
-			
+			ConstructedTlvDataObject newAlgIdentifier = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
+			newAlgIdentifier.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OID, OID));
+			newAlgIdentifier.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, new byte[] {(byte) algIdentifierMapping.get(algIdHexString).intValue()}));
+			return newAlgIdentifier;
 		}
 		
 		//fallthrough, return input
