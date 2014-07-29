@@ -418,4 +418,8 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		return ecParameterSpec;
 	}
 	
+	public ECParameterSpec getEcParameterSpec() {
+		return ecParameterSpec;
+	}
+	
 }
