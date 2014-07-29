@@ -19,7 +19,8 @@ public class StandardizedDomainParametersTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testSimplifyAlgorithmIdentifier() {
-		for(byte i = 0; i < StandardizedDomainParameters.NO_OF_STANDARDIZED_DOMAIN_PARAMETERS; i++) {
+		//FIXME for(byte i = 0; i < StandardizedDomainParameters.NO_OF_STANDARDIZED_DOMAIN_PARAMETERS; i++) {
+		for(byte i = 13; i < 14; i++) {
 			DomainParameterSet domParams = StandardizedDomainParameters.getDomainParameterSetById(i);
 			if (domParams == null) continue;
 			
