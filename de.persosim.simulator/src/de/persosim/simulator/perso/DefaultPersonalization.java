@@ -250,7 +250,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		keyPair = new KeyPair(publicKey, privateKey);
 
 		KeyObject riKey = new KeyObject(keyPair, new KeyIdentifier(1));
-		riKey.addOidIdentifier(new OidIdentifier(new RiOid(Ri.id_RI_ECDH)));
+		riKey.addOidIdentifier(new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)));
 		mf.addChild(riKey);
 	}
 

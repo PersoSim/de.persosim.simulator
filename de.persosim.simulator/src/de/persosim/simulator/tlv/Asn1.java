@@ -57,6 +57,7 @@ public interface Asn1 {
 	public static final byte UNIVERSAL_BMP_STRING = 0x1E;
 
 	// Tags frequently used within PersoSim (this list should be extended when needed)
+	public static final byte BOOLEAN = UNIVERSAL_BOOLEAN;
 	public static final byte INTEGER = UNIVERSAL_INTEGER;
 	public static final byte BIT_STRING = UNIVERSAL_BIT_STRING;
 	public static final byte OCTET_STRING = UNIVERSAL_OCTET_STRING;
