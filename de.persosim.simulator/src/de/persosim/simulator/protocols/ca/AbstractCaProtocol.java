@@ -394,6 +394,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			ConstructedTlvDataObject caDomainInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 			caDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericCaOidBytes));
 			caDomainInfo.addTlvDataObject(algIdentifier);
+			caDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 			secInfos.add(caDomainInfo);
 			
 			//build SubjectPublicKeyInfo
