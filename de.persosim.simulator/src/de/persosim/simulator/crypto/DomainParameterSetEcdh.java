@@ -34,8 +34,8 @@ import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 /**
- * This interface specifies the domain parameter sets to be used for ECDH key
- * agreement with the PACE protocol.
+ * This class specifies the domain parameter sets to be used for ECDH key
+ * agreements or within ECDH keys.
  * 
  * @author slutters
  * 
