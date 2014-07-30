@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -17,8 +19,12 @@ import java.security.spec.ECPublicKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
 import org.junit.Test;
 
+import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
@@ -303,6 +309,36 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 				System.out.println("domain parameter set " + i + " passed check");
 			}
 		}
+	}
+	
+	/**
+	 * Positive test: Ensure that the datastructure restored from the XML
+	 * representation is identical to the input.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void test_JaxbMarshallUnmarshall() throws Exception {
+		DomainParameterSetEcdh input = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		
+		// instantiate marshaller
+		Marshaller m = PersoSimJaxbContextProvider.getContext().createMarshaller();
+		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+		
+		// Write to String
+		StringWriter strWriter = new StringWriter();
+		m.marshal(input, strWriter);
+		String marshalledPerso = strWriter.toString();
+		System.out.println(marshalledPerso);
+		
+		//unmarshall from string
+		StringReader sr = new StringReader(marshalledPerso);
+		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
+		Object unmarshalledObject = um.unmarshal(sr);
+		
+		//assert that the recreated object matches the input
+		assertEquals(input, unmarshalledObject);
+
 	}
 	
 }
