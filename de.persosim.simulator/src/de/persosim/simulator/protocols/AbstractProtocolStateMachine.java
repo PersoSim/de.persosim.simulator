@@ -193,6 +193,7 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 	
 	public void createNewTagSpecification(TlvTag tag) {
 		this.tagSpecification = new TlvSpecification(tag);
+		this.tagSpecification.setStrictOrder(STRICT_ORDER);
 	}
 	
 	public void createNewPath() {
