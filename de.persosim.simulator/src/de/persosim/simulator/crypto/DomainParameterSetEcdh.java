@@ -26,20 +26,26 @@ import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 /**
- * This interface specifies the domain parameter sets to be used for ECDH key
- * agreement with the PACE protocol.
+ * This class specifies the domain parameter sets to be used for ECDH key
+ * agreements or within ECDH keys.
  * 
  * @author slutters
  * 
  */
 @XmlRootElement
 public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants {
+	
+	public static final byte[] id_ecPublicKey = HexString.toByteArray("2A8648CE3D0201");
+	public static final byte[] id_primeField = HexString.toByteArray("2A8648CE3D0101");
+	
 	//FIXME AMY correctly serialize DomainParameterSetEcdh
 //	@XmlElement
 	protected ECParameterSpec ecParameterSpec;
@@ -119,7 +125,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	 */
 	public static int getPublicPointReferenceLengthL(BigInteger q) {
 		int log = q.bitLength();
-		int result = ((Double) Math.ceil(log/8)).intValue();
+		int result = ((Double) Math.ceil(log/8.0)).intValue();
 		return result;
 	}
 	
@@ -416,6 +422,38 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	@Override
 	public ECParameterSpec getKeySpec() {
 		return ecParameterSpec;
+	}
+
+	@Override
+	public ConstructedTlvDataObject getAlgorithmIdentifier() {
+		
+		PrimitiveTlvDataObject version = new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, new byte[] {0x01});
+		
+		ConstructedTlvDataObject fieldId = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
+		fieldId.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OID, id_primeField));
+		fieldId.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, getPrime().toByteArray()));
+				
+		ConstructedTlvDataObject curve = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
+		curve.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OCTET_STRING, getCurve().getA().toByteArray()));
+		curve.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OCTET_STRING, getCurve().getB().toByteArray()));
+		
+		PrimitiveTlvDataObject base = new PrimitiveTlvDataObject(TlvConstants.TAG_OCTET_STRING, CryptoUtil.encode(getGenerator(), getPublicPointReferenceLengthL(getPrime())));
+		PrimitiveTlvDataObject order = new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, getOrder().toByteArray());
+		PrimitiveTlvDataObject cofactor = new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, BigInteger.valueOf(getCofactor()).toByteArray());
+		
+		ConstructedTlvDataObject params = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
+		params.addTlvDataObject(version);
+		params.addTlvDataObject(fieldId);
+    	params.addTlvDataObject(curve);
+    	params.addTlvDataObject(base);
+    	params.addTlvDataObject(order);
+    	params.addTlvDataObject(cofactor);
+			    
+	    ConstructedTlvDataObject retVal = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
+		retVal.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OID, id_ecPublicKey));
+		retVal.addTlvDataObject(params);
+		
+		return retVal;
 	}
 	
 }

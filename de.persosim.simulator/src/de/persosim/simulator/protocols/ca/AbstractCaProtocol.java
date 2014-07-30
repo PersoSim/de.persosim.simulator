@@ -33,6 +33,7 @@ import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.KeyDerivationFunction;
+import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.ProtocolUpdate;
@@ -388,7 +389,8 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTagField(TAG_SEQUENCE);
 			TlvDataObject subjPubKey = encKey.getTagField(TAG_BIT_STRING);
 			
-			//XXX AMY simplify algorithmIdentifer (using standardized domain parameters) if applicable
+			//using standardized domain parameters if possible
+			algIdentifier = StandardizedDomainParameters.simplifyAlgorithmIdentifier(algIdentifier);
 			
 			//add CaDomainParameterInfo
 			ConstructedTlvDataObject caDomainInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
