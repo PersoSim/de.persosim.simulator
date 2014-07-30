@@ -363,7 +363,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 					break;
 				}
 			}
-			if (keyId == -1) continue;
+			if (keyId == -1) continue; // skip keys that dont't provide a keyId
 			
 			//cached values
 			byte[] genericCaOidBytes = null;

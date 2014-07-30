@@ -6,9 +6,9 @@ import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 import javax.crypto.KeyAgreement;
@@ -19,9 +19,11 @@ import de.persosim.simulator.apdumatching.ApduSpecification;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
 import de.persosim.simulator.apdumatching.TlvSpecification;
 import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyObject;
 import de.persosim.simulator.cardobjects.MasterFile;
+import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.exception.VerificationException;
@@ -29,6 +31,7 @@ import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
@@ -39,7 +42,6 @@ import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
-import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.InfoSource;
 import de.persosim.simulator.utils.Utils;
 
@@ -77,19 +79,71 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 	@Override
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 
-		// FIXME RiInfo should be extracted from mf
-
-		ArrayList<TlvDataObject> secInfos = new ArrayList<>();
-
-		// FIXME RiInfo should be extracted from mf
-		ConstructedTlvDataObject riInfo = new ConstructedTlvDataObject(HexString.toByteArray("3017060A04007F000702020502033009020101020101010100"));
-		secInfos.add(riInfo);
+		if ((publicity == SecInfoPublicity.AUTHENTICATED) || (publicity == SecInfoPublicity.PRIVILEGED)) {
+			OidIdentifier riOidIdentifier = new OidIdentifier(new Oid(Ri.id_RI));
+			
+			Collection<CardObject> riKeyCardObjects = mf.findChildren(
+					new KeyIdentifier(), riOidIdentifier);
+			
+			HashSet<TlvDataObject> secInfos = new HashSet<TlvDataObject>();
+			
+			for (CardObject curKey : riKeyCardObjects) {
+				if (! (curKey instanceof KeyObject)) {
+					continue;
+				}
+				Collection<CardObjectIdentifier> identifiers = curKey.getAllIdentifiers();
 				
-		//FIXME RiDomainParameterInfo should not be static
-		ConstructedTlvDataObject riDomainParameterInfo = new ConstructedTlvDataObject(HexString.toByteArray("3019060904007F000702020502300C060704007F0007010202010D"));
-		secInfos.add(riDomainParameterInfo);
-
-		return secInfos;
+				//extract keyId
+				int keyId = -1;
+				for (CardObjectIdentifier curIdentifier : identifiers) {
+					if (curIdentifier instanceof KeyIdentifier) {
+						keyId = ((KeyIdentifier) curIdentifier).getKeyReference();
+						break;
+					}
+				}
+				if (keyId == -1) continue; // skip keys that dont't provide a keyId
+				
+				//cached values
+				byte[] genericRiOidBytes = null;
+				
+				//construct and add RiInfos
+				for (CardObjectIdentifier curIdentifier : identifiers) {
+					if (riOidIdentifier.matches(curIdentifier)) {
+						byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
+						genericRiOidBytes = Arrays.copyOfRange(oidBytes, 0, 9);
+						
+						//define params
+						ConstructedTlvDataObject params = new ConstructedTlvDataObject(TAG_SEQUENCE);
+						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{1}));
+						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
+						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, new byte[]{0x00})); //IMPL RI handle authorizedOnly
+						
+						ConstructedTlvDataObject riInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+						riInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
+						riInfo.addTlvDataObject(params);
+						//IMPL RI handle maxKeyLen
+						
+						secInfos.add(riInfo);					
+					}
+				}
+				
+				//extract required data from curKey
+				ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(((KeyObject) curKey).getKeyPair().getPublic().getEncoded());
+				ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTagField(TAG_SEQUENCE);
+				//XXX AMY simplify algorithmIdentifer (using standardized domain parameters) if applicable
+				
+				//add RiDomainParameterInfo
+				ConstructedTlvDataObject riDomainInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+				riDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericRiOidBytes));
+				riDomainInfo.addTlvDataObject(algIdentifier);
+				secInfos.add(riDomainInfo);
+				
+			}
+			
+			return secInfos;
+		} else {
+			return Collections.emptySet();
+		}
 	}
 
 	@Override
