@@ -455,5 +455,26 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		
 		return retVal;
 	}
+
+	@Override
+	public int hashCode() {
+		//implement hashCode() and equals based on the byte[] representation of getAlgorithmIdentifier
+		return getAlgorithmIdentifier().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		DomainParameterSetEcdh other = (DomainParameterSetEcdh) obj;
+		return getAlgorithmIdentifier().equals(other.getAlgorithmIdentifier());
+	}
 	
 }
