@@ -108,10 +108,8 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			return;
 		}
 		
-		if (challenge == null){
-			challenge = new byte [8];
-			secureRandom.nextBytes(challenge);	
-		}
+		challenge = new byte [8];
+		secureRandom.nextBytes(challenge);	
 		
 		// create and propagate response APDU
 		ResponseApdu resp = new ResponseApdu(new TlvValuePlain(challenge), Iso7816.SW_9000_NO_ERROR);
@@ -624,6 +622,14 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			return;
 		}
 
+		//ensure GetChallenge was called before
+		if (challenge == null) {
+			// create and propagate response APDU
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+			this.processingData.updateResponseAPDU(this,"No challenge was generated, please call GetChellenge first", resp);
+			return;
+		}
+		
 		
 		byte [] terminalSignatureData = processingData.getCommandApdu().getCommandData().toByteArray();
 		

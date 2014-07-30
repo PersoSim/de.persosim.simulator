@@ -6,40 +6,38 @@ package de.persosim.simulator.protocols.ta;
  */
  @SuppressWarnings("all")//generated code 
 
-/* Command line options: -verbose -p EA -o DefaultTaProtocol -l java -t TA:taclass C:\develop\wd\protocol_ta.xml   */
+/* Command line options: -verbose -p EA -o DefaultTaProtocol -l java -t TA:taclass C:\develop\eclipse-persosim\git\de.persosim.models\exported\protocol_ta.xml   */
 /* This file is generated from protocol_ta.xml - do not edit manually  */
-/* Generated on: Mon Jul 07 16:46:09 CEST 2014 / version 3.52beta2 */
+/* Generated on: Wed Jul 30 09:45:19 CEST 2014 / version 3.52beta2 */
 
 
 
 public class DefaultTaProtocol extends AbstractTaProtocol
 {
 
-	public static final int TA_SET_DST_RECEIVED = 0;
-	public static final int TA_GET_CHALLENGE_RECEIVED = 1;
-	public static final int REGISTER_APDU_SET_DST = 2;
-	public static final int TA_GET_CHALLENGE_FIRST_STEP_RECEIVED = 3;
-	public static final int TA_EXTERNAL_AUTHENTICATE_RECEIVED = 4;
-	public static final int TA_EXTERNAL_AUTHENTICATE_PROCESSED = 5;
-	public static final int TA_GET_CHALLENGE_PROCESSED = 6;
-	public static final int REGISTER_APDU_PSO = 7;
-	public static final int REGISTER_APDU_EXTERNAL_AUTHENTICATE = 8;
-	public static final int REGISTER_APDU_GET_CHALLENGE = 9;
-	public static final int TA_SET_AT_PROCESSED = 10;
-	public static final int TA_SET_DST_PROCESSED = 11;
-	public static final int TA_IN_PROGRESS = 12;
-	public static final int TA_COMPLETE = 13;
-	public static final int TA_PROGRESS_INIT = 14;
-	public static final int TA_SET_AT_RECEIVED = 15;
-	public static final int TA_GET_CHALLENGE_FIRST_STEP_PROCESSED = 16;
-	public static final int TA_INIT = 17;
-	public static final int TA_PSO_RECEIVED = 18;
-	public static final int REGISTER_APDUS = 19;
-	public static final int TA_ANNOUNCED = 20;
-	public static final int REGISTER_APDU_SET_AT = 21;
-	public static final int TA_PSO_PROCESSED = 22;
-	public static final int RESET = 23;
-	public static final int __UNKNOWN_STATE__ = 24;
+	public static final int TA_IN_PROGRESS = 0;
+	public static final int TA_SET_DST_RECEIVED = 1;
+	public static final int TA_COMPLETE = 2;
+	public static final int TA_PROGRESS_INIT = 3;
+	public static final int TA_GET_CHALLENGE_RECEIVED = 4;
+	public static final int REGISTER_APDU_SET_DST = 5;
+	public static final int TA_SET_AT_RECEIVED = 6;
+	public static final int TA_EXTERNAL_AUTHENTICATE_RECEIVED = 7;
+	public static final int TA_INIT = 8;
+	public static final int TA_GET_CHALLENGE_PROCESSED = 9;
+	public static final int TA_EXTERNAL_AUTHENTICATE_PROCESSED = 10;
+	public static final int TA_PSO_RECEIVED = 11;
+	public static final int REGISTER_APDUS = 12;
+	public static final int REGISTER_APDU_EXTERNAL_AUTHENTICATE = 13;
+	public static final int REGISTER_APDU_PSO = 14;
+	public static final int TA_ANNOUNCED = 15;
+	public static final int REGISTER_APDU_SET_AT = 16;
+	public static final int TA_PSO_PROCESSED = 17;
+	public static final int TA_SET_AT_PROCESSED = 18;
+	public static final int REGISTER_APDU_GET_CHALLENGE = 19;
+	public static final int RESET = 20;
+	public static final int TA_SET_DST_PROCESSED = 21;
+	public static final int __UNKNOWN_STATE__ = 22;
 
 
 	public static final int DEFAULTTAPROTOCOL_NO_MSG = 0;
@@ -66,44 +64,40 @@ public class DefaultTaProtocol extends AbstractTaProtocol
 
 	/* Helper to get innermost active state id */
 	public int getInnermostActiveState() {
-		if(isInTA_PSO_PROCESSED()){
-			return TA_PSO_PROCESSED;
-		}else if(isInTA_PSO_RECEIVED()){
-			return TA_PSO_RECEIVED;
-		}else if(isInTA_GET_CHALLENGE_FIRST_STEP_PROCESSED()){
-			return TA_GET_CHALLENGE_FIRST_STEP_PROCESSED;
-		}else if(isInTA_SET_AT_RECEIVED()){
-			return TA_SET_AT_RECEIVED;
-		}else if(isInTA_PROGRESS_INIT()){
-			return TA_PROGRESS_INIT;
-		}else if(isInTA_SET_DST_PROCESSED()){
+		if(isInTA_SET_DST_PROCESSED()){
 			return TA_SET_DST_PROCESSED;
 		}else if(isInTA_SET_AT_PROCESSED()){
 			return TA_SET_AT_PROCESSED;
-		}else if(isInTA_GET_CHALLENGE_PROCESSED()){
-			return TA_GET_CHALLENGE_PROCESSED;
+		}else if(isInTA_PSO_PROCESSED()){
+			return TA_PSO_PROCESSED;
+		}else if(isInTA_PSO_RECEIVED()){
+			return TA_PSO_RECEIVED;
 		}else if(isInTA_EXTERNAL_AUTHENTICATE_PROCESSED()){
 			return TA_EXTERNAL_AUTHENTICATE_PROCESSED;
 		}else if(isInTA_EXTERNAL_AUTHENTICATE_RECEIVED()){
 			return TA_EXTERNAL_AUTHENTICATE_RECEIVED;
-		}else if(isInTA_GET_CHALLENGE_FIRST_STEP_RECEIVED()){
-			return TA_GET_CHALLENGE_FIRST_STEP_RECEIVED;
-		}else if(isInTA_GET_CHALLENGE_RECEIVED()){
-			return TA_GET_CHALLENGE_RECEIVED;
+		}else if(isInTA_SET_AT_RECEIVED()){
+			return TA_SET_AT_RECEIVED;
+		}else if(isInTA_PROGRESS_INIT()){
+			return TA_PROGRESS_INIT;
 		}else if(isInTA_SET_DST_RECEIVED()){
 			return TA_SET_DST_RECEIVED;
-		}else if(isInREGISTER_APDU_SET_AT()){
-			return REGISTER_APDU_SET_AT;
-		}else if(isInTA_INIT()){
-			return TA_INIT;
 		}else if(isInREGISTER_APDU_GET_CHALLENGE()){
 			return REGISTER_APDU_GET_CHALLENGE;
-		}else if(isInREGISTER_APDU_EXTERNAL_AUTHENTICATE()){
-			return REGISTER_APDU_EXTERNAL_AUTHENTICATE;
+		}else if(isInREGISTER_APDU_SET_AT()){
+			return REGISTER_APDU_SET_AT;
 		}else if(isInREGISTER_APDU_PSO()){
 			return REGISTER_APDU_PSO;
+		}else if(isInREGISTER_APDU_EXTERNAL_AUTHENTICATE()){
+			return REGISTER_APDU_EXTERNAL_AUTHENTICATE;
+		}else if(isInTA_GET_CHALLENGE_PROCESSED()){
+			return TA_GET_CHALLENGE_PROCESSED;
+		}else if(isInTA_INIT()){
+			return TA_INIT;
 		}else if(isInREGISTER_APDU_SET_DST()){
 			return REGISTER_APDU_SET_DST;
+		}else if(isInTA_GET_CHALLENGE_RECEIVED()){
+			return TA_GET_CHALLENGE_RECEIVED;
 		}else if(isInRESET()){
 			return RESET;
 		}else if(isInTA_COMPLETE()){
@@ -114,30 +108,28 @@ public class DefaultTaProtocol extends AbstractTaProtocol
 	}
 
 	// Helper(s) to find out if the machine is in a certain state
-	public boolean isInTA_SET_DST_RECEIVED(){return (((stateVarTA_IN_PROGRESS==  TA_SET_DST_RECEIVED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInTA_GET_CHALLENGE_RECEIVED(){return (((stateVarTA_IN_PROGRESS==  TA_GET_CHALLENGE_RECEIVED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInREGISTER_APDU_SET_DST(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_SET_DST)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInTA_GET_CHALLENGE_FIRST_STEP_RECEIVED(){return (((stateVarTA_IN_PROGRESS==  TA_GET_CHALLENGE_FIRST_STEP_RECEIVED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInTA_EXTERNAL_AUTHENTICATE_RECEIVED(){return (((stateVarTA_IN_PROGRESS==  TA_EXTERNAL_AUTHENTICATE_RECEIVED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInTA_EXTERNAL_AUTHENTICATE_PROCESSED(){return (((stateVarTA_IN_PROGRESS==  TA_EXTERNAL_AUTHENTICATE_PROCESSED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInTA_GET_CHALLENGE_PROCESSED(){return (((stateVarTA_IN_PROGRESS==  TA_GET_CHALLENGE_PROCESSED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInREGISTER_APDU_PSO(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_PSO)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInREGISTER_APDU_EXTERNAL_AUTHENTICATE(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_EXTERNAL_AUTHENTICATE)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInREGISTER_APDU_GET_CHALLENGE(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_GET_CHALLENGE)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInTA_SET_AT_PROCESSED(){return (((stateVarTA_IN_PROGRESS==  TA_SET_AT_PROCESSED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInTA_SET_DST_PROCESSED(){return (((stateVarTA_IN_PROGRESS==  TA_SET_DST_PROCESSED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
 	public boolean isInTA_IN_PROGRESS(){return (((stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInTA_SET_DST_RECEIVED(){return (((stateVarTA_IN_PROGRESS==  TA_SET_DST_RECEIVED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
 	public boolean isInTA_COMPLETE(){return (((stateVar==  TA_COMPLETE)) ? (true) : (false));}
 	public boolean isInTA_PROGRESS_INIT(){return (((stateVarTA_IN_PROGRESS==  TA_PROGRESS_INIT)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInTA_GET_CHALLENGE_RECEIVED(){return (((stateVarTA_ANNOUNCED==  TA_GET_CHALLENGE_RECEIVED)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInREGISTER_APDU_SET_DST(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_SET_DST)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
 	public boolean isInTA_SET_AT_RECEIVED(){return (((stateVarTA_IN_PROGRESS==  TA_SET_AT_RECEIVED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInTA_GET_CHALLENGE_FIRST_STEP_PROCESSED(){return (((stateVarTA_IN_PROGRESS==  TA_GET_CHALLENGE_FIRST_STEP_PROCESSED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInTA_EXTERNAL_AUTHENTICATE_RECEIVED(){return (((stateVarTA_IN_PROGRESS==  TA_EXTERNAL_AUTHENTICATE_RECEIVED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
 	public boolean isInTA_INIT(){return (((stateVarTA_ANNOUNCED==  TA_INIT)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInTA_GET_CHALLENGE_PROCESSED(){return (((stateVarTA_ANNOUNCED==  TA_GET_CHALLENGE_PROCESSED)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInTA_EXTERNAL_AUTHENTICATE_PROCESSED(){return (((stateVarTA_IN_PROGRESS==  TA_EXTERNAL_AUTHENTICATE_PROCESSED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
 	public boolean isInTA_PSO_RECEIVED(){return (((stateVarTA_IN_PROGRESS==  TA_PSO_RECEIVED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
 	public boolean isInREGISTER_APDUS(){return (((stateVar==  REGISTER_APDUS)) ? (true) : (false));}
+	public boolean isInREGISTER_APDU_EXTERNAL_AUTHENTICATE(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_EXTERNAL_AUTHENTICATE)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
+	public boolean isInREGISTER_APDU_PSO(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_PSO)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
 	public boolean isInTA_ANNOUNCED(){return (((stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
 	public boolean isInREGISTER_APDU_SET_AT(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_SET_AT)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
 	public boolean isInTA_PSO_PROCESSED(){return (((stateVarTA_IN_PROGRESS==  TA_PSO_PROCESSED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInTA_SET_AT_PROCESSED(){return (((stateVarTA_IN_PROGRESS==  TA_SET_AT_PROCESSED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInREGISTER_APDU_GET_CHALLENGE(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_GET_CHALLENGE)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
 	public boolean isInRESET(){return (((stateVar==  RESET)) ? (true) : (false));}
+	public boolean isInTA_SET_DST_PROCESSED(){return (((stateVarTA_IN_PROGRESS==  TA_SET_DST_PROCESSED)&&(stateVarTA_ANNOUNCED==  TA_IN_PROGRESS)&&(stateVar==  TA_ANNOUNCED)) ? (true) : (false));}
 
 
 
@@ -376,6 +368,59 @@ public class DefaultTaProtocol extends AbstractTaProtocol
 
 				switch (stateVarTA_ANNOUNCED) {
 
+					case TA_GET_CHALLENGE_PROCESSED:
+						if(true){
+							/* Transition from TA_GET_CHALLENGE_PROCESSED to TA_IN_PROGRESS */
+							evConsumed=16;
+
+							/* Action code for transition  */
+							returnResult();
+
+							stateVarTA_ANNOUNCED =  TA_IN_PROGRESS;/* entry chain  */
+							if(stateVarTA_IN_PROGRESS==  TA_EXTERNAL_AUTHENTICATE_PROCESSED){
+								returnResult();
+
+							}else if(stateVarTA_IN_PROGRESS==  TA_EXTERNAL_AUTHENTICATE_RECEIVED){
+								processCommandExternalAuthenticate();
+
+							}else if(stateVarTA_IN_PROGRESS==  TA_PSO_PROCESSED){
+								returnResult();
+
+							}else if(stateVarTA_IN_PROGRESS==  TA_PSO_RECEIVED){
+								processCommandPsoVerifyCertificate();
+
+							}else if(stateVarTA_IN_PROGRESS==  TA_SET_AT_PROCESSED){
+								returnResult();
+
+							}else if(stateVarTA_IN_PROGRESS==  TA_SET_AT_RECEIVED){
+								processCommandSetAt();
+
+							}else if(stateVarTA_IN_PROGRESS==  TA_SET_DST_PROCESSED){
+								returnResult();
+
+							}else if(stateVarTA_IN_PROGRESS==  TA_SET_DST_RECEIVED){
+								processCommandSetDst();
+
+							}
+
+						}else{
+							/* Intentionally left blank */
+						} /*end of event selection */
+					break; /* end of case TA_GET_CHALLENGE_PROCESSED  */
+
+					case TA_GET_CHALLENGE_RECEIVED:
+						if(isStatusWord(SW_9000_NO_ERROR)){
+							/* Transition from TA_GET_CHALLENGE_RECEIVED to TA_GET_CHALLENGE_PROCESSED */
+							evConsumed=16;
+
+
+							/* adjust state variables  */
+							stateVarTA_ANNOUNCED =  TA_GET_CHALLENGE_PROCESSED;
+						}else{
+							/* Intentionally left blank */
+						} /*end of event selection */
+					break; /* end of case TA_GET_CHALLENGE_RECEIVED  */
+
 					case TA_INIT:
 						if(true){
 							/* Transition from TA_INIT to TA_IN_PROGRESS */
@@ -387,18 +432,6 @@ public class DefaultTaProtocol extends AbstractTaProtocol
 
 							}else if(stateVarTA_IN_PROGRESS==  TA_EXTERNAL_AUTHENTICATE_RECEIVED){
 								processCommandExternalAuthenticate();
-
-							}else if(stateVarTA_IN_PROGRESS==  TA_GET_CHALLENGE_FIRST_STEP_PROCESSED){
-								returnResult();
-
-							}else if(stateVarTA_IN_PROGRESS==  TA_GET_CHALLENGE_FIRST_STEP_RECEIVED){
-								processCommandGetChallenge();
-
-							}else if(stateVarTA_IN_PROGRESS==  TA_GET_CHALLENGE_PROCESSED){
-								returnResult();
-
-							}else if(stateVarTA_IN_PROGRESS==  TA_GET_CHALLENGE_RECEIVED){
-								processCommandGetChallenge();
 
 							}else if(stateVarTA_IN_PROGRESS==  TA_PSO_PROCESSED){
 								returnResult();
@@ -462,77 +495,8 @@ public class DefaultTaProtocol extends AbstractTaProtocol
 								} /*end of event selection */
 							break; /* end of case TA_EXTERNAL_AUTHENTICATE_RECEIVED  */
 
-							case TA_GET_CHALLENGE_FIRST_STEP_PROCESSED:
-								if(isAPDU("Set DST")){
-									/* Transition from TA_GET_CHALLENGE_FIRST_STEP_PROCESSED to TA_SET_DST_RECEIVED */
-									evConsumed=16;
-
-									/* OnEntry code of state TA_SET_DST_RECEIVED */
-									processCommandSetDst();
-
-									/* adjust state variables  */
-									stateVarTA_IN_PROGRESS =  TA_SET_DST_RECEIVED;
-								}else{
-									/* Intentionally left blank */
-								} /*end of event selection */
-							break; /* end of case TA_GET_CHALLENGE_FIRST_STEP_PROCESSED  */
-
-							case TA_GET_CHALLENGE_FIRST_STEP_RECEIVED:
-								if(isStatusWord(SW_9000_NO_ERROR)){
-									/* Transition from TA_GET_CHALLENGE_FIRST_STEP_RECEIVED to TA_GET_CHALLENGE_FIRST_STEP_PROCESSED */
-									evConsumed=16;
-
-									/* OnEntry code of state TA_GET_CHALLENGE_FIRST_STEP_PROCESSED */
-									returnResult();
-
-									/* adjust state variables  */
-									stateVarTA_IN_PROGRESS =  TA_GET_CHALLENGE_FIRST_STEP_PROCESSED;
-								}else{
-									/* Intentionally left blank */
-								} /*end of event selection */
-							break; /* end of case TA_GET_CHALLENGE_FIRST_STEP_RECEIVED  */
-
-							case TA_GET_CHALLENGE_PROCESSED:
-								if(isAPDU("External Authenticate")){
-									/* Transition from TA_GET_CHALLENGE_PROCESSED to TA_EXTERNAL_AUTHENTICATE_RECEIVED */
-									evConsumed=16;
-
-									/* OnEntry code of state TA_EXTERNAL_AUTHENTICATE_RECEIVED */
-									processCommandExternalAuthenticate();
-
-									/* adjust state variables  */
-									stateVarTA_IN_PROGRESS =  TA_EXTERNAL_AUTHENTICATE_RECEIVED;
-								}else{
-									/* Intentionally left blank */
-								} /*end of event selection */
-							break; /* end of case TA_GET_CHALLENGE_PROCESSED  */
-
-							case TA_GET_CHALLENGE_RECEIVED:
-								if(isStatusWord(SW_9000_NO_ERROR)){
-									/* Transition from TA_GET_CHALLENGE_RECEIVED to TA_GET_CHALLENGE_PROCESSED */
-									evConsumed=16;
-
-									/* OnEntry code of state TA_GET_CHALLENGE_PROCESSED */
-									returnResult();
-
-									/* adjust state variables  */
-									stateVarTA_IN_PROGRESS =  TA_GET_CHALLENGE_PROCESSED;
-								}else{
-									/* Intentionally left blank */
-								} /*end of event selection */
-							break; /* end of case TA_GET_CHALLENGE_RECEIVED  */
-
 							case TA_PROGRESS_INIT:
-								if(isAPDU("Get Challenge")){
-									/* Transition from TA_PROGRESS_INIT to TA_GET_CHALLENGE_FIRST_STEP_RECEIVED */
-									evConsumed=16;
-
-									/* OnEntry code of state TA_GET_CHALLENGE_FIRST_STEP_RECEIVED */
-									processCommandGetChallenge();
-
-									/* adjust state variables  */
-									stateVarTA_IN_PROGRESS =  TA_GET_CHALLENGE_FIRST_STEP_RECEIVED;
-								}else if(isAPDU("Set DST")){
+								if(isAPDU("Set DST")){
 									/* Transition from TA_PROGRESS_INIT to TA_SET_DST_RECEIVED */
 									evConsumed=16;
 
@@ -586,15 +550,15 @@ public class DefaultTaProtocol extends AbstractTaProtocol
 							break; /* end of case TA_PSO_RECEIVED  */
 
 							case TA_SET_AT_PROCESSED:
-								if(isAPDU("Get Challenge")){
-									/* Transition from TA_SET_AT_PROCESSED to TA_GET_CHALLENGE_RECEIVED */
+								if(isAPDU("External Authenticate")){
+									/* Transition from TA_SET_AT_PROCESSED to TA_EXTERNAL_AUTHENTICATE_RECEIVED */
 									evConsumed=16;
 
-									/* OnEntry code of state TA_GET_CHALLENGE_RECEIVED */
-									processCommandGetChallenge();
+									/* OnEntry code of state TA_EXTERNAL_AUTHENTICATE_RECEIVED */
+									processCommandExternalAuthenticate();
 
 									/* adjust state variables  */
-									stateVarTA_IN_PROGRESS =  TA_GET_CHALLENGE_RECEIVED;
+									stateVarTA_IN_PROGRESS =  TA_EXTERNAL_AUTHENTICATE_RECEIVED;
 								}else{
 									/* Intentionally left blank */
 								} /*end of event selection */
@@ -649,6 +613,23 @@ public class DefaultTaProtocol extends AbstractTaProtocol
 								/* Intentionally left blank */
 							break;
 						} /* end switch TA_IN_PROGRESS */
+
+						/* Check if event was already processed  */
+						if(evConsumed==0){
+
+							if(isAPDU("Get Challenge")){
+								/* Transition from TA_IN_PROGRESS to TA_GET_CHALLENGE_RECEIVED */
+								evConsumed=16;
+								
+								/* OnEntry code of state TA_GET_CHALLENGE_RECEIVED */
+								processCommandGetChallenge();
+
+								/* adjust state variables  */
+								stateVarTA_ANNOUNCED =  TA_GET_CHALLENGE_RECEIVED;
+							}else{
+								/* Intentionally left blank */
+							} /*end of event selection */
+						}
 					break; /* end of case TA_IN_PROGRESS  */
 
 					default:
