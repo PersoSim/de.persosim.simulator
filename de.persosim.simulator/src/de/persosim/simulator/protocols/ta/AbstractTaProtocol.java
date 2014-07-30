@@ -348,6 +348,14 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		this.processingData.updateResponseAPDU(this,
 				"Command SetAT successfully processed", resp);
 	}
+
+	/**
+	 * Returns whether a "Get Challenge" was already received.
+	 * @return <code>true</code> if a "Get Challenge" was already received.
+	 */
+	boolean hasChallenge() {
+		return challenge != null;
+	}
 	
 	/**
 	 * This method checks the given data against the given RSA or ECDSA
