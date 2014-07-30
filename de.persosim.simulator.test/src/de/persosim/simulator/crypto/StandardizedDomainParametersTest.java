@@ -8,6 +8,7 @@ import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
+import de.persosim.simulator.utils.HexString;
 
 
 public class StandardizedDomainParametersTest extends PersoSimTestCase {
@@ -19,10 +20,12 @@ public class StandardizedDomainParametersTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testSimplifyAlgorithmIdentifier() {
-		//FIXME for(byte i = 0; i < StandardizedDomainParameters.NO_OF_STANDARDIZED_DOMAIN_PARAMETERS; i++) {
-		for(byte i = 13; i < 14; i++) {
+		for(byte i = 0; i < StandardizedDomainParameters.NO_OF_STANDARDIZED_DOMAIN_PARAMETERS; i++) {
 			DomainParameterSet domParams = StandardizedDomainParameters.getDomainParameterSetById(i);
 			if (domParams == null) continue;
+			
+			//dump configuration for includion in algIdentifierMapping
+			System.out.println(String.format("algIdentifierMapping.put(\"" + HexString.encode(domParams.getAlgorithmIdentifier().toByteArray()) + "\", 0x%02X);", i));
 			
 			ConstructedTlvDataObject expectedAlgIdentifier = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
 			expectedAlgIdentifier.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OID, StandardizedDomainParameters.OID));
