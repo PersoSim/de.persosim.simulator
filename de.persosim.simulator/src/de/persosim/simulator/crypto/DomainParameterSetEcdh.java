@@ -125,7 +125,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	 */
 	public static int getPublicPointReferenceLengthL(BigInteger q) {
 		int log = q.bitLength();
-		int result = ((Double) Math.ceil(log/8)).intValue();
+		int result = ((Double) Math.ceil(log/8.0)).intValue();
 		return result;
 	}
 	
@@ -431,7 +431,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		
 		ConstructedTlvDataObject fieldId = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
 		fieldId.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OID, id_primeField));
-		fieldId.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, ((ECFieldFp) getCurve().getField()).getP().toByteArray()));
+		fieldId.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, getPrime().toByteArray()));
 				
 		ConstructedTlvDataObject curve = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
 		curve.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OCTET_STRING, getCurve().getA().toByteArray()));
