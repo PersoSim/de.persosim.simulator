@@ -224,8 +224,8 @@ public class StandardizedDomainParameters {
 	 * Simplify the given AlgorithmIdentifier using standardized domain
 	 * parameters if possible
 	 * <p/>
-	 * Returns a new AlgorithmIdentifier describing the povided input using OID
-	 * bsi-de 1 2 and an integer identifiing the used domain parameter set.
+	 * Returns a new AlgorithmIdentifier describing the provided input using OID
+	 * bsi-de 1 2 and an integer identifying the used domain parameter set.
 	 * <p/>
 	 * If the provided input does not match any known standardized domain
 	 * parameters the input is returned without further checking.
