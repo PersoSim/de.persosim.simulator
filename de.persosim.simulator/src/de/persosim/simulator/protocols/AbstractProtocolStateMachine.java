@@ -189,6 +189,7 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 		
 	public void createNewApduSpecification(String id) {
 		this.apduSpecification = new ApduSpecification(id);
+		apduSpecification.getTags().setStrictOrder(ARBITRARY_ORDER);
 	}
 	
 	public void createNewTagSpecification(TlvTag tag) {
