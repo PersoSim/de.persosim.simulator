@@ -194,7 +194,7 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 		if(!elementMatch) {return false;}
 		
 		if (reqChaining != REQ_OPTIONAL) {
-			if (!(apdu instanceof InterindustryCommandApdu)) { //XXX AMY: use a marker interface to check for channel abilities to provide more generic way
+			if (!(apdu instanceof InterindustryCommandApdu)) {
 				log(ApduSpecification.class, "apdu class does not support channels");
 				return false;
 			}
