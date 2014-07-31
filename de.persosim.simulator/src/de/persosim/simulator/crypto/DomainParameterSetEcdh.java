@@ -24,7 +24,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -46,8 +48,8 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	public static final byte[] id_ecPublicKey = HexString.toByteArray("2A8648CE3D0201");
 	public static final byte[] id_primeField = HexString.toByteArray("2A8648CE3D0101");
 	
-	//FIXME AMY correctly serialize DomainParameterSetEcdh
-//	@XmlElement
+	@XmlElement
+	@XmlJavaTypeAdapter(EcParameterSpecAdapter.class)
 	protected ECParameterSpec ecParameterSpec;
 	
 	public DomainParameterSetEcdh() {}
@@ -454,6 +456,27 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		retVal.addTlvDataObject(params);
 		
 		return retVal;
+	}
+
+	@Override
+	public int hashCode() {
+		//implement hashCode() and equals based on the byte[] representation of getAlgorithmIdentifier
+		return getAlgorithmIdentifier().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		DomainParameterSetEcdh other = (DomainParameterSetEcdh) obj;
+		return getAlgorithmIdentifier().equals(other.getAlgorithmIdentifier());
 	}
 	
 }
