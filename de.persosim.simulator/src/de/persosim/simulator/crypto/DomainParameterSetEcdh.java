@@ -479,4 +479,9 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		return getAlgorithmIdentifier().equals(other.getAlgorithmIdentifier());
 	}
 	
+	@Override
+	public ECParameterSpec getAlgorithmParameterSpec() {
+		return ecParameterSpec;
+	}
+	
 }

@@ -97,4 +97,11 @@ public interface DomainParameterSet {
 	 */
 	public abstract ConstructedTlvDataObject getAlgorithmIdentifier();
 	
+	/**
+	 * Returns an {@link AlgorithmParameterSpec} object which is as close to this object as possible.
+	 * The object may be used e.g. for key generation.
+	 * @return an {@link AlgorithmParameterSpec} object which is as close to this object as possible
+	 */
+	public abstract AlgorithmParameterSpec getAlgorithmParameterSpec();
+	
 }
