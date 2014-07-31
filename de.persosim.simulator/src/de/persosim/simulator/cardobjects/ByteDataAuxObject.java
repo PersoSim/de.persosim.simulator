@@ -22,7 +22,7 @@ import de.persosim.simulator.utils.Utils;
 @XmlRootElement
 public class ByteDataAuxObject extends AuxDataObject {
 
-	@XmlElement //XXX try XmlValue here
+	@XmlElement
 	@XmlJavaTypeAdapter(HexBinaryAdapter.class)
 	byte [] data;
 	
