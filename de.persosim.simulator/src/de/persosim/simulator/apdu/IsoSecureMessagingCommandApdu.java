@@ -8,7 +8,7 @@ import de.persosim.simulator.securemessaging.SecureMessaging;
  * SecureMessaging according to ISO7816-4.
  * <p/>
  * {@link SecureMessaging} operates directly on these APDUs to wrap/unwrap the
- * sm encoded data. This allows to apply ISO-SecureMessaging on prprietary APDUs
+ * sm encoded data. This allows to apply ISO-SecureMessaging on proprietary APDUs
  * if their content is encoded accordingly.
  * 
  * @author amay
