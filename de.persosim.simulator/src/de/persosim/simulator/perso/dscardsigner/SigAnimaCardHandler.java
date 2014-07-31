@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
@@ -15,20 +14,21 @@ import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 import javax.smartcardio.TerminalFactory;
 
+import de.persosim.simulator.utils.HexString;
+import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+
 /**
  * @author tsenger
  *
  */
 public class SigAnimaCardHandler {
 
-    private static final Logger log = Logger.getLogger(SigAnimaCardHandler.class.getName());
-
     public static final byte PERM_FREE = 0;
     public static final byte PERM_PIN = 1;
 
     private static final int SW_NO_ERROR = 0x9000;
 
-    private static final boolean debug = false;
 
     private final CardChannel channel;
 
@@ -132,9 +132,9 @@ public class SigAnimaCardHandler {
     }
 
     private ResponseAPDU transmit(CommandAPDU apdu) throws CardException {
-        if (debug) System.out.println("Send:\n"+HexString.bufferToHex(apdu.getBytes())+"\n");
+    	log(SigAnimaCardHandler.class, "Send:\n"+HexString.dump(apdu.getBytes())+"\n", TRACE);
         ResponseAPDU resp = channel.transmit(apdu);
-        if (debug) System.out.println("Receive:\n"+HexString.bufferToHex(resp.getBytes())+"\n");
+        log(SigAnimaCardHandler.class, "Receive:\n"+HexString.dump(resp.getBytes())+"\n", TRACE);
         return resp;
     }
 
@@ -222,25 +222,24 @@ public class SigAnimaCardHandler {
     }
 
     private boolean sendVerify(String password) throws CardException {
-        log.fine("called sendVerify");
         CommandAPDU capdu = new CommandAPDU(0, 0x20, 0x00, 0x00, password.getBytes());
         ResponseAPDU resp = transmit(capdu);
         if (resp.getSW()==SW_NO_ERROR) return true;
-        else throw new CardException("Verify command failed! Response was: "+HexString.bufferToHex(resp.getBytes()));
+        else throw new CardException("Verify command failed! Response was: "+HexString.dump(resp.getBytes()));
     }
 
     private boolean sendChangeReferenceData(byte p1, byte[] data) throws CardException {
         CommandAPDU capdu = new CommandAPDU(0, 0x24, p1, 0x00, data);
         ResponseAPDU resp = transmit(capdu);
         if (resp.getSW()==SW_NO_ERROR) return true;
-        else throw new CardException("ChangeReferenceData command failed! Response was: "+HexString.bufferToHex(resp.getBytes()));
+        else throw new CardException("ChangeReferenceData command failed! Response was: "+HexString.dump(resp.getBytes()));
     }
 
     private boolean sendSelectFile(short fid) throws CardException {
         CommandAPDU capdu = new CommandAPDU(0, 0xA4, 0x00, 0x00, shortToByteArray(fid));
         ResponseAPDU resp = transmit(capdu);
         if (resp.getSW()==SW_NO_ERROR) return true;
-        else throw new CardException("Select file command failed! Response was: "+HexString.bufferToHex(resp.getBytes()));
+        else throw new CardException("Select file command failed! Response was: "+HexString.dump(resp.getBytes()));
     }
 
     private boolean sendCreateFile(short fid, short length, byte permission) throws CardException {
@@ -251,7 +250,7 @@ public class SigAnimaCardHandler {
         CommandAPDU capdu = new CommandAPDU(0, 0xE0, 0x00, 0x00, data);
         ResponseAPDU resp = transmit(capdu);
         if (resp.getSW()==SW_NO_ERROR) return true;
-        else throw new CardException("CreateFile command failed! Response was: "+HexString.bufferToHex(resp.getBytes()));
+        else throw new CardException("CreateFile command failed! Response was: "+HexString.dump(resp.getBytes()));
     }
 
     private boolean sendWriteBinary(byte[] data) throws CardException {
@@ -268,7 +267,7 @@ public class SigAnimaCardHandler {
             apduData.write(data, offset, blockSize);
             CommandAPDU capdu = new CommandAPDU(0, 0xD0, (byte) (offset >> 8), (byte) (offset & 0xFF), apduData.toByteArray());
             ResponseAPDU resp = transmit(capdu);
-            if (!(resp.getSW()==SW_NO_ERROR)) throw new CardException("WriteBinary command failed! Response was: "+HexString.bufferToHex(resp.getBytes()));
+            if (!(resp.getSW()==SW_NO_ERROR)) throw new CardException("WriteBinary command failed! Response was: "+HexString.dump(resp.getBytes()));
             offset += blockSize;
         }
         return true;
@@ -277,45 +276,43 @@ public class SigAnimaCardHandler {
     private byte[] sendReadBinary(byte high_offset, byte low_offset, int le) throws CardException {
         CommandAPDU capdu = new CommandAPDU((byte) 0x00, (byte) 0xB0, high_offset, low_offset, le);
         ResponseAPDU resp = transmit(capdu);
-        if (resp.getSW()!=SW_NO_ERROR) throw new CardException("ReadBinary command failed! Response was: "+HexString.bufferToHex(resp.getBytes()));
+        if (resp.getSW()!=SW_NO_ERROR) throw new CardException("ReadBinary command failed! Response was: "+HexString.dump(resp.getBytes()));
         return resp.getData();
     }
 
     private byte[] sendGenKeyPair() throws CardException {
         CommandAPDU capdu = new CommandAPDU(0, 0x46, 0x80, 0x00);
         ResponseAPDU resp = transmit(capdu);
-        if (resp.getSW()!=SW_NO_ERROR) throw new CardException("Generate KeyPair command failed! Response was:  "+HexString.bufferToHex(resp.getBytes()));
+        if (resp.getSW()!=SW_NO_ERROR) throw new CardException("Generate KeyPair command failed! Response was:  "+HexString.dump(resp.getBytes()));
         return resp.getData();
     }
 
     private byte[] sendPSOSign(byte[] tosign) throws CardException {
-        log.fine("called sendPSOSign");
         CommandAPDU capdu = new CommandAPDU(0, 0x2A, 0x9E, 0x9A, tosign);
         ResponseAPDU resp = transmit(capdu);
-        if (resp.getSW()!=SW_NO_ERROR) throw new CardException("PSOSign command failed! Response was: "+HexString.bufferToHex(resp.getBytes()));
+        if (resp.getSW()!=SW_NO_ERROR) throw new CardException("PSOSign command failed! Response was: "+HexString.dump(resp.getBytes()));
         return resp.getData();
     }
 
     private boolean sendMSE(byte keyId) throws CardException {
-        log.fine("called sendMSE");
         CommandAPDU capdu = new CommandAPDU(0, 0x22, 0x41, 0xB6, new byte[]{(byte)0x84, 0x01, keyId});
         ResponseAPDU resp = transmit(capdu);
         if (resp.getSW()==SW_NO_ERROR) return true;
-        else throw new CardException("MSE:SetAT failed! Response was: "+HexString.bufferToHex(resp.getBytes()));
+        else throw new CardException("MSE:SetAT failed! Response was: "+HexString.dump(resp.getBytes()));
     }
 
     private boolean sendMSE(byte keyId, byte domainParameterId) throws CardException {
         CommandAPDU capdu = new CommandAPDU(0, 0x22, 0x41, 0xB6, new byte[]{(byte)0x84, 0x01, keyId, (byte)0x80, 0x01, domainParameterId});
         ResponseAPDU resp = transmit(capdu);
         if (resp.getSW()==SW_NO_ERROR) return true;
-        else throw new CardException("MSE:SetAT failed! Response was: "+HexString.bufferToHex(resp.getBytes()));
+        else throw new CardException("MSE:SetAT failed! Response was: "+HexString.dump(resp.getBytes()));
     }
 
     private boolean selectApplet(byte[] aid) throws CardException {
         CommandAPDU capdu = new CommandAPDU(0, 0xA4, 0x04, 0, aid);
         ResponseAPDU resp = transmit(capdu);
         if (resp.getSW()==SW_NO_ERROR) return true;
-        else throw new CardException("Select Applet failed! Response was: "+HexString.bufferToHex(resp.getBytes()));
+        else throw new CardException("Select Applet failed! Response was: "+HexString.dump(resp.getBytes()));
     }
 
     private static byte[] shortToByteArray(short sh) {

@@ -11,6 +11,8 @@ import java.util.Properties;
 
 import javax.smartcardio.CardException;
 
+import de.persosim.simulator.utils.HexString;
+
 
 public class CardSigner {
 
@@ -35,7 +37,7 @@ public class CardSigner {
 	
 	private SigAnimaCardHandler buildCardHandler() throws CardException  {
 		int slotId = Integer.parseInt(props.getProperty("slotId", "0"));
-		byte[] saAID = HexString.hexToBuffer(props.getProperty("saAID", "D2760001324543534947"));
+		byte[] saAID = HexString.toByteArray(props.getProperty("saAID", "D2760001324543534947"));
         return new SigAnimaCardHandler(slotId, saAID);
     }
 	
