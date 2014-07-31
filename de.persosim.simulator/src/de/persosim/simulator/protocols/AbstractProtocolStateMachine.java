@@ -183,10 +183,6 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 		return match;
 	}
 	
-	// -----------------------------------------------
-	// XXX AMY remove these methods (from model)
-	// -----------------------------------------------
-		
 	public void createNewApduSpecification(String id) {
 		this.apduSpecification = new ApduSpecification(id);
 		apduSpecification.getTags().setStrictOrder(ARBITRARY_ORDER);

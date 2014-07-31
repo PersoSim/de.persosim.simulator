@@ -230,18 +230,15 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		
 		if(rawKeyPlain.length % 2 != 1) {throw new IllegalArgumentException("encoded public key EC point must be of uneven byte length");};
 		
-		// XXX re-creation of public key from byte[] does not check for correct encoding (compressed/uncompressed/hybrid)
-		// XXX re-creation of public key from byte[] does not consider other encoding than uncompressed, i.e. is missing compressed and hybrid encoding.
-		
 		byte firstKeyByte = rawKeyPlain[0];
 		
 		switch (firstKeyByte){
 		case (byte) 0x01:
-			throw new IllegalArgumentException("encoding 0x01 of public key point is currently not supported");
+			throw new IllegalArgumentException("encoding 0x01 of public key point is currently not supported"); //IMPL ECPoint encoding
 		case (byte) 0x02:
-			throw new IllegalArgumentException("encoding 0x02 of public key point is currently not supported");
+			throw new IllegalArgumentException("encoding 0x02 of public key point is currently not supported"); //IMPL ECPoint encoding
 		case (byte) 0x03:
-			throw new IllegalArgumentException("encoding 0x03 of public key point is currently not supported");
+			throw new IllegalArgumentException("encoding 0x03 of public key point is currently not supported"); //IMPL ECPoint encoding
 		case (byte) 0x04:
 			log(DomainParameterSetEcdh.class, "leading byte 0x04 of public key point indicates uncompressed encoding", TRACE);
 			break;

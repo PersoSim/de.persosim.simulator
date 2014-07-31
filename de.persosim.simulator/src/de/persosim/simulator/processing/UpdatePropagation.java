@@ -11,6 +11,9 @@ package de.persosim.simulator.processing;
  * updates or to allow further propagation of this information in order to
  * update other entities within the system with the same data.
  * 
+ * As an {@link UpdatePropagation} is passed to several entities within the
+ * system instances of this interface are expected to be immutable.
+ * 
  * @author amay
  * 
  */

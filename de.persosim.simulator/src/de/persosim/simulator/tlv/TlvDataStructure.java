@@ -53,16 +53,12 @@ public interface TlvDataStructure extends Iterable<TlvDataObject> {
 	
 	/**
 	 * Adds the specified object to this data structure if possible
+	 * <p>
+	 * NOTE: callers MUST ensure that they do not construct circular references
+	 * within the object structure
 	 * 
-	 * XXX DEV Check for/prohibit circular object references?
-	 * Example:
-	 * 1) Create constructed empty object A
-	 * 2) Create constructed empty object B
-	 * 3) add B to A
-	 * 4) add A to B
-	 * 5) A.toByteArray ...
-	 *
-	 * @param tlvDataObject the object to be added
+	 * @param tlvDataObject
+	 *            the object to be added
 	 */
 	public void addTlvDataObject(TlvDataObject tlvDataObject);
 	

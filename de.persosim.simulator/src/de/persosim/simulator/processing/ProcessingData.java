@@ -166,7 +166,6 @@ public class ProcessingData implements Iso7816, InfoSource {
 	 */
 	public LinkedList<UpdatePropagation> getUpdatePropagations(
 			Class<? extends UpdatePropagation> key) {
-		//TODO AMY check whether the UpdatePropagations should be secured by returning clones here
 		LinkedList<UpdatePropagation> retVal = updatePropagations.get(key);
 		
 		//ensure reVal is not null
