@@ -14,21 +14,77 @@ import javax.smartcardio.CardException;
 import de.persosim.simulator.utils.HexString;
 
 
+/**
+ * This class is the interface between the PersoSim personalization and the SigAnimaCardHandler.
+ * It provides the signature function and returns the corresponding DS.
+ * @author tsenger
+ *
+ */
+/**
+ * @author tsenger
+ *
+ */
 public class CardSigner {
 
+	/** 
+	 * The properties file contains the slotId to which the SigAnima javacard is connected, 
+	 * the AID of the SigAnima applet, the EF FID which contains the DS certificate 
+	 * and the PIN the unlock the signature function
+	 * example content:
+	 *  
+	 * <pre>
+	 * slotId = 1
+	 * saAID = D2760001324543534947
+	 * sigPIN = 1234
+	 * dsCertFID = 5302
+	 * </pre>
+	 * 
+	 */
 	private String propertiesFile = "/home/tsenger/DScardSigner.properties";
 	private Properties props = null;
 	
 	public CardSigner() {
-		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+//		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());  // Already added by PersoSim
 		props = loadProperties(propertiesFile);
 	}
 
+	/**
+	 * This method gets the signature over the given input bytes. It first calculate the digest 
+	 * send the digest to the signing function of the SigAnima card and returns the signature.
+	 * 
+	 * @param digestAlg Digest algorithm name to use e.g. SHA1, SHA224, SHA256, ...
+	 * @param input the data to sign. Depending on the selected digest algorithm the signature algorithm is ECDSAwithSHAxxx
+	 * @return The signature over the given input data. 
+	 * @throws CardException
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchProviderException
+	 */
 	public byte[] getSignature(String digestAlg, byte[] input) throws CardException, NoSuchAlgorithmException, NoSuchProviderException {
 		byte[] digest = getDigest(digestAlg, input);
 		return getCardSignature(props.getProperty("sigPIN"), digest);
 		
 	}
+	
+	/**
+	 * Reads the DS certificate which is stored in the SigAnima applet.
+	 * 
+	 * @return DS certificate
+	 * @throws CardException
+	 * @throws IOException
+	 */
+	public byte[] getDSCertificate() throws CardException, IOException  {
+		byte[] dsCertBytes = null;
+		short dsCertFID = Short.parseShort(props.getProperty("dsCertFID", "5302"), 16);
+
+		synchronized (this) // select and read several times
+        	{
+            	SigAnimaCardHandler cardHandler = buildCardHandler();
+                dsCertBytes = cardHandler.getFile(dsCertFID);
+            }
+
+
+        return dsCertBytes;
+    }
 	
 	private byte[] getDigest(String algorithm, byte[] data) throws NoSuchAlgorithmException, NoSuchProviderException {
 		MessageDigest mda = MessageDigest.getInstance(algorithm, "BC");
@@ -56,20 +112,6 @@ public class CardSigner {
      
 		return signatureBytes;
 	}
-	
-	public byte[] getDSCertificate() throws CardException, IOException  {
-		byte[] dsCertBytes = null;
-		short dsCertFID = Short.parseShort(props.getProperty("dsCertFID", "5302"), 16);
-
-		synchronized (this) // select and read several times
-        	{
-            	SigAnimaCardHandler cardHandler = buildCardHandler();
-                dsCertBytes = cardHandler.getFile(dsCertFID);
-            }
-
-
-        return dsCertBytes;
-    }
 	
 	private Properties loadProperties(String filename) {
 		

@@ -19,6 +19,12 @@ import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 /**
+ * Class for communication with smartcards containing an SigAnima JavaCard applet (https://github.com/tsenger/SigAnima)
+ *  
+ * SigAnima provided ECDSA plain signature function.  
+ * This class provides all necessary methods to use all functions of this applet.
+ * All implemented commands with all parameters are described in the APDU reference document of SigAnima on the project repository. 
+ * 
  * @author tsenger
  *
  */
@@ -37,35 +43,90 @@ public class SigAnimaCardHandler {
         selectApplet(aid);
     }
 
+    /**
+     * @param password The data field should contain the ASCII bytes of the PIN (i.e. from the range 0x30 .. 0x39). 
+     * @return Returns true if the PIN was correct. Otherwise it return false. The retry counter has a initial value of 3.
+     * @throws CardException
+     */
     public boolean verify(String password) throws CardException {
         return sendVerify(password);
     }
 
+    /**
+     * Signs the given plain data and return the signature. The input field may contain the hash value of the data to be signed. 
+     * The sign command will sign what ever it gets in the input field. 
+     * The signing function will pad data with leading zero up to the size of the public key if the data is shorter then the public key size. 
+     * If the data is bigger then the public key, the data will be truncated to the size of the public key (most significant bytes will be cut off).
+     * 
+     * @param keyId Contains the key identifier to the key to sign with. There three slots for key pair. The key identifier is simply the index of the key pair and must be a value between 0x00 and 0x02.
+     * @param input Input data to sign. It may contain the hash value of the data to be signed. 
+     * @return Signature bytes
+     * @throws CardException
+     */
     public byte[] sign(byte keyId, byte[] input) throws CardException {
         sendMSE(keyId);
         return sendPSOSign(input);
     }
 
+    /**
+     * Generates a ECDSA key pair and return the public key
+     * 
+     * @param keyId Contains the key identifier. There three slots for key pair. The key identifier is simply the index of the key pair and must be a value between 0x00 and 0x02.
+     * @param domainParameterId  Contains the ID of the standardized domain parameters. Valid values are: 0x0A for secp224r1, 0x0B for BrainpoolP224r1, 0x0C for secp256r1, 0x0D for BrainpoolP256r1, 0x0E for BrainpoolP320r1
+     * @return The response is a simple TLV structures with tag 0x86 which contains the uncompressed EC public key as value.
+     * @throws CardException
+     */
     public byte[] genKeyPair(byte keyId, byte domainParameterId) throws CardException {
         sendMSE(keyId, domainParameterId);
         return sendGenKeyPair();
     }
 
+    /**
+     * Generates a new EF and fill it with the given data
+     * 
+     * @param fid FID of the EF to create
+     * @param fileBytes The content of the EF
+     * @return success
+     * @throws CardException
+     */
     public boolean createAndWriteFile(short fid, byte[] fileBytes) throws CardException {
         sendCreateFile(fid, (short)fileBytes.length, PERM_FREE);
         return writeFile(fid, fileBytes);
     }
 
+    /**
+     * Select existing EF and fill it with the given data
+     * @param fid EF to select
+     * @param fileBytes The content of the EF
+     * @return success
+     * @throws CardException
+     */
     public boolean writeFile(short fid, byte[] fileBytes) throws CardException {
         if (!sendSelectFile(fid)) return false;
         return sendWriteBinary(fileBytes);
     }
 
+    /**
+     * Sets the PUK of the applet.
+     * This command is only available when the applet is in the initial state. 
+     * 
+     * @param puk The field should contain the ASCII bytes of the PUK (i.e. from the range 0x30 .. 0x39).  The PUK length should always be 10.
+     * @return success
+     * @throws CardException
+     */
     public boolean setPUK(String puk) throws CardException {
         if (puk.length()!=10) throw new IllegalArgumentException("PUK length must be 10 bytes!");
         return sendChangeReferenceData((byte)1, puk.getBytes());
     }
 
+    /**
+     * Change the PIN of the applet
+     * 
+     * @param puk The field should contain the ASCII bytes of the PUK (i.e. from the range 0x30 .. 0x39). The PUK length should always be 10.
+     * @param pin The field should contain the ASCII bytes of the PUK (i.e. from the range 0x30 .. 0x39). The PIN length should be between 4 and 10.
+     * @return success
+     * @throws CardException
+     */
     public boolean setPIN(String puk, String pin) throws CardException {
         if (puk.length()!=10) throw new IllegalArgumentException("PUK length must be 10 bytes!");
         byte[] mergedPukPin = new byte[10+pin.length()];
@@ -74,6 +135,13 @@ public class SigAnimaCardHandler {
         return sendChangeReferenceData((byte)0, mergedPukPin);
     }
 
+    /**
+     * Sets the internal state of the applet.
+     * 
+     * @param state 0x01 initial, 0x02 prepersonalized. The state is set to personalized (0x03) implicitly by the change reference data command when setting the user PIN. 
+     * @return success
+     * @throws CardException
+     */
     public boolean setState(byte state) throws CardException {
         CommandAPDU capdu = new CommandAPDU(0, 0xDA, 0x68, state);
         ResponseAPDU resp = transmit(capdu);
