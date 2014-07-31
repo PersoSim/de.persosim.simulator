@@ -13,7 +13,7 @@ import java.util.LinkedList;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.CommandApduFactory;
-import de.persosim.simulator.apdu.InterindustryCommandApdu;
+import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.platform.Iso7816;
@@ -74,8 +74,8 @@ public class SecureMessaging extends Layer {
 	
 	@Override
 	public void processAscending() {
-		if(this.processingData.getCommandApdu() instanceof InterindustryCommandApdu) { //XXX AMY use a marker interface to check for secure messaging abilities to provide more generic way
-			if (((InterindustryCommandApdu) processingData.getCommandApdu()).getSecureMessaging() != SM_OFF_OR_NO_INDICATION) {
+		if(this.processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu) {
+			if (((IsoSecureMessagingCommandApdu) processingData.getCommandApdu()).getSecureMessaging() != SM_OFF_OR_NO_INDICATION) {
 				if (dataProvider != null) {
 					processIncomingSMAPDU();
 					log(this, "successfully processed ascending secured APDU", TRACE);
@@ -125,8 +125,8 @@ public class SecureMessaging extends Layer {
 	public void processDescending() {
 		CommandApdu cApdu = processingData.getCommandApdu();
 		if ((cApdu != null) && cApdu.wasSecureMessaging()) {
-			if ((cApdu instanceof InterindustryCommandApdu) //XXX AMY use a marker interface to check for secure messaging abilities to provide more generic way
-					&& ((InterindustryCommandApdu) cApdu).getSecureMessaging() == SM_OFF_OR_NO_INDICATION) {
+			if ((cApdu instanceof IsoSecureMessagingCommandApdu)
+					&& ((IsoSecureMessagingCommandApdu) cApdu).getSecureMessaging() == SM_OFF_OR_NO_INDICATION) {
 				processOutgoingSMAPDU();
 				log(this, "successfully processed descending APDU", TRACE);
 			} else {

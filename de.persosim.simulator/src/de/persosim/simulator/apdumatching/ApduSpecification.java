@@ -3,6 +3,7 @@ package de.persosim.simulator.apdumatching;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.InterindustryCommandApdu;
+import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.exception.CommandParameterUndefinedException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
@@ -223,8 +224,8 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 		if(reqSecureMessaging != REQ_OPTIONAL) {
 			CommandApdu curApdu = apdu;
 			while (curApdu != null) {
-				if ((curApdu instanceof InterindustryCommandApdu) && //XXX AMY use a marker interface to check for secure messaging abilities to provide more generic way
-						(secureMessaging == ((InterindustryCommandApdu) curApdu).getSecureMessaging())) {
+				if ((curApdu instanceof IsoSecureMessagingCommandApdu) &&
+						(secureMessaging == ((IsoSecureMessagingCommandApdu) curApdu).getSecureMessaging())) {
 					if(reqSecureMessaging == REQ_MATCH) {
 						break;
 					} else {

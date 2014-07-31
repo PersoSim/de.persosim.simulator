@@ -12,7 +12,7 @@ import de.persosim.simulator.platform.Iso7816Lib;
  * @author amay
  * 
  */
-public class InterindustryCommandApdu extends CommandApdu {
+public class InterindustryCommandApdu extends CommandApdu implements IsoSecureMessagingCommandApdu {
 	public boolean chaining;
 	public byte secureMessaging;
 	public byte channel;
@@ -33,10 +33,10 @@ public class InterindustryCommandApdu extends CommandApdu {
 		return chaining;
 	}
 
-	/**
-	 * see {@link Iso7816Lib#getSecureMessagingStatus(byte[])}
-	 * @return SM indicator
+	/* (non-Javadoc)
+	 * @see de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu#getSecureMessaging()
 	 */
+	@Override
 	public byte getSecureMessaging() {
 		return secureMessaging;
 	}
