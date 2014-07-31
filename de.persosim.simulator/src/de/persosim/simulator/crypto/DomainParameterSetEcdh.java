@@ -418,7 +418,8 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		return ecParameterSpec;
 	}
 	
-	public ECParameterSpec getEcParameterSpec() {
+	@Override
+	public ECParameterSpec getAlgorithmParameterSpec() {
 		return ecParameterSpec;
 	}
 	
