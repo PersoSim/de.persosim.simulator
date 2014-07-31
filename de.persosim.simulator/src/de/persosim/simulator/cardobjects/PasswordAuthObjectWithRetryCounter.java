@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * This class represents a {@link PasswordAuthObject} extended to provide a retry counter.
  * XXX SLS missing initialization of life cycle state
- * XXX DEV talk about (consistent) use of life cycle
  * 
  * @author slutters
  *
