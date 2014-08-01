@@ -1,6 +1,17 @@
 package de.persosim.simulator.perso;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+
+import javax.smartcardio.CardException;
+
+import de.persosim.simulator.perso.dscardsigner.CardSigner;
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
+
+import static de.persosim.simulator.utils.PersoSimLogger.WARN;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 /**
  * SecInfoCmsBuilder that allows creation of valid Signatures within the German
@@ -17,17 +28,44 @@ import de.persosim.simulator.tlv.TlvDataObject;
  * 
  */
 public class TestPkiCmsBuilder extends DefaultSecInfoCmsBuilder {
+	
+	private CardSigner cardSigner;
+		
+	public TestPkiCmsBuilder() {
+		cardSigner = new CardSigner();
+	}
 
 	@Override
 	protected TlvDataObject getCertificate() {
-		// TODO Auto-generated method stub
-		return super.getCertificate();
+		
+		byte[] dsCertBytes = null;
+		
+		try {
+			dsCertBytes = cardSigner.getDSCertificate();
+			if (dsCertBytes==null) return super.getCertificate();
+			else return new ConstructedTlvDataObject(dsCertBytes);
+		} catch (CardException | IOException e) {
+			log(TestPkiCmsBuilder.class, e.getMessage(), WARN);
+			return super.getCertificate();
+		}
 	}
 
 	@Override
-	protected byte[] getSignature(byte[] sigInput) {
-		// TODO Auto-generated method stub
-		return super.getSignature(sigInput);
+	protected byte[] getSignature(byte[] sigInput) {	
+		
+		String digestAlgorithm = "SHA224"; //TODO Get digest algorithm by parsing getDigestAlgorithm()
+		byte[] signature = null;
+		
+		try {
+			signature = cardSigner.getSignature(digestAlgorithm, sigInput);
+			if (signature==null) signature = super.getSignature(sigInput);
+		} catch (CardException | NoSuchAlgorithmException | NoSuchProviderException e) {
+			log(TestPkiCmsBuilder.class, e.getMessage(), WARN);
+			return super.getSignature(sigInput);
+		}
+		return signature;
 	}
+	
+	
 
 }
