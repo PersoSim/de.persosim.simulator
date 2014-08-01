@@ -21,17 +21,6 @@ public class TR03110VerifySecureMessagingCommandApdu extends CommandApdu impleme
 		sm = (byte) ((byte) (super.getCla() & (byte) 0b00001100) >> 2);
 	}
 	
-	public static boolean matches(byte [] apdu){
-		CommandApdu command = new CommandApdu(apdu);
-		if ((command.getCla() == (byte) (0x8c & 0xFF) || (command.getCla() == (byte) (0x80 & 0xFF)))
-				&& command.getIns() == 0x20
-				&& command.getP1P2() == (short) (0x8000 & 0xFFFF)
-				){
-			return true;
-		}
-		return false;
-	}
-	
 	@Override
 	public byte getCla() {
 		// proprietary class, no chaining
