@@ -19,10 +19,7 @@ import de.persosim.simulator.utils.HexString;
  * @author tsenger
  *
  */
-/**
- * @author tsenger
- *
- */
+
 public class CardSigner {
 
 	/** 
@@ -39,7 +36,7 @@ public class CardSigner {
 	 * </pre>
 	 * 
 	 */
-	private String propertiesFile = "Example_DScardSigner.properties";
+	private String propertiesFile = "DScardSigner.properties";
 	private Properties props = null;
 	
 	public CardSigner() {
