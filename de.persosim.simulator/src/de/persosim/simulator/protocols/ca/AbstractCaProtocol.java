@@ -324,21 +324,6 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		 */
 		processingData.addUpdatePropagation(this, "Command General Authenticate successfully processed - Protocol CA completed", new ProtocolUpdate(true));
 	}
-	
-	//XXX SLS remove method from state machine
-	public void processCommandInitialize() {
-		log(this, "processed COMMAND_INITIALIZE", DEBUG);
-	}
-	
-	//XXX SLS remove method from state machine
-	public void processCommandFinalize() {
-		log(this, "processed COMMAND_FINALIZE", DEBUG);
-	}
-	
-	//XXX SLS remove method from state machine
-	public void processCommandReset() {
-		log(this, "processed COMMAND_RESET", DEBUG);
-	}
 
 	@Override
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
