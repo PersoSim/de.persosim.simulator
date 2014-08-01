@@ -10,6 +10,9 @@ import de.persosim.simulator.perso.dscardsigner.CardSigner;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
 
+import static de.persosim.simulator.utils.PersoSimLogger.WARN;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+
 /**
  * SecInfoCmsBuilder that allows creation of valid Signatures within the German
  * nPA TestPKI
@@ -42,6 +45,7 @@ public class TestPkiCmsBuilder extends DefaultSecInfoCmsBuilder {
 			if (dsCertBytes==null) return super.getCertificate();
 			else return new ConstructedTlvDataObject(dsCertBytes);
 		} catch (CardException | IOException e) {
+			log(TestPkiCmsBuilder.class, e.getMessage(), WARN);
 			return super.getCertificate();
 		}
 	}
@@ -56,6 +60,7 @@ public class TestPkiCmsBuilder extends DefaultSecInfoCmsBuilder {
 			signature = cardSigner.getSignature(digestAlgorithm, sigInput);
 			if (signature==null) signature = super.getSignature(sigInput);
 		} catch (CardException | NoSuchAlgorithmException | NoSuchProviderException e) {
+			log(TestPkiCmsBuilder.class, e.getMessage(), WARN);
 			return super.getSignature(sigInput);
 		}
 		return signature;

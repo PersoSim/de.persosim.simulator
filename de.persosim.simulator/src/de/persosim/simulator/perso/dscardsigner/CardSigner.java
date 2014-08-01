@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.Security;
 import java.util.Properties;
 
 import javax.smartcardio.CardException;
@@ -40,11 +39,10 @@ public class CardSigner {
 	 * </pre>
 	 * 
 	 */
-	private String propertiesFile = "/home/tsenger/DScardSigner.properties";
+	private String propertiesFile = "Example_DScardSigner.properties";
 	private Properties props = null;
 	
 	public CardSigner() {
-//		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());  // Already added by PersoSim
 		props = loadProperties(propertiesFile);
 	}
 
