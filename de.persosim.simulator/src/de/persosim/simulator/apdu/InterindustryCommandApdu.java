@@ -41,6 +41,11 @@ public class InterindustryCommandApdu extends CommandApdu implements IsoSecureMe
 		return secureMessaging;
 	}
 
+	@Override
+	public void setSecureMessaging(byte smStatus) {
+		secureMessaging = smStatus;
+	}
+
 	public byte getChannel() {
 		return channel;
 	}

@@ -17,7 +17,6 @@ import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.platform.Iso7816;
-import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.secstatus.SecStatusEventUpdatePropagation;
@@ -216,14 +215,14 @@ public class SecureMessaging extends Layer {
 		log(this, "Incoming SM APDU is ISO case: " + smApdu.getIsoCase(), DEBUG);
 		
 		try {
-			byte[] plainApduBytes = extractPlainTextAPDU();
-			log(this, "plain text APDU is " + HexString.encode(plainApduBytes), DEBUG);
+			//create new CommandAPDU
+			CommandApdu plainCommand = extractPlainTextAPDU();
+			log(this, "plain text APDU is " + plainCommand, DEBUG);
 			
 			if (verifyMac()) {
 				log(this, "verification of mac: correct", DEBUG);
 				
-				//create and propagate new CommandAPDU
-				CommandApdu plainCommand = CommandApduFactory.createCommandApdu(plainApduBytes, smApdu);
+				//propagate new CommandAPDU
 				processingData.updateCommandApdu(this, "SM APDU extracted", plainCommand);
 				
 			} else {
@@ -246,10 +245,10 @@ public class SecureMessaging extends Layer {
 	}
 	
 	/**
-	 * This method returns a byte array representation of an SM secured APDU.
+	 * This method returns a plain APDU.
 	 * @return a byte array representation of an SM secured APDU
 	 */
-	public byte[] extractPlainTextAPDU() {
+	public CommandApdu extractPlainTextAPDU() {
 		TlvDataObject tlvObject87, tlvObject8E, tlvObject97;
 		byte[] encryptedData, paddedData, data, le, plainAPDU, dbgIv;
 		int isoCaseOfPlainAPDU;
@@ -294,7 +293,6 @@ public class SecureMessaging extends Layer {
 		
 		try {
 			byte[] header = this.processingData.getCommandApdu().getHeader();
-			header[0] = Iso7816Lib.setSecureMessagingStatus(header[0], Iso7816.SM_OFF_OR_NO_INDICATION);
 			apduStream.write(header);
 		} catch (IOException e) {
 			logException(this, e);
@@ -349,9 +347,13 @@ public class SecureMessaging extends Layer {
 		
 		plainAPDU = apduStream.toByteArray();
 		
-		log(this, "completed extracting SM APDU", TRACE);
+		CommandApdu result = CommandApduFactory.createCommandApdu(plainAPDU, processingData.getCommandApdu());
+		if (this.processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu){
+			((IsoSecureMessagingCommandApdu)result).setSecureMessaging(Iso7816.SM_OFF_OR_NO_INDICATION);
+		}
 		
-		return plainAPDU;
+		log(this, "completed extracting SM APDU", TRACE);
+		return result;
 	}
 	
 	/**
