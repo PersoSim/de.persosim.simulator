@@ -125,10 +125,6 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		secureRandom = new SecureRandom();
 	}
 	
-	public void processCommandInitialize() {
-		log(this, "processed COMMAND_INITIALIZE", DEBUG);
-	}
-	
 	/**
 	 * This method processes the command APDU SET_AT.
 	 */
@@ -728,10 +724,6 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		return new ResponseData(sw, note);
 	}
 	
-	public void processCommandFinalize() {
-		log(this, "processed COMMAND_FINALIZE", DEBUG);
-	}
-	
 	/**
 	 * This method returns the name of the password associated with the currently used password identifier.
 	 * @return the name of the used password
@@ -758,11 +750,6 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		default:
 			return "unknown password identifier " + pwdIdentifier;
 		}
-	}
-	
-	public void processCommandReset() {
-		log(this, "PACE failed", DEBUG);
-		log(this, "processed COMMAND_RESET", DEBUG);
 	}
 	
 	@Override

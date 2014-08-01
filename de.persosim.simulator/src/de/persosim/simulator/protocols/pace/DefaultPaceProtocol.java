@@ -8,7 +8,7 @@ package de.persosim.simulator.protocols.pace;
 
 /* Command line options: -verbose -p EA -o DefaultPaceProtocol -l java -t PACE:paceclass C:\develop\wd\protocol_pace.xml   */
 /* This file is generated from protocol_pace.xml - do not edit manually  */
-/* Generated on: Thu Jul 03 14:56:23 CEST 2014 / version 3.52beta2 */
+/* Generated on: Fri Aug 01 12:45:35 CEST 2014 / version 3.52beta2 */
 
 
 
@@ -238,7 +238,6 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 						stateVar =  PACE_ANNOUNCED;/* entry chain  */
 						if(stateVarPACE_ANNOUNCED==  PACE_INIT){
 							logs("INIT");
-							processCommandInitialize();
 							returnResult();
 
 						}else if(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS){
@@ -266,7 +265,6 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 							}
 						}else if(stateVarPACE_ANNOUNCED==  PACE_MUTUAL_AUTHENTICATE_PROCESSED){
 							logs("MA_PROCESSED");
-							processCommandFinalize();
 
 						}
 
@@ -293,7 +291,6 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 
 					/* OnEntry code of state PACE_INIT */
 					logs("INIT");
-					processCommandInitialize();
 					returnResult();
 
 					/* adjust state variables  */
@@ -404,7 +401,6 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 							stateVar =  PACE_ANNOUNCED;/* entry chain  */
 							if(stateVarPACE_ANNOUNCED==  PACE_INIT){
 								logs("INIT");
-								processCommandInitialize();
 								returnResult();
 
 							}else if(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS){
@@ -432,7 +428,6 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 								}
 							}else if(stateVarPACE_ANNOUNCED==  PACE_MUTUAL_AUTHENTICATE_PROCESSED){
 								logs("MA_PROCESSED");
-								processCommandFinalize();
 
 							}
 
@@ -518,7 +513,6 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 			case RESET:
 				/* action code  */
 				logs("RESET");
-				processCommandReset();
 
 
 				if(true){
@@ -530,7 +524,6 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 
 					/* OnEntry code of state PACE_INIT */
 					logs("INIT");
-					processCommandInitialize();
 					returnResult();
 
 					/* adjust state variables  */
@@ -675,7 +668,6 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 
 											/* OnEntry code of state PACE_MUTUAL_AUTHENTICATE_PROCESSED */
 											logs("MA_PROCESSED");
-											processCommandFinalize();
 
 											/* adjust state variables  */
 											stateVarGENERAL_AUTHENTICATE_CHAINING =  PACE_GET_NONCE_PROCESSED;
@@ -846,7 +838,6 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 							stateVar =  PACE_ANNOUNCED;/* entry chain  */
 							if(stateVarPACE_ANNOUNCED==  PACE_INIT){
 								logs("INIT");
-								processCommandInitialize();
 								returnResult();
 
 							}else if(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS){
@@ -874,7 +865,6 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 								}
 							}else if(stateVarPACE_ANNOUNCED==  PACE_MUTUAL_AUTHENTICATE_PROCESSED){
 								logs("MA_PROCESSED");
-								processCommandFinalize();
 
 							}
 

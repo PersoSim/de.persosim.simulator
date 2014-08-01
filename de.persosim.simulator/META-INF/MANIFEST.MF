@@ -8,6 +8,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: de.persosim.simulator,
  de.persosim.simulator.cardobjects,
  de.persosim.simulator.crypto,
+ de.persosim.simulator.crypto.certificates,
+ de.persosim.simulator.exception,
  de.persosim.simulator.perso,
  de.persosim.simulator.platform,
  de.persosim.simulator.protocols,

@@ -8,7 +8,7 @@ package de.persosim.simulator.protocols.ca;
 
 /* Command line options: -verbose -p EA -o DefaultCaProtocol -l java -t CA:caclass C:\develop\wd\protocol_ca.xml   */
 /* This file is generated from protocol_ca.xml - do not edit manually  */
-/* Generated on: Thu Jul 03 15:45:47 CEST 2014 / version 3.52beta2 */
+/* Generated on: Fri Aug 01 12:45:22 CEST 2014 / version 3.52beta2 */
 
 
 
@@ -162,7 +162,6 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 
 					/* OnEntry code of state CA_INIT */
 					logs("INIT");
-					processCommandInitialize();
 					returnResult();
 
 					/* adjust state variables  */
@@ -184,7 +183,6 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 						stateVar =  CA_IN_PROGRESS;/* entry chain  */
 						if(stateVarCA_IN_PROGRESS==  CA_GENERAL_AUTHENTICATE_PROCESSED){
 							logs("GENERAL_AUTHENTICATE_PROCESSED");
-							processCommandFinalize();
 
 						}else if(stateVarCA_IN_PROGRESS==  CA_GENERAL_AUTHENTICATE_RECEIVED){
 							logs("GENERAL_AUTHENTICATE_RECEIVED");
@@ -192,7 +190,6 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 
 						}else if(stateVarCA_IN_PROGRESS==  CA_INIT){
 							logs("INIT");
-							processCommandInitialize();
 							returnResult();
 
 						}else if(stateVarCA_IN_PROGRESS==  CA_SET_AT_PROCESSED){
@@ -263,7 +260,6 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 							stateVar =  CA_IN_PROGRESS;/* entry chain  */
 							if(stateVarCA_IN_PROGRESS==  CA_GENERAL_AUTHENTICATE_PROCESSED){
 								logs("GENERAL_AUTHENTICATE_PROCESSED");
-								processCommandFinalize();
 
 							}else if(stateVarCA_IN_PROGRESS==  CA_GENERAL_AUTHENTICATE_RECEIVED){
 								logs("GENERAL_AUTHENTICATE_RECEIVED");
@@ -271,7 +267,6 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 
 							}else if(stateVarCA_IN_PROGRESS==  CA_INIT){
 								logs("INIT");
-								processCommandInitialize();
 								returnResult();
 
 							}else if(stateVarCA_IN_PROGRESS==  CA_SET_AT_PROCESSED){
@@ -330,7 +325,6 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 			case RESET:
 				/* action code  */
 				logs("RESET");
-				processCommandReset();
 
 
 				if(true){
@@ -342,7 +336,6 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 
 					/* OnEntry code of state CA_INIT */
 					logs("INIT");
-					processCommandInitialize();
 					returnResult();
 
 					/* adjust state variables  */
@@ -381,7 +374,6 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 
 							/* OnEntry code of state CA_GENERAL_AUTHENTICATE_PROCESSED */
 							logs("GENERAL_AUTHENTICATE_PROCESSED");
-							processCommandFinalize();
 
 							/* adjust state variables  */
 							stateVarCA_IN_PROGRESS =  CA_GENERAL_AUTHENTICATE_PROCESSED;
@@ -469,7 +461,6 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 							stateVar =  CA_IN_PROGRESS;/* entry chain  */
 							if(stateVarCA_IN_PROGRESS==  CA_GENERAL_AUTHENTICATE_PROCESSED){
 								logs("GENERAL_AUTHENTICATE_PROCESSED");
-								processCommandFinalize();
 
 							}else if(stateVarCA_IN_PROGRESS==  CA_GENERAL_AUTHENTICATE_RECEIVED){
 								logs("GENERAL_AUTHENTICATE_RECEIVED");
@@ -477,7 +468,6 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 
 							}else if(stateVarCA_IN_PROGRESS==  CA_INIT){
 								logs("INIT");
-								processCommandInitialize();
 								returnResult();
 
 							}else if(stateVarCA_IN_PROGRESS==  CA_SET_AT_PROCESSED){
