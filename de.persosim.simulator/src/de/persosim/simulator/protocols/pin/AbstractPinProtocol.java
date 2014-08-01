@@ -60,12 +60,12 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	
 	//XXX this could be defined as a generic command instead of the both methods above
 	private void changePassword(ChangeablePasswordAuthObject passwordObject) {
+		if(passwordObject == null) {throw new NullPointerException("new password object must not be null");}
+		
 		CommandApdu cApdu = processingData.getCommandApdu();
 		TlvValue tlvData = cApdu.getCommandData();
 		
 		String passwordName = passwordObject.getPasswordName();
-		
-		//XXX SLS null check on passwordObject
 		
 		if(tlvData == null) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND); // is this the correct SW here? suggest 6A80
