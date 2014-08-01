@@ -3,7 +3,6 @@ package de.persosim.simulator.platform;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.persosim.simulator.test.PersoSimTestCase;
@@ -205,7 +204,6 @@ public class Iso7816LibTest extends PersoSimTestCase implements Iso7816 {
 		Iso7816Lib.setSecureMessagingStatus((byte) 0x20, SM_OFF_OR_NO_INDICATION);
 	}
 	
-	@Ignore //FIXME MBK reenable after implementing proprietary APDU handling
 	@Test(expected = IllegalArgumentException.class)
 	public void testSetSecureMessagingStatus_ProprietaryFormat() {
 		Iso7816Lib.setSecureMessagingStatus((byte)0x80, SM_OFF_OR_NO_INDICATION);
