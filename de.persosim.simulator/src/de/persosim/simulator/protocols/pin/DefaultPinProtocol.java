@@ -8,7 +8,7 @@ package de.persosim.simulator.protocols.pin;
 
 /* Command line options: -verbose -p EA -o DefaultPinProtocol -l java -t PIN:pinclass C:\develop\wd\protocol_pin.xml   */
 /* This file is generated from protocol_pin.xml - do not edit manually  */
-/* Generated on: Mon Jun 30 10:28:54 CEST 2014 / version 3.52beta2 */
+/* Generated on: Mon Aug 04 10:37:05 CEST 2014 / version 3.52beta2 */
 
 
 
@@ -18,24 +18,22 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 	public static final int REGISTER_APDU_ACTIVATE_PIN = 0;
 	public static final int DEACTIVATE_PIN_RECEIVED = 1;
 	public static final int UNBLOCK_PIN_PROCESSED = 2;
-	public static final int PIN_ANNOUNCED = 3;
-	public static final int CHANGE_PIN_RECEIVED = 4;
+	public static final int CHANGE_PASSWORD_RECEIVED = 3;
+	public static final int PASSWORD_ANNOUNCED = 4;
 	public static final int REGISTER_APDUS = 5;
 	public static final int REGISTER_APDU_CHANGE_PIN = 6;
 	public static final int PIN_INIT = 7;
 	public static final int ACTIVATE_PIN_PROCESSED = 8;
 	public static final int ACTIVATE_PIN_RECEIVED = 9;
-	public static final int CHANGE_CAN_PROCESSED = 10;
-	public static final int UNBLOCK_PIN_RECEIVED = 11;
-	public static final int REGISTER_APDU_UNBLOCK_PIN = 12;
-	public static final int REGISTER_APDU_DEACTIVATE_PIN = 13;
-	public static final int PIN_COMPLETED = 14;
-	public static final int CHANGE_PIN_PROCESSED = 15;
-	public static final int CHANGE_CAN_RECEIVED = 16;
-	public static final int ERROR_HANDLING = 17;
-	public static final int DEACTIVATE_PIN_PROCESSED = 18;
-	public static final int REGISTER_APDU_CHANGE_CAN = 19;
-	public static final int __UNKNOWN_STATE__ = 20;
+	public static final int UNBLOCK_PIN_RECEIVED = 10;
+	public static final int REGISTER_APDU_UNBLOCK_PIN = 11;
+	public static final int REGISTER_APDU_DEACTIVATE_PIN = 12;
+	public static final int PASSWORD_COMPLETED = 13;
+	public static final int CHANGE_PASSWORD_PROCESSED = 14;
+	public static final int ERROR_HANDLING = 15;
+	public static final int DEACTIVATE_PIN_PROCESSED = 16;
+	public static final int REGISTER_APDU_CHANGE_CAN = 17;
+	public static final int __UNKNOWN_STATE__ = 18;
 
 
 	public static final int DEFAULTPINPROTOCOL_NO_MSG = 0;
@@ -46,7 +44,7 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 	protected boolean m_initialized=false;
 
 	int  stateVar;
-	int  stateVarPIN_ANNOUNCED;
+	int  stateVarPASSWORD_ANNOUNCED;
 	int  stateVarREGISTER_APDUS;
 
 	// State handler class default ctor
@@ -55,7 +53,7 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 	}
 
 	/* Helper(s) to reset history */
-	public void resetHistoryPIN_ANNOUNCED(){stateVarPIN_ANNOUNCED= PIN_INIT;}
+	public void resetHistoryPASSWORD_ANNOUNCED(){stateVarPASSWORD_ANNOUNCED= PIN_INIT;}
 	public void resetHistoryREGISTER_APDUS(){stateVarREGISTER_APDUS= REGISTER_APDU_ACTIVATE_PIN;}
 
 	/* Helper to get innermost active state id */
@@ -64,18 +62,14 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 			return REGISTER_APDU_CHANGE_CAN;
 		}else if(isInDEACTIVATE_PIN_PROCESSED()){
 			return DEACTIVATE_PIN_PROCESSED;
-		}else if(isInCHANGE_CAN_RECEIVED()){
-			return CHANGE_CAN_RECEIVED;
-		}else if(isInCHANGE_PIN_PROCESSED()){
-			return CHANGE_PIN_PROCESSED;
+		}else if(isInCHANGE_PASSWORD_PROCESSED()){
+			return CHANGE_PASSWORD_PROCESSED;
 		}else if(isInREGISTER_APDU_DEACTIVATE_PIN()){
 			return REGISTER_APDU_DEACTIVATE_PIN;
 		}else if(isInREGISTER_APDU_UNBLOCK_PIN()){
 			return REGISTER_APDU_UNBLOCK_PIN;
 		}else if(isInUNBLOCK_PIN_RECEIVED()){
 			return UNBLOCK_PIN_RECEIVED;
-		}else if(isInCHANGE_CAN_PROCESSED()){
-			return CHANGE_CAN_PROCESSED;
 		}else if(isInACTIVATE_PIN_RECEIVED()){
 			return ACTIVATE_PIN_RECEIVED;
 		}else if(isInACTIVATE_PIN_PROCESSED()){
@@ -84,8 +78,8 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 			return PIN_INIT;
 		}else if(isInREGISTER_APDU_CHANGE_PIN()){
 			return REGISTER_APDU_CHANGE_PIN;
-		}else if(isInCHANGE_PIN_RECEIVED()){
-			return CHANGE_PIN_RECEIVED;
+		}else if(isInCHANGE_PASSWORD_RECEIVED()){
+			return CHANGE_PASSWORD_RECEIVED;
 		}else if(isInUNBLOCK_PIN_PROCESSED()){
 			return UNBLOCK_PIN_PROCESSED;
 		}else if(isInDEACTIVATE_PIN_RECEIVED()){
@@ -94,8 +88,8 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 			return REGISTER_APDU_ACTIVATE_PIN;
 		}else if(isInERROR_HANDLING()){
 			return ERROR_HANDLING;
-		}else if(isInPIN_COMPLETED()){
-			return PIN_COMPLETED;
+		}else if(isInPASSWORD_COMPLETED()){
+			return PASSWORD_COMPLETED;
 		}else{
 			return __UNKNOWN_STATE__;
 		}
@@ -103,24 +97,22 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 
 	// Helper(s) to find out if the machine is in a certain state
 	public boolean isInREGISTER_APDU_ACTIVATE_PIN(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_ACTIVATE_PIN)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInDEACTIVATE_PIN_RECEIVED(){return (((stateVarPIN_ANNOUNCED==  DEACTIVATE_PIN_RECEIVED)&&(stateVar==  PIN_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInUNBLOCK_PIN_PROCESSED(){return (((stateVarPIN_ANNOUNCED==  UNBLOCK_PIN_PROCESSED)&&(stateVar==  PIN_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInPIN_ANNOUNCED(){return (((stateVar==  PIN_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInCHANGE_PIN_RECEIVED(){return (((stateVarPIN_ANNOUNCED==  CHANGE_PIN_RECEIVED)&&(stateVar==  PIN_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInDEACTIVATE_PIN_RECEIVED(){return (((stateVarPASSWORD_ANNOUNCED==  DEACTIVATE_PIN_RECEIVED)&&(stateVar==  PASSWORD_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInUNBLOCK_PIN_PROCESSED(){return (((stateVarPASSWORD_ANNOUNCED==  UNBLOCK_PIN_PROCESSED)&&(stateVar==  PASSWORD_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInCHANGE_PASSWORD_RECEIVED(){return (((stateVarPASSWORD_ANNOUNCED==  CHANGE_PASSWORD_RECEIVED)&&(stateVar==  PASSWORD_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInPASSWORD_ANNOUNCED(){return (((stateVar==  PASSWORD_ANNOUNCED)) ? (true) : (false));}
 	public boolean isInREGISTER_APDUS(){return (((stateVar==  REGISTER_APDUS)) ? (true) : (false));}
 	public boolean isInREGISTER_APDU_CHANGE_PIN(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_CHANGE_PIN)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInPIN_INIT(){return (((stateVarPIN_ANNOUNCED==  PIN_INIT)&&(stateVar==  PIN_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInACTIVATE_PIN_PROCESSED(){return (((stateVarPIN_ANNOUNCED==  ACTIVATE_PIN_PROCESSED)&&(stateVar==  PIN_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInACTIVATE_PIN_RECEIVED(){return (((stateVarPIN_ANNOUNCED==  ACTIVATE_PIN_RECEIVED)&&(stateVar==  PIN_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInCHANGE_CAN_PROCESSED(){return (((stateVarPIN_ANNOUNCED==  CHANGE_CAN_PROCESSED)&&(stateVar==  PIN_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInUNBLOCK_PIN_RECEIVED(){return (((stateVarPIN_ANNOUNCED==  UNBLOCK_PIN_RECEIVED)&&(stateVar==  PIN_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInPIN_INIT(){return (((stateVarPASSWORD_ANNOUNCED==  PIN_INIT)&&(stateVar==  PASSWORD_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInACTIVATE_PIN_PROCESSED(){return (((stateVarPASSWORD_ANNOUNCED==  ACTIVATE_PIN_PROCESSED)&&(stateVar==  PASSWORD_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInACTIVATE_PIN_RECEIVED(){return (((stateVarPASSWORD_ANNOUNCED==  ACTIVATE_PIN_RECEIVED)&&(stateVar==  PASSWORD_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInUNBLOCK_PIN_RECEIVED(){return (((stateVarPASSWORD_ANNOUNCED==  UNBLOCK_PIN_RECEIVED)&&(stateVar==  PASSWORD_ANNOUNCED)) ? (true) : (false));}
 	public boolean isInREGISTER_APDU_UNBLOCK_PIN(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_UNBLOCK_PIN)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
 	public boolean isInREGISTER_APDU_DEACTIVATE_PIN(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_DEACTIVATE_PIN)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInPIN_COMPLETED(){return (((stateVar==  PIN_COMPLETED)) ? (true) : (false));}
-	public boolean isInCHANGE_PIN_PROCESSED(){return (((stateVarPIN_ANNOUNCED==  CHANGE_PIN_PROCESSED)&&(stateVar==  PIN_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInCHANGE_CAN_RECEIVED(){return (((stateVarPIN_ANNOUNCED==  CHANGE_CAN_RECEIVED)&&(stateVar==  PIN_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInPASSWORD_COMPLETED(){return (((stateVar==  PASSWORD_COMPLETED)) ? (true) : (false));}
+	public boolean isInCHANGE_PASSWORD_PROCESSED(){return (((stateVarPASSWORD_ANNOUNCED==  CHANGE_PASSWORD_PROCESSED)&&(stateVar==  PASSWORD_ANNOUNCED)) ? (true) : (false));}
 	public boolean isInERROR_HANDLING(){return (((stateVar==  ERROR_HANDLING)) ? (true) : (false));}
-	public boolean isInDEACTIVATE_PIN_PROCESSED(){return (((stateVarPIN_ANNOUNCED==  DEACTIVATE_PIN_PROCESSED)&&(stateVar==  PIN_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInDEACTIVATE_PIN_PROCESSED(){return (((stateVarPASSWORD_ANNOUNCED==  DEACTIVATE_PIN_PROCESSED)&&(stateVar==  PASSWORD_ANNOUNCED)) ? (true) : (false));}
 	public boolean isInREGISTER_APDU_CHANGE_CAN(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_CHANGE_CAN)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
 
 
@@ -142,7 +134,7 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 
 			// Set state vars to default states
 			stateVar =  REGISTER_APDUS; /* set init state of top state */
-			stateVarPIN_ANNOUNCED =  PIN_INIT; /* set init state of PIN_ANNOUNCED */
+			stateVarPASSWORD_ANNOUNCED =  PIN_INIT; /* set init state of PASSWORD_ANNOUNCED */
 			stateVarREGISTER_APDUS =  REGISTER_APDU_ACTIVATE_PIN; /* set init state of REGISTER_APDUS */
 
 		}
@@ -153,8 +145,8 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 		stateVar=state;
 	}
 
-	protected void defaultpinprotocolChangeToStatePIN_ANNOUNCED(int  state){
-		stateVarPIN_ANNOUNCED = state;
+	protected void defaultpinprotocolChangeToStatePASSWORD_ANNOUNCED(int  state){
+		stateVarPASSWORD_ANNOUNCED = state;
 	}
 	
 	protected void defaultpinprotocolChangeToStateREGISTER_APDUS(int  state){
@@ -182,35 +174,35 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 
 			case ERROR_HANDLING:
 				if(true){
-					/* Transition from ERROR_HANDLING to PIN_ANNOUNCED */
+					/* Transition from ERROR_HANDLING to PASSWORD_ANNOUNCED */
 					evConsumed=16;
 
 					logs("INIT");
 					returnResult();
-					stateVar =  PIN_ANNOUNCED;/* Default in entry chain  */
-					stateVarPIN_ANNOUNCED =  PIN_INIT;/* Default in entry chain  */
+					stateVar =  PASSWORD_ANNOUNCED;/* Default in entry chain  */
+					stateVarPASSWORD_ANNOUNCED =  PIN_INIT;/* Default in entry chain  */
 
 				}else{
 					/* Intentionally left blank */
 				} /*end of event selection */
 			break; /* end of case ERROR_HANDLING  */
 
-			case PIN_ANNOUNCED:
+			case PASSWORD_ANNOUNCED:
 
-				switch (stateVarPIN_ANNOUNCED) {
+				switch (stateVarPASSWORD_ANNOUNCED) {
 
 					case ACTIVATE_PIN_PROCESSED:
 						if(true){
-							/* Transition from ACTIVATE_PIN_PROCESSED to PIN_COMPLETED */
+							/* Transition from ACTIVATE_PIN_PROCESSED to PASSWORD_COMPLETED */
 							evConsumed=16;
 
 
-							/* OnEntry code of state PIN_COMPLETED */
+							/* OnEntry code of state PASSWORD_COMPLETED */
 							returnResult();
 
 							/* adjust state variables  */
-							stateVar =  PIN_COMPLETED;
-							stateVarPIN_ANNOUNCED =  PIN_INIT;
+							stateVar =  PASSWORD_COMPLETED;
+							stateVarPASSWORD_ANNOUNCED =  PIN_INIT;
 						}else{
 							/* Intentionally left blank */
 						} /*end of event selection */
@@ -225,97 +217,56 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 							logs("ACTIVATE_PIN_PROCESSED");
 
 							/* adjust state variables  */
-							stateVarPIN_ANNOUNCED =  ACTIVATE_PIN_PROCESSED;
+							stateVarPASSWORD_ANNOUNCED =  ACTIVATE_PIN_PROCESSED;
 						}else{
 							/* Intentionally left blank */
 						} /*end of event selection */
 					break; /* end of case ACTIVATE_PIN_RECEIVED  */
 
-					case CHANGE_CAN_PROCESSED:
+					case CHANGE_PASSWORD_PROCESSED:
 						if(true){
-							/* Transition from CHANGE_CAN_PROCESSED to PIN_COMPLETED */
+							/* Transition from CHANGE_PASSWORD_PROCESSED to PASSWORD_COMPLETED */
 							evConsumed=16;
 
 
-							/* OnEntry code of state PIN_COMPLETED */
+							/* OnEntry code of state PASSWORD_COMPLETED */
 							returnResult();
 
 							/* adjust state variables  */
-							stateVar =  PIN_COMPLETED;
-							stateVarPIN_ANNOUNCED =  PIN_INIT;
+							stateVar =  PASSWORD_COMPLETED;
+							stateVarPASSWORD_ANNOUNCED =  PIN_INIT;
 						}else{
 							/* Intentionally left blank */
 						} /*end of event selection */
-					break; /* end of case CHANGE_CAN_PROCESSED  */
+					break; /* end of case CHANGE_PASSWORD_PROCESSED  */
 
-					case CHANGE_CAN_RECEIVED:
+					case CHANGE_PASSWORD_RECEIVED:
 						if(isStatusWord(SW_9000_NO_ERROR)){
-							/* Transition from CHANGE_CAN_RECEIVED to CHANGE_CAN_PROCESSED */
+							/* Transition from CHANGE_PASSWORD_RECEIVED to CHANGE_PASSWORD_PROCESSED */
 							evConsumed=16;
 
-							/* OnEntry code of state CHANGE_CAN_PROCESSED */
-							logs("CHANGE_CAN_PROCESSED");
+							/* OnEntry code of state CHANGE_PASSWORD_PROCESSED */
+							logs("CHANGE_PASSWORD_PROCESSED");
 
 							/* adjust state variables  */
-							stateVarPIN_ANNOUNCED =  CHANGE_CAN_PROCESSED;
-						}else if(isStatusWord_63CX_Counter()){
-							/* Transition from CHANGE_CAN_RECEIVED to CHANGE_CAN_PROCESSED */
-							evConsumed=16;
-
-							/* OnEntry code of state CHANGE_CAN_PROCESSED */
-							logs("CHANGE_CAN_PROCESSED");
-
-							/* adjust state variables  */
-							stateVarPIN_ANNOUNCED =  CHANGE_CAN_PROCESSED;
+							stateVarPASSWORD_ANNOUNCED =  CHANGE_PASSWORD_PROCESSED;
 						}else{
 							/* Intentionally left blank */
 						} /*end of event selection */
-					break; /* end of case CHANGE_CAN_RECEIVED  */
-
-					case CHANGE_PIN_PROCESSED:
-						if(true){
-							/* Transition from CHANGE_PIN_PROCESSED to PIN_COMPLETED */
-							evConsumed=16;
-
-
-							/* OnEntry code of state PIN_COMPLETED */
-							returnResult();
-
-							/* adjust state variables  */
-							stateVar =  PIN_COMPLETED;
-							stateVarPIN_ANNOUNCED =  PIN_INIT;
-						}else{
-							/* Intentionally left blank */
-						} /*end of event selection */
-					break; /* end of case CHANGE_PIN_PROCESSED  */
-
-					case CHANGE_PIN_RECEIVED:
-						if(isStatusWord(SW_9000_NO_ERROR)){
-							/* Transition from CHANGE_PIN_RECEIVED to CHANGE_PIN_PROCESSED */
-							evConsumed=16;
-
-							/* OnEntry code of state CHANGE_PIN_PROCESSED */
-							logs("CHANGE_PIN_PROCESSED");
-
-							/* adjust state variables  */
-							stateVarPIN_ANNOUNCED =  CHANGE_PIN_PROCESSED;
-						}else{
-							/* Intentionally left blank */
-						} /*end of event selection */
-					break; /* end of case CHANGE_PIN_RECEIVED  */
+					break; /* end of case CHANGE_PASSWORD_RECEIVED  */
 
 					case DEACTIVATE_PIN_PROCESSED:
 						if(true){
-							/* Transition from DEACTIVATE_PIN_PROCESSED to PIN_COMPLETED */
+							/* Transition from DEACTIVATE_PIN_PROCESSED to PASSWORD_COMPLETED */
 							evConsumed=16;
 
 
-							/* OnEntry code of state PIN_COMPLETED */
+							/* OnEntry code of state PASSWORD_COMPLETED */
 							returnResult();
 
 							/* adjust state variables  */
-							stateVar =  PIN_COMPLETED;
-							stateVarPIN_ANNOUNCED =  PIN_INIT;
+							stateVar =  PASSWORD_COMPLETED;
+							stateVarPASSWORD_ANNOUNCED =  PIN_INIT;
 						}else{
 							/* Intentionally left blank */
 						} /*end of event selection */
@@ -330,7 +281,7 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 							logs("DEACTIVATE_PIN_PROCESSED");
 
 							/* adjust state variables  */
-							stateVarPIN_ANNOUNCED =  DEACTIVATE_PIN_PROCESSED;
+							stateVarPASSWORD_ANNOUNCED =  DEACTIVATE_PIN_PROCESSED;
 						}else{
 							/* Intentionally left blank */
 						} /*end of event selection */
@@ -346,27 +297,27 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 							processCommandActivatePin();
 
 							/* adjust state variables  */
-							stateVarPIN_ANNOUNCED =  ACTIVATE_PIN_RECEIVED;
+							stateVarPASSWORD_ANNOUNCED =  ACTIVATE_PIN_RECEIVED;
 						}else if(isAPDU("Change CAN")){
-							/* Transition from PIN_INIT to CHANGE_CAN_RECEIVED */
+							/* Transition from PIN_INIT to CHANGE_PASSWORD_RECEIVED */
 							evConsumed=16;
 
-							/* OnEntry code of state CHANGE_CAN_RECEIVED */
-							logs("CHANGE_CAN_RECEIVED");
-							processCommandChangeCan();
+							/* OnEntry code of state CHANGE_PASSWORD_RECEIVED */
+							logs("CHANGE_PASSWORD_RECEIVED");
+							processCommandChangePassword();
 
 							/* adjust state variables  */
-							stateVarPIN_ANNOUNCED =  CHANGE_CAN_RECEIVED;
+							stateVarPASSWORD_ANNOUNCED =  CHANGE_PASSWORD_RECEIVED;
 						}else if(isAPDU("Change PIN")){
-							/* Transition from PIN_INIT to CHANGE_PIN_RECEIVED */
+							/* Transition from PIN_INIT to CHANGE_PASSWORD_RECEIVED */
 							evConsumed=16;
 
-							/* OnEntry code of state CHANGE_PIN_RECEIVED */
-							logs("CHANGE_PIN_RECEIVED");
-							processCommandChangePin();
+							/* OnEntry code of state CHANGE_PASSWORD_RECEIVED */
+							logs("CHANGE_PASSWORD_RECEIVED");
+							processCommandChangePassword();
 
 							/* adjust state variables  */
-							stateVarPIN_ANNOUNCED =  CHANGE_PIN_RECEIVED;
+							stateVarPASSWORD_ANNOUNCED =  CHANGE_PASSWORD_RECEIVED;
 						}else if(isAPDU("Deactivate PIN")){
 							/* Transition from PIN_INIT to DEACTIVATE_PIN_RECEIVED */
 							evConsumed=16;
@@ -376,7 +327,7 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 							processCommandDeactivatePin();
 
 							/* adjust state variables  */
-							stateVarPIN_ANNOUNCED =  DEACTIVATE_PIN_RECEIVED;
+							stateVarPASSWORD_ANNOUNCED =  DEACTIVATE_PIN_RECEIVED;
 						}else if(isAPDU("Unblock PIN")){
 							/* Transition from PIN_INIT to UNBLOCK_PIN_RECEIVED */
 							evConsumed=16;
@@ -386,7 +337,7 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 							processCommandUnblockPin();
 
 							/* adjust state variables  */
-							stateVarPIN_ANNOUNCED =  UNBLOCK_PIN_RECEIVED;
+							stateVarPASSWORD_ANNOUNCED =  UNBLOCK_PIN_RECEIVED;
 						}else{
 							/* Intentionally left blank */
 						} /*end of event selection */
@@ -394,16 +345,16 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 
 					case UNBLOCK_PIN_PROCESSED:
 						if(true){
-							/* Transition from UNBLOCK_PIN_PROCESSED to PIN_COMPLETED */
+							/* Transition from UNBLOCK_PIN_PROCESSED to PASSWORD_COMPLETED */
 							evConsumed=16;
 
 
-							/* OnEntry code of state PIN_COMPLETED */
+							/* OnEntry code of state PASSWORD_COMPLETED */
 							returnResult();
 
 							/* adjust state variables  */
-							stateVar =  PIN_COMPLETED;
-							stateVarPIN_ANNOUNCED =  PIN_INIT;
+							stateVar =  PASSWORD_COMPLETED;
+							stateVarPASSWORD_ANNOUNCED =  PIN_INIT;
 						}else{
 							/* Intentionally left blank */
 						} /*end of event selection */
@@ -418,7 +369,7 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 							logs("UNBLOCK_PIN_PROCESSED");
 
 							/* adjust state variables  */
-							stateVarPIN_ANNOUNCED =  UNBLOCK_PIN_PROCESSED;
+							stateVarPASSWORD_ANNOUNCED =  UNBLOCK_PIN_PROCESSED;
 						}else{
 							/* Intentionally left blank */
 						} /*end of event selection */
@@ -427,13 +378,13 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 					default:
 						/* Intentionally left blank */
 					break;
-				} /* end switch PIN_ANNOUNCED */
+				} /* end switch PASSWORD_ANNOUNCED */
 
 				/* Check if event was already processed  */
 				if(evConsumed==0){
 
 					if(true){
-						/* Transition from PIN_ANNOUNCED to ERROR_HANDLING */
+						/* Transition from PASSWORD_ANNOUNCED to ERROR_HANDLING */
 						evConsumed=16;
 						
 
@@ -443,11 +394,11 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 						/* Intentionally left blank */
 					} /*end of event selection */
 				}
-			break; /* end of case PIN_ANNOUNCED  */
+			break; /* end of case PASSWORD_ANNOUNCED  */
 
-			case PIN_COMPLETED:
+			case PASSWORD_COMPLETED:
 				if(true){
-					/* Transition from PIN_COMPLETED to PIN_INIT */
+					/* Transition from PASSWORD_COMPLETED to PIN_INIT */
 					evConsumed=16;
 
 
@@ -456,12 +407,12 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 					returnResult();
 
 					/* adjust state variables  */
-					stateVar =  PIN_ANNOUNCED;
-					stateVarPIN_ANNOUNCED =  PIN_INIT;
+					stateVar =  PASSWORD_ANNOUNCED;
+					stateVarPASSWORD_ANNOUNCED =  PIN_INIT;
 				}else{
 					/* Intentionally left blank */
 				} /*end of event selection */
-			break; /* end of case PIN_COMPLETED  */
+			break; /* end of case PASSWORD_COMPLETED  */
 
 			case REGISTER_APDUS:
 
@@ -498,20 +449,19 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 						apduSpecification.setIsoFormat(ISO_FORMAT_FIRSTINTERINDUSTRY);
 						apduSpecification.setIsoCase(ISO_CASE_3);
 						apduSpecification.setP1(P1_02_CHANGE);
-						apduSpecification.setP2(P2_02_CAN);
 						apduSpecification.setIns(INS_2C_RESET_RETRY_COUNTER);
 						registerApduSpecification(apduSpecification);
 
 
 						if(true){
-							/* Transition from REGISTER_APDU_CHANGE_CAN to PIN_ANNOUNCED */
+							/* Transition from REGISTER_APDU_CHANGE_CAN to PASSWORD_ANNOUNCED */
 							evConsumed=16;
 
 
 							logs("INIT");
 							returnResult();
-							stateVar =  PIN_ANNOUNCED;/* Default in entry chain  */
-							stateVarPIN_ANNOUNCED =  PIN_INIT;/* Default in entry chain  */
+							stateVar =  PASSWORD_ANNOUNCED;/* Default in entry chain  */
+							stateVarPASSWORD_ANNOUNCED =  PIN_INIT;/* Default in entry chain  */
 
 							/* adjust state variables  */
 							stateVarREGISTER_APDUS =  REGISTER_APDU_ACTIVATE_PIN;
@@ -527,7 +477,6 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 						apduSpecification.setIsoFormat(ISO_FORMAT_FIRSTINTERINDUSTRY);
 						apduSpecification.setIsoCase(ISO_CASE_3);
 						apduSpecification.setP1(P1_02_UNBLOCK_AND_CHANGE);
-						apduSpecification.setP2(P2_03_PIN);
 						apduSpecification.setIns(INS_2C_RESET_RETRY_COUNTER);
 						registerApduSpecification(apduSpecification);
 
