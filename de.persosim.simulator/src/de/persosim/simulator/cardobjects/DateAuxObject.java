@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.persosim.simulator.exception.NotParseableException;
-import de.persosim.simulator.protocols.TR03110;
+import de.persosim.simulator.protocols.TR03110Utils;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
@@ -63,7 +63,7 @@ public class DateAuxObject extends AuxDataObject {
 						throw new AccessDeniedException(
 								"Age verification not allowed");
 					}
-					Date dateToCheck = TR03110.parseDate(current
+					Date dateToCheck = TR03110Utils.parseDate(current
 							.getDiscretionaryData());
 					return !date.after(dateToCheck);
 				} catch (NotParseableException e) {
@@ -71,7 +71,7 @@ public class DateAuxObject extends AuxDataObject {
 				}
 			} else if (identifier.getOid().equals(TaOid.id_DateOfExpiry)) {
 				try {
-					Date dateToCheck = TR03110.parseDate(current
+					Date dateToCheck = TR03110Utils.parseDate(current
 							.getDiscretionaryData());
 					return !date.before(dateToCheck);
 				} catch (NotParseableException e) {

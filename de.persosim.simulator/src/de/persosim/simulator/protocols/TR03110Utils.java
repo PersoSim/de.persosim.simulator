@@ -39,7 +39,7 @@ import de.persosim.simulator.utils.Utils;
  * @author mboonk
  *
  */
-public class TR03110 implements TlvConstants {
+public class TR03110Utils implements TlvConstants {
 	public static final int ACCESS_RIGHTS_AT_CAN_ALLOWED_BIT = 4;
 	
 	public final static byte[] id_BSI                              = {0x04, 0x00, 0x7F, 0x00, 0x07};
@@ -142,7 +142,7 @@ public class TR03110 implements TlvConstants {
 			
 		case 1:
 			CardObject matchingCardObject = cardObjects.iterator().next();;
-			log(TR03110.class, "selected " + matchingCardObject, DEBUG);
+			log(TR03110Utils.class, "selected " + matchingCardObject, DEBUG);
 			return matchingCardObject;
 
 		default:

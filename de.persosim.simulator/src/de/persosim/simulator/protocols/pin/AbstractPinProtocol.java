@@ -17,7 +17,7 @@ import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
-import de.persosim.simulator.protocols.TR03110;
+import de.persosim.simulator.protocols.TR03110Utils;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.SecMechanism;
@@ -42,7 +42,7 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	}
 	
 	public void processCommandActivatePin() {
-		PasswordAuthObject pinObject = getPasswordAuthObject(TR03110.ID_PIN);
+		PasswordAuthObject pinObject = getPasswordAuthObject(TR03110Utils.ID_PIN);
 		
 		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
@@ -104,7 +104,7 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	}
 	
 	public void processCommandDeactivatePin() {
-		PasswordAuthObject pinObject = getPasswordAuthObject(TR03110.ID_PIN);
+		PasswordAuthObject pinObject = getPasswordAuthObject(TR03110Utils.ID_PIN);
 		
 		//XXX this check should be done by the objects themself
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
@@ -134,7 +134,7 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	}
 	
 	public void processCommandUnblockPin() {
-		PasswordAuthObjectWithRetryCounter pinObject = (PasswordAuthObjectWithRetryCounter) getPasswordAuthObject(TR03110.ID_PIN);
+		PasswordAuthObjectWithRetryCounter pinObject = (PasswordAuthObjectWithRetryCounter) getPasswordAuthObject(TR03110Utils.ID_PIN);
 		log(this, "old PIN retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
 		
 		try {

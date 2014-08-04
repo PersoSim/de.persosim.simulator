@@ -1,6 +1,6 @@
 package de.persosim.simulator.protocols.pace;
 
-import static de.persosim.simulator.protocols.TR03110.buildAuthenticationTokenInput;
+import static de.persosim.simulator.protocols.TR03110Utils.buildAuthenticationTokenInput;
 import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
 import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
@@ -47,7 +47,7 @@ import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.ResponseData;
-import de.persosim.simulator.protocols.TR03110;
+import de.persosim.simulator.protocols.TR03110Utils;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
@@ -184,7 +184,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		
 		CardObject cardObject;
 		try {
-			cardObject = TR03110.getSpecificChild(cardState.getObject(new MasterFileIdentifier(), Scope.FROM_MF), domainParameterSetIdentifier, new OidIdentifier(paceOid));
+			cardObject = TR03110Utils.getSpecificChild(cardState.getObject(new MasterFileIdentifier(), Scope.FROM_MF), domainParameterSetIdentifier, new OidIdentifier(paceOid));
 		} catch (IllegalArgumentException e) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
 			this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
@@ -329,7 +329,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			if (password.getPasswordIdentifier() == PWD_PIN
 					|| (password.getPasswordIdentifier() == PWD_CAN && chat
 							.getRelativeAuthorization().getAuthorization()
-							.getBit(TR03110.ACCESS_RIGHTS_AT_CAN_ALLOWED_BIT))) {
+							.getBit(TR03110Utils.ACCESS_RIGHTS_AT_CAN_ALLOWED_BIT))) {
 				return true;
 			}
 			break;
