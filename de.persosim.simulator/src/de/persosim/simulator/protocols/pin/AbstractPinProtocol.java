@@ -52,8 +52,7 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 		log(this, "processed COMMAND_ACTIVATE_PIN", DEBUG);
 	}
 	
-	//XXX this could be defined as a generic command instead of the both methods above
-	private void processCommandChangePassword() {
+	public void processCommandChangePassword() {
 		CommandApdu cApdu = processingData.getCommandApdu();
 		TlvValue tlvData = cApdu.getCommandData();
 		
