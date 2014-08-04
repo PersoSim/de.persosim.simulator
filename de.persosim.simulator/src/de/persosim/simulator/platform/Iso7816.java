@@ -190,6 +190,13 @@ public interface Iso7816 {
 	public static final byte P2_SELECT_NO_OR_PROPRIETARY = (byte) 0b1100;
 	
 	/*
+	 * P1 for {@link #INS_2C_RESET_RETRY_COUNTER}
+	 */
+	public static final byte P1_02_UNBLOCK_AND_CHANGE = (byte) 0x02;
+	public static final byte P1_02_CHANGE             = (byte) 0x02;
+	public static final byte P1_03_UNBLOCK            = (byte) 0x03;
+	
+	/*
 	 * SW1-SW2 according to ISO7816-4
 	 */
 	
