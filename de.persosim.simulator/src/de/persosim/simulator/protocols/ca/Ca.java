@@ -10,7 +10,6 @@ import de.persosim.simulator.utils.Utils;
  * @author slutters
  *
  */
-//XXX SLS move overlap with Pace interface to common parent interface
 public interface Ca extends Tr03110 {
 	/* CA OIDs according to TR-03110 v2.1 part 3 */
 	
