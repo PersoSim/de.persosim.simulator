@@ -2,6 +2,7 @@ package de.persosim.simulator.protocols.ca;
 
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -10,22 +11,14 @@ import de.persosim.simulator.utils.Utils;
  *
  */
 //XXX SLS move overlap with Pace interface to common parent interface
-public interface Ca {
+public interface Ca extends Tr03110 {
 	/* CA OIDs according to TR-03110 v2.1 part 3 */
 	
 	/* CA id */
-	  
-//	                                                            0x00 itu-t(0)
-//	                                                                  0x04 identified-organization(4)
-//	                                                                        0x00 etsi(0)
-//	                                                                              0x7F reserved(127)
-//	                                                                                    0x00 etsi-identified-organization(0)
-//	                                                                                          0x07 7
-//	                                                                                                0x02 bsi-de protocols(2)
-//	                                                                                                      0x02 smartcard(2)
-//	                                                                                                            0x03 3 ca protocol(3)
+//	                                                                                                      0x02 bsi-de protocols(2)
+//	                                                                                                            0x02 smartcard(2)
+//	                                                                                                                  0x03 3 ca protocol(3)
 	
-	public final static byte[] id_BSI                              = {0x04, 0x00, 0x7F, 0x00, 0x07};
 	public final static byte[] id_CA                               = Utils.appendBytes(id_BSI, new byte[]{0x02, 0x02, 0x03});
 	public final static String id_CA_STRING                        = "id-CA";
 	

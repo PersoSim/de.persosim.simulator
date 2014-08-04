@@ -2,29 +2,22 @@ package de.persosim.simulator.protocols.pace;
 
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.Utils;
 
 /**
  * @author slutters
  *
  */
-public interface Pace {
+public interface Pace extends Tr03110 {
 	
 	/* PACE OIDs according to TR-03110 v2.1 part 3 */
 	
 	/* PACE id */
-	  
-//	                                                            0x00 itu-t(0)
-//	                                                                  0x04 identified-organization(4)
-//	                                                                        0x00 etsi(0)
-//	                                                                              0x7F reserved(127)
-//	                                                                                    0x00 etsi-identified-organization(0)
-//	                                                                                          0x07 7
-//	                                                                                                0x02 bsi-de protocols(2)
-//	                                                                                                      0x02 smartcard(2)
-//	                                                                                                            0x04 4 pace protocol(4)
+//	                                                                                                      0x02 bsi-de protocols(2)
+//	                                                                                                            0x02 smartcard(2)
+//	                                                                                                                  0x04 4 pace protocol(4)
 	
-	public final static byte[] id_BSI                              = {0x04, 0x00, 0x7F, 0x00, 0x07};
 	public final static byte[] id_PACE                             = Utils.appendBytes(id_BSI, new byte[]{0x02, 0x02, 0x04});
 	public final static String id_PACE_STRING                      = "id-PACE";
 	
