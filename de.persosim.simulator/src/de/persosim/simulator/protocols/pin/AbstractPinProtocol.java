@@ -69,7 +69,7 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 		String passwordName = passwordObject.getPasswordName();
 		
 		if(tlvData == null) {
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND); // is this the correct SW here? suggest 6A80
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
 			this.processingData.updateResponseAPDU(this, "no new " + passwordName + " data received", resp);
 			/* there is nothing more to be done here */
 			return;
