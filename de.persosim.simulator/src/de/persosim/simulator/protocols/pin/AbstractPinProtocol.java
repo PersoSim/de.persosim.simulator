@@ -11,6 +11,7 @@ import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
+import de.persosim.simulator.cardobjects.NullCardObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.Scope;
@@ -24,6 +25,7 @@ import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 /**
  * This class implements the PIN management functionality specified in TR-03110,
@@ -50,24 +52,22 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 		log(this, "processed COMMAND_ACTIVATE_PIN", DEBUG);
 	}
 	
-	public void processCommandChangePin() {
-		changePassword((PasswordAuthObjectWithRetryCounter) getPasswordAuthObject(TR03110.ID_PIN));
-		log(this, "processed COMMAND_CHANGE_PIN", DEBUG);
-	}
-	
-	public void processCommandChangeCan() {
-		changePassword((PasswordAuthObjectWithRetryCounter) getPasswordAuthObject(TR03110.ID_CAN));
-		log(this, "processed COMMAND_CHANGE_CAN", DEBUG);
-	}
-	
 	//XXX this could be defined as a generic command instead of the both methods above
-	private void changePassword(ChangeablePasswordAuthObject passwordObject) {
+	private void processCommandChangePassword() {
 		CommandApdu cApdu = processingData.getCommandApdu();
 		TlvValue tlvData = cApdu.getCommandData();
 		
-		String passwordName = passwordObject.getPasswordName();
+		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
+		ChangeablePasswordAuthObject passwordObject = (ChangeablePasswordAuthObject) getPasswordAuthObject(identifier);
 		
-		//XXX SLS null check on passwordObject
+		if(passwordObject == null) {
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A86_INCORRECT_PARAMETERS_P1P2);
+			this.processingData.updateResponseAPDU(this, "P2 references unknown password " + identifier, resp);
+			/* there is nothing more to be done here */
+			return;
+		}
+		
+		String passwordName = passwordObject.getPasswordName();
 		
 		if(tlvData == null) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND); // is this the correct SW here? suggest 6A80
@@ -100,6 +100,8 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 		
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, passwordName + " successfully changed", resp);
+		
+		log(this, "processed COMMAND_CHANGE_PASSWORD", DEBUG);
 	}
 	
 	public void processCommandDeactivatePin() {
@@ -163,7 +165,13 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	}
 	
 	private PasswordAuthObject getPasswordAuthObject(int identifier) {
-		return (PasswordAuthObject) cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
+		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
+		
+		if(object instanceof NullCardObject) {
+			return null;
+		} else{
+			return (PasswordAuthObject) object;
+		}
 	}
 
 }
