@@ -9,7 +9,6 @@ import de.persosim.simulator.utils.Utils;
  *
  */
 public interface Pace {
-	public final static String DUMMY_STRING                        = "dummy string"; 
 	
 	/* PACE OIDs according to TR-03110 v2.1 part 3 */
 	
