@@ -11,10 +11,12 @@ import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
+import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
+import de.persosim.simulator.protocols.TR03110;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.SecMechanism;
@@ -38,7 +40,7 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	}
 	
 	public void processCommandActivatePin() {
-		PasswordAuthObjectWithRetryCounter pinObject = getPinObject();
+		PasswordAuthObject pinObject = getPasswordAuthObject(TR03110.ID_PIN);
 		
 		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
@@ -49,12 +51,12 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	}
 	
 	public void processCommandChangePin() {
-		changePassword(getPinObject());
+		changePassword((PasswordAuthObjectWithRetryCounter) getPasswordAuthObject(TR03110.ID_PIN));
 		log(this, "processed COMMAND_CHANGE_PIN", DEBUG);
 	}
 	
 	public void processCommandChangeCan() {
-		changePassword(getCanObject());
+		changePassword((PasswordAuthObjectWithRetryCounter) getPasswordAuthObject(TR03110.ID_CAN));
 		log(this, "processed COMMAND_CHANGE_CAN", DEBUG);
 	}
 	
@@ -101,8 +103,7 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	}
 	
 	public void processCommandDeactivatePin() {
-		PasswordAuthObjectWithRetryCounter pinObject = getPinObject();
-		
+		PasswordAuthObject pinObject = getPasswordAuthObject(TR03110.ID_PIN);
 		
 		//XXX this check should be done by the objects themself
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
@@ -132,7 +133,7 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	}
 	
 	public void processCommandUnblockPin() {
-		PasswordAuthObjectWithRetryCounter pinObject = getPinObject();
+		PasswordAuthObjectWithRetryCounter pinObject = (PasswordAuthObjectWithRetryCounter) getPasswordAuthObject(TR03110.ID_PIN);
 		log(this, "old PIN retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
 		
 		try {
@@ -161,12 +162,8 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 		log(this, "processed COMMAND_RESUME_PIN", DEBUG);
 	}
 	
-	private PasswordAuthObjectWithRetryCounter getPinObject() {
-		return (PasswordAuthObjectWithRetryCounter) cardState.getObject(new AuthObjectIdentifier(3), Scope.FROM_MF);
-	}
-	
-	private ChangeablePasswordAuthObject getCanObject() {
-		return (ChangeablePasswordAuthObject) cardState.getObject(new AuthObjectIdentifier(2), Scope.FROM_MF);
+	private PasswordAuthObject getPasswordAuthObject(int identifier) {
+		return (PasswordAuthObject) cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
 	}
 
 }
