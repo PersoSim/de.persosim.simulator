@@ -6,6 +6,7 @@ import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.Utils;
 
 /**
+ * This interface provides constants used in the context of the PACE protocol according to TR-03110.
  * @author slutters
  *
  */
