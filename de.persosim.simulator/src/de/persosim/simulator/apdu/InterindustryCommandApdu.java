@@ -13,10 +13,7 @@ import de.persosim.simulator.platform.Iso7816Lib;
  * 
  */
 public class InterindustryCommandApdu extends CommandApdu implements IsoSecureMessagingCommandApdu {
-	public boolean chaining;
-	public byte secureMessaging;
-	public byte channel;
-
+	
 	/**
 	 * Parses the apdu from the given byte array and sets the provided instance as predecessor.
 	 * @param apdu
@@ -24,35 +21,32 @@ public class InterindustryCommandApdu extends CommandApdu implements IsoSecureMe
 	 */
 	public InterindustryCommandApdu(byte[] apdu, CommandApdu previousCommandApdu) {
 		super(apdu, previousCommandApdu);
-		chaining = Iso7816Lib.isCommandChainingCLA(apdu);
-		secureMessaging = Iso7816Lib.getSecureMessagingStatus(apdu);
-		channel = Iso7816Lib.getChannel(apdu);
 	}
 	
 	public boolean isChaining() {
-		return chaining;
+		return Iso7816Lib.isCommandChainingCLA(header);
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu#getSecureMessaging()
 	 */
 	@Override
 	public byte getSecureMessaging() {
-		return secureMessaging;
+		return Iso7816Lib.getSecureMessagingStatus(header);
 	}
 
 	@Override
 	public void setSecureMessaging(byte smStatus) {
-		secureMessaging = smStatus;
+		header[Iso7816Lib.OFFSET_CLA] = Iso7816Lib.setSecureMessagingStatus(getCla(), smStatus);
 	}
 
 	public byte getChannel() {
-		return channel;
+		return Iso7816Lib.getChannel(getHeader());
 	}
 
 	@Override
 	public boolean wasSecureMessaging() {
-		if(secureMessaging != Iso7816.SM_OFF_OR_NO_INDICATION) {
+		if(getSecureMessaging() != Iso7816.SM_OFF_OR_NO_INDICATION) {
 			return true;
 		} else {
 			return super.wasSecureMessaging();

@@ -25,13 +25,9 @@ import de.persosim.simulator.utils.Utils;
  * 
  */
 public class CommandApdu {
-	private byte isoFormat;
-	private byte cla;
-	private byte ins;
-	private byte p1;
-	private byte p2;
-	private byte isoCase;
+	protected byte [] header;
 	private boolean isExtendedLength;
+	private byte isoCase;
 	private int ne;
 	private short nc;
 	private TlvValue commandData;
@@ -55,14 +51,9 @@ public class CommandApdu {
 		//store history
 		predecessor = previousCommandApdu;
 		
-		//extract data from CLA byte
-		cla = Iso7816Lib.getClassByte(apdu);
-		isoFormat = Iso7816Lib.getISOFormat(apdu);
-		
-		//store INS/P1/P2 bytes
-		ins = Iso7816Lib.getInstructionByte(apdu);
-		p1 = Iso7816Lib.getP1(apdu);
-		p2 = Iso7816Lib.getP2(apdu);
+		//copy header
+		header = new byte [4];
+		System.arraycopy(apdu, 0, header, 0, header.length);
 		
 		//analyze/store Iso case and length
 		isExtendedLength = Iso7816Lib.isExtendedLengthLCLE(apdu);
@@ -87,23 +78,23 @@ public class CommandApdu {
 	}
 
 	public byte getIsoFormat() {
-		return isoFormat;
+		return Iso7816Lib.getISOFormat(Iso7816Lib.getClassByte(header));
 	}
 
 	public byte getCla() {
-		return cla;
+		return Iso7816Lib.getClassByte(header);
 	}
 
 	public byte getIns() {
-		return ins;
+		return Iso7816Lib.getInstructionByte(header);
 	}
 
 	public byte getP1() {
-		return p1;
+		return Iso7816Lib.getP1(header);
 	}
 
 	public byte getP2() {
-		return p2;
+		return Iso7816Lib.getP2(header);
 	}
 
 	public byte getIsoCase() {
@@ -166,11 +157,8 @@ public class CommandApdu {
 	}
 
 	public byte[] getHeader() {
-		byte[] header= new byte[4];
-		header[0] = getCla();
-		header[1] = getIns();
-		header[2] = getP1();
-		header[3] = getP2();
+		byte[] header = new byte[this.header.length];
+		System.arraycopy(this.header, 0, header, 0, this.header.length);
 		return header;
 	}
 

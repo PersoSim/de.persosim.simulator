@@ -1,6 +1,7 @@
 package de.persosim.simulator.apdu;
 
 import de.persosim.simulator.platform.Iso7816;
+import de.persosim.simulator.platform.Iso7816Lib;
 
 
 /**
@@ -13,31 +14,23 @@ import de.persosim.simulator.platform.Iso7816;
  */
 public class TR03110VerifySecureMessagingCommandApdu extends CommandApdu implements
 		IsoSecureMessagingCommandApdu {
-
-	private byte sm;
 	
 	TR03110VerifySecureMessagingCommandApdu(byte[] apdu, CommandApdu previousCommandApdu) {
 		super(apdu, previousCommandApdu);
-		sm = (byte) ((byte) (super.getCla() & (byte) 0b00001100) >> 2);
 	}
 	
-	@Override
-	public byte getCla() {
-		// proprietary class, no chaining
-		byte cla = (byte) 0b10000000;
-		// first interindustry style secure messaging bits
-		cla = (byte) (cla | (sm << 2));
-		return cla; 
+	public TR03110VerifySecureMessagingCommandApdu(byte[] apdu) {
+		this(apdu, null);
 	}
-	
+
 	@Override
 	public byte getSecureMessaging() {
-		return sm;
+		return (byte) ((byte) (super.getCla() & (byte) 0b00001100) >> 2);
 	}
 
 	@Override
 	public void setSecureMessaging(byte smStatus) {
-		sm = smStatus;
+		header[Iso7816Lib.OFFSET_CLA] = (byte) ((byte) (getCla() & 0b11110011) | smStatus << 2);
 	}
 
 	@Override
