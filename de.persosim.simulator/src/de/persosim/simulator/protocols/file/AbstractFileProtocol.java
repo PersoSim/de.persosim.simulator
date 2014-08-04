@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
 
+import de.persosim.simulator.apdu.CommandApduImpl;
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardFile;

@@ -12,7 +12,7 @@ import de.persosim.simulator.platform.Iso7816Lib;
  * @author amay
  * 
  */
-public class InterindustryCommandApdu extends CommandApdu implements IsoSecureMessagingCommandApdu {
+public class InterindustryCommandApdu extends CommandApduImpl implements IsoSecureMessagingCommandApdu {
 	
 	/**
 	 * Parses the apdu from the given byte array and sets the provided instance as predecessor.

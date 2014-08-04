@@ -12,7 +12,7 @@ import de.persosim.simulator.platform.Iso7816Lib;
  * @author mboonk
  * 
  */
-public class TR03110VerifySecureMessagingCommandApdu extends CommandApdu implements
+public class TR03110VerifySecureMessagingCommandApdu extends CommandApduImpl implements
 		IsoSecureMessagingCommandApdu {
 	
 	TR03110VerifySecureMessagingCommandApdu(byte[] apdu, CommandApdu previousCommandApdu) {

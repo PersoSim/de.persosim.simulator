@@ -35,12 +35,12 @@ public class CommandApduFactory {
 			if (matchesTR03110Verify(apdu)){
 				return new TR03110VerifySecureMessagingCommandApdu(apdu, previousCommandApdu);
 			}
-			return new CommandApdu(apdu, previousCommandApdu);
+			return new CommandApduImpl(apdu, previousCommandApdu);
 		}
 	}
 	
 	private static boolean matchesTR03110Verify(byte [] apdu){
-		CommandApdu command = new CommandApdu(apdu);
+		CommandApdu command = new CommandApduImpl(apdu);
 		if ((command.getCla() == (byte) (0x8c & 0xFF) || (command.getCla() == (byte) (0x80 & 0xFF)))
 				&& command.getIns() == 0x20
 				&& command.getP1P2() == (short) (0x8000 & 0xFFFF)

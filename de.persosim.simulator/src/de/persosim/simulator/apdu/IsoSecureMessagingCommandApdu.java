@@ -4,7 +4,7 @@ import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.securemessaging.SecureMessaging;
 
 /**
- * This interface should be implemented by all {@link CommandApdu}s that support
+ * This interface should be implemented by all {@link CommandApduImpl}s that support
  * SecureMessaging according to ISO7816-4.
  * <p/>
  * {@link SecureMessaging} operates directly on these APDUs to wrap/unwrap the
@@ -14,7 +14,7 @@ import de.persosim.simulator.securemessaging.SecureMessaging;
  * @author amay
  * 
  */
-public interface IsoSecureMessagingCommandApdu {
+public interface IsoSecureMessagingCommandApdu extends CommandApdu{
 
 	/**
 	 * see {@link Iso7816Lib#getSecureMessagingStatus(byte[])}

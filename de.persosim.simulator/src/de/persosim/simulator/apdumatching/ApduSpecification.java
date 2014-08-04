@@ -1,6 +1,7 @@
 package de.persosim.simulator.apdumatching;
 
 import static de.persosim.simulator.utils.PersoSimLogger.log;
+import de.persosim.simulator.apdu.CommandApduImpl;
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.InterindustryCommandApdu;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
@@ -180,11 +181,11 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 	}
 	
 	/**
-	 * This method performs a matching of the specification defined within this object against the provided {@link CommandApdu}.
+	 * This method performs a matching of the specification defined within this object against the provided {@link CommandApduImpl}.
 	 * The matching is positive only iff all parameters match.
 	 * Parameters match iff the received parameters are optional, equal the expected ones or do not equal parameters expected to mismatch.
 	 * @param apdu the {@link CommandApdu} to match
-	 * @return whether the specification defined within this object matches against the provided {@link CommandApdu}
+	 * @return whether the specification defined within this object matches against the provided {@link CommandApduImpl}
 	 */
 	public boolean matchesFullApdu(CommandApdu apdu) {
 		byte isoCaseReceived;
