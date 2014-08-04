@@ -35,7 +35,7 @@ import de.persosim.simulator.utils.Utils;
  * @author slutters
  * 
  */
-public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine implements Pin, TlvConstants {
+public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine implements Tr03110, TlvConstants {
 	
 	public AbstractPinProtocol() {
 		super("PIN");
