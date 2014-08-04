@@ -45,27 +45,6 @@ public interface Pace extends Tr03110 {
 	/*--------------------------------------------------------------------------------*/
 	/*--------------------------------------------------------------------------------*/
 	
-	/* Symmetric cipher */
-	public final static byte DES3_CBC_CBC                          = (byte) 0x01;
-	public final static byte AES_CBC_CMAC_128                      = (byte) 0x02;
-	public final static byte AES_CBC_CMAC_192                      = (byte) 0x03;
-	public final static byte AES_CBC_CMAC_256                      = (byte) 0x04;
-	
-	public final static byte[] SYMMETRIC_CIPHER                    = new byte[]{DES3_CBC_CBC, AES_CBC_CMAC_128, AES_CBC_CMAC_192, AES_CBC_CMAC_256};
-	
-	/*--------------------------------------------------------------------------------*/
-	
-	/* Symmetric cipher */
-	public final static String DES3_CBC_CBC_STRING                 = "DES3-CBC-CBC";
-	public final static String AES_CBC_CMAC_128_STRING             = "AES-CBC-CMAC-128";
-	public final static String AES_CBC_CMAC_192_STRING             = "AES-CBC-CMAC-192";
-	public final static String AES_CBC_CMAC_256_STRING             = "AES-CBC-CMAC-256";
-	
-	public final static String[] SYMMETRIC_CIPHER_STRING           = new String[]{DES3_CBC_CBC_STRING, AES_CBC_CMAC_128_STRING, AES_CBC_CMAC_192_STRING, AES_CBC_CMAC_256_STRING};
-	
-	/*--------------------------------------------------------------------------------*/
-	/*--------------------------------------------------------------------------------*/
-	
 	/* DH-GM */
 	public final static byte[] id_PACE_DH_GM_3DES_CBC_CBC          = Utils.appendBytes(id_PACE, DH_GM, DES3_CBC_CBC);
 	public final static byte[] id_PACE_DH_GM_AES_CBC_CMAC_128      = Utils.appendBytes(id_PACE, DH_GM, AES_CBC_CMAC_128);

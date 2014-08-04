@@ -22,5 +22,18 @@ public interface Tr03110 {
 	
 	public final static byte ID_PIN = 3;
 	public final static byte ID_CAN = 2;
+	
+	/*--------------------------------------------------------------------------------*/
+	/*--------------------------------------------------------------------------------*/
+	
+	/* Symmetric cipher */
+	public final static byte DES3_CBC_CBC                          = (byte) 0x01;
+	public final static byte AES_CBC_CMAC_128                      = (byte) 0x02;
+	public final static byte AES_CBC_CMAC_192                      = (byte) 0x03;
+	public final static byte AES_CBC_CMAC_256                      = (byte) 0x04;
+	
+	public final static byte[] SYMMETRIC_CIPHER                    = new byte[]{DES3_CBC_CBC, AES_CBC_CMAC_128, AES_CBC_CMAC_192, AES_CBC_CMAC_256};
+	
+	/*--------------------------------------------------------------------------------*/
 
 }

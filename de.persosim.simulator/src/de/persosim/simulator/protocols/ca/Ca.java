@@ -42,17 +42,6 @@ public interface Ca extends Tr03110 {
 	/*--------------------------------------------------------------------------------*/
 	/*--------------------------------------------------------------------------------*/
 	
-	/* Symmetric cipher */
-	public final static byte DES3_CBC_CBC                          = (byte) 0x01;
-	public final static byte AES_CBC_CMAC_128                      = (byte) 0x02;
-	public final static byte AES_CBC_CMAC_192                      = (byte) 0x03;
-	public final static byte AES_CBC_CMAC_256                      = (byte) 0x04;
-	
-	public final static byte[] SYMMETRIC_CIPHER                    = new byte[]{DES3_CBC_CBC, AES_CBC_CMAC_128, AES_CBC_CMAC_192, AES_CBC_CMAC_256};
-	
-	/*--------------------------------------------------------------------------------*/
-	/*--------------------------------------------------------------------------------*/
-	
 	/* DH */
 	public final static byte[] id_CA_DH_3DES_CBC_CBC          = Utils.appendBytes(id_CA, DH, DES3_CBC_CBC);
 	public final static byte[] id_CA_DH_AES_CBC_CMAC_128      = Utils.appendBytes(id_CA, DH, AES_CBC_CMAC_128);
