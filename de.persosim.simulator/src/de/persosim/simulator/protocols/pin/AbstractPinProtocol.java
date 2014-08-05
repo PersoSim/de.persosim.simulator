@@ -12,7 +12,6 @@ import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.NullCardObject;
-import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.platform.Iso7816;
@@ -42,7 +41,18 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	}
 	
 	public void processCommandActivatePin() {
-		PasswordAuthObject pinObject = getPasswordAuthObject(Tr03110.ID_PIN);
+		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
+		
+		PasswordAuthObjectWithRetryCounter pinObject;
+		
+		if(object instanceof NullCardObject) {
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
+			/* there is nothing more to be done here */
+			return;
+		} else{
+			pinObject = (PasswordAuthObjectWithRetryCounter) object;
+		}
 		
 		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
@@ -57,7 +67,18 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 		TlvValue tlvData = cApdu.getCommandData();
 		
 		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
-		ChangeablePasswordAuthObject passwordObject = (ChangeablePasswordAuthObject) getPasswordAuthObject(identifier);
+		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
+		
+		ChangeablePasswordAuthObject passwordObject;
+		
+		if(object instanceof NullCardObject) {
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
+			/* there is nothing more to be done here */
+			return;
+		} else{
+			passwordObject = (ChangeablePasswordAuthObject) object;
+		}
 		
 		if(passwordObject == null) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A86_INCORRECT_PARAMETERS_P1P2);
@@ -104,7 +125,18 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	}
 	
 	public void processCommandDeactivatePin() {
-		PasswordAuthObject pinObject = getPasswordAuthObject(Tr03110.ID_PIN);
+		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
+		
+		PasswordAuthObjectWithRetryCounter pinObject;
+		
+		if(object instanceof NullCardObject) {
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
+			/* there is nothing more to be done here */
+			return;
+		} else{
+			pinObject = (PasswordAuthObjectWithRetryCounter) object;
+		}
 		
 		//XXX this check should be done by the objects themself
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
@@ -134,7 +166,19 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	}
 	
 	public void processCommandUnblockPin() {
-		PasswordAuthObjectWithRetryCounter pinObject = (PasswordAuthObjectWithRetryCounter) getPasswordAuthObject(Tr03110.ID_PIN);
+		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
+		
+		PasswordAuthObjectWithRetryCounter pinObject;
+		
+		if(object instanceof NullCardObject) {
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
+			/* there is nothing more to be done here */
+			return;
+		} else{
+			pinObject = (PasswordAuthObjectWithRetryCounter) object;
+		}
+		
 		log(this, "old PIN retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
 		
 		try {
@@ -161,16 +205,6 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	
 	public void processCommandResumePin() {
 		log(this, "processed COMMAND_RESUME_PIN", DEBUG);
-	}
-	
-	private PasswordAuthObject getPasswordAuthObject(int identifier) {
-		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
-		
-		if(object instanceof NullCardObject) {
-			return null;
-		} else{
-			return (PasswordAuthObject) object;
-		}
 	}
 
 }
