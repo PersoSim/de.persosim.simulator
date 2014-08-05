@@ -173,9 +173,8 @@ public interface Iso7816 {
 	public static final byte P1_SELECT_FILE_BY_PATH_FROM_DF 		   = (byte) 0x09;
 	
 	// P1 for {@link #INS_2C_RESET_RETRY_COUNTER}
-	public static final byte P1_RESET_RETRY_COUNTER_UNBLOCK_AND_CHANGE = (byte) 0x02;
-	public static final byte P1_RESET_RETRY_COUNTER_CHANGE             = (byte) 0x02;
-	public static final byte P1_RESET_RETRY_COUNTER_UNBLOCK            = (byte) 0x03;
+	public static final byte P1_RESET_RETRY_COUNTER_NEW_DATA           = (byte) 0x02;
+	public static final byte P1_RESET_RETRY_COUNTER_ABSENT_DATA        = (byte) 0x03;
 	
 
 	/*
