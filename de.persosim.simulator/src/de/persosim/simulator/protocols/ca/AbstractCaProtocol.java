@@ -1,6 +1,6 @@
 package de.persosim.simulator.protocols.ca;
 
-import static de.persosim.simulator.protocols.TR03110.buildAuthenticationTokenInput;
+import static de.persosim.simulator.protocols.TR03110Utils.buildAuthenticationTokenInput;
 import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
 import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
@@ -37,7 +37,8 @@ import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.ProtocolUpdate;
-import de.persosim.simulator.protocols.TR03110;
+import de.persosim.simulator.protocols.TR03110Utils;
+import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -131,7 +132,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 		CardObject cardObject;
 		try {
-			cardObject = TR03110.getSpecificChild(cardState.getObject(new MasterFileIdentifier(), Scope.FROM_MF), keyIdentifier, new OidIdentifier(caOid));
+			cardObject = TR03110Utils.getSpecificChild(cardState.getObject(new MasterFileIdentifier(), Scope.FROM_MF), keyIdentifier, new OidIdentifier(caOid));
 		} catch (IllegalArgumentException e) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
 			this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
@@ -152,7 +153,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		}
 		
 		/* CA domain parameters */
-		caDomainParameters = TR03110.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());
+		caDomainParameters = TR03110Utils.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());
 		
 		this.cryptoSupport = caOid.getCryptoSupport();
 		
@@ -392,7 +393,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			if ((publicity == SecInfoPublicity.AUTHENTICATED) || (publicity == SecInfoPublicity.PRIVILEGED)) {
 				//add CaPublicKeyInfo
 				ConstructedTlvDataObject caPublicKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Utils.concatByteArrays(TR03110.id_PK, new byte[] {genericCaOidBytes[8]})));
+				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Utils.concatByteArrays(Tr03110.id_PK, new byte[] {genericCaOidBytes[8]})));
 				caPublicKeyInfo.addTlvDataObject(subjPubKeyInfo);
 				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 				secInfos.add(caPublicKeyInfo);

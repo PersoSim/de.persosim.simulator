@@ -30,22 +30,16 @@ import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
-import de.persosim.simulator.utils.Utils;
 
 /**
  * XXX MBK replace TaOid with OID according to our own OID class hierarchy 
  * 
- * This class contains methods and constants unique to the TR-03110 specification.
+ * This class contains methods unique to the TR-03110 specification.
  * @author mboonk
  *
  */
-public class TR03110 implements TlvConstants {
+public class TR03110Utils implements TlvConstants {
 	public static final int ACCESS_RIGHTS_AT_CAN_ALLOWED_BIT = 4;
-	
-	public final static byte[] id_BSI                              = {0x04, 0x00, 0x7F, 0x00, 0x07};
-	public final static byte[] id_PK                               = Utils.appendBytes(id_BSI, new byte[]{0x02, 0x02, 0x01});
-	
-	
 	
 	/**
 	 * The given public key data will be parsed and if needed filled in with the
@@ -139,7 +133,7 @@ public class TR03110 implements TlvConstants {
 			
 		case 1:
 			CardObject matchingCardObject = cardObjects.iterator().next();;
-			log(TR03110.class, "selected " + matchingCardObject, DEBUG);
+			log(TR03110Utils.class, "selected " + matchingCardObject, DEBUG);
 			return matchingCardObject;
 
 		default:

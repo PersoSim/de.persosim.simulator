@@ -6,7 +6,7 @@ import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
 import java.util.HashMap;
 
-import de.persosim.simulator.protocols.TR03110;
+import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -20,7 +20,7 @@ import de.persosim.simulator.utils.Utils;
  *
  */
 public class StandardizedDomainParameters {
-	public static final byte[] OID = Utils.appendBytes(TR03110.id_BSI, (byte) 0x01, (byte) 0x02);
+	public static final byte[] OID = Utils.appendBytes(Tr03110.id_BSI, (byte) 0x01, (byte) 0x02);
 	
 	public static final int NO_OF_STANDARDIZED_DOMAIN_PARAMETERS = 32;
 	

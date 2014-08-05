@@ -11,10 +11,11 @@ import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
-import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
+import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
+import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.SecMechanism;
@@ -22,6 +23,7 @@ import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 /**
  * This class implements the PIN management functionality specified in TR-03110,
@@ -31,16 +33,23 @@ import de.persosim.simulator.utils.HexString;
  * @author slutters
  * 
  */
-public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine implements Pin, TlvConstants {
+public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine implements Tr03110, TlvConstants {
 	
 	public AbstractPinProtocol() {
 		super("PIN");
 	}
 	
 	public void processCommandActivatePin() {
-		PasswordAuthObjectWithRetryCounter pinObject = getPinObject();
 		
-		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
+		if(!(object instanceof PinObject)) {
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
+			/* there is nothing more to be done here */
+			return;
+		}
+		
+		((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, "PIN successfully activated", resp);
@@ -48,27 +57,25 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 		log(this, "processed COMMAND_ACTIVATE_PIN", DEBUG);
 	}
 	
-	public void processCommandChangePin() {
-		changePassword(getPinObject());
-		log(this, "processed COMMAND_CHANGE_PIN", DEBUG);
-	}
-	
-	public void processCommandChangeCan() {
-		changePassword(getCanObject());
-		log(this, "processed COMMAND_CHANGE_CAN", DEBUG);
-	}
-	
-	//XXX this could be defined as a generic command instead of the both methods above
-	private void changePassword(ChangeablePasswordAuthObject passwordObject) {
+	public void processCommandChangePassword() {
 		CommandApdu cApdu = processingData.getCommandApdu();
 		TlvValue tlvData = cApdu.getCommandData();
 		
+		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
+		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
+		
+		if(!(object instanceof ChangeablePasswordAuthObject)) {
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
+			/* there is nothing more to be done here */
+			return;
+		}
+		
+		ChangeablePasswordAuthObject passwordObject = (ChangeablePasswordAuthObject) object;
 		String passwordName = passwordObject.getPasswordName();
 		
-		//XXX SLS null check on passwordObject
-		
 		if(tlvData == null) {
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND); // is this the correct SW here? suggest 6A80
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
 			this.processingData.updateResponseAPDU(this, "no new " + passwordName + " data received", resp);
 			/* there is nothing more to be done here */
 			return;
@@ -98,11 +105,19 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 		
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, passwordName + " successfully changed", resp);
+		
+		log(this, "processed COMMAND_CHANGE_PASSWORD", DEBUG);
 	}
 	
 	public void processCommandDeactivatePin() {
-		PasswordAuthObjectWithRetryCounter pinObject = getPinObject();
+		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
 		
+		if(!(object instanceof PinObject)) {
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
+			/* there is nothing more to be done here */
+			return;
+		}
 		
 		//XXX this check should be done by the objects themself
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
@@ -123,7 +138,7 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 			}
 		}
 		
-		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
+		((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
 		
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, "PIN successfully deactivated", resp);
@@ -132,7 +147,17 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	}
 	
 	public void processCommandUnblockPin() {
-		PasswordAuthObjectWithRetryCounter pinObject = getPinObject();
+		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
+		
+		if(!(object instanceof PinObject)) {
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
+			/* there is nothing more to be done here */
+			return;
+		}
+		
+		PinObject pinObject = (PinObject) object;
+		
 		log(this, "old PIN retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
 		
 		try {
@@ -159,14 +184,6 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	
 	public void processCommandResumePin() {
 		log(this, "processed COMMAND_RESUME_PIN", DEBUG);
-	}
-	
-	private PasswordAuthObjectWithRetryCounter getPinObject() {
-		return (PasswordAuthObjectWithRetryCounter) cardState.getObject(new AuthObjectIdentifier(3), Scope.FROM_MF);
-	}
-	
-	private ChangeablePasswordAuthObject getCanObject() {
-		return (ChangeablePasswordAuthObject) cardState.getObject(new AuthObjectIdentifier(2), Scope.FROM_MF);
 	}
 
 }
