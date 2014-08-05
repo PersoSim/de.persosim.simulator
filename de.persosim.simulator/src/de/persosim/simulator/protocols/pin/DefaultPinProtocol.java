@@ -8,7 +8,7 @@ package de.persosim.simulator.protocols.pin;
 
 /* Command line options: -verbose -p EA -o DefaultPinProtocol -l java -t PIN:pinclass C:\develop\wd\protocol_pin.xml   */
 /* This file is generated from protocol_pin.xml - do not edit manually  */
-/* Generated on: Mon Aug 04 14:47:15 CEST 2014 / version 3.52beta2 */
+/* Generated on: Tue Aug 05 09:48:51 CEST 2014 / version 3.52beta2 */
 
 
 
@@ -434,7 +434,7 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 						apduSpecification.setInitialAPDU(true);
 						apduSpecification.setIsoFormat(ISO_FORMAT_FIRSTINTERINDUSTRY);
 						apduSpecification.setIsoCase(ISO_CASE_3);
-						apduSpecification.setP1(P1_02_UNBLOCK_AND_CHANGE);
+						apduSpecification.setP1(P1_RESET_RETRY_COUNTER_UNBLOCK_AND_CHANGE);
 						apduSpecification.setIns(INS_2C_RESET_RETRY_COUNTER);
 						registerApduSpecification(apduSpecification);
 
@@ -487,7 +487,7 @@ public class DefaultPinProtocol extends AbstractPinProtocol
 						apduSpecification.setIsoFormat(ISO_FORMAT_FIRSTINTERINDUSTRY);
 						apduSpecification.setIsoCase(ISO_CASE_1);
 						apduSpecification.setIns(INS_2C_RESET_RETRY_COUNTER);
-						apduSpecification.setP1(P1_03_UNBLOCK);
+						apduSpecification.setP1(P1_RESET_RETRY_COUNTER_UNBLOCK);
 						apduSpecification.setP2(ID_PIN);
 						registerApduSpecification(apduSpecification);
 
