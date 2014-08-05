@@ -40,20 +40,16 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	}
 	
 	public void processCommandActivatePin() {
+		
 		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
-		
-		PinObject pinObject;
-		
-		if(object instanceof PinObject) {
-			pinObject = (PinObject) object;
-		} else{
+		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
 			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
 			/* there is nothing more to be done here */
 			return;
 		}
 		
-		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+		((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, "PIN successfully activated", resp);
@@ -68,17 +64,14 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
 		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
 		
-		ChangeablePasswordAuthObject passwordObject;
-		
-		if(object instanceof ChangeablePasswordAuthObject) {
-			passwordObject = (ChangeablePasswordAuthObject) object;
-		} else{
+		if(!(object instanceof ChangeablePasswordAuthObject)) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
 			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
 			/* there is nothing more to be done here */
 			return;
 		}
 		
+		ChangeablePasswordAuthObject passwordObject = (ChangeablePasswordAuthObject) object;
 		String passwordName = passwordObject.getPasswordName();
 		
 		if(tlvData == null) {
@@ -119,11 +112,7 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	public void processCommandDeactivatePin() {
 		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
 		
-		PinObject pinObject;
-		
-		if(object instanceof PinObject) {
-			pinObject = (PinObject) object;
-		} else{
+		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
 			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
 			/* there is nothing more to be done here */
@@ -149,7 +138,7 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 			}
 		}
 		
-		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
+		((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
 		
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, "PIN successfully deactivated", resp);
@@ -160,16 +149,14 @@ public abstract class AbstractPinProtocol extends AbstractProtocolStateMachine i
 	public void processCommandUnblockPin() {
 		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
 		
-		PinObject pinObject;
-		
-		if(object instanceof PinObject) {
-			pinObject = (PinObject) object;
-		} else{
+		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
 			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
 			/* there is nothing more to be done here */
 			return;
 		}
+		
+		PinObject pinObject = (PinObject) object;
 		
 		log(this, "old PIN retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
 		
