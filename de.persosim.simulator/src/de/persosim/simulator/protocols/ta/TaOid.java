@@ -15,15 +15,14 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 //XXX MBK complete this class and extract according methods from TR03110
 @XmlRootElement
-public class TaOid extends Oid {
-	public final static byte[] bytes_id_BSI          = {0x04, 0x00, 0x7F, 0x00, 0x07};
-	
-	public final static TaOid id_TA                  = new TaOid(Utils.appendBytes(bytes_id_BSI, new byte[]{0x02, 0x02, 0x02}), "id-TA");
+public class TaOid extends Oid implements Tr03110 {
+	public final static TaOid id_TA                  = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x02, 0x02, 0x02}), "id-TA");
 	
 	public static final TaOid id_TA_RSA              = new TaOid(Utils.appendBytes(id_TA.oidByteArray,     (byte) 0x01),  "id-TA-RSA");
 	public static final TaOid id_TA_RSA_v1_5_SHA_1   = new TaOid(Utils.appendBytes(id_TA_RSA.oidByteArray, (byte) 0x01),  "id-TA-RSA-v1-5-SHA-1");
@@ -41,14 +40,14 @@ public class TaOid extends Oid {
 	public static final TaOid id_TA_ECDSA_SHA_512    = new TaOid(Utils.appendBytes(id_TA_ECDSA.oidByteArray, (byte) 0x05), "id-TA-ECDSA-SHA-512");
 
 	// Auxiliary data verification
-	public final static TaOid id_AuxiliaryData       = new TaOid(Utils.appendBytes(bytes_id_BSI, new byte[]{0x03, 0x01, 0x04}), "id-AuxiliaryData");
+	public final static TaOid id_AuxiliaryData       = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x04}), "id-AuxiliaryData");
 	
 	public static final TaOid id_DateOfBirth         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x01), "id-DateOfBirth");
 	public static final TaOid id_DateOfExpiry        = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x02), "id-DateOfExpiry");
 	public static final TaOid id_CommunityID         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x03), "id-CommunityID");
 	
 	// terminal types
-	public final static TaOid id_Roles               = new TaOid(Utils.appendBytes(bytes_id_BSI, new byte[]{0x03, 0x01, 0x02}), "id-roles");
+	public final static TaOid id_Roles               = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x02}), "id-roles");
 	
 	public static final TaOid id_IS                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x01), "id-IS");
 	public static final TaOid id_AT                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x02), "id-AT");
@@ -56,7 +55,7 @@ public class TaOid extends Oid {
 	
 	// certificate extensions
 
-	public final static TaOid id_Extensions          = new TaOid(Utils.appendBytes(bytes_id_BSI, new byte[]{0x03, 0x01, 0x03}), "id-extensions");
+	public final static TaOid id_Extensions          = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x03}), "id-extensions");
 	
 	public static final TaOid id_Description         = new TaOid(Utils.appendBytes(id_Extensions.oidByteArray, (byte) 0x01), "id-description");
 	public static final TaOid id_Sector              = new TaOid(Utils.appendBytes(id_Extensions.oidByteArray, (byte) 0x02), "id-sector");

@@ -2,30 +2,23 @@ package de.persosim.simulator.protocols.pace;
 
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.Utils;
 
 /**
+ * This interface provides constants used in the context of the PACE protocol according to TR-03110.
  * @author slutters
  *
  */
-public interface Pace {
-	public final static String DUMMY_STRING                        = "dummy string"; 
+public interface Pace extends Tr03110 {
 	
 	/* PACE OIDs according to TR-03110 v2.1 part 3 */
 	
 	/* PACE id */
-	  
-//	                                                            0x00 itu-t(0)
-//	                                                                  0x04 identified-organization(4)
-//	                                                                        0x00 etsi(0)
-//	                                                                              0x7F reserved(127)
-//	                                                                                    0x00 etsi-identified-organization(0)
-//	                                                                                          0x07 7
-//	                                                                                                0x02 bsi-de protocols(2)
-//	                                                                                                      0x02 smartcard(2)
-//	                                                                                                            0x04 4 pace protocol(4)
+//	                                                                                                      0x02 bsi-de protocols(2)
+//	                                                                                                            0x02 smartcard(2)
+//	                                                                                                                  0x04 4 pace protocol(4)
 	
-	public final static byte[] id_BSI                              = {0x04, 0x00, 0x7F, 0x00, 0x07};
 	public final static byte[] id_PACE                             = Utils.appendBytes(id_BSI, new byte[]{0x02, 0x02, 0x04});
 	public final static String id_PACE_STRING                      = "id-PACE";
 	
@@ -49,27 +42,6 @@ public interface Pace {
 	public final static String ECDH_IM_STRING                      = "ECDH-IM";
 	
 	public final static String[] KEY_AGREEMENT_AND_MAPPING_STRING  = new String[]{DH_GM_STRING, ECDH_GM_STRING, DH_IM_STRING, ECDH_IM_STRING};
-	
-	/*--------------------------------------------------------------------------------*/
-	/*--------------------------------------------------------------------------------*/
-	
-	/* Symmetric cipher */
-	public final static byte DES3_CBC_CBC                          = (byte) 0x01;
-	public final static byte AES_CBC_CMAC_128                      = (byte) 0x02;
-	public final static byte AES_CBC_CMAC_192                      = (byte) 0x03;
-	public final static byte AES_CBC_CMAC_256                      = (byte) 0x04;
-	
-	public final static byte[] SYMMETRIC_CIPHER                    = new byte[]{DES3_CBC_CBC, AES_CBC_CMAC_128, AES_CBC_CMAC_192, AES_CBC_CMAC_256};
-	
-	/*--------------------------------------------------------------------------------*/
-	
-	/* Symmetric cipher */
-	public final static String DES3_CBC_CBC_STRING                 = "DES3-CBC-CBC";
-	public final static String AES_CBC_CMAC_128_STRING             = "AES-CBC-CMAC-128";
-	public final static String AES_CBC_CMAC_192_STRING             = "AES-CBC-CMAC-192";
-	public final static String AES_CBC_CMAC_256_STRING             = "AES-CBC-CMAC-256";
-	
-	public final static String[] SYMMETRIC_CIPHER_STRING           = new String[]{DES3_CBC_CBC_STRING, AES_CBC_CMAC_128_STRING, AES_CBC_CMAC_192_STRING, AES_CBC_CMAC_256_STRING};
 	
 	/*--------------------------------------------------------------------------------*/
 	/*--------------------------------------------------------------------------------*/

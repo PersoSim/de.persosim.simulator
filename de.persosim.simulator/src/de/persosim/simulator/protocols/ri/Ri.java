@@ -1,5 +1,6 @@
 package de.persosim.simulator.protocols.ri;
 
+import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.Utils;
 
@@ -10,8 +11,7 @@ import de.persosim.simulator.utils.Utils;
  * @author mboonk
  * 
  */
-public interface Ri {
-	public final static byte[] id_BSI = { 0x04, 0x00, 0x7F, 0x00, 0x07 };
+public interface Ri extends Tr03110 {
 	public final static byte[] id_RI = Utils.appendBytes(id_BSI, new byte[] {
 			0x02, 0x02, 0x05 });
 
