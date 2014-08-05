@@ -164,37 +164,36 @@ public interface Iso7816 {
 	 * P1 according to ISO7816-4
 	 */
 
-	public static final byte P1_SELECT_FILE_MF_DF_EF 				= (byte) 0x00;
-	public static final byte P1_SELECT_FILE_CHILD_DF 				= (byte) 0x01;
-	public static final byte P1_SELECT_FILE_EF_UNDER_CURRENT_DF 	= (byte) 0x02;
-	public static final byte P1_SELECT_FILE_PARENT_DF 				= (byte) 0x03;
-	public static final byte P1_SELECT_FILE_DF_BY_NAME 				= (byte) 0x04;
-	public static final byte P1_SELECT_FILE_BY_PATH_FROM_MF 		= (byte) 0x08;
-	public static final byte P1_SELECT_FILE_BY_PATH_FROM_DF 		= (byte) 0x09;
+	public static final byte P1_SELECT_FILE_MF_DF_EF 				   = (byte) 0x00;
+	public static final byte P1_SELECT_FILE_CHILD_DF 				   = (byte) 0x01;
+	public static final byte P1_SELECT_FILE_EF_UNDER_CURRENT_DF 	   = (byte) 0x02;
+	public static final byte P1_SELECT_FILE_PARENT_DF 				   = (byte) 0x03;
+	public static final byte P1_SELECT_FILE_DF_BY_NAME 				   = (byte) 0x04;
+	public static final byte P1_SELECT_FILE_BY_PATH_FROM_MF 		   = (byte) 0x08;
+	public static final byte P1_SELECT_FILE_BY_PATH_FROM_DF 		   = (byte) 0x09;
+	
+	// P1 for {@link #INS_2C_RESET_RETRY_COUNTER}
+	public static final byte P1_RESET_RETRY_COUNTER_UNBLOCK_AND_CHANGE = (byte) 0x02;
+	public static final byte P1_RESET_RETRY_COUNTER_CHANGE             = (byte) 0x02;
+	public static final byte P1_RESET_RETRY_COUNTER_UNBLOCK            = (byte) 0x03;
 	
 
 	/*
 	 * P2 according to ISO7816-4
 	 */
 
-	public static final byte P2_SELECT_OCCURRENCE_MASK = 0b00000011;
-	public static final byte P2_SELECT_OCCURRENCE_FIRST = (byte) 0b0000;
-	public static final byte P2_SELECT_OCCURRENCE_LAST = (byte) 0b0001;
-	public static final byte P2_SELECT_OCCURRENCE_NEXT = (byte) 0b0010;
-	public static final byte P2_SELECT_OCCURRENCE_PREVIOUS = (byte) 0b0011;
+	public static final byte P2_SELECT_OCCURRENCE_MASK                 = 0b00000011;
+	public static final byte P2_SELECT_OCCURRENCE_FIRST                = (byte) 0b0000;
+	public static final byte P2_SELECT_OCCURRENCE_LAST                 = (byte) 0b0001;
+	public static final byte P2_SELECT_OCCURRENCE_NEXT                 = (byte) 0b0010;
+	public static final byte P2_SELECT_OCCURRENCE_PREVIOUS             = (byte) 0b0011;
 
-	public static final byte P2_SELECT_FCI_MASK = 0b00001100;
-	public static final byte P2_SELECT_FCI_TEMPLATE = (byte) 0b0000;
-	public static final byte P2_SELECT_FCP_TEMPLATE = (byte) 0b0100;
-	public static final byte P2_SELECT_FMD_TEMPLATE = (byte) 0b1000;
-	public static final byte P2_SELECT_NO_OR_PROPRIETARY = (byte) 0b1100;
+	public static final byte P2_SELECT_FCI_MASK                        = 0b00001100;
+	public static final byte P2_SELECT_FCI_TEMPLATE                    = (byte) 0b0000;
+	public static final byte P2_SELECT_FCP_TEMPLATE                    = (byte) 0b0100;
+	public static final byte P2_SELECT_FMD_TEMPLATE                    = (byte) 0b1000;
+	public static final byte P2_SELECT_NO_OR_PROPRIETARY               = (byte) 0b1100;
 	
-	/*
-	 * P1 for {@link #INS_2C_RESET_RETRY_COUNTER}
-	 */
-	public static final byte P1_02_UNBLOCK_AND_CHANGE = (byte) 0x02;
-	public static final byte P1_02_CHANGE             = (byte) 0x02;
-	public static final byte P1_03_UNBLOCK            = (byte) 0x03;
 	
 	/*
 	 * SW1-SW2 according to ISO7816-4
