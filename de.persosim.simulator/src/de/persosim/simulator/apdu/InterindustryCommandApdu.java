@@ -2,6 +2,7 @@ package de.persosim.simulator.apdu;
 
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
+import de.persosim.simulator.utils.Utils;
 
 /**
  * This class encapsulates all features of a CommandApdu that are only present
@@ -35,11 +36,6 @@ public class InterindustryCommandApdu extends CommandApduImpl implements IsoSecu
 		return Iso7816Lib.getSecureMessagingStatus(header);
 	}
 
-	@Override
-	public void setSecureMessaging(byte smStatus) {
-		header[Iso7816Lib.OFFSET_CLA] = Iso7816Lib.setSecureMessagingStatus(getCla(), smStatus);
-	}
-
 	public byte getChannel() {
 		return Iso7816Lib.getChannel(getHeader());
 	}
@@ -51,5 +47,12 @@ public class InterindustryCommandApdu extends CommandApduImpl implements IsoSecu
 		} else {
 			return super.wasSecureMessaging();
 		}
+	}
+
+	@Override
+	public CommandApdu rewrapApdu(byte newSmStatus, byte[] commandData) {
+		byte [] newApdu = Utils.concatByteArrays(header, commandData);
+		newApdu[Iso7816.OFFSET_CLA] = Iso7816Lib.setSecureMessagingStatus(newApdu[Iso7816.OFFSET_CLA], newSmStatus);
+		return new InterindustryCommandApdu(newApdu, this);
 	}
 }

@@ -4,8 +4,8 @@ import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.securemessaging.SecureMessaging;
 
 /**
- * This interface should be implemented by all {@link CommandApduImpl}s that support
- * SecureMessaging according to ISO7816-4.
+ * This interface should be implemented by all {@link CommandApduImpl}s that
+ * support SecureMessaging according to ISO7816-4.
  * <p/>
  * {@link SecureMessaging} operates directly on these APDUs to wrap/unwrap the
  * sm encoded data. This allows to apply ISO-SecureMessaging on proprietary
@@ -14,7 +14,7 @@ import de.persosim.simulator.securemessaging.SecureMessaging;
  * @author amay
  * 
  */
-public interface IsoSecureMessagingCommandApdu extends CommandApdu{
+public interface IsoSecureMessagingCommandApdu extends CommandApdu {
 
 	/**
 	 * see {@link Iso7816Lib#getSecureMessagingStatus(byte[])}
@@ -24,11 +24,16 @@ public interface IsoSecureMessagingCommandApdu extends CommandApdu{
 	public abstract byte getSecureMessaging();
 
 	/**
-	 * see {@link Iso7816Lib#setSecureMessagingStatus(byte[])}
+	 * This methods implementations should wrap a given data (including L_c,
+	 * command data and L_e fields) into a new CommandApdu using the same
+	 * header.
 	 * 
-	 * @param smStatus
-	 *            secure messaging status
+	 * @param newSmStatus
+	 *            the new ISO7816 secure messaging status to store
+	 * @param commandData
+	 *            the L_c|command data|L_e fields
+	 * @return
 	 */
-	public abstract void setSecureMessaging(byte smStatus);
+	public CommandApdu rewrapApdu(byte newSmStatus, byte[] commandData);
 
 }

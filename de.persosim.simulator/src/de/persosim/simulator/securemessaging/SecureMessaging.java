@@ -250,7 +250,7 @@ public class SecureMessaging extends Layer {
 	 */
 	public CommandApdu extractPlainTextAPDU() {
 		TlvDataObject tlvObject87, tlvObject8E, tlvObject97;
-		byte[] encryptedData, paddedData, data, le, plainAPDU, dbgIv;
+		byte[] encryptedData, paddedData, data, le, plainApduCommandData, dbgIv;
 		int isoCaseOfPlainAPDU;
 		ByteArrayOutputStream apduStream;
 		
@@ -258,6 +258,10 @@ public class SecureMessaging extends Layer {
 		
 		if(processingData.getCommandApdu().getIsoCase() != ISO_CASE_4) {
 			throw new IllegalArgumentException("SM APDU is expected to be ISO case 4");
+		}
+		
+		if (!(processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu)){
+			throw new IllegalArgumentException("SM APDU is expected to be an IsoSecureMessagingCommandApdu");
 		}
 		
 		TlvDataObjectContainer constructedCommandDataField = processingData.getCommandApdu().getCommandDataObjectContainer();
@@ -290,14 +294,6 @@ public class SecureMessaging extends Layer {
 		}
 		
 		apduStream = new ByteArrayOutputStream();
-		
-		try {
-			byte[] header = this.processingData.getCommandApdu().getHeader();
-			apduStream.write(header);
-		} catch (IOException e) {
-			logException(this, e);
-		}
-		
 		// append extendedLengthIndicator if needed
 		if (processingData.getCommandApdu().isExtendedLength()) {
 			apduStream.write(0x00);
@@ -345,13 +341,8 @@ public class SecureMessaging extends Layer {
 			}
 		}
 		
-		plainAPDU = apduStream.toByteArray();
-		
-		CommandApdu result = CommandApduFactory.createCommandApdu(plainAPDU, processingData.getCommandApdu());
-		if (this.processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu){
-			((IsoSecureMessagingCommandApdu)result).setSecureMessaging(Iso7816.SM_OFF_OR_NO_INDICATION);
-		}
-		
+		plainApduCommandData = apduStream.toByteArray();
+		CommandApdu result = ((IsoSecureMessagingCommandApdu)this.processingData.getCommandApdu()).rewrapApdu(Iso7816.SM_OFF_OR_NO_INDICATION, plainApduCommandData);
 		log(this, "completed extracting SM APDU", TRACE);
 		return result;
 	}
