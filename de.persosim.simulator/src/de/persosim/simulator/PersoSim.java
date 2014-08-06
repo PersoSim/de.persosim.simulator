@@ -24,7 +24,7 @@ import de.persosim.simulator.perso.DefaultPersoTestPki;
 import de.persosim.simulator.perso.Personalization;
 
 public class PersoSim implements Runnable {
-
+	
 	private SocketSimulator simulator;
 	
 	/*
@@ -52,8 +52,15 @@ public class PersoSim implements Runnable {
 	private String simHost = "localhost"; // default
 	private int simPort = 9876; // default
 
-	public PersoSim() {
+	public PersoSim(String[] args) {
 		Security.addProvider(new BouncyCastleProvider());
+		
+		try {
+			handleArgs(args);
+		} catch (IllegalArgumentException e) {
+			System.out.println("simulation aborted, reason is: " + e.getMessage());
+		}
+		
 	}
 
 	/**
@@ -65,15 +72,7 @@ public class PersoSim implements Runnable {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		PersoSim sim = new PersoSim();
-		
-		try {
-			sim.handleArgs(args);
-			sim.run();
-		} catch (IllegalArgumentException e) {
-			System.out.println("simulation aborted, reason is: " + e.getMessage());
-			sim.stopSimulator();
-		}
+		(new PersoSim(args)).run();
 	}
 
 	@Override
@@ -357,6 +356,8 @@ public class PersoSim implements Runnable {
 	}
 
 	public void handleArgs(String[] args) {
+		if(args == null) {throw new NullPointerException("arguments must not be null");}
+		
 		Iterator<String> argsIterator = Arrays.asList(args).iterator();
 		
 		String currentArgument;
