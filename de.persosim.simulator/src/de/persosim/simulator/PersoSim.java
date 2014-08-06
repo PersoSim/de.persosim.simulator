@@ -118,8 +118,13 @@ public class PersoSim implements Runnable {
 				            			setPersonalization(args[1]);
 				            			stopSimulator();
 				            			startSimulator();
-				            		} catch(IllegalArgumentException e) {
-				            			System.out.println("unable to set personalization, reason is: " + e.getMessage());
+				            		} catch(FileNotFoundException | IllegalArgumentException e) {
+				            			if(e instanceof FileNotFoundException) {
+				            				System.out.println("unable to set personalization, reason is: perso file not found");
+				            			} else{
+				            				System.out.println("unable to set personalization, reason is: " + e.getMessage());
+				            			}
+				            			
 				            			System.out.println("simulation is stopped");
 				            			stopSimulator();
 				            		}
@@ -165,26 +170,36 @@ public class PersoSim implements Runnable {
 	}
 	
 	/**
-	 * This method parses the provided String object for commands and possible arguments.
-	 * It will return an array of length 0-2 depending on the trimmed encoded command String.
-	 * If the String is empty an array of length 0 will be returned.
-	 * If the String contains white space an array of length 2 will be returned with the substring up to the white space followed by the trimmed rest.
-	 * Otherwise the an array of length 1 is returned only bearing a command.
-	 * @param args the argument String to be parsed
+	 * This method parses the provided String object for commands and possible
+	 * arguments. First the provided String is trimmed. If the String is empty,
+	 * the returned array will be of length 0. If the String does not contain at
+	 * least one space character ' ', the whole String will be returned as first
+	 * and only element of an array of length 1. If the String does contain at
+	 * least one space character ' ', the substring up to but not including the
+	 * position of the first occurrence will be the first element of the
+	 * returned array. The rest of the String will be trimmed and, if not of
+	 * length 0, form the second array element.
+	 * 
+	 * @param args
+	 *            the argument String to be parsed
 	 * @return the parsed arguments
+	 * @throws NullPointerException
+	 *             if provided arguments are null
 	 */
 	public static String[] parseArgs(String args) {
+		if(args == null) {throw new NullPointerException("arguments must not be null");}
+		
 		String argsInput = args.trim().toLowerCase();
 		
 		int index = argsInput.indexOf(" ");
 		
 		if(index >= 0) {
-			String cmd = args.substring(0, index);
-			String params = args.substring(index).trim();
+			String cmd = argsInput.substring(0, index);
+			String params = argsInput.substring(index).trim();
 			return new String[]{cmd, params};
 		} else{
-			if(args.length() > 0) {
-				return new String[]{args};
+			if(argsInput.length() > 0) {
+				return new String[]{argsInput};
 			} else{
 				return new String[0];
 			}
@@ -231,8 +246,14 @@ public class PersoSim implements Runnable {
 		return currentPersonalization;
 	}
 	
-	public static Personalization parsePersonalization(String persoFileName) {
-		// try to read perso from provided file
+	/**
+	 * This method parses a {@link Personalization} object from a file identified by its name.
+	 * @param persoFileName the name of the file to contain the personalization
+	 * @return the parsed personalization
+	 * @throws FileNotFoundException 
+	 * @throws IllegalArgumentException if parsing of personalization not successful
+	 */
+	public static Personalization parsePersonalization(String persoFileName) throws FileNotFoundException {
 		File persoFile = new File(persoFileName);
 		
 		Unmarshaller um;
@@ -243,15 +264,12 @@ public class PersoSim implements Runnable {
 					.unmarshal(new FileReader(persoFile));
 		} catch (JAXBException e) {
 			throw new IllegalArgumentException("Unable to parse personalization from file " + persoFileName);
-		} catch (FileNotFoundException e) {
-			throw new IllegalArgumentException("Perso file " + persoFileName + " not found");
 		}
 	}
 	
-	public void setPersonalization(String persoFileName) {
-		Personalization perso = parsePersonalization(persoFileName);
+	public void setPersonalization(String persoFileName) throws FileNotFoundException {
+		currentPersonalization = parsePersonalization(persoFileName);
 		System.out.println("personalization successfully read from file " + persoFileName);
-		currentPersonalization = perso;
 	}
 	
 	public void setPort(String newPortString) {
@@ -372,6 +390,8 @@ public class PersoSim implements Runnable {
             			setPersonalization(fileName);
             		} catch(IllegalArgumentException e) {
             			throw new IllegalArgumentException("unable to set personalization, reason is: " + e.getMessage());
+            		} catch(FileNotFoundException e) {
+            			throw new IllegalArgumentException("unable to set personalization, reason is: perso file not found");
             		}
             	} else{
             		System.out.println("set personalization command requires file name");
