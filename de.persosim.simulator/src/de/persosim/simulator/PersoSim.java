@@ -39,14 +39,18 @@ public class PersoSim implements Runnable {
 	public static final String CMD_RESTART                    = "restart";
 	public static final String CMD_STOP                       = "stop";
 	public static final String CMD_EXIT                       = "exit";
-	public static final String CMD_LOAD_PERSONALIZATION       = "loadPerso";
-	public static final String CMD_LOAD_PERSONALIZATION_SHORT = "-p";
+	public static final String CMD_SET_HOST                   = "sethost";
+	public static final String CMD_SET_HOST_SHORT             = "-host";
+	public static final String CMD_SET_PORT                   = "setport";
+	public static final String CMD_SET_PORT_SHORT             = "-port";
+	public static final String CMD_LOAD_PERSONALIZATION       = "loadperso";
+	public static final String CMD_LOAD_PERSONALIZATION_SHORT = "-perso";
 	public static final String CMD_SEND_APDU                  = "sendapdu";
 	public static final String CMD_HELP                       = "help";
 	
 	//XXX adjust host/port (e.g. from command line args)
-	private String simHost = "localhost";
-	private int simPort = 9876;
+	private String simHost = "localhost"; // default
+	private int simPort = 9876; // default
 
 	public PersoSim() {
 		Security.addProvider(new BouncyCastleProvider());
@@ -250,6 +254,23 @@ public class PersoSim implements Runnable {
 		System.out.println("personalization successfully read from file " + persoFileName);
 		currentPersonalization = perso;
 	}
+	
+	public void setPort(String newPortString) {
+		if(newPortString == null) {throw new NullPointerException("port parameter must not be null");}
+		int newPort = Integer.parseInt(newPortString);
+		if(newPort < 0) {throw new IllegalArgumentException("port number must be positive");}
+		
+		simPort = newPort;
+		//IMPL check for port being unused
+	}
+	
+	public void setHost(String newHost) {
+		if(newHost == null) {throw new NullPointerException("host name must not be null");}
+		if(newHost.length() <= 0) {throw new IllegalArgumentException("host name must not be empty");}
+		
+		simHost = newHost;
+		//IMPL check for host response
+	}
 
 	/**
 	 * Stops the simulator thread and returns when the thread is stopped.
@@ -353,6 +374,30 @@ public class PersoSim implements Runnable {
             		}
             	} else{
             		System.out.println("set personalization command requires file name");
+            	}
+            	break;
+            case CMD_SET_HOST_SHORT:
+            	if(argsIterator.hasNext()) {
+            		String hostName = argsIterator.next();
+            		try{
+            			setHost(hostName);
+            		} catch(IllegalArgumentException | NullPointerException e) {
+            			throw new IllegalArgumentException("unable to set host name, reason is: " + e.getMessage());
+            		}
+            	} else{
+            		System.out.println("set host command requires host name");
+            	}
+            	break;
+            case CMD_SET_PORT_SHORT:
+            	if(argsIterator.hasNext()) {
+            		String portNoString = argsIterator.next();
+            		try{
+            			setPort(portNoString);
+            		} catch(IllegalArgumentException | NullPointerException e) {
+            			throw new IllegalArgumentException("unable to set port, reason is: " + e.getMessage());
+            		}
+            	} else{
+            		System.out.println("set port command requires port number");
             	}
             	break;
             default: System.out.println("unrecognized command or parameter \"" + currentArgument + "\" will be ignored");
