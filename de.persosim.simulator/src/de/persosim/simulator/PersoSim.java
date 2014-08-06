@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.security.Security;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +26,23 @@ import de.persosim.simulator.perso.Personalization;
 public class PersoSim implements Runnable {
 
 	private SocketSimulator simulator;
+	
+	/*
+	 * This variable holds the currently used personalization.
+	 * It may explicitly be null and must not be read directly from here.
+	 * As there exist several ways of providing a personalization of which none at all may be used the variable may remain null/unset.
+	 * Due to this possibility access to this variable must be performed by calling the getPersonalization() method. 
+	 */
+	private Personalization currentPersonalization;
+	
+	public static final String CMD_START                      = "start";
+	public static final String CMD_RESTART                    = "restart";
+	public static final String CMD_STOP                       = "stop";
+	public static final String CMD_EXIT                       = "exit";
+	public static final String CMD_LOAD_PERSONALIZATION       = "loadPerso";
+	public static final String CMD_LOAD_PERSONALIZATION_SHORT = "-p";
+	public static final String CMD_SEND_APDU                  = "sendapdu";
+	public static final String CMD_HELP                       = "help";
 	
 	//XXX adjust host/port (e.g. from command line args)
 	private String simHost = "localhost";
@@ -43,8 +62,14 @@ public class PersoSim implements Runnable {
 	 */
 	public static void main(String[] args) {
 		PersoSim sim = new PersoSim();
-		sim.handleArgs(args);
-		sim.run();
+		
+		try {
+			sim.handleArgs(args);
+			sim.run();
+		} catch (IllegalArgumentException e) {
+			System.out.println("simulation aborted, reason is: " + e.getMessage());
+			sim.stopSimulator();
+		}
 	}
 
 	@Override
@@ -80,18 +105,54 @@ public class PersoSim implements Runnable {
 			try {
 				if (cmd != null) {
 					cmd = cmd.trim();
-					if (cmd.toLowerCase().startsWith("sendapdu")) {
-						cmdSendApdu(cmd);
-					} else if (cmd.toLowerCase().startsWith("exit")) {
-						stopSimulator();
-						executeUserCommands = false;
-					} else if (cmd.toLowerCase().startsWith("help")) {
-						System.out.println("Available commands:");
-						System.out.println("sendApdu <hestring>");
-						System.out.println("help");
-						System.out.println("exit");
-					} else {
-						System.out.println("unknown command");
+					String[] args = parseArgs(cmd);
+					
+					if(args.length > 0) {
+						switch (args[0]) {
+				            case CMD_LOAD_PERSONALIZATION:
+				            	if(args.length == 2) {
+				            		try{
+				            			setPersonalization(args[1]);
+				            			stopSimulator();
+				            			startSimulator();
+				            		} catch(IllegalArgumentException e) {
+				            			System.out.println("unable to set personalization, reason is: " + e.getMessage());
+				            			System.out.println("simulation is stopped");
+				            			stopSimulator();
+				            		}
+				            	} else{
+				            		System.out.println("set personalization command requires one single file name");
+				            	}
+				            	break;
+				            case CMD_SEND_APDU:
+				            	cmdSendApdu(cmd);
+				            	break;
+				            case CMD_START:
+				            	startSimulator();
+				            	break;
+				            case CMD_RESTART:
+				            	stopSimulator();
+				            	startSimulator();
+				            case CMD_STOP:
+				            	stopSimulator();
+				            	break;
+				            case CMD_EXIT:
+				            	stopSimulator();
+								executeUserCommands = false;
+								break;
+				            case CMD_HELP:
+				            	System.out.println("Available commands:");
+								System.out.println(CMD_SEND_APDU + " <hexstring>");
+								System.out.println(CMD_LOAD_PERSONALIZATION + " <file name>");
+								System.out.println(CMD_START);
+								System.out.println(CMD_RESTART);
+								System.out.println(CMD_STOP);
+								System.out.println(CMD_EXIT);
+								System.out.println(CMD_HELP);
+								break;
+				            default: System.out.println("unrecognized command \"" + args[0] + "\" and parameters will be ignored");
+				                     break;
+						}
 					}
 				}
 			} catch (RuntimeException e) {
@@ -99,9 +160,37 @@ public class PersoSim implements Runnable {
 			}
 		}
 	}
+	
+	/**
+	 * This method parses the provided String object for commands and possible arguments.
+	 * It will return an array of length 0-2 depending on the trimmed encoded command String.
+	 * If the String is empty an array of length 0 will be returned.
+	 * If the String contains white space an array of length 2 will be returned with the substring up to the white space followed by the trimmed rest.
+	 * Otherwise the an array of length 1 is returned only bearing a command.
+	 * @param args the argument String to be parsed
+	 * @return the parsed arguments
+	 */
+	public static String[] parseArgs(String args) {
+		String argsInput = args.trim().toLowerCase();
+		
+		int index = argsInput.indexOf(" ");
+		
+		if(index >= 0) {
+			String cmd = args.substring(0, index);
+			String params = args.substring(index).trim();
+			return new String[]{cmd, params};
+		} else{
+			if(args.length() > 0) {
+				return new String[]{args};
+			} else{
+				return new String[0];
+			}
+			
+		}
+	}
 
 	/**
-	 * This methods handles instantiation and (re)start of the SocketSimulator.
+	 * This method handles instantiation and (re)start of the SocketSimulator.
 	 */
 	private void startSimulator() {
 		if (simulator == null) {
@@ -114,27 +203,52 @@ public class PersoSim implements Runnable {
 
 	}
 
-	private Personalization getPersonalization() {
-		// try to read perso from provided file
-		String persoFileName = "perso.xml";
-		File persoFile = new File(persoFileName);
-		if (persoFile.exists()) {
-			Unmarshaller um;
-			try {
-				um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-				System.out.println("Loading personalization from file " + persoFileName);
-				return (Personalization) um
-						.unmarshal(new FileReader(persoFile));
-			} catch (JAXBException e) {
-				System.out.println("Unable to parse personalization from file " + persoFileName);
-				showExceptionToUser(e);
-			} catch (FileNotFoundException e) {
-				System.out.println("Perso file " + persoFileName + " not found");
-			}
+	/**
+	 * This method returns the content of {@link #currentPersonalization}, the
+	 * currently used personalization. If no personalization is set, i.e. the
+	 * variable is null, it will be set to the default personalization which
+	 * will be returned thereafter. This mode of accessing personalization
+	 * opportunistic assumes that a personalization will always be set and
+	 * generating a default personalization is an overhead only to be spent as a
+	 * measure of last resort.
+	 * 
+	 * @return the currently used personalization
+	 */
+	public Personalization getPersonalization() {
+//		// try to read perso from provided file
+//		String persoFileName = "perso.xml";
+//		
+//		currentPersonalization = parsePersonalization(persoFileName);
+		
+		if(currentPersonalization == null) {
+			System.out.println("Loading default personalization");
+			currentPersonalization = new DefaultPersoTestPki();
 		}
 		
-		System.out.println("Loading default personalization");
-		return new DefaultPersoTestPki();
+		return currentPersonalization;
+	}
+	
+	public static Personalization parsePersonalization(String persoFileName) {
+		// try to read perso from provided file
+		File persoFile = new File(persoFileName);
+		
+		Unmarshaller um;
+		try {
+			um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
+			System.out.println("Loading personalization from file " + persoFileName);
+			return (Personalization) um
+					.unmarshal(new FileReader(persoFile));
+		} catch (JAXBException e) {
+			throw new IllegalArgumentException("Unable to parse personalization from file " + persoFileName);
+		} catch (FileNotFoundException e) {
+			throw new IllegalArgumentException("Perso file " + persoFileName + " not found");
+		}
+	}
+	
+	public void setPersonalization(String persoFileName) {
+		Personalization perso = parsePersonalization(persoFileName);
+		System.out.println("personalization successfully read from file " + persoFileName);
+		currentPersonalization = perso;
 	}
 
 	/**
@@ -169,7 +283,7 @@ public class PersoSim implements Runnable {
 	/**
 	 * Transmit the given APDU to the simulator, which processes it and returns
 	 * the response. The response APDU is received from the simulator via its
-	 * socket interface an returned to the caller as HexString.
+	 * socket interface and returned to the caller as HexString.
 	 * 
 	 * @param cmdApdu
 	 *            HexString containing the CommandAPDU
@@ -222,7 +336,30 @@ public class PersoSim implements Runnable {
 	}
 
 	public void handleArgs(String[] args) {
-		// TODO handle command line args as soon as those are defined
+		Iterator<String> argsIterator = Arrays.asList(args).iterator();
+		
+		String currentArgument;
+		while(argsIterator.hasNext()) {
+			currentArgument = argsIterator.next();
+			
+			switch (currentArgument) {
+            case CMD_LOAD_PERSONALIZATION_SHORT:
+            	if(argsIterator.hasNext()) {
+            		String fileName = argsIterator.next();
+            		try{
+            			setPersonalization(fileName);
+            		} catch(IllegalArgumentException e) {
+            			throw new IllegalArgumentException("unable to set personalization, reason is: " + e.getMessage());
+            		}
+            	} else{
+            		System.out.println("set personalization command requires file name");
+            	}
+            	break;
+            default: System.out.println("unrecognized command or parameter \"" + currentArgument + "\" will be ignored");
+                     break;
+			}
+		}
+		
 	}
 
 }
