@@ -233,11 +233,6 @@ public class PersoSim implements Runnable {
 	 * @return the currently used personalization
 	 */
 	public Personalization getPersonalization() {
-//		// try to read perso from provided file
-//		String persoFileName = "perso.xml";
-//		
-//		currentPersonalization = parsePersonalization(persoFileName);
-		
 		if(currentPersonalization == null) {
 			System.out.println("Loading default personalization");
 			currentPersonalization = new DefaultPersoTestPki();
