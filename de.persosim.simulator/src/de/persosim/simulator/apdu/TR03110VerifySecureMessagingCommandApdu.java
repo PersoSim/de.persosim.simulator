@@ -37,7 +37,7 @@ public class TR03110VerifySecureMessagingCommandApdu extends CommandApduImpl imp
 	@Override
 	public CommandApdu rewrapApdu(byte newSmStatus, byte[] commandData) {
 		byte [] newApdu = Utils.concatByteArrays(header, commandData);
-		newApdu[Iso7816.OFFSET_CLA] = header[Iso7816Lib.OFFSET_CLA] = (byte) ((byte) (getCla() & 0b11110011) | newSmStatus << 2);
+		newApdu[Iso7816.OFFSET_CLA] = (byte) ((byte) (getCla() & 0b11110011) | newSmStatus << 2);
 		return new TR03110VerifySecureMessagingCommandApdu(newApdu, this);
 	}
 

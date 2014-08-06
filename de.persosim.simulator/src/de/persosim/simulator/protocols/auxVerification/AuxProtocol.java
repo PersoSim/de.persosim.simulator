@@ -147,7 +147,6 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 	public Collection<ApduSpecification> getApduSet() {
 		HashSet<ApduSpecification> apdus = new HashSet<>();
 		ApduSpecification apduSpecification = new ApduSpecification("Verify");
-		apduSpecification.setIsoFormat(ISO_FORMAT_FIRSTINTERINDUSTRY);
 		apduSpecification.setIsoCase(ISO_CASE_2);
 		apduSpecification.setChaining(false);
 		apduSpecification.setIns(INS_20_VERIFY);

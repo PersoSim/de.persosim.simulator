@@ -35,6 +35,7 @@ public class TR03110VerifySecureMessagingCommandApduTest extends PersoSimTestCas
 		expectedHeader[0] = (byte) 0x80;
 		assertEquals(apdu.getCommandData(), result.getCommandData());
 		assertArrayEquals(expectedHeader, result.getHeader());
+		assertArrayEquals(Utils.concatByteArrays(apduHeader, commandData), result.getPredecessor().toByteArray());
 	}
 	
 }

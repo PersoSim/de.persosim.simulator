@@ -35,6 +35,7 @@ public class InterindustryCommandApduTest extends PersoSimTestCase {
 		expectedHeader[0] = (byte) 0x00;
 		assertEquals(apdu.getCommandData(), result.getCommandData());
 		assertArrayEquals(expectedHeader, result.getHeader());
+		assertArrayEquals(Utils.concatByteArrays(apduHeader, commandData), result.getPredecessor().toByteArray());
 	}
 	
 }
