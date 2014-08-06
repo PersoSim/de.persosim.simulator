@@ -119,7 +119,7 @@ public class PersoSimGUI extends JFrame implements ActionListener {
 			PersoSim.main(args);
 		} else {
 			PersoSim sim = new PersoSim(args);
-			sim.handleArgs(args);
+			sim.executeStartupCommands(args);
 			new PersoSimGUI(sim);
 		}
 	}
