@@ -111,6 +111,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		}
 		
 		assertFalse(socketSim.isRunning());
+		assertNull(Deencapsulation.getField(persoSim, "simulator"));
 	}
 	
 	/**
@@ -144,7 +145,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: parse arguments from a String containing spaces not only only at start and end.
+	 * Positive test case: parse arguments from a String containing spaces not only at start and end.
 	 */
 	@Test
 	public void parseArgsIncoherentString() {
