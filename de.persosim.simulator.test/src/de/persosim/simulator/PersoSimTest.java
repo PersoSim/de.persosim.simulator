@@ -65,15 +65,6 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		SocketSimulator socketSim = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
 		
-		int counter = 1;
-		long delay = 1000;
-		
-		while(((socketSim == null) || !socketSim.isRunning()) && (counter <= 5)) {
-			this.wait(delay);
-			delay *= 2;
-			counter++;
-		}
-		
 		assertTrue(socketSim.isRunning());
 	}
 	
@@ -89,26 +80,8 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		SocketSimulator socketSim = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
 		
-		int counter = 1;
-		long delay = 1000;
-		
-		while(((socketSim == null) || !socketSim.isRunning()) && (counter <= 5)) {
-			this.wait(delay);
-			delay *= 2;
-			counter++;
-		}
-		
 		assertTrue(socketSim.isRunning());
 		Deencapsulation.invoke(persoSim, "stopSimulator");
-		
-		counter = 1;
-		delay = 1000;
-		
-		while(socketSim.isRunning() && (counter <= 5)) {
-			this.wait(delay);
-			delay *= 2;
-			counter++;
-		}
 		
 		assertFalse(socketSim.isRunning());
 		assertNull(Deencapsulation.getField(persoSim, "simulator"));
@@ -196,7 +169,92 @@ public class PersoSimTest extends PersoSimTestCase {
 		assertTrue(true);
 	}
 	
+	/**
+	 * Positive test case: test setting of new personalization via command line or user arguments.
+	 * @throws InterruptedException 
+	 * @throws IllegalArgumentException 
+	 * @throws FileNotFoundException 
+	 */
+	@Test
+	public void testCmdLoadPersonalizationValidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
+		persoSim = new PersoSim(new String[0]);
+		
+		Deencapsulation.invoke(persoSim, "startSimulator");
+		
+		SocketSimulator socketSimPre = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
+		
+		Personalization persoPre = PersoSim.parsePersonalization("tmp/perso-jaxb.xml");
+		Deencapsulation.invoke(persoSim, "cmdLoadPersonalization", new Object[]{new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, "tmp/perso-jaxb.xml"}});
+		
+		SocketSimulator socketSimPost = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
+		
+		assertNotNull(socketSimPost);              // SocketSimulator has been stopped and recreated
+		assertTrue(socketSimPost != socketSimPre); // SocketSimulator has been stopped and recreated
+		assertTrue(socketSimPost.isRunning());     // new SocketSimulator is actually running
+		
+		Personalization persoPost = PersoSim.parsePersonalization("tmp/perso-jaxb.xml");
+		
+		assertNotNull(persoPost);
+		assertTrue(persoPost != persoPre); // Personalization has changed
+	}
 	
+	/**
+	 * Positive test case: test setting of new port via command line or user arguments.
+	 * @throws InterruptedException 
+	 * @throws IllegalArgumentException 
+	 * @throws FileNotFoundException 
+	 */
+	@Test
+	public void testCmdSetPortNo() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
+		persoSim = new PersoSim(new String[0]);
+		
+		Deencapsulation.invoke(persoSim, "startSimulator");
+		
+		SocketSimulator socketSimPre = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
+		
+		int portPre = Deencapsulation.getField(persoSim, "simPort");
+		int portPostExpected = portPre + 1;
+		Deencapsulation.invoke(persoSim, "cmdSetPortNo", new Object[]{new String[]{PersoSim.CMD_SET_PORT, (new Integer (portPostExpected)).toString()}});
+		
+		SocketSimulator socketSimPost = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
+		
+		assertNotNull(socketSimPost);              // SocketSimulator has been stopped and recreated
+		assertTrue(socketSimPost != socketSimPre); // SocketSimulator has been stopped and recreated
+		assertTrue(socketSimPost.isRunning());     // new SocketSimulator is actually running
+		
+		int portPost = Deencapsulation.getField(persoSim, "simPort");
+		
+		assertEquals(portPostExpected, portPost); // Port has changed
+	}
+	
+	/**
+	 * Positive test case: test setting of new host via command line or user arguments.
+	 * @throws InterruptedException 
+	 * @throws IllegalArgumentException 
+	 * @throws FileNotFoundException 
+	 */
+	@Test
+	public void testCmdSetHost() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
+		persoSim = new PersoSim(new String[0]);
+		
+		Deencapsulation.invoke(persoSim, "startSimulator");
+		
+		SocketSimulator socketSimPre = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
+		
+		String hostPre = Deencapsulation.getField(persoSim, "simHost");
+		String hostPostExpected = new String(hostPre);
+		Deencapsulation.invoke(persoSim, "cmdSetHostName", new Object[]{new String[]{PersoSim.CMD_SET_HOST, (hostPostExpected)}});
+		
+		SocketSimulator socketSimPost = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
+		
+		assertNotNull(socketSimPost);              // SocketSimulator has been stopped and recreated
+		assertTrue(socketSimPost != socketSimPre); // SocketSimulator has been stopped and recreated
+		assertTrue(socketSimPost.isRunning());     // new SocketSimulator is actually running
+		
+		String hostPost = Deencapsulation.getField(persoSim, "simHost");
+		
+		assertTrue(hostPost != hostPre); // Host has changed
+	}
 	
 	@Test
 	public void testFail() {
