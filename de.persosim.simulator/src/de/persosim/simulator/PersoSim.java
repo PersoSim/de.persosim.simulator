@@ -21,15 +21,27 @@ import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
 import de.persosim.simulator.perso.DefaultPersoTestPki;
 import de.persosim.simulator.perso.Personalization;
 
+/**
+ * This class provides access to and control of the actual simulator. It can be
+ * used to start, stop and configure it. The simulator may be configured by
+ * providing either command line arguments during start-up or user initiated
+ * commands at runtime. Currently both options only allow for a single command
+ * to be executed parameterized by at most one command argument. As all
+ * parameters vital for the operation of the simulator are implicitly set to
+ * default values by fall-through, no explicit configuration is required.
+ * 
+ * @author slutters
+ * 
+ */
 public class PersoSim implements Runnable {
 	
 	private SocketSimulator simulator;
 	
 	/*
 	 * This variable holds the currently used personalization.
-	 * It may explicitly be null and must not be read directly from here.
+	 * It may explicitly be null and should not be read directly from here.
 	 * As there exist several ways of providing a personalization of which none at all may be used the variable may remain null/unset.
-	 * Due to this possibility access to this variable must be performed by calling the getPersonalization() method. 
+	 * Due to this possibility access to this variable should be performed by calling the getPersonalization() method. 
 	 */
 	private Personalization currentPersonalization;
 	
@@ -97,6 +109,9 @@ public class PersoSim implements Runnable {
 	 * position of the first occurrence will be the first element of the
 	 * returned array. The rest of the String will be trimmed and, if not of
 	 * length 0, form the second array element.
+	 * 
+	 * IMPL extend to parse for multiple arguments add recognition of "
+	 * characters as indication of file names allowing white spaces in between.
 	 * 
 	 * @param args
 	 *            the argument String to be parsed
@@ -178,11 +193,21 @@ public class PersoSim implements Runnable {
 		}
 	}
 	
+	/**
+	 * This method sets the personalization by providing a file that it is to be read and parsed from.
+	 * @param persoFileName the file that the personalization is to be read from
+	 * @throws FileNotFoundException if the provided file is not found
+	 */
 	public void setPersonalization(String persoFileName) throws FileNotFoundException {
 		currentPersonalization = parsePersonalization(persoFileName);
 		System.out.println("personalization successfully read from file " + persoFileName);
 	}
 	
+	/**
+	 * This method sets a new port for the simulator.
+	 * In order for the changes to take effect, the simulator needs to be restarted.
+	 * @param newPortString the new port to be used
+	 */
 	public void setPort(String newPortString) {
 		if(newPortString == null) {throw new NullPointerException("port parameter must not be null");}
 		int newPort = Integer.parseInt(newPortString);
@@ -192,6 +217,11 @@ public class PersoSim implements Runnable {
 		//IMPL check for port being unused
 	}
 	
+	/**
+	 * This method sets a new host for the simulator.
+	 * In order for the changes to take effect, the simulator needs to be restarted.
+	 * @param newHost the new host to be used
+	 */
 	public void setHost(String newHost) {
 		if(newHost == null) {throw new NullPointerException("host name must not be null");}
 		if(newHost.length() <= 0) {throw new IllegalArgumentException("host name must not be empty");}
@@ -371,8 +401,12 @@ public class PersoSim implements Runnable {
 	
 	/**
 	 * This method implements the behavior of the user command prompt. E.g.
-	 * prints the prompt, reads the user commands and forwards this to the
-	 * respective method for processing.
+	 * prints the prompt, reads the user commands and forwards this to the the
+	 * execution method for processing. Only one command per invocation of the
+	 * execution method is allowed. The first argument provided must be the
+	 * command, followed by an arbitrary number of parameters. If the number of
+	 * provided parameters is higher than the number expected by the command,
+	 * the surplus parameters will be ignored.
 	 */
 	private void handleUserCommands() {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -397,6 +431,10 @@ public class PersoSim implements Runnable {
 		}
 	}
 	
+	/**
+	 * This method implements the execution of commands initiated by user interaction.
+	 * @param args the parsed commands and arguments
+	 */
 	private void executeUserCommands(String[] args) {
 		if(args == null) {throw new NullPointerException("arguments must not be null");}
 		if(args.length == 0) {return;}
@@ -430,6 +468,10 @@ public class PersoSim implements Runnable {
 		}
 	}
 	
+	/**
+	 * This method implements the execution of commands initiated by command line arguments.
+	 * @param args the parsed commands and arguments
+	 */
 	public void executeStartupCommands(String[] args) {
 		if(args == null) {throw new NullPointerException("arguments must not be null");}
 		if(args.length == 0) {return;}
