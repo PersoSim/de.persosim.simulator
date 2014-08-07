@@ -372,6 +372,8 @@ public class PersoSim implements Runnable {
 			String hostName = args[1];
     		try{
     			setHost(hostName);
+    			stopSimulator();
+    			startSimulator();
     			return true;
     		} catch(IllegalArgumentException | NullPointerException e) {
     			System.out.println("unable to set host name, reason is: " + e.getMessage());
@@ -387,7 +389,9 @@ public class PersoSim implements Runnable {
 		if(args.length >= 2) {
 			String portNoString = args[1];
     		try{
-    			setHost(portNoString);
+    			setPort(portNoString);
+    			stopSimulator();
+    			startSimulator();
     			return true;
     		} catch(IllegalArgumentException | NullPointerException e) {
     			System.out.println("unable to set port, reason is: " + e.getMessage());
