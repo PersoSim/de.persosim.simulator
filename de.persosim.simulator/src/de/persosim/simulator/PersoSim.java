@@ -185,7 +185,7 @@ public class PersoSim implements Runnable {
 		Unmarshaller um;
 		try {
 			um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-			System.out.println("Loading personalization from file " + persoFileName);
+			System.out.println("Parsing personalization from file " + persoFileName);
 			return (Personalization) um
 					.unmarshal(new FileReader(persoFile));
 		} catch (JAXBException e) {
@@ -200,7 +200,7 @@ public class PersoSim implements Runnable {
 	 */
 	public void setPersonalization(String persoFileName) throws FileNotFoundException {
 		currentPersonalization = parsePersonalization(persoFileName);
-		System.out.println("personalization successfully read from file " + persoFileName);
+		System.out.println("personalization successfully read and set from file " + persoFileName);
 	}
 	
 	/**
@@ -214,6 +214,9 @@ public class PersoSim implements Runnable {
 		if(newPort < 0) {throw new IllegalArgumentException("port number must be positive");}
 		
 		simPort = newPort;
+		
+		System.out.println("new port successfully set to " + newPort);
+		
 		//IMPL check for port being unused
 	}
 	
@@ -227,6 +230,9 @@ public class PersoSim implements Runnable {
 		if(newHost.length() <= 0) {throw new IllegalArgumentException("host name must not be empty");}
 		
 		simHost = newHost;
+		
+		System.out.println("new host successfully set to " + newHost);
+		
 		//IMPL check for host response
 	}
 
@@ -246,7 +252,7 @@ public class PersoSim implements Runnable {
 	 * @param cmd
 	 *            string containing the command
 	 */
-	private void cmdSendApdu(String cmd) {
+	private void sendCmdApdu(String cmd) {
 		cmd = cmd.trim();
 
 		Pattern cmdSendApduPattern = Pattern
@@ -260,10 +266,15 @@ public class PersoSim implements Runnable {
 
 	}
 	
+	/**
+	 * This method processes the send APDU command according to the provided arguments.
+	 * @param args the arguments provided for processing
+	 * @return whether processing has been successful
+	 */
 	private boolean cmdSendApdu(String[] args) {
 		if(args.length >= 2) {
     		try{
-    			cmdSendApdu("sendApdu " + args[1]);
+    			sendCmdApdu("sendApdu " + args[1]);
     			return true;
     		} catch(RuntimeException e) {
     			System.out.println("unable to set personalization, reason is: " + e.getMessage());
@@ -330,6 +341,9 @@ public class PersoSim implements Runnable {
 
 	}
 	
+	/**
+	 * This method prints the help menu to the command line.
+	 */
 	private void printHelp() {
 		System.out.println("Available commands:");
 		System.out.println(CMD_SEND_APDU + " <hexstring>");
@@ -341,6 +355,11 @@ public class PersoSim implements Runnable {
 		System.out.println(CMD_HELP);
 	}
 	
+	/**
+	 * This method processes the load personalization command according to the provided arguments.
+	 * @param args the arguments provided for processing
+	 * @return whether processing has been successful
+	 */
 	private boolean cmdLoadPersonalization(String[] args) {
 		if(args.length >= 2) {
     		try{
@@ -367,6 +386,11 @@ public class PersoSim implements Runnable {
     	}
 	}
 	
+	/**
+	 * This method processes the set host name command according to the provided arguments.
+	 * @param args the arguments provided for processing
+	 * @return whether processing has been successful
+	 */
 	private boolean cmdSetHostName(String[] args) {
 		if(args.length >= 2) {
 			String hostName = args[1];
@@ -385,6 +409,11 @@ public class PersoSim implements Runnable {
     	}
 	}
 	
+	/**
+	 * This method processes the set port command according to the provided arguments.
+	 * @param args the arguments provided for processing
+	 * @return whether processing has been successful
+	 */
 	private boolean cmdSetPortNo(String[] args) {
 		if(args.length >= 2) {
 			String portNoString = args[1];
