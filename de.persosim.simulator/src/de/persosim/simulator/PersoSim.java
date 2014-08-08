@@ -468,6 +468,14 @@ public class PersoSim implements Runnable {
             	cmdLoadPersonalization(args);
             	restartSimulator();
             	break;
+            case CMD_SET_HOST:
+            	cmdSetHostName(args);
+            	restartSimulator();
+            	break;
+            case CMD_SET_PORT:
+            	cmdSetPortNo(args);
+            	restartSimulator();
+            	break;
             case CMD_SEND_APDU:
             	cmdSendApdu(args);
             	break;
