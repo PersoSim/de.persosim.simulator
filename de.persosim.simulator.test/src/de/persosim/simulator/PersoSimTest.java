@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.platform.PersoSimKernel;
 import de.persosim.simulator.test.PersoSimTestCase;
 
 public class PersoSimTest extends PersoSimTestCase {
@@ -198,7 +199,8 @@ public class PersoSimTest extends PersoSimTestCase {
 		assertTrue(socketSimPost != socketSimPre); // SocketSimulator has been stopped and recreated
 		assertTrue(socketSimPost.isRunning());     // new SocketSimulator is actually running
 		
-		Personalization persoPost = PersoSim.parsePersonalization("tmp/perso-jaxb.xml");
+		PersoSimKernel kernel = Deencapsulation.getField(socketSimPost, "kernel");
+		Personalization persoPost = Deencapsulation.getField(kernel, "perso");
 		
 		assertNotNull(persoPost);
 		assertTrue(persoPost != persoPre); // Personalization has changed
@@ -261,6 +263,35 @@ public class PersoSimTest extends PersoSimTestCase {
 	@Test
 	public void testExecuteUserCommandsCmdSetHost() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
 		persoSim = new PersoSim(new String[0]);
+		
+		Deencapsulation.invoke(persoSim, "startSimulator");
+		
+		SocketSimulator socketSimPre = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
+		
+		String hostPre = Deencapsulation.getField(persoSim, "simHost");
+		String hostPostExpected = new String(hostPre);
+		Deencapsulation.invoke(persoSim, "executeUserCommands", new Object[]{new String[]{PersoSim.CMD_SET_HOST, (hostPostExpected)}});
+		
+		SocketSimulator socketSimPost = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
+		
+		assertNotNull(socketSimPost);              // SocketSimulator has been stopped and recreated
+		assertTrue(socketSimPost != socketSimPre); // SocketSimulator has been stopped and recreated
+		assertTrue(socketSimPost.isRunning());     // new SocketSimulator is actually running
+		
+		String hostPost = Deencapsulation.getField(persoSim, "simHost");
+		
+		assertTrue(hostPost != hostPre); // Host has changed
+	}
+	
+	/**
+	 * Positive test case: test setting of new host via user arguments.
+	 * @throws InterruptedException 
+	 * @throws IllegalArgumentException 
+	 * @throws FileNotFoundException 
+	 */
+	@Test
+	public void testExecuteStartupCommandsCmdSetHost() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
+		persoSim = new PersoSim(new String[]{PersoSim.CMD_SET_HOST_SHORT, (new Integer(42)).toString()});
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
