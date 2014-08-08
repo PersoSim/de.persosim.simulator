@@ -199,6 +199,25 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Negative test case: test setting of new personalization via command line or user arguments with invalid personalization.
+	 * @throws InterruptedException 
+	 * @throws IllegalArgumentException 
+	 * @throws FileNotFoundException 
+	 */
+	@Test
+	public void testCmdLoadPersonalizationInvalidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
+		persoSim = new PersoSim(new String[0]);
+		
+		Deencapsulation.invoke(persoSim, "startSimulator");
+		
+		Deencapsulation.invoke(persoSim, "cmdLoadPersonalization", new Object[]{new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, "non-existing.file"}});
+		
+		SocketSimulator socketSimPost = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
+		
+		assertNull(socketSimPost);              // SocketSimulator has been stopped and set to null
+	}
+	
+	/**
 	 * Positive test case: test setting of new port via command line or user arguments.
 	 * @throws InterruptedException 
 	 * @throws IllegalArgumentException 
@@ -254,11 +273,6 @@ public class PersoSimTest extends PersoSimTestCase {
 		String hostPost = Deencapsulation.getField(persoSim, "simHost");
 		
 		assertTrue(hostPost != hostPre); // Host has changed
-	}
-	
-	@Test
-	public void testFail() {
-		assertTrue(false);
 	}
 
 }
