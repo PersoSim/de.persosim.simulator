@@ -160,7 +160,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws FileNotFoundException 
 	 * @throws JAXBException 
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = JAXBException.class)
 	public void parsePersonalizationInvalidFile() throws FileNotFoundException, JAXBException {
 		PersoSim.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
 	}
@@ -175,14 +175,14 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: test setting of new personalization via command line or user arguments.
+	 * Positive test case: test setting of new personalization via user arguments.
 	 * @throws InterruptedException 
 	 * @throws IllegalArgumentException 
 	 * @throws FileNotFoundException 
 	 * @throws JAXBException 
 	 */
 	@Test
-	public void testCmdLoadPersonalizationValidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException, JAXBException {
+	public void testExecuteUserCommandsCmdLoadPersonalizationValidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException, JAXBException {
 		persoSim = new PersoSim(new String[0]);
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
@@ -190,7 +190,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		SocketSimulator socketSimPre = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
 		
 		Personalization persoPre = PersoSim.parsePersonalization("tmp/perso-jaxb.xml");
-		Deencapsulation.invoke(persoSim, "cmdLoadPersonalization", new Object[]{new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, "tmp/perso-jaxb.xml"}});
+		Deencapsulation.invoke(persoSim, "executeUserCommands", new Object[]{new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, "tmp/perso-jaxb.xml"}});
 		
 		SocketSimulator socketSimPost = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
 		
@@ -205,13 +205,13 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Negative test case: test setting of new personalization via command line or user arguments with invalid personalization.
+	 * Negative test case: test setting of new personalization via user arguments with invalid personalization.
 	 * @throws InterruptedException 
 	 * @throws IllegalArgumentException 
 	 * @throws FileNotFoundException 
 	 */
 	@Test
-	public void testCmdLoadPersonalizationInvalidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
+	public void testExecuteUserCommandsCmdLoadPersonalizationInvalidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
 		persoSim = new PersoSim(new String[0]);
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
@@ -224,13 +224,13 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: test setting of new port via command line or user arguments.
+	 * Positive test case: test setting of new port via user arguments.
 	 * @throws InterruptedException 
 	 * @throws IllegalArgumentException 
 	 * @throws FileNotFoundException 
 	 */
 	@Test
-	public void testCmdSetPortNo() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
+	public void testExecuteUserCommandsCmdSetPortNo() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
 		persoSim = new PersoSim(new String[0]);
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
@@ -239,7 +239,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		int portPre = Deencapsulation.getField(persoSim, "simPort");
 		int portPostExpected = portPre + 1;
-		Deencapsulation.invoke(persoSim, "cmdSetPortNo", new Object[]{new String[]{PersoSim.CMD_SET_PORT, (new Integer (portPostExpected)).toString()}});
+		Deencapsulation.invoke(persoSim, "executeUserCommands", new Object[]{new String[]{PersoSim.CMD_SET_PORT, (new Integer (portPostExpected)).toString()}});
 		
 		SocketSimulator socketSimPost = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
 		
@@ -253,13 +253,13 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: test setting of new host via command line or user arguments.
+	 * Positive test case: test setting of new host via user arguments.
 	 * @throws InterruptedException 
 	 * @throws IllegalArgumentException 
 	 * @throws FileNotFoundException 
 	 */
 	@Test
-	public void testCmdSetHost() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
+	public void testExecuteUserCommandsCmdSetHost() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
 		persoSim = new PersoSim(new String[0]);
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
@@ -268,7 +268,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		String hostPre = Deencapsulation.getField(persoSim, "simHost");
 		String hostPostExpected = new String(hostPre);
-		Deencapsulation.invoke(persoSim, "cmdSetHostName", new Object[]{new String[]{PersoSim.CMD_SET_HOST, (hostPostExpected)}});
+		Deencapsulation.invoke(persoSim, "executeUserCommands", new Object[]{new String[]{PersoSim.CMD_SET_HOST, (hostPostExpected)}});
 		
 		SocketSimulator socketSimPost = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
 		
