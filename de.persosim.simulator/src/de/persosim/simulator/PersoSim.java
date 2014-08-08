@@ -151,6 +151,11 @@ public class PersoSim implements Runnable {
 		}
 
 	}
+	
+	private void restartSimulator() {
+		stopSimulator();
+		startSimulator();
+	}
 
 	/**
 	 * This method returns the content of {@link #currentPersonalization}, the
@@ -364,8 +369,6 @@ public class PersoSim implements Runnable {
 		if(args.length >= 2) {
     		try{
     			setPersonalization(args[1]);
-    			stopSimulator();
-    			startSimulator();
     			return true;
     		} catch(FileNotFoundException | IllegalArgumentException e) {
     			if(e instanceof FileNotFoundException) {
@@ -396,8 +399,6 @@ public class PersoSim implements Runnable {
 			String hostName = args[1];
     		try{
     			setHost(hostName);
-    			stopSimulator();
-    			startSimulator();
     			return true;
     		} catch(IllegalArgumentException | NullPointerException e) {
     			System.out.println("unable to set host name, reason is: " + e.getMessage());
@@ -419,8 +420,6 @@ public class PersoSim implements Runnable {
 			String portNoString = args[1];
     		try{
     			setPort(portNoString);
-    			stopSimulator();
-    			startSimulator();
     			return true;
     		} catch(IllegalArgumentException | NullPointerException e) {
     			System.out.println("unable to set port, reason is: " + e.getMessage());
@@ -476,6 +475,7 @@ public class PersoSim implements Runnable {
 		switch (currentArgument) {
             case CMD_LOAD_PERSONALIZATION:
             	cmdLoadPersonalization(args);
+            	restartSimulator();
             	break;
             case CMD_SEND_APDU:
             	cmdSendApdu(args);
@@ -484,8 +484,7 @@ public class PersoSim implements Runnable {
             	startSimulator();
             	break;
             case CMD_RESTART:
-            	stopSimulator();
-            	startSimulator();
+            	restartSimulator();
             case CMD_STOP:
             	stopSimulator();
             	break;
