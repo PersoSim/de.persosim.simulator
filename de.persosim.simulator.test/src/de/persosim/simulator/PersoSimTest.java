@@ -8,6 +8,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
 
+import javax.xml.bind.JAXBException;
+
 import mockit.Deencapsulation;
 
 import org.junit.After;
@@ -134,9 +136,10 @@ public class PersoSimTest extends PersoSimTestCase {
 	/**
 	 * Positive test case: parse personalization from a valid file.
 	 * @throws FileNotFoundException 
+	 * @throws JAXBException 
 	 */
 	@Test
-	public void parsePersonalizationValidFile() throws FileNotFoundException {
+	public void parsePersonalizationValidFile() throws FileNotFoundException, JAXBException {
 		Personalization perso = PersoSim.parsePersonalization("tmp/perso-jaxb.xml");
 		
 		assertNotNull(perso);
@@ -145,18 +148,20 @@ public class PersoSimTest extends PersoSimTestCase {
 	/**
 	 * Negative test case: parse personalization from a non-existing file.
 	 * @throws FileNotFoundException 
+	 * @throws JAXBException 
 	 */
 	@Test(expected = FileNotFoundException.class)
-	public void parsePersonalizationFileNotFound() throws FileNotFoundException {
+	public void parsePersonalizationFileNotFound() throws FileNotFoundException, JAXBException {
 		PersoSim.parsePersonalization("file not found");
 	}
 	
 	/**
 	 * Negative test case: parse personalization from an invalid existing file.
 	 * @throws FileNotFoundException 
+	 * @throws JAXBException 
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void parsePersonalizationInvalidFile() throws FileNotFoundException {
+	public void parsePersonalizationInvalidFile() throws FileNotFoundException, JAXBException {
 		PersoSim.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
 	}
 	
@@ -174,9 +179,10 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws InterruptedException 
 	 * @throws IllegalArgumentException 
 	 * @throws FileNotFoundException 
+	 * @throws JAXBException 
 	 */
 	@Test
-	public void testCmdLoadPersonalizationValidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
+	public void testCmdLoadPersonalizationValidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException, JAXBException {
 		persoSim = new PersoSim(new String[0]);
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");

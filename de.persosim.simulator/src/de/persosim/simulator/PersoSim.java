@@ -182,28 +182,24 @@ public class PersoSim implements Runnable {
 	 * @param persoFileName the name of the file to contain the personalization
 	 * @return the parsed personalization
 	 * @throws FileNotFoundException 
-	 * @throws IllegalArgumentException if parsing of personalization not successful
+	 * @throws JAXBException if parsing of personalization not successful
 	 */
-	public static Personalization parsePersonalization(String persoFileName) throws FileNotFoundException, IllegalArgumentException {
+	public static Personalization parsePersonalization(String persoFileName) throws FileNotFoundException, JAXBException {
 		File persoFile = new File(persoFileName);
 		
-		Unmarshaller um;
-		try {
-			um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-			System.out.println("Parsing personalization from file " + persoFileName);
-			return (Personalization) um
-					.unmarshal(new FileReader(persoFile));
-		} catch (JAXBException e) {
-			throw new IllegalArgumentException("Unable to parse personalization from file " + persoFileName);
-		}
+		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
+		System.out.println("Parsing personalization from file " + persoFileName);
+		return (Personalization) um
+				.unmarshal(new FileReader(persoFile));
 	}
 	
 	/**
 	 * This method sets the personalization by providing a file that it is to be read and parsed from.
 	 * @param persoFileName the file that the personalization is to be read from
 	 * @throws FileNotFoundException if the provided file is not found
+	 * @throws JAXBException if parsing of personalization not successful
 	 */
-	public void setPersonalization(String persoFileName) throws FileNotFoundException {
+	public void setPersonalization(String persoFileName) throws FileNotFoundException, JAXBException {
 		currentPersonalization = parsePersonalization(persoFileName);
 		System.out.println("personalization successfully read and set from file " + persoFileName);
 	}
@@ -370,12 +366,8 @@ public class PersoSim implements Runnable {
     		try{
     			setPersonalization(args[1]);
     			return 2;
-    		} catch(FileNotFoundException | IllegalArgumentException e) {
-    			if(e instanceof FileNotFoundException) {
-    				System.out.println("unable to set personalization, reason is: perso file not found");
-    			} else{
-    				System.out.println("unable to set personalization, reason is: " + e.getMessage());
-    			}
+    		} catch(FileNotFoundException | JAXBException e) {
+    			System.out.println("unable to set personalization, reason is: " + e.getMessage());
     			
     			System.out.println("simulation is stopped");
     			stopSimulator();
