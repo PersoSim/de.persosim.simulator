@@ -4,14 +4,13 @@ import java.io.FileNotFoundException;
 import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
 
-import de.persosim.simulator.apdu.CommandApduImpl;
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardFile;
-import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
+import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.FileIdentifierIncorrectValueException;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;

@@ -11,6 +11,7 @@ import org.junit.Before;
  */
 public class XmlDefaultPersoTest extends XmlPersonalizationTest {
 
+	@Override
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();

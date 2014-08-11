@@ -1,7 +1,6 @@
 package de.persosim.simulator.apdu;
 
 import de.persosim.simulator.platform.Iso7816;
-import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.utils.Utils;
 
 

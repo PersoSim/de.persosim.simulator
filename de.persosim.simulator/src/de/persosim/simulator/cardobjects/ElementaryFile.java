@@ -133,6 +133,7 @@ public class ElementaryFile extends AbstractFile {
 	 * Used to erase wrapper elements for empty collections
 	 * @param m
 	 */
+	@Override
 	protected void beforeMarshal(Marshaller m){
 		super.beforeMarshal(m);
 		if ((readingConditions != null) && (readingConditions.isEmpty())) {
@@ -153,6 +154,7 @@ public class ElementaryFile extends AbstractFile {
 	 * @param u
 	 * @param parent
 	 */
+	@Override
 	protected void afterUnmarshal(Unmarshaller u, Object parent) {
 		super.afterUnmarshal(u, parent);
 		if (readingConditions == null) readingConditions = Collections.emptySet();

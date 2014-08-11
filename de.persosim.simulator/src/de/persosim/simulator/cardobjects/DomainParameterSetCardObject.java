@@ -72,6 +72,7 @@ public class DomainParameterSetCardObject extends AbstractCardObject {
 	 * Used to serialize standardized domain parameters only using their id.
 	 * @param m
 	 */
+	@Override
 	protected void beforeMarshal(Marshaller m){
 		super.beforeMarshal(m);
 		
@@ -88,6 +89,7 @@ public class DomainParameterSetCardObject extends AbstractCardObject {
 	 * @param u
 	 * @param parent
 	 */
+	@Override
 	protected void afterUnmarshal(Unmarshaller u, Object parent) {
 		super.afterUnmarshal(u, parent);
 		

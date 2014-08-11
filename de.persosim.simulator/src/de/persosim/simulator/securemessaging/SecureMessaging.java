@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import de.persosim.simulator.apdu.CommandApdu;
-import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.crypto.CryptoSupport;
