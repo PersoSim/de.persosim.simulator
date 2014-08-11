@@ -344,6 +344,8 @@ public class PersoSim implements Runnable {
 		System.out.println("Available commands:");
 		System.out.println(CMD_SEND_APDU + " <hexstring>");
 		System.out.println(CMD_LOAD_PERSONALIZATION + " <file name>");
+		System.out.println(CMD_SET_HOST + " <host name>");
+		System.out.println(CMD_SET_PORT + " <port number>");
 		System.out.println(CMD_START);
 		System.out.println(CMD_RESTART);
 		System.out.println(CMD_STOP);
