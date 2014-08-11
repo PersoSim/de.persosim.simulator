@@ -167,15 +167,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: check for NullPointerException if PersoSim constructor is called with null argument.
-	 */
-	@Test
-	public void testPersoSimConstructorUnknownArgument() {
-		persoSim = new PersoSim(new String[]{"unknownCommand"});
-		assertTrue(true);
-	}
-	
-	/**
 	 * Positive test case: test setting of new personalization via user arguments.
 	 * @throws InterruptedException 
 	 * @throws IllegalArgumentException 
