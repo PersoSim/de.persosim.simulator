@@ -116,12 +116,8 @@ public class PersoSim implements Runnable {
 	 * @param args
 	 *            the argument String to be parsed
 	 * @return the parsed arguments
-	 * @throws NullPointerException
-	 *             if provided arguments are null
 	 */
-	public static String[] parseArgs(String args) throws NullPointerException {
-		if(args == null) {throw new NullPointerException("arguments must not be null");}
-		
+	public static String[] parseArgs(String args) {
 		String argsInput = args.trim().toLowerCase();
 		
 		int index = argsInput.indexOf(" ");
@@ -136,7 +132,6 @@ public class PersoSim implements Runnable {
 			} else{
 				return new String[0];
 			}
-			
 		}
 	}
 
