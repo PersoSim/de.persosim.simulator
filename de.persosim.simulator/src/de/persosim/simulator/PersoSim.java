@@ -67,7 +67,7 @@ public class PersoSim implements Runnable {
 		Security.addProvider(new BouncyCastleProvider());
 		
 		try {
-			executeStartupCommands(args);
+			handleArgs(args);
 		} catch (IllegalArgumentException e) {
 			System.out.println("simulation aborted, reason is: " + e.getMessage());
 		}
@@ -498,7 +498,7 @@ public class PersoSim implements Runnable {
 	 * This method implements the execution of commands initiated by command line arguments.
 	 * @param args the parsed commands and arguments
 	 */
-	public void executeStartupCommands(String[] args) {
+	public void handleArgs(String[] args) {
 		if(args.length == 0) {return;}
 		
 		String[] currentArgs = args;
