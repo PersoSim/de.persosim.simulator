@@ -59,16 +59,6 @@ public interface CommandApdu {
 
 	public abstract CommandApdu getPredecessor();
 
-	/**
-	 * Returns true iff this APDU is (or any predecessor was) sm secured
-	 * <p/>
-	 * This methods needs to be overridden by subclasses that support secure
-	 * messaging
-	 * 
-	 * @return
-	 */
-	public abstract boolean wasSecureMessaging();
-
 	public abstract boolean isNeZeroEncoded();
 
 }

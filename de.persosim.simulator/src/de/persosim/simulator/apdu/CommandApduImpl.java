@@ -292,19 +292,6 @@ public class CommandApduImpl implements CommandApdu {
 	}
 
 	/* (non-Javadoc)
-	 * @see de.persosim.simulator.apdu.CommandApdu#wasSecureMessaging()
-	 */
-	@Override
-	public boolean wasSecureMessaging() {
-		//this class does not support secure messaging, maybe a predecessor does
-		if (predecessor != null) {
-			return predecessor.wasSecureMessaging();
-		} else {
-			return false;
-		}
-	}
-
-	/* (non-Javadoc)
 	 * @see de.persosim.simulator.apdu.CommandApdu#isNeZeroEncoded()
 	 */
 	@Override

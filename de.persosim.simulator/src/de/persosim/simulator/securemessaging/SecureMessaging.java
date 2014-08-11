@@ -75,7 +75,7 @@ public class SecureMessaging extends Layer {
 		if(this.processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu) {
 			if (((IsoSecureMessagingCommandApdu) processingData.getCommandApdu()).getSecureMessaging() != SM_OFF_OR_NO_INDICATION) {
 				if (dataProvider != null) {
-					processIncomingSMAPDU();
+					processIncomingSmApdu();
 					log(this, "successfully processed ascending secured APDU", TRACE);
 					return;
 				} else {
@@ -121,22 +121,40 @@ public class SecureMessaging extends Layer {
 	 */
 	@Override
 	public void processDescending() {
-		CommandApdu cApdu = processingData.getCommandApdu();
-		if ((cApdu != null) && cApdu.wasSecureMessaging()) {
-			if ((cApdu instanceof IsoSecureMessagingCommandApdu)
-					&& ((IsoSecureMessagingCommandApdu) cApdu).getSecureMessaging() == SM_OFF_OR_NO_INDICATION) {
-				processOutgoingSMAPDU();
-				log(this, "successfully processed descending APDU", TRACE);
-			} else {
-				log(this, "SM error, dont wrap response", TRACE);
-			}
-		} else {
-			log(this, "don't touch descending APDU that was not sm secured", TRACE);
+		if (isSmWrappingApplicable()){
+			processOutgoingSmApdu();
 		}
-
+		
 		log(this, "successfully processed descending APDU", TRACE);
 		
 		handleUpdatePropagations();
+	}
+	
+	private boolean isSmWrappingApplicable(){
+		CommandApdu cApdu = processingData.getCommandApdu();
+
+		if (!(cApdu instanceof IsoSecureMessagingCommandApdu)) {
+			log(this, "descending APDU is does not support iso secure messaging",
+					TRACE);
+			return false;
+		}
+
+		if (((IsoSecureMessagingCommandApdu) cApdu).wasSecureMessaging()
+				&& ((IsoSecureMessagingCommandApdu) cApdu).getSecureMessaging() != SM_OFF_OR_NO_INDICATION) {
+			log(this,
+					"descending APDU was sm secured but not unwrapped properly",
+					TRACE);
+			return false;
+		}
+		
+		if (dataProvider == null){
+			log(this,
+					"no secure messaging session is established (no secure messaging data provider is set)",
+					TRACE);
+			return false;
+		}
+		
+		return true;
 	}
 	
 	private void handleUpdatePropagations() {
@@ -150,9 +168,9 @@ public class SecureMessaging extends Layer {
 	}
 
 	/**
-	 * This method performs the SM operations for outgoing APDUs
+	 * This method performs the SM operations for outgoing APDUs if they are needed
 	 */
-	public void processOutgoingSMAPDU() {
+	public void processOutgoingSmApdu() {
 		log(this, "START encryption of outgoing SM APDU");
 		dataProvider.nextIncoming();
 		
@@ -200,12 +218,13 @@ public class SecureMessaging extends Layer {
 		//create and propagate response APDU
 		ResponseApdu resp = new ResponseApdu(container, this.processingData.getResponseApdu().getStatusWord());
 		this.processingData.updateResponseAPDU(this, "Encrypted outgoing SM APDU", resp);
+		log(this, "successfully processed descending APDU", TRACE);
 	}
 	
 	/**
 	 * This method performs the SM operations for incoming APDUs
 	 */
-	public void processIncomingSMAPDU() {
+	public void processIncomingSmApdu() {
 		log(this, "start processing SM APDU", TRACE);
 		dataProvider.nextIncoming();
 		CommandApdu smApdu = processingData.getCommandApdu();

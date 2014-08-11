@@ -29,7 +29,11 @@ public class TR03110VerifySecureMessagingCommandApdu extends CommandApduImpl imp
 		if(getSecureMessaging() != Iso7816.SM_OFF_OR_NO_INDICATION) {
 			return true;
 		} else {
-			return super.wasSecureMessaging();
+			if (getPredecessor() instanceof IsoSecureMessagingCommandApdu) {
+				return ((IsoSecureMessagingCommandApdu)getPredecessor()).wasSecureMessaging();
+			} else {
+				return false;
+			}
 		}
 	}
 

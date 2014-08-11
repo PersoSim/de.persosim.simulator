@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
@@ -100,9 +101,12 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	/*--------------------------------------------------------------------------------*/
 
 	void processCommandGetChallenge() {
-		if (!processingData.getCommandApdu().wasSecureMessaging()){
+		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
+				&& !((IsoSecureMessagingCommandApdu) processingData
+						.getCommandApdu()).wasSecureMessaging()) {
 			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			ResponseApdu resp = new ResponseApdu(
+					Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
 			this.processingData.updateResponseAPDU(this,
 					"TA must be executed in secure messaging", resp);
 			return;
@@ -127,9 +131,12 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	void processCommandSetDst() {
-		if (!processingData.getCommandApdu().wasSecureMessaging()){
+		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
+				&& !((IsoSecureMessagingCommandApdu) processingData
+						.getCommandApdu()).wasSecureMessaging()) {
 			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			ResponseApdu resp = new ResponseApdu(
+					Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
 			this.processingData.updateResponseAPDU(this,
 					"TA must be executed in secure messaging", resp);
 			return;
@@ -226,9 +233,12 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 
 	void processCommandSetAt() {
-		if (!processingData.getCommandApdu().wasSecureMessaging()){
+		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
+				&& !((IsoSecureMessagingCommandApdu) processingData
+						.getCommandApdu()).wasSecureMessaging()) {
 			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			ResponseApdu resp = new ResponseApdu(
+					Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
 			this.processingData.updateResponseAPDU(this,
 					"TA must be executed in secure messaging", resp);
 			return;
@@ -392,13 +402,17 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 
 	void processCommandPsoVerifyCertificate() {
-		if (!processingData.getCommandApdu().wasSecureMessaging()){
+		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
+				&& !((IsoSecureMessagingCommandApdu) processingData
+						.getCommandApdu()).wasSecureMessaging()) {
 			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			ResponseApdu resp = new ResponseApdu(
+					Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
 			this.processingData.updateResponseAPDU(this,
 					"TA must be executed in secure messaging", resp);
 			return;
 		}
+		
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) commandData.getTagField(TR03110.TAG_7F4E);
 		PrimitiveTlvDataObject certificateSignatureData = (PrimitiveTlvDataObject) commandData.getTagField(TR03110.TAG_5F37);
@@ -614,9 +628,12 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 
 	void processCommandExternalAuthenticate() {
-		if (!processingData.getCommandApdu().wasSecureMessaging()){
+		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
+				&& !((IsoSecureMessagingCommandApdu) processingData
+						.getCommandApdu()).wasSecureMessaging()) {
 			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			ResponseApdu resp = new ResponseApdu(
+					Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
 			this.processingData.updateResponseAPDU(this,
 					"TA must be executed in secure messaging", resp);
 			return;

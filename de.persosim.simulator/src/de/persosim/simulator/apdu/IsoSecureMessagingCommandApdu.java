@@ -36,4 +36,13 @@ public interface IsoSecureMessagingCommandApdu extends CommandApdu {
 	 */
 	public CommandApdu rewrapApdu(byte newSmStatus, byte[] data);
 
+
+	/**
+	 * Returns true iff this APDU is (or any predecessor was) sm secured
+	 * <p/>
+	 * 
+	 * @return
+	 */
+	public abstract boolean wasSecureMessaging();
+
 }

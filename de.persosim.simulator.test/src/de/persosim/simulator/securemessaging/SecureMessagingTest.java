@@ -227,7 +227,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 		setField(secureMessaging, "processingData", pData);
 
 		// call mut
-		secureMessaging.processOutgoingSMAPDU();
+		secureMessaging.processOutgoingSmApdu();
 
 		// extract/check ResponseApdu
 		ResponseApdu respApdu = pData.getResponseApdu();
@@ -265,7 +265,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 		setField(secureMessaging, "processingData", pData);
 
 		// call mut
-		secureMessaging.processOutgoingSMAPDU();
+		secureMessaging.processOutgoingSmApdu();
 
 		// extract/check ResponseApdu
 		ResponseApdu respApdu = pData.getResponseApdu();
