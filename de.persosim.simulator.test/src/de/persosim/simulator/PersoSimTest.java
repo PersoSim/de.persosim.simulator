@@ -95,7 +95,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void parseArgsEmptyString() {
-		String[] result = PersoSim.parseArgs("");
+		String[] result = PersoSim.parseCommand("");
 		
 		assertEquals(result.length, 0);
 	}
@@ -105,7 +105,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test(expected = NullPointerException.class)
 	public void parseArgsNull() {
-		PersoSim.parseArgs(null);
+		PersoSim.parseCommand(null);
 	}
 	
 	/**
@@ -114,7 +114,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	@Test
 	public void parseArgsUntrimmedCoherentString() {
 		String arg = "string";
-		String[] result = PersoSim.parseArgs(" " + arg + "  ");
+		String[] result = PersoSim.parseCommand(" " + arg + "  ");
 		
 		assertEquals(result.length, 1);
 		assertEquals(result[0], arg);
@@ -127,7 +127,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void parseArgsIncoherentString() {
 		String arg1 = "string1";
 		String arg2 = "string 2";
-		String[] result = PersoSim.parseArgs(" " + arg1 + "  " + arg2);
+		String[] result = PersoSim.parseCommand(" " + arg1 + "  " + arg2);
 		
 		assertEquals(result.length, 2);
 		assertEquals(result[0], arg1);
