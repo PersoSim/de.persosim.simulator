@@ -30,10 +30,10 @@ public interface IsoSecureMessagingCommandApdu extends CommandApdu {
 	 * 
 	 * @param newSmStatus
 	 *            the new ISO7816 secure messaging status to store
-	 * @param commandData
-	 *            the L_c|command data|L_e fields
+	 * @param data
+	 *            the L_c|command data|L_e fields as concatenated byte array
 	 * @return
 	 */
-	public CommandApdu rewrapApdu(byte newSmStatus, byte[] commandData);
+	public CommandApdu rewrapApdu(byte newSmStatus, byte[] data);
 
 }

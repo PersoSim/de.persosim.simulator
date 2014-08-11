@@ -12,30 +12,32 @@ import de.persosim.simulator.utils.Utils;
 
 public class InterindustryCommandApduTest extends PersoSimTestCase {
 	byte [] apduHeader;
+	byte [] lc;
 	byte [] commandData;
 	
 	@Before
 	public void setUp(){
 		apduHeader = new byte [] { (byte) 0x0C, 0x20, (byte) 0x80, 0x00};
-		commandData = new byte [] { 0x01, (byte) 0xFF };
+		lc = new byte [] {0x01};
+		commandData = new byte [] {(byte) 0xFF};
 	}
 	
 	@Test
 	public void testGetSecureMessaging(){
-		IsoSecureMessagingCommandApdu apdu = new InterindustryCommandApdu(Utils.concatByteArrays(apduHeader, commandData), null);
+		IsoSecureMessagingCommandApdu apdu = new InterindustryCommandApdu(Utils.concatByteArrays(apduHeader, lc, commandData), null);
 		assertEquals(0b00000011, apdu.getSecureMessaging());
 	}
 
 	@Test
 	public void testRewrapApdu(){
-		IsoSecureMessagingCommandApdu apdu = new InterindustryCommandApdu(Utils.concatByteArrays(apduHeader, commandData), null);
-		IsoSecureMessagingCommandApdu result = (IsoSecureMessagingCommandApdu) apdu.rewrapApdu((byte) 0, commandData);
+		IsoSecureMessagingCommandApdu apdu = new InterindustryCommandApdu(Utils.concatByteArrays(apduHeader, lc, commandData), null);
+		IsoSecureMessagingCommandApdu result = (IsoSecureMessagingCommandApdu) apdu.rewrapApdu((byte) 0, Utils.concatByteArrays(lc, commandData));
 		
 		byte [] expectedHeader = Arrays.copyOf(apduHeader, apduHeader.length);
 		expectedHeader[0] = (byte) 0x00;
 		assertEquals(apdu.getCommandData(), result.getCommandData());
 		assertArrayEquals(expectedHeader, result.getHeader());
-		assertArrayEquals(Utils.concatByteArrays(apduHeader, commandData), result.getPredecessor().toByteArray());
+		assertArrayEquals(Utils.concatByteArrays(apduHeader, lc, commandData), result.getPredecessor().toByteArray());
 	}
 	
 }
