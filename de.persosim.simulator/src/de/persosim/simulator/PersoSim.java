@@ -117,7 +117,7 @@ public class PersoSim implements Runnable {
 	 *            the argument String to be parsed
 	 * @return the parsed arguments
 	 */
-	public static String[] parseArgs(String args) {
+	public static String[] parseCommand(String args) {
 		String argsInput = args.trim().toLowerCase();
 		
 		int index = argsInput.indexOf(" ");
@@ -441,7 +441,7 @@ public class PersoSim implements Runnable {
 			try {
 				if (cmd != null) {
 					cmd = cmd.trim();
-					String[] args = parseArgs(cmd);
+					String[] args = parseCommand(cmd);
 					executeUserCommands(args);
 				}
 			} catch (RuntimeException e) {
