@@ -57,6 +57,7 @@ public class PersoSim implements Runnable {
 	public static final String CMD_LOAD_PERSONALIZATION_SHORT = "-perso";
 	public static final String CMD_SEND_APDU                  = "sendapdu";
 	public static final String CMD_HELP                       = "help";
+	public static final String CMD_HELP_SHORT                 = "-h";
 	
 	//XXX adjust host/port (e.g. from command line args)
 	private String simHost = "localhost"; // default
@@ -211,7 +212,7 @@ public class PersoSim implements Runnable {
 		
 		simPort = newPort;
 		
-		System.out.println("new port successfully set to " + newPort);
+		System.out.println("new port set to " + newPort + " after restart of simulation.");
 		
 		//IMPL check for port being unused
 	}
@@ -227,7 +228,7 @@ public class PersoSim implements Runnable {
 		
 		simHost = newHost;
 		
-		System.out.println("new host successfully set to " + newHost);
+		System.out.println("new host set to use port " + newHost + " after restart of simulation.");
 		
 		//IMPL check for host response
 	}
@@ -340,7 +341,18 @@ public class PersoSim implements Runnable {
 	/**
 	 * This method prints the help menu to the command line.
 	 */
-	private void printHelp() {
+	private void printHelpArgs() {
+		System.out.println("Available commands:");
+		System.out.println(CMD_LOAD_PERSONALIZATION_SHORT + " <file name>");
+		System.out.println(CMD_SET_HOST_SHORT + " <host name>");
+		System.out.println(CMD_SET_PORT_SHORT + " <port number>");
+		System.out.println(CMD_HELP_SHORT);
+	}
+	
+	/**
+	 * This method prints the help menu to the user command line.
+	 */
+	private void printHelpCmd() {
 		System.out.println("Available commands:");
 		System.out.println(CMD_SEND_APDU + " <hexstring>");
 		System.out.println(CMD_LOAD_PERSONALIZATION + " <file name>");
@@ -488,7 +500,7 @@ public class PersoSim implements Runnable {
             	stopSimulator();
 				executeUserCommands = false;
             case CMD_HELP:
-            	printHelp();
+            	printHelpCmd();
 				break;
             default: 
             	System.out.println("unrecognized command \"" + currentArgument + "\" and parameters will be ignored");
@@ -518,6 +530,9 @@ public class PersoSim implements Runnable {
 		        case CMD_SET_PORT_SHORT:
 		        	noOfUnprocessedArgs -= cmdSetPortNo(currentArgs);
 		        	break;
+		        case CMD_HELP_SHORT:
+	            	printHelpArgs();
+					break;
 		        default:
 		        	System.out.println("unrecognized command or parameter \"" + currentArgument + "\" will be ignored");
 		        	noOfUnprocessedArgs--;
