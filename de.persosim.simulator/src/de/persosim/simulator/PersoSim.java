@@ -58,6 +58,7 @@ public class PersoSim implements Runnable {
 	public static final String CMD_SEND_APDU                  = "sendapdu";
 	public static final String CMD_HELP                       = "help";
 	public static final String CMD_HELP_SHORT                 = "-h";
+	public static final String CMD_CONSOLE_ONLY               = "--consoleOnly";
 	
 	//XXX adjust host/port (e.g. from command line args)
 	private String simHost = "localhost"; // default
@@ -533,6 +534,11 @@ public class PersoSim implements Runnable {
 		        case CMD_HELP_SHORT:
 	            	printHelpArgs();
 					break;
+		        case CMD_CONSOLE_ONLY:
+		        	// do no actual processing, i.e. prevent simulator from logging unknown command error as command has already been processed
+		        	// command is passed on as part of unprocessed original command line arguments
+		        	noOfUnprocessedArgs--;
+		        	break;
 		        default:
 		        	System.out.println("unrecognized command or parameter \"" + currentArgument + "\" will be ignored");
 		        	noOfUnprocessedArgs--;
