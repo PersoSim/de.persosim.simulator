@@ -79,7 +79,7 @@ public class SocketSimulator implements Runnable {
 
 		// wait until the just started Thread begins execution
 		int counter = 0;
-		do {
+		while (!isRunning()) {
 			try {
 				counter++;
 				Thread.sleep(500);
@@ -90,7 +90,7 @@ public class SocketSimulator implements Runnable {
 				e.printStackTrace();
 				break;
 			}
-		} while (isRunning());
+		} ;
 
 		return isRunning();
 	}
