@@ -64,9 +64,13 @@ public class PersoSim implements Runnable {
 	private String simHost = "localhost"; // default
 	private int simPort = 9876; // default
 	private boolean executeUserCommands = true;
-
-	public PersoSim(String[] args) {
+	
+	public PersoSim() {
 		Security.addProvider(new BouncyCastleProvider());
+	}
+	
+	public PersoSim(String[] args) {
+		this();
 		
 		try {
 			handleArgs(args);

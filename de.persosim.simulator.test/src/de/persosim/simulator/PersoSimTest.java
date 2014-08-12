@@ -35,7 +35,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testImplicitSettingOfDefaultPersonalization() {
-		persoSim = new PersoSim(new String[0]);
+		persoSim = new PersoSim();
 		
 		Personalization persoInit = (Personalization) Deencapsulation.getField(persoSim, "currentPersonalization");
 		
@@ -62,7 +62,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator() throws InterruptedException {
-		persoSim = new PersoSim(new String[0]);
+		persoSim = new PersoSim();
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -77,7 +77,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStopSimulator() throws InterruptedException {
-		persoSim = new PersoSim(new String[0]);
+		persoSim = new PersoSim();
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -175,7 +175,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdLoadPersonalizationValidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException, JAXBException {
-		persoSim = new PersoSim(new String[0]);
+		persoSim = new PersoSim();
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -205,7 +205,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdLoadPersonalizationInvalidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
-		persoSim = new PersoSim(new String[0]);
+		persoSim = new PersoSim();
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -224,7 +224,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdSetPortNo() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
-		persoSim = new PersoSim(new String[0]);
+		persoSim = new PersoSim();
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -253,7 +253,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdSetHost() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
-		persoSim = new PersoSim(new String[0]);
+		persoSim = new PersoSim();
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
