@@ -470,7 +470,7 @@ public class PersoSim implements Runnable {
 	 * @param args the parsed commands and arguments
 	 */
 	private void executeUserCommands(String[] args) {
-		if(args.length == 0) {return;}
+		if(args.length == 0) {throw new NullPointerException("args must not be empty");}
 		
 		String currentArgument = args[0];
 		switch (currentArgument) {
@@ -514,7 +514,7 @@ public class PersoSim implements Runnable {
 	 * @param args the parsed commands and arguments
 	 */
 	public void handleArgs(String[] args) {
-		if(args.length == 0) {return;}
+		if(args.length == 0) {throw new NullPointerException("args must not be empty");}
 		
 		String[] currentArgs = args;
 		int noOfUnprocessedArgs = args.length;
