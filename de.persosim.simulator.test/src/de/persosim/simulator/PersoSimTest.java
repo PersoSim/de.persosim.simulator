@@ -11,10 +11,15 @@ import java.io.FileNotFoundException;
 import javax.xml.bind.JAXBException;
 
 import mockit.Deencapsulation;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+import de.persosim.simulator.perso.DefaultPersoTestPki;
+import de.persosim.simulator.perso.MinimumPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.PersoSimKernel;
 import de.persosim.simulator.test.PersoSimTestCase;
@@ -22,6 +27,15 @@ import de.persosim.simulator.test.PersoSimTestCase;
 public class PersoSimTest extends PersoSimTestCase {
 	
 	PersoSim persoSim;
+	
+	@Mocked DefaultPersoTestPki defaultPersoTestPki;
+	
+	@Before
+	public void setUp() {
+		MinimumPersonalization perso = new MinimumPersonalization();
+		
+		perso.writeToFile("dummyPersonalization.xml");
+	}
 	
 	@After
 	public void tearDown() {
@@ -31,10 +45,35 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Positive test case: parse dummy personalization created during setUp.
+	 * @throws FileNotFoundException 
+	 * @throws JAXBException 
+	 */
+	@Test
+	public void testDummyPersonalization() throws FileNotFoundException, JAXBException {
+		Personalization perso = PersoSim.parsePersonalization("dummyPersonalization.xml");
+		
+		assertNotNull(perso);
+	}
+	
+	/**
 	 * Positive test case: test implicit setting of a default personalization if no other personalization is explicitly set.
 	 */
 	@Test
 	public void testImplicitSettingOfDefaultPersonalization() {
+		// prepare the mock
+		new NonStrictExpectations() {
+			{
+				defaultPersoTestPki.getObjectTree();
+				result = new MinimumPersonalization().getObjectTree();
+			}
+			
+			{
+				defaultPersoTestPki.getProtocolList();
+				result = new MinimumPersonalization().getProtocolList();
+			}
+		};
+		
 		persoSim = new PersoSim();
 		
 		Personalization persoInit = (Personalization) Deencapsulation.getField(persoSim, "currentPersonalization");
@@ -62,7 +101,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator() throws InterruptedException {
-		persoSim = new PersoSim();
+		persoSim = new PersoSim(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION_SHORT, "dummyPersonalization.xml"});
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -77,7 +116,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStopSimulator() throws InterruptedException {
-		persoSim = new PersoSim();
+		persoSim = new PersoSim(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION_SHORT, "dummyPersonalization.xml"});
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -141,7 +180,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void parsePersonalizationValidFile() throws FileNotFoundException, JAXBException {
-		Personalization perso = PersoSim.parsePersonalization("tmp/perso-jaxb.xml");
+		Personalization perso = PersoSim.parsePersonalization("dummyPersonalization.xml");
 		
 		assertNotNull(perso);
 	}
@@ -175,14 +214,14 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdLoadPersonalizationValidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException, JAXBException {
-		persoSim = new PersoSim();
+		persoSim = new PersoSim(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION_SHORT, "dummyPersonalization.xml"});
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
 		SocketSimulator socketSimPre = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
 		
 		Personalization persoPre = PersoSim.parsePersonalization("tmp/perso-jaxb.xml");
-		Deencapsulation.invoke(persoSim, "executeUserCommands", new Object[]{new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, "tmp/perso-jaxb.xml"}});
+		Deencapsulation.invoke(persoSim, "executeUserCommands", new Object[]{new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, "dummyPersonalization.xml"}});
 		
 		SocketSimulator socketSimPost = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
 		
@@ -205,7 +244,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdLoadPersonalizationInvalidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
-		persoSim = new PersoSim();
+		persoSim = new PersoSim(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION_SHORT, "dummyPersonalization.xml"});
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -224,7 +263,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdSetPortNo() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
-		persoSim = new PersoSim();
+		persoSim = new PersoSim(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION_SHORT, "dummyPersonalization.xml"});
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -253,7 +292,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdSetHost() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
-		persoSim = new PersoSim();
+		persoSim = new PersoSim(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION_SHORT, "dummyPersonalization.xml"});
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -282,7 +321,9 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteStartupCommandsCmdSetHost() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
-		persoSim = new PersoSim(new String[]{PersoSim.CMD_SET_HOST_SHORT, (new Integer(42)).toString()});
+		persoSim = new PersoSim(new String[]{"dummyPersonalization.xml"});
+		
+		persoSim = new PersoSim(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION_SHORT, "dummyPersonalization.xml", PersoSim.CMD_SET_HOST_SHORT, (new Integer(42)).toString()});
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
