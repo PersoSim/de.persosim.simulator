@@ -266,21 +266,19 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
-		SocketSimulator socketSimPre = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
-		
+		String hostPre = Deencapsulation.getField(persoSim, "simHost");
 		int portPre = Deencapsulation.getField(persoSim, "simPort");
+		
+		// check that the simulator is actually running on the advertised port
+		String selectApdu = "00A4020C02011C"; 
+		String responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu, hostPre, portPre);
+		assertEquals(responseSelect, "9000");
+		
 		int portPostExpected = portPre + 1;
 		Deencapsulation.invoke(persoSim, "executeUserCommands", new Object[]{new String[]{PersoSim.CMD_SET_PORT, (new Integer (portPostExpected)).toString()}});
 		
-		SocketSimulator socketSimPost = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
-		
-		assertNotNull(socketSimPost);              // SocketSimulator has been stopped and recreated
-		assertTrue(socketSimPost != socketSimPre); // SocketSimulator has been stopped and recreated
-		assertTrue(socketSimPost.isRunning());     // new SocketSimulator is actually running
-		
-		int portPost = Deencapsulation.getField(persoSim, "simPort");
-		
-		assertEquals(portPostExpected, portPost); // Port has changed
+		responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu, hostPre, portPostExpected);
+		assertEquals(responseSelect, "9000");
 	}
 	
 	/**
@@ -295,21 +293,19 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
-		SocketSimulator socketSimPre = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
-		
 		String hostPre = Deencapsulation.getField(persoSim, "simHost");
+		int portPre = Deencapsulation.getField(persoSim, "simPort");
+		
 		String hostPostExpected = new String(hostPre);
 		Deencapsulation.invoke(persoSim, "executeUserCommands", new Object[]{new String[]{PersoSim.CMD_SET_HOST, (hostPostExpected)}});
-		
-		SocketSimulator socketSimPost = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
-		
-		assertNotNull(socketSimPost);              // SocketSimulator has been stopped and recreated
-		assertTrue(socketSimPost != socketSimPre); // SocketSimulator has been stopped and recreated
-		assertTrue(socketSimPost.isRunning());     // new SocketSimulator is actually running
 		
 		String hostPost = Deencapsulation.getField(persoSim, "simHost");
 		
 		assertTrue(hostPost != hostPre); // Host has changed
+		
+		String selectApdu = "00A4020C02011C"; 
+		String responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu, hostPostExpected, portPre);
+		assertEquals(responseSelect, "9000");
 	}
 	
 	/**
