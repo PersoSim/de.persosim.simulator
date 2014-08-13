@@ -287,7 +287,7 @@ public class PersoSim implements Runnable {
 			return 1;
     	}
 	}
-
+	
 	/**
 	 * Transmit the given APDU to the simulator, which processes it and returns
 	 * the response. The response APDU is received from the simulator via its
@@ -298,11 +298,29 @@ public class PersoSim implements Runnable {
 	 * @return
 	 */
 	private String exchangeApdu(String cmdApdu) {
+		return exchangeApdu(cmdApdu, simHost, simPort);
+	}
+
+	/**
+	 * Transmit the given APDU to the simulator identified by host name and port
+	 * number, where it will be processed and answered by a response. The
+	 * response APDU is received from the simulator via its socket interface and
+	 * returned to the caller as HexString.
+	 * 
+	 * @param cmdApdu
+	 *            HexString containing the CommandAPDU
+	 * @param host
+	 *            the host to contact
+	 * @param port
+	 *            the port to query
+	 * @return
+	 */
+	private String exchangeApdu(String cmdApdu, String host, int port) {
 		cmdApdu = cmdApdu.replaceAll("\\s", ""); // remove any whitespace
 
 		Socket socket;
 		try {
-			socket = new Socket(simHost, simPort);
+			socket = new Socket(host, port);
 		} catch (IOException e) {
 			socket = null;
 			showExceptionToUser(e);
