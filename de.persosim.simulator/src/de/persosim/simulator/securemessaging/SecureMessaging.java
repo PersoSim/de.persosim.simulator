@@ -218,7 +218,6 @@ public class SecureMessaging extends Layer {
 		//create and propagate response APDU
 		ResponseApdu resp = new ResponseApdu(container, this.processingData.getResponseApdu().getStatusWord());
 		this.processingData.updateResponseAPDU(this, "Encrypted outgoing SM APDU", resp);
-		log(this, "successfully processed descending APDU", TRACE);
 	}
 	
 	/**
