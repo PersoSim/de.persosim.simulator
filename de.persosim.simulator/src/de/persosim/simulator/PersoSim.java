@@ -65,6 +65,7 @@ public class PersoSim implements Runnable {
 	private int simPort = 9876; // default
 	private boolean executeUserCommands = true;
 	
+	//FIXME SLS what is this constructor used for?
 	public PersoSim() {
 		Security.addProvider(new BouncyCastleProvider());
 	}
@@ -232,8 +233,9 @@ public class PersoSim implements Runnable {
 		if(newHost.length() <= 0) {throw new IllegalArgumentException("host name must not be empty");}
 		
 		simHost = newHost;
+		//FIXME SLS what does this method really do? What does setting a host for the simulator mean?
 		
-		System.out.println("new host set to use port " + newHost + " after restart of simulation.");
+		System.out.println("new host set to " + newHost + " after restart of simulation.");
 		
 		//IMPL check for host response
 	}
@@ -315,6 +317,7 @@ public class PersoSim implements Runnable {
 	 *            the port to query
 	 * @return
 	 */
+	//FIXME SLS why is this new method needed?
 	private String exchangeApdu(String cmdApdu, String host, int port) {
 		cmdApdu = cmdApdu.replaceAll("\\s", ""); // remove any whitespace
 
@@ -365,6 +368,7 @@ public class PersoSim implements Runnable {
 	 * This method prints the help menu to the command line.
 	 */
 	private void printHelpArgs() {
+		//FIXME SLS why are these constants called CMD_xxx_SHORT instead of ARG_xxx?
 		System.out.println("Available commands:");
 		System.out.println(CMD_LOAD_PERSONALIZATION_SHORT + " <file name>");
 		System.out.println(CMD_SET_HOST_SHORT + " <host name>");
@@ -492,6 +496,7 @@ public class PersoSim implements Runnable {
 	 * @param args the parsed commands and arguments
 	 */
 	private void executeUserCommands(String[] args) {
+		//FIXME SLS why not simply ignore an empty command?
 		if(args.length == 0) {throw new NullPointerException("args must not be empty");}
 		
 		String currentArgument = args[0];
@@ -536,7 +541,7 @@ public class PersoSim implements Runnable {
 	 * @param args the parsed commands and arguments
 	 */
 	public void handleArgs(String[] args) {
-		if(args.length == 0) {throw new NullPointerException("args must not be empty");}
+		if(args.length == 0) {throw new NullPointerException("args must not be empty");} //FIXME SLS why not? aren't defaults ok?
 		
 		String[] currentArgs = args;
 		int noOfUnprocessedArgs = args.length;
@@ -568,6 +573,7 @@ public class PersoSim implements Runnable {
 			}
 			
 			String[] updatedArgs = new String[noOfUnprocessedArgs];
+			//FIXME SLS use Arrays.copyOF or copyOfRange instead of manual loop
 			for(int i = 0; i < noOfUnprocessedArgs; i++) {
 				updatedArgs[i] = currentArgs[currentArgs.length - noOfUnprocessedArgs + i];
 			}

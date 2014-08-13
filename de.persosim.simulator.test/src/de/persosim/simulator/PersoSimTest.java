@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 import javax.xml.bind.JAXBException;
 
-import mockit.Deencapsulation;
+import mockit.Deencapsulation; //FIXME SLS why is this import needed at all
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
@@ -34,6 +34,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	public static final byte[] EF_CS_CONTENT_1 = HexString.toByteArray("FF010203");
 	public static final byte[] EF_CS_CONTENT_2 = HexString.toByteArray("FF030201");
 	
+	//FIXME SLS ensure that these files are located somewhere that is ignored by git (e.g. tmp)
 	public static final String DUMMY_PERSONALIZATION_FILE_1 = "dummyPersonalization1.xml";
 	public static final String DUMMY_PERSONALIZATION_FILE_2 = "dummyPersonalization2.xml";
 	
@@ -53,6 +54,10 @@ public class PersoSimTest extends PersoSimTestCase {
 			Deencapsulation.invoke(persoSim, "stopSimulator");
 		}
 	}
+	
+	//FIXME SLS missing test: launch PersoSimConsole, hit enter => this produces a NPE and shouldn't
+	//FIXME SLS missing test: launch PersoSimConsole, type exit, hit enter => this produces a list of available commands and shouldn't
+	//FIXME SLS missing test: launch PersoSimConsole, type an unknown command, hit enter => this should produces a list of available commands (along the existing line that the given command is unknown) and doesn't
 	
 	/**
 	 * Positive test case: test implicit setting of a default personalization if no other personalization is explicitly set.
@@ -78,6 +83,8 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
+		//FIXME SLS the following code is used very similar several times, extract it to a method
+		//FIXME SLS reasign stdin and stdout instead of using deencapsulation, deencapsulation is nearly always evil, especially on the DUT
 		String selectApdu = "00A4020C02011C"; 
 		String responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu);
 		assertEquals(responseSelect, "9000");
@@ -97,6 +104,8 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testPersoSimConstructorNullArgument() {
 		persoSim = new PersoSim(null);
 	}
+	
+	//FIXME SLS I don't see a testcase that uses the real default perso...
 	
 	/**
 	 * Positive test case: test start of socket simulator.
@@ -209,6 +218,16 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Positive test case: check for NullPointerException if PersoSim constructor is called with null argument.
+	 */
+	@Test
+	public void testPersoSimConstructorUnknownArgument() {
+		persoSim = new PersoSim(new String[]{"unknownCommand"});
+		//FIXME SLS this test method must NOT be removed but the assert needs to check something usefull
+		assertTrue(true);
+	}
+	
+	/**
 	 * Positive test case: test setting of new personalization via user arguments.
 	 * @throws InterruptedException 
 	 * @throws IllegalArgumentException 
@@ -301,7 +320,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		String hostPost = Deencapsulation.getField(persoSim, "simHost");
 		
-		assertTrue(hostPost != hostPre); // Host has changed
+		assertTrue(hostPost != hostPre); // Host has changed //FIXME SLS this does not check the changed behaviour. What different behaviour do you expect?
 		
 		String selectApdu = "00A4020C02011C"; 
 		String responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu, hostPostExpected, portPre);
