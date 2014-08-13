@@ -100,17 +100,39 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 
 	/*--------------------------------------------------------------------------------*/
 
-	void processCommandGetChallenge() {
-		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
-				&& !((IsoSecureMessagingCommandApdu) processingData
-						.getCommandApdu()).wasSecureMessaging()) {
+	/**
+	 * This method checks if the received APDU is a correct
+	 * {@link IsoSecureMessagingCommandApdu} and was encrypted.
+	 * 
+	 * @return true, iff it is a {@link IsoSecureMessagingCommandApdu} and the
+	 *         APDU was encrypted at some point in its history
+	 */
+	private boolean checkSecureMessagingApdu(){
+		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu){
+			if (!((IsoSecureMessagingCommandApdu) processingData
+							.getCommandApdu()).wasSecureMessaging()) {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(
+						Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this,
+						"TA must be executed in secure messaging", resp);
+				return false;
+			}
+		} else {
 			// create and propagate response APDU
 			ResponseApdu resp = new ResponseApdu(
-					Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+					Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
 			this.processingData.updateResponseAPDU(this,
-					"TA must be executed in secure messaging", resp);
-			return;
+					"This APDU should not have reached this point in processing, check for the correct APDU type processing in the APDU factory", resp);
+			return false;
 		}
+		return true;
+	}
+	
+	void processCommandGetChallenge() {
+		if (!checkSecureMessagingApdu()){
+			return;
+		}		
 		
 		challenge = new byte [8];
 		secureRandom.nextBytes(challenge);	
@@ -131,14 +153,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	void processCommandSetDst() {
-		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
-				&& !((IsoSecureMessagingCommandApdu) processingData
-						.getCommandApdu()).wasSecureMessaging()) {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(
-					Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this,
-					"TA must be executed in secure messaging", resp);
+		if (!checkSecureMessagingApdu()){
 			return;
 		}
 		
@@ -233,14 +248,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 
 	void processCommandSetAt() {
-		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
-				&& !((IsoSecureMessagingCommandApdu) processingData
-						.getCommandApdu()).wasSecureMessaging()) {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(
-					Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this,
-					"TA must be executed in secure messaging", resp);
+		if (!checkSecureMessagingApdu()){
 			return;
 		}
 		
@@ -402,14 +410,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 
 	void processCommandPsoVerifyCertificate() {
-		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
-				&& !((IsoSecureMessagingCommandApdu) processingData
-						.getCommandApdu()).wasSecureMessaging()) {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(
-					Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this,
-					"TA must be executed in secure messaging", resp);
+		if (!checkSecureMessagingApdu()){
 			return;
 		}
 		
