@@ -130,7 +130,25 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 					new DedicatedFileIdentifier(HexString
 							.toByteArray("E8 07 04 00 7F 00 07 03 02")));
 			mf.addChild(eIdAppl);
-			addEidDatagroups(eIdAppl);
+			
+			addEidDg1(eIdAppl);
+			addEidDg2(eIdAppl);
+			addEidDg3(eIdAppl);
+			addEidDg4(eIdAppl);
+			addEidDg5(eIdAppl);
+			addEidDg6(eIdAppl);
+			addEidDg7(eIdAppl);
+			addEidDg8(eIdAppl);
+			addEidDg9(eIdAppl);
+			addEidDg10(eIdAppl);
+			addEidDg11(eIdAppl);
+			addEidDg12(eIdAppl);
+			addEidDg13(eIdAppl);
+			addEidDg17(eIdAppl);
+			addEidDg18(eIdAppl);
+			addEidDg19(eIdAppl);
+			addEidDg20(eIdAppl);
+			addEidDg21(eIdAppl);
 
 			// ePass application
 			DedicatedFile ePassAppl = new DedicatedFile(null,
@@ -348,12 +366,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 		ePassAppl.addChild(epassDg4);
 	}
 
-	/**
-	 * Add data files to the eID application
-	 * 
-	 */
-	protected void addEidDatagroups(DedicatedFile eIdAppl) {
-		// eID DG1
+	
+	
+	protected void addEidDg1(DedicatedFile eIdAppl) {
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0101),
 				new ShortFileIdentifier(0x01),
 				HexString.toByteArray("61 04 13 02 54 50"),
@@ -361,8 +376,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg1);
+	}
 
-		// eID DG2
+	protected void addEidDg2(DedicatedFile eIdAppl) {
 		CardFile eidDg2 = new ElementaryFile(new FileIdentifier(0x0102),
 				new ShortFileIdentifier(0x02),
 				HexString.toByteArray("62 03 13 01 44"),
@@ -370,8 +386,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg2);
+	}
 
-		// eID DG3
+	protected void addEidDg3(DedicatedFile eIdAppl) {
 		CardFile eidDg3 = new ElementaryFile(new FileIdentifier(0x0103),
 				new ShortFileIdentifier(0x03),
 				HexString.toByteArray("63 0A 12 08 32 30 32 30 31 30 33 31"),
@@ -379,8 +396,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg3);
+	}
 
-		// eID DG4
+	protected void addEidDg4(DedicatedFile eIdAppl) {
 		CardFile eidDg4 = new ElementaryFile(new FileIdentifier(0x0104),
 				new ShortFileIdentifier(0x04),
 				HexString.toByteArray("64 07 0C 05 45 72 69 6B 61"),
@@ -388,8 +406,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg4);
-
-		// eID DG5
+	}
+	
+	protected void addEidDg5(DedicatedFile eIdAppl) {
 		CardFile eidDg5 = new ElementaryFile(
 				new FileIdentifier(0x0105),
 				new ShortFileIdentifier(0x05),
@@ -399,8 +418,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 						.<SecCondition> emptySet(), Collections
 						.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg5);
+	}
 
-		// eID DG6
+	protected void addEidDg6(DedicatedFile eIdAppl) {
 		CardFile eidDg6 = new ElementaryFile(
 				new FileIdentifier(0x0106),
 				new ShortFileIdentifier(0x06),
@@ -410,8 +430,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 						.<SecCondition> emptySet(), Collections
 						.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg6);
+	}
 
-		// eID DG7
+	protected void addEidDg7(DedicatedFile eIdAppl) {
 		CardFile eidDg7 = new ElementaryFile(new FileIdentifier(0x0107),
 				new ShortFileIdentifier(0x07),
 				HexString.toByteArray("67 02 0C 00"),
@@ -419,8 +440,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg7);
+	}
 
-		// eID DG8
+	protected void addEidDg8(DedicatedFile eIdAppl) {
 		CardFile eidDg8 = new ElementaryFile(new FileIdentifier(0x0108),
 				new ShortFileIdentifier(0x08),
 				HexString.toByteArray("68 0A 12 08 31 39 36 34 30 38 31 32"),
@@ -428,8 +450,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg8);
+	}
 
-		// eID DG9
+	protected void addEidDg9(DedicatedFile eIdAppl) {
 		CardFile eidDg9 = new ElementaryFile(
 				new FileIdentifier(0x0109),
 				new ShortFileIdentifier(0x09),
@@ -439,8 +462,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 						.<SecCondition> emptySet(), Collections
 						.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg9);
-
-		// eID DG10
+	}
+	
+	protected void addEidDg10(DedicatedFile eIdAppl) {
 		CardFile eidDg10 = new ElementaryFile(new FileIdentifier(0x010A),
 				new ShortFileIdentifier(0x0A),
 				HexString.toByteArray("6A 03 13 01 44"),
@@ -448,8 +472,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg10);
+	}
 
-		// eID DG11
+	protected void addEidDg11(DedicatedFile eIdAppl) {
 		CardFile eidDg11 = new ElementaryFile(new FileIdentifier(0x010B),
 				new ShortFileIdentifier(0x0B),
 				HexString.toByteArray("6B 03 13 01 46"),
@@ -457,8 +482,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg11);
+	}
 
-		// eID DG12
+	protected void addEidDg12(DedicatedFile eIdAppl) {
 		CardFile eidDg12 = new ElementaryFile(
 				new FileIdentifier(0x010C),
 				new ShortFileIdentifier(0x0C),
@@ -468,8 +494,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 						.<SecCondition> emptySet(), Collections
 						.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg12);
+	}
 
-		// eID DG13
+	protected void addEidDg13(DedicatedFile eIdAppl) {
 		CardFile eidDg13 = new ElementaryFile(new FileIdentifier(0x010D),
 				new ShortFileIdentifier(0x0D),
 				HexString.toByteArray("6D 09 0C 07 4D 75 65 6C 6C 65 72"),
@@ -477,8 +504,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg13);
+	}
 
-		// eID DG17
+	protected void addEidDg17(DedicatedFile eIdAppl) {
 		CardFile eidDg17 = new ElementaryFile(
 				new FileIdentifier(0x0111),
 				new ShortFileIdentifier(0x11),
@@ -487,16 +515,18 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				getAccessRightReadEidDg(17), getAccessRightUpdateEidDg(17),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg17);
+	}
 
-		// eID DG18
+	protected void addEidDg18(DedicatedFile eIdAppl) {
 		CardFile eidDg18 = new ElementaryFile(new FileIdentifier(0x0112),
 				new ShortFileIdentifier(0x12),
 				HexString.toByteArray("72 09 04 07 02 76 11 00 00 00 00"),
 				getAccessRightReadEidDg(18), getAccessRightUpdateEidDg(18),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg18);
+	}
 
-		// eID DG19
+	protected void addEidDg19(DedicatedFile eIdAppl) {
 		CardFile eidDg19 = new ElementaryFile(
 				new FileIdentifier(0x0113),
 				new ShortFileIdentifier(0x13),
@@ -505,8 +535,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				getAccessRightReadEidDg(19), getAccessRightUpdateEidDg(19),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg19);
+	}
 
-		// eID DG20
+	protected void addEidDg20(DedicatedFile eIdAppl) {
 		CardFile eidDg20 = new ElementaryFile(
 				new FileIdentifier(0x0114),
 				new ShortFileIdentifier(0x14),
@@ -515,8 +546,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				getAccessRightReadEidDg(20), getAccessRightUpdateEidDg(20),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg20);
+	}
 
-		// eID DG21
+	protected void addEidDg21(DedicatedFile eIdAppl) {
 		CardFile eidDg21 = new ElementaryFile(
 				new FileIdentifier(0x0115),
 				new ShortFileIdentifier(0x15),
@@ -567,7 +599,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 	 * @param dgNr
 	 * @return
 	 */
-	private Collection<SecCondition> getAccessRightReadEidDg(int dgNr) {
+	protected static Collection<SecCondition> getAccessRightReadEidDg(int dgNr) {
 		HashSet<SecCondition> retVal = new HashSet<>();
 		retVal.add(new TaSecurityCondition(TerminalType.AT,
 				new RelativeAuthorization(CertificateRole.TERMINAL,
@@ -582,7 +614,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 	 * @param dgNr
 	 * @return
 	 */
-	private Collection<SecCondition> getAccessRightUpdateEidDg(int dgNr) {
+	protected static Collection<SecCondition> getAccessRightUpdateEidDg(int dgNr) {
 		HashSet<SecCondition> retVal = new HashSet<>();
 		retVal.add(new TaSecurityCondition(TerminalType.AT,
 				new RelativeAuthorization(CertificateRole.TERMINAL,
