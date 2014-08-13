@@ -473,14 +473,7 @@ public abstract class Iso7816Lib implements Iso7816 {
 				cla = (byte) (cla & (byte) 0x20);
 				return (byte) (cla >> 4);
 			} else{
-				if(isoFormat >= ISO_FORMAT_PROPRIETARY) {
-
-					//FIXME MBK remove this block when proprietary apdus are implemented
-					if (cla == (byte) 0x8C && apdu[OFFSET_INS] == INS_20_VERIFY){
-						cla = (byte) (cla & (byte) 0x0C);
-						return (byte) (cla >> 2);	
-					}
-					
+				if(isoFormat >= ISO_FORMAT_PROPRIETARY) {					
 					ISO7816Exception.throwIt(Iso7816.SW_6E00_CLA_NOT_SUPPORTED);
 				} else{
 					// exception is thrown implicitly by called function.
@@ -547,9 +540,6 @@ public abstract class Iso7816Lib implements Iso7816 {
 				throw new IllegalArgumentException(
 						"Unsupported status for further interindustry CLA");
 			}
-		case ISO_FORMAT_PROPRIETARY:
-			//FIXME MBK remove or implement correctly
-			return 0;
 		default:
 			throw new IllegalArgumentException("Format of CLA not supported");
 		}

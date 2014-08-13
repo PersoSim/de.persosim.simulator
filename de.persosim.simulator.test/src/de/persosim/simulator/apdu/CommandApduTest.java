@@ -13,7 +13,7 @@ public class CommandApduTest extends PersoSimTestCase {
 	/**
 	 * Creates a CommandApdu from a string representation. This string
 	 * representation can be either a plain HexString or similar to the output
-	 * of {@link CommandApdu#toString()}
+	 * of {@link CommandApduImpl#toString()}
 	 * 
 	 * @param apduString
 	 * @return
@@ -24,7 +24,7 @@ public class CommandApduTest extends PersoSimTestCase {
 		inputStr = inputStr.replaceAll("\\[", "").replaceAll("\\]","");
 		inputStr = inputStr.replaceAll("\\|", "");
 
-		return new CommandApdu(HexString.toByteArray(inputStr));
+		return new CommandApduImpl(HexString.toByteArray(inputStr));
 	}
 	
 	/**

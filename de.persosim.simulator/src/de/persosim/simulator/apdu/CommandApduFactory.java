@@ -1,5 +1,7 @@
 package de.persosim.simulator.apdu;
 
+import de.persosim.simulator.platform.Iso7816Lib;
+
 
 public class CommandApduFactory {
 
@@ -26,13 +28,25 @@ public class CommandApduFactory {
 	 */
 	public static CommandApdu createCommandApdu(byte[] apdu,
 			CommandApdu previousCommandApdu) {
-
-		//FIXME MBK reintegrate check of interindustry apdu
-		//if (Iso7816Lib.isISOInterindustry(apdu)) {
+		
+		if (Iso7816Lib.isISOInterindustry(apdu)) {
 			return new InterindustryCommandApdu(apdu, previousCommandApdu);
-		//} else {
-		//	return new CommandApdu(apdu, previousCommandApdu);
-		//}
+		} else {
+			if (matchesTR03110Verify(apdu)){
+				return new TR03110VerifySecureMessagingCommandApdu(apdu, previousCommandApdu);
+			}
+			return new CommandApduImpl(apdu, previousCommandApdu);
+		}
 	}
-
+	
+	private static boolean matchesTR03110Verify(byte [] apdu){
+		CommandApdu command = new CommandApduImpl(apdu);
+		if ((command.getCla() == (byte) (0x8c & 0xFF) || (command.getCla() == (byte) (0x80 & 0xFF)))
+				&& command.getIns() == 0x20
+				&& command.getP1P2() == (short) (0x8000 & 0xFFFF)
+				){
+			return true;
+		}
+		return false;
+	}
 }

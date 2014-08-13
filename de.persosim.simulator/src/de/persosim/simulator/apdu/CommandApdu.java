@@ -1,127 +1,71 @@
 package de.persosim.simulator.apdu;
 
-import static de.persosim.simulator.utils.PersoSimLogger.logException;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvValue;
-import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.Utils;
 
 /**
- * Container class carrying the information of the command APDU. This class
- * provides simplified access to all the relevant information that can be
- * extracted from the command APDU.
+ * This interface defines an container object carrying the information of the
+ * command APDU. Implementations provide simplified access to all the relevant
+ * information that can be extracted from the command APDU.
  * 
- * It also stores the processing history of this CommandApdu. For example if the
- * APDU was SM secured and unwrapped by the SecureMessaging layer the original
- * CommandApdu is preserved in the predecessor field.
+ * Additionally access to the history of this CommandApdu is to be provided. For
+ * example if the APDU was SM secured and unwrapped by the SecureMessaging layer
+ * the original CommandApdu is preserved in the predecessor field.
  * 
- * @author amay
+ * Implementations will usually use the methods in the {@link Iso7816Lib}.
+ * 
+ * @author mboonk
  * 
  */
-public class CommandApdu {
-	private byte isoFormat;
-	private byte cla;
-	private byte ins;
-	private byte p1;
-	private byte p2;
-	private byte isoCase;
-	private boolean isExtendedLength;
-	private int ne;
-	private short nc;
-	private TlvValue commandData;
+public interface CommandApdu {
 
-	private CommandApdu predecessor = null;
+	public abstract byte getIsoFormat();
 
 	/**
-	 * Parses the apdu from the given byte array.
-	 * @param apdu
+	 * @return the class byte {@link Iso7816Lib#getClassByte(byte[])}
 	 */
-	CommandApdu(byte[] apdu) {
-		this(apdu, null);
-	}
+	public abstract byte getCla();
+
+	/**
+	 * @return the instruction byte
+	 */
+	public abstract byte getIns();
+
+	/**
+	 * @return the P1 parameter byte
+	 */
+	public abstract byte getP1();
+
+	/**
+	 * @return the P2 parameter byte
+	 */
+	public abstract byte getP2();
+
+	/**
+	 * @return the iso case representation
+	 */
+	public abstract byte getIsoCase();
+
+	/**
+	 * @return true, iff the APDU is an extendend length encoding
+	 */
+	public abstract boolean isExtendedLength();
+
+	/**
+	 * @return the number encoded in the L_c field of the APDU
+	 */
+	public abstract int getNc();
 	
 	/**
-	 * Parses the apdu from the given byte array and sets the provided instance as predecessor.
-	 * @param apdu
-	 * @param previousCommandApdu the predecessor of this instance, may be null
+	 * Tries to create a TlvValue from the commandDataField. This
+	 * may result in a RuntimeException when the contained data cannot be
+	 * parsed. Thus the caller is expected to handle this gracefully.
+	 * 
+	 * @return TlvValue created from command data field
 	 */
-	CommandApdu(byte[] apdu, CommandApdu previousCommandApdu) {
-		//store history
-		predecessor = previousCommandApdu;
-		
-		//extract data from CLA byte
-		cla = Iso7816Lib.getClassByte(apdu);
-		isoFormat = Iso7816Lib.getISOFormat(apdu);
-		
-		//store INS/P1/P2 bytes
-		ins = Iso7816Lib.getInstructionByte(apdu);
-		p1 = Iso7816Lib.getP1(apdu);
-		p2 = Iso7816Lib.getP2(apdu);
-		
-		//analyze/store Iso case and length
-		isExtendedLength = Iso7816Lib.isExtendedLengthLCLE(apdu);
-		isoCase = Iso7816Lib.getISOcase(apdu);
-		
-		//handle commandData (if present)
-		if ((isoCase == Iso7816.ISO_CASE_3) || (isoCase == Iso7816.ISO_CASE_4)) {
-			nc = Iso7816Lib.getNc(apdu);
-			commandData = Iso7816Lib.getCommandData(apdu);
-		} else {
-			nc = 0;
-			commandData = null;
-		}
-		
-		//store ne (if present)
-		if ((isoCase == Iso7816.ISO_CASE_2) || (isoCase == Iso7816.ISO_CASE_4)) {
-			ne = Iso7816Lib.getNe(apdu);
-		} else {
-			ne = 0;
-		}
+	public abstract TlvValue getCommandData();
 
-	}
-
-	public byte getIsoFormat() {
-		return isoFormat;
-	}
-
-	public byte getCla() {
-		return cla;
-	}
-
-	public byte getIns() {
-		return ins;
-	}
-
-	public byte getP1() {
-		return p1;
-	}
-
-	public byte getP2() {
-		return p2;
-	}
-
-	public byte getIsoCase() {
-		return isoCase;
-	}
-
-	public boolean isExtendedLength() {
-		return isExtendedLength;
-	}
-	
-	public int getNc() {
-		return nc;
-	}
-
-	public TlvValue getCommandData() {
-		return commandData;
-	}
-	
 	/**
 	 * Tries to create a TlvDataObjectContainer from the commandDataField. This
 	 * may result in a RuntimeException when the contained data cannot be
@@ -129,152 +73,40 @@ public class CommandApdu {
 	 * 
 	 * @return TlvDataObjectContainer created from command data field
 	 */
-	public TlvDataObjectContainer getCommandDataObjectContainer() {
-		if (!(commandData instanceof TlvDataObjectContainer)) {
-			commandData = new TlvDataObjectContainer(commandData);
-		}
-		return (TlvDataObjectContainer) commandData;
-	}
+	public abstract TlvDataObjectContainer getCommandDataObjectContainer();
 
-	public int getNe() {
-		return ne;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		
-		sb.append(HexString.encode(getHeader()));
+	/**
+	 * @return the number encoding in the L_e field of the APDU
+	 */
+	public abstract int getNe();
 
-		if (isoCase > 2) {
-			sb.append('|');
-			sb.append(HexString.encode(getLc()));
-			sb.append('|');
-			sb.append(getCommandData().toString());
-		}
+	/**
+	 * @return both parameter bytes concatenated into one {@link short} value
+	 */
+	public abstract short getP1P2();
 
-		if ((isoCase == 2) || (isoCase == 4)) {
-			sb.append('|');
-			sb.append(HexString.encode(getLe()));
-		}
-		
-		return sb.toString();
-	}
-	
-	public short getP1P2() {
-		return Utils.concatenate(getP1(), getP2());
-	}
-
-	public byte[] getHeader() {
-		byte[] header= new byte[4];
-		header[0] = getCla();
-		header[1] = getIns();
-		header[2] = getP1();
-		header[3] = getP2();
-		return header;
-	}
+	/**
+	 * @return the first four bytes of the APDU containing CLA,INS,P1,P2
+	 */
+	public abstract byte[] getHeader();
 
 	/**
 	 * Returns a byte representation of this object.
-	 * @return
-	 */
-	public byte[] toByteArray() {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		try {
-			os.write(getHeader());
-			if (isoCase > 2) {
-				os.write(getLc());
-				os.write(getCommandData().toByteArray());
-			}
-			os.write(getLe());
-		} catch (IOException e) {
-			logException(getClass(), e);
-		}
-
-	    return os.toByteArray();
-	}
-
-	/**
-	 * Constructs valid byte encoding of Lc.
-	 * <p/>
-	 * If no data field is present an empty array is returned. If data field is
-	 * present and extended length is used the returned byte array contains the
-	 * required leading zero byte.
 	 * 
-	 * @return byte encoding of Lc field
+	 * @return the APDU as byte array
 	 */
-	private byte[] getLc() {
-		if (isoCase > 2) {
-			if (isExtendedLength) {
-				byte[] retVal = new byte[3];
-				retVal[0] = 0;
-				retVal[1] = (byte) ((nc & (short) 0xFF00) >> 8);
-				retVal[2] = (byte) (nc & (short) 0x00FF);
-				return retVal;
-			} else {
-				return new byte[]{(byte) nc};
-			}
-		} else {
-			return new byte[]{};
-		}
-	}
+	public abstract byte[] toByteArray();
 
 	/**
-	 * Constructs valid byte encoding of Le.
-	 * <p/>
-	 * If Le is absent an empty array is returned.
-	 * If extended length is used Le is encoded in two bytes.
-	 * If data field is absent and extended length is used the returned byte array contains the
-	 * required leading zero byte.
+	 * The history of this APDU is maintained in a chain of predecessors.
 	 * 
-	 * @return byte encoding of Le field
+	 * @return the predecessor to this APDU
 	 */
-	private byte[] getLe() {
-		if (ne > 0) {  
-			if(isExtendedLength) {
-				if (isoCase > 2) {
-					return Utils.toUnsignedByteArray((short)ne);
-				} else {
-					byte[] retVal = new byte[3];
-					retVal[0] = 0;
-					retVal[1] = (byte) ((ne & (short) 0xFF00) >> 8);
-					retVal[2] = (byte) (ne & (short) 0x00FF);
-					return retVal;
-				}
-				
-			} else {
-				return new byte[] {(byte) ne};
-			}
-		} else {
-			return new byte[]{};
-		}
-	}
-
-	public CommandApdu getPredecessor() {
-		return predecessor;
-	}
+	public abstract CommandApdu getPredecessor();
 
 	/**
-	 * Returns true iff this APDU is (or any predecessor was) sm secured
-	 * <p/>
-	 * This methods needs to be overridden by subclasses that support secure messaging
-	 * @return
+	 * @return true, iff the N_e number was zero encoded in the L_e field 
 	 */
-	public boolean wasSecureMessaging() {
-		//this class does not support secure messaging, maybe a predecessor does
-		if (predecessor != null) {
-			return predecessor.wasSecureMessaging();
-		} else {
-			return false;
-		}
-	}
-
-	public boolean isNeZeroEncoded() {
-		if (isExtendedLength) {
-			return ne == 65536;
-		} else {
-			return ne == 256;
-		}
-	}
+	public abstract boolean isNeZeroEncoded();
 
 }
