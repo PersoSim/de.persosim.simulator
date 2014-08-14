@@ -31,20 +31,20 @@ import de.persosim.simulator.utils.HexString;
  * @author slutters
  *
  */
-public class DefaultPersoTestPkiTemplate09 extends DefaultPersoTestPki {
+public class DefaultPersoTestPkiTemplate10 extends DefaultPersoTestPki {
 	
 	@Override
 	protected void addAuxData() {
 		// Aux data
-		byte[] communityId = HexString.toByteArray("02761600560000"); // updated
+		byte[] communityId = HexString.toByteArray("02761100000000"); // updated
 		
 		Calendar calendar = Calendar.getInstance();
 		
-		calendar.set(2002, Calendar.FEBRUARY, 30, 0, 0, 0); // updated
+		calendar.set(1899, Calendar.MAY, 2, 0, 0, 0); // updated
 		calendar.set(Calendar.MILLISECOND, 0);
 		Date dateOfBirth = calendar.getTime();
 		
-		calendar.set(2016, Calendar.OCTOBER, 31, 0, 0, 0); // updated
+		calendar.set(2020, Calendar.OCTOBER, 31, 0, 0, 0); // updated
 		calendar.set(Calendar.MILLISECOND, 0);
 		Date validityDate = calendar.getTime();
 
@@ -60,7 +60,7 @@ public class DefaultPersoTestPkiTemplate09 extends DefaultPersoTestPki {
 	protected void addEidDg3(DedicatedFile eIdAppl) {
 		CardFile eidDg3 = new ElementaryFile(new FileIdentifier(0x0103),
 				new ShortFileIdentifier(0x03),
-				HexString.toByteArray("6306120420161031"),
+				HexString.toByteArray("6306120420201031"),
 				getAccessRightReadEidDg(3),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
@@ -71,7 +71,7 @@ public class DefaultPersoTestPkiTemplate09 extends DefaultPersoTestPki {
 	protected void addEidDg4(DedicatedFile eIdAppl) {
 		CardFile eidDg4 = new ElementaryFile(new FileIdentifier(0x0104),
 				new ShortFileIdentifier(0x04),
-				HexString.toByteArray("640712054C494C4C59"),
+				HexString.toByteArray("645212504748474847484748474847484748474847484748474847484748474847484748474847484748474847484748474847484748474847484748474847484748474847484748474847484748474847484748"),
 				getAccessRightReadEidDg(4),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
@@ -84,7 +84,7 @@ public class DefaultPersoTestPkiTemplate09 extends DefaultPersoTestPki {
 				new FileIdentifier(0x0105),
 				new ShortFileIdentifier(0x05),
 				HexString
-						.toByteArray("650A0C085343485553544552"),
+						.toByteArray("657A0C78434443444344434443444344434443444344434443444344434443444344434443444344434443444344434443444344434443444344434443444344434443444344434443444344434443444344434443444344434443444344434443444344434443444344434443444344434443444344434443444344"),
 				getAccessRightReadEidDg(5), Collections
 						.<SecCondition> emptySet(), Collections
 						.<SecCondition> emptySet());
@@ -97,7 +97,7 @@ public class DefaultPersoTestPkiTemplate09 extends DefaultPersoTestPki {
 				new FileIdentifier(0x0106),
 				new ShortFileIdentifier(0x06),
 				HexString
-						.toByteArray("66020C00"),
+						.toByteArray("663E0C3C535453545354535453545354535453545354535453545354535453545354535453545354535453545354535453545354535453545354535453545354"),
 				getAccessRightReadEidDg(6), Collections
 						.<SecCondition> emptySet(), Collections
 						.<SecCondition> emptySet());
@@ -108,7 +108,7 @@ public class DefaultPersoTestPkiTemplate09 extends DefaultPersoTestPki {
 	protected void addEidDg7(DedicatedFile eIdAppl) {
 		CardFile eidDg7 = new ElementaryFile(new FileIdentifier(0x0107),
 				new ShortFileIdentifier(0x07),
-				HexString.toByteArray("67020C00"),
+				HexString.toByteArray("672A0C2841424142414241424142414241424142414241424142414241424142414241424142414241424142"),
 				getAccessRightReadEidDg(7),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
@@ -119,7 +119,7 @@ public class DefaultPersoTestPkiTemplate09 extends DefaultPersoTestPki {
 	protected void addEidDg8(DedicatedFile eIdAppl) {
 		CardFile eidDg8 = new ElementaryFile(new FileIdentifier(0x0108),
 				new ShortFileIdentifier(0x08),
-				HexString.toByteArray("6806120420020330"),
+				HexString.toByteArray("6806120418990502"),
 				getAccessRightReadEidDg(8),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
@@ -132,7 +132,7 @@ public class DefaultPersoTestPkiTemplate09 extends DefaultPersoTestPki {
 				new FileIdentifier(0x0109),
 				new ShortFileIdentifier(0x09),
 				HexString
-						.toByteArray("69180C164DC39C484C48415553454E2F5448C39C52494E47454E"),
+						.toByteArray("69520C50494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A494A"),
 				getAccessRightReadEidDg(9), Collections
 						.<SecCondition> emptySet(), Collections
 						.<SecCondition> emptySet());
@@ -143,7 +143,7 @@ public class DefaultPersoTestPkiTemplate09 extends DefaultPersoTestPki {
 	protected void addEidDg11(DedicatedFile eIdAppl) {
 		CardFile eidDg11 = new ElementaryFile(new FileIdentifier(0x010B),
 				new ShortFileIdentifier(0x0B),
-				HexString.toByteArray("6B03130146"),
+				HexString.toByteArray("6B0313014D"),
 				getAccessRightReadEidDg(11),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
@@ -154,7 +154,7 @@ public class DefaultPersoTestPkiTemplate09 extends DefaultPersoTestPki {
 	protected void addEidDg13(DedicatedFile eIdAppl) {
 		CardFile eidDg13 = new ElementaryFile(new FileIdentifier(0x010D),
 				new ShortFileIdentifier(0x0D),
-				HexString.toByteArray("6D020C00"),
+				HexString.toByteArray("6D4D0C4B454645464546454645464546454645464546454645464546454645464546454645464546454645464546454645464546454645464546454645464546454645464546454645464546454645"),
 				getAccessRightReadEidDg(13),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
@@ -167,7 +167,7 @@ public class DefaultPersoTestPkiTemplate09 extends DefaultPersoTestPki {
 				new FileIdentifier(0x0111),
 				new ShortFileIdentifier(0x11),
 				HexString
-						.toByteArray("7131302FAA130C114D415249454E53545241C39F4520313434AB0A0C08454953454E414348AD03130144AE0713053939383137"),
+						.toByteArray("71763074AA340C324F504F504F504F504F504F504F504F504F504F504F504F504F504F504F504F504F504F504F504F504F504F504F504F504F50AB2E0C2C4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4E4D4EAD03130144AE0713053132333435"),
 				getAccessRightReadEidDg(17), getAccessRightUpdateEidDg(17),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg17);
@@ -177,7 +177,7 @@ public class DefaultPersoTestPkiTemplate09 extends DefaultPersoTestPki {
 	protected void addEidDg18(DedicatedFile eIdAppl) {
 		CardFile eidDg18 = new ElementaryFile(new FileIdentifier(0x0112),
 				new ShortFileIdentifier(0x12),
-				HexString.toByteArray("7209040702761600560000"),
+				HexString.toByteArray("7209040702761100000000"),
 				getAccessRightReadEidDg(18), getAccessRightUpdateEidDg(18),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg18);
