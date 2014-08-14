@@ -132,7 +132,7 @@ public class DefaultPersoTestPkiTemplate02 extends DefaultPersoTestPki {
 				new FileIdentifier(0x0109),
 				new ShortFileIdentifier(0x09),
 				HexString
-						.toByteArray("69120C104652414E4B4655525420284F44455229"),
+						.toByteArray("6914A1120C104652414E4B4655525420284F44455229"),
 				getAccessRightReadEidDg(9), Collections
 						.<SecCondition> emptySet(), Collections
 						.<SecCondition> emptySet());
