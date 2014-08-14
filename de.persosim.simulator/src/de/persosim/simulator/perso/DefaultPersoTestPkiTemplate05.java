@@ -119,7 +119,7 @@ public class DefaultPersoTestPkiTemplate05 extends DefaultPersoTestPki {
 	protected void addEidDg8(DedicatedFile eIdAppl) {
 		CardFile eidDg8 = new ElementaryFile(new FileIdentifier(0x0108),
 				new ShortFileIdentifier(0x08),
-				HexString.toByteArray("6806120419890101"),
+				HexString.toByteArray("680412021989"),
 				getAccessRightReadEidDg(8),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
@@ -132,7 +132,7 @@ public class DefaultPersoTestPkiTemplate05 extends DefaultPersoTestPki {
 				new FileIdentifier(0x0109),
 				new ShortFileIdentifier(0x09),
 				HexString
-						.toByteArray("6913A1110C0F4445535341552D524FE1BA9E4C4155"),
+						.toByteArray("6912A1100C0E4445535341552D524FC39F4C4155"),
 				getAccessRightReadEidDg(9), Collections
 						.<SecCondition> emptySet(), Collections
 						.<SecCondition> emptySet());

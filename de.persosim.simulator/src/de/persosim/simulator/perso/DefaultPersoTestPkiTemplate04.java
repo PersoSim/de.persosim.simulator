@@ -119,7 +119,7 @@ public class DefaultPersoTestPkiTemplate04 extends DefaultPersoTestPki {
 	protected void addEidDg8(DedicatedFile eIdAppl) {
 		CardFile eidDg8 = new ElementaryFile(new FileIdentifier(0x0108),
 				new ShortFileIdentifier(0x08),
-				HexString.toByteArray("6806120419940901"),
+				HexString.toByteArray("68051203199409"),
 				getAccessRightReadEidDg(8),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
