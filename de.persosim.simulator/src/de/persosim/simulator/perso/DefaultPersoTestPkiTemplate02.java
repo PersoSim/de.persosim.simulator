@@ -167,7 +167,7 @@ public class DefaultPersoTestPkiTemplate02 extends DefaultPersoTestPki {
 				new FileIdentifier(0x0111),
 				new ShortFileIdentifier(0x11),
 				HexString
-						.toByteArray("71353033AA150C1345484D2D57454C4B2D53545241C39F45203333AB150C134CC39C4242454E41552F535052454557414C44AD03130144"),
+						.toByteArray("713E303CAA150C1345484D2D57454C4B2D53545241C39F45203333AB150C134CC39C4242454E41552F535052454557414C44AD03130144AE0713053033323232"),
 				getAccessRightReadEidDg(17), getAccessRightUpdateEidDg(17),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg17);
