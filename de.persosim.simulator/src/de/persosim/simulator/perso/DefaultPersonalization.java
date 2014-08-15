@@ -155,7 +155,10 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 					new DedicatedFileIdentifier(
 							HexString.toByteArray("A0 00 00 02 47 10 01")));
 			mf.addChild(ePassAppl);
-			addEpassDatagroups(ePassAppl);
+			addEpassDatagroup1(ePassAppl);
+			addEpassDatagroup2(ePassAppl);
+			addEpassDatagroup3(ePassAppl);
+			addEpassDatagroup4(ePassAppl);
 
 		} catch (CertificateNotParseableException | NoSuchAlgorithmException
 				| NoSuchProviderException | IOException e) {
@@ -320,7 +323,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				.addOidIdentifier(Pace.OID_IDENTIFIER_id_PACE_ECDH_GM_AES_CBC_CMAC_128);
 	}
 
-	protected void addEpassDatagroups(DedicatedFile ePassAppl) {
+	protected void addEpassDatagroup1(DedicatedFile ePassAppl) {
 		// ePass DG1
 		CardFile epassDg1 = new ElementaryFile(
 				new FileIdentifier(0x0101),
@@ -331,7 +334,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		ePassAppl.addChild(epassDg1);
+	}
 
+	protected void addEpassDatagroup2(DedicatedFile ePassAppl) {
 		// ePass DG2
 		CardFile epassDg2 = new ElementaryFile(
 				new FileIdentifier(0x0102),
@@ -342,7 +347,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		ePassAppl.addChild(epassDg2);
+	}
 
+	protected void addEpassDatagroup3(DedicatedFile ePassAppl) {
 		// ePass DG3
 		CardFile epassDg3 = new ElementaryFile(
 				new FileIdentifier(0x0103),
@@ -353,7 +360,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		ePassAppl.addChild(epassDg3);
+	}
 
+	protected void addEpassDatagroup4(DedicatedFile ePassAppl) {
 		// ePass DG4
 		CardFile epassDg4 = new ElementaryFile(
 				new FileIdentifier(0x0104),
