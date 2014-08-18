@@ -127,9 +127,9 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 	
 	private void transmitPasswords() throws IOException {
 		String mrz = getMrz();
-		String can = HexString.encode(getPassword(ID_CAN));
-		String pin = HexString.encode(getPassword(ID_PIN));
-		String puk = HexString.encode(getPassword(ID_PUK));
+		byte[] can = getPassword(ID_CAN);
+		byte[] pin = getPassword(ID_PIN);
+		byte[] puk = getPassword(ID_PUK);
 		
 		if (mrz != null) {
 			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "Use MRZ Reader", "false");
@@ -169,25 +169,29 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 		}
 		
 		if (can != null) {
-			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_can", can);
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_can", HexString.encode(can));
 		}
 		
 		if (pin != null) {
-			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_pin", pin);
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_pin", HexString.encode(pin));
 		}
 		
 		if (puk != null) {
-			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_puk", puk);
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_puk", HexString.encode(puk));
 		}
 
 	}
 	
 	/**
-	 * This method returns the MRZ used for personalization.
+	 * This method returns the MRZ used for personalization. If no MRZ is set null is returned.
 	 * @return the MRZ used for personalization
 	 */
 	protected String getMrz() {
 		Collection<CardObject> cardObjects = getPersonalization().getObjectTree().findChildren(new AuthObjectIdentifier(Tr03110.ID_MRZ));
+		
+		if(cardObjects.isEmpty()) {
+			return null;
+		}
 		
 		MrzAuthObject mrzAuthObject = (MrzAuthObject) cardObjects.iterator().next();
 		
@@ -196,12 +200,18 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 	
 	/**
 	 * This method returns the requested password as set during personalization.
+	 * If no such password is set null is returned.
 	 * Valid password identifiers as set in {@link Tr03110} e.g. are ID_MRZ, ID_CA, ID_PIN, ID_PUK.
 	 * @param passwordIdentifier the password identifier
 	 * @return the requested password as set during personalization
 	 */
 	protected byte[] getPassword(int passwordIdentifier) {
 		Collection<CardObject> cardObjects = getPersonalization().getObjectTree().findChildren(new AuthObjectIdentifier(passwordIdentifier));
+		
+		if(cardObjects.isEmpty()) {
+			return null;
+		}
+		
 		PasswordAuthObject pwdAuthObject = (PasswordAuthObject) cardObjects.iterator().next();
 		return pwdAuthObject.getPassword();
 	}
