@@ -13,7 +13,6 @@ import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.securemessaging.SecureMessaging;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.InfoSource;
-import de.persosim.simulator.utils.PersoSimLogger;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -42,7 +41,6 @@ public class PersoSimKernel implements InfoSource {
 	 * Performs initialization of object.
 	 */
 	public void init() {
-		PersoSimLogger.init();
 		log(this, "init called", TRACE);
 		
 		int layerId = 0;

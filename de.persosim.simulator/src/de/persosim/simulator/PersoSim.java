@@ -20,6 +20,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
 import de.persosim.simulator.perso.DefaultPersoTestPki;
 import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.utils.PersoSimLogger;
 
 public class PersoSim implements Runnable {
 
@@ -42,6 +43,7 @@ public class PersoSim implements Runnable {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		PersoSimLogger.init();
 		PersoSim sim = new PersoSim();
 		sim.handleArgs(args);
 		sim.run();
