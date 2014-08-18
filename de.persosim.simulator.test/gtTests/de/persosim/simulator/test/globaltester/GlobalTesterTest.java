@@ -1,5 +1,6 @@
 package de.persosim.simulator.test.globaltester;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.junit.After;
@@ -9,10 +10,16 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.persosim.simulator.SocketSimulator;
+import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
+import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.MrzAuthObject;
+import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.test.PersoSimTestCase;
+import de.persosim.simulator.utils.HexString;
 
-public abstract class GlobalTesterTest extends PersoSimTestCase {
+public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr03110 {
 
 	private static final String GT_SERVER_HOST = "localhost";
 	private static final int GT_SERVER_PORT = 6789;
@@ -112,10 +119,91 @@ public abstract class GlobalTesterTest extends PersoSimTestCase {
 		
 		
 		//TODO configureGtServer
-//		transmitPasswords();
+		transmitPasswords();
 //		configureCertificates();
 //		transmitCertificates();
 //		generateCertificatesIfNeeded();
+	}
+	
+	private void transmitPasswords() throws IOException {
+		String mrz = getMrz();
+		String can = HexString.encode(getPassword(ID_CAN));
+		String pin = HexString.encode(getPassword(ID_PIN));
+		String puk = HexString.encode(getPassword(ID_PUK));
+		
+		if (mrz != null) {
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "Use MRZ Reader", "false");
+			
+			String mrz1 = null;
+			String mrz2 = null; 
+			String mrz3 = null;
+			
+			switch (mrz.length()) {
+			case 74:
+				mrz1 = mrz.substring(0, 36);
+				mrz2 = mrz.substring(36, 74);
+				mrz3 = "";
+				break;
+				
+			case 88:
+				mrz1 = mrz.substring(0, 44);
+				mrz2 = mrz.substring(44, 88);
+				mrz3 = "";
+				break;
+				
+			case 90:
+				mrz1 = mrz.substring(0, 30);
+				mrz2 = mrz.substring(30, 60);
+				mrz3 = mrz.substring(60, 90);
+				break;
+
+			default:
+				break;
+			}
+			
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "Default definition of first line in MRZ", mrz1);
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "Default definition of second line in MRZ", mrz2);
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "Default definition of third line in MRZ", mrz3);
+			
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "Activate third MRZ line", mrz3.length() > 0 ? "true" : "false");
+		}
+		
+		if (can != null) {
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_can", can);
+		}
+		
+		if (pin != null) {
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_pin", pin);
+		}
+		
+		if (puk != null) {
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_puk", puk);
+		}
+
+	}
+	
+	/**
+	 * This method returns the MRZ used for personalization.
+	 * @return the MRZ used for personalization
+	 */
+	protected String getMrz() {
+		Collection<CardObject> cardObjects = getPersonalization().getObjectTree().findChildren(new AuthObjectIdentifier(Tr03110.ID_MRZ));
+		
+		MrzAuthObject mrzAuthObject = (MrzAuthObject) cardObjects.iterator().next();
+		
+		return mrzAuthObject.getMrz();
+	}
+	
+	/**
+	 * This method returns the requested password as set during personalization.
+	 * Valid password identifiers as set in {@link Tr03110} e.g. are ID_MRZ, ID_CA, ID_PIN, ID_PUK.
+	 * @param passwordIdentifier the password identifier
+	 * @return the requested password as set during personalization
+	 */
+	protected byte[] getPassword(int passwordIdentifier) {
+		Collection<CardObject> cardObjects = getPersonalization().getObjectTree().findChildren(new AuthObjectIdentifier(passwordIdentifier));
+		PasswordAuthObject pwdAuthObject = (PasswordAuthObject) cardObjects.iterator().next();
+		return pwdAuthObject.getPassword();
 	}
 
 	/**
