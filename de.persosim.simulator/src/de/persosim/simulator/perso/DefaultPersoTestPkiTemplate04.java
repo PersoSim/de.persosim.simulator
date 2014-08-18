@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -24,6 +25,7 @@ import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.protocols.ta.TaOid;
+import de.persosim.simulator.secstatus.PaceSecurityCondition;
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.utils.HexString;
 
@@ -207,6 +209,19 @@ public class DefaultPersoTestPkiTemplate04 extends DefaultPersoTestPki {
 				new AuthObjectIdentifier(4), "9876543210".getBytes("UTF-8"),
 				"PUK");
 		mf.addChild(puk);
+	}
+	
+	@Override
+	protected void addEpassDatagroup1(DedicatedFile ePassAppl) {
+		// ePass DG1
+		CardFile epassDg1 = new ElementaryFile(
+				new FileIdentifier(0x0101),
+				new ShortFileIdentifier(0x01),
+				HexString.toByteArray("615D5F1F5A4944443C3C303132333435363738343C3C3C3C3C3C3C3C3C3C3C3C3C3C3C393430393C3C384D31363130333136443C3C3C3C3C3C3C3C3C3C3C3C3C30434F5349433C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C"),
+				Arrays.asList((SecCondition) new PaceSecurityCondition()),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		ePassAppl.addChild(epassDg1);
 	}
 
 }
