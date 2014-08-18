@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -24,6 +25,7 @@ import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.protocols.ta.TaOid;
+import de.persosim.simulator.secstatus.PaceSecurityCondition;
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.utils.HexString;
 
@@ -188,7 +190,7 @@ public class DefaultPersoTestPkiTemplate01 extends DefaultPersoTestPki {
 			NoSuchProviderException, IOException, UnsupportedEncodingException {
 		MrzAuthObject mrz = new MrzAuthObject(
 				new AuthObjectIdentifier(1),
-				"P<D<<C11T002JM4<<<<<<<<<<<<<<<9608122F2310314D<<<<<<<<<<<<<4MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
+				"IDD<<0123456784<<<<<<<<<<<<<<<6408125F2010315D<<<<<<<<<<<<<2MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
 		mf.addChild(mrz);
 
 		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(
@@ -207,6 +209,19 @@ public class DefaultPersoTestPkiTemplate01 extends DefaultPersoTestPki {
 				new AuthObjectIdentifier(4), "9876543210".getBytes("UTF-8"),
 				"PUK");
 		mf.addChild(puk);
+	}
+	
+	@Override
+	protected void addEpassDatagroup1(DedicatedFile ePassAppl) {
+		// ePass DG1
+		CardFile epassDg1 = new ElementaryFile(
+				new FileIdentifier(0x0101),
+				new ShortFileIdentifier(0x01),
+				HexString.toByteArray("615D5F1F5A5450443C3C543232303030313239333C3C3C3C3C3C3C3C3C3C3C3C3C3C3C363430383132353C32303130333135443C3C3C3C3C3C3C3C3C3C3C3C3C344D55535445524D414E4E3C3C4552494B413C3C3C3C3C3C3C3C3C3C3C3C3C"),
+				Arrays.asList((SecCondition) new PaceSecurityCondition()),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		ePassAppl.addChild(epassDg1);
 	}
 
 }

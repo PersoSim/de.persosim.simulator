@@ -188,7 +188,7 @@ public class DefaultPersoTestPkiTemplate05 extends DefaultPersoTestPki {
 			NoSuchProviderException, IOException, UnsupportedEncodingException {
 		MrzAuthObject mrz = new MrzAuthObject(
 				new AuthObjectIdentifier(1),
-				"P<D<<C11T002JM4<<<<<<<<<<<<<<<9608122F2310314D<<<<<<<<<<<<<4MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
+				"IDD<<0123456784<<<<<<<<<<<<<<<89<<<<3F1610316D<<<<<<<<<<<<<0OEZMEN<<AGCA<<<<<<<<<<<<<<<<<<");
 		mf.addChild(mrz);
 
 		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(
