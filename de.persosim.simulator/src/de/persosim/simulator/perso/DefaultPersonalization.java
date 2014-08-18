@@ -41,6 +41,7 @@ import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.CertificateNotParseableException;
+import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.protocols.auxVerification.AuxProtocol;
 import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.protocols.ca.CaProtocol;
@@ -76,7 +77,7 @@ import de.persosim.simulator.utils.HexString;
  * @author amay
  * 
  */
-public abstract class DefaultPersonalization extends XmlPersonalization {
+public abstract class DefaultPersonalization extends XmlPersonalization implements Tr03110 {
 
 	public DefaultPersonalization() {
 		buildProtocolList();
@@ -579,24 +580,24 @@ public abstract class DefaultPersonalization extends XmlPersonalization {
 	protected void addAuthObjects() throws NoSuchAlgorithmException,
 			NoSuchProviderException, IOException, UnsupportedEncodingException {
 		MrzAuthObject mrz = new MrzAuthObject(
-				new AuthObjectIdentifier(1),
+				new AuthObjectIdentifier(ID_MRZ),
 				"P<D<<C11T002JM4<<<<<<<<<<<<<<<9608122F2310314D<<<<<<<<<<<<<4MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
 		mf.addChild(mrz);
 
 		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(
-				new AuthObjectIdentifier(2), "500540".getBytes("UTF-8"), "CAN",
+				new AuthObjectIdentifier(ID_CAN), "500540".getBytes("UTF-8"), "CAN",
 				6, 6);
 		can.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		mf.addChild(can);
 
 		PasswordAuthObjectWithRetryCounter pin = new PinObject(
-				new AuthObjectIdentifier(3), "123456".getBytes("UTF-8"), 6, 6,
+				new AuthObjectIdentifier(ID_PIN), "123456".getBytes("UTF-8"), 6, 6,
 				3);
 		pin.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		mf.addChild(pin);
 
 		PasswordAuthObject puk = new PasswordAuthObject(
-				new AuthObjectIdentifier(4), "9876543210".getBytes("UTF-8"),
+				new AuthObjectIdentifier(ID_PUK), "9876543210".getBytes("UTF-8"),
 				"PUK");
 		mf.addChild(puk);
 	}
