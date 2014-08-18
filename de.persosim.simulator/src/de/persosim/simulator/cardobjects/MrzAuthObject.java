@@ -20,7 +20,14 @@ import de.persosim.simulator.documents.MrzTD1;
 //XXX MrzAuthObject, relies on TD1 format
 @XmlRootElement
 public class MrzAuthObject extends PasswordAuthObject {
-
+	
+	//XXX add serialization for this object
+	/*
+	 * byte[] from super class does not need to be serialized as it can be
+	 * recomputed from MRZ by unmarshaller calling construct method.
+	 */
+	protected String mrz;
+	
 	public MrzAuthObject() {
 	}
 	
@@ -28,6 +35,7 @@ public class MrzAuthObject extends PasswordAuthObject {
 			throws NoSuchAlgorithmException, NoSuchProviderException,
 			IOException {
 		super(identifier, constructMrzPassword(mrz), "MRZ");
+		this.mrz = mrz;
 	}
 
 	/**
@@ -66,4 +74,9 @@ public class MrzAuthObject extends PasswordAuthObject {
 		MessageDigest md = MessageDigest.getInstance("SHA-1", Crypto.getCryptoProvider());
 		return md.digest(sb.toString().getBytes("UTF-8"));
 	}
+
+	public String getMrz() {
+		return mrz;
+	}
+	
 }
