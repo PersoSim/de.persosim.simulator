@@ -6,7 +6,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 import javax.xml.bind.JAXBException;
@@ -51,7 +57,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	@After
 	public void tearDown() {
 		if(persoSim != null) {
-			Deencapsulation.invoke(persoSim, "stopSimulator");
+			persoSim.executeUserCommands(PersoSim.CMD_STOP);
 		}
 	}
 	
@@ -63,9 +69,10 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: test implicit setting of a default personalization if no other personalization is explicitly set.
 	 * @throws JAXBException 
 	 * @throws FileNotFoundException 
+	 * @throws UnsupportedEncodingException 
 	 */
 	@Test
-	public void testImplicitSettingOfDefaultPersonalization() throws FileNotFoundException, JAXBException {
+	public void testImplicitSettingOfDefaultPersonalization() throws FileNotFoundException, JAXBException, UnsupportedEncodingException {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
@@ -80,21 +87,63 @@ public class PersoSimTest extends PersoSimTestCase {
 		};
 		
 		persoSim = new PersoSim(null);
+		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		Deencapsulation.invoke(persoSim, "startSimulator");
-		
-		//FIXME SLS the following code is used very similar several times, extract it to a method
-		//FIXME SLS reasign stdin and stdout instead of using deencapsulation, deencapsulation is nearly always evil, especially on the DUT
-		String selectApdu = "00A4020C02011C"; 
-		String responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu);
+		String responseSelect = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
 		assertEquals(responseSelect, "9000");
 		
-		String readBinaryApdu = "00B0000004";
-		String responseReadBinary = Deencapsulation.invoke(persoSim, "exchangeApdu", readBinaryApdu);
+		String responseReadBinaryExpected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_1, 4)).toUpperCase();
+		String responseReadBinary = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00B0000004");
+		assertEquals(responseReadBinaryExpected, responseReadBinary.substring(0, responseReadBinary.length() - 4).toUpperCase());
+	}
+	
+	public static String sendCommand(PersoSim persoSimInstance, String... args) throws UnsupportedEncodingException {
+//		InputStream	origIn	= System.in;
+		PrintStream	origOut	= System.out;
+		PrintStream	origErr	= System.err;
 		
-		String expected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_1, 4)).toUpperCase();
+//		InputStream	stdin = null;
+//		String cmdSelect = PersoSim.CMD_SEND_APDU + " 00A4020C02011C";
+//		try {
+//			stdin = new ByteArrayInputStream(cmdSelect.getBytes("UTF-8"));
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			System.out.println ("Redirect:  Unable to open input stream!");
+//		    System.exit (1);
+//		}
 		
-		assertEquals(expected, responseReadBinary.substring(0, responseReadBinary.length() - 4).toUpperCase());
+		ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
+		PrintStream	stdout = new PrintStream(baos1);
+		
+		ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+		PrintStream	stderr = new PrintStream(baos2);
+		
+		System.setOut(stdout);
+		System.setErr(stderr);
+		
+		origOut.print(baos1.toString());
+		origOut.flush();
+		
+		//FIXME SLS reasign stdin and stdout instead of using deencapsulation, deencapsulation is nearly always evil, especially on the DUT
+		
+		persoSimInstance.executeUserCommands(args);
+		
+		String responseSelectBulk = baos1.toString("UTF-8");
+		origOut.print(responseSelectBulk);
+		origOut.flush();
+		
+		int startIndex = responseSelectBulk.trim().lastIndexOf("\n");
+		String responseSelect = "";
+
+		if((startIndex != -1) && (startIndex != responseSelectBulk.length())){
+			responseSelect = responseSelectBulk.substring(startIndex+3).trim();
+		}
+		
+		System.setOut(origOut);
+		System.setErr(origErr);
+		
+		return responseSelect;
 	}
 	
 	/**
