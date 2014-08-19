@@ -49,8 +49,6 @@ public class PersoSim implements Runnable {
 	public static final String CMD_RESTART                    = "restart";
 	public static final String CMD_STOP                       = "stop";
 	public static final String CMD_EXIT                       = "exit";
-	public static final String CMD_SET_HOST                   = "sethost";
-	public static final String CMD_SET_HOST_SHORT             = "-host";
 	public static final String CMD_SET_PORT                   = "setport";
 	public static final String CMD_SET_PORT_SHORT             = "-port";
 	public static final String CMD_LOAD_PERSONALIZATION       = "loadperso";
@@ -216,23 +214,6 @@ public class PersoSim implements Runnable {
 		
 		//IMPL check for port being unused
 	}
-	
-	/**
-	 * This method sets a new host for the simulator.
-	 * In order for the changes to take effect, the simulator needs to be restarted.
-	 * @param newHost the new host to be used
-	 */
-	public void setHost(String newHost) {
-		if(newHost == null) {throw new NullPointerException("host name must not be null");}
-		if(newHost.length() <= 0) {throw new IllegalArgumentException("host name must not be empty");}
-		
-		simHost = newHost;
-		//FIXME SLS what does this method really do? What does setting a host for the simulator mean?
-		
-		System.out.println("new host set to " + newHost + " after restart of simulation.");
-		
-		//IMPL check for host response
-	}
 
 	/**
 	 * Stops the simulator thread and returns when the thread is stopped.
@@ -365,7 +346,6 @@ public class PersoSim implements Runnable {
 		//FIXME SLS why are these constants called CMD_xxx_SHORT instead of ARG_xxx?
 		System.out.println("Available commands:");
 		System.out.println(CMD_LOAD_PERSONALIZATION_SHORT + " <file name>");
-		System.out.println(CMD_SET_HOST_SHORT + " <host name>");
 		System.out.println(CMD_SET_PORT_SHORT + " <port number>");
 		System.out.println(CMD_HELP_SHORT);
 	}
@@ -377,7 +357,6 @@ public class PersoSim implements Runnable {
 		System.out.println("Available commands:");
 		System.out.println(CMD_SEND_APDU + " <hexstring>");
 		System.out.println(CMD_LOAD_PERSONALIZATION + " <file name>");
-		System.out.println(CMD_SET_HOST + " <host name>");
 		System.out.println(CMD_SET_PORT + " <port number>");
 		System.out.println(CMD_START);
 		System.out.println(CMD_RESTART);
@@ -407,27 +386,6 @@ public class PersoSim implements Runnable {
     		System.out.println("set personalization command requires one single file name");
     		System.out.println("simulation is stopped");
 			stopSimulator();
-			return 1;
-    	}
-	}
-	
-	/**
-	 * This method processes the set host name command according to the provided arguments.
-	 * @param args the arguments provided for processing
-	 * @return whether processing has been successful
-	 */
-	private int cmdSetHostName(String[] args) {
-		if(args.length >= 2) {
-			String hostName = args[1];
-    		try{
-    			setHost(hostName);
-    			return 2;
-    		} catch(IllegalArgumentException | NullPointerException e) {
-    			System.out.println("unable to set host name, reason is: " + e.getMessage());
-    			return 1;
-    		}
-    	} else{
-    		System.out.println("set host command requires host name");
 			return 1;
     	}
 	}
@@ -499,10 +457,6 @@ public class PersoSim implements Runnable {
             	cmdLoadPersonalization(args);
             	restartSimulator();
             	break;
-            case CMD_SET_HOST:
-            	cmdSetHostName(args);
-            	restartSimulator();
-            	break;
             case CMD_SET_PORT:
             	cmdSetPortNo(args);
             	restartSimulator();
@@ -545,9 +499,6 @@ public class PersoSim implements Runnable {
 			switch (currentArgument) {
 		        case CMD_LOAD_PERSONALIZATION_SHORT:
 		        	noOfUnprocessedArgs -= cmdLoadPersonalization(currentArgs);
-		        	break;
-		        case CMD_SET_HOST_SHORT:
-		        	noOfUnprocessedArgs -= cmdSetHostName(currentArgs);
 		        	break;
 		        case CMD_SET_PORT_SHORT:
 		        	noOfUnprocessedArgs -= cmdSetPortNo(currentArgs);
