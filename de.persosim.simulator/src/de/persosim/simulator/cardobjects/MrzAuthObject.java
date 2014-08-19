@@ -21,11 +21,7 @@ import de.persosim.simulator.documents.MrzTD1;
 @XmlRootElement
 public class MrzAuthObject extends PasswordAuthObject {
 	
-	//XXX add serialization for this object
-	/*
-	 * byte[] from super class does not need to be serialized as it can be
-	 * recomputed from MRZ by unmarshaller calling construct method.
-	 */
+	//XXX add serialization for this object including mrt field and unmarshaller that can reproduce password[] from mrz
 	protected String mrz;
 	
 	public MrzAuthObject() {

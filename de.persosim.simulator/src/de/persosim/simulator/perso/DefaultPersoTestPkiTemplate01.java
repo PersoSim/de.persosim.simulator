@@ -37,6 +37,15 @@ public class DefaultPersoTestPkiTemplate01 extends DefaultPersoTestPkiTemplate {
 	
 	@Override
 	protected void addAuxData() {
+		//FIXME SLS redundant data, all aux data can be parsed from MRZ, the default implementation should use 
+		// see redundancies in addEpassDatagroup1(), addAuthObjects(), addEidDg[1-5,8,10,11,18] maybee more
+		//
+		// suggestion build an implementation in DefaultPersonalization that
+		// extracts as much of the datagroups as possible from as few input as
+		// possible, this would reduce the risk of inconsistent configuration
+		// and signifficatnly decrease the need for duplicated code in overriden
+		// methods. 
+		
 		// Aux data
 		byte[] communityId = HexString.toByteArray("02760503150000"); // updated
 		

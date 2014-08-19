@@ -9,6 +9,8 @@ import de.persosim.simulator.test.globaltester.GtConstants;
 import de.persosim.simulator.test.globaltester.GtSuiteDescriptor;
 import de.persosim.simulator.test.globaltester.JobDescriptor;
 
+//FIXME SLS following comments apply to all new Persos (without having looked at them in detail)
+//FIXME SLS name of test class should be similar to that of the class under test
 public class TestPerso001Test extends GtDefaultPersoTest {
 
 	@Override
@@ -19,7 +21,8 @@ public class TestPerso001Test extends GtDefaultPersoTest {
 		
 		return persoCache;
 	}
-	
+
+	//FIXME SLS This Method is overidden in all ne testcases, why not introduce a common ancestor?
 	@Override
 	public Collection<JobDescriptor> getAllApplicableGtTests() {
 		Collection<JobDescriptor> retVal = 

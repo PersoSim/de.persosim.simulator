@@ -187,6 +187,7 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 	 * @return the MRZ used for personalization
 	 */
 	protected String getMrz() {
+		//FIXME SLS dupplicated code, reduce this method to getPassword and check the type of the returned object
 		Collection<CardObject> cardObjects = getPersonalization().getObjectTree().findChildren(new AuthObjectIdentifier(Tr03110.ID_MRZ));
 		
 		if(cardObjects.isEmpty()) {

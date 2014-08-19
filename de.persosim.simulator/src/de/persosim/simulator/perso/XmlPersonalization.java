@@ -80,10 +80,10 @@ public class XmlPersonalization implements Personalization {
 			File xmlFile = new File(fileName);
 			m.marshal(this, xmlFile);
 		} catch (PropertyException e) {
-			// TODO Auto-generated catch block
+			// FIXME SLS Auto-generated catch block
 			e.printStackTrace();
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
+			// FIXME SLS Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
