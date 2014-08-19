@@ -3,15 +3,11 @@ package de.persosim.simulator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.PrintStream;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
@@ -40,9 +36,8 @@ public class PersoSimTest extends PersoSimTestCase {
 	public static final byte[] EF_CS_CONTENT_1 = HexString.toByteArray("FF010203");
 	public static final byte[] EF_CS_CONTENT_2 = HexString.toByteArray("FF030201");
 	
-	//FIXME SLS ensure that these files are located somewhere that is ignored by git (e.g. tmp)
-	public static final String DUMMY_PERSONALIZATION_FILE_1 = "dummyPersonalization1.xml";
-	public static final String DUMMY_PERSONALIZATION_FILE_2 = "dummyPersonalization2.xml";
+	public static final String DUMMY_PERSONALIZATION_FILE_1 = "tmp/dummyPersonalization1.xml";
+	public static final String DUMMY_PERSONALIZATION_FILE_2 = "tmp/dummyPersonalization2.xml";
 	
 	@Before
 	public void setUp() {
@@ -159,35 +154,38 @@ public class PersoSimTest extends PersoSimTestCase {
 	/**
 	 * Positive test case: test start of socket simulator.
 	 * @throws InterruptedException 
+	 * @throws UnsupportedEncodingException 
 	 */
 	@Test
-	public void testStartSimulator() throws InterruptedException {
+	public void testStartSimulator() throws InterruptedException, UnsupportedEncodingException {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
-		Deencapsulation.invoke(persoSim, "startSimulator");
+		String responseSelect1 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
 		
-		SocketSimulator socketSim = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
+		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		assertTrue(socketSim.isRunning());
+		String responseSelect2 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
+		assertEquals(responseSelect2, "9000");
+		assertTrue(responseSelect1 != responseSelect2);
 	}
 	
 	/**
 	 * Positive test case: test stop of socket simulator.
 	 * @throws InterruptedException 
+	 * @throws UnsupportedEncodingException 
 	 */
 	@Test
-	public void testStopSimulator() throws InterruptedException {
+	public void testStopSimulator() throws InterruptedException, UnsupportedEncodingException {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
-		Deencapsulation.invoke(persoSim, "startSimulator");
+		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		SocketSimulator socketSim = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
+		String responseSelect1 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
+		assertEquals(responseSelect1, "9000");
 		
-		assertTrue(socketSim.isRunning());
-		Deencapsulation.invoke(persoSim, "stopSimulator");
-		
-		assertFalse(socketSim.isRunning());
-		assertNull(Deencapsulation.getField(persoSim, "simulator"));
+		persoSim.executeUserCommands(PersoSim.CMD_STOP);
+		String responseSelect2 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
+		assertTrue(responseSelect1 != responseSelect2);
 	}
 	
 	/**
@@ -282,25 +280,23 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws IllegalArgumentException 
 	 * @throws FileNotFoundException 
 	 * @throws JAXBException 
+	 * @throws UnsupportedEncodingException 
 	 */
 	@Test
-	public void testExecuteUserCommandsCmdLoadPersonalizationValidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException, JAXBException {
+	public void testExecuteUserCommandsCmdLoadPersonalizationValidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException, JAXBException, UnsupportedEncodingException {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
-		Deencapsulation.invoke(persoSim, "startSimulator");
+		persoSim.executeUserCommands(PersoSim.CMD_START);
+		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_2);
 		
-		Deencapsulation.invoke(persoSim, "executeUserCommands", new Object[]{new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_2}});
-		
-		String selectApdu = "00A4020C02011C"; 
-		String responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu);
+		String responseSelect = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
 		assertEquals(responseSelect, "9000");
 		
-		String readBinaryApdu = "00B0000004";
-		String responseReadBinary = Deencapsulation.invoke(persoSim, "exchangeApdu", readBinaryApdu);
+		String responseReadBinary = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00B0000004");
 		
-		String expected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_2, 4)).toUpperCase();
+		String responseReadBinaryExpected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_2, 4)).toUpperCase();
 		
-		assertEquals(expected, responseReadBinary.substring(0, responseReadBinary.length() - 4).toUpperCase());
+		assertEquals(responseReadBinaryExpected, responseReadBinary.substring(0, responseReadBinary.length() - 4).toUpperCase());
 	}
 	
 	/**
@@ -308,18 +304,17 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws InterruptedException 
 	 * @throws IllegalArgumentException 
 	 * @throws FileNotFoundException 
+	 * @throws UnsupportedEncodingException 
 	 */
 	@Test
-	public void testExecuteUserCommandsCmdLoadPersonalizationInvalidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
+	public void testExecuteUserCommandsCmdLoadPersonalizationInvalidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException, UnsupportedEncodingException {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
-		Deencapsulation.invoke(persoSim, "startSimulator");
+		persoSim.executeUserCommands(PersoSim.CMD_START);
+		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, "non-existing.file");
 		
-		Deencapsulation.invoke(persoSim, "cmdLoadPersonalization", new Object[]{new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, "non-existing.file"}});
-		
-		SocketSimulator socketSimPost = (SocketSimulator) Deencapsulation.getField(persoSim, "simulator");
-		
-		assertNull(socketSimPost);              // SocketSimulator has been stopped and set to null
+		String responseSelect = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
+		assertFalse(responseSelect.equals("9000"));
 	}
 	
 	/**
@@ -332,20 +327,19 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testExecuteUserCommandsCmdSetPortNo() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
-		Deencapsulation.invoke(persoSim, "startSimulator");
+		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		String hostPre = Deencapsulation.getField(persoSim, "simHost");
-		int portPre = Deencapsulation.getField(persoSim, "simPort");
+		int portPre = PersoSim.DEFAULT_SIM_PORT;
 		
 		// check that the simulator is actually running on the advertised port
 		String selectApdu = "00A4020C02011C"; 
-		String responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu, hostPre, portPre);
+		String responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu, PersoSim.DEFAULT_SIM_HOST, portPre);
 		assertEquals(responseSelect, "9000");
 		
 		int portPostExpected = portPre + 1;
-		Deencapsulation.invoke(persoSim, "executeUserCommands", new Object[]{new String[]{PersoSim.CMD_SET_PORT, (new Integer (portPostExpected)).toString()}});
+		persoSim.executeUserCommands(PersoSim.CMD_SET_PORT, (new Integer (portPostExpected)).toString());
 		
-		responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu, hostPre, portPostExpected);
+		responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu, PersoSim.DEFAULT_SIM_HOST, portPostExpected);
 		assertEquals(responseSelect, "9000");
 	}
 
