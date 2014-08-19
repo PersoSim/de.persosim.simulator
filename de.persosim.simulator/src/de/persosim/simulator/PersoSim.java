@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.security.Security;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,12 +51,12 @@ public class PersoSim implements Runnable {
 	public static final String CMD_STOP                       = "stop";
 	public static final String CMD_EXIT                       = "exit";
 	public static final String CMD_SET_PORT                   = "setport";
-	public static final String CMD_SET_PORT_SHORT             = "-port";
+	public static final String ARG_SET_PORT                   = "-port";
 	public static final String CMD_LOAD_PERSONALIZATION       = "loadperso";
-	public static final String CMD_LOAD_PERSONALIZATION_SHORT = "-perso";
+	public static final String ARG_LOAD_PERSONALIZATION       = "-perso";
 	public static final String CMD_SEND_APDU                  = "sendapdu";
 	public static final String CMD_HELP                       = "help";
-	public static final String CMD_HELP_SHORT                 = "-h";
+	public static final String ARG_HELP                       = "-h";
 	public static final String CMD_CONSOLE_ONLY               = "--consoleOnly";
 	
 	private String simHost = "localhost"; // default
@@ -343,11 +344,10 @@ public class PersoSim implements Runnable {
 	 * This method prints the help menu to the command line.
 	 */
 	private void printHelpArgs() {
-		//FIXME SLS why are these constants called CMD_xxx_SHORT instead of ARG_xxx?
 		System.out.println("Available commands:");
-		System.out.println(CMD_LOAD_PERSONALIZATION_SHORT + " <file name>");
-		System.out.println(CMD_SET_PORT_SHORT + " <port number>");
-		System.out.println(CMD_HELP_SHORT);
+		System.out.println(ARG_LOAD_PERSONALIZATION + " <file name>");
+		System.out.println(ARG_SET_PORT + " <port number>");
+		System.out.println(ARG_HELP);
 	}
 	
 	/**
@@ -448,8 +448,7 @@ public class PersoSim implements Runnable {
 	 * @param args the parsed commands and arguments
 	 */
 	private void executeUserCommands(String[] args) {
-		//FIXME SLS why not simply ignore an empty command?
-		if(args.length == 0) {throw new NullPointerException("args must not be empty");}
+		if((args == null) || (args.length == 0)) {return;}
 		
 		String currentArgument = args[0];
 		switch (currentArgument) {
@@ -489,7 +488,7 @@ public class PersoSim implements Runnable {
 	 * @param args the parsed commands and arguments
 	 */
 	public void handleArgs(String[] args) {
-		if(args.length == 0) {throw new NullPointerException("args must not be empty");} //FIXME SLS why not? aren't defaults ok?
+		if((args == null) || (args.length == 0)) {return;}
 		
 		String[] currentArgs = args;
 		int noOfUnprocessedArgs = args.length;
@@ -497,13 +496,13 @@ public class PersoSim implements Runnable {
 		while(noOfUnprocessedArgs > 0) {
 			String currentArgument = currentArgs[0];
 			switch (currentArgument) {
-		        case CMD_LOAD_PERSONALIZATION_SHORT:
+		        case ARG_LOAD_PERSONALIZATION:
 		        	noOfUnprocessedArgs -= cmdLoadPersonalization(currentArgs);
 		        	break;
-		        case CMD_SET_PORT_SHORT:
+		        case ARG_SET_PORT:
 		        	noOfUnprocessedArgs -= cmdSetPortNo(currentArgs);
 		        	break;
-		        case CMD_HELP_SHORT:
+		        case ARG_HELP:
 	            	printHelpArgs();
 					break;
 		        case CMD_CONSOLE_ONLY:
@@ -517,12 +516,7 @@ public class PersoSim implements Runnable {
 		            break;
 			}
 			
-			String[] updatedArgs = new String[noOfUnprocessedArgs];
-			//FIXME SLS use Arrays.copyOF or copyOfRange instead of manual loop
-			for(int i = 0; i < noOfUnprocessedArgs; i++) {
-				updatedArgs[i] = currentArgs[currentArgs.length - noOfUnprocessedArgs + i];
-			}
-			currentArgs = updatedArgs;
+			currentArgs = Arrays.copyOfRange(currentArgs, currentArgs.length - noOfUnprocessedArgs, currentArgs.length);
 			
 		}
 		

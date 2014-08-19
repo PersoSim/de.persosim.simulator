@@ -113,7 +113,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator() throws InterruptedException {
-		persoSim = new PersoSim(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION_SHORT, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -128,7 +128,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStopSimulator() throws InterruptedException {
-		persoSim = new PersoSim(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION_SHORT, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -236,7 +236,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdLoadPersonalizationValidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException, JAXBException {
-		persoSim = new PersoSim(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION_SHORT, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -262,7 +262,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdLoadPersonalizationInvalidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
-		persoSim = new PersoSim(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION_SHORT, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
@@ -281,7 +281,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdSetPortNo() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
-		persoSim = new PersoSim(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION_SHORT, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		
