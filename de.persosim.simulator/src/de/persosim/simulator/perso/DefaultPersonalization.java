@@ -126,46 +126,59 @@ public abstract class DefaultPersonalization extends XmlPersonalization implemen
 			addEfCardSecurity();
 			addEfChipSecurity();
 
-			// eID application
-			DedicatedFile eIdAppl = new DedicatedFile(null,
-					new DedicatedFileIdentifier(HexString
-							.toByteArray("E8 07 04 00 7F 00 07 03 02")));
-			mf.addChild(eIdAppl);
-			
-			addEidDg1(eIdAppl);
-			addEidDg2(eIdAppl);
-			addEidDg3(eIdAppl);
-			addEidDg4(eIdAppl);
-			addEidDg5(eIdAppl);
-			addEidDg6(eIdAppl);
-			addEidDg7(eIdAppl);
-			addEidDg8(eIdAppl);
-			addEidDg9(eIdAppl);
-			addEidDg10(eIdAppl);
-			addEidDg11(eIdAppl);
-			addEidDg12(eIdAppl);
-			addEidDg13(eIdAppl);
-			addEidDg17(eIdAppl);
-			addEidDg18(eIdAppl);
-			addEidDg19(eIdAppl);
-			addEidDg20(eIdAppl);
-			addEidDg21(eIdAppl);
-
-			// ePass application
-			DedicatedFile ePassAppl = new DedicatedFile(null,
-					new DedicatedFileIdentifier(
-							HexString.toByteArray("A0 00 00 02 47 10 01")));
-			mf.addChild(ePassAppl);
-			addEpassDatagroup1(ePassAppl);
-			addEpassDatagroup2(ePassAppl);
-			addEpassDatagroup3(ePassAppl);
-			addEpassDatagroup4(ePassAppl);
+			addEidApplication();
+			addEpassApplication();
 
 		} catch (CertificateNotParseableException | NoSuchAlgorithmException
 				| NoSuchProviderException | IOException e) {
 			// don't care for the moment
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Add the eID application to the card and fill it with content
+	 */
+	protected void addEidApplication() {
+		// eID application
+		DedicatedFile eIdAppl = new DedicatedFile(null,
+				new DedicatedFileIdentifier(HexString
+						.toByteArray("E8 07 04 00 7F 00 07 03 02")));
+		mf.addChild(eIdAppl);
+		
+		addEidDg1(eIdAppl);
+		addEidDg2(eIdAppl);
+		addEidDg3(eIdAppl);
+		addEidDg4(eIdAppl);
+		addEidDg5(eIdAppl);
+		addEidDg6(eIdAppl);
+		addEidDg7(eIdAppl);
+		addEidDg8(eIdAppl);
+		addEidDg9(eIdAppl);
+		addEidDg10(eIdAppl);
+		addEidDg11(eIdAppl);
+		addEidDg12(eIdAppl);
+		addEidDg13(eIdAppl);
+		addEidDg17(eIdAppl);
+		addEidDg18(eIdAppl);
+		addEidDg19(eIdAppl);
+		addEidDg20(eIdAppl);
+		addEidDg21(eIdAppl);
+	}
+
+	/**
+	 * Add the ePassport application to the card and fill it with content
+	 */
+	protected void addEpassApplication() {
+		// ePass application
+		DedicatedFile ePassAppl = new DedicatedFile(null,
+				new DedicatedFileIdentifier(
+						HexString.toByteArray("A0 00 00 02 47 10 01")));
+		mf.addChild(ePassAppl);
+		addEpassDatagroup1(ePassAppl);
+		addEpassDatagroup2(ePassAppl);
+		addEpassDatagroup3(ePassAppl);
+		addEpassDatagroup4(ePassAppl);
 	}
 
 	/**
