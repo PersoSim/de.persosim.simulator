@@ -79,7 +79,7 @@ public class PersoSimTest extends PersoSimTestCase {
 			}
 		};
 		
-		persoSim = new PersoSim();
+		persoSim = new PersoSim(null);
 		
 		Deencapsulation.invoke(persoSim, "startSimulator");
 		

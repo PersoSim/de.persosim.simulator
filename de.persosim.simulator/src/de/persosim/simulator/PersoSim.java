@@ -60,18 +60,12 @@ public class PersoSim implements Runnable {
 	public static final String CMD_HELP_SHORT                 = "-h";
 	public static final String CMD_CONSOLE_ONLY               = "--consoleOnly";
 	
-	//XXX adjust host/port (e.g. from command line args)
 	private String simHost = "localhost"; // default
 	private int simPort = 9876; // default
 	private boolean executeUserCommands = true;
 	
-	//FIXME SLS what is this constructor used for?
-	public PersoSim() {
-		Security.addProvider(new BouncyCastleProvider());
-	}
-	
 	public PersoSim(String[] args) {
-		this();
+		Security.addProvider(new BouncyCastleProvider());
 		
 		try {
 			handleArgs(args);
