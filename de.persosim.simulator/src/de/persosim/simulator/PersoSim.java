@@ -59,8 +59,10 @@ public class PersoSim implements Runnable {
 	public static final String ARG_HELP                       = "-h";
 	public static final String CMD_CONSOLE_ONLY               = "--consoleOnly";
 	
-	private String simHost = "localhost"; // default
-	private int simPort = 9876; // default
+	public static final int DEFAULT_SIM_PORT = 9876;
+	public static final String DEFAULT_SIM_HOST = "localhost";
+	
+	private int simPort = DEFAULT_SIM_PORT; // default
 	private boolean executeUserCommands = true;
 	
 	public PersoSim(String[] args) {
@@ -276,7 +278,7 @@ public class PersoSim implements Runnable {
 	 * @return
 	 */
 	private String exchangeApdu(String cmdApdu) {
-		return exchangeApdu(cmdApdu, simHost, simPort);
+		return exchangeApdu(cmdApdu, DEFAULT_SIM_HOST, simPort);
 	}
 
 	/**
@@ -447,7 +449,7 @@ public class PersoSim implements Runnable {
 	 * This method implements the execution of commands initiated by user interaction.
 	 * @param args the parsed commands and arguments
 	 */
-	private void executeUserCommands(String[] args) {
+	public void executeUserCommands(String... args) {
 		if((args == null) || (args.length == 0)) {return;}
 		
 		String currentArgument = args[0];
@@ -487,7 +489,7 @@ public class PersoSim implements Runnable {
 	 * This method implements the execution of commands initiated by command line arguments.
 	 * @param args the parsed commands and arguments
 	 */
-	public void handleArgs(String[] args) {
+	public void handleArgs(String... args) {
 		if((args == null) || (args.length == 0)) {return;}
 		
 		String[] currentArgs = args;
