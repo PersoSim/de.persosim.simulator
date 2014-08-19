@@ -175,7 +175,10 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 	}
 
 	/**
-	 * Return the SignerIdentifier to be used within the SignerInfo returned by {@link #getSignerInfo()}
+	 * Return the SignerIdentifier to be used within the SignerInfo returned by {@link #getSignerInfo()}.
+	 * <p/>
+	 * The provided identifier is extracted from the certificate provided by {@link #getCertificate()}.
+	 * If more than one certificate is used you need to override {@link #getSignerInfos()} anyhow and can safely ignore this method
 	 * @return
 	 */
 	protected TlvDataObject getSid() {
