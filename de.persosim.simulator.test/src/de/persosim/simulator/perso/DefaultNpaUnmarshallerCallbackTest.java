@@ -140,7 +140,13 @@ public class DefaultNpaUnmarshallerCallbackTest extends PersoSimTestCase {
 				mockedProtocol1.getSecInfos(SecInfoPublicity.AUTHENTICATED, masterFile);
 				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("3103010101")));
 				
+				mockedProtocol1.getSecInfos(SecInfoPublicity.PRIVILEGED, masterFile);
+				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("3103010101")));
+				
 				mockedProtocol2.getSecInfos(SecInfoPublicity.AUTHENTICATED, masterFile);
+				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("3103010102")));
+				
+				mockedProtocol2.getSecInfos(SecInfoPublicity.PRIVILEGED, masterFile);
 				result = Arrays.asList(new ConstructedTlvDataObject(HexString.toByteArray("3103010102")), new ConstructedTlvDataObject(HexString.toByteArray("3103010103")));
 				
 			}
@@ -149,7 +155,7 @@ public class DefaultNpaUnmarshallerCallbackTest extends PersoSimTestCase {
 		new DefaultNpaUnmarshallerCallback().afterUnmarshall(mockedPerso);
 		
 		//check content of created EF.ChipSecurity
-		Collection<CardObject> files = masterFile.findChildren(new FileIdentifier(0x011D)); //FIXME wrong FID here, use 0x011B instead, and fix according issues
+		Collection<CardObject> files = masterFile.findChildren(new FileIdentifier(0x011B));
 		assertEquals(1, files.size());
 		
 		ElementaryFile efChipSecurity = (ElementaryFile) files.iterator().next();
