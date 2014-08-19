@@ -33,7 +33,7 @@ import de.persosim.simulator.utils.HexString;
  * @author slutters
  *
  */
-public class DefaultPersoTestPkiTemplate11 extends DefaultPersoTestPki {
+public class DefaultPersoTestPkiTemplate11 extends DefaultPersoTestPkiTemplate {
 	
 	@Override
 	protected void addAuxData() {
