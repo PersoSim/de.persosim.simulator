@@ -1,9 +1,9 @@
 package de.persosim.simulator.perso;
 
+import static de.persosim.simulator.utils.PersoSimLogger.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,10 +25,13 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Test;
 
+import de.persosim.simulator.test.PersoSimTestCase;
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.utils.HexString;
 
-public abstract class SecInfoCmsBuilderTest {
+
+public abstract class SecInfoCmsBuilderTest extends PersoSimTestCase {
 	
 	//FIXME add tests for DefaultSecInfoCmsBuilder
 
@@ -39,10 +42,14 @@ public abstract class SecInfoCmsBuilderTest {
 	protected abstract SecInfoCmsBuilder getNewTestObject();
 	
 	@Test
-	public void testBuildSignedData() {
+	public void testBuildSignedData() throws Exception {
 		SecInfoCmsBuilder objectUnderTest = getNewTestObject();
-		assertNotNull(objectUnderTest);
-		fail("Not yet implemented");
+
+		byte[] secInfosBytes = HexString.toByteArray("310F310301010131030101023103010103");
+		
+		ConstructedTlvDataObject secInfosTlv = new ConstructedTlvDataObject(secInfosBytes);
+		
+		checkSignedData(objectUnderTest.buildSignedData(secInfosTlv).toByteArray(), secInfosBytes);
 	}
 
 	public static boolean verifySignature() {
@@ -51,9 +58,10 @@ public abstract class SecInfoCmsBuilderTest {
 	}
 
 	public static X509Certificate getCertificate(SignedData cms, SignerInfo sigInfo) throws GeneralSecurityException {
-		
 		X500Name sigIssuerName = sigInfo.getIssuerAndSerialNumber().getName();
 		X500Principal signerInfoIssuerPrincipal = new X500Principal(sigIssuerName.toString());
+		
+		log(SecInfoCmsBuilderTest.class, "Searching certificate for \"" + signerInfoIssuerPrincipal + "\"", DEBUG);
 		
 		ASN1Encodable[] certificates = cms.getCertificates().toArray();
 		CertificateFactory certFactory = CertificateFactory.getInstance("X.509", BouncyCastleProvider.PROVIDER_NAME);
@@ -68,8 +76,10 @@ public abstract class SecInfoCmsBuilderTest {
 				X500Principal certificateIssuerPrincipal = cert.getIssuerX500Principal();
 				
 				if (signerInfoIssuerPrincipal.equals(certificateIssuerPrincipal)) {
+					log(SecInfoCmsBuilderTest.class, "Found certificate \"" + certificateIssuerPrincipal + "\", does match.", DEBUG);
 					return cert;
 				}
+				log(SecInfoCmsBuilderTest.class, "Found certificate \"" + certificateIssuerPrincipal + "\", does NOT match.", DEBUG);
 				
 			} catch (IOException | CertificateException e) {
 				//this certificate can not be used
