@@ -59,10 +59,6 @@ public class TlvPath extends ArrayList<TlvTagIdentifier> {
 	 * @param tagIdentifiers a list of {@link TlvTagIdentifier} objects
 	 */
 	public TlvPath(TlvTagIdentifier... tagIdentifiers) {
-		super();
-		
-		if ( tagIdentifiers == null ) {throw new IllegalArgumentException( "path must not be empty" );} //FIXME can this be removed?
-		
 		for(int i = 0; i < tagIdentifiers.length; i++) {
 			this.add(tagIdentifiers[i]);
 		}
