@@ -66,12 +66,14 @@ public class PersoSim implements Runnable {
 	
 	private int simPort = DEFAULT_SIM_PORT; // default
 	private boolean executeUserCommands = false;
+	private boolean processingCommandLineArguments = false;
 	
 	public PersoSim(String... args) {
 		Security.addProvider(new BouncyCastleProvider());
 		
 		try {
 			handleArgs(args);
+			processingCommandLineArguments = false;
 		} catch (IllegalArgumentException e) {
 			System.out.println("simulation aborted, reason is: " + e.getMessage());
 		}
@@ -476,10 +478,10 @@ public class PersoSim implements Runnable {
 	    			args.remove(0);
 	    			args.remove(0);
 	    			
-	    			if(executeUserCommands) {
-	    				return restartSimulator();
-	    			} else{
+	    			if(processingCommandLineArguments) {
 	    				return true;
+	    			} else{
+	    				return restartSimulator();
 	    			}
 	    		} catch(FileNotFoundException | JAXBException e) {
 	    			System.out.println("unable to set personalization, reason is: " + e.getMessage());
@@ -511,7 +513,7 @@ public class PersoSim implements Runnable {
 	    			args.remove(0);
 	    			args.remove(0);
 	    			
-	    			if(executeUserCommands) {
+	    			if(processingCommandLineArguments) {
 	    				return true;
 	    			} else{
 	    				return restartSimulator();
@@ -577,10 +579,10 @@ public class PersoSim implements Runnable {
 			if(cmd.equals(CMD_HELP) || cmd.equals(ARG_HELP)) {
 				args.remove(0);
 				
-				if(executeUserCommands) {
-					return printHelpCmd();
-				} else{
+				if(processingCommandLineArguments) {
 					return printHelpArgs();
+				} else{
+					return printHelpCmd();
 				}
 			}
 		}
@@ -613,8 +615,10 @@ public class PersoSim implements Runnable {
 			}
 		}
 		
-		int noOfArgsWhenChekedLast = currentArgs.size();
+		int noOfArgsWhenCheckedLast;
 		while(currentArgs.size() > 0) {
+			noOfArgsWhenCheckedLast = currentArgs.size();
+			
 			cmdLoadPersonalization(currentArgs);
 			cmdSetPortNo(currentArgs);
 			cmdSendApdu(currentArgs);
@@ -624,7 +628,7 @@ public class PersoSim implements Runnable {
 			cmdExitSimulator(currentArgs);
 			cmdHelp(currentArgs);
 			
-			if(noOfArgsWhenChekedLast == currentArgs.size()) {
+			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
 				//first command in queue has not been processed
 				String currentArgument = currentArgs.get(0);
 				System.out.println("unrecognized argument \"" + currentArgument + "\" will be ignored");
@@ -641,9 +645,17 @@ public class PersoSim implements Runnable {
 	public void handleArgs(String... args) {
 		if((args == null) || (args.length == 0)) {return;}
 		
+		processingCommandLineArguments = true;
+		
 		List<String> currentArgs = Arrays.asList(args);
 		// the list returned by Arrays.asList() does not support optional but required remove operation
 		currentArgs = new ArrayList<String>(currentArgs);
+		
+		for(int i = currentArgs.size() - 1; i >= 0; i--) {
+			if(currentArgs.get(i) == null) {
+				currentArgs.remove(i);
+			}
+		}
 		
 		while(currentArgs.size() > 0) {
 			String currentArgument = currentArgs.get(0);
