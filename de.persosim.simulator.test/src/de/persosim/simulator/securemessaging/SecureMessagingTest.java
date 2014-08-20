@@ -232,7 +232,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 		// extract/check ResponseApdu
 		ResponseApdu respApdu = pData.getResponseApdu();
 		assertNotNull("responseApdu is empty", respApdu);
-		assertFalse("DO 87 present", ((TlvDataObjectContainer) respApdu.getData()).containsTagField(new TlvTag((byte)0x87)));
+		assertFalse("DO 87 present", ((TlvDataObjectContainer) respApdu.getData()).containsTlvDataObject(new TlvTag((byte)0x87)));
 	}
 	
 	/**
@@ -270,7 +270,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 		// extract/check ResponseApdu
 		ResponseApdu respApdu = pData.getResponseApdu();
 		assertNotNull("responseApdu is empty", respApdu);
-		assertFalse("DO 87 present", ((TlvDataObjectContainer) respApdu.getData()).containsTagField(new TlvTag((byte)0x87)));
+		assertFalse("DO 87 present", ((TlvDataObjectContainer) respApdu.getData()).containsTlvDataObject(new TlvTag((byte)0x87)));
 	}
 
 	/**

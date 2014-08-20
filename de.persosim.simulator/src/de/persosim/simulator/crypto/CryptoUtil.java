@@ -317,7 +317,7 @@ public class CryptoUtil {
 	 * @throws GeneralSecurityException
 	 */
 	public static ECPublicKey parsePublicKeyEc(ConstructedTlvDataObject publicKeyData, ECParameterSpec paramSpec) throws GeneralSecurityException {
-		TlvDataObject publicPointData = publicKeyData.getTagField(TlvConstants.TAG_86);
+		TlvDataObject publicPointData = publicKeyData.getTlvDataObject(TlvConstants.TAG_86);
 		ECPoint publicPoint = DomainParameterSetEcdh
 				.reconstructPoint(publicPointData.getValueField());
 
@@ -334,12 +334,12 @@ public class CryptoUtil {
 	 * @throws GeneralSecurityException
 	 */
 	public static ECParameterSpec parseParameterSpecEc(ConstructedTlvDataObject publicKeyData){
-		TlvDataObject modulusData = publicKeyData.getTagField(TlvConstants.TAG_81);
-		TlvDataObject firstCoefficientData = publicKeyData.getTagField(TlvConstants.TAG_82);
-		TlvDataObject secondCoefficientData = publicKeyData.getTagField(TlvConstants.TAG_83);
-		TlvDataObject basePointData = publicKeyData.getTagField(TlvConstants.TAG_84);
-		TlvDataObject orderOfBasePointData = publicKeyData.getTagField(TlvConstants.TAG_85);
-		TlvDataObject cofactorData = publicKeyData.getTagField(TlvConstants.TAG_87);
+		TlvDataObject modulusData = publicKeyData.getTlvDataObject(TlvConstants.TAG_81);
+		TlvDataObject firstCoefficientData = publicKeyData.getTlvDataObject(TlvConstants.TAG_82);
+		TlvDataObject secondCoefficientData = publicKeyData.getTlvDataObject(TlvConstants.TAG_83);
+		TlvDataObject basePointData = publicKeyData.getTlvDataObject(TlvConstants.TAG_84);
+		TlvDataObject orderOfBasePointData = publicKeyData.getTlvDataObject(TlvConstants.TAG_85);
+		TlvDataObject cofactorData = publicKeyData.getTlvDataObject(TlvConstants.TAG_87);
 
 		ECField field = new ECFieldFp(new BigInteger(1,
 				modulusData.getValueField()));

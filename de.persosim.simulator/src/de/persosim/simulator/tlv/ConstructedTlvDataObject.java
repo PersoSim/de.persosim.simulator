@@ -195,23 +195,23 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	/*--------------------------------------------------------------------------------*/
 
 	@Override
-	public TlvDataObject getTagField(TlvPath path) {
-		return tlvDataObjectContainer.getTagField(path);
+	public TlvDataObject getTlvDataObject(TlvPath path) {
+		return tlvDataObjectContainer.getTlvDataObject(path);
 	}
 
 	@Override
-	public TlvDataObject getTagField(TlvTag tlvTag) {
-		return tlvDataObjectContainer.getTagField(tlvTag);
+	public TlvDataObject getTlvDataObject(TlvTag tlvTag) {
+		return tlvDataObjectContainer.getTlvDataObject(tlvTag);
 	}
 	
 	@Override
-	public TlvDataObject getTagField(TlvPath path, int index) {
-		return tlvDataObjectContainer.getTagField(path, index);
+	public TlvDataObject getTlvDataObject(TlvPath path, int index) {
+		return tlvDataObjectContainer.getTlvDataObject(path, index);
 	}
 
 	@Override
-	public boolean containsTagField(TlvTag tagField) {
-		return tlvDataObjectContainer.containsTagField(tagField);
+	public boolean containsTlvDataObject(TlvTag tagField) {
+		return tlvDataObjectContainer.containsTlvDataObject(tagField);
 	}
 	
 	/*--------------------------------------------------------------------------------*/

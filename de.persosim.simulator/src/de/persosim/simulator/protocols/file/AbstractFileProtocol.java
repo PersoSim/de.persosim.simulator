@@ -220,7 +220,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 	 */
 	private TlvDataObject getDDO(CommandApdu apdu) throws TagNotFoundException{
 		for (byte tag : ODDINS_COMMAND_DDO_TAGS){
-			TlvDataObject result = apdu.getCommandDataObjectContainer().getTagField(new TlvTag(tag)); 
+			TlvDataObject result = apdu.getCommandDataObjectContainer().getTlvDataObject(new TlvTag(tag)); 
 			if (result != null){
 				return result;
 			}
@@ -249,7 +249,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 	 * @return the value to be used as file offset
 	 */
 	private int getOffset(TlvDataObjectContainer tlv) {
-		TlvDataObject offset = tlv.getTagField(new TlvTag(ODDINS_COMMAND_TAG));
+		TlvDataObject offset = tlv.getTlvDataObject(new TlvTag(ODDINS_COMMAND_TAG));
 		return Utils.getIntFromUnsignedByteArray(offset.getValueField());
 	}
 

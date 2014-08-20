@@ -112,7 +112,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 
 	
 	@Override
-	public TlvDataObject getTagField(TlvPath path, int index) {
+	public TlvDataObject getTlvDataObject(TlvPath path, int index) {
 		TlvTag currentTlvTag;
 		
 		if((path == null) || (path.size() == 0)) {throw new NullPointerException();}
@@ -127,7 +127,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 					return tlvDataObject;
 				} else{
 					if(tlvDataObject.isConstructedTLVObject()) {
-						return ((ConstructedTlvDataObject) tlvDataObject).getTagField(path, index + 1);
+						return ((ConstructedTlvDataObject) tlvDataObject).getTlvDataObject(path, index + 1);
 					} else{
 						return null;
 					}
@@ -139,12 +139,12 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	}
 	
 	@Override
-	public TlvDataObject getTagField(TlvPath path) {
-		return this.getTagField(path, 0);
+	public TlvDataObject getTlvDataObject(TlvPath path) {
+		return this.getTlvDataObject(path, 0);
 	}
 	
 	@Override
-	public TlvDataObject getTagField(TlvTag tlvTag) {
+	public TlvDataObject getTlvDataObject(TlvTag tlvTag) {
 		if(tlvTag == null) {throw new NullPointerException("tag must not be null");}
 		
 		for(TlvDataObject tlvDataObject : this.tlvObjects) {
@@ -157,8 +157,8 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	}
 	
 	@Override
-	public boolean containsTagField(TlvTag tagField) {
-		return this.getTagField(tagField) != null;
+	public boolean containsTlvDataObject(TlvTag tagField) {
+		return this.getTlvDataObject(tagField) != null;
 	}
 	
 	@Override
@@ -232,7 +232,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 		TlvDataObject supposedParent;
 		ConstructedTlvDataObject actualParent;
 		
-		supposedParent = this.getTagField(path);
+		supposedParent = this.getTlvDataObject(path);
 		
 		if((supposedParent != null) && (supposedParent.isConstructedTLVObject())) {
 			actualParent = (ConstructedTlvDataObject) supposedParent;
@@ -259,7 +259,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 			TlvPath pathToParent = path.clone();
 			pathToParent.remove(pathToParent.size() - 1);
 			
-			TlvDataObject supposedParent = this.getTagField(pathToParent);
+			TlvDataObject supposedParent = this.getTlvDataObject(pathToParent);
 			
 			if((supposedParent != null) && (supposedParent.isConstructedTLVObject())) {
 				ConstructedTlvDataObject actualParent = (ConstructedTlvDataObject) supposedParent;

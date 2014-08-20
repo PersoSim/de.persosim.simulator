@@ -18,7 +18,7 @@ public interface TlvDataStructure extends Iterable<TlvDataObject> {
 	 * @param index the current position within the path
 	 * @return the TLV data object at the specified path, null otherwise
 	 */
-	public TlvDataObject getTagField(TlvPath path, int index);
+	public TlvDataObject getTlvDataObject(TlvPath path, int index);
 	
 	/**
 	 * Returns the TLV data object at the specified path.
@@ -26,21 +26,21 @@ public interface TlvDataStructure extends Iterable<TlvDataObject> {
 	 * @param path the path of the TLV data object, including the objects tag itself, not including the starting object
 	 * @return the TLV data object at the specified path, null otherwise
 	 */
-	public TlvDataObject getTagField(TlvPath path);
+	public TlvDataObject getTlvDataObject(TlvPath path);
 	
 	/**
 	 * Returns the TLV data object identified by the provided tag.
 	 * @param tlvTag the tag used for identification
 	 * @return the TLV data object identified by the provided tag, null otherwise
 	 */
-	public TlvDataObject getTagField(TlvTag tlvTag);
+	public TlvDataObject getTlvDataObject(TlvTag tlvTag);
 	
 	/**
 	 * Returns whether this data structure contains a TLV data object identified by the provided tag.
 	 * @param tlvTag the tag used for identification
 	 * @return whether this data structure contains a TLV data object identified by the provided tag
 	 */
-	public boolean containsTagField(TlvTag tagField);
+	public boolean containsTlvDataObject(TlvTag tagField);
 	
 	/*--------------------------------------------------------------------------------*/
 	
