@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 import javax.xml.bind.JAXBException;
 
-import mockit.Deencapsulation; //FIXME SLS why is this import needed at all
+import mockit.Deencapsulation;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
@@ -63,7 +63,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	public static String sendCommand(PersoSim persoSimInstance, String... args) throws UnsupportedEncodingException {
 		PrintStream	origOut	= System.out;
-		PrintStream	origErr	= System.err;
 		
 		ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
 		PrintStream	stdout = new PrintStream(baos1);
@@ -91,7 +90,6 @@ public class PersoSimTest extends PersoSimTestCase {
 		}
 		
 		System.setOut(origOut);
-		System.setErr(origErr);
 		
 		return responseSelect;
 	}
@@ -99,6 +97,15 @@ public class PersoSimTest extends PersoSimTestCase {
 	//FIXME SLS missing test: launch PersoSimConsole, hit enter => this produces a NPE and shouldn't
 	//FIXME SLS missing test: launch PersoSimConsole, type exit, hit enter => this produces a list of available commands and shouldn't
 	//FIXME SLS missing test: launch PersoSimConsole, type an unknown command, hit enter => this should produces a list of available commands (along the existing line that the given command is unknown) and doesn't
+	
+	/**
+	 * Positive test case: check behavior of PersoSim constructor when called with empty argument.
+	 */
+	@Test
+	public void testPersoSimConstructorEmptyArgument() {
+		persoSim = new PersoSim(new String[]{});
+		assertNotNull(persoSim);
+	}
 	
 	/**
 	 * Positive test case: test implicit setting of a default personalization if no other personalization is explicitly set.
