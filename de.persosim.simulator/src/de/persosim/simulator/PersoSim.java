@@ -28,10 +28,9 @@ import de.persosim.simulator.perso.Personalization;
  * This class provides access to and control of the actual simulator. It can be
  * used to start, stop and configure it. The simulator may be configured by
  * providing either command line arguments during start-up or user initiated
- * commands at runtime. Currently both options only allow for a single command
- * to be executed parameterized by at most one command argument. As all
- * parameters vital for the operation of the simulator are implicitly set to
- * default values by fall-through, no explicit configuration is required.
+ * commands at runtime. As all parameters vital for the operation of the
+ * simulator are implicitly set to default values by fall-through, no explicit
+ * configuration is required.
  * 
  * @author slutters
  * 
@@ -141,21 +140,27 @@ public class PersoSim implements Runnable {
 		}
 	}
 	
-	//ok
 	/**
 	 * This method handles instantiation and (re)start of the SocketSimulator.
+	 * @return whether instantiation and starting was successful
 	 */
 	private boolean startSimulator() {
-		simulator = new SocketSimulator(getPersonalization(), simPort);
+		SocketSimulator newSimulator = new SocketSimulator(getPersonalization(), simPort);
 		
-		if (simulator.isRunning()) {
-			return false;
+		if(newSimulator.start()) {
+			simulator = newSimulator;
+			return true;
 		} else{
-			return simulator.start();
+			return false;
 		}
 
 	}
 	
+	/**
+	 * This method processes the command for starting the simulator.
+	 * @param args arguments that may contain a start command
+	 * @return whether instantiation and starting was successful
+	 */
 	public boolean cmdStartSimulator(List<String> args) {
 		if((args != null) && (args.size() >= 1)) {
 			String cmd = args.get(0);
@@ -169,6 +174,25 @@ public class PersoSim implements Runnable {
 		return false;
 	}
 	
+	/**
+	 * Stops the simulator thread and returns when the thread is stopped.
+	 */
+	private boolean stopSimulator() {
+		boolean simStopped = false;
+		
+		if (simulator != null) {
+			simStopped = simulator.stop();
+			simulator = null;
+		}
+		
+		return simStopped;
+	}
+	
+	/**
+	 * This method processes the command for stopping the simulator.
+	 * @param args arguments that may contain a stop command
+	 * @return whether stopping was successful
+	 */
 	public boolean cmdStopSimulator(List<String> args) {
 		if((args != null) && (args.size() >= 1)) {
 			String cmd = args.get(0);
@@ -182,41 +206,20 @@ public class PersoSim implements Runnable {
 		return false;
 	}
 	
-	
-	
-//	private boolean cmdLoadPersonalization(List<String> args) {
-//		if(args.size() >= 2) {
-//    		try{
-//    			currentPersonalization = parsePersonalization(args.get(1));
-//				
-//    			args.remove(0);
-//    			args.remove(0);
-//    			
-//    			if(executeUserCommands) {
-//    				return true;
-//    			} else{
-//    				return restartSimulator();
-//    			}
-//    		} catch(FileNotFoundException | JAXBException e) {
-//    			System.out.println("unable to set personalization, reason is: " + e.getMessage());
-//    		}
-//    	} else{
-//    		System.out.println("set personalization command requires one single file name");
-//    	}
-//		
-//		stopSimulator();
-//		System.out.println("simulation is stopped");
-//		args.remove(0);
-//		return false;
-//	}
-	
-	
-	
+	/**
+	 * This method restarts the simulator.
+	 * @return whether restarting has been successful
+	 */
 	private boolean restartSimulator() {
 		stopSimulator();
 		return startSimulator();
 	}
 	
+	/**
+	 * This method processes the command for restarting the simulator.
+	 * @param args arguments that may contain a restart command
+	 * @return whether restarting was successful
+	 */
 	public boolean cmdRestartSimulator(List<String> args) {
 		if((args != null) && (args.size() >= 1)) {
 			String cmd = args.get(0);
@@ -230,6 +233,11 @@ public class PersoSim implements Runnable {
 		return false;
 	}
 	
+	/**
+	 * This method processes the command for exiting the simulator.
+	 * @param args arguments that may contain an exit command
+	 * @return whether exiting was successful
+	 */
 	public boolean cmdExitSimulator(List<String> args) {
 		if((args != null) && (args.size() >= 1)) {
 			String cmd = args.get(0);
@@ -280,7 +288,7 @@ public class PersoSim implements Runnable {
 	}
 	
 	/**
-	 * This method sets a new port for the simulator.
+	 * This method sets a new port for the simulator to be used at the next start.
 	 * In order for the changes to take effect, the simulator needs to be restarted.
 	 * @param newPortString the new port to be used
 	 */
@@ -295,27 +303,13 @@ public class PersoSim implements Runnable {
 		
 		//IMPL check for port being unused
 	}
-	
-	//ok
-	/**
-	 * Stops the simulator thread and returns when the thread is stopped.
-	 */
-	private boolean stopSimulator() {
-		boolean simStopped = false;
-		
-		if (simulator != null) {
-			simStopped = simulator.stop();
-			simulator = null;
-		}
-		
-		return simStopped;
-	}
 
 	/**
 	 * Transmit an APDU to the card
 	 * 
 	 * @param cmd
 	 *            string containing the command
+	 * @return the response
 	 */
 	private String sendCmdApdu(String cmd) {
 		cmd = cmd.trim();
@@ -331,7 +325,6 @@ public class PersoSim implements Runnable {
 
 	}
 	
-	//ok
 	/**
 	 * This method processes the send APDU command according to the provided arguments.
 	 * @param args the arguments provided for processing
@@ -385,9 +378,11 @@ public class PersoSim implements Runnable {
 	 *            the host to contact
 	 * @param port
 	 *            the port to query
-	 * @return
+	 * @return the response
 	 */
 	//FIXME SLS why is this new method needed?
+	//used for testing whether the new port is actually used
+	//no call reference due to deencapsulation
 	private String exchangeApdu(String cmdApdu, String host, int port) {
 		cmdApdu = cmdApdu.replaceAll("\\s", ""); // remove any whitespace
 
@@ -431,24 +426,23 @@ public class PersoSim implements Runnable {
 		}
 
 		return respApdu;
-
+		
 	}
 	
 	/**
 	 * This method prints the help menu to the command line.
 	 */
-	private boolean printHelpArgs() {
+	private void printHelpArgs() {
 		System.out.println("Available commands:");
 		System.out.println(ARG_LOAD_PERSONALIZATION + " <file name>");
 		System.out.println(ARG_SET_PORT + " <port number>");
 		System.out.println(ARG_HELP);
-		return true;
 	}
 	
 	/**
 	 * This method prints the help menu to the user command line.
 	 */
-	private boolean printHelpCmd() {
+	private void printHelpCmd() {
 		System.out.println("Available commands:");
 		System.out.println(CMD_SEND_APDU + " <hexstring>");
 		System.out.println(CMD_LOAD_PERSONALIZATION + " <file name>");
@@ -458,14 +452,12 @@ public class PersoSim implements Runnable {
 		System.out.println(CMD_STOP);
 		System.out.println(CMD_EXIT);
 		System.out.println(CMD_HELP);
-		return true;
 	}
 	
-	//ok
 	/**
 	 * This method processes the load personalization command according to the provided arguments.
-	 * @param args the arguments provided for processing
-	 * @return whether processing has been successful
+	 * @param args the arguments provided for processing the load personalization command
+	 * @return whether processing of the load personalization command has been successful
 	 */
 	public boolean cmdLoadPersonalization(List<String> args) {
 		if((args != null) && (args.size() >= 2)) {
@@ -496,11 +488,10 @@ public class PersoSim implements Runnable {
 		return false;
 	}
 	
-	//ok
 	/**
 	 * This method processes the set port command according to the provided arguments.
-	 * @param args the arguments provided for processing
-	 * @return whether processing has been successful
+	 * @param args the arguments provided for processing the set port command
+	 * @return whether processing of the set port command has been successful
 	 */
 	public boolean cmdSetPortNo(List<String> args) {
 		if((args != null) && (args.size() >= 2)) {
@@ -529,7 +520,6 @@ public class PersoSim implements Runnable {
 		return false;
 	}
 	
-	//ok
 	/**
 	 * This method implements the behavior of the user command prompt. E.g.
 	 * prints the prompt, reads the user commands and forwards this to the the
@@ -580,16 +570,22 @@ public class PersoSim implements Runnable {
 				args.remove(0);
 				
 				if(processingCommandLineArguments) {
-					return printHelpArgs();
+					printHelpArgs();
 				} else{
-					return printHelpCmd();
+					printHelpCmd();
 				}
+				return true;
 			}
 		}
 		
 		return false;
 	}
 	
+	/**
+	 * This method implements the execution of commands initiated by user interaction.
+	 * It processes user commands based on a single String containing the whole command and all of its parameters.
+	 * @param cmd the single String command
+	 */
 	public void executeUserCommands(String cmd) {
 		String trimmedCmd = cmd.trim();
 		System.out.println("new cmd: " + trimmedCmd);
@@ -600,6 +596,7 @@ public class PersoSim implements Runnable {
 	
 	/**
 	 * This method implements the execution of commands initiated by user interaction.
+	 * It processes user commands based on single String representing the command and all of its parameters.
 	 * @param args the parsed commands and arguments
 	 */
 	public void executeUserCommands(String... args) {
