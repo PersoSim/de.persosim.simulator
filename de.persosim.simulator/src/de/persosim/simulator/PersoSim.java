@@ -10,6 +10,7 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.security.Security;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,7 +64,7 @@ public class PersoSim implements Runnable {
 	public static final String DEFAULT_SIM_HOST = "localhost";
 	
 	private int simPort = DEFAULT_SIM_PORT; // default
-	private boolean executeUserCommands = true;
+	private boolean executeUserCommands = false;
 	
 	public PersoSim(String[] args) {
 		Security.addProvider(new BouncyCastleProvider());
@@ -136,22 +137,81 @@ public class PersoSim implements Runnable {
 			}
 		}
 	}
-
+	
+	//ok
 	/**
 	 * This method handles instantiation and (re)start of the SocketSimulator.
 	 */
-	private void startSimulator() {
+	private boolean startSimulator() {
 		simulator = new SocketSimulator(getPersonalization(), simPort);
 		
-		if (!simulator.isRunning()) {
-			simulator.start();
+		if (simulator.isRunning()) {
+			return false;
+		} else{
+			return simulator.start();
 		}
 
 	}
 	
-	private void restartSimulator() {
+	public boolean cmdStartSimulator(List<String> args) {
+		if((args != null) && (args.size() >= 1)) {
+			String cmd = args.get(0);
+			
+			if(cmd.equals(CMD_START)) {
+				args.remove(0);
+				return startSimulator();
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean cmdStopSimulator(List<String> args) {
+		if((args != null) && (args.size() >= 1)) {
+			String cmd = args.get(0);
+			
+			if(cmd.equals(CMD_STOP)) {
+				args.remove(0);
+				return stopSimulator();
+			}
+		}
+		
+		return false;
+	}
+	
+	
+	
+//	private boolean cmdLoadPersonalization(List<String> args) {
+//		if(args.size() >= 2) {
+//    		try{
+//    			currentPersonalization = parsePersonalization(args.get(1));
+//				
+//    			args.remove(0);
+//    			args.remove(0);
+//    			
+//    			if(executeUserCommands) {
+//    				return true;
+//    			} else{
+//    				return restartSimulator();
+//    			}
+//    		} catch(FileNotFoundException | JAXBException e) {
+//    			System.out.println("unable to set personalization, reason is: " + e.getMessage());
+//    		}
+//    	} else{
+//    		System.out.println("set personalization command requires one single file name");
+//    	}
+//		
+//		stopSimulator();
+//		System.out.println("simulation is stopped");
+//		args.remove(0);
+//		return false;
+//	}
+	
+	
+	
+	private boolean restartSimulator() {
 		stopSimulator();
-		startSimulator();
+		return startSimulator();
 	}
 
 	/**
@@ -186,19 +246,7 @@ public class PersoSim implements Runnable {
 		
 		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
 		System.out.println("Parsing personalization from file " + persoFileName);
-		return (Personalization) um
-				.unmarshal(new FileReader(persoFile));
-	}
-	
-	/**
-	 * This method sets the personalization by providing a file that it is to be read and parsed from.
-	 * @param persoFileName the file that the personalization is to be read from
-	 * @throws FileNotFoundException if the provided file is not found
-	 * @throws JAXBException if parsing of personalization not successful
-	 */
-	public void setPersonalization(String persoFileName) throws FileNotFoundException, JAXBException {
-		currentPersonalization = parsePersonalization(persoFileName);
-		System.out.println("personalization successfully read and set from file " + persoFileName);
+		return (Personalization) um.unmarshal(new FileReader(persoFile));
 	}
 	
 	/**
@@ -217,15 +265,20 @@ public class PersoSim implements Runnable {
 		
 		//IMPL check for port being unused
 	}
-
+	
+	//ok
 	/**
 	 * Stops the simulator thread and returns when the thread is stopped.
 	 */
-	private void stopSimulator() {
+	private boolean stopSimulator() {
+		boolean simStopped = false;
+		
 		if (simulator != null) {
-			simulator.stop();
+			simStopped = simulator.stop();
 			simulator = null;
 		}
+		
+		return simStopped;
 	}
 
 	/**
@@ -234,7 +287,7 @@ public class PersoSim implements Runnable {
 	 * @param cmd
 	 *            string containing the command
 	 */
-	private void sendCmdApdu(String cmd) {
+	private String sendCmdApdu(String cmd) {
 		cmd = cmd.trim();
 
 		Pattern cmdSendApduPattern = Pattern
@@ -244,28 +297,34 @@ public class PersoSim implements Runnable {
 			throw new RuntimeException("invalid arguments to sendApdu");
 		}
 		String apdu = matcher.group(1);
-		exchangeApdu(apdu);
+		return exchangeApdu(apdu);
 
 	}
 	
+	//ok
 	/**
 	 * This method processes the send APDU command according to the provided arguments.
 	 * @param args the arguments provided for processing
 	 * @return whether processing has been successful
 	 */
-	private int cmdSendApdu(String[] args) {
-		if(args.length >= 2) {
+	private String cmdSendApdu(List<String> args) {
+		String result;
+		
+		if(args.size() >= 2) {
     		try{
-    			sendCmdApdu("sendApdu " + args[1]);
-    			return 2;
+    			result = sendCmdApdu("sendApdu " + args.get(1));
+    			args.remove(0);
+    			args.remove(0);
     		} catch(RuntimeException e) {
-    			System.out.println("unable to set personalization, reason is: " + e.getMessage());
-    			return 1;
+    			result = "unable to set personalization, reason is: " + e.getMessage();
+    			args.remove(0);
     		}
     	} else{
-    		System.out.println("set personalization command requires one single APDU");
-			return 1;
+    		result = "set personalization command requires one single APDU";
+    		args.remove(0);
     	}
+		
+		return result;
 	}
 	
 	/**
@@ -345,17 +404,18 @@ public class PersoSim implements Runnable {
 	/**
 	 * This method prints the help menu to the command line.
 	 */
-	private void printHelpArgs() {
+	private boolean printHelpArgs() {
 		System.out.println("Available commands:");
 		System.out.println(ARG_LOAD_PERSONALIZATION + " <file name>");
 		System.out.println(ARG_SET_PORT + " <port number>");
 		System.out.println(ARG_HELP);
+		return true;
 	}
 	
 	/**
 	 * This method prints the help menu to the user command line.
 	 */
-	private void printHelpCmd() {
+	private boolean printHelpCmd() {
 		System.out.println("Available commands:");
 		System.out.println(CMD_SEND_APDU + " <hexstring>");
 		System.out.println(CMD_LOAD_PERSONALIZATION + " <file name>");
@@ -365,54 +425,76 @@ public class PersoSim implements Runnable {
 		System.out.println(CMD_STOP);
 		System.out.println(CMD_EXIT);
 		System.out.println(CMD_HELP);
+		return true;
 	}
 	
+	//ok
 	/**
 	 * This method processes the load personalization command according to the provided arguments.
 	 * @param args the arguments provided for processing
 	 * @return whether processing has been successful
 	 */
-	private int cmdLoadPersonalization(String[] args) {
-		if(args.length >= 2) {
-    		try{
-    			setPersonalization(args[1]);
-    			return 2;
-    		} catch(FileNotFoundException | JAXBException e) {
-    			System.out.println("unable to set personalization, reason is: " + e.getMessage());
-    			
-    			System.out.println("simulation is stopped");
-    			stopSimulator();
-    			return 1;
-    		}
-    	} else{
-    		System.out.println("set personalization command requires one single file name");
-    		System.out.println("simulation is stopped");
-			stopSimulator();
-			return 1;
-    	}
+	private boolean cmdLoadPersonalization(List<String> args) {
+		if((args != null) && (args.size() >= 2)) {
+			String cmd = args.get(0);
+			
+			if(cmd.equals(CMD_START)) {
+				try{
+	    			currentPersonalization = parsePersonalization(args.get(1));
+					
+	    			args.remove(0);
+	    			args.remove(0);
+	    			
+	    			if(executeUserCommands) {
+	    				return true;
+	    			} else{
+	    				return restartSimulator();
+	    			}
+	    		} catch(FileNotFoundException | JAXBException e) {
+	    			System.out.println("unable to set personalization, reason is: " + e.getMessage());
+	    			stopSimulator();
+	    			System.out.println("simulation is stopped");
+	    			args.remove(0);
+	    			return false;
+	    		}
+			}
+		}
+		
+		return false;
 	}
 	
+	//ok
 	/**
 	 * This method processes the set port command according to the provided arguments.
 	 * @param args the arguments provided for processing
 	 * @return whether processing has been successful
 	 */
-	private int cmdSetPortNo(String[] args) {
-		if(args.length >= 2) {
-			String portNoString = args[1];
+	private boolean cmdSetPortNo(List<String> args) {
+		if(args.size() >= 2) {
+			
     		try{
-    			setPort(portNoString);
-    			return 2;
+    			setPort(args.get(1));
+    			
+    			args.remove(0);
+    			args.remove(0);
+    			
+    			if(executeUserCommands) {
+    				return true;
+    			} else{
+    				return restartSimulator();
+    			}
     		} catch(IllegalArgumentException | NullPointerException e) {
     			System.out.println("unable to set port, reason is: " + e.getMessage());
-    			return 1;
     		}
     	} else{
     		System.out.println("set host command requires host name");
-			return 1;
     	}
+		
+		args.remove(0);
+		return false;
 	}
 	
+	//ok
 	/**
 	 * This method implements the behavior of the user command prompt. E.g.
 	 * prints the prompt, reads the user commands and forwards this to the the
@@ -425,17 +507,27 @@ public class PersoSim implements Runnable {
 	private void handleUserCommands() {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
+		PrintStream	origOut	= System.out;
+		
+		executeUserCommands = true;
 		while (executeUserCommands) {
 			System.out.println("PersoSim commandline: ");
+			origOut.println("still alive");
+			origOut.flush();
 			String cmd = null;
 			try {
+				System.out.println("read cmd");
 				cmd = br.readLine();
+				System.out.println("cmd is: " + cmd);
 			} catch (IOException e) {
 				e.printStackTrace();
+				origOut.println("somethign wrong");
+				origOut.flush();
 			}
 			try {
 				if (cmd != null) {
 					cmd = cmd.trim();
+					System.out.println("new cmd: " + cmd);
 					String[] args = parseCommand(cmd);
 					executeUserCommands(args);
 				}
@@ -445,43 +537,86 @@ public class PersoSim implements Runnable {
 		}
 	}
 	
+	public String executeUserCommands(String cmd) {
+		String trimmedCmd = cmd.trim();
+		System.out.println("new cmd: " + trimmedCmd);
+		String[] args = parseCommand(trimmedCmd);
+		
+		return executeUserCommands(args);
+	}
+	
 	/**
 	 * This method implements the execution of commands initiated by user interaction.
 	 * @param args the parsed commands and arguments
 	 */
-	public void executeUserCommands(String... args) {
-		if((args == null) || (args.length == 0)) {return;}
+	public String executeUserCommands(String... args) {
+		if((args == null) || (args.length == 0)) {return "no arguments to process";}
 		
-		String currentArgument = args[0];
+		List<String> currentArgs = Arrays.asList(args);
+		
+		String currentArgument = currentArgs.get(0);
 		switch (currentArgument) {
             case CMD_LOAD_PERSONALIZATION:
-            	cmdLoadPersonalization(args);
-            	restartSimulator();
-            	break;
+            	return cmdLoadPersonalization(currentArgs) + "";
             case CMD_SET_PORT:
-            	cmdSetPortNo(args);
-            	restartSimulator();
-            	break;
+            	return cmdSetPortNo(currentArgs) + "";
             case CMD_SEND_APDU:
-            	cmdSendApdu(args);
-            	break;
+            	return cmdSendApdu(currentArgs) + "";
             case CMD_START:
-            	startSimulator();
-            	break;
+            	return startSimulator() + "";
             case CMD_RESTART:
-            	restartSimulator();
+            	return restartSimulator() + "";
             case CMD_STOP:
-            	stopSimulator();
-            	break;
+            	return stopSimulator() + "";
             case CMD_EXIT:
-            	stopSimulator();
 				executeUserCommands = false;
+				return stopSimulator() + "";
             case CMD_HELP:
-            	printHelpCmd();
-				break;
+            	return printHelpCmd() + "";
             default: 
-            	System.out.println("unrecognized command \"" + currentArgument + "\" and parameters will be ignored");
-                break;
+            	String warning = "unrecognized command \"" + currentArgument + "\" and parameters will be ignored";
+            	System.out.println(warning);
+            	return warning;
+		}
+	}
+	
+	public String altExecuteUserCommands(String... args) {
+		if((args == null) || (args.length == 0)) {return "no arguments to process";}
+		
+		List<String> currentArgs = Arrays.asList(args);
+		
+		while(currentArgs.size() > 0) {
+			cmdLoadPersonalization(currentArgs);
+			cmdSetPortNo(currentArgs);
+			cmdSendApdu(currentArgs);
+			cmdStartSimulator(currentArgs);
+			cmdRestartSimulator(currentArgs);
+			cmdStopSimulator(currentArgs);
+			
+		}
+		
+		switch (currentArgument) {
+            case CMD_LOAD_PERSONALIZATION:
+            	return cmdLoadPersonalization(currentArgs) + "";
+            case CMD_SET_PORT:
+            	return cmdSetPortNo(currentArgs) + "";
+            case CMD_SEND_APDU:
+            	return cmdSendApdu(currentArgs) + "";
+            case CMD_START:
+            	return startSimulator() + "";
+            case CMD_RESTART:
+            	return restartSimulator() + "";
+            case CMD_STOP:
+            	return stopSimulator() + "";
+            case CMD_EXIT:
+				executeUserCommands = false;
+				return stopSimulator() + "";
+            case CMD_HELP:
+            	return printHelpCmd() + "";
+            default: 
+            	String warning = "unrecognized command \"" + currentArgument + "\" and parameters will be ignored";
+            	System.out.println(warning);
+            	return warning;
 		}
 	}
 	
@@ -492,34 +627,31 @@ public class PersoSim implements Runnable {
 	public void handleArgs(String... args) {
 		if((args == null) || (args.length == 0)) {return;}
 		
-		String[] currentArgs = args;
-		int noOfUnprocessedArgs = args.length;
+		List<String> currentArgs = Arrays.asList(args);
 		
-		while(noOfUnprocessedArgs > 0) {
-			String currentArgument = currentArgs[0];
+		while(currentArgs.size() > 0) {
+			String currentArgument = currentArgs.get(0);
 			switch (currentArgument) {
 		        case ARG_LOAD_PERSONALIZATION:
-		        	noOfUnprocessedArgs -= cmdLoadPersonalization(currentArgs);
+		        	cmdLoadPersonalization(currentArgs);
 		        	break;
 		        case ARG_SET_PORT:
-		        	noOfUnprocessedArgs -= cmdSetPortNo(currentArgs);
+		        	cmdSetPortNo(currentArgs);
 		        	break;
 		        case ARG_HELP:
 	            	printHelpArgs();
+	            	currentArgs.remove(0);
 					break;
 		        case CMD_CONSOLE_ONLY:
 		        	// do no actual processing, i.e. prevent simulator from logging unknown command error as command has already been processed
 		        	// command is passed on as part of unprocessed original command line arguments
-		        	noOfUnprocessedArgs--;
+		        	currentArgs.remove(0);
 		        	break;
 		        default:
 		        	System.out.println("unrecognized command or parameter \"" + currentArgument + "\" will be ignored");
-		        	noOfUnprocessedArgs--;
+		        	currentArgs.remove(0);
 		            break;
 			}
-			
-			currentArgs = Arrays.copyOfRange(currentArgs, currentArgs.length - noOfUnprocessedArgs, currentArgs.length);
-			
 		}
 		
 	}
