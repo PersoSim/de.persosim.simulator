@@ -1,5 +1,8 @@
 package de.persosim.simulator.perso;
 
+import static de.persosim.simulator.utils.PersoSimLogger.WARN;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -8,10 +11,6 @@ import javax.smartcardio.CardException;
 
 import de.persosim.simulator.perso.dscardsigner.CardSigner;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
-import de.persosim.simulator.tlv.TlvDataObject;
-
-import static de.persosim.simulator.utils.PersoSimLogger.WARN;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 /**
  * SecInfoCmsBuilder that allows creation of valid Signatures within the German
@@ -36,7 +35,7 @@ public class TestPkiCmsBuilder extends DefaultSecInfoCmsBuilder {
 	}
 
 	@Override
-	protected TlvDataObject getCertificate() {
+	protected ConstructedTlvDataObject getCertificate() {
 		
 		byte[] dsCertBytes = null;
 		
