@@ -9,7 +9,7 @@ import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvPath;
-import de.persosim.simulator.tlv.TlvTag;
+import de.persosim.simulator.tlv.TlvTagIdentifier;
 
 /**
  * This class provides a container for specifications of TLV elements. Its
@@ -94,15 +94,15 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 	 * the provided tag within the sub tags of this object. If no occurrence can
 	 * be found the returned index will be "-1".
 	 * 
-	 * @param tag
+	 * @param tlvTagIdentifier
 	 *            the tag to be matched for
 	 * @return the first occurrence of the provided tag
 	 */
-	public int getFirstIndexOfSubTag(TlvTag tag) {
-		if(tag == null) {throw new NullPointerException("tag must not be null");}
+	public int getFirstIndexOfSubTag(TlvTagIdentifier tlvTagIdentifier) {
+		if(tlvTagIdentifier == null) {throw new NullPointerException("tag must not be null");}
 		
 		for(int i = 0; i < size(); i++) {
-			if(get(i).matches(tag)) {
+			if(get(i).matches(tlvTagIdentifier.getTag())) { //FIXME review/cleanup this, first invewtigate what this method is used for
 				return i;
 			}
 		}
@@ -134,7 +134,7 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 		while(tlvIterator.hasNext()) {
 			tlvDataObject = tlvIterator.next();
 			
-			currentWorkingIndex = this.getFirstIndexOfSubTag(tlvDataObject.getTlvTag());
+			currentWorkingIndex = this.getFirstIndexOfSubTag(new TlvTagIdentifier(tlvDataObject.getTlvTag()));
 			
 			if(currentWorkingIndex < 0) {
 				if(!this.allowUnspecifiedSubTags) {

@@ -118,7 +118,9 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 		if((path == null) || (path.size() == 0)) {throw new NullPointerException();}
 		if((index < 0) || (index >= path.size())) {throw new IllegalArgumentException("index must not be outside of path");}
 		
-		currentTlvTag = path.get(index);
+		//FIXME cleanup this mess (cat -> bathtub)
+		
+		currentTlvTag = path.get(index).getTag();
 		if(currentTlvTag == null) {throw new NullPointerException();}
 		
 		for(TlvDataObject tlvDataObject : this.tlvObjects) {
@@ -252,7 +254,8 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 		if(path == null) {throw new NullPointerException("path must not be null");};
 		if(path.size() < 1) {throw new IllegalArgumentException("path must not be empty");};
 		
-		TlvTag tagToBeRemoved = path.getLastElement();
+		//FIXME review/cleanup this
+		TlvTag tagToBeRemoved = path.getLastElement().getTag();
 		
 		if(path.size() == 1) {
 			removeTlvDataObject(tagToBeRemoved);
