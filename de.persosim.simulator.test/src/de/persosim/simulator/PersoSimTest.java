@@ -5,11 +5,21 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Console;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringBufferInputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 import javax.xml.bind.JAXBException;
 
@@ -92,6 +102,145 @@ public class PersoSimTest extends PersoSimTestCase {
 		assertEquals(responseReadBinaryExpected, responseReadBinary.substring(0, responseReadBinary.length() - 4).toUpperCase());
 	}
 	
+//	@Test
+//	public void altTestImplicitSettingOfDefaultPersonalization() throws FileNotFoundException, JAXBException, UnsupportedEncodingException {
+//		// prepare the mock
+//		new NonStrictExpectations() {
+//			{
+//				defaultPersoTestPki.getObjectTree();
+//				result = new MinimumPersonalization(EF_CS_CONTENT_1).getObjectTree();
+//			}
+//			
+//			{
+//				defaultPersoTestPki.getProtocolList();
+//				result = new MinimumPersonalization(EF_CS_CONTENT_1).getProtocolList();
+//			}
+//		};
+//		
+//		System.out.println("001");
+//		
+//		persoSim = new PersoSim(null);
+////		persoSim.run();
+////		persoSim.executeUserCommands(PersoSim.CMD_START);
+//		
+//		Thread persoSimThread = new Thread(persoSim);
+//		persoSimThread.start();
+//		
+//		System.out.println("002");
+//		
+//		try {
+//		    Thread.sleep(3000);                 //1000 milliseconds is one second.
+//		} catch(InterruptedException ex) {
+//		    Thread.currentThread().interrupt();
+//		}
+//		
+//		System.out.println("003");
+//		
+//		String responseSelect = altSendCommand(PersoSim.CMD_SEND_APDU, "00A4020C02011C");
+//		assertEquals(responseSelect, "9000");
+//		
+//		System.out.println("004");
+//		
+//		String responseReadBinaryExpected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_1, 4)).toUpperCase();
+//		String responseReadBinary = altSendCommand(PersoSim.CMD_SEND_APDU, "00B0000004");
+//		assertEquals(responseReadBinaryExpected, responseReadBinary.substring(0, responseReadBinary.length() - 4).toUpperCase());
+//	}
+	
+	public static String altSendCommand(String... args) throws UnsupportedEncodingException {
+		InputStream	origIn	= System.in;
+		PrintStream	origOut	= System.out;
+		PrintStream	origErr	= System.err;
+		
+		PipedInputStream sysInPipe = new PipedInputStream(); 
+	    PipedOutputStream sysOutPipe = new PipedOutputStream();
+	    PrintStream sysOutPrint = new PrintStream(sysOutPipe);
+	    
+	    System.out.println("A001");
+	    
+	    PipedInputStream inPipe = new PipedInputStream(); 
+	    PipedOutputStream outPipe = new PipedOutputStream();
+	    PrintWriter outWriter = new PrintWriter(outPipe, true);
+	    
+	    System.out.println("A002");
+	    
+	    try {
+			outPipe.connect(sysInPipe);
+			inPipe.connect(sysOutPipe);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    System.out.println("A003");
+	    
+	    System.setIn(sysInPipe);
+	    System.setOut(sysOutPrint);
+	    
+	    System.out.println("A004");
+	    
+	    String cmd = null;
+	    for(String arg : args) {
+	    	cmd += arg + " ";
+	    }
+	    
+	    System.out.println("A005");
+	    
+	    outWriter.println(cmd);
+	    outWriter.flush();
+	    
+	    System.out.println("A006");
+	    
+	    int counter = 0;
+	    
+	    Scanner s = new Scanner(inPipe);
+        while (s.hasNextLine()) {
+        		 String line = s.nextLine();
+            	 
+        		 origOut.println("new line: " + line);
+        		 
+        		 if(counter >= 2) {
+        			 break;
+        		 }
+        		 counter++;
+        }
+        s.close();
+        
+        System.out.println("A007");
+        
+        outWriter.close();
+        try {
+			inPipe.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        outWriter.close();
+        
+        return "nothing"; 
+        
+        
+
+		
+//		try {
+//		    Thread.sleep(3000);                 //1000 milliseconds is one second.
+//		} catch(InterruptedException ex) {
+//		    Thread.currentThread().interrupt();
+//		}
+//		
+//		String responseSelectBulk = baos1.toString("UTF-8");
+//		origOut.print(responseSelectBulk);
+//		origOut.flush();
+//		
+//		int startIndex = responseSelectBulk.trim().lastIndexOf("\n");
+//		String responseSelect = "";
+//
+//		if((startIndex != -1) && (startIndex != responseSelectBulk.length())){
+//			responseSelect = responseSelectBulk.substring(startIndex+3).trim();
+//		}
+//		
+//		return responseSelect;
+	}
+	
 	public static String sendCommand(PersoSim persoSimInstance, String... args) throws UnsupportedEncodingException {
 //		InputStream	origIn	= System.in;
 		PrintStream	origOut	= System.out;
@@ -142,14 +291,13 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Negative test case: check for NullPointerException if PersoSim constructor is called with null argument.
+	 * Positive test case: check for NullPointerException if PersoSim constructor is called with null argument.
 	 */
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void testPersoSimConstructorNullArgument() {
-		persoSim = new PersoSim(null);
+		persoSim = new PersoSim((String) null);
+		assertNotNull(persoSim);
 	}
-	
-	//FIXME SLS I don't see a testcase that uses the real default perso...
 	
 	/**
 	 * Positive test case: test start of socket simulator.
@@ -176,7 +324,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStopSimulator() throws InterruptedException, UnsupportedEncodingException {
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1);
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
@@ -333,14 +481,19 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		// check that the simulator is actually running on the advertised port
 		String selectApdu = "00A4020C02011C"; 
-		String responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu, PersoSim.DEFAULT_SIM_HOST, portPre);
+//		String responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu, PersoSim.DEFAULT_SIM_HOST, portPre);
+		
+		ArrayList<String> args = new ArrayList<String>();
+		args.add(PersoSim.CMD_SEND_APDU);
+		args.add("00A4020C02011C");
+		String responseSelect = persoSim.cmdSendApdu(args);
 		assertEquals(responseSelect, "9000");
 		
-		int portPostExpected = portPre + 1;
+		int portPostExpected = portPre + 2;
 		persoSim.executeUserCommands(PersoSim.CMD_SET_PORT, (new Integer (portPostExpected)).toString());
 		
 		responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu, PersoSim.DEFAULT_SIM_HOST, portPostExpected);
-		assertEquals(responseSelect, "9000");
+		assertEquals("9000", responseSelect);
 	}
 
 }
