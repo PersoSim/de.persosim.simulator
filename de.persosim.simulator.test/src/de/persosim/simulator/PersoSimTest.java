@@ -5,9 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.Console;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +13,6 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.StringBufferInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +45,10 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	public static final String DUMMY_PERSONALIZATION_FILE_1 = "tmp/dummyPersonalization1.xml";
 	public static final String DUMMY_PERSONALIZATION_FILE_2 = "tmp/dummyPersonalization2.xml";
+	
+	public static final String SELECT_APDU = "00A4020C02011C";
+	public static final String READ_BINARY_APDU = "00B0000004";
+	public static final String SW_NO_ERROR = "9000";
 	
 	@Before
 	public void setUp() {
@@ -91,60 +92,16 @@ public class PersoSimTest extends PersoSimTestCase {
 			}
 		};
 		
-		persoSim = new PersoSim(null);
+		persoSim = new PersoSim((String) null);
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		String responseSelect = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
-		assertEquals(responseSelect, "9000");
+		String responseSelect = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
+		assertEquals(SW_NO_ERROR, responseSelect);
 		
 		String responseReadBinaryExpected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_1, 4)).toUpperCase();
-		String responseReadBinary = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00B0000004");
+		String responseReadBinary = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, READ_BINARY_APDU);
 		assertEquals(responseReadBinaryExpected, responseReadBinary.substring(0, responseReadBinary.length() - 4).toUpperCase());
 	}
-	
-//	@Test
-//	public void altTestImplicitSettingOfDefaultPersonalization() throws FileNotFoundException, JAXBException, UnsupportedEncodingException {
-//		// prepare the mock
-//		new NonStrictExpectations() {
-//			{
-//				defaultPersoTestPki.getObjectTree();
-//				result = new MinimumPersonalization(EF_CS_CONTENT_1).getObjectTree();
-//			}
-//			
-//			{
-//				defaultPersoTestPki.getProtocolList();
-//				result = new MinimumPersonalization(EF_CS_CONTENT_1).getProtocolList();
-//			}
-//		};
-//		
-//		System.out.println("001");
-//		
-//		persoSim = new PersoSim(null);
-////		persoSim.run();
-////		persoSim.executeUserCommands(PersoSim.CMD_START);
-//		
-//		Thread persoSimThread = new Thread(persoSim);
-//		persoSimThread.start();
-//		
-//		System.out.println("002");
-//		
-//		try {
-//		    Thread.sleep(3000);                 //1000 milliseconds is one second.
-//		} catch(InterruptedException ex) {
-//		    Thread.currentThread().interrupt();
-//		}
-//		
-//		System.out.println("003");
-//		
-//		String responseSelect = altSendCommand(PersoSim.CMD_SEND_APDU, "00A4020C02011C");
-//		assertEquals(responseSelect, "9000");
-//		
-//		System.out.println("004");
-//		
-//		String responseReadBinaryExpected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_1, 4)).toUpperCase();
-//		String responseReadBinary = altSendCommand(PersoSim.CMD_SEND_APDU, "00B0000004");
-//		assertEquals(responseReadBinaryExpected, responseReadBinary.substring(0, responseReadBinary.length() - 4).toUpperCase());
-//	}
 	
 	public static String altSendCommand(String... args) throws UnsupportedEncodingException {
 		InputStream	origIn	= System.in;
@@ -308,12 +265,12 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testStartSimulator() throws InterruptedException, UnsupportedEncodingException {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
-		String responseSelect1 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
+		String responseSelect1 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		String responseSelect2 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
-		assertEquals(responseSelect2, "9000");
+		String responseSelect2 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
+		assertEquals(SW_NO_ERROR, responseSelect2);
 		assertTrue(responseSelect1 != responseSelect2);
 	}
 	
@@ -328,11 +285,11 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		String responseSelect1 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
-		assertEquals(responseSelect1, "9000");
+		String responseSelect1 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
+		assertEquals(SW_NO_ERROR, responseSelect1);
 		
 		persoSim.executeUserCommands(PersoSim.CMD_STOP);
-		String responseSelect2 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
+		String responseSelect2 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
 		assertTrue(responseSelect1 != responseSelect2);
 	}
 	
@@ -340,7 +297,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: parse arguments from an empty String.
 	 */
 	@Test
-	public void parseArgsEmptyString() {
+	public void testParseCommandEmptyString() {
 		String[] result = PersoSim.parseCommand("");
 		
 		assertEquals(result.length, 0);
@@ -350,7 +307,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Negative test case: parse arguments from null.
 	 */
 	@Test(expected = NullPointerException.class)
-	public void parseArgsNull() {
+	public void testParseCommandNull() {
 		PersoSim.parseCommand(null);
 	}
 	
@@ -358,7 +315,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: parse arguments from a String containing spaces only at start and end.
 	 */
 	@Test
-	public void parseArgsUntrimmedCoherentString() {
+	public void testParseCommandUntrimmedCoherentString() {
 		String arg = "string";
 		String[] result = PersoSim.parseCommand(" " + arg + "  ");
 		
@@ -370,7 +327,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: parse arguments from a String containing spaces not only at start and end.
 	 */
 	@Test
-	public void parseArgsIncoherentString() {
+	public void testParseCommandIncoherentString() {
 		String arg1 = "string1";
 		String arg2 = "string 2";
 		String[] result = PersoSim.parseCommand(" " + arg1 + "  " + arg2);
@@ -386,7 +343,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws JAXBException 
 	 */
 	@Test
-	public void parsePersonalizationValidFile() throws FileNotFoundException, JAXBException {
+	public void testParsePersonalizationValidFile() throws FileNotFoundException, JAXBException {
 		Personalization perso = PersoSim.parsePersonalization(DUMMY_PERSONALIZATION_FILE_1);
 		
 		assertNotNull(perso);
@@ -398,7 +355,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws JAXBException 
 	 */
 	@Test(expected = FileNotFoundException.class)
-	public void parsePersonalizationFileNotFound() throws FileNotFoundException, JAXBException {
+	public void testParsePersonalizationFileNotFound() throws FileNotFoundException, JAXBException {
 		PersoSim.parsePersonalization("file not found");
 	}
 	
@@ -408,7 +365,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws JAXBException 
 	 */
 	@Test(expected = JAXBException.class)
-	public void parsePersonalizationInvalidFile() throws FileNotFoundException, JAXBException {
+	public void testParsePersonalizationInvalidFile() throws FileNotFoundException, JAXBException {
 		PersoSim.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
 	}
 	
@@ -437,10 +394,10 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_2);
 		
-		String responseSelect = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
-		assertEquals(responseSelect, "9000");
+		String responseSelect = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
+		assertEquals(SW_NO_ERROR, responseSelect);
 		
-		String responseReadBinary = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00B0000004");
+		String responseReadBinary = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, READ_BINARY_APDU);
 		
 		String responseReadBinaryExpected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_2, 4)).toUpperCase();
 		
@@ -461,8 +418,8 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, "non-existing.file");
 		
-		String responseSelect = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, "00A4020C02011C");
-		assertFalse(responseSelect.equals("9000"));
+		String responseSelect = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
+		assertFalse(responseSelect.equals(SW_NO_ERROR));
 	}
 	
 	/**
@@ -474,26 +431,19 @@ public class PersoSimTest extends PersoSimTestCase {
 	@Test
 	public void testExecuteUserCommandsCmdSetPortNo() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
-		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
-		
-		int portPre = PersoSim.DEFAULT_SIM_PORT;
-		
-		// check that the simulator is actually running on the advertised port
-		String selectApdu = "00A4020C02011C"; 
-//		String responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu, PersoSim.DEFAULT_SIM_HOST, portPre);
 		
 		ArrayList<String> args = new ArrayList<String>();
 		args.add(PersoSim.CMD_SEND_APDU);
-		args.add("00A4020C02011C");
+		args.add(SELECT_APDU);
 		String responseSelect = persoSim.cmdSendApdu(args);
-		assertEquals(responseSelect, "9000");
+		assertEquals(SW_NO_ERROR, responseSelect);
 		
-		int portPostExpected = portPre + 2;
+		int portPostExpected = PersoSim.DEFAULT_SIM_PORT + 1;
 		persoSim.executeUserCommands(PersoSim.CMD_SET_PORT, (new Integer (portPostExpected)).toString());
 		
-		responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", selectApdu, PersoSim.DEFAULT_SIM_HOST, portPostExpected);
-		assertEquals("9000", responseSelect);
+		responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", SELECT_APDU, PersoSim.DEFAULT_SIM_HOST, portPostExpected);
+		assertEquals(SW_NO_ERROR, responseSelect);
 	}
 
 }
