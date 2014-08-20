@@ -7,16 +7,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Scanner;
 
 import javax.xml.bind.JAXBException;
 
@@ -67,6 +61,41 @@ public class PersoSimTest extends PersoSimTestCase {
 		}
 	}
 	
+	public static String sendCommand(PersoSim persoSimInstance, String... args) throws UnsupportedEncodingException {
+		PrintStream	origOut	= System.out;
+		PrintStream	origErr	= System.err;
+		
+		ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
+		PrintStream	stdout = new PrintStream(baos1);
+		
+		ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+		PrintStream	stderr = new PrintStream(baos2);
+		
+		System.setOut(stdout);
+		System.setErr(stderr);
+		
+		origOut.print(baos1.toString());
+		origOut.flush();
+		
+		persoSimInstance.executeUserCommands(args);
+		
+		String responseSelectBulk = baos1.toString("UTF-8");
+		origOut.print(responseSelectBulk);
+		origOut.flush();
+		
+		int startIndex = responseSelectBulk.trim().lastIndexOf("\n");
+		String responseSelect = "";
+
+		if((startIndex != -1) && (startIndex != responseSelectBulk.length())){
+			responseSelect = responseSelectBulk.substring(startIndex+3).trim();
+		}
+		
+		System.setOut(origOut);
+		System.setErr(origErr);
+		
+		return responseSelect;
+	}
+	
 	//FIXME SLS missing test: launch PersoSimConsole, hit enter => this produces a NPE and shouldn't
 	//FIXME SLS missing test: launch PersoSimConsole, type exit, hit enter => this produces a list of available commands and shouldn't
 	//FIXME SLS missing test: launch PersoSimConsole, type an unknown command, hit enter => this should produces a list of available commands (along the existing line that the given command is unknown) and doesn't
@@ -101,150 +130,6 @@ public class PersoSimTest extends PersoSimTestCase {
 		String responseReadBinaryExpected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_1, 4)).toUpperCase();
 		String responseReadBinary = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, READ_BINARY_APDU);
 		assertEquals(responseReadBinaryExpected, responseReadBinary.substring(0, responseReadBinary.length() - 4).toUpperCase());
-	}
-	
-	public static String altSendCommand(String... args) throws UnsupportedEncodingException {
-		InputStream	origIn	= System.in;
-		PrintStream	origOut	= System.out;
-		PrintStream	origErr	= System.err;
-		
-		PipedInputStream sysInPipe = new PipedInputStream(); 
-	    PipedOutputStream sysOutPipe = new PipedOutputStream();
-	    PrintStream sysOutPrint = new PrintStream(sysOutPipe);
-	    
-	    System.out.println("A001");
-	    
-	    PipedInputStream inPipe = new PipedInputStream(); 
-	    PipedOutputStream outPipe = new PipedOutputStream();
-	    PrintWriter outWriter = new PrintWriter(outPipe, true);
-	    
-	    System.out.println("A002");
-	    
-	    try {
-			outPipe.connect(sysInPipe);
-			inPipe.connect(sysOutPipe);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    
-	    System.out.println("A003");
-	    
-	    System.setIn(sysInPipe);
-	    System.setOut(sysOutPrint);
-	    
-	    System.out.println("A004");
-	    
-	    String cmd = null;
-	    for(String arg : args) {
-	    	cmd += arg + " ";
-	    }
-	    
-	    System.out.println("A005");
-	    
-	    outWriter.println(cmd);
-	    outWriter.flush();
-	    
-	    System.out.println("A006");
-	    
-	    int counter = 0;
-	    
-	    Scanner s = new Scanner(inPipe);
-        while (s.hasNextLine()) {
-        		 String line = s.nextLine();
-            	 
-        		 origOut.println("new line: " + line);
-        		 
-        		 if(counter >= 2) {
-        			 break;
-        		 }
-        		 counter++;
-        }
-        s.close();
-        
-        System.out.println("A007");
-        
-        outWriter.close();
-        try {
-			inPipe.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        outWriter.close();
-        
-        return "nothing"; 
-        
-        
-
-		
-//		try {
-//		    Thread.sleep(3000);                 //1000 milliseconds is one second.
-//		} catch(InterruptedException ex) {
-//		    Thread.currentThread().interrupt();
-//		}
-//		
-//		String responseSelectBulk = baos1.toString("UTF-8");
-//		origOut.print(responseSelectBulk);
-//		origOut.flush();
-//		
-//		int startIndex = responseSelectBulk.trim().lastIndexOf("\n");
-//		String responseSelect = "";
-//
-//		if((startIndex != -1) && (startIndex != responseSelectBulk.length())){
-//			responseSelect = responseSelectBulk.substring(startIndex+3).trim();
-//		}
-//		
-//		return responseSelect;
-	}
-	
-	public static String sendCommand(PersoSim persoSimInstance, String... args) throws UnsupportedEncodingException {
-//		InputStream	origIn	= System.in;
-		PrintStream	origOut	= System.out;
-		PrintStream	origErr	= System.err;
-		
-//		InputStream	stdin = null;
-//		String cmdSelect = PersoSim.CMD_SEND_APDU + " 00A4020C02011C";
-//		try {
-//			stdin = new ByteArrayInputStream(cmdSelect.getBytes("UTF-8"));
-//		} catch (UnsupportedEncodingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			System.out.println ("Redirect:  Unable to open input stream!");
-//		    System.exit (1);
-//		}
-		
-		ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
-		PrintStream	stdout = new PrintStream(baos1);
-		
-		ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
-		PrintStream	stderr = new PrintStream(baos2);
-		
-		System.setOut(stdout);
-		System.setErr(stderr);
-		
-		origOut.print(baos1.toString());
-		origOut.flush();
-		
-		//FIXME SLS reasign stdin and stdout instead of using deencapsulation, deencapsulation is nearly always evil, especially on the DUT
-		
-		persoSimInstance.executeUserCommands(args);
-		
-		String responseSelectBulk = baos1.toString("UTF-8");
-		origOut.print(responseSelectBulk);
-		origOut.flush();
-		
-		int startIndex = responseSelectBulk.trim().lastIndexOf("\n");
-		String responseSelect = "";
-
-		if((startIndex != -1) && (startIndex != responseSelectBulk.length())){
-			responseSelect = responseSelectBulk.substring(startIndex+3).trim();
-		}
-		
-		System.setOut(origOut);
-		System.setErr(origErr);
-		
-		return responseSelect;
 	}
 	
 	/**
@@ -370,13 +255,12 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: check for NullPointerException if PersoSim constructor is called with null argument.
+	 * Positive test case: check behavior of PersoSim constructor when called with null argument.
 	 */
 	@Test
 	public void testPersoSimConstructorUnknownArgument() {
 		persoSim = new PersoSim(new String[]{"unknownCommand"});
-		//FIXME SLS this test method must NOT be removed but the assert needs to check something usefull
-		assertTrue(true);
+		assertNotNull(persoSim);
 	}
 	
 	/**
@@ -443,6 +327,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim.executeUserCommands(PersoSim.CMD_SET_PORT, (new Integer (portPostExpected)).toString());
 		
 		responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", SELECT_APDU, PersoSim.DEFAULT_SIM_HOST, portPostExpected);
+		
 		assertEquals(SW_NO_ERROR, responseSelect);
 	}
 
