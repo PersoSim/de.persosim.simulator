@@ -94,7 +94,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	 * Constructs an object only containing the provided object
 	 * @param tlvDataObject the object to contain
 	 */
-	public TlvDataObjectContainer(TlvDataObject tlvDataObject) {
+	public TlvDataObjectContainer(TlvDataObject... tlvDataObject) {
 		this();
 		this.addTlvDataObject(tlvDataObject);
 	}
@@ -241,9 +241,10 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	}
 	
 	@Override
-	public void addTlvDataObject(TlvDataObject tlvDataObject) {
-		if(tlvDataObject == null) {throw new NullPointerException("tlvDataObject object must not be null");}
-		this.tlvObjects.add(tlvDataObject);
+	public void addTlvDataObject(TlvDataObject... tlvDataObject) {
+		for (int i = 0; i < tlvDataObject.length; i++) {
+			this.tlvObjects.add(tlvDataObject[i]);	
+		}
 	}
 	
 	@Override

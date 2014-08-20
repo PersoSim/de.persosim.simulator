@@ -60,7 +60,7 @@ public interface TlvDataStructure extends Iterable<TlvDataObject> {
 	 * @param tlvDataObject
 	 *            the object to be added
 	 */
-	public void addTlvDataObject(TlvDataObject tlvDataObject);
+	public void addTlvDataObject(TlvDataObject... tlvDataObject);
 	
 	/**
 	 * Removes the object at the specified path if possible.

@@ -222,7 +222,7 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	}
 	
 	@Override
-	public void addTlvDataObject(TlvDataObject tlvDataObject) {
+	public void addTlvDataObject(TlvDataObject... tlvDataObject) {
 		tlvDataObjectContainer.addTlvDataObject(tlvDataObject);
 	}
 
