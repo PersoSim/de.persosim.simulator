@@ -29,7 +29,15 @@ public interface TlvDataStructure extends Iterable<TlvDataObject> {
 	public TlvDataObject getTlvDataObject(TlvPath path);
 	
 	/**
-	 * Returns the TLV data object identified by the provided tag.
+	 * Returns the TLV data object identified by the provided tag identifier.
+	 * @param tagIdentifier 
+	 * @return the TLV data object identified by the provided tag, null otherwise
+	 */
+	public TlvDataObject getTlvDataObject(TlvTagIdentifier tagIdentifier);
+	
+	/**
+	 * convenience method to allow retrieving objects with an TlvTag directly.
+	 * @see #getTlvDataObject(TlvTagIdentifier)
 	 * @param tlvTag the tag used for identification
 	 * @return the TLV data object identified by the provided tag, null otherwise
 	 */

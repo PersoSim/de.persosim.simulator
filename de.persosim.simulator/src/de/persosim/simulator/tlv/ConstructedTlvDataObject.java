@@ -203,6 +203,11 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	public TlvDataObject getTlvDataObject(TlvTag tlvTag) {
 		return tlvDataObjectContainer.getTlvDataObject(tlvTag);
 	}
+
+	@Override
+	public TlvDataObject getTlvDataObject(TlvTagIdentifier tagIdentifier) {
+		return tlvDataObjectContainer.getTlvDataObject(tagIdentifier);
+	}
 	
 	@Override
 	public TlvDataObject getTlvDataObject(TlvPath path, int index) {

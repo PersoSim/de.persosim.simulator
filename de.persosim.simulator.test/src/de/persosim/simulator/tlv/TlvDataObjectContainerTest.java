@@ -35,9 +35,9 @@ public class TlvDataObjectContainerTest implements TlvConstants {
 		
 		TlvDataObjectContainer container = new TlvDataObjectContainer(child1, child2);
 
-		//FIXME enable the following line (and implement the requied methods)
-//		assertEquals(child2, container.getTlvDataObject(new TlvTagIdentifier(TAG_INTEGER, 1)));
+		assertEquals(child2, container.getTlvDataObject(new TlvTagIdentifier(TAG_INTEGER, 1)));
 	}
 	
-	//FIXME add negative test, when this occurence cannot be found 
+	//FIXME add negative test, when this occurence cannot be found
+	//FIXME check usage of TagIndentifiers from within a TlvPath
 }

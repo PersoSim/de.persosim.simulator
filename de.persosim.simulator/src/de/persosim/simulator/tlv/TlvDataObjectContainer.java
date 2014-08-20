@@ -146,16 +146,26 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	}
 	
 	@Override
-	public TlvDataObject getTlvDataObject(TlvTag tlvTag) {
-		if(tlvTag == null) {throw new NullPointerException("tag must not be null");}
+	public TlvDataObject getTlvDataObject(TlvTagIdentifier tagIdentifier) {
+		if(tagIdentifier == null) {throw new NullPointerException("tag must not be null");}
+		int remainingOccurences = tagIdentifier.getOccurence();
 		
 		for(TlvDataObject tlvDataObject : this.tlvObjects) {
-			if(tlvDataObject.getTlvTag().equals(tlvTag)) {
-				return tlvDataObject;
+			if(tlvDataObject.getTlvTag().equals(tagIdentifier.getTag())) {
+				if (remainingOccurences == 0) {
+					return tlvDataObject;
+				} else {
+					remainingOccurences--;
+				}
 			}
 		}
 		
 		return null;
+	}
+	
+	@Override
+	public TlvDataObject getTlvDataObject(TlvTag tlvTag) {
+		return getTlvDataObject(new TlvTagIdentifier(tlvTag));
 	}
 	
 	@Override
