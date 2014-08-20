@@ -245,6 +245,7 @@ public class PersoSim implements Runnable {
 			if(cmd.equals(CMD_EXIT)) {
 				args.remove(0);
 				executeUserCommands = false;
+				System.out.println("simulator exit");
 				return stopSimulator();
 			}
 		}
@@ -532,27 +533,18 @@ public class PersoSim implements Runnable {
 	private void handleUserCommands() {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-		PrintStream	origOut	= System.out;
-		
 		executeUserCommands = true;
 		while (executeUserCommands) {
 			System.out.println("PersoSim commandline: ");
-			origOut.println("still alive");
-			origOut.flush();
 			String cmd = null;
 			try {
-				System.out.println("read cmd");
 				cmd = br.readLine();
-				System.out.println("cmd is: " + cmd);
 			} catch (IOException e) {
 				e.printStackTrace();
-				origOut.println("somethign wrong");
-				origOut.flush();
 			}
 			try {
 				if (cmd != null) {
 					cmd = cmd.trim();
-					System.out.println("new cmd: " + cmd);
 					String[] args = parseCommand(cmd);
 					executeUserCommands(args);
 				}
@@ -630,6 +622,7 @@ public class PersoSim implements Runnable {
 				String currentArgument = currentArgs.get(0);
 				System.out.println("unrecognized argument \"" + currentArgument + "\" will be ignored");
 				currentArgs.remove(0);
+				printHelpCmd();
 			}
 		}
 		
@@ -675,6 +668,7 @@ public class PersoSim implements Runnable {
 		        default:
 		        	System.out.println("unrecognized command or parameter \"" + currentArgument + "\" will be ignored");
 		        	currentArgs.remove(0);
+		        	printHelpArgs();
 		            break;
 			}
 		}
