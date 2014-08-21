@@ -301,7 +301,7 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	public boolean isValidBerEncoding() {
 		if(!super.isValidBerEncoding()) {return false;}
 		
-		return isConstructedTLVObject();
+		return tlvTag.indicatesEncodingConstructed();
 	}
 
 	/**

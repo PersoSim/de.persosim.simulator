@@ -179,7 +179,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 		
 		if(recursive) {
 			for(TlvDataObject tlvDataObject : this.tlvObjects) {
-				if(tlvDataObject.isConstructedTLVObject()) {
+				if(tlvDataObject instanceof ConstructedTlvDataObject) {
 					noOfElements += ((ConstructedTlvDataObject) tlvDataObject).getNoOfElements(recursive);
 				}
 			}
@@ -235,15 +235,12 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	
 	@Override
 	public void addTlvDataObject(TlvPath path, TlvDataObject tlvDataObject) {
-		TlvDataObject supposedParent;
-		ConstructedTlvDataObject actualParent;
+		TlvDataObject supposedParent = getTlvDataObject(path);
 		
-		supposedParent = this.getTlvDataObject(path);
-		
-		if((supposedParent != null) && (supposedParent.isConstructedTLVObject())) {
-			actualParent = (ConstructedTlvDataObject) supposedParent;
+		if((supposedParent != null) && (supposedParent instanceof ConstructedTlvDataObject)) {
+			ConstructedTlvDataObject actualParent = (ConstructedTlvDataObject) supposedParent;
 			actualParent.addTlvDataObject(tlvDataObject);
-		}
+		} //XXX add consistent behavior for these failure cases, e.g. notify the caller that no action was taken at all
 	}
 	
 	@Override
@@ -269,10 +266,10 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 			
 			TlvDataObject supposedParent = this.getTlvDataObject(pathToParent);
 			
-			if((supposedParent != null) && (supposedParent.isConstructedTLVObject())) {
+			if((supposedParent != null) && (supposedParent instanceof ConstructedTlvDataObject)) {
 				ConstructedTlvDataObject actualParent = (ConstructedTlvDataObject) supposedParent;
 				actualParent.removeTlvDataObject(tagToBeRemoved);
-			}
+			} //XXX add consistent behavior for these failure cases, e.g. notify the caller that no action was taken at all
 		}
 	}
 	
