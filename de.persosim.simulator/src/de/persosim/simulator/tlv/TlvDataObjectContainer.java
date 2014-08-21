@@ -255,34 +255,28 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 		if(path == null) {throw new NullPointerException("path must not be null");};
 		if(path.size() < 1) {throw new IllegalArgumentException("path must not be empty");};
 		
-		//FIXME review/cleanup this
-		TlvTag tagToBeRemoved = path.getLastElement().getTag();
-		
 		if(path.size() == 1) {
-			removeTlvDataObject(tagToBeRemoved);
+			removeTlvDataObject(path.get(0));
 		} else{
-			TlvPath pathToParent = path.clone();
-			pathToParent.remove(pathToParent.size() - 1);
+			TlvPath subPath = path.clone();
+			subPath.remove(0);
 			
-			TlvDataObject supposedParent = this.getTlvDataObject(pathToParent);
-			
+			TlvDataObject supposedParent = getTlvDataObject(path.get(0));
 			if((supposedParent != null) && (supposedParent instanceof ConstructedTlvDataObject)) {
-				ConstructedTlvDataObject actualParent = (ConstructedTlvDataObject) supposedParent;
-				actualParent.removeTlvDataObject(tagToBeRemoved);
+				((ConstructedTlvDataObject) supposedParent).removeTlvDataObject(subPath);
 			} //XXX add consistent behavior for these failure cases, e.g. notify the caller that no action was taken at all
 		}
 	}
 	
 	@Override
+	public void removeTlvDataObject(TlvTagIdentifier tagIdentifier) {
+		TlvDataObject objToRemove = getTlvDataObject(tagIdentifier);
+		tlvObjects.remove(objToRemove);		
+	}
+	
+	@Override
 	public void removeTlvDataObject(TlvTag tlvTag) {
-		TlvDataObject tlvDataObject;
-		
-		for(int i = 0; i < this.tlvObjects.size(); i++) {
-			tlvDataObject = this.tlvObjects.get(i);
-			if(tlvDataObject.matches(tlvTag)) {
-				this.tlvObjects.remove(i);
-			}
-		}
+		removeTlvDataObject(new TlvTagIdentifier(tlvTag));
 	}
 
 	@Override

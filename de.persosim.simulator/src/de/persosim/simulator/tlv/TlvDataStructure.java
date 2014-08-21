@@ -36,7 +36,7 @@ public interface TlvDataStructure extends Iterable<TlvDataObject> {
 	public TlvDataObject getTlvDataObject(TlvTagIdentifier tagIdentifier);
 	
 	/**
-	 * convenience method to allow retrieving objects with an TlvTag directly.
+	 * Convenience method to allow retrieving objects with a TlvTag directly.
 	 * @see #getTlvDataObject(TlvTagIdentifier)
 	 * @param tlvTag the tag used for identification
 	 * @return the TLV data object identified by the provided tag, null otherwise
@@ -77,8 +77,15 @@ public interface TlvDataStructure extends Iterable<TlvDataObject> {
 	public void removeTlvDataObject(TlvPath path);
 	
 	/**
-	 * Removes the specified object from this data structure if possible.
-	 * @param tlvTag the object to be removed
+	 * Removes the specified object from this data structure if present.
+	 * @param tagIdentifier the object to be removed
+	 */
+	public void removeTlvDataObject(TlvTagIdentifier tagIdentifier);
+	
+	/**
+	 * Convenience method to allow removing objects with a matching TlvTag directly.
+	 * @see #removeTlvDataObject(TlvTagIdentifier)
+	 * @param tlvTag the tag used for identification
 	 */
 	public void removeTlvDataObject(TlvTag tlvTag);
 	

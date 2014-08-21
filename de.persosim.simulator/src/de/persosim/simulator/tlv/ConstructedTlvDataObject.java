@@ -237,6 +237,11 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	}
 
 	@Override
+	public void removeTlvDataObject(TlvTagIdentifier tagIdentifier) {
+		tlvDataObjectContainer.removeTlvDataObject(tagIdentifier);
+	}
+
+	@Override
 	public void removeTlvDataObject(TlvTag tlvTag) {
 		tlvDataObjectContainer.removeTlvDataObject(tlvTag);
 	}
