@@ -63,7 +63,7 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 			return;
 		} else{
 			TlvSpecification subTlvSpec;
-			int index = getFirstIndexOfSubTag(path.get(pathOffset));
+			int index = getIndexOfSubTag(path.get(pathOffset));
 			
 			if(index >= 0) {
 				subTlvSpec = get(index);
@@ -90,7 +90,7 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 	}
 	
 	/**
-	 * This method returns the first index of an occurrence of a tag matching
+	 * This method returns the index of an occurrence of a tag matching
 	 * the provided tag within the sub tags of this object. If no occurrence can
 	 * be found the returned index will be "-1".
 	 * 
@@ -98,12 +98,18 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 	 *            the tag to be matched for
 	 * @return the first occurrence of the provided tag
 	 */
-	public int getFirstIndexOfSubTag(TlvTagIdentifier tlvTagIdentifier) {
+	public int getIndexOfSubTag(TlvTagIdentifier tlvTagIdentifier) {
 		if(tlvTagIdentifier == null) {throw new NullPointerException("tag must not be null");}
 		
+		int remainingOccurences = tlvTagIdentifier.getOccurence();
+		
 		for(int i = 0; i < size(); i++) {
-			if(get(i).matches(tlvTagIdentifier.getTag())) { //FIXME review/cleanup this, first invewtigate what this method is used for
-				return i;
+			if(get(i).matches(tlvTagIdentifier.getTag())) {
+				if (remainingOccurences == 0) {
+					return i;
+				} else {
+					remainingOccurences--;
+				}
 			}
 		}
 		
@@ -134,7 +140,7 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 		while(tlvIterator.hasNext()) {
 			tlvDataObject = tlvIterator.next();
 			
-			currentWorkingIndex = this.getFirstIndexOfSubTag(new TlvTagIdentifier(tlvDataObject.getTlvTag()));
+			currentWorkingIndex = this.getIndexOfSubTag(new TlvTagIdentifier(tlvDataObject.getTlvTag()));
 			
 			if(currentWorkingIndex < 0) {
 				if(!this.allowUnspecifiedSubTags) {
