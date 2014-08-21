@@ -30,6 +30,8 @@ import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
 
+//FIXME SLS generaly use method names with a separating _ between the name of the method to test and the special circumstances that are tested
+//FIXME SLS @Test methods can simply thro Exception instead of a bunch of narroy subclasses. These methods are not intended to be used by any caller that would complain about that
 public class PersoSimTest extends PersoSimTestCase {
 	
 	PersoSim persoSim;
@@ -65,7 +67,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	@After
 	public void tearDown() {
 		if(persoSim != null) {
-			persoSim.executeUserCommands(PersoSim.CMD_STOP);
+			persoSim.executeUserCommands(PersoSim.CMD_STOP); //FIXME SLS why not call persoSim.stopSimulator directly? (and why is it not public?)
 		}
 		
 		System.setOut(origOut);
@@ -124,7 +126,7 @@ public class PersoSimTest extends PersoSimTestCase {
 			
 			respApdu = in.readLine();
 		} catch (IOException e) {
-			throw e;
+			throw e; //FIXME SLS isn't this catch block obsolete?
 		} finally {
 			if (socket != null) {
 				try {
@@ -160,7 +162,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		try {
 			responseBulk = redStdOut.toString("UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// "UTF-8" _is_ valid
+			// "UTF-8" _is_ valid //FIXME SLS then simply throw this exception furhter, we are in a unit test here any unexpected behavior shall lead to failing tests instead of asimple log
 			e.printStackTrace();
 		}
 		
@@ -175,7 +177,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws UnsupportedEncodingException 
 	 */
 	@Test
-	public void testPersoSimConstructorEmptyArgument() throws UnsupportedEncodingException {
+	public void testPersoSimConstructor_EmptyArgument() throws UnsupportedEncodingException {
 		System.out.println("test001");
 		activateStdOutRedirection();
 		
@@ -192,8 +194,8 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: check how PersoSim constructor handles null argument.
 	 */
 	@Test
-	public void testPersoSimConstructorNullArgument() {
-		System.out.println("test002");
+	public void testPersoSimConstructor_NullArgument() {
+		System.out.println("test002"); //FIXME SLS remove all these useless printlns (they don't relate the output to any specific test method, for debugging running the tests on-by-one is more effective)
 		activateStdOutRedirection();
 		
 		persoSim = new PersoSim((String) null);
@@ -209,7 +211,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: check how PersoSim command line handles empty argument.
 	 */
 	@Test
-	public void testExecuteUserCommandsEmptyArgument() {
+	public void testExecuteUserCommands_EmptyArgument() {
 		System.out.println("test017");
 		
 		persoSim = new PersoSim((String) null);
@@ -229,7 +231,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: check how PersoSim command line handles exit command.
 	 */
 	@Test
-	public void testExecuteUserCommandsExit() {
+	public void testExecuteUserCommands_Exit() {
 		System.out.println("test018");
 		
 		persoSim = new PersoSim((String) null);
@@ -249,7 +251,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: check how PersoSim command line handles an unknown argument.
 	 */
 	@Test
-	public void testExecuteUserCommandsUnknownArgument() {
+	public void testExecuteUserCommands_UnknownArgument() {
 		System.out.println("test019");
 		
 		persoSim = new PersoSim((String) null);
@@ -260,7 +262,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		String responseBulk = readRedStdOut();
 		
-		String response = responseBulk.trim();
+		String response = responseBulk.trim(); //FIXME SLS I see this quite offen, why isn't this handled within readRedStdOut()?
 		
 		assertTrue(response.startsWith(PersoSim.LOG_UNKNOWN_ARG));
 	}
@@ -288,7 +290,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		};
 		
 		persoSim = new PersoSim((String) null);
-		persoSim.executeUserCommands(PersoSim.CMD_START);
+		persoSim.executeUserCommands(PersoSim.CMD_START); //FIXME SLS again, execute the corresponding methods directly instead of indirectly through some kind of String parsing method. Check all calls to executeUserCommands 
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
@@ -439,6 +441,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	/**
 	 * Positive test case: check behavior of PersoSim constructor when called with null argument.
 	 */
+	//FIXME SLS this test does not test a null argument as stated in the JavaDoc
 	@Test
 	public void testPersoSimConstructorUnknownArgument() {
 		System.out.println("test013");
@@ -455,7 +458,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws UnknownHostException 
 	 */
 	@Test
-	public void testExecuteUserCommandsCmdLoadPersonalizationValidPersonalization() throws InterruptedException, IllegalArgumentException, JAXBException, UnknownHostException, IOException {
+	public void testExecuteUserCommandsCmdLoadPersonalization_ValidPersonalization() throws InterruptedException, IllegalArgumentException, JAXBException, UnknownHostException, IOException {
 		System.out.println("test014");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
@@ -473,7 +476,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Negative test case: test setting of new personalization via user arguments with invalid personalization.
+	 * Negative test case: test setting of new personalization via user arguments with invalid personalization. //FIXME SLS be a little more detailed here, I see at least two different types of invalid personalization: File does not exist vs. File does not encode a perso, please test both
 	 * @throws InterruptedException 
 	 * @throws IllegalArgumentException 
 	 * @throws IOException 
@@ -488,6 +491,8 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, "non-existing.file");
 		
+		
+		//FIXME SLS this check can be achieved by expectation in the @Test annotation instead of this bulky construct here
 		boolean caughtIoException = false;
 		
 		try {

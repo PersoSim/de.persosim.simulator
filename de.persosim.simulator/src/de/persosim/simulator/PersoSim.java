@@ -76,7 +76,7 @@ public class PersoSim implements Runnable {
 		
 		try {
 			handleArgs(args);
-			processingCommandLineArguments = false;
+			processingCommandLineArguments = false; //FIXME SLS why is this reset here and not at the end of handleArgs()?
 		} catch (IllegalArgumentException e) {
 			System.out.println("simulation aborted, reason is: " + e.getMessage());
 		}
@@ -180,6 +180,8 @@ public class PersoSim implements Runnable {
 	
 	/**
 	 * Stops the simulator thread and returns when the thread is stopped.
+	 * FIXME SLS check value returned by simulator,stop()
+	 * FIXME SLS @return missing here
 	 */
 	private boolean stopSimulator() {
 		boolean simStopped = false;
@@ -348,14 +350,14 @@ public class PersoSim implements Runnable {
 	    			args.remove(0);
 	    			return result;
 	    		} catch(RuntimeException e) {
-	    			result = "unable to set personalization, reason is: " + e.getMessage();
+	    			result = "unable to set personalization, reason is: " + e.getMessage(); //FIXME SLS wrong message within this method
 	    			args.remove(0);
 	    			return result;
 	    		}
 			}
 		}
 		
-		return "unable to process command";
+		return "unable to process command"; //FIXME SLS add more detail here
 	}
 	
 	/**
@@ -385,9 +387,6 @@ public class PersoSim implements Runnable {
 	 *            the port to query
 	 * @return the response
 	 */
-	//FIXME SLS why is this new method needed?
-	//used for testing whether the new port is actually used
-	//no call reference due to deencapsulation
 	private String exchangeApdu(String cmdApdu, String host, int port) {
 		cmdApdu = cmdApdu.replaceAll("\\s", ""); // remove any whitespace
 
@@ -484,7 +483,7 @@ public class PersoSim implements Runnable {
 	    			System.out.println("unable to set personalization, reason is: " + e.getMessage());
 	    			stopSimulator();
 	    			System.out.println("simulation is stopped");
-	    			args.remove(0);
+	    			args.remove(0); //FIXME SLS why remove only one arg here but two above? try to remove them in the same place, maybe read them to local variables and remove them before the catch block
 	    			return false;
 	    		}
 			}
@@ -516,7 +515,7 @@ public class PersoSim implements Runnable {
 	    			}
 	    		} catch(IllegalArgumentException | NullPointerException e) {
 	    			System.out.println("unable to set port, reason is: " + e.getMessage());
-	    			args.remove(0);
+	    			args.remove(0); //FIXME SLS see method above, try to keep the number of removed args consistent
 	    			return false;
 	    		}
 			}
@@ -597,9 +596,7 @@ public class PersoSim implements Runnable {
 	public void executeUserCommands(String... args) {
 		if((args == null) || (args.length == 0)) {System.out.println(LOG_NO_OPERATION); return;}
 		
-		List<String> currentArgs = Arrays.asList(args);
-		// the list returned by Arrays.asList() does not support optional but required remove operation
-		currentArgs = new ArrayList<String>(currentArgs);
+		ArrayList<String> currentArgs = new ArrayList<String>(Arrays.asList(args)); // plain return value of Arrays.asList() does not support required remove operation
 		
 		for(int i = currentArgs.size() - 1; i >= 0; i--) {
 			if(currentArgs.get(i) == null) {
@@ -628,6 +625,7 @@ public class PersoSim implements Runnable {
 				System.out.println(LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored");
 				currentArgs.remove(0);
 				printHelpCmd();
+				//FIXME SLS I expect the loop to be ended here...
 			}
 		}
 		
@@ -656,6 +654,7 @@ public class PersoSim implements Runnable {
 		
 		while(currentArgs.size() > 0) {
 			String currentArgument = currentArgs.get(0);
+			//FIXME SLS why is this code so different from executeUserCommands? Can't args be handled identical? At least the called methods are the same...
 			switch (currentArgument) {
 		        case ARG_LOAD_PERSONALIZATION:
 		        	cmdLoadPersonalization(currentArgs);
