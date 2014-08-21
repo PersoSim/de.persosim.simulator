@@ -44,8 +44,18 @@ public class PersoSimTest extends PersoSimTestCase {
 	public static final String READ_BINARY_APDU = "00B0000004";
 	public static final String SW_NO_ERROR = "9000";
 	
+	static PrintStream	origOut;
+	static PrintStream origErr;
+	
+	static ByteArrayOutputStream redStdOut;
+	static ByteArrayOutputStream redStdErr;
+	
+	
+	
 	@Before
 	public void setUp() {
+		origOut	= System.out;
+		origErr = System.err;
 		
 		MinimumPersonalization perso1 = new MinimumPersonalization(EF_CS_CONTENT_1);
 		perso1.writeToFile(DUMMY_PERSONALIZATION_FILE_1);
@@ -59,30 +69,32 @@ public class PersoSimTest extends PersoSimTestCase {
 		if(persoSim != null) {
 			persoSim.executeUserCommands(PersoSim.CMD_STOP);
 		}
+		
+		System.setOut(origOut);
+		System.setErr(origErr);
 	}
 	
 	public static String sendCommand(PersoSim persoSimInstance, String... args) throws UnsupportedEncodingException {
-		PrintStream	origOut	= System.out;
+		redStdOut = new ByteArrayOutputStream();
+		PrintStream	stdout = new PrintStream(redStdOut);
 		
-		ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
-		PrintStream	stdout = new PrintStream(baos1);
-		
-		ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
-		PrintStream	stderr = new PrintStream(baos2);
+		redStdErr = new ByteArrayOutputStream();
+		PrintStream	stderr = new PrintStream(redStdErr);
 		
 		System.setOut(stdout);
 		System.setErr(stderr);
 		
-		origOut.print(baos1.toString());
+		origOut.print(redStdOut.toString());
 		origOut.flush();
 		
 		persoSimInstance.executeUserCommands(args);
 		
-		String responseBulk = baos1.toString("UTF-8");
+		String responseBulk = redStdOut.toString("UTF-8");
 		origOut.print(responseBulk);
 		origOut.flush();
 		
 		System.setOut(origOut);
+		System.setErr(origErr);
 		
 		return responseBulk;
 	}
@@ -98,16 +110,83 @@ public class PersoSimTest extends PersoSimTestCase {
 		return response;
 	}
 	
+	public static void activateStdOutRedirection() {
+		redStdOut = new ByteArrayOutputStream();
+		PrintStream	stdout = new PrintStream(redStdOut);
+		
+		System.setOut(stdout);
+		origOut.print(redStdOut.toString());
+		origOut.flush();
+	}
+	
+	public static void activateStdErrRedirection() {
+		redStdErr = new ByteArrayOutputStream();
+		PrintStream	stderr = new PrintStream(redStdErr);
+		
+		System.setErr(stderr);
+		origOut.print(redStdErr.toString());
+		origOut.flush();
+	}
+	
+	public static String readRedStdOut() {
+		String responseBulk = "";
+		
+		try {
+			responseBulk = redStdOut.toString("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// "UTF-8" _is_ valid
+			e.printStackTrace();
+		}
+		
+		origOut.print(responseBulk);
+		origOut.flush();
+		
+		return responseBulk;
+	}
+	
+	public static String readRedStdErr() {
+		String responseBulk = "";
+		
+		try {
+			responseBulk = redStdErr.toString("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// "UTF-8" _is_ valid
+			e.printStackTrace();
+		}
+		
+		origErr.print(responseBulk);
+		origErr.flush();
+		
+		return responseBulk;
+	}
+	
 	//FIXME SLS missing test: launch PersoSimConsole, hit enter => this produces a NPE and shouldn't
 	//FIXME SLS missing test: launch PersoSimConsole, type exit, hit enter => this produces a list of available commands and shouldn't
 	//FIXME SLS missing test: launch PersoSimConsole, type an unknown command, hit enter => this should produces a list of available commands (along the existing line that the given command is unknown) and doesn't
 	
 	/**
 	 * Positive test case: check behavior of PersoSim constructor when called with empty argument.
+	 * @throws UnsupportedEncodingException 
 	 */
 	@Test
-	public void testPersoSimConstructorEmptyArgument() {
+	public void testPersoSimConstructorEmptyArgument() throws UnsupportedEncodingException {
+		activateStdOutRedirection();
+		
 		persoSim = new PersoSim(new String[]{});
+		
+		String responseBulk = readRedStdOut();
+		
+		String response = responseBulk.trim();
+		
+		assertEquals(PersoSim.LOG_NO_OPERATION, response);
+	}
+	
+	/**
+	 * Positive test case: check for NullPointerException if PersoSim constructor is called with null argument.
+	 */
+	@Test
+	public void testPersoSimConstructorNullArgument() {
+		persoSim = new PersoSim((String) null);
 		assertNotNull(persoSim);
 	}
 	
@@ -141,15 +220,6 @@ public class PersoSimTest extends PersoSimTestCase {
 		String responseReadBinaryExpected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_1, 4)).toUpperCase();
 		String responseReadBinary = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, READ_BINARY_APDU));
 		assertEquals(responseReadBinaryExpected, responseReadBinary.substring(0, responseReadBinary.length() - 4).toUpperCase());
-	}
-	
-	/**
-	 * Positive test case: check for NullPointerException if PersoSim constructor is called with null argument.
-	 */
-	@Test
-	public void testPersoSimConstructorNullArgument() {
-		persoSim = new PersoSim((String) null);
-		assertNotNull(persoSim);
 	}
 	
 	/**
