@@ -78,20 +78,24 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		persoSimInstance.executeUserCommands(args);
 		
-		String responseSelectBulk = baos1.toString("UTF-8");
-		origOut.print(responseSelectBulk);
+		String responseBulk = baos1.toString("UTF-8");
+		origOut.print(responseBulk);
 		origOut.flush();
-		
-		int startIndex = responseSelectBulk.trim().lastIndexOf("\n");
-		String responseSelect = "";
-
-		if((startIndex != -1) && (startIndex != responseSelectBulk.length())){
-			responseSelect = responseSelectBulk.substring(startIndex+3).trim();
-		}
 		
 		System.setOut(origOut);
 		
-		return responseSelect;
+		return responseBulk;
+	}
+	
+	public static String extractStatusWord(String responseBulk) {
+		int startIndex = responseBulk.trim().lastIndexOf("\n");
+		String response = "";
+
+		if((startIndex != -1) && (startIndex != responseBulk.length())){
+			response = responseBulk.substring(startIndex+3).trim();
+		}
+		
+		return response;
 	}
 	
 	//FIXME SLS missing test: launch PersoSimConsole, hit enter => this produces a NPE and shouldn't
@@ -131,11 +135,11 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim = new PersoSim((String) null);
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		String responseSelect = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
+		String responseSelect = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
 		
 		String responseReadBinaryExpected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_1, 4)).toUpperCase();
-		String responseReadBinary = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, READ_BINARY_APDU);
+		String responseReadBinary = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, READ_BINARY_APDU));
 		assertEquals(responseReadBinaryExpected, responseReadBinary.substring(0, responseReadBinary.length() - 4).toUpperCase());
 	}
 	
@@ -157,11 +161,11 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testStartSimulator() throws InterruptedException, UnsupportedEncodingException {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
-		String responseSelect1 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
+		String responseSelect1 = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		String responseSelect2 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
+		String responseSelect2 = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect2);
 		assertTrue(responseSelect1 != responseSelect2);
 	}
@@ -177,11 +181,11 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		String responseSelect1 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
+		String responseSelect1 = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect1);
 		
 		persoSim.executeUserCommands(PersoSim.CMD_STOP);
-		String responseSelect2 = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
+		String responseSelect2 = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
 		assertTrue(responseSelect1 != responseSelect2);
 	}
 	
@@ -285,10 +289,10 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_2);
 		
-		String responseSelect = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
+		String responseSelect = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
 		
-		String responseReadBinary = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, READ_BINARY_APDU);
+		String responseReadBinary = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, READ_BINARY_APDU));
 		
 		String responseReadBinaryExpected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_2, 4)).toUpperCase();
 		
@@ -309,7 +313,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, "non-existing.file");
 		
-		String responseSelect = sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU);
+		String responseSelect = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
 		assertFalse(responseSelect.equals(SW_NO_ERROR));
 	}
 	
