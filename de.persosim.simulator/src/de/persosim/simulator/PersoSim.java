@@ -61,6 +61,8 @@ public class PersoSim implements Runnable {
 	public static final String CMD_CONSOLE_ONLY               = "--consoleOnly";
 	
 	public static final String LOG_NO_OPERATION = "nothing to process";
+	public static final String LOG_SIM_EXIT     = "simulator exit";
+	public static final String LOG_UNKNOWN_ARG  = "unknown argument";
 	
 	public static final int DEFAULT_SIM_PORT = 9876;
 	public static final String DEFAULT_SIM_HOST = "localhost";
@@ -247,7 +249,7 @@ public class PersoSim implements Runnable {
 			if(cmd.equals(CMD_EXIT)) {
 				args.remove(0);
 				executeUserCommands = false;
-				System.out.println("simulator exit");
+				System.out.println(LOG_SIM_EXIT);
 				return stopSimulator();
 			}
 		}
@@ -582,7 +584,6 @@ public class PersoSim implements Runnable {
 	 */
 	public void executeUserCommands(String cmd) {
 		String trimmedCmd = cmd.trim();
-		System.out.println("new cmd: " + trimmedCmd);
 		String[] args = parseCommand(trimmedCmd);
 		
 		executeUserCommands(args);
@@ -594,7 +595,7 @@ public class PersoSim implements Runnable {
 	 * @param args the parsed commands and arguments
 	 */
 	public void executeUserCommands(String... args) {
-		if((args == null) || (args.length == 0)) {return;}
+		if((args == null) || (args.length == 0)) {System.out.println(LOG_NO_OPERATION); return;}
 		
 		List<String> currentArgs = Arrays.asList(args);
 		// the list returned by Arrays.asList() does not support optional but required remove operation
@@ -605,6 +606,8 @@ public class PersoSim implements Runnable {
 				currentArgs.remove(i);
 			}
 		}
+		
+		if(currentArgs.size() == 0) {System.out.println(LOG_NO_OPERATION); return;}
 		
 		int noOfArgsWhenCheckedLast;
 		while(currentArgs.size() > 0) {
@@ -622,7 +625,7 @@ public class PersoSim implements Runnable {
 			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
 				//first command in queue has not been processed
 				String currentArgument = currentArgs.get(0);
-				System.out.println("unrecognized argument \"" + currentArgument + "\" will be ignored");
+				System.out.println(LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored");
 				currentArgs.remove(0);
 				printHelpCmd();
 			}
@@ -670,7 +673,7 @@ public class PersoSim implements Runnable {
 		        	currentArgs.remove(0);
 		        	break;
 		        default:
-		        	System.out.println("unrecognized command or parameter \"" + currentArgument + "\" will be ignored");
+		        	System.out.println(LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored");
 		        	currentArgs.remove(0);
 		        	printHelpArgs();
 		            break;
