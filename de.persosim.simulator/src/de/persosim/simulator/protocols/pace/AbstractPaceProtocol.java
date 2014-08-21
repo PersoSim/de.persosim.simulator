@@ -139,7 +139,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		/* PACE OID */
 		/* Check for the PACE OID for itself */
 		/* tlvObject will never be null if APDU passed check against APDU specification */
-		TlvDataObject tlvObject = commandData.getTagField(TAG_80);
+		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_80);
 		
 		try {
 			paceOid = new PaceOid(tlvObject.getValueField());
@@ -153,7 +153,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		
 		/* PACE password */
 		/* Check for the PACE password itself */
-		tlvObject = commandData.getTagField(TAG_83);
+		tlvObject = commandData.getTlvDataObject(TAG_83);
 		
 		CardObject pwdCandidate = cardState.getObject(new AuthObjectIdentifier(tlvObject.getValueField()), Scope.FROM_MF);
 		if (pwdCandidate instanceof PasswordAuthObject){
@@ -173,7 +173,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		 * parameters registered for the selected OID exactly one matches the
 		 * key agreement implicitly indicated by the OID.
 		 */
-		tlvObject = commandData.getTagField(TAG_84);
+		tlvObject = commandData.getTlvDataObject(TAG_84);
 		
 		DomainParameterSetIdentifier domainParameterSetIdentifier;
 		if(tlvObject == null) {
@@ -207,12 +207,12 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		/*
 		 * {@link #tlvObject} may be null if no terminal authentication follows PACE
 		 */
-		tlvObject = commandData.getTagField(TAG_7F4C);
+		tlvObject = commandData.getTlvDataObject(TAG_7F4C);
 		if (tlvObject != null){
 			try {
 				ConstructedTlvDataObject chatData = (ConstructedTlvDataObject) tlvObject;
-				TlvDataObject oidData = chatData.getTagField(TAG_06);
-				byte[] roleData = chatData.getTagField(TAG_53).getValueField();
+				TlvDataObject oidData = chatData.getTlvDataObject(TAG_06);
+				byte[] roleData = chatData.getTlvDataObject(TAG_53).getValueField();
 				TaOid chatOid = new TaOid(oidData.getValueField());
 				RelativeAuthorization authorization = new RelativeAuthorization(
 						CertificateRole.getFromMostSignificantBits(roleData[0]), BitField.buildFromBigEndian(
@@ -399,7 +399,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		 * Extract mapping data
 		 */
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-		TlvDataObject tlvObject = commandData.getTagField(new TlvPath(TAG_7C, TAG_81));
+		TlvDataObject tlvObject = commandData.getTlvDataObject(new TlvPath(TAG_7C, TAG_81));
 		
 		/* 
 		 * The received mapping data may contain the following
@@ -462,7 +462,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		//get commandDataContainer
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 						
-		TlvDataObject tlvObject = commandData.getTagField(new TlvPath(new TlvTag((byte) 0x7C), new TlvTag((byte) 0x83)));
+		TlvDataObject tlvObject = commandData.getTlvDataObject(new TlvPath(new TlvTag((byte) 0x7C), new TlvTag((byte) 0x83)));
 		byte[] rawKeyPlain = tlvObject.getValueField();
 		
 		log(this, "PCD's public raw key of " + rawKeyPlain.length + " bytes length is: " + HexString.encode(rawKeyPlain), TRACE);
@@ -510,7 +510,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		/* get commandDataContainer */
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 						
-		tlvObject = commandData.getTagField(path);
+		tlvObject = commandData.getTlvDataObject(path);
 		pcdTokenReceivedFromPCD = tlvObject.getValueField();
 		
 		/* construct authentication token input based on PACE OID and ephemeral keys */

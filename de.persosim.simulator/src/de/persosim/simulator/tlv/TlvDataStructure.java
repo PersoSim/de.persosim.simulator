@@ -18,7 +18,7 @@ public interface TlvDataStructure extends Iterable<TlvDataObject> {
 	 * @param index the current position within the path
 	 * @return the TLV data object at the specified path, null otherwise
 	 */
-	public TlvDataObject getTagField(TlvPath path, int index);
+	public TlvDataObject getTlvDataObject(TlvPath path, int index);
 	
 	/**
 	 * Returns the TLV data object at the specified path.
@@ -26,21 +26,29 @@ public interface TlvDataStructure extends Iterable<TlvDataObject> {
 	 * @param path the path of the TLV data object, including the objects tag itself, not including the starting object
 	 * @return the TLV data object at the specified path, null otherwise
 	 */
-	public TlvDataObject getTagField(TlvPath path);
+	public TlvDataObject getTlvDataObject(TlvPath path);
 	
 	/**
-	 * Returns the TLV data object identified by the provided tag.
+	 * Returns the TLV data object identified by the provided tag identifier.
+	 * @param tagIdentifier 
+	 * @return the TLV data object identified by the provided tag, null otherwise
+	 */
+	public TlvDataObject getTlvDataObject(TlvTagIdentifier tagIdentifier);
+	
+	/**
+	 * Convenience method to allow retrieving objects with a TlvTag directly.
+	 * @see #getTlvDataObject(TlvTagIdentifier)
 	 * @param tlvTag the tag used for identification
 	 * @return the TLV data object identified by the provided tag, null otherwise
 	 */
-	public TlvDataObject getTagField(TlvTag tlvTag);
+	public TlvDataObject getTlvDataObject(TlvTag tlvTag);
 	
 	/**
 	 * Returns whether this data structure contains a TLV data object identified by the provided tag.
 	 * @param tlvTag the tag used for identification
 	 * @return whether this data structure contains a TLV data object identified by the provided tag
 	 */
-	public boolean containsTagField(TlvTag tagField);
+	public boolean containsTlvDataObject(TlvTag tagField);
 	
 	/*--------------------------------------------------------------------------------*/
 	
@@ -55,12 +63,14 @@ public interface TlvDataStructure extends Iterable<TlvDataObject> {
 	 * Adds the specified object to this data structure if possible
 	 * <p>
 	 * NOTE: callers MUST ensure that they do not construct circular references
-	 * within the object structure
+	 * within the object structure. Also adding of the SAME object at different
+	 * places in the object structure is not advisable (though not forbidden)
+	 * but may lead to unexpected behavior when adding/removing elements.
 	 * 
 	 * @param tlvDataObject
 	 *            the object to be added
 	 */
-	public void addTlvDataObject(TlvDataObject tlvDataObject);
+	public void addTlvDataObject(TlvDataObject... tlvDataObject);
 	
 	/**
 	 * Removes the object at the specified path if possible.
@@ -69,8 +79,15 @@ public interface TlvDataStructure extends Iterable<TlvDataObject> {
 	public void removeTlvDataObject(TlvPath path);
 	
 	/**
-	 * Removes the specified object from this data structure if possible.
-	 * @param tlvTag the object to be removed
+	 * Removes the specified object from this data structure if present.
+	 * @param tagIdentifier the object to be removed
+	 */
+	public void removeTlvDataObject(TlvTagIdentifier tagIdentifier);
+	
+	/**
+	 * Convenience method to allow removing objects with a matching TlvTag directly.
+	 * @see #removeTlvDataObject(TlvTagIdentifier)
+	 * @param tlvTag the tag used for identification
 	 */
 	public void removeTlvDataObject(TlvTag tlvTag);
 	

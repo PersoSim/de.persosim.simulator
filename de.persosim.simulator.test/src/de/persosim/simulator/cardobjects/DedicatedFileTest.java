@@ -33,7 +33,7 @@ public class DedicatedFileTest extends PersoSimTestCase {
 	public void testGetFileControlParameterObject(){
 		ConstructedTlvDataObject fcp = df.getFileControlParameterDataObject();
 		TlvTag dfNameTag = new TlvTag((byte)0x84);
-		assertTrue(fcp.containsTagField(dfNameTag));
-		assertArrayEquals(dfName, fcp.getTagField(dfNameTag).getValueField());
+		assertTrue(fcp.containsTlvDataObject(dfNameTag));
+		assertArrayEquals(dfName, fcp.getTlvDataObject(dfNameTag).getValueField());
 	}
 }

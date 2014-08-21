@@ -158,7 +158,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		}
 		
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-		TlvDataObject publicKeyReference = commandData.getTagField(TR03110Utils.TAG_83);
+		TlvDataObject publicKeyReference = commandData.getTlvDataObject(TR03110Utils.TAG_83);
 		
 		//get necessary information stored in an earlier protocol (e.g. PACE)
 		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
@@ -264,10 +264,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		}
 		
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-		TlvDataObject cryptographicMechanismReferenceData = commandData.getTagField(TR03110Utils.TAG_80);
-		TlvDataObject publicKeyReferenceData = commandData.getTagField(TR03110Utils.TAG_83);
-		TlvDataObject auxiliaryAuthenticatedData = commandData.getTagField(TR03110Utils.TAG_67);
-		TlvDataObject ephemeralPublicKeyData = commandData.getTagField(TR03110Utils.TAG_91);
+		TlvDataObject cryptographicMechanismReferenceData = commandData.getTlvDataObject(TR03110Utils.TAG_80);
+		TlvDataObject publicKeyReferenceData = commandData.getTlvDataObject(TR03110Utils.TAG_83);
+		TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TR03110Utils.TAG_67);
+		TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(TR03110Utils.TAG_91);
 		
 		if (publicKeyReferenceData != null){
 			try {
@@ -328,8 +328,8 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 						return;	
 					}
 					ConstructedTlvDataObject ddo = (ConstructedTlvDataObject) currentObject;
-					TlvDataObject objectIdentifier = ddo.getTagField(TR03110Utils.TAG_06);
-					TlvDataObject discretionaryData = ddo.getTagField(TR03110Utils.TAG_53);
+					TlvDataObject objectIdentifier = ddo.getTlvDataObject(TR03110Utils.TAG_06);
+					TlvDataObject discretionaryData = ddo.getTlvDataObject(TR03110Utils.TAG_53);
 					try {
 						auxiliaryData.add(new AuthenticatedAuxiliaryData(new TaOid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
 					} catch (IllegalArgumentException e) {
@@ -415,8 +415,8 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		}
 		
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) commandData.getTagField(TR03110Utils.TAG_7F4E);
-		PrimitiveTlvDataObject certificateSignatureData = (PrimitiveTlvDataObject) commandData.getTagField(TR03110Utils.TAG_5F37);
+		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) commandData.getTlvDataObject(TR03110Utils.TAG_7F4E);
+		PrimitiveTlvDataObject certificateSignatureData = (PrimitiveTlvDataObject) commandData.getTlvDataObject(TR03110Utils.TAG_5F37);
 		
 		try {
 			CardVerifiableCertificate certificate = new CardVerifiableCertificate(certificateBodyData, currentCertificate.getPublicKey());
@@ -708,11 +708,11 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	private void extractTerminalSector(CardVerifiableCertificate certificate) {
 		for(CertificateExtension extension : certificate.getCertificateExtensions()){
 			if (extension.getObjectIdentifier().equals(TaOid.id_Sector)){
-				if (extension.getDataObjects().containsTagField(TlvConstants.TAG_80)){
-					firstSectorPublicKeyHash = extension.getDataObjects().getTagField(TlvConstants.TAG_80).getValueField();
+				if (extension.getDataObjects().containsTlvDataObject(TlvConstants.TAG_80)){
+					firstSectorPublicKeyHash = extension.getDataObjects().getTlvDataObject(TlvConstants.TAG_80).getValueField();
 				}
-				if (extension.getDataObjects().containsTagField(TlvConstants.TAG_81)){
-					secondSectorPublicKeyHash = extension.getDataObjects().getTagField(TlvConstants.TAG_81).getValueField();
+				if (extension.getDataObjects().containsTlvDataObject(TlvConstants.TAG_81)){
+					secondSectorPublicKeyHash = extension.getDataObjects().getTlvDataObject(TlvConstants.TAG_81).getValueField();
 				}
 			}
 		}

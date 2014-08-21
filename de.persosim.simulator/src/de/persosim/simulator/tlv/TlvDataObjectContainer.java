@@ -94,7 +94,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	 * Constructs an object only containing the provided object
 	 * @param tlvDataObject the object to contain
 	 */
-	public TlvDataObjectContainer(TlvDataObject tlvDataObject) {
+	public TlvDataObjectContainer(TlvDataObject... tlvDataObject) {
 		this();
 		this.addTlvDataObject(tlvDataObject);
 	}
@@ -112,25 +112,44 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 
 	
 	@Override
-	public TlvDataObject getTagField(TlvPath path, int index) {
-		TlvTag currentTlvTag;
-		
+	public TlvDataObject getTlvDataObject(TlvPath path, int index) {
 		if((path == null) || (path.size() == 0)) {throw new NullPointerException();}
 		if((index < 0) || (index >= path.size())) {throw new IllegalArgumentException("index must not be outside of path");}
 		
-		currentTlvTag = path.get(index);
-		if(currentTlvTag == null) {throw new NullPointerException();}
+		
+		//find indicated child
+		TlvDataObject indicatedChild = getTlvDataObject(path.get(index));
+		
+		if (indicatedChild == null) {
+			return null;
+		}
+		
+		if(index == (path.size() - 1)) {
+			return indicatedChild;
+		} else if(indicatedChild instanceof ConstructedTlvDataObject) {
+			return ((ConstructedTlvDataObject) indicatedChild).getTlvDataObject(path, index + 1);
+		} else{
+			return null;
+		}
+		
+	}
+	
+	@Override
+	public TlvDataObject getTlvDataObject(TlvPath path) {
+		return this.getTlvDataObject(path, 0);
+	}
+	
+	@Override
+	public TlvDataObject getTlvDataObject(TlvTagIdentifier tagIdentifier) {
+		if(tagIdentifier == null) {throw new NullPointerException("tag must not be null");}
+		int remainingOccurences = tagIdentifier.getNoOfPreviousOccurrences();
 		
 		for(TlvDataObject tlvDataObject : this.tlvObjects) {
-			if(tlvDataObject.getTlvTag().matches(currentTlvTag)) {
-				if(index == (path.size() - 1)) {
+			if(tlvDataObject.getTlvTag().equals(tagIdentifier.getTag())) {
+				if (remainingOccurences == 0) {
 					return tlvDataObject;
-				} else{
-					if(tlvDataObject.isConstructedTLVObject()) {
-						return ((ConstructedTlvDataObject) tlvDataObject).getTagField(path, index + 1);
-					} else{
-						return null;
-					}
+				} else {
+					remainingOccurences--;
 				}
 			}
 		}
@@ -139,26 +158,13 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	}
 	
 	@Override
-	public TlvDataObject getTagField(TlvPath path) {
-		return this.getTagField(path, 0);
+	public TlvDataObject getTlvDataObject(TlvTag tlvTag) {
+		return getTlvDataObject(new TlvTagIdentifier(tlvTag));
 	}
 	
 	@Override
-	public TlvDataObject getTagField(TlvTag tlvTag) {
-		if(tlvTag == null) {throw new NullPointerException("tag must not be null");}
-		
-		for(TlvDataObject tlvDataObject : this.tlvObjects) {
-			if(tlvDataObject.getTlvTag().equals(tlvTag)) {
-				return tlvDataObject;
-			}
-		}
-		
-		return null;
-	}
-	
-	@Override
-	public boolean containsTagField(TlvTag tagField) {
-		return this.getTagField(tagField) != null;
+	public boolean containsTlvDataObject(TlvTag tagField) {
+		return this.getTlvDataObject(tagField) != null;
 	}
 	
 	@Override
@@ -173,7 +179,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 		
 		if(recursive) {
 			for(TlvDataObject tlvDataObject : this.tlvObjects) {
-				if(tlvDataObject.isConstructedTLVObject()) {
+				if(tlvDataObject instanceof ConstructedTlvDataObject) {
 					noOfElements += ((ConstructedTlvDataObject) tlvDataObject).getNoOfElements(recursive);
 				}
 			}
@@ -229,21 +235,19 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	
 	@Override
 	public void addTlvDataObject(TlvPath path, TlvDataObject tlvDataObject) {
-		TlvDataObject supposedParent;
-		ConstructedTlvDataObject actualParent;
+		TlvDataObject supposedParent = getTlvDataObject(path);
 		
-		supposedParent = this.getTagField(path);
-		
-		if((supposedParent != null) && (supposedParent.isConstructedTLVObject())) {
-			actualParent = (ConstructedTlvDataObject) supposedParent;
+		if((supposedParent != null) && (supposedParent instanceof ConstructedTlvDataObject)) {
+			ConstructedTlvDataObject actualParent = (ConstructedTlvDataObject) supposedParent;
 			actualParent.addTlvDataObject(tlvDataObject);
-		}
+		} //XXX add consistent behavior for these failure cases, e.g. notify the caller that no action was taken at all
 	}
 	
 	@Override
-	public void addTlvDataObject(TlvDataObject tlvDataObject) {
-		if(tlvDataObject == null) {throw new NullPointerException("tlvDataObject object must not be null");}
-		this.tlvObjects.add(tlvDataObject);
+	public void addTlvDataObject(TlvDataObject... tlvDataObject) {
+		for (int i = 0; i < tlvDataObject.length; i++) {
+			this.tlvObjects.add(tlvDataObject[i]);	
+		}
 	}
 	
 	@Override
@@ -251,33 +255,28 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 		if(path == null) {throw new NullPointerException("path must not be null");};
 		if(path.size() < 1) {throw new IllegalArgumentException("path must not be empty");};
 		
-		TlvTag tagToBeRemoved = path.getLastElement();
-		
 		if(path.size() == 1) {
-			removeTlvDataObject(tagToBeRemoved);
+			removeTlvDataObject(path.get(0));
 		} else{
-			TlvPath pathToParent = path.clone();
-			pathToParent.remove(pathToParent.size() - 1);
+			TlvPath subPath = path.clone();
+			subPath.remove(0);
 			
-			TlvDataObject supposedParent = this.getTagField(pathToParent);
-			
-			if((supposedParent != null) && (supposedParent.isConstructedTLVObject())) {
-				ConstructedTlvDataObject actualParent = (ConstructedTlvDataObject) supposedParent;
-				actualParent.removeTlvDataObject(tagToBeRemoved);
-			}
+			TlvDataObject supposedParent = getTlvDataObject(path.get(0));
+			if((supposedParent != null) && (supposedParent instanceof ConstructedTlvDataObject)) {
+				((ConstructedTlvDataObject) supposedParent).removeTlvDataObject(subPath);
+			} //XXX add consistent behavior for these failure cases, e.g. notify the caller that no action was taken at all
 		}
 	}
 	
 	@Override
+	public void removeTlvDataObject(TlvTagIdentifier tagIdentifier) {
+		TlvDataObject objToRemove = getTlvDataObject(tagIdentifier);
+		tlvObjects.remove(objToRemove);		
+	}
+	
+	@Override
 	public void removeTlvDataObject(TlvTag tlvTag) {
-		TlvDataObject tlvDataObject;
-		
-		for(int i = 0; i < this.tlvObjects.size(); i++) {
-			tlvDataObject = this.tlvObjects.get(i);
-			if(tlvDataObject.matches(tlvTag)) {
-				this.tlvObjects.remove(i);
-			}
-		}
+		removeTlvDataObject(new TlvTagIdentifier(tlvTag));
 	}
 
 	@Override

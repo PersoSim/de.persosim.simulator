@@ -70,9 +70,9 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 			}
 			
 			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-			if (commandData.containsTagField(TlvConstants.TAG_06)){
+			if (commandData.containsTlvDataObject(TlvConstants.TAG_06)){
 				try{
-					TaOid oid = new TaOid(commandData.getTagField(TlvConstants.TAG_06).getValueField());
+					TaOid oid = new TaOid(commandData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
 					processOid(processingData, oid);
 					
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
