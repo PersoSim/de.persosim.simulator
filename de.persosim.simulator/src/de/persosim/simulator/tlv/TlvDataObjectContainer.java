@@ -113,31 +113,25 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	
 	@Override
 	public TlvDataObject getTlvDataObject(TlvPath path, int index) {
-		TlvTag currentTlvTag;
-		
 		if((path == null) || (path.size() == 0)) {throw new NullPointerException();}
 		if((index < 0) || (index >= path.size())) {throw new IllegalArgumentException("index must not be outside of path");}
 		
-		//FIXME cleanup this mess (cat -> bathtub)
 		
-		currentTlvTag = path.get(index).getTag();
-		if(currentTlvTag == null) {throw new NullPointerException();}
+		//find indicated child
+		TlvDataObject indicatedChild = getTlvDataObject(path.get(index));
 		
-		for(TlvDataObject tlvDataObject : this.tlvObjects) {
-			if(tlvDataObject.getTlvTag().matches(currentTlvTag)) {
-				if(index == (path.size() - 1)) {
-					return tlvDataObject;
-				} else{
-					if(tlvDataObject.isConstructedTLVObject()) {
-						return ((ConstructedTlvDataObject) tlvDataObject).getTlvDataObject(path, index + 1);
-					} else{
-						return null;
-					}
-				}
-			}
+		if (indicatedChild == null) {
+			return null;
 		}
 		
-		return null;
+		if(index == (path.size() - 1)) {
+			return indicatedChild;
+		} else if(indicatedChild instanceof ConstructedTlvDataObject) {
+			return ((ConstructedTlvDataObject) indicatedChild).getTlvDataObject(path, index + 1);
+		} else{
+			return null;
+		}
+		
 	}
 	
 	@Override

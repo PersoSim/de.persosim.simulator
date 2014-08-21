@@ -187,6 +187,7 @@ public abstract class TlvDataObject extends TlvElement implements Iso7816, Valid
 	 * Returns whether this TLV data object is constructed (bit 6 of first tag field == 1)
 	 * @return whether this TLV data object is constructed
 	 */
+	//FIXME remove this method, check object type instead
 	public boolean isConstructedTLVObject() {
 		return tlvTag.indicatesEncodingConstructed();
 	}
