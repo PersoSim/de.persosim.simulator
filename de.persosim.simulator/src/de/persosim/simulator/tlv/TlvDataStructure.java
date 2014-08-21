@@ -64,7 +64,7 @@ public interface TlvDataStructure extends Iterable<TlvDataObject> {
 	 * <p>
 	 * NOTE: callers MUST ensure that they do not construct circular references
 	 * within the object structure. Also adding of the SAME object at different
-	 * places in the object structure is not adviseable (though not forbidden)
+	 * places in the object structure is not advisable (though not forbidden)
 	 * but may lead to unexpected behavior when adding/removing elements.
 	 * 
 	 * @param tlvDataObject

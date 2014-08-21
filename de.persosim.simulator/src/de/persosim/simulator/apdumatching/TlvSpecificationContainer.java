@@ -99,9 +99,9 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 	 * @return the first occurrence of the provided tag
 	 */
 	public int getIndexOfSubTag(TlvTagIdentifier tlvTagIdentifier) {
-		if(tlvTagIdentifier == null) {throw new NullPointerException("tag must not be null");}
+		if(tlvTagIdentifier == null) {throw new NullPointerException("tag identifier must not be null");}
 		
-		int remainingOccurences = tlvTagIdentifier.getOccurence();
+		int remainingOccurences = tlvTagIdentifier.getOccurrence();
 		
 		for(int i = 0; i < size(); i++) {
 			if(get(i).matches(tlvTagIdentifier.getTag())) {

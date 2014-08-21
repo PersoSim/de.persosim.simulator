@@ -9,7 +9,7 @@ import de.persosim.simulator.utils.HexString;
 public class TlvDataObjectContainerTest implements TlvConstants {
 
 	/**
-	 * Positive test: get the first occurence of a given tag from a
+	 * Positive test: get the first occurrence of a given tag from a
 	 * {@link TlvDataObjectContainer} containing more than one child with the
 	 * same tag.
 	 */
@@ -24,7 +24,7 @@ public class TlvDataObjectContainerTest implements TlvConstants {
 	}
 	
 	/**
-	 * Positive test: get the second occurence of a given tag from a
+	 * Positive test: get the second occurrence of a given tag from a
 	 * {@link TlvDataObjectContainer} containing more than one child with the
 	 * same tag.
 	 */
@@ -39,7 +39,7 @@ public class TlvDataObjectContainerTest implements TlvConstants {
 	}
 	
 	/**
-	 * Negative test: get the third occurence of a given tag from a
+	 * Negative test: get the third occurrence of a given tag from a
 	 * {@link TlvDataObjectContainer} containing only two children with the
 	 * expected tag.
 	 */
@@ -54,7 +54,7 @@ public class TlvDataObjectContainerTest implements TlvConstants {
 	}
 	
 	/**
-	 * Positive test: get the second occurence of a given tag from a
+	 * Positive test: get the second occurrence of a given tag from a
 	 * {@link TlvDataObjectContainer} containing more than one child with the
 	 * same tag.
 	 */

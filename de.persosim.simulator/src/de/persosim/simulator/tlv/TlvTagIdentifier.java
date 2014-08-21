@@ -2,11 +2,14 @@ package de.persosim.simulator.tlv;
 
 /**
  * This class describes a segment of a {@link TlvPath}. It contains a TlvTag to
- * be searched and an optional occurence.
+ * be searched and an optional occurrence.
  * <p/>
- * If the occurence is specified this {@link TlvTagIdentifier} identifies the
- * zero-based occurence of the given tag in its container. Otherwise the first
- * occurence is identified.
+ * If the occurrence is specified this {@link TlvTagIdentifier} identifies the
+ * zero-based occurrence of the given tag in its container. Otherwise the first
+ * occurrence is identified.
+ * 
+ * FIXME AMY either start counting occurrences at 1 or rename variable
+ * what about "noOfPreviousOccurrences" - getOccurence() e.g. at one place is directly assigned to a variable named "remainingOccurences".
  * 
  * @author amay
  * 
@@ -14,10 +17,10 @@ package de.persosim.simulator.tlv;
 public class TlvTagIdentifier {
 
 	private TlvTag tag;
-	private int occurence = 0;
+	private int occurrence = 0;
 
 	/**
-	 * Create an identifier matching the given tag (and the first occurence).
+	 * Create an identifier matching the given tag (and the first occurrence).
 	 * @param tag TlvTag to be matched
 	 */
 	public TlvTagIdentifier(TlvTag tag) {
@@ -25,21 +28,21 @@ public class TlvTagIdentifier {
 	}
 
 	/**
-	 * Create an identifier matching the given tag (and the first occurence).
+	 * Create an identifier matching the given tag (and the first occurrence).
 	 * @param tag TlvTag to be matched
-	 * @param occurence Occurence of the given TlvTag
+	 * @param occurrence Occurrence of the given TlvTag
 	 */
-	public TlvTagIdentifier(TlvTag tag, int occurence) {
+	public TlvTagIdentifier(TlvTag tag, int occurrence) {
 		this.tag = tag;
-		this.occurence = occurence;
+		this.occurrence = occurrence;
 	}
 
 	public TlvTag getTag() {
 		return tag;
 	}
 
-	public int getOccurence() {
-		return occurence;
+	public int getOccurrence() {
+		return occurrence;
 	}
 	
 	
