@@ -1,16 +1,19 @@
 package de.persosim.simulator;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.xml.bind.JAXBException;
 
@@ -74,28 +77,60 @@ public class PersoSimTest extends PersoSimTestCase {
 		System.setErr(origErr);
 	}
 	
-	public static String sendCommand(PersoSim persoSimInstance, String... args) {
-		activateStdOutRedirection();
-		
-		persoSimInstance.executeUserCommands(args);
-		
-		String responseBulk = readRedStdOut();
-		
-		System.setOut(origOut);
-		System.setErr(origErr);
-		
-		return responseBulk;
-	}
+//	public static String sendCommand(PersoSim persoSimInstance, String... args) {
+//		activateStdOutRedirection();
+//		
+//		persoSimInstance.executeUserCommands(args);
+//		
+//		String responseBulk = readRedStdOut();
+//		
+//		System.setOut(origOut);
+//		System.setErr(origErr);
+//		
+//		return responseBulk;
+//	}
 	
 	public static String extractStatusWord(String responseBulk) {
-		int startIndex = responseBulk.trim().lastIndexOf("\n");
-		String response = "";
-
-		if((startIndex != -1) && (startIndex != responseBulk.length())){
-			response = responseBulk.substring(startIndex+3).trim();
-		}
+		return responseBulk.substring(responseBulk.length() - 4);
+	}
+	
+	public static String extractResponse(String responseBulk) {
+		return responseBulk.substring(0, responseBulk.length() - 4).trim();
+	}
+	
+	private String exchangeApdu(String cmdApdu) throws UnknownHostException, IOException {
+		return exchangeApdu(cmdApdu, PersoSim.DEFAULT_SIM_PORT);
+	}
+	
+	private String exchangeApdu(String cmdApdu, int port) throws IOException {
+		cmdApdu = cmdApdu.replaceAll("\\s", ""); // remove any whitespace
 		
-		return response;
+		Socket socket = null;
+		String respApdu = null;
+		
+		try {
+			socket = new Socket(PersoSim.DEFAULT_SIM_HOST, port);
+
+			PrintStream out = new PrintStream(socket.getOutputStream());
+			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+			out.println(cmdApdu);
+			out.flush();
+			
+			respApdu = in.readLine();
+		} catch (IOException e) {
+			throw e;
+		} finally {
+			if (socket != null) {
+				try {
+					socket.close();
+				} catch (IOException e) {
+					return "socket close failure";
+				}
+			}
+		}
+
+		return respApdu;
 	}
 	
 	public static void activateStdOutRedirection() {
@@ -147,8 +182,6 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		return responseBulk;
 	}
-	
-	//FIXME SLS missing test: launch PersoSimConsole, type an unknown command, hit enter => this should produces a list of available commands (along the existing line that the given command is unknown) and doesn't
 	
 	/**
 	 * Positive test case: check behavior of PersoSim constructor when called with empty argument.
@@ -248,11 +281,11 @@ public class PersoSimTest extends PersoSimTestCase {
 	/**
 	 * Positive test case: test implicit setting of a default personalization if no other personalization is explicitly set.
 	 * @throws JAXBException 
-	 * @throws FileNotFoundException 
-	 * @throws UnsupportedEncodingException 
+	 * @throws IOException 
+	 * @throws UnknownHostException 
 	 */
 	@Test
-	public void testImplicitSettingOfDefaultPersonalization() throws FileNotFoundException, JAXBException, UnsupportedEncodingException {
+	public void testImplicitSettingOfDefaultPersonalization() throws JAXBException, UnknownHostException, IOException {
 		System.out.println("test003");
 		// prepare the mock
 		new NonStrictExpectations() {
@@ -270,51 +303,67 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim = new PersoSim((String) null);
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		String responseSelect = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
+		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
 		
-		String responseReadBinaryExpected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_1, 4)).toUpperCase();
-		String responseReadBinary = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, READ_BINARY_APDU));
-		assertEquals(responseReadBinaryExpected, responseReadBinary.substring(0, responseReadBinary.length() - 4).toUpperCase());
+		String responseReadBinaryExpected = (HexString.encode(EF_CS_CONTENT_1)).toUpperCase();
+		String responseReadBinary = (extractResponse(exchangeApdu(READ_BINARY_APDU))).toUpperCase();
+		assertEquals(responseReadBinaryExpected, responseReadBinary);
 	}
 	
 	/**
 	 * Positive test case: test start of socket simulator.
 	 * @throws InterruptedException 
-	 * @throws UnsupportedEncodingException 
+	 * @throws IOException 
+	 * @throws UnknownHostException 
 	 */
 	@Test
-	public void testStartSimulator() throws InterruptedException, UnsupportedEncodingException {
+	public void testStartSimulator() throws InterruptedException, UnknownHostException, IOException {
 		System.out.println("test004");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
-		String responseSelect1 = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
+		boolean caughtIoException = false;
+		try {
+			exchangeApdu(SELECT_APDU);
+		} catch (IOException e) {
+			caughtIoException = true;
+		}
+		
+		assertTrue(caughtIoException);
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		String responseSelect2 = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect2);
-		assertTrue(responseSelect1 != responseSelect2);
+		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
+		assertEquals(SW_NO_ERROR, responseSelect);
 	}
 	
 	/**
 	 * Positive test case: test stop of socket simulator.
 	 * @throws InterruptedException 
-	 * @throws UnsupportedEncodingException 
+	 * @throws IOException 
+	 * @throws UnknownHostException 
 	 */
 	@Test
-	public void testStopSimulator() throws InterruptedException, UnsupportedEncodingException {
+	public void testStopSimulator() throws InterruptedException, UnknownHostException, IOException {
 		System.out.println("test005");
 		persoSim = new PersoSim(PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1);
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		String responseSelect1 = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
+		String responseSelect1 = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect1);
 		
 		persoSim.executeUserCommands(PersoSim.CMD_STOP);
-		String responseSelect2 = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
-		assertTrue(responseSelect1 != responseSelect2);
+		
+		boolean caughtIoException = false;
+		
+		try {
+			exchangeApdu(SELECT_APDU);
+		} catch (IOException e) {
+			caughtIoException = true;
+		}
+		
+		assertTrue(caughtIoException);
 	}
 	
 	/**
@@ -414,45 +463,53 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: test setting of new personalization via user arguments.
 	 * @throws InterruptedException 
 	 * @throws IllegalArgumentException 
-	 * @throws FileNotFoundException 
 	 * @throws JAXBException 
-	 * @throws UnsupportedEncodingException 
+	 * @throws IOException 
+	 * @throws UnknownHostException 
 	 */
 	@Test
-	public void testExecuteUserCommandsCmdLoadPersonalizationValidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException, JAXBException, UnsupportedEncodingException {
+	public void testExecuteUserCommandsCmdLoadPersonalizationValidPersonalization() throws InterruptedException, IllegalArgumentException, JAXBException, UnknownHostException, IOException {
 		System.out.println("test014");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_2);
 		
-		String responseSelect = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
+		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
 		
-		String responseReadBinary = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, READ_BINARY_APDU));
+		String responseReadBinary = (extractResponse(exchangeApdu(READ_BINARY_APDU))).toUpperCase();
 		
-		String responseReadBinaryExpected = HexString.encode(Arrays.copyOf(EF_CS_CONTENT_2, 4)).toUpperCase();
+		String responseReadBinaryExpected = (HexString.encode(EF_CS_CONTENT_2)).toUpperCase();
 		
-		assertEquals(responseReadBinaryExpected, responseReadBinary.substring(0, responseReadBinary.length() - 4).toUpperCase());
+		assertEquals(responseReadBinaryExpected, responseReadBinary);
 	}
 	
 	/**
 	 * Negative test case: test setting of new personalization via user arguments with invalid personalization.
 	 * @throws InterruptedException 
 	 * @throws IllegalArgumentException 
-	 * @throws FileNotFoundException 
-	 * @throws UnsupportedEncodingException 
+	 * @throws IOException 
+	 * @throws UnknownHostException 
 	 */
 	@Test
-	public void testExecuteUserCommandsCmdLoadPersonalizationInvalidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException, UnsupportedEncodingException {
+	public void testExecuteUserCommandsCmdLoadPersonalizationInvalidPersonalization() throws InterruptedException, IllegalArgumentException, UnknownHostException, IOException {
 		System.out.println("test015");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
+		
 		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, "non-existing.file");
 		
-		String responseSelect = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
-		assertFalse(responseSelect.equals(SW_NO_ERROR));
+		boolean caughtIoException = false;
+		
+		try {
+			exchangeApdu(SELECT_APDU);
+		} catch (IOException e) {
+			caughtIoException = true;
+		}
+		
+		assertTrue(caughtIoException);
 	}
 	
 	/**
