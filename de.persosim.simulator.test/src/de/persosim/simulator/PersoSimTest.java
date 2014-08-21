@@ -47,17 +47,13 @@ public class PersoSimTest extends PersoSimTestCase {
 	public static final String SW_NO_ERROR = "9000";
 	
 	static PrintStream	origOut;
-	static PrintStream origErr;
-	
 	static ByteArrayOutputStream redStdOut;
-	static ByteArrayOutputStream redStdErr;
 	
 	
 	
 	@Before
 	public void setUp() {
 		origOut	= System.out;
-		origErr = System.err;
 		
 		MinimumPersonalization perso1 = new MinimumPersonalization(EF_CS_CONTENT_1);
 		perso1.writeToFile(DUMMY_PERSONALIZATION_FILE_1);
@@ -73,21 +69,44 @@ public class PersoSimTest extends PersoSimTestCase {
 		}
 		
 		System.setOut(origOut);
-		System.setErr(origErr);
 	}
 	
+	/**
+	 * This method extracts the status word from an APDU response String.
+	 * @param responseBulk the bulk APDU response
+	 * @return the status word
+	 */
 	public static String extractStatusWord(String responseBulk) {
 		return responseBulk.substring(responseBulk.length() - 4);
 	}
 	
+	/**
+	 * This method extracts the data response from an APDU response String.
+	 * @param responseBulk the bulk APDU response
+	 * @return the data
+	 */
 	public static String extractResponse(String responseBulk) {
 		return responseBulk.substring(0, responseBulk.length() - 4).trim();
 	}
 	
+	/**
+	 * This method exchanges APDUs with a simulator running on default host and port.
+	 * @param cmdApdu the APDU to be sent
+	 * @return the APDU response
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
 	private String exchangeApdu(String cmdApdu) throws UnknownHostException, IOException {
 		return exchangeApdu(cmdApdu, PersoSim.DEFAULT_SIM_PORT);
 	}
 	
+	/**
+	 * This method exchanges APDUs with a simulator running on localhost at the provided port.
+	 * @param cmdApdu the APDU to be sent
+	 * @param port the port to contact the simulator
+	 * @return the APDU response
+	 * @throws IOException
+	 */
 	private String exchangeApdu(String cmdApdu, int port) throws IOException {
 		cmdApdu = cmdApdu.replaceAll("\\s", ""); // remove any whitespace
 		
@@ -119,6 +138,9 @@ public class PersoSimTest extends PersoSimTestCase {
 		return respApdu;
 	}
 	
+	/**
+	 * This method activates redirection of System.out.
+	 */
 	public static void activateStdOutRedirection() {
 		redStdOut = new ByteArrayOutputStream();
 		PrintStream	stdout = new PrintStream(redStdOut);
@@ -128,15 +150,10 @@ public class PersoSimTest extends PersoSimTestCase {
 		origOut.flush();
 	}
 	
-	public static void activateStdErrRedirection() {
-		redStdErr = new ByteArrayOutputStream();
-		PrintStream	stderr = new PrintStream(redStdErr);
-		
-		System.setErr(stderr);
-		origOut.print(redStdErr.toString());
-		origOut.flush();
-	}
-	
+	/**
+	 * This method reads from redirected System.out.
+	 * @return the data read from redirected System.out
+	 */
 	public static String readRedStdOut() {
 		String responseBulk = "";
 		
@@ -149,22 +166,6 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		origOut.print(responseBulk);
 		origOut.flush();
-		
-		return responseBulk;
-	}
-	
-	public static String readRedStdErr() {
-		String responseBulk = "";
-		
-		try {
-			responseBulk = redStdErr.toString("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// "UTF-8" _is_ valid
-			e.printStackTrace();
-		}
-		
-		origErr.print(responseBulk);
-		origErr.flush();
 		
 		return responseBulk;
 	}
