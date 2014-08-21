@@ -58,9 +58,9 @@ public class TlvPath extends ArrayList<TlvTagIdentifier> {
 	 * Constructor for constructing this object from a list of {@link TlvTagIdentifier} objects.
 	 * @param tagIdentifiers a list of {@link TlvTagIdentifier} objects
 	 */
-	public TlvPath(TlvTagIdentifier... tagIdentifiers) {// FIXME AMY what about for(TlvTagIdentifier tagIdentifier : tagIdentifiers) ?
-		for(int i = 0; i < tagIdentifiers.length; i++) {
-			this.add(tagIdentifiers[i]);
+	public TlvPath(TlvTagIdentifier... tagIdentifiers) {
+		for(TlvTagIdentifier curTagIdentifier : tagIdentifiers) {
+			this.add(curTagIdentifier);
 		}
 	}
 	
