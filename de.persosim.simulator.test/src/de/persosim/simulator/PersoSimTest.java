@@ -74,24 +74,12 @@ public class PersoSimTest extends PersoSimTestCase {
 		System.setErr(origErr);
 	}
 	
-	public static String sendCommand(PersoSim persoSimInstance, String... args) throws UnsupportedEncodingException {
-		redStdOut = new ByteArrayOutputStream();
-		PrintStream	stdout = new PrintStream(redStdOut);
-		
-		redStdErr = new ByteArrayOutputStream();
-		PrintStream	stderr = new PrintStream(redStdErr);
-		
-		System.setOut(stdout);
-		System.setErr(stderr);
-		
-		origOut.print(redStdOut.toString());
-		origOut.flush();
+	public static String sendCommand(PersoSim persoSimInstance, String... args) {
+		activateStdOutRedirection();
 		
 		persoSimInstance.executeUserCommands(args);
 		
-		String responseBulk = redStdOut.toString("UTF-8");
-		origOut.print(responseBulk);
-		origOut.flush();
+		String responseBulk = readRedStdOut();
 		
 		System.setOut(origOut);
 		System.setErr(origErr);
@@ -160,8 +148,6 @@ public class PersoSimTest extends PersoSimTestCase {
 		return responseBulk;
 	}
 	
-	//FIXME SLS missing test: launch PersoSimConsole, hit enter => this produces a NPE and shouldn't
-	//FIXME SLS missing test: launch PersoSimConsole, type exit, hit enter => this produces a list of available commands and shouldn't
 	//FIXME SLS missing test: launch PersoSimConsole, type an unknown command, hit enter => this should produces a list of available commands (along the existing line that the given command is unknown) and doesn't
 	
 	/**
@@ -170,6 +156,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testPersoSimConstructorEmptyArgument() throws UnsupportedEncodingException {
+		System.out.println("test001");
 		activateStdOutRedirection();
 		
 		persoSim = new PersoSim(new String[]{});
@@ -182,10 +169,11 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: check for NullPointerException if PersoSim constructor is called with null argument.
+	 * Positive test case: check how PersoSim constructor handles null argument.
 	 */
 	@Test
 	public void testPersoSimConstructorNullArgument() {
+		System.out.println("test002");
 		activateStdOutRedirection();
 		
 		persoSim = new PersoSim((String) null);
@@ -198,6 +186,66 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Positive test case: check how PersoSim command line handles empty argument.
+	 */
+	@Test
+	public void testExecuteUserCommandsEmptyArgument() {
+		System.out.println("test017");
+		
+		persoSim = new PersoSim((String) null);
+		
+		activateStdOutRedirection();
+		
+		persoSim.executeUserCommands("");
+		
+		String responseBulk = readRedStdOut();
+		
+		String response = responseBulk.trim();
+		
+		assertEquals(PersoSim.LOG_NO_OPERATION, response);
+	}
+	
+	/**
+	 * Positive test case: check how PersoSim command line handles exit command.
+	 */
+	@Test
+	public void testExecuteUserCommandsExit() {
+		System.out.println("test018");
+		
+		persoSim = new PersoSim((String) null);
+		
+		activateStdOutRedirection();
+		
+		persoSim.executeUserCommands(PersoSim.CMD_EXIT);
+		
+		String responseBulk = readRedStdOut();
+		
+		String response = responseBulk.trim();
+		
+		assertEquals(PersoSim.LOG_SIM_EXIT, response);
+	}
+	
+	/**
+	 * Positive test case: check how PersoSim command line handles an unknown argument.
+	 */
+	@Test
+	public void testExecuteUserCommandsUnknownArgument() {
+		System.out.println("test019");
+		
+		persoSim = new PersoSim((String) null);
+		
+		activateStdOutRedirection();
+		
+		persoSim.executeUserCommands("unknown");
+		
+		String responseBulk = readRedStdOut();
+		
+		String response = responseBulk.trim();
+		
+		assertTrue(response.startsWith(PersoSim.LOG_UNKNOWN_ARG));
+	}
+	
+	/**
 	 * Positive test case: test implicit setting of a default personalization if no other personalization is explicitly set.
 	 * @throws JAXBException 
 	 * @throws FileNotFoundException 
@@ -205,6 +253,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testImplicitSettingOfDefaultPersonalization() throws FileNotFoundException, JAXBException, UnsupportedEncodingException {
+		System.out.println("test003");
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
@@ -236,6 +285,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator() throws InterruptedException, UnsupportedEncodingException {
+		System.out.println("test004");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		String responseSelect1 = extractStatusWord(sendCommand(persoSim, PersoSim.CMD_SEND_APDU, SELECT_APDU));
@@ -254,6 +304,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStopSimulator() throws InterruptedException, UnsupportedEncodingException {
+		System.out.println("test005");
 		persoSim = new PersoSim(PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1);
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
@@ -271,6 +322,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testParseCommandEmptyString() {
+		System.out.println("test006");
 		String[] result = PersoSim.parseCommand("");
 		
 		assertEquals(result.length, 0);
@@ -281,6 +333,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test(expected = NullPointerException.class)
 	public void testParseCommandNull() {
+		System.out.println("test007");
 		PersoSim.parseCommand(null);
 	}
 	
@@ -289,6 +342,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testParseCommandUntrimmedCoherentString() {
+		System.out.println("test008");
 		String arg = "string";
 		String[] result = PersoSim.parseCommand(" " + arg + "  ");
 		
@@ -301,6 +355,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testParseCommandIncoherentString() {
+		System.out.println("test009");
 		String arg1 = "string1";
 		String arg2 = "string 2";
 		String[] result = PersoSim.parseCommand(" " + arg1 + "  " + arg2);
@@ -317,6 +372,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testParsePersonalizationValidFile() throws FileNotFoundException, JAXBException {
+		System.out.println("test010");
 		Personalization perso = PersoSim.parsePersonalization(DUMMY_PERSONALIZATION_FILE_1);
 		
 		assertNotNull(perso);
@@ -329,6 +385,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test(expected = FileNotFoundException.class)
 	public void testParsePersonalizationFileNotFound() throws FileNotFoundException, JAXBException {
+		System.out.println("test011");
 		PersoSim.parsePersonalization("file not found");
 	}
 	
@@ -339,6 +396,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test(expected = JAXBException.class)
 	public void testParsePersonalizationInvalidFile() throws FileNotFoundException, JAXBException {
+		System.out.println("test012");
 		PersoSim.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
 	}
 	
@@ -347,6 +405,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testPersoSimConstructorUnknownArgument() {
+		System.out.println("test013");
 		persoSim = new PersoSim(new String[]{"unknownCommand"});
 		assertNotNull(persoSim);
 	}
@@ -361,6 +420,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdLoadPersonalizationValidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException, JAXBException, UnsupportedEncodingException {
+		System.out.println("test014");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
@@ -385,6 +445,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdLoadPersonalizationInvalidPersonalization() throws InterruptedException, FileNotFoundException, IllegalArgumentException, UnsupportedEncodingException {
+		System.out.println("test015");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
@@ -402,6 +463,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdSetPortNo() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
+		System.out.println("test016");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
