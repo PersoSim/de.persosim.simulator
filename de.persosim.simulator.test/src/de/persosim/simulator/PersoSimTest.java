@@ -186,8 +186,15 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testPersoSimConstructorNullArgument() {
+		activateStdOutRedirection();
+		
 		persoSim = new PersoSim((String) null);
-		assertNotNull(persoSim);
+		
+		String responseBulk = readRedStdOut();
+		
+		String response = responseBulk.trim();
+		
+		assertEquals(PersoSim.LOG_NO_OPERATION, response);
 	}
 	
 	/**
