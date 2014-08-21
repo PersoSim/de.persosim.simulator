@@ -17,7 +17,6 @@ import java.util.ArrayList;
 
 import javax.xml.bind.JAXBException;
 
-import mockit.Deencapsulation;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
@@ -76,19 +75,6 @@ public class PersoSimTest extends PersoSimTestCase {
 		System.setOut(origOut);
 		System.setErr(origErr);
 	}
-	
-//	public static String sendCommand(PersoSim persoSimInstance, String... args) {
-//		activateStdOutRedirection();
-//		
-//		persoSimInstance.executeUserCommands(args);
-//		
-//		String responseBulk = readRedStdOut();
-//		
-//		System.setOut(origOut);
-//		System.setErr(origErr);
-//		
-//		return responseBulk;
-//	}
 	
 	public static String extractStatusWord(String responseBulk) {
 		return responseBulk.substring(responseBulk.length() - 4);
@@ -516,10 +502,10 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: test setting of new port via user arguments.
 	 * @throws InterruptedException 
 	 * @throws IllegalArgumentException 
-	 * @throws FileNotFoundException 
+	 * @throws IOException 
 	 */
 	@Test
-	public void testExecuteUserCommandsCmdSetPortNo() throws InterruptedException, FileNotFoundException, IllegalArgumentException {
+	public void testExecuteUserCommandsCmdSetPortNo() throws InterruptedException, IllegalArgumentException, IOException {
 		System.out.println("test016");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		persoSim.executeUserCommands(PersoSim.CMD_START);
@@ -533,7 +519,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		int portPostExpected = PersoSim.DEFAULT_SIM_PORT + 1;
 		persoSim.executeUserCommands(PersoSim.CMD_SET_PORT, (new Integer (portPostExpected)).toString());
 		
-		responseSelect = Deencapsulation.invoke(persoSim, "exchangeApdu", SELECT_APDU, PersoSim.DEFAULT_SIM_HOST, portPostExpected);
+		responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU, portPostExpected));
 		
 		assertEquals(SW_NO_ERROR, responseSelect);
 	}
