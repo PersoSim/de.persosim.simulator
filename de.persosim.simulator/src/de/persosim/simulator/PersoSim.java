@@ -60,6 +60,8 @@ public class PersoSim implements Runnable {
 	public static final String ARG_HELP                       = "-h";
 	public static final String CMD_CONSOLE_ONLY               = "--consoleOnly";
 	
+	public static final String LOG_NO_OPERATION = "nothing to process";
+	
 	public static final int DEFAULT_SIM_PORT = 9876;
 	public static final String DEFAULT_SIM_HOST = "localhost";
 	
@@ -633,7 +635,7 @@ public class PersoSim implements Runnable {
 	 * @param args the parsed commands and arguments
 	 */
 	public void handleArgs(String... args) {
-		if((args == null) || (args.length == 0)) {return;}
+		if((args == null) || (args.length == 0)) {System.out.println(LOG_NO_OPERATION); return;}
 		
 		processingCommandLineArguments = true;
 		
@@ -646,6 +648,8 @@ public class PersoSim implements Runnable {
 				currentArgs.remove(i);
 			}
 		}
+		
+		if(currentArgs.size() == 0) {System.out.println(LOG_NO_OPERATION); return;}
 		
 		while(currentArgs.size() > 0) {
 			String currentArgument = currentArgs.get(0);
