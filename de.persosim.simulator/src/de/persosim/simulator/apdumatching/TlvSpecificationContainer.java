@@ -101,7 +101,7 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 	public int getIndexOfSubTag(TlvTagIdentifier tlvTagIdentifier) {
 		if(tlvTagIdentifier == null) {throw new NullPointerException("tag identifier must not be null");}
 		
-		int remainingOccurences = tlvTagIdentifier.getOccurrence();
+		int remainingOccurences = tlvTagIdentifier.getNoOfPreviousOccurrences();
 		
 		for(int i = 0; i < size(); i++) {
 			if(get(i).matches(tlvTagIdentifier.getTag())) {

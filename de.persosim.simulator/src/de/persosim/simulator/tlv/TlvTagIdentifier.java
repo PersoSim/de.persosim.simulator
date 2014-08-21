@@ -8,16 +8,13 @@ package de.persosim.simulator.tlv;
  * zero-based occurrence of the given tag in its container. Otherwise the first
  * occurrence is identified.
  * 
- * FIXME AMY either start counting occurrences at 1 or rename variable
- * what about "noOfPreviousOccurrences" - getOccurence() e.g. at one place is directly assigned to a variable named "remainingOccurences".
- * 
  * @author amay
  * 
  */
 public class TlvTagIdentifier {
 
 	private TlvTag tag;
-	private int occurrence = 0;
+	private int noOfPreviousOccurrences = 0;
 
 	/**
 	 * Create an identifier matching the given tag (and the first occurrence).
@@ -30,19 +27,19 @@ public class TlvTagIdentifier {
 	/**
 	 * Create an identifier matching the given tag (and the first occurrence).
 	 * @param tag TlvTag to be matched
-	 * @param occurrence Occurrence of the given TlvTag
+	 * @param noOfPreviousOccurrences number of previous occurrences of the given TlvTag
 	 */
-	public TlvTagIdentifier(TlvTag tag, int occurrence) {
+	public TlvTagIdentifier(TlvTag tag, int noOfPreviousOccurrences) {
 		this.tag = tag;
-		this.occurrence = occurrence;
+		this.noOfPreviousOccurrences = noOfPreviousOccurrences;
 	}
 
 	public TlvTag getTag() {
 		return tag;
 	}
 
-	public int getOccurrence() {
-		return occurrence;
+	public int getNoOfPreviousOccurrences() {
+		return noOfPreviousOccurrences;
 	}
 	
 	
