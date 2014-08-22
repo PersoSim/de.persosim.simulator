@@ -14,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.xml.bind.JAXBException;
 
@@ -265,7 +266,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		};
 		
 		persoSim = new PersoSim((String) null);
-		persoSim.executeUserCommands(PersoSim.CMD_START); //FIXME SLS again, execute the corresponding methods directly instead of indirectly through some kind of String parsing method. Check all calls to executeUserCommands 
+		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
@@ -292,7 +293,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		assertTrue(caughtIoException);
 		
-		persoSim.executeUserCommands(PersoSim.CMD_START);
+		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
@@ -306,12 +307,12 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testStopSimulator() throws Exception {
 		persoSim = new PersoSim(PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1);
 		
-		persoSim.executeUserCommands(PersoSim.CMD_START);
+		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
 		
 		String responseSelect1 = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect1);
 		
-		persoSim.executeUserCommands(PersoSim.CMD_STOP);
+		persoSim.cmdStopSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_STOP})));
 		
 		boolean caughtIoException = false;
 		
@@ -415,8 +416,9 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testExecuteUserCommandsCmdLoadPersonalization_ValidPersonalization() throws Exception {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
-		persoSim.executeUserCommands(PersoSim.CMD_START);
-		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_2);
+		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
+		
+		persoSim.cmdLoadPersonalization(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_2})));
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
@@ -436,9 +438,9 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testExecuteUserCommandsCmdLoadPersonalization_InvalidPersonalizationFile() throws Exception {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
-		persoSim.executeUserCommands(PersoSim.CMD_START);
+		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
 		
-		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java");
+		persoSim.cmdLoadPersonalization(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"})));
 		
 		exchangeApdu(SELECT_APDU);
 	}
@@ -451,9 +453,9 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testExecuteUserCommandsCmdLoadPersonalization_FileNotFound() throws Exception {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
-		persoSim.executeUserCommands(PersoSim.CMD_START);
+		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
 		
-		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, "non-existing.file");
+		persoSim.cmdLoadPersonalization(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, "non-existing.file"})));
 		
 		exchangeApdu(SELECT_APDU);
 	}
@@ -474,7 +476,8 @@ public class PersoSimTest extends PersoSimTestCase {
 		assertEquals(SW_NO_ERROR, responseSelect);
 		
 		int portPostExpected = PersoSim.DEFAULT_SIM_PORT + 1;
-		persoSim.executeUserCommands(PersoSim.CMD_SET_PORT, (new Integer (portPostExpected)).toString());
+		
+		persoSim.cmdSetPortNo(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_SET_PORT, (new Integer (portPostExpected)).toString()})));
 		
 		responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU, portPostExpected));
 		
