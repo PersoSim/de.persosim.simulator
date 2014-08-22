@@ -11,10 +11,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.xml.bind.JAXBException;
 
@@ -266,7 +265,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		};
 		
 		persoSim = new PersoSim((String) null);
-		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START}))); //FIXME SLS why not call persoSim.startSimulator() directly? see other occurences of persoSim.cmd within this file
+		persoSim.startSimulator();
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
@@ -293,7 +292,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		assertTrue(caughtIoException);
 		
-		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
+		persoSim.startSimulator();
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
@@ -303,26 +302,18 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: test stop of socket simulator.
 	 * @throws Exception 
 	 */
-	@Test
+	@Test(expected = ConnectException.class)
 	public void testStopSimulator() throws Exception {
 		persoSim = new PersoSim(PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1);
 		
-		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
+		persoSim.startSimulator();
 		
 		String responseSelect1 = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect1);
 		
-		persoSim.cmdStopSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_STOP})));
+		persoSim.stopSimulator();
 		
-		boolean caughtIoException = false;
-		
-		try {
-			exchangeApdu(SELECT_APDU);
-		} catch (IOException e) {
-			caughtIoException = true;
-		}
-		
-		assertTrue(caughtIoException);
+		exchangeApdu(SELECT_APDU);
 	}
 	
 	/**
@@ -416,9 +407,9 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testExecuteUserCommandsCmdLoadPersonalization_ValidPersonalization() throws Exception {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
-		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
+		persoSim.startSimulator();
 		
-		persoSim.cmdLoadPersonalization(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_2})));
+		persoSim.loadPersonalization(DUMMY_PERSONALIZATION_FILE_2);
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
@@ -502,15 +493,13 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
-		ArrayList<String> args = new ArrayList<String>();
-		args.add(PersoSim.CMD_SEND_APDU);
-		args.add(SELECT_APDU);
-		String responseSelect = persoSim.cmdSendApdu(args);
+		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
 		
 		int portPostExpected = PersoSim.DEFAULT_SIM_PORT + 1;
 		
-		persoSim.cmdSetPortNo(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_SET_PORT, (new Integer (portPostExpected)).toString()})));
+		persoSim.setPort((new Integer (portPostExpected)).toString());
+		persoSim.restartSimulator();
 		
 		responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU, portPostExpected));
 		
