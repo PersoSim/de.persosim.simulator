@@ -130,7 +130,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 				
 				//extract required data from curKey
 				ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(((KeyObject) curKey).getKeyPair().getPublic().getEncoded());
-				ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTagField(TAG_SEQUENCE);
+				ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTlvDataObject(TAG_SEQUENCE);
 				
 				//using standardized domain parameters if possible
 				algIdentifier = StandardizedDomainParameters.simplifyAlgorithmIdentifier(algIdentifier);
@@ -227,12 +227,12 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 	 * @throws VerificationException
 	 */
 	private PrimitiveTlvDataObject handleSectorKey(TlvTag commandTag, PrivateKey staticPrivateKey, ConstructedTlvDataObject dynamicAuthenticationData, MessageDigest publicKeyCheckingHash, byte [] sectorPublicKeyHash, TlvTag responseTag) throws GeneralSecurityException, VerificationException{
-		TlvDataObject sectorPublicKeyData = dynamicAuthenticationData.getTagField(commandTag);
+		TlvDataObject sectorPublicKeyData = dynamicAuthenticationData.getTlvDataObject(commandTag);
 		if (sectorPublicKeyData instanceof ConstructedTlvDataObject) {
 			if (!checkSectorPublicKeyHash((ConstructedTlvDataObject)sectorPublicKeyData, publicKeyCheckingHash, sectorPublicKeyHash)){
 				throw new VerificationException("The public key hash transmitted during a previous protocol does not match the given public key");
 			}
-			RiOid oid = new RiOid(((ConstructedTlvDataObject)sectorPublicKeyData).getTagField(TlvConstants.TAG_06).getValueField());
+			RiOid oid = new RiOid(((ConstructedTlvDataObject)sectorPublicKeyData).getTlvDataObject(TlvConstants.TAG_06).getValueField());
 			PublicKey sectorPublicKey = oid.parsePublicKey((ConstructedTlvDataObject) sectorPublicKeyData);
 			return new PrimitiveTlvDataObject(responseTag, calculateSectorIdentifier(staticPrivateKey, sectorPublicKey, oid.getKeyAgreement(), oid.getHash()));
 		}
@@ -240,9 +240,9 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 	}
 	
 	private void processCommandGeneralAuthenticate(ProcessingData processingData) {
-		if (processingData.getCommandApdu().getCommandDataObjectContainer().getTagField(TlvConstants.TAG_7C) instanceof ConstructedTlvDataObject){
+		if (processingData.getCommandApdu().getCommandDataObjectContainer().getTlvDataObject(TlvConstants.TAG_7C) instanceof ConstructedTlvDataObject){
 			ConstructedTlvDataObject dynamicAuthenticationData = (ConstructedTlvDataObject)processingData.getCommandApdu()
-					.getCommandDataObjectContainer().getTagField(TlvConstants.TAG_7C);
+					.getCommandDataObjectContainer().getTlvDataObject(TlvConstants.TAG_7C);
 			
 			//get necessary information stored in TA
 			HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
@@ -280,7 +280,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 						TlvConstants.TAG_7C);
 				try {
 					if (dynamicAuthenticationData
-							.getTagField(RI_FIRST_SECTOR_KEY_TAG) != null) {
+							.getTlvDataObject(RI_FIRST_SECTOR_KEY_TAG) != null) {
 						responseData.addTlvDataObject(handleSectorKey(
 								RI_FIRST_SECTOR_KEY_TAG, staticPrivateKey,
 								dynamicAuthenticationData,
@@ -289,7 +289,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 
 					}
 					if (dynamicAuthenticationData
-							.getTagField(RI_SECOND_SECTOR_KEY_TAG) != null) {
+							.getTlvDataObject(RI_SECOND_SECTOR_KEY_TAG) != null) {
 						responseData
 								.addTlvDataObject(handleSectorKey(
 										RI_SECOND_SECTOR_KEY_TAG,
@@ -334,10 +334,10 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 	private void processCommandSetAt(ProcessingData processingData) {
 		TlvDataObject cryptographicMechanismReferenceData = processingData
 				.getCommandApdu().getCommandDataObjectContainer()
-				.getTagField(TlvConstants.TAG_80);
+				.getTlvDataObject(TlvConstants.TAG_80);
 		TlvDataObject privateKeyReferenceData = processingData.getCommandApdu()
 				.getCommandDataObjectContainer()
-				.getTagField(TlvConstants.TAG_84);
+				.getTlvDataObject(TlvConstants.TAG_84);
 
 		if (cryptographicMechanismReferenceData != null) {
 			try{

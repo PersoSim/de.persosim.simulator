@@ -183,7 +183,7 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 	 * @return
 	 */
 	protected TlvDataObject getSid() {
-		TlvDataObject identifier = getCertificate().getTagField(new TlvPath(TAG_SEQUENCE));
+		TlvDataObject identifier = getCertificate().getTlvDataObject(new TlvPath(TAG_SEQUENCE));
 		
 		//FIXME extract correct identifier from certificate (requires modifications on TlvPath and TlvDataObjectContainer, see independent branch)
 		

@@ -56,22 +56,22 @@ public class TR03110Utils implements TlvConstants {
 	public static PublicKey parseCertificatePublicKey(
 			ConstructedTlvDataObject publicKeyData,
 			PublicKey trustPointPublicKey) throws GeneralSecurityException {
-		TaOid oid = new TaOid(publicKeyData.getTagField(TAG_06)
+		TaOid oid = new TaOid(publicKeyData.getTlvDataObject(TAG_06)
 				.getValueField());
 
 		if (oid.getIdString().contains("ECDSA")) {
 			ECParameterSpec paramSpec = null;
 			ECPublicKey trustPointEcPublicKey = (ECPublicKey) trustPointPublicKey;
-			if (publicKeyData.containsTagField(TAG_81)&&
-					publicKeyData.containsTagField(TAG_82)&&
-					publicKeyData.containsTagField(TAG_83)&&
-					publicKeyData.containsTagField(TAG_84)&&
-					publicKeyData.containsTagField(TAG_85)&&
-					publicKeyData.containsTagField(TAG_87)) {
+			if (publicKeyData.containsTlvDataObject(TAG_81)&&
+					publicKeyData.containsTlvDataObject(TAG_82)&&
+					publicKeyData.containsTlvDataObject(TAG_83)&&
+					publicKeyData.containsTlvDataObject(TAG_84)&&
+					publicKeyData.containsTlvDataObject(TAG_85)&&
+					publicKeyData.containsTlvDataObject(TAG_87)) {
 				paramSpec = CryptoUtil.parseParameterSpecEc(publicKeyData);
 			} else {
 				if (trustPointEcPublicKey.getParams().getCurve().getField()
-						.getFieldSize() / 8 != ((publicKeyData.getTagField(
+						.getFieldSize() / 8 != ((publicKeyData.getTlvDataObject(
 						TlvConstants.TAG_86).getLengthValue() - 1) / 2)) {
 					throw new InvalidKeySpecException(
 							"The trust points field bit length does not match");

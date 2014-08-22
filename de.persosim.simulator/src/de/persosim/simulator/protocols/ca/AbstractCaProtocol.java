@@ -106,7 +106,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		/* CA OID */
 		/* Check for the CA OID for itself */
 		/* tlvObject will never be null if APDU passed check against APDU specification */
-		TlvDataObject tlvObject = commandData.getTagField(TAG_80);
+		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_80);
 		
 		try {
 			caOid = new CaOid(tlvObject.getValueField());
@@ -120,7 +120,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 		/* key reference */
 		/* tlvObject may be null if key material is to be implicitly selected */
-		tlvObject = commandData.getTagField(TAG_84);
+		tlvObject = commandData.getTlvDataObject(TAG_84);
 		
 		KeyIdentifier keyIdentifier;
 		if(tlvObject == null) {
@@ -172,7 +172,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 		
 		//retrieve PCD's public key
-		TlvDataObject tlvObject = commandData.getTagField(new TlvPath(new TlvTag((byte) 0x7C), new TlvTag((byte) 0x80)));
+		TlvDataObject tlvObject = commandData.getTlvDataObject(new TlvPath(new TlvTag((byte) 0x7C), new TlvTag((byte) 0x80)));
 		byte[] pcdPublicKeyMaterial = tlvObject.getValueField();
 		
 		String keyAgreementAlgorithmName = caDomainParameters.getKeyAgreementAlgorithm();
@@ -372,8 +372,8 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			
 			//extract required data from curKey
 			ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(((KeyObject) curKey).getKeyPair().getPublic().getEncoded());
-			ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTagField(TAG_SEQUENCE);
-			TlvDataObject subjPubKey = encKey.getTagField(TAG_BIT_STRING);
+			ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTlvDataObject(TAG_SEQUENCE);
+			TlvDataObject subjPubKey = encKey.getTlvDataObject(TAG_BIT_STRING);
 			
 			//using standardized domain parameters if possible
 			algIdentifier = StandardizedDomainParameters.simplifyAlgorithmIdentifier(algIdentifier);

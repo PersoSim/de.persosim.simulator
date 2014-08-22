@@ -207,7 +207,7 @@ public class PrimitiveTlvDataObject extends TlvDataObject {
 	public boolean isValidBerEncoding() {
 		if(!super.isValidBerEncoding()) {return false;}
 		
-		return isPrimitiveTLVObject();
+		return tlvTag.indicatesEncodingPrimitive();
 	}
 	
 }

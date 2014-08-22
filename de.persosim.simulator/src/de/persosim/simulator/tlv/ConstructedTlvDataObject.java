@@ -195,23 +195,28 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	/*--------------------------------------------------------------------------------*/
 
 	@Override
-	public TlvDataObject getTagField(TlvPath path) {
-		return tlvDataObjectContainer.getTagField(path);
+	public TlvDataObject getTlvDataObject(TlvPath path) {
+		return tlvDataObjectContainer.getTlvDataObject(path);
 	}
 
 	@Override
-	public TlvDataObject getTagField(TlvTag tlvTag) {
-		return tlvDataObjectContainer.getTagField(tlvTag);
+	public TlvDataObject getTlvDataObject(TlvTag tlvTag) {
+		return tlvDataObjectContainer.getTlvDataObject(tlvTag);
+	}
+
+	@Override
+	public TlvDataObject getTlvDataObject(TlvTagIdentifier tagIdentifier) {
+		return tlvDataObjectContainer.getTlvDataObject(tagIdentifier);
 	}
 	
 	@Override
-	public TlvDataObject getTagField(TlvPath path, int index) {
-		return tlvDataObjectContainer.getTagField(path, index);
+	public TlvDataObject getTlvDataObject(TlvPath path, int index) {
+		return tlvDataObjectContainer.getTlvDataObject(path, index);
 	}
 
 	@Override
-	public boolean containsTagField(TlvTag tagField) {
-		return tlvDataObjectContainer.containsTagField(tagField);
+	public boolean containsTlvDataObject(TlvTag tagField) {
+		return tlvDataObjectContainer.containsTlvDataObject(tagField);
 	}
 	
 	/*--------------------------------------------------------------------------------*/
@@ -222,13 +227,18 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	}
 	
 	@Override
-	public void addTlvDataObject(TlvDataObject tlvDataObject) {
+	public void addTlvDataObject(TlvDataObject... tlvDataObject) {
 		tlvDataObjectContainer.addTlvDataObject(tlvDataObject);
 	}
 
 	@Override
 	public void removeTlvDataObject(TlvPath path) {
 		tlvDataObjectContainer.removeTlvDataObject(path);
+	}
+
+	@Override
+	public void removeTlvDataObject(TlvTagIdentifier tagIdentifier) {
+		tlvDataObjectContainer.removeTlvDataObject(tagIdentifier);
 	}
 
 	@Override
@@ -296,7 +306,7 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	public boolean isValidBerEncoding() {
 		if(!super.isValidBerEncoding()) {return false;}
 		
-		return isConstructedTLVObject();
+		return tlvTag.indicatesEncodingConstructed();
 	}
 
 	/**

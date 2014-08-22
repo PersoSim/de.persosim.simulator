@@ -488,7 +488,7 @@ public class ConstructedTlvDataObjectTest {
 		path.add(tagC4);
 		path.add(tagP2);
 
-		assertEquals("Is expected path", tlvObject1.getTagField(path),
+		assertEquals("Is expected path", tlvObject1.getTlvDataObject(path),
 				tlvObject11112);
 	}
 	
@@ -541,7 +541,7 @@ public class ConstructedTlvDataObjectTest {
 
 		path.add(tagP3);
 
-		assertEquals("Is expected path", tlvObject1.getTagField(path),
+		assertEquals("Is expected path", tlvObject1.getTlvDataObject(path),
 				tlvObject11113);
 	}
 	

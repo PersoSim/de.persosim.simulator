@@ -57,7 +57,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 	@Test
 	public void testGetFileControlInformation(){
 		ConstructedTlvDataObject fcp = file.getFileControlParameterDataObject();
-		assertTrue(fcp.containsTagField(new TlvTag((byte)0x80)));
-		assertTrue(fcp.containsTagField(new TlvTag((byte)0x88)));
+		assertTrue(fcp.containsTlvDataObject(new TlvTag((byte)0x80)));
+		assertTrue(fcp.containsTlvDataObject(new TlvTag((byte)0x88)));
 	}
 }

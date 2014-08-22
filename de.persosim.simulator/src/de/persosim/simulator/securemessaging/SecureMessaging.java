@@ -282,7 +282,7 @@ public class SecureMessaging extends Layer {
 		}
 		
 		TlvDataObjectContainer constructedCommandDataField = processingData.getCommandApdu().getCommandDataObjectContainer();
-		tlvObject8E = constructedCommandDataField .getTagField(TAG_8E);
+		tlvObject8E = constructedCommandDataField .getTlvDataObject(TAG_8E);
 		log(this, "TLV object 8E is: " + tlvObject8E, TRACE);
 		
 		if(tlvObject8E == null) {
@@ -293,8 +293,8 @@ public class SecureMessaging extends Layer {
 			throw new IllegalArgumentException("SM APDU is expected to contain tag 8E (mac)");
 		}
 		
-		tlvObject87 = constructedCommandDataField.getTagField(TAG_87);
-		tlvObject97 = constructedCommandDataField.getTagField(TAG_97);
+		tlvObject87 = constructedCommandDataField.getTlvDataObject(TAG_87);
+		tlvObject97 = constructedCommandDataField.getTlvDataObject(TAG_97);
 		
 		if(tlvObject87 == null) {
 			if(tlvObject97 == null) {
@@ -385,15 +385,15 @@ public class SecureMessaging extends Layer {
 		}
 		
 		TlvDataObjectContainer constructedCommandDataField = processingData.getCommandApdu().getCommandDataObjectContainer();
-		tlvObject8E = constructedCommandDataField.getTagField(TAG_8E);
+		tlvObject8E = constructedCommandDataField.getTlvDataObject(TAG_8E);
 		log(this, "TLV object 8E is: " + tlvObject8E, TRACE);
 		
 		if(tlvObject8E == null) {
 			throw new IllegalArgumentException("SM APDU is expected to contain tag 8E (mac)");
 		}
 		
-		tlvObject87 = constructedCommandDataField.getTagField(TAG_87);
-		tlvObject97 = constructedCommandDataField.getTagField(TAG_97);
+		tlvObject87 = constructedCommandDataField.getTlvDataObject(TAG_87);
+		tlvObject97 = constructedCommandDataField.getTlvDataObject(TAG_97);
 		
 		if(tlvObject87 == null) {
 			if(tlvObject97 == null) {

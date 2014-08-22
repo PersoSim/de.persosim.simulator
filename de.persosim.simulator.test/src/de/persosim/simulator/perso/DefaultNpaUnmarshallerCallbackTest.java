@@ -124,7 +124,7 @@ public class DefaultNpaUnmarshallerCallbackTest extends PersoSimTestCase {
 		ConstructedTlvDataObject fileContentTlv = new ConstructedTlvDataObject(fileContent);
 		
 		assertEquals(new TlvTag(Asn1.SEQUENCE),  fileContentTlv.getTlvTag());
-		TlvDataObject cmsTlv = new ConstructedTlvDataObject(fileContentTlv.getTagField(new TlvTag((byte)0xA0)).getValueField());
+		TlvDataObject cmsTlv = new ConstructedTlvDataObject(fileContentTlv.getTlvDataObject(new TlvTag((byte)0xA0)).getValueField());
 		SecInfoCmsBuilderTest.checkSignedData(cmsTlv.toByteArray(), expecedEContent);
 	}
 
@@ -166,7 +166,7 @@ public class DefaultNpaUnmarshallerCallbackTest extends PersoSimTestCase {
 		ConstructedTlvDataObject fileContentTlv = new ConstructedTlvDataObject(fileContent);
 		
 		assertEquals(new TlvTag(Asn1.SEQUENCE),  fileContentTlv.getTlvTag());
-		TlvDataObject cmsTlv = new ConstructedTlvDataObject(fileContentTlv.getTagField(new TlvTag((byte)0xA0)).getValueField());
+		TlvDataObject cmsTlv = new ConstructedTlvDataObject(fileContentTlv.getTlvDataObject(new TlvTag((byte)0xA0)).getValueField());
 		SecInfoCmsBuilderTest.checkSignedData(cmsTlv.toByteArray(), expecedEContent);
 	}
 

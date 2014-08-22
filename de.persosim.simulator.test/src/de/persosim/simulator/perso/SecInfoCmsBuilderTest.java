@@ -18,6 +18,7 @@ import javax.security.auth.x500.X500Principal;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1StreamParser;
+import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERSequenceParser;
 import org.bouncycastle.asn1.pkcs.SignedData;
 import org.bouncycastle.asn1.pkcs.SignerInfo;
