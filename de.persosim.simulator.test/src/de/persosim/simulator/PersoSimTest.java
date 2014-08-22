@@ -266,7 +266,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		};
 		
 		persoSim = new PersoSim((String) null);
-		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
+		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START}))); //FIXME SLS why not call persoSim.startSimulator() directly? see other occurences of persoSim.cmd within this file
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
@@ -438,6 +438,8 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testExecuteUserCommandsCmdLoadPersonalization_InvalidPersonalizationFile() throws Exception {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
+		//FIXME SLS as user command and command line arg are handled identical there seems to be no need to instanticate the simulator with a different perso and change this afterwards, instead use the modified perso file as command arg directly
+		
 		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
 		
 		persoSim.cmdLoadPersonalization(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"})));
@@ -453,6 +455,8 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testExecuteUserCommandsCmdLoadPersonalization_FileNotFound() throws Exception {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
+		//FIXME SLS as user command and command line arg are handled identical there seems to be no need to instanticate the simulator with a different perso and change this afterwards, instead use the modified perso file as command arg directly
+		
 		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
 		
 		persoSim.cmdLoadPersonalization(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, "non-existing.file"})));
@@ -465,6 +469,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws Exception
 	 */
 	@Test
+	//FIXME SLS no need to test setting of the port through a userCommand
 	public void testExecuteUserCommandsCmdSetPortNo() throws Exception {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		persoSim.executeUserCommands(PersoSim.CMD_START);
