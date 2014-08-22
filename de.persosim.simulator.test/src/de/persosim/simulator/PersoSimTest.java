@@ -166,7 +166,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	/**
 	 * Positive test case: check behavior of PersoSim constructor when called with empty argument.
-	 * @throws UnsupportedEncodingException 
+	 * @throws Exception 
 	 */
 	@Test
 	public void testPersoSimConstructor_EmptyArgument() throws Exception {
@@ -213,6 +213,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	/**
 	 * Positive test case: check how PersoSim command line handles exit command.
+	 * @throws Exception
 	 */
 	@Test
 	public void testExecuteUserCommands_Exit() throws Exception {
@@ -229,6 +230,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	/**
 	 * Positive test case: check how PersoSim command line handles an unknown argument.
+	 * @throws Exception
 	 */
 	@Test
 	public void testExecuteUserCommands_UnknownArgument() throws Exception {
@@ -245,9 +247,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	/**
 	 * Positive test case: test implicit setting of a default personalization if no other personalization is explicitly set.
-	 * @throws JAXBException 
-	 * @throws IOException 
-	 * @throws UnknownHostException 
+	 * @throws Exception
 	 */
 	@Test
 	public void testImplicitSettingOfDefaultPersonalization() throws Exception {
@@ -277,9 +277,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	/**
 	 * Positive test case: test start of socket simulator.
-	 * @throws InterruptedException 
-	 * @throws IOException 
-	 * @throws UnknownHostException 
+	 * @throws Exception
 	 */
 	@Test
 	public void testStartSimulator() throws Exception {
@@ -302,9 +300,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	/**
 	 * Positive test case: test stop of socket simulator.
-	 * @throws InterruptedException 
-	 * @throws IOException 
-	 * @throws UnknownHostException 
+	 * @throws Exception 
 	 */
 	@Test
 	public void testStopSimulator() throws Exception {
@@ -375,8 +371,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	/**
 	 * Positive test case: parse personalization from a valid file.
-	 * @throws FileNotFoundException 
-	 * @throws JAXBException 
+	 * @throws Exception
 	 */
 	@Test
 	public void testParsePersonalization_ValidFile() throws Exception {
@@ -387,8 +382,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	/**
 	 * Negative test case: parse personalization from a non-existing file.
-	 * @throws FileNotFoundException 
-	 * @throws JAXBException 
+	 * @throws Exception
 	 */
 	@Test(expected = FileNotFoundException.class)
 	public void testParsePersonalization_FileNotFound() throws Exception {
@@ -397,8 +391,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	/**
 	 * Negative test case: parse personalization from an invalid existing file.
-	 * @throws FileNotFoundException 
-	 * @throws JAXBException 
+	 * @throws Exception
 	 */
 	@Test(expected = JAXBException.class)
 	public void testParsePersonalization_InvalidFile() throws Exception {
@@ -406,9 +399,8 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: check behavior of PersoSim constructor when called with null argument.
+	 * Positive test case: check behavior of PersoSim constructor when called with unknown argument.
 	 */
-	//FIXME SLS this test does not test a null argument as stated in the JavaDoc
 	@Test
 	public void testPersoSimConstructor_UnknownArgument() {
 		persoSim = new PersoSim(new String[]{"unknownCommand"});
@@ -417,11 +409,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	/**
 	 * Positive test case: test setting of new personalization via user arguments.
-	 * @throws InterruptedException 
-	 * @throws IllegalArgumentException 
-	 * @throws JAXBException 
-	 * @throws IOException 
-	 * @throws UnknownHostException 
+	 * @throws Exception
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdLoadPersonalization_ValidPersonalization() throws Exception {
@@ -441,38 +429,38 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Negative test case: test setting of new personalization via user arguments with invalid personalization. //FIXME SLS be a little more detailed here, I see at least two different types of invalid personalization: File does not exist vs. File does not encode a perso, please test both
-	 * @throws InterruptedException 
-	 * @throws IllegalArgumentException 
-	 * @throws IOException 
-	 * @throws UnknownHostException 
+	 * Negative test case: test setting of new personalization via user arguments with argument referencing existing file containing invalid personalization.
+	 * @throws Exception 
 	 */
-	@Test
-	public void testExecuteUserCommandsCmdLoadPersonalization_InvalidPersonalization() throws Exception {
+	@Test(expected = IOException.class)
+	public void testExecuteUserCommandsCmdLoadPersonalization_InvalidPersonalizationFile() throws Exception {
+		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		
+		persoSim.executeUserCommands(PersoSim.CMD_START);
+		
+		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java");
+		
+		exchangeApdu(SELECT_APDU);
+	}
+	
+	/**
+	 * Negative test case: test setting of new personalization via user arguments with argument referencing non existing file.
+	 * @throws Exception
+	 */
+	@Test(expected = IOException.class)
+	public void testExecuteUserCommandsCmdLoadPersonalization_FileNotFound() throws Exception {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
 		persoSim.executeUserCommands(PersoSim.CMD_LOAD_PERSONALIZATION, "non-existing.file");
 		
-		
-		//FIXME SLS this check can be achieved by expectation in the @Test annotation instead of this bulky construct here
-		boolean caughtIoException = false;
-		
-		try {
-			exchangeApdu(SELECT_APDU);
-		} catch (IOException e) {
-			caughtIoException = true;
-		}
-		
-		assertTrue(caughtIoException);
+		exchangeApdu(SELECT_APDU);
 	}
 	
 	/**
 	 * Positive test case: test setting of new port via user arguments.
-	 * @throws InterruptedException 
-	 * @throws IllegalArgumentException 
-	 * @throws IOException 
+	 * @throws Exception
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdSetPortNo() throws Exception {
