@@ -12,6 +12,7 @@ import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvPath;
 import de.persosim.simulator.tlv.TlvTag;
+import de.persosim.simulator.tlv.TlvTagIdentifier;
 import de.persosim.simulator.utils.HexString;
 
 /**
@@ -183,18 +184,13 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 	 * @return
 	 */
 	protected TlvDataObject getSid() {
-		TlvDataObject identifier = getCertificate().getTlvDataObject(new TlvPath(TAG_SEQUENCE));
+		ConstructedTlvDataObject cert = getCertificate();
 		
-		//FIXME extract correct identifier from certificate (requires modifications on TlvPath and TlvDataObjectContainer, see independent branch)
-		
-		
-		String currentHexString = "30 5A 30 55 31 0B 30 09 06 03 55 04 06 13 02 44 45 31 0D 30 0B 06 03 55 04 0A 0C 04 62 75 6E 64 31 0C 30 0A 06 03 55 04 0B 0C 03 62 73 69 31 0D 30 0B 06 03 55 04 05 13 04 30 30 30 33 31 1A 30 18 06 03 55 04 03 0C 11 54 45 53 54 20 63 73 63 61 2D 67 65 72 6D 61 6E 79 02 01 19";
-		System.out.println(identifier);
-		System.out.println(currentHexString);
-		
-		identifier = new ConstructedTlvDataObject(HexString.toByteArray(currentHexString));
-		
-		return new ConstructedTlvDataObject(TAG_SEQUENCE, identifier);
+		TlvDataObject issuer = cert.getTlvDataObject(new TlvPath(new TlvTagIdentifier(TAG_SEQUENCE), new TlvTagIdentifier(TAG_SEQUENCE,1)));
+
+		TlvDataObject serialNumber = cert.getTlvDataObject(new TlvPath(TAG_SEQUENCE, TAG_INTEGER));
+
+		return new ConstructedTlvDataObject(TAG_SEQUENCE, issuer, serialNumber);
 	}
 
 	

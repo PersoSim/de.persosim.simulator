@@ -1,6 +1,7 @@
 package de.persosim.simulator.perso;
 
-import static de.persosim.simulator.utils.PersoSimLogger.*;
+import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -18,11 +19,10 @@ import javax.security.auth.x500.X500Principal;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1StreamParser;
-import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERSequenceParser;
+import org.bouncycastle.asn1.cms.IssuerAndSerialNumber;
 import org.bouncycastle.asn1.pkcs.SignedData;
-import org.bouncycastle.asn1.pkcs.SignerInfo;
-import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Test;
 
@@ -58,9 +58,9 @@ public abstract class SecInfoCmsBuilderTest extends PersoSimTestCase {
 		return true; 
 	}
 
-	public static X509Certificate getCertificate(SignedData cms, SignerInfo sigInfo) throws GeneralSecurityException {
-		X500Name sigIssuerName = sigInfo.getIssuerAndSerialNumber().getName();
-		X500Principal signerInfoIssuerPrincipal = new X500Principal(sigIssuerName.toString());
+	public static X509Certificate getCertificate(SignedData cms, ASN1Sequence sigInfo) throws GeneralSecurityException, IOException {
+		ASN1Sequence sid = (ASN1Sequence) sigInfo.getObjectAt(1);
+		X500Principal signerInfoIssuerPrincipal = new X500Principal(sid.getObjectAt(0).toASN1Primitive().getEncoded());
 		
 		log(SecInfoCmsBuilderTest.class, "Searching certificate for \"" + signerInfoIssuerPrincipal + "\"", DEBUG);
 		
@@ -124,7 +124,7 @@ public abstract class SecInfoCmsBuilderTest extends PersoSimTestCase {
 		
 		//check signature for each SignerInfo
 		for (int i = 0; i < signerInfos.length; i++) {
-			SignerInfo sigInfo = new SignerInfo((ASN1Sequence) signerInfos[i]);
+			ASN1Sequence sigInfo = (ASN1Sequence) signerInfos[i];
 			
 			//get certificate
 			Object cert = SecInfoCmsBuilderTest.getCertificate(cms, sigInfo);
