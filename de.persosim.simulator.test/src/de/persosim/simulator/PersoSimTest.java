@@ -434,34 +434,62 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Negative test case: test setting of new personalization via user arguments with argument referencing existing file containing invalid personalization.
 	 * @throws Exception 
 	 */
-	@Test(expected = IOException.class)
+	@Test
 	public void testExecuteUserCommandsCmdLoadPersonalization_InvalidPersonalizationFile() throws Exception {
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		// prepare the mock
+		new NonStrictExpectations() {
+			{
+				defaultPersoTestPki.getObjectTree();
+				result = new MinimumPersonalization(EF_CS_CONTENT_1).getObjectTree();
+			}
+			
+			{
+				defaultPersoTestPki.getProtocolList();
+				result = new MinimumPersonalization(EF_CS_CONTENT_1).getProtocolList();
+			}
+		};
 		
-		//FIXME SLS as user command and command line arg are handled identical there seems to be no need to instanticate the simulator with a different perso and change this afterwards, instead use the modified perso file as command arg directly
+		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"});
 		
-		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
+		persoSim.startSimulator();
 		
-		persoSim.cmdLoadPersonalization(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"})));
+		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
+		assertEquals(SW_NO_ERROR, responseSelect);
 		
-		exchangeApdu(SELECT_APDU);
+		String responseReadBinaryExpected = (HexString.encode(EF_CS_CONTENT_1)).toUpperCase();
+		String responseReadBinary = (extractResponse(exchangeApdu(READ_BINARY_APDU))).toUpperCase();
+		assertEquals(responseReadBinaryExpected, responseReadBinary);
 	}
 	
 	/**
 	 * Negative test case: test setting of new personalization via user arguments with argument referencing non existing file.
 	 * @throws Exception
 	 */
-	@Test(expected = IOException.class)
+	@Test
 	public void testExecuteUserCommandsCmdLoadPersonalization_FileNotFound() throws Exception {
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		// prepare the mock
+		new NonStrictExpectations() {
+			{
+				defaultPersoTestPki.getObjectTree();
+				result = new MinimumPersonalization(EF_CS_CONTENT_1).getObjectTree();
+			}
+			
+			{
+				defaultPersoTestPki.getProtocolList();
+				result = new MinimumPersonalization(EF_CS_CONTENT_1).getProtocolList();
+			}
+		};
 		
-		//FIXME SLS as user command and command line arg are handled identical there seems to be no need to instanticate the simulator with a different perso and change this afterwards, instead use the modified perso file as command arg directly
+		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, "non-existing.file"});
 		
-		persoSim.cmdStartSimulator(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_START})));
+		persoSim.startSimulator();
 		
-		persoSim.cmdLoadPersonalization(new ArrayList<String>(Arrays.asList(new String[]{PersoSim.CMD_LOAD_PERSONALIZATION, "non-existing.file"})));
+		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
+		assertEquals(SW_NO_ERROR, responseSelect);
 		
-		exchangeApdu(SELECT_APDU);
+		String responseReadBinaryExpected = (HexString.encode(EF_CS_CONTENT_1)).toUpperCase();
+		String responseReadBinary = (extractResponse(exchangeApdu(READ_BINARY_APDU))).toUpperCase();
+		assertEquals(responseReadBinaryExpected, responseReadBinary);
 	}
 	
 	/**
