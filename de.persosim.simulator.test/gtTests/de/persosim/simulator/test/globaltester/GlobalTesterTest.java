@@ -187,16 +187,13 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 	 * @return the MRZ used for personalization
 	 */
 	protected String getMrz() {
-		//FIXME SLS dupplicated code, reduce this method to getPassword and check the type of the returned object
-		Collection<CardObject> cardObjects = getPersonalization().getObjectTree().findChildren(new AuthObjectIdentifier(Tr03110.ID_MRZ));
+		PasswordAuthObject pwdAuthObject = getPasswordAuthObject(Tr03110.ID_MRZ);
 		
-		if(cardObjects.isEmpty()) {
+		if((pwdAuthObject == null) || (!(pwdAuthObject instanceof MrzAuthObject))) {
 			return null;
 		}
 		
-		MrzAuthObject mrzAuthObject = (MrzAuthObject) cardObjects.iterator().next();
-		
-		return mrzAuthObject.getMrz();
+		return ((MrzAuthObject) pwdAuthObject).getMrz();
 	}
 	
 	/**
@@ -207,14 +204,34 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 	 * @return the requested password as set during personalization
 	 */
 	protected byte[] getPassword(int passwordIdentifier) {
+		PasswordAuthObject pwdAuthObject = getPasswordAuthObject(passwordIdentifier);
+		
+		if(pwdAuthObject == null) {
+			return null;
+		}
+		
+		return pwdAuthObject.getPassword();
+	}
+	
+	/**
+	 * This method returns the {@link PasswordAuthObject} identified by the provided password identifier.
+	 * @param passwordIdentifier the password identifier to identify a password auth object
+	 * @return the identified password auth object if found, otherwise null
+	 */
+	protected PasswordAuthObject getPasswordAuthObject(int passwordIdentifier) {
 		Collection<CardObject> cardObjects = getPersonalization().getObjectTree().findChildren(new AuthObjectIdentifier(passwordIdentifier));
 		
 		if(cardObjects.isEmpty()) {
 			return null;
 		}
 		
-		PasswordAuthObject pwdAuthObject = (PasswordAuthObject) cardObjects.iterator().next();
-		return pwdAuthObject.getPassword();
+		CardObject cardObject = cardObjects.iterator().next();
+		
+		if(cardObject instanceof PasswordAuthObject) {
+			return (PasswordAuthObject) cardObject;
+		} else{
+			return null;
+		}
 	}
 
 	/**
