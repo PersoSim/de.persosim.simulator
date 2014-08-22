@@ -400,11 +400,11 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: test setting of new personalization via user arguments.
+	 * Positive test case: test setting of new personalization.
 	 * @throws Exception
 	 */
 	@Test
-	public void testExecuteUserCommandsCmdLoadPersonalization_ValidPersonalization() throws Exception {
+	public void testLoadPersonalization_ValidPersonalization() throws Exception {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		persoSim.startSimulator();
@@ -426,7 +426,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws Exception 
 	 */
 	@Test
-	public void testExecuteUserCommandsCmdLoadPersonalization_InvalidPersonalizationFile() throws Exception {
+	public void testArgLoadPersonalization_InvalidPersonalizationFile() throws Exception {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
@@ -457,7 +457,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws Exception
 	 */
 	@Test
-	public void testExecuteUserCommandsCmdLoadPersonalization_FileNotFound() throws Exception {
+	public void testArgLoadPersonalization_FileNotFound() throws Exception {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
@@ -490,7 +490,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	@Test
 	public void testExecuteUserCommandsCmdSetPortNo() throws Exception {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
-		persoSim.executeUserCommands(PersoSim.CMD_START);
+		persoSim.startSimulator();
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
