@@ -65,7 +65,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	@After
 	public void tearDown() {
 		if(persoSim != null) {
-			persoSim.executeUserCommands(PersoSim.CMD_STOP); //FIXME SLS why not call persoSim.stopSimulator directly? (and why is it not public?)
+			persoSim.stopSimulator();
 		}
 		
 		System.setOut(origOut);
@@ -123,8 +123,6 @@ public class PersoSimTest extends PersoSimTestCase {
 			out.flush();
 			
 			respApdu = in.readLine();
-		} catch (IOException e) {
-			throw e; //FIXME SLS isn't this catch block obsolete?
 		} finally {
 			if (socket != null) {
 				try {
@@ -152,17 +150,13 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	/**
 	 * This method reads from redirected System.out.
-	 * @return the data read from redirected System.out
+	 * @return the trimmed data read from redirected System.out
+	 * @throws UnsupportedEncodingException 
 	 */
-	public static String readRedStdOut() {
+	public static String readRedStdOut() throws UnsupportedEncodingException {
 		String responseBulk = "";
 		
-		try {
-			responseBulk = redStdOut.toString("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// "UTF-8" _is_ valid //FIXME SLS then simply throw this exception furhter, we are in a unit test here any unexpected behavior shall lead to failing tests instead of asimple log
-			e.printStackTrace();
-		}
+		responseBulk = redStdOut.toString("UTF-8").trim();
 		
 		origOut.print(responseBulk);
 		origOut.flush();
@@ -176,51 +170,43 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testPersoSimConstructor_EmptyArgument() throws Exception {
-		System.out.println("test001");
 		activateStdOutRedirection();
 		
 		persoSim = new PersoSim(new String[]{});
 		
-		String responseBulk = readRedStdOut();
-		
-		String response = responseBulk.trim();
+		String response = readRedStdOut();
 		
 		assertEquals(PersoSim.LOG_NO_OPERATION, response);
 	}
 	
 	/**
 	 * Positive test case: check how PersoSim constructor handles null argument.
+	 * @throws Exception 
 	 */
 	@Test
-	public void testPersoSimConstructor_NullArgument() {
-		System.out.println("test002"); //FIXME SLS remove all these useless printlns (they don't relate the output to any specific test method, for debugging running the tests on-by-one is more effective)
+	public void testPersoSimConstructor_NullArgument() throws Exception {
 		activateStdOutRedirection();
 		
 		persoSim = new PersoSim((String) null);
 		
-		String responseBulk = readRedStdOut();
-		
-		String response = responseBulk.trim();
+		String response = readRedStdOut();
 		
 		assertEquals(PersoSim.LOG_NO_OPERATION, response);
 	}
 	
 	/**
 	 * Positive test case: check how PersoSim command line handles empty argument.
+	 * @throws Exception 
 	 */
 	@Test
-	public void testExecuteUserCommands_EmptyArgument() {
-		System.out.println("test017");
-		
+	public void testExecuteUserCommands_EmptyArgument() throws Exception {
 		persoSim = new PersoSim((String) null);
 		
 		activateStdOutRedirection();
 		
 		persoSim.executeUserCommands("");
 		
-		String responseBulk = readRedStdOut();
-		
-		String response = responseBulk.trim();
+		String response = readRedStdOut();
 		
 		assertEquals(PersoSim.LOG_NO_OPERATION, response);
 	}
@@ -229,18 +215,14 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: check how PersoSim command line handles exit command.
 	 */
 	@Test
-	public void testExecuteUserCommands_Exit() {
-		System.out.println("test018");
-		
+	public void testExecuteUserCommands_Exit() throws Exception {
 		persoSim = new PersoSim((String) null);
 		
 		activateStdOutRedirection();
 		
 		persoSim.executeUserCommands(PersoSim.CMD_EXIT);
 		
-		String responseBulk = readRedStdOut();
-		
-		String response = responseBulk.trim();
+		String response = readRedStdOut();
 		
 		assertEquals(PersoSim.LOG_SIM_EXIT, response);
 	}
@@ -249,18 +231,14 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: check how PersoSim command line handles an unknown argument.
 	 */
 	@Test
-	public void testExecuteUserCommands_UnknownArgument() {
-		System.out.println("test019");
-		
+	public void testExecuteUserCommands_UnknownArgument() throws Exception {
 		persoSim = new PersoSim((String) null);
 		
 		activateStdOutRedirection();
 		
 		persoSim.executeUserCommands("unknown");
 		
-		String responseBulk = readRedStdOut();
-		
-		String response = responseBulk.trim(); //FIXME SLS I see this quite offen, why isn't this handled within readRedStdOut()?
+		String response = readRedStdOut();
 		
 		assertTrue(response.startsWith(PersoSim.LOG_UNKNOWN_ARG));
 	}
@@ -273,7 +251,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testImplicitSettingOfDefaultPersonalization() throws Exception {
-		System.out.println("test003");
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
@@ -306,7 +283,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator() throws Exception {
-		System.out.println("test004");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		boolean caughtIoException = false;
@@ -332,7 +308,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStopSimulator() throws Exception {
-		System.out.println("test005");
 		persoSim = new PersoSim(PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1);
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
@@ -358,7 +333,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testParseCommandEmptyString() {
-		System.out.println("test006");
 		String[] result = PersoSim.parseCommand("");
 		
 		assertEquals(result.length, 0);
@@ -378,7 +352,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testParseCommand_UntrimmedCoherentString() {
-		System.out.println("test008");
 		String arg = "string";
 		String[] result = PersoSim.parseCommand(" " + arg + "  ");
 		
@@ -391,7 +364,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testParseCommand_IncoherentString() {
-		System.out.println("test009");
 		String arg1 = "string1";
 		String arg2 = "string 2";
 		String[] result = PersoSim.parseCommand(" " + arg1 + "  " + arg2);
@@ -408,7 +380,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testParsePersonalization_ValidFile() throws Exception {
-		System.out.println("test010");
 		Personalization perso = PersoSim.parsePersonalization(DUMMY_PERSONALIZATION_FILE_1);
 		
 		assertNotNull(perso);
@@ -421,7 +392,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test(expected = FileNotFoundException.class)
 	public void testParsePersonalization_FileNotFound() throws Exception {
-		System.out.println("test011");
 		PersoSim.parsePersonalization("file not found");
 	}
 	
@@ -432,7 +402,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test(expected = JAXBException.class)
 	public void testParsePersonalization_InvalidFile() throws Exception {
-		System.out.println("test012");
 		PersoSim.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
 	}
 	
@@ -442,7 +411,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	//FIXME SLS this test does not test a null argument as stated in the JavaDoc
 	@Test
 	public void testPersoSimConstructor_UnknownArgument() {
-		System.out.println("test013");
 		persoSim = new PersoSim(new String[]{"unknownCommand"});
 		assertNotNull(persoSim);
 	}
@@ -457,7 +425,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdLoadPersonalization_ValidPersonalization() throws Exception {
-		System.out.println("test014");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
@@ -482,7 +449,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdLoadPersonalization_InvalidPersonalization() throws Exception {
-		System.out.println("test015");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		persoSim.executeUserCommands(PersoSim.CMD_START);
@@ -510,7 +476,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdSetPortNo() throws Exception {
-		System.out.println("test016");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		persoSim.executeUserCommands(PersoSim.CMD_START);
 		
