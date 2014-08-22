@@ -30,8 +30,6 @@ import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
 
-//FIXME SLS generaly use method names with a separating _ between the name of the method to test and the special circumstances that are tested
-//FIXME SLS @Test methods can simply thro Exception instead of a bunch of narroy subclasses. These methods are not intended to be used by any caller that would complain about that
 public class PersoSimTest extends PersoSimTestCase {
 	
 	PersoSim persoSim;
@@ -177,7 +175,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws UnsupportedEncodingException 
 	 */
 	@Test
-	public void testPersoSimConstructor_EmptyArgument() throws UnsupportedEncodingException {
+	public void testPersoSimConstructor_EmptyArgument() throws Exception {
 		System.out.println("test001");
 		activateStdOutRedirection();
 		
@@ -274,7 +272,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws UnknownHostException 
 	 */
 	@Test
-	public void testImplicitSettingOfDefaultPersonalization() throws JAXBException, UnknownHostException, IOException {
+	public void testImplicitSettingOfDefaultPersonalization() throws Exception {
 		System.out.println("test003");
 		// prepare the mock
 		new NonStrictExpectations() {
@@ -307,7 +305,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws UnknownHostException 
 	 */
 	@Test
-	public void testStartSimulator() throws InterruptedException, UnknownHostException, IOException {
+	public void testStartSimulator() throws Exception {
 		System.out.println("test004");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
@@ -333,7 +331,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws UnknownHostException 
 	 */
 	@Test
-	public void testStopSimulator() throws InterruptedException, UnknownHostException, IOException {
+	public void testStopSimulator() throws Exception {
 		System.out.println("test005");
 		persoSim = new PersoSim(PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1);
 		
@@ -379,7 +377,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: parse arguments from a String containing spaces only at start and end.
 	 */
 	@Test
-	public void testParseCommandUntrimmedCoherentString() {
+	public void testParseCommand_UntrimmedCoherentString() {
 		System.out.println("test008");
 		String arg = "string";
 		String[] result = PersoSim.parseCommand(" " + arg + "  ");
@@ -392,7 +390,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: parse arguments from a String containing spaces not only at start and end.
 	 */
 	@Test
-	public void testParseCommandIncoherentString() {
+	public void testParseCommand_IncoherentString() {
 		System.out.println("test009");
 		String arg1 = "string1";
 		String arg2 = "string 2";
@@ -409,7 +407,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws JAXBException 
 	 */
 	@Test
-	public void testParsePersonalizationValidFile() throws FileNotFoundException, JAXBException {
+	public void testParsePersonalization_ValidFile() throws Exception {
 		System.out.println("test010");
 		Personalization perso = PersoSim.parsePersonalization(DUMMY_PERSONALIZATION_FILE_1);
 		
@@ -422,7 +420,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws JAXBException 
 	 */
 	@Test(expected = FileNotFoundException.class)
-	public void testParsePersonalizationFileNotFound() throws FileNotFoundException, JAXBException {
+	public void testParsePersonalization_FileNotFound() throws Exception {
 		System.out.println("test011");
 		PersoSim.parsePersonalization("file not found");
 	}
@@ -433,7 +431,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws JAXBException 
 	 */
 	@Test(expected = JAXBException.class)
-	public void testParsePersonalizationInvalidFile() throws FileNotFoundException, JAXBException {
+	public void testParsePersonalization_InvalidFile() throws Exception {
 		System.out.println("test012");
 		PersoSim.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
 	}
@@ -443,7 +441,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	//FIXME SLS this test does not test a null argument as stated in the JavaDoc
 	@Test
-	public void testPersoSimConstructorUnknownArgument() {
+	public void testPersoSimConstructor_UnknownArgument() {
 		System.out.println("test013");
 		persoSim = new PersoSim(new String[]{"unknownCommand"});
 		assertNotNull(persoSim);
@@ -458,7 +456,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws UnknownHostException 
 	 */
 	@Test
-	public void testExecuteUserCommandsCmdLoadPersonalization_ValidPersonalization() throws InterruptedException, IllegalArgumentException, JAXBException, UnknownHostException, IOException {
+	public void testExecuteUserCommandsCmdLoadPersonalization_ValidPersonalization() throws Exception {
 		System.out.println("test014");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
@@ -483,7 +481,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws UnknownHostException 
 	 */
 	@Test
-	public void testExecuteUserCommandsCmdLoadPersonalizationInvalidPersonalization() throws InterruptedException, IllegalArgumentException, UnknownHostException, IOException {
+	public void testExecuteUserCommandsCmdLoadPersonalization_InvalidPersonalization() throws Exception {
 		System.out.println("test015");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
@@ -511,7 +509,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws IOException 
 	 */
 	@Test
-	public void testExecuteUserCommandsCmdSetPortNo() throws InterruptedException, IllegalArgumentException, IOException {
+	public void testExecuteUserCommandsCmdSetPortNo() throws Exception {
 		System.out.println("test016");
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		persoSim.executeUserCommands(PersoSim.CMD_START);
