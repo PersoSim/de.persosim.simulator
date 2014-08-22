@@ -76,7 +76,6 @@ public class PersoSim implements Runnable {
 		
 		try {
 			handleArgs(args);
-			processingCommandLineArguments = false; //FIXME SLS why is this reset here and not at the end of handleArgs()?
 		} catch (IllegalArgumentException e) {
 			System.out.println("simulation aborted, reason is: " + e.getMessage());
 		}
@@ -148,7 +147,7 @@ public class PersoSim implements Runnable {
 	 * This method handles instantiation and (re)start of the SocketSimulator.
 	 * @return whether instantiation and starting was successful
 	 */
-	private boolean startSimulator() {
+	public boolean startSimulator() {
 		SocketSimulator newSimulator = new SocketSimulator(getPersonalization(), simPort);
 		
 		if(newSimulator.start()) {
@@ -180,10 +179,9 @@ public class PersoSim implements Runnable {
 	
 	/**
 	 * Stops the simulator thread and returns when the thread is stopped.
-	 * FIXME SLS check value returned by simulator,stop()
-	 * FIXME SLS @return missing here
+	 * @return whether stopping was successful
 	 */
-	private boolean stopSimulator() {
+	public boolean stopSimulator() {
 		boolean simStopped = false;
 		
 		if (simulator != null) {
@@ -216,7 +214,7 @@ public class PersoSim implements Runnable {
 	 * This method restarts the simulator.
 	 * @return whether restarting has been successful
 	 */
-	private boolean restartSimulator() {
+	public boolean restartSimulator() {
 		stopSimulator();
 		return startSimulator();
 	}
@@ -350,14 +348,16 @@ public class PersoSim implements Runnable {
 	    			args.remove(0);
 	    			return result;
 	    		} catch(RuntimeException e) {
-	    			result = "unable to set personalization, reason is: " + e.getMessage(); //FIXME SLS wrong message within this method
+	    			result = "unable to send APDU, reason is: " + e.getMessage();
 	    			args.remove(0);
 	    			return result;
 	    		}
+			} else{
+				return "no send APDU command";
 			}
+		} else{
+			return "missing parameter for APDU content";
 		}
-		
-		return "unable to process command"; //FIXME SLS add more detail here
 	}
 	
 	/**
@@ -468,12 +468,14 @@ public class PersoSim implements Runnable {
 			String cmd = args.get(0);
 			
 			if(cmd.equals(CMD_LOAD_PERSONALIZATION) || cmd.equals(ARG_LOAD_PERSONALIZATION)) {
-				try{
-	    			currentPersonalization = parsePersonalization(args.get(1));
-					
-	    			args.remove(0);
-	    			args.remove(0);
-	    			
+				String arg = args.get(1);
+				
+				args.remove(0);
+    			args.remove(0);
+				
+    			try{
+					Personalization perso = parsePersonalization(arg);
+	    			currentPersonalization = perso; 
 	    			if(processingCommandLineArguments) {
 	    				return true;
 	    			} else{
@@ -483,9 +485,9 @@ public class PersoSim implements Runnable {
 	    			System.out.println("unable to set personalization, reason is: " + e.getMessage());
 	    			stopSimulator();
 	    			System.out.println("simulation is stopped");
-	    			args.remove(0); //FIXME SLS why remove only one arg here but two above? try to remove them in the same place, maybe read them to local variables and remove them before the catch block
 	    			return false;
 	    		}
+				
 			}
 		}
 		
@@ -502,11 +504,12 @@ public class PersoSim implements Runnable {
 			String cmd = args.get(0);
 			
 			if(cmd.equals(CMD_SET_PORT) || cmd.equals(ARG_SET_PORT)) {
+				String arg = args.get(1);
+				args.remove(0);
+    			args.remove(0);
+				
 				try{
-	    			setPort(args.get(1));
-	    			
-	    			args.remove(0);
-	    			args.remove(0);
+	    			setPort(arg);
 	    			
 	    			if(processingCommandLineArguments) {
 	    				return true;
@@ -515,7 +518,6 @@ public class PersoSim implements Runnable {
 	    			}
 	    		} catch(IllegalArgumentException | NullPointerException e) {
 	    			System.out.println("unable to set port, reason is: " + e.getMessage());
-	    			args.remove(0); //FIXME SLS see method above, try to keep the number of removed args consistent
 	    			return false;
 	    		}
 			}
@@ -622,10 +624,10 @@ public class PersoSim implements Runnable {
 			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
 				//first command in queue has not been processed
 				String currentArgument = currentArgs.get(0);
-				System.out.println(LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored");
+				System.out.println(LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped");
 				currentArgs.remove(0);
 				printHelpCmd();
-				//FIXME SLS I expect the loop to be ended here...
+				break;
 			}
 		}
 		
@@ -652,32 +654,33 @@ public class PersoSim implements Runnable {
 		
 		if(currentArgs.size() == 0) {System.out.println(LOG_NO_OPERATION); return;}
 		
+		int noOfArgsWhenCheckedLast;
 		while(currentArgs.size() > 0) {
-			String currentArgument = currentArgs.get(0);
-			//FIXME SLS why is this code so different from executeUserCommands? Can't args be handled identical? At least the called methods are the same...
-			switch (currentArgument) {
-		        case ARG_LOAD_PERSONALIZATION:
-		        	cmdLoadPersonalization(currentArgs);
-		        	break;
-		        case ARG_SET_PORT:
-		        	cmdSetPortNo(currentArgs);
-		        	break;
-		        case ARG_HELP:
-	            	printHelpArgs();
-	            	currentArgs.remove(0);
-					break;
-		        case CMD_CONSOLE_ONLY:
-		        	// do no actual processing, i.e. prevent simulator from logging unknown command error as command has already been processed
+			noOfArgsWhenCheckedLast = currentArgs.size();
+			
+			cmdLoadPersonalization(currentArgs);
+			cmdSetPortNo(currentArgs);
+			cmdHelp(currentArgs);
+			
+			if(currentArgs.size() > 0) {
+				if(currentArgs.get(0).equals(CMD_CONSOLE_ONLY)) {
+					// do no actual processing, i.e. prevent simulator from logging unknown command error as command has already been processed
 		        	// command is passed on as part of unprocessed original command line arguments
 		        	currentArgs.remove(0);
-		        	break;
-		        default:
-		        	System.out.println(LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored");
-		        	currentArgs.remove(0);
-		        	printHelpArgs();
-		            break;
+				}
+			}
+			
+			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
+				//first command in queue has not been processed
+				String currentArgument = currentArgs.get(0);
+				System.out.println(LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped");
+				currentArgs.remove(0);
+				printHelpCmd();
+				break;
 			}
 		}
+		
+		processingCommandLineArguments = false;
 		
 	}
 
