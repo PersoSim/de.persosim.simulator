@@ -488,7 +488,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws Exception
 	 */
 	@Test
-	//FIXME SLS no need to test setting of the port through a userCommand
 	public void testExecuteUserCommandsCmdSetPortNo() throws Exception {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		persoSim.executeUserCommands(PersoSim.CMD_START);
