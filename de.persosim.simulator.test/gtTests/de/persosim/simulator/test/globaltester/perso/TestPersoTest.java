@@ -14,7 +14,7 @@ public class TestPersoTest extends GtDefaultPersoTest {
 		Collection<JobDescriptor> retVal = 
 		new ArrayList<JobDescriptor>();
 		
-		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_H_04a"));
+		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_P_01"));
 
 		return retVal;
 	}
