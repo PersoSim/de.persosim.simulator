@@ -248,13 +248,21 @@ public class PersoSim implements Runnable {
 			
 			if(cmd.equals(CMD_EXIT)) {
 				args.remove(0);
-				executeUserCommands = false;
-				System.out.println(LOG_SIM_EXIT);
-				return stopSimulator();
+				return exitSimulator();
 			}
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * This method stops the simulator and no longer accepts user input.
+	 * @return whether the simulator has been stopped
+	 */
+	public boolean exitSimulator() {
+		executeUserCommands = false;
+		System.out.println(LOG_SIM_EXIT);
+		return stopSimulator();
 	}
 
 	/**
@@ -472,26 +480,30 @@ public class PersoSim implements Runnable {
 				
 				args.remove(0);
     			args.remove(0);
-				
-    			try{
-					Personalization perso = parsePersonalization(arg);
-	    			currentPersonalization = perso; 
-	    			if(processingCommandLineArguments) {
-	    				return true;
-	    			} else{
-	    				return restartSimulator();
-	    			}
-	    		} catch(FileNotFoundException | JAXBException e) {
-	    			System.out.println("unable to set personalization, reason is: " + e.getMessage());
-	    			stopSimulator();
-	    			System.out.println("simulation is stopped");
-	    			return false;
-	    		}
+    			
+    			loadPersonalization(arg);
 				
 			}
 		}
 		
 		return false;
+	}
+	
+	public boolean loadPersonalization(String fileName) {
+		try{
+			Personalization perso = parsePersonalization(fileName);
+			currentPersonalization = perso; 
+			if(processingCommandLineArguments) {
+				return true;
+			} else{
+				return restartSimulator();
+			}
+		} catch(FileNotFoundException | JAXBException e) {
+			System.out.println("unable to set personalization, reason is: " + e.getMessage());
+			stopSimulator();
+			System.out.println("simulation is stopped");
+			return false;
+		}
 	}
 	
 	/**
