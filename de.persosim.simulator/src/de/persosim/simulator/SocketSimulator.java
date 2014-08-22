@@ -130,7 +130,7 @@ public class SocketSimulator implements Runnable {
 			}
 		}
 		
-		return isRunning(); //FIXME SLS this returns false if the method successfuly stoped the simulator. Is this intended? seems strange, at least clearly state this within the JavaDoc and check the call hierarchy 
+		return !isRunning();
 	}
 
 	@Override
