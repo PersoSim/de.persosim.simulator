@@ -45,7 +45,7 @@ public class PersoSim implements Runnable {
 	 * As there exist several ways of providing a personalization of which none at all may be used the variable may remain null/unset.
 	 * Due to this possibility access to this variable should be performed by calling the getPersonalization() method. 
 	 */
-	private Personalization currentPersonalization;
+	private Personalization currentPersonalization = new DefaultPersoTestPki();
 	
 	public static final String CMD_START                      = "start";
 	public static final String CMD_RESTART                    = "restart";
@@ -148,6 +148,11 @@ public class PersoSim implements Runnable {
 	 * @return whether instantiation and starting was successful
 	 */
 	public boolean startSimulator() {
+		if (getPersonalization() == null) {
+			System.out.println("No personalization available, please load a valid personalization before starting the simulator");
+			return false;
+		}
+		
 		SocketSimulator newSimulator = new SocketSimulator(getPersonalization(), simPort);
 		
 		if(newSimulator.start()) {
@@ -277,11 +282,6 @@ public class PersoSim implements Runnable {
 	 * @return the currently used personalization
 	 */
 	public Personalization getPersonalization() {
-		if(currentPersonalization == null) {
-			System.out.println("Loading default personalization");
-			currentPersonalization = new DefaultPersoTestPki();
-		}
-		
 		return currentPersonalization;
 	}
 	
@@ -490,6 +490,7 @@ public class PersoSim implements Runnable {
 	}
 	
 	public boolean loadPersonalization(String fileName) {
+		currentPersonalization = null;
 		try{
 			Personalization perso = parsePersonalization(fileName);
 			currentPersonalization = perso; 

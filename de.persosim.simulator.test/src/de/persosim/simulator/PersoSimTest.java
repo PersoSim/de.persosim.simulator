@@ -1,6 +1,7 @@
 package de.persosim.simulator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -425,62 +426,22 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Negative test case: test setting of new personalization via user arguments with argument referencing existing file containing invalid personalization.
 	 * @throws Exception 
 	 */
-	@Test
-	public void testArgLoadPersonalization_InvalidPersonalizationFile() throws Exception {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				defaultPersoTestPki.getObjectTree();
-				result = new MinimumPersonalization(EF_CS_CONTENT_1).getObjectTree();
-			}
-			
-			{
-				defaultPersoTestPki.getProtocolList();
-				result = new MinimumPersonalization(EF_CS_CONTENT_1).getProtocolList();
-			}
-		};
-		
+	@Test(expected = IOException.class)
+	public void testArgLoadPersonalization_InvalidPersonalizationFile() throws Exception {		
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"});
 		
-		persoSim.startSimulator();
-		
-		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect);
-		
-		String responseReadBinaryExpected = (HexString.encode(EF_CS_CONTENT_1)).toUpperCase();
-		String responseReadBinary = (extractResponse(exchangeApdu(READ_BINARY_APDU))).toUpperCase();
-		assertEquals(responseReadBinaryExpected, responseReadBinary);
+		assertFalse(persoSim.startSimulator());
 	}
 	
 	/**
 	 * Negative test case: test setting of new personalization via user arguments with argument referencing non existing file.
 	 * @throws Exception
 	 */
-	@Test
+	@Test(expected = IOException.class)
 	public void testArgLoadPersonalization_FileNotFound() throws Exception {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				defaultPersoTestPki.getObjectTree();
-				result = new MinimumPersonalization(EF_CS_CONTENT_1).getObjectTree();
-			}
-			
-			{
-				defaultPersoTestPki.getProtocolList();
-				result = new MinimumPersonalization(EF_CS_CONTENT_1).getProtocolList();
-			}
-		};
-		
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, "non-existing.file"});
 		
-		persoSim.startSimulator();
-		
-		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect);
-		
-		String responseReadBinaryExpected = (HexString.encode(EF_CS_CONTENT_1)).toUpperCase();
-		String responseReadBinary = (extractResponse(exchangeApdu(READ_BINARY_APDU))).toUpperCase();
-		assertEquals(responseReadBinaryExpected, responseReadBinary);
+		assertFalse(persoSim.startSimulator());
 	}
 	
 	/**
