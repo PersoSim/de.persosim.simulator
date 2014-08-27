@@ -10,9 +10,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.PublicKey;
+import java.security.Signature;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -20,13 +24,12 @@ import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1StreamParser;
 import org.bouncycastle.asn1.DERSequenceParser;
-import org.bouncycastle.asn1.cms.IssuerAndSerialNumber;
 import org.bouncycastle.asn1.pkcs.SignedData;
-import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Test;
 
 import de.persosim.simulator.test.PersoSimTestCase;
+import de.persosim.simulator.tlv.Asn1;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.utils.HexString;
@@ -53,9 +56,26 @@ public abstract class SecInfoCmsBuilderTest extends PersoSimTestCase {
 		checkSignedData(objectUnderTest.buildSignedData(secInfosTlv).toByteArray(), secInfosBytes);
 	}
 
-	public static boolean verifySignature() {
-		//FIXME implement signature verification
-		return true; 
+	/**
+	 * Verify the signature of the hashed input against the provided certificate
+	 * @param sigInput input of the signature to be checked
+	 * @param sigBytes the signature
+	 * @param cert certificate that provides the public key for signature verification
+	 * @return true iff sigBytes represent a valid signature of the input sigInput generated with the private key associated to cert
+	 * @throws GeneralSecurityException
+	 */
+	public static boolean verifySignature(byte[] sigInput, byte[] sigBytes, String digest, X509Certificate cert) throws GeneralSecurityException {
+		Signature sig = Signature.getInstance(cert.getSigAlgName(), BouncyCastleProvider.PROVIDER_NAME);
+		
+		PublicKey pubKey = cert.getPublicKey();
+		sig.initVerify(pubKey);
+		
+		MessageDigest mda = MessageDigest.getInstance(digest, BouncyCastleProvider.PROVIDER_NAME);
+		sig.update(mda.digest(sigInput));
+		
+		sig.verify(sigBytes);
+		
+		return true; //TODO implement signature verification		
 	}
 
 	public static X509Certificate getCertificate(SignedData cms, ASN1Sequence sigInfo) throws GeneralSecurityException, IOException {
@@ -127,11 +147,25 @@ public abstract class SecInfoCmsBuilderTest extends PersoSimTestCase {
 			ASN1Sequence sigInfo = (ASN1Sequence) signerInfos[i];
 			
 			//get certificate
-			Object cert = SecInfoCmsBuilderTest.getCertificate(cms, sigInfo);
+			X509Certificate cert = SecInfoCmsBuilderTest.getCertificate(cms, sigInfo);
 			assertNotNull("No matching certificate found for SignerInfo " + i, cert);
+
+			//FIXME check hashed value of eContent in signed attributes
 			
 			//verifySignature
-			assertTrue("Signature verification failed for SingerInfo " + i, SecInfoCmsBuilderTest.verifySignature());
+			byte[] sigInput, sigBytes;
+			byte[] signedAttributes = sigInfo.getObjectAt(3).toASN1Primitive().getEncoded();
+			if (signedAttributes[0] == (byte) 0xa0) {
+				sigInput = signedAttributes;
+				sigInput[0] = Asn1.SEQUENCE;
+				sigBytes = sigInfo.getObjectAt(5).toASN1Primitive().getEncoded();
+			} else {
+				sigInput = eContentOctetString.getValueField();
+				sigBytes = sigInfo.getObjectAt(4).toASN1Primitive().getEncoded();
+			}
+			
+			sigBytes = Arrays.copyOfRange(sigBytes, 2, sigBytes.length);
+			assertTrue("Signature verification failed for SingerInfo " + i, SecInfoCmsBuilderTest.verifySignature(sigInput, sigBytes, "SHA224", cert));
 		}
 		
 	}

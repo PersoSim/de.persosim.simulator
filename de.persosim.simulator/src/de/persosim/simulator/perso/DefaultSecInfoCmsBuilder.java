@@ -158,8 +158,7 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 	    	byte[] sigInput = signedAttrs.toByteArray();
 	    	sigInput[0] = Asn1.SEQUENCE;
 	    	signatureBytes = getSignature(sigInput);
-	    } else {
-	    
+	    } else {	    
 	    	signatureBytes = getSignature(eContent.toByteArray());
 	    }
 	    TlvDataObject signature = new PrimitiveTlvDataObject(TAG_OCTET_STRING, signatureBytes);
