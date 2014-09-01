@@ -481,7 +481,7 @@ public class PersoSim implements Runnable {
 				args.remove(0);
     			args.remove(0);
     			
-    			loadPersonalization(arg);
+    			return loadPersonalization(arg);
 				
 			}
 		}
