@@ -24,6 +24,9 @@ public abstract class Utils {
 	public static final int MASK_BYTE_TO_INT = (short) 0x000000FF;
 	public static final int MASK_SHORT_TO_INT = 0x0000FFFF;
 	
+	public static final byte DATE_SET_MIN_VALUE = (byte) -1;
+	public static final byte DATE_NO_CHECKS = (byte) 0;
+	public static final byte DATE_SET_MAX_VALUE = (byte) 1;
 	
 	/*--------------------------------------------------------------------------------*/
 	
