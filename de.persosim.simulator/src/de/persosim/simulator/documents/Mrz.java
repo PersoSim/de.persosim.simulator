@@ -387,7 +387,7 @@ public abstract class Mrz {
 	 *            length of the buffer that should be used for the checksum
 	 * @return
 	 */
-	private static byte computeChecksum(byte[] pbuffer, int offset, int length) {
+	public static byte computeChecksum(byte[] pbuffer, int offset, int length) {
 		int[] weight = { 7, 3, 1 };
 		int csum = 0;
 		byte ctemp = (byte) 0x00;
