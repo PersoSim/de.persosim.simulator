@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
@@ -24,6 +25,7 @@ import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.documents.Mrz;
 import de.persosim.simulator.protocols.ta.TaOid;
+import de.persosim.simulator.secstatus.PaceSecurityCondition;
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -33,27 +35,51 @@ import de.persosim.simulator.utils.Utils;
 
 public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	
-	public abstract String getEidDg1PlainData();
-	public abstract String getEidDg2PlainData();
-	public abstract String getEidDg3PlainData();
+	public String getEidDg1PlainData() {
+		return "ID";
+	}
+	
+	public String getEidDg2PlainData() {
+		return "D";
+	}
+	
+	public String getEidDg3PlainData() {
+		return "20201031";
+	}
+	
 	public abstract String getEidDg4PlainData();
 	public abstract String getEidDg5PlainData();
-	public abstract String getEidDg6PlainData();
-	public abstract String getEidDg7PlainData();
-	public abstract String getEidDg8PlainData();
 	
-	public abstract String getEidDg10PlainData();
+	public String getEidDg6PlainData() {
+		return "";
+	}
+	
+	public String getEidDg7PlainData() {
+		return "";
+	}
+	
+	public abstract String getEidDg8PlainData();
+	public abstract String getEidDg9PlainData();
+	
+	public String getEidDg10PlainData() {
+		return "D";
+	}
+	
 	public abstract String getEidDg11PlainData();
 	
-	public abstract String getEidDg13PlainData();
-	
-	
-	
+	public String getEidDg13PlainData() {
+		return "";
+	}
 	
 	public abstract String getEidDg18PlainData();
 	
+	public String getEidDg19PlainData() {
+		return "ResPermit1";
+	}
 	
-	
+	public String getEidDg20PlainData() {
+		return "ResPermit2";
+	}
 	
 	public abstract String getDocumentNumber();
 	public abstract String getMrzLine3of3();
@@ -134,6 +160,34 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	}
 	
 	@Override
+	protected void addEpassDatagroup1(DedicatedFile ePassAppl) {
+		String mrz = getMrz();
+		byte[] mrzPlainBytes;
+		
+		try {
+			mrzPlainBytes = mrz.getBytes("US-ASCII");
+		} catch (UnsupportedEncodingException e) {
+			// US-ASCII is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			mrzPlainBytes = new byte[0];
+		}
+		
+		ConstructedTlvDataObject ePassDg1 = new ConstructedTlvDataObject(new TlvTag((byte) 0x61));
+		PrimitiveTlvDataObject ePassDg1Sub = new PrimitiveTlvDataObject(new TlvTag(new byte[]{(byte) 0x5F, (byte) 0x1F}), mrzPlainBytes);
+		ePassDg1.addTlvDataObject(ePassDg1Sub);
+		
+		// ePass DG1
+		CardFile epassDg1 = new ElementaryFile(
+				new FileIdentifier(0x0101),
+				new ShortFileIdentifier(0x01),
+				ePassDg1.toByteArray(),
+				Arrays.asList((SecCondition) new PaceSecurityCondition()),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		ePassAppl.addChild(epassDg1);
+	}
+	
+	@Override
 	protected void addAuthObjects() throws NoSuchAlgorithmException,
 			NoSuchProviderException, IOException, UnsupportedEncodingException {
 		MrzAuthObject mrz = new MrzAuthObject(
@@ -182,6 +236,36 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 				dateOfBirth));
 		mf.addChild(new DateAuxObject(new OidIdentifier(TaOid.id_DateOfExpiry),
 				validityDate));
+	}
+	
+	@Override
+	protected void addEidDg1(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg1Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x61));
+		PrimitiveTlvDataObject documentType = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), HexString.toByteArray(getEidDg1PlainData()));
+		dg1Tlv.addTlvDataObject(documentType);
+		
+		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0101),
+				new ShortFileIdentifier(0x01),
+				dg1Tlv.toByteArray(),
+				getAccessRightReadEidDg(1),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg1);
+	}
+	
+	@Override
+	protected void addEidDg2(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg2Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x62));
+		PrimitiveTlvDataObject documentType = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), HexString.toByteArray(getEidDg2PlainData()));
+		dg2Tlv.addTlvDataObject(documentType);
+		
+		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0102),
+				new ShortFileIdentifier(0x02),
+				dg2Tlv.toByteArray(),
+				getAccessRightReadEidDg(2),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg1);
 	}
 	
 	@Override
@@ -317,6 +401,50 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	}
 	
 	@Override
+	protected void addEidDg9(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg9Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x69));
+		ConstructedTlvDataObject free = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
+		
+		byte[] placeOfBirthPlainBytes;
+		
+		try {
+			placeOfBirthPlainBytes = getEidDg9PlainData().getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// UTF-8 is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			placeOfBirthPlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject pob = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), placeOfBirthPlainBytes);
+		dg9Tlv.addTlvDataObject(free);
+		free.addTlvDataObject(pob);
+		
+		CardFile eidDg9 = new ElementaryFile(
+				new FileIdentifier(0x0109),
+				new ShortFileIdentifier(0x09),
+				dg9Tlv.toByteArray(),
+				getAccessRightReadEidDg(9),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg9);
+	}
+	
+	@Override
+	protected void addEidDg10(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg10Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x6A));
+		PrimitiveTlvDataObject nationality = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), HexString.toByteArray(getEidDg10PlainData()));
+		dg10Tlv.addTlvDataObject(nationality);
+		
+		CardFile eidDg10 = new ElementaryFile(new FileIdentifier(0x010A),
+				new ShortFileIdentifier(0x0A),
+				dg10Tlv.toByteArray(),
+				getAccessRightReadEidDg(10),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg10);
+	}
+	
+	@Override
 	protected void addEidDg11(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg11Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x6B));
 		byte[] sexPlainBytes;
@@ -378,6 +506,36 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 				getAccessRightReadEidDg(18), getAccessRightUpdateEidDg(18),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg18);
+	}
+	
+	@Override
+	protected void addEidDg19(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg19Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x73));
+		PrimitiveTlvDataObject residencePermit1 = new PrimitiveTlvDataObject(new TlvTag((byte) 0x04), HexString.toByteArray(getEidDg19PlainData()));
+		dg19Tlv.addTlvDataObject(residencePermit1);
+		
+		CardFile eidDg19 = new ElementaryFile(new FileIdentifier(0x0113),
+				new ShortFileIdentifier(0x13),
+				dg19Tlv.toByteArray(),
+				getAccessRightReadEidDg(19),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg19);
+	}
+	
+	@Override
+	protected void addEidDg20(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg20Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x74));
+		PrimitiveTlvDataObject residencePermit2 = new PrimitiveTlvDataObject(new TlvTag((byte) 0x04), HexString.toByteArray(getEidDg20PlainData()));
+		dg20Tlv.addTlvDataObject(residencePermit2);
+		
+		CardFile eidDg19 = new ElementaryFile(new FileIdentifier(0x0114),
+				new ShortFileIdentifier(0x14),
+				dg20Tlv.toByteArray(),
+				getAccessRightReadEidDg(20),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg19);
 	}
 	
 }
