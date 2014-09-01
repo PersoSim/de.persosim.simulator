@@ -1,18 +1,34 @@
 package de.persosim.simulator.perso;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.Collections;
+import java.util.Date;
 
+import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
+import de.persosim.simulator.cardobjects.ByteDataAuxObject;
 import de.persosim.simulator.cardobjects.CardFile;
+import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
+import de.persosim.simulator.cardobjects.DateAuxObject;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
+import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
+import de.persosim.simulator.cardobjects.MrzAuthObject;
+import de.persosim.simulator.cardobjects.OidIdentifier;
+import de.persosim.simulator.cardobjects.PasswordAuthObject;
+import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
+import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
+import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	
@@ -38,7 +54,72 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	
 	
 	
+	public abstract String getMrz();
 	
+	
+	
+	public String getPin() {
+		return "123456";
+	}
+	
+	public String getCan() {
+		return "500540";
+	}
+	
+	public String getPuk() {
+		return "9876543210";
+	}
+	
+	@Override
+	protected void addAuthObjects() throws NoSuchAlgorithmException,
+			NoSuchProviderException, IOException, UnsupportedEncodingException {
+		MrzAuthObject mrz = new MrzAuthObject(
+				new AuthObjectIdentifier(1),
+				getMrz());
+		mf.addChild(mrz);
+
+		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(
+				new AuthObjectIdentifier(2), getCan().getBytes("UTF-8"), "CAN",
+				6, 6);
+		can.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+		mf.addChild(can);
+
+		PasswordAuthObjectWithRetryCounter pin = new PinObject(
+				new AuthObjectIdentifier(3), getPin().getBytes("UTF-8"), 6, 6,
+				3);
+		pin.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+		mf.addChild(pin);
+
+		PasswordAuthObject puk = new PasswordAuthObject(
+				new AuthObjectIdentifier(4), getPuk().getBytes("UTF-8"),
+				"PUK");
+		mf.addChild(puk);
+	}
+	
+	@Override
+	protected void addAuxData() {
+		// Aux data
+		byte[] communityId;
+		
+		try {
+			communityId = getEidDg18PlainData().getBytes("US-ASCII");
+		} catch (UnsupportedEncodingException e) {
+			// US-ASCII is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			communityId = new byte[0];
+		}
+		
+		Date dateOfBirth = Utils.getDate(getEidDg8PlainData(), Utils.DATE_SET_MAX_VALUE);
+		
+		Date validityDate = Utils.getDate(getEidDg3PlainData());
+
+		mf.addChild(new ByteDataAuxObject(new OidIdentifier(
+				TaOid.id_CommunityID), communityId));
+		mf.addChild(new DateAuxObject(new OidIdentifier(TaOid.id_DateOfBirth),
+				dateOfBirth));
+		mf.addChild(new DateAuxObject(new OidIdentifier(TaOid.id_DateOfExpiry),
+				validityDate));
+	}
 	
 	@Override
 	protected void addEidDg3(DedicatedFile eIdAppl) {
