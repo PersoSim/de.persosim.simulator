@@ -426,7 +426,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Negative test case: test setting of new personalization via user arguments with argument referencing existing file containing invalid personalization.
 	 * @throws Exception 
 	 */
-	@Test(expected = IOException.class)
+	@Test
 	public void testArgLoadPersonalization_InvalidPersonalizationFile() throws Exception {		
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"});
 		
@@ -437,7 +437,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Negative test case: test setting of new personalization via user arguments with argument referencing non existing file.
 	 * @throws Exception
 	 */
-	@Test(expected = IOException.class)
+	@Test
 	public void testArgLoadPersonalization_FileNotFound() throws Exception {
 		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, "non-existing.file"});
 		
