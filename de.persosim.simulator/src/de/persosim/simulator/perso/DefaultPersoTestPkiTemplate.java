@@ -1,5 +1,175 @@
 package de.persosim.simulator.perso;
 
-public class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
+import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+
+import de.persosim.simulator.cardobjects.CardFile;
+import de.persosim.simulator.cardobjects.DedicatedFile;
+import de.persosim.simulator.cardobjects.ElementaryFile;
+import de.persosim.simulator.cardobjects.FileIdentifier;
+import de.persosim.simulator.cardobjects.ShortFileIdentifier;
+import de.persosim.simulator.secstatus.SecCondition;
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
+import de.persosim.simulator.tlv.TlvTag;
+import de.persosim.simulator.utils.HexString;
+
+public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
+	
+	public abstract String getEidDg1PlainData();
+	public abstract String getEidDg2PlainData();
+	public abstract String getEidDg3PlainData();
+	public abstract String getEidDg4PlainData();
+	public abstract String getEidDg5PlainData();
+	public abstract String getEidDg6PlainData();
+	public abstract String getEidDg7PlainData();
+	public abstract String getEidDg8PlainData();
+	
+	public abstract String getEidDg10PlainData();
+	public abstract String getEidDg11PlainData();
+	
+	public abstract String getEidDg13PlainData();
+	
+	
+	
+	
+	public abstract String getEidDg18PlainData();
+	
+	
+	
+	
+	
+	
+	@Override
+	protected void addEidDg3(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg3Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x63));
+		PrimitiveTlvDataObject dateOfExpiry = new PrimitiveTlvDataObject(new TlvTag((byte) 0x12), HexString.toByteArray(getEidDg3PlainData()));
+		dg3Tlv.addTlvDataObject(dateOfExpiry);
+		
+		CardFile eidDg3 = new ElementaryFile(new FileIdentifier(0x0103),
+				new ShortFileIdentifier(0x03),
+				dg3Tlv.toByteArray(),
+				getAccessRightReadEidDg(3),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg3);
+	}
+	
+	@Override
+	protected void addEidDg4(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg4Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x64));
+		byte[] givenNamesPlainBytes;
+		
+		try {
+			givenNamesPlainBytes = getEidDg4PlainData().getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// UTF-8 is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			givenNamesPlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject givenNames = new PrimitiveTlvDataObject(new TlvTag((byte) 0x12), givenNamesPlainBytes);
+		dg4Tlv.addTlvDataObject(givenNames);
+		
+		CardFile eidDg4 = new ElementaryFile(new FileIdentifier(0x0104),
+				new ShortFileIdentifier(0x04),
+				dg4Tlv.toByteArray(),
+				getAccessRightReadEidDg(4),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg4);
+	}
+	
+	@Override
+	protected void addEidDg5(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg5Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x65));
+		byte[] familyNamesPlainBytes;
+		
+		try {
+			familyNamesPlainBytes = getEidDg5PlainData().getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// UTF-8 is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			familyNamesPlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject fn = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), familyNamesPlainBytes);
+		dg5Tlv.addTlvDataObject(fn);
+		
+		CardFile eidDg5 = new ElementaryFile(
+				new FileIdentifier(0x0105),
+				new ShortFileIdentifier(0x05),
+				dg5Tlv.toByteArray(),
+				getAccessRightReadEidDg(5),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg5);
+	}
+	
+	@Override
+	protected void addEidDg6(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg6Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x66));
+		byte[] religiousArtisticNamePlainBytes;
+		
+		try {
+			religiousArtisticNamePlainBytes = getEidDg6PlainData().getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// UTF-8 is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			religiousArtisticNamePlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject religiousArtisticName = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), religiousArtisticNamePlainBytes);
+		dg6Tlv.addTlvDataObject(religiousArtisticName);
+		
+		CardFile eidDg6 = new ElementaryFile(
+				new FileIdentifier(0x0106),
+				new ShortFileIdentifier(0x06),
+				dg6Tlv.toByteArray(),
+				getAccessRightReadEidDg(6),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg6);
+	}
+	
+	@Override
+	protected void addEidDg7(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg7Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x67));
+		byte[] academicTitlePlainBytes;
+		
+		try {
+			academicTitlePlainBytes = getEidDg7PlainData().getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// UTF-8 is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			academicTitlePlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject academicTitle = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), academicTitlePlainBytes);
+		dg7Tlv.addTlvDataObject(academicTitle);
+		
+		CardFile eidDg7 = new ElementaryFile(new FileIdentifier(0x0107),
+				new ShortFileIdentifier(0x07),
+				dg7Tlv.toByteArray(),
+				getAccessRightReadEidDg(7),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg7);
+	}
+	
+	@Override
+	protected void addEidDg8(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg8Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x68));
+		PrimitiveTlvDataObject dateOfBirth = new PrimitiveTlvDataObject(new TlvTag((byte) 0x12), HexString.toByteArray(getEidDg8PlainData()));
+		dg8Tlv.addTlvDataObject(dateOfBirth);
+		
+		CardFile eidDg8 = new ElementaryFile(new FileIdentifier(0x0108),
+				new ShortFileIdentifier(0x08),
+				dg8Tlv.toByteArray(),
+				getAccessRightReadEidDg(8),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg8);
+	}
 	
 }
