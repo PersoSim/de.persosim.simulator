@@ -22,6 +22,7 @@ import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
+import de.persosim.simulator.documents.Mrz;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -54,9 +55,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	
 	
 	
-	public abstract String getMrz();
-	
-	
+	public abstract String getDocumentNumber();
+	public abstract String getMrzLine3of3();
 	
 	public String getPin() {
 		return "123456";
@@ -68,6 +68,69 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	
 	public String getPuk() {
 		return "9876543210";
+	}
+	
+	private static String getMrzLine1of3(String documentType, String issuingCountry, String documentNumber) {
+		String line1;
+		
+		if(documentType == null) {throw new NullPointerException("document type must not be null");}
+		if((documentType.length() <= 0) || (documentType.length() > 2)) {throw new IllegalArgumentException("document type must be 1 or 2 characters long");}
+		
+		line1 = documentType;
+		
+		if(documentType.length() == 1) {
+			line1 += Mrz.Filler;
+		}
+		
+		if(issuingCountry == null) {throw new NullPointerException("issuing country must not be null");}
+		if((issuingCountry.length() <= 0) || (documentType.length() > 3)) {throw new IllegalArgumentException("issuing country must be between 1 or 3 characters long");}
+		
+		line1 += issuingCountry;
+		
+		for(int i = issuingCountry.length(); i < 3; i++) {
+			line1 += Mrz.Filler;
+		}
+		
+		if(documentNumber == null) {throw new NullPointerException("document number must not be null");}
+		if(issuingCountry.length() != 9) {throw new IllegalArgumentException("document number must be exactly 9 characters long");}
+		
+		line1 += documentNumber;
+		line1 += String.valueOf((char) Mrz.computeChecksum(documentNumber.getBytes(), 0, documentNumber.length()));
+		
+		for(int i = 0; i < 15; i++) {
+			line1 += Mrz.Filler;
+		}
+		
+		return line1;
+	}
+	
+	private static String getMrzLine2of3(String mrzLine1, String dob, String sex, String doe, String nation) {
+		String line2;
+		
+		String dobNew = dob.substring(2).replace(" ", Mrz.Filler);
+		dobNew += String.valueOf((char) Mrz.computeChecksum(dobNew.getBytes(), 0, dobNew.length()));
+		
+		String doeNew = doe.substring(2);
+		doeNew += String.valueOf((char) Mrz.computeChecksum(doeNew.getBytes(), 0, doeNew.length()));
+		
+		line2 = dobNew + sex + doeNew + nation;
+		
+		for(int i = 0; i < 13; i++) {
+			line2 += Mrz.Filler;
+		}
+		
+		String lines12 = mrzLine1.substring(5) + dobNew + doeNew;
+		line2 += String.valueOf((char) Mrz.computeChecksum(lines12.getBytes(), 0, lines12.length()));
+		
+		return line2;
+	}
+	
+	public String getMrz() {
+		String line1 = getMrzLine1of3(getEidDg1PlainData(), getEidDg2PlainData(), getDocumentNumber());
+		String line2 = getMrzLine2of3(line1, getEidDg8PlainData(), getEidDg11PlainData(), getEidDg3PlainData(), getEidDg10PlainData());
+		String line3 = getMrzLine3of3();
+		
+		return line1 + line2 + line3;
 	}
 	
 	@Override
