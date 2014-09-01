@@ -35,6 +35,23 @@ import de.persosim.simulator.utils.HexString;
  */
 public class DefaultPersoTestPkiTemplate01 extends DefaultPersoTestPkiTemplate {
 	
+	public static final String MK01_DG03 = "20201031";
+	public static final String MK01_DG04 = "ERIKA";
+	public static final String MK01_DG05 = "MUSTERMANN";
+	public static final String MK01_DG06 = "";
+	public static final String MK01_DG07 = "";
+	public static final String MK01_DG08 = "19640812";
+	public static final String MK01_DG09 = "BERLIN";
+	public static final String MK01_DG11 = "F";
+	public static final String MK01_DG13 = "GABLER";
+	public static final String MK01_DG17_STREET = "HEIDESTRASSE 17";
+	public static final String MK01_DG17_CITY = "KÖLN";
+	public static final String MK01_DG17_COUNTRY = "D";
+	public static final String MK01_DG17_ZIP = "51147";
+	public static final String MK01_DG18 = "02760503150000";
+
+	public static final String MK01_LINE3 = "MUSTERMANN<<ERIKA<<<<<<<<<<<<<";
+	
 	@Override
 	protected void addAuxData() {
 		//FIXME SLS redundant data, all aux data can be parsed from MRZ, the default implementation should use 
