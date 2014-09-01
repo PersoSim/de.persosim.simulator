@@ -172,4 +172,68 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 		eIdAppl.addChild(eidDg8);
 	}
 	
+	@Override
+	protected void addEidDg11(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg11Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x6B));
+		byte[] sexPlainBytes;
+		
+		try {
+			sexPlainBytes = getEidDg11PlainData().getBytes("US-ASCII");
+		} catch (UnsupportedEncodingException e) {
+			// US-ASCII is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			sexPlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject sex = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), sexPlainBytes);
+		dg11Tlv.addTlvDataObject(sex);
+		
+		CardFile eidDg11 = new ElementaryFile(new FileIdentifier(0x010B),
+				new ShortFileIdentifier(0x0B),
+				sex.toByteArray(),
+				getAccessRightReadEidDg(11),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg11);
+	}
+	
+	@Override
+	protected void addEidDg13(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg13Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x6D));
+		byte[] birthNamePlainBytes;
+		
+		try {
+			birthNamePlainBytes = getEidDg13PlainData().getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// UTF-8 is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			birthNamePlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject birthName = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), birthNamePlainBytes);
+		dg13Tlv.addTlvDataObject(birthName);
+		
+		CardFile eidDg13 = new ElementaryFile(new FileIdentifier(0x010D),
+				new ShortFileIdentifier(0x0D),
+				dg13Tlv.toByteArray(),
+				getAccessRightReadEidDg(13),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg13);
+	}
+	
+	@Override
+	protected void addEidDg18(DedicatedFile eIdAppl) {
+		ConstructedTlvDataObject dg18Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x72));
+		PrimitiveTlvDataObject communityId = new PrimitiveTlvDataObject(new TlvTag((byte) 0x04), HexString.toByteArray(getEidDg18PlainData()));
+		dg18Tlv.addTlvDataObject(communityId);
+		
+		CardFile eidDg18 = new ElementaryFile(new FileIdentifier(0x0112),
+				new ShortFileIdentifier(0x12),
+				dg18Tlv.toByteArray(),
+				getAccessRightReadEidDg(18), getAccessRightUpdateEidDg(18),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg18);
+	}
+	
 }
