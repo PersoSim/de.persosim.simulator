@@ -6,6 +6,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * 
@@ -463,6 +465,79 @@ public abstract class Utils {
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * This method creates a {@link Date} object from a {@link String} representation with respect to year, month and day.
+	 * The provided String is expected to be exactly 8 characters long and encoded as follows: YYYYMMDD.
+	 * If the String parts for month or day contain non-numeric characters a NumberFormatException will be thrown
+	 * Well formatted date strings will not be checked for validity, e.g. december 34th would not be discarded.
+	 * @param dateString the date encoded as follows: YYYYMMDD
+	 * @return a {@link Date} object
+	 */
+	public static Date getDate(String dateString) {
+		return getDate(dateString, (byte) 0);
+	}
+	
+	/**
+	 * This method creates a {@link Date} object from a {@link String} representation with respect to year, month and day.
+	 * The provided String is expected to be exactly 8 characters long and encoded as follows: YYYYMMDD.
+	 * If the String parts for month or day contain non-numeric characters, they will be handled according to the second provided parameter:
+	 * -1: the minimum possible value will be chosen
+	 *  0: a NumberFormatException will be thrown
+	 *  1: the maximum possible value will be chosen
+	 * Well formatted date strings will not be checked for validity, e.g. december 34th would not be discarded.
+	 * @param dateString the date encoded as follows: YYYYMMDD
+	 * @param handleNonNumericCharacters determine how non-numeric characters will be handled
+	 * @return a {@link Date} object
+	 */
+	public static Date getDate(String dateString, byte handleNonNumericCharacters) {
+		if(dateString == null) {throw new NullPointerException("date must not be null");}
+		if(dateString.length() != 8) {throw new IllegalArgumentException("date must be exactly 8 characters long");}
+		
+		Calendar calendar = Calendar.getInstance();
+		
+		int year = Integer.parseInt(dateString.substring(0, 4));
+		
+		calendar.set(Calendar.YEAR, year);
+		
+		int month, day;
+		
+		try {
+			month = Integer.parseInt(dateString.substring(4, 6));
+		} catch (NumberFormatException e) {
+			switch (handleNonNumericCharacters) {
+            	case -1: month = Calendar.JANUARY;
+                     break;
+            	case 0:  throw e;
+            	case 1:  month = Calendar.DECEMBER;
+                     break;
+            	default: throw new IllegalArgumentException("invalid value for handling illegal month");
+			}
+		}
+		
+		calendar.set(Calendar.MONTH, month);
+		
+		try {
+			day = Integer.parseInt(dateString.substring(6, 8));
+		} catch (NumberFormatException e) {
+			switch (handleNonNumericCharacters) {
+            	case -1: day = 1;
+                     break;
+            	case 0:  throw e;
+            	case 1:  day = calendar.getActualMaximum(Calendar.DATE);
+                     break;
+            	default: throw new IllegalArgumentException("invalid value for handling illegal day");
+			}
+		}
+		
+		calendar.set(Calendar.DATE, day);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		return calendar.getTime();
 	}
 	
 }
