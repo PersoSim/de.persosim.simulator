@@ -2,6 +2,7 @@ package de.persosim.simulator.perso;
 
 import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -17,13 +18,19 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Enumeration;
 
 import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.ASN1StreamParser;
 import org.bouncycastle.asn1.DERSequenceParser;
+import org.bouncycastle.asn1.DERTaggedObject;
 import org.bouncycastle.asn1.pkcs.SignedData;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Test;
@@ -150,13 +157,45 @@ public abstract class SecInfoCmsBuilderTest extends PersoSimTestCase {
 			X509Certificate cert = SecInfoCmsBuilderTest.getCertificate(cms, sigInfo);
 			assertNotNull("No matching certificate found for SignerInfo " + i, cert);
 
-			//FIXME check hashed value of eContent in signed attributes
+			
 			
 			//verifySignature
+			ASN1Primitive sigAttribs = sigInfo.getObjectAt(3).toASN1Primitive();
 			byte[] sigInput, sigBytes;
-			byte[] signedAttributes = sigInfo.getObjectAt(3).toASN1Primitive().getEncoded();
-			if (signedAttributes[0] == (byte) 0xa0) {
-				sigInput = signedAttributes;
+			if (sigAttribs instanceof DERTaggedObject) {
+				//find message digest in signed attributes
+				byte[] actualDigest = null;
+				ASN1Sequence sigAttribsSequence = (ASN1Sequence) ((DERTaggedObject) sigAttribs).getObject();
+				@SuppressWarnings("rawtypes") // legacy code
+				Enumeration e = sigAttribsSequence.getObjects();
+				while (e.hasMoreElements()) {
+					Object curElem = e.nextElement();
+					if (!(curElem instanceof ASN1Sequence)) continue;
+					
+					ASN1Sequence curAttrib = (ASN1Sequence) curElem;
+					if (curAttrib.size() != 2) continue;
+					
+					ASN1Encodable attrType = curAttrib.getObjectAt(0);
+					if (!(attrType instanceof ASN1ObjectIdentifier)) continue;
+					if (!((ASN1ObjectIdentifier) attrType).getId().equals("1.2.840.113549.1.9.4")) continue;
+					
+					ASN1Encodable attrValue = curAttrib.getObjectAt(1);
+					assertTrue("attrValues of signed attribute 'Message digest' must be a SET ", attrValue instanceof ASN1Set);
+					assertEquals("signed attribute 'Message digest' - nr of elements in SET", 1, ((ASN1Set)attrValue).size());
+					ASN1Encodable messageDigest = ((ASN1Set) attrValue).getObjectAt(0);
+					assertTrue("message digest must be encoded as OctestString within SignedAttributes", messageDigest instanceof ASN1OctetString);
+					
+					actualDigest = ((ASN1OctetString) messageDigest).getOctets();
+				}
+				assertNotNull("message digest missing in signed attributes", actualDigest);
+				
+				//check message digest of eContent
+				MessageDigest md = MessageDigest.getInstance("SHA224"); //XXX extract the used digest alg from cms
+				byte[] expectedDigest = md.digest(expectedEContent);
+				assertArrayEquals("message digest found in signed attributes does not match eContent", expectedDigest, actualDigest);
+				
+				
+				sigInput = sigAttribs.getEncoded();
 				sigInput[0] = Asn1.SEQUENCE;
 				sigBytes = sigInfo.getObjectAt(5).toASN1Primitive().getEncoded();
 			} else {
