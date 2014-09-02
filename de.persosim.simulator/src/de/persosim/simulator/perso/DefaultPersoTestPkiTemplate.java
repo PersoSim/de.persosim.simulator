@@ -71,6 +71,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 		return "";
 	}
 	
+	public abstract byte[] getEidDg17Data();
+	
 	public abstract String getEidDg18PlainData();
 	
 	public String getEidDg19PlainData() {
@@ -495,6 +497,17 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	}
 	
 	@Override
+	protected void addEidDg17(DedicatedFile eIdAppl) {
+		CardFile eidDg17 = new ElementaryFile(
+				new FileIdentifier(0x0111),
+				new ShortFileIdentifier(0x11),
+				getEidDg17Data(),
+				getAccessRightReadEidDg(17), getAccessRightUpdateEidDg(17),
+				Collections.<SecCondition> emptySet());
+		eIdAppl.addChild(eidDg17);
+	}
+	
+	@Override
 	protected void addEidDg18(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg18Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x72));
 		PrimitiveTlvDataObject communityId = new PrimitiveTlvDataObject(new TlvTag((byte) 0x04), HexString.toByteArray(getEidDg18PlainData()));
@@ -536,6 +549,30 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg19);
+	}
+	
+	public static ConstructedTlvDataObject createEidDg17Tlv(String streetString, String cityString, String countryString, String zipString) throws UnsupportedEncodingException {
+		ConstructedTlvDataObject dg17 = new ConstructedTlvDataObject(new TlvTag((byte) 0x71));
+		ConstructedTlvDataObject npor = new ConstructedTlvDataObject(new TlvTag((byte) 0x30));
+		ConstructedTlvDataObject seq1 = new ConstructedTlvDataObject(new TlvTag((byte) 0xAA));
+		ConstructedTlvDataObject seq2 = new ConstructedTlvDataObject(new TlvTag((byte) 0xAB));
+		ConstructedTlvDataObject seq3 = new ConstructedTlvDataObject(new TlvTag((byte) 0xAD));
+		ConstructedTlvDataObject seq4 = new ConstructedTlvDataObject(new TlvTag((byte) 0xAE));
+		PrimitiveTlvDataObject street = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), streetString.getBytes("UTF-8"));
+		PrimitiveTlvDataObject city = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), cityString.getBytes("UTF-8"));
+		PrimitiveTlvDataObject country = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), countryString.getBytes("US-ASCII"));
+		PrimitiveTlvDataObject zip = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), zipString.getBytes("US-ASCII"));
+		dg17.addTlvDataObject(npor);
+		npor.addTlvDataObject(seq1);
+		npor.addTlvDataObject(seq2);
+		npor.addTlvDataObject(seq3);
+		npor.addTlvDataObject(seq4);
+		seq1.addTlvDataObject(street);
+		seq2.addTlvDataObject(city);
+		seq3.addTlvDataObject(country);
+		seq4.addTlvDataObject(zip);
+		
+		return dg17;
 	}
 	
 }
