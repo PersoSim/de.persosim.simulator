@@ -45,7 +45,7 @@ public class DefaultPersoTestPkiTemplate01 extends DefaultPersoTestPkiTemplate {
 		ConstructedTlvDataObject dg17Tlv; 
 		
 		try {
-			dg17Tlv = DefaultPersoTestPkiTemplate.createEidDg17Tlv("HEIDESTRASSE 17", "KÖLN", "D", "51147");
+			dg17Tlv = DefaultPersoTestPkiTemplate.createEidDg17Tlv("HEIDESTRASSE 17", "KÖLN", null, "D", "51147");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -62,7 +62,7 @@ public class DefaultPersoTestPkiTemplate01 extends DefaultPersoTestPkiTemplate {
 
 	@Override
 	public String getDocumentNumber() {
-		return "00000001";
+		return "000000001";
 	}
 
 	@Override

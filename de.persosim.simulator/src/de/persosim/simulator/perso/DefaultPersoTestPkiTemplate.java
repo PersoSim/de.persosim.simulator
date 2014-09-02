@@ -551,26 +551,67 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 		eIdAppl.addChild(eidDg19);
 	}
 	
-	public static ConstructedTlvDataObject createEidDg17Tlv(String streetString, String cityString, String countryString, String zipString) throws UnsupportedEncodingException {
+	public static ConstructedTlvDataObject createEidDg17Tlv() throws UnsupportedEncodingException {
+		return createEidDg17Tlv(null, null, null, null, null);
+	}
+	
+	public static ConstructedTlvDataObject createEidDg17Tlv(String streetString, String cityString, String stateString, String countryString, String zipString) throws UnsupportedEncodingException {
 		ConstructedTlvDataObject dg17 = new ConstructedTlvDataObject(new TlvTag((byte) 0x71));
 		ConstructedTlvDataObject npor = new ConstructedTlvDataObject(new TlvTag((byte) 0x30));
-		ConstructedTlvDataObject seq1 = new ConstructedTlvDataObject(new TlvTag((byte) 0xAA));
-		ConstructedTlvDataObject seq2 = new ConstructedTlvDataObject(new TlvTag((byte) 0xAB));
-		ConstructedTlvDataObject seq3 = new ConstructedTlvDataObject(new TlvTag((byte) 0xAD));
-		ConstructedTlvDataObject seq4 = new ConstructedTlvDataObject(new TlvTag((byte) 0xAE));
-		PrimitiveTlvDataObject street = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), streetString.getBytes("UTF-8"));
-		PrimitiveTlvDataObject city = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), cityString.getBytes("UTF-8"));
-		PrimitiveTlvDataObject country = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), countryString.getBytes("US-ASCII"));
-		PrimitiveTlvDataObject zip = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), zipString.getBytes("US-ASCII"));
 		dg17.addTlvDataObject(npor);
-		npor.addTlvDataObject(seq1);
-		npor.addTlvDataObject(seq2);
-		npor.addTlvDataObject(seq3);
-		npor.addTlvDataObject(seq4);
-		seq1.addTlvDataObject(street);
-		seq2.addTlvDataObject(city);
-		seq3.addTlvDataObject(country);
-		seq4.addTlvDataObject(zip);
+		
+		byte startTag = (byte) 0xAA;
+		byte currentTag = startTag;
+		ConstructedTlvDataObject seq;
+		PrimitiveTlvDataObject content;
+		
+		if(streetString != null) {
+			seq = new ConstructedTlvDataObject(new TlvTag(currentTag));
+			npor.addTlvDataObject(seq);
+			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), streetString.getBytes("UTF-8"));
+			seq.addTlvDataObject(content);
+			currentTag++;
+		}
+		
+		if(cityString != null) {
+			seq = new ConstructedTlvDataObject(new TlvTag(currentTag));
+			npor.addTlvDataObject(seq);
+			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), cityString.getBytes("UTF-8"));
+			seq.addTlvDataObject(content);
+			currentTag++;
+		}
+		
+		if(stateString != null) {
+			seq = new ConstructedTlvDataObject(new TlvTag(currentTag));
+			npor.addTlvDataObject(seq);
+			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), stateString.getBytes("UTF-8"));
+			seq.addTlvDataObject(content);
+			currentTag++;
+		}
+		
+		if(countryString != null) {
+			seq = new ConstructedTlvDataObject(new TlvTag(currentTag));
+			npor.addTlvDataObject(seq);
+			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), countryString.getBytes("US-ASCII"));
+			seq.addTlvDataObject(content);
+			currentTag++;
+		}
+		
+		if(zipString != null) {
+			seq = new ConstructedTlvDataObject(new TlvTag(currentTag));
+			npor.addTlvDataObject(seq);
+			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), zipString.getBytes("US-ASCII"));
+			seq.addTlvDataObject(content);
+			currentTag++;
+		}
+		
+		if(currentTag == startTag) {
+			dg17 = new ConstructedTlvDataObject(new TlvTag((byte) 0x71));
+			npor = new ConstructedTlvDataObject(new TlvTag((byte) 0xA2));
+			PrimitiveTlvDataObject noPlace = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), (new String("keine Hauptwohnung in Deutschland")).getBytes("UTF-8"));
+			dg17.addTlvDataObject(npor);
+			npor.addTlvDataObject(noPlace);
+		}
 		
 		return dg17;
 	}
