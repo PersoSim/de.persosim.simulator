@@ -71,9 +71,14 @@ public class PersoSim implements Runnable {
 	private boolean executeUserCommands = false;
 	private boolean processingCommandLineArguments = false;
 	
+	static {
+		//register BouncyCastle provider
+		if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+			Security.addProvider(new BouncyCastleProvider());
+		}
+	}
+	
 	public PersoSim(String... args) {
-		Security.addProvider(new BouncyCastleProvider());
-		
 		try {
 			handleArgs(args);
 		} catch (IllegalArgumentException e) {
