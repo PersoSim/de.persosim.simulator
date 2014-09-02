@@ -1,5 +1,8 @@
 package de.persosim.simulator.perso;
 
+import static de.persosim.simulator.utils.PersoSimLogger.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -200,7 +203,25 @@ public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder
 	 * @return
 	 */
 	protected TlvDataObject getSignedAttrs(ConstructedTlvDataObject eContent) {
-		return new ConstructedTlvDataObject(HexString.toByteArray("A0 64 30 17 06 09 2A 86 48 86 F7 0D 01 09 03 31 0A 06 08 04 00 7F 00 07 03 02 01 30 1C 06 09 2A 86 48 86 F7 0D 01 09 05 31 0F 17 0D 31 33 31 30 31 34 30 39 32 32 33 38 5A 30 2B 06 09 2A 86 48 86 F7 0D 01 09 04 31 1E 04 1C B1 1F DC 64 72 5A 6C 13 98 CD B8 13 A8 2B D7 C8 54 22 85 36 FC E6 DA 48 5D 1C CA E5"));
+		ConstructedTlvDataObject signedAttrs = new ConstructedTlvDataObject(TAG_A0);
+
+		//add contentType
+		signedAttrs.addTlvDataObject(new ConstructedTlvDataObject(HexString.toByteArray("30 17 06 09 2A 86 48 86 F7 0D 01 09 03 31 0A 06 08 04 00 7F 00 07 03 02 01")));
+
+		//add messageDigest
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA224"); //XXX use digest alg from #getDigestAlgorithm()
+			byte[] digest = md.digest(eContent.getTlvDataObject(new TlvPath(TAG_A0, TAG_OCTET_STRING)).getValueField());
+			ConstructedTlvDataObject messageDigest = new ConstructedTlvDataObject(TAG_SEQUENCE);
+			messageDigest.addTlvDataObject(new PrimitiveTlvDataObject(HexString.toByteArray("06 09 2A 86 48 86 F7 0D 01 09 04")));
+			ConstructedTlvDataObject attrValues = new ConstructedTlvDataObject(TAG_SET, new PrimitiveTlvDataObject(TAG_OCTET_STRING, digest));
+			messageDigest.addTlvDataObject(attrValues);
+			signedAttrs.addTlvDataObject(messageDigest);
+		} catch (NoSuchAlgorithmException e) {
+			logException(getClass(), e);
+		}
+		
+		return signedAttrs;
 	}
 
 	/**
