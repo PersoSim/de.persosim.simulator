@@ -300,6 +300,22 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Positive test case: second execution of startSimulator() shouldn't do anything, especially not fail or throw an exception.
+	 * @throws Exception
+	 */
+	@Test
+	public void testStartSimulator_twice() throws Exception {
+		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		
+		persoSim.startSimulator();
+		assertTrue(persoSim.startSimulator());
+		
+		//ensure that the simulator is responding
+		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
+		assertEquals(SW_NO_ERROR, responseSelect);
+	}
+	
+	/**
 	 * Positive test case: test stop of socket simulator.
 	 * @throws Exception 
 	 */

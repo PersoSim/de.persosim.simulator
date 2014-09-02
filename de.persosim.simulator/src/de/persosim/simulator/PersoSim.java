@@ -153,6 +153,11 @@ public class PersoSim implements Runnable {
 	 * @return whether instantiation and starting was successful
 	 */
 	public boolean startSimulator() {
+		if (simulator != null && simulator.isRunning()) {
+			System.out.println("Simulator already running");
+			return true;
+		}
+		
 		if (getPersonalization() == null) {
 			System.out.println("No personalization available, please load a valid personalization before starting the simulator");
 			return false;
