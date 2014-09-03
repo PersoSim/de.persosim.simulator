@@ -282,7 +282,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 			documentTypePlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject documentType = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), documentTypePlainBytes);
+		PrimitiveTlvDataObject documentType = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), documentTypePlainBytes);
 		dg1Tlv.addTlvDataObject(documentType);
 		
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0101),
@@ -307,7 +307,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 			issuingStatePlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject issuingState = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), issuingStatePlainBytes);
+		PrimitiveTlvDataObject issuingState = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), issuingStatePlainBytes);
 		dg2Tlv.addTlvDataObject(issuingState);
 		
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0102),
@@ -332,7 +332,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 			dateOfExpiryPlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject dateOfExpiry = new PrimitiveTlvDataObject(new TlvTag((byte) 0x12), dateOfExpiryPlainBytes);
+		PrimitiveTlvDataObject dateOfExpiry = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_NUMERIC_STRING), dateOfExpiryPlainBytes);
 		dg3Tlv.addTlvDataObject(dateOfExpiry);
 		
 		CardFile eidDg3 = new ElementaryFile(new FileIdentifier(0x0103),
@@ -382,7 +382,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 			familyNamesPlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject fn = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), familyNamesPlainBytes);
+		PrimitiveTlvDataObject fn = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), familyNamesPlainBytes);
 		dg5Tlv.addTlvDataObject(fn);
 		
 		CardFile eidDg5 = new ElementaryFile(
@@ -408,7 +408,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 			religiousArtisticNamePlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject religiousArtisticName = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), religiousArtisticNamePlainBytes);
+		PrimitiveTlvDataObject religiousArtisticName = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), religiousArtisticNamePlainBytes);
 		dg6Tlv.addTlvDataObject(religiousArtisticName);
 		
 		CardFile eidDg6 = new ElementaryFile(
@@ -434,7 +434,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 			academicTitlePlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject academicTitle = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), academicTitlePlainBytes);
+		PrimitiveTlvDataObject academicTitle = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), academicTitlePlainBytes);
 		dg7Tlv.addTlvDataObject(academicTitle);
 		
 		CardFile eidDg7 = new ElementaryFile(new FileIdentifier(0x0107),
@@ -459,7 +459,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 			dateOfBirthPlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject dateOfBirth = new PrimitiveTlvDataObject(new TlvTag((byte) 0x12), dateOfBirthPlainBytes);
+		PrimitiveTlvDataObject dateOfBirth = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_NUMERIC_STRING), dateOfBirthPlainBytes);
 		dg8Tlv.addTlvDataObject(dateOfBirth);
 		
 		CardFile eidDg8 = new ElementaryFile(new FileIdentifier(0x0108),
@@ -486,7 +486,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 			placeOfBirthPlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject pob = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), placeOfBirthPlainBytes);
+		PrimitiveTlvDataObject pob = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), placeOfBirthPlainBytes);
 		dg9Tlv.addTlvDataObject(free);
 		free.addTlvDataObject(pob);
 		
@@ -513,7 +513,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 			nationalityPlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject nationality = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), nationalityPlainBytes);
+		PrimitiveTlvDataObject nationality = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), nationalityPlainBytes);
 		dg10Tlv.addTlvDataObject(nationality);
 		
 		CardFile eidDg10 = new ElementaryFile(new FileIdentifier(0x010A),
@@ -538,7 +538,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 			sexPlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject sex = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), sexPlainBytes);
+		PrimitiveTlvDataObject sex = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), sexPlainBytes);
 		dg11Tlv.addTlvDataObject(sex);
 		
 		CardFile eidDg11 = new ElementaryFile(new FileIdentifier(0x010B),
@@ -563,7 +563,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 			birthNamePlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject birthName = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), birthNamePlainBytes);
+		PrimitiveTlvDataObject birthName = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), birthNamePlainBytes);
 		dg13Tlv.addTlvDataObject(birthName);
 		
 		CardFile eidDg13 = new ElementaryFile(new FileIdentifier(0x010D),
@@ -660,54 +660,55 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	public static ConstructedTlvDataObject createEidDg17Tlv(String streetString, String cityString, String stateString, String countryString, String zipString) throws UnsupportedEncodingException {
 		ConstructedTlvDataObject dg17 = new ConstructedTlvDataObject(new TlvTag((byte) 0x71));
-		ConstructedTlvDataObject npor = new ConstructedTlvDataObject(new TlvTag((byte) 0x30));
-		dg17.addTlvDataObject(npor);
-		
-		ConstructedTlvDataObject sequenceElement;
-		PrimitiveTlvDataObject content;
-		
-		if(streetString != null) {
-			sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAA));
-			npor.addTlvDataObject(sequenceElement);
-			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), streetString.getBytes("UTF-8"));
-			sequenceElement.addTlvDataObject(content);
-		}
-		
-		if(cityString != null) {
-			sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAB));
-			npor.addTlvDataObject(sequenceElement);
-			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), cityString.getBytes("UTF-8"));
-			sequenceElement.addTlvDataObject(content);
-		}
-		
-		if(stateString != null) {
-			sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAC));
-			npor.addTlvDataObject(sequenceElement);
-			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), stateString.getBytes("UTF-8"));
-			sequenceElement.addTlvDataObject(content);
-		}
-		
-		if(countryString != null) {
-			sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAD));
-			npor.addTlvDataObject(sequenceElement);
-			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), countryString.getBytes("US-ASCII"));
-			sequenceElement.addTlvDataObject(content);
-		}
-		
-		if(zipString != null) {
-			sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAE));
-			npor.addTlvDataObject(sequenceElement);
-			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), zipString.getBytes("US-ASCII"));
-			sequenceElement.addTlvDataObject(content);
-		}
+		ConstructedTlvDataObject npor;
 		
 		if((streetString == null) && (cityString == null) && (stateString == null) && (countryString == null) && (zipString == null)) {
-			dg17 = new ConstructedTlvDataObject(new TlvTag((byte) 0x71));
 			npor = new ConstructedTlvDataObject(new TlvTag((byte) 0xA2));
 			PrimitiveTlvDataObject noPlace = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), (new String("keine Hauptwohnung in Deutschland")).getBytes("UTF-8"));
-			dg17.addTlvDataObject(npor);
 			npor.addTlvDataObject(noPlace);
+		} else{
+			npor = new ConstructedTlvDataObject(new TlvTag((byte) 0x30));
+			
+			ConstructedTlvDataObject sequenceElement;
+			PrimitiveTlvDataObject content;
+			
+			if(streetString != null) {
+				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAA));
+				npor.addTlvDataObject(sequenceElement);
+				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), streetString.getBytes("UTF-8"));
+				sequenceElement.addTlvDataObject(content);
+			}
+			
+			if(cityString != null) {
+				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAB));
+				npor.addTlvDataObject(sequenceElement);
+				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), cityString.getBytes("UTF-8"));
+				sequenceElement.addTlvDataObject(content);
+			}
+			
+			if(stateString != null) {
+				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAC));
+				npor.addTlvDataObject(sequenceElement);
+				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), stateString.getBytes("UTF-8"));
+				sequenceElement.addTlvDataObject(content);
+			}
+			
+			if(countryString != null) {
+				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAD));
+				npor.addTlvDataObject(sequenceElement);
+				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), countryString.getBytes("US-ASCII"));
+				sequenceElement.addTlvDataObject(content);
+			}
+			
+			if(zipString != null) {
+				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAE));
+				npor.addTlvDataObject(sequenceElement);
+				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), zipString.getBytes("US-ASCII"));
+				sequenceElement.addTlvDataObject(content);
+			}
 		}
+		
+		dg17.addTlvDataObject(npor);
 		
 		return dg17;
 	}
