@@ -35,14 +35,26 @@ import de.persosim.simulator.utils.Utils;
 
 public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	
+	/**
+	 * This method returns the default String "ID" for eID application data group 1 (Document Type) of the new German identity card.
+	 * @return the document type
+	 */
 	public String getEidDg1PlainData() {
 		return "ID";
 	}
 	
+	/**
+	 * This method returns the default String "D" for eID application data group 2 (Issuing State) of the new German identity card.
+	 * @return the issuing state
+	 */
 	public String getEidDg2PlainData() {
 		return "D";
 	}
 	
+	/**
+	 * This method returns the default String "20201031" for eID application data group 3 (Date of Expiry) of the new German identity card.
+	 * @return the date of expiry
+	 */
 	public String getEidDg3PlainData() {
 		return "20201031";
 	}
@@ -50,10 +62,18 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	public abstract String getEidDg4PlainData();
 	public abstract String getEidDg5PlainData();
 	
+	/**
+	 * This method returns the default String "" for eID application data group 6 (Religious/Artistic Name) of the new German identity card.
+	 * @return the religious/artistic name
+	 */
 	public String getEidDg6PlainData() {
 		return "";
 	}
 	
+	/**
+	 * This method returns the default String "" for eID application data group 7 (Academic Title) of the new German identity card.
+	 * @return the academic title
+	 */
 	public String getEidDg7PlainData() {
 		return "";
 	}
@@ -61,12 +81,20 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	public abstract String getEidDg8PlainData();
 	public abstract String getEidDg9PlainData();
 	
+	/**
+	 * This method returns the default String "D" for eID application data group 10 (Nationality) of the new German identity card.
+	 * @return the nationality
+	 */
 	public String getEidDg10PlainData() {
 		return "D";
 	}
 	
 	public abstract String getEidDg11PlainData();
 	
+	/**
+	 * This method returns the default String "" for eID application data group 13 (Birth Name) of the new German identity card.
+	 * @return the birth name
+	 */
 	public String getEidDg13PlainData() {
 		return "";
 	}
