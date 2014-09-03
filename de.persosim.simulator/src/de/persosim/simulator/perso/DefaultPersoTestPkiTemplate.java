@@ -30,7 +30,6 @@ import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
-import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
@@ -148,7 +147,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 		}
 		
 		if(documentNumber == null) {throw new NullPointerException("document number must not be null");}
-		if(issuingCountry.length() != 9) {throw new IllegalArgumentException("document number must be exactly 9 characters long");}
+		if(documentNumber.length() != 9) {throw new IllegalArgumentException("document number must be exactly 9 characters long");}
 		
 		line1 += documentNumber;
 		line1 += String.valueOf((char) Mrz.computeChecksum(documentNumber.getBytes(), 0, documentNumber.length()));
@@ -271,7 +270,17 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	@Override
 	protected void addEidDg1(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg1Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x61));
-		PrimitiveTlvDataObject documentType = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), HexString.toByteArray(getEidDg1PlainData()));
+		byte[] documentTypePlainBytes;
+		
+		try {
+			documentTypePlainBytes = getEidDg1PlainData().getBytes("US-ASCII");
+		} catch (UnsupportedEncodingException e) {
+			// US-ASCII is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			documentTypePlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject documentType = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), documentTypePlainBytes);
 		dg1Tlv.addTlvDataObject(documentType);
 		
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0101),
@@ -286,8 +295,18 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	@Override
 	protected void addEidDg2(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg2Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x62));
-		PrimitiveTlvDataObject documentType = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), HexString.toByteArray(getEidDg2PlainData()));
-		dg2Tlv.addTlvDataObject(documentType);
+		byte[] issuingStatePlainBytes;
+		
+		try {
+			issuingStatePlainBytes = getEidDg2PlainData().getBytes("US-ASCII");
+		} catch (UnsupportedEncodingException e) {
+			// US-ASCII is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			issuingStatePlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject issuingState = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), issuingStatePlainBytes);
+		dg2Tlv.addTlvDataObject(issuingState);
 		
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0102),
 				new ShortFileIdentifier(0x02),
@@ -301,7 +320,17 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	@Override
 	protected void addEidDg3(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg3Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x63));
-		PrimitiveTlvDataObject dateOfExpiry = new PrimitiveTlvDataObject(new TlvTag((byte) 0x12), HexString.toByteArray(getEidDg3PlainData()));
+		byte[] dateOfExpiryPlainBytes;
+		
+		try {
+			dateOfExpiryPlainBytes = getEidDg3PlainData().getBytes("US-ASCII");
+		} catch (UnsupportedEncodingException e) {
+			// US-ASCII is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			dateOfExpiryPlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject dateOfExpiry = new PrimitiveTlvDataObject(new TlvTag((byte) 0x12), dateOfExpiryPlainBytes);
 		dg3Tlv.addTlvDataObject(dateOfExpiry);
 		
 		CardFile eidDg3 = new ElementaryFile(new FileIdentifier(0x0103),
@@ -418,7 +447,17 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	@Override
 	protected void addEidDg8(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg8Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x68));
-		PrimitiveTlvDataObject dateOfBirth = new PrimitiveTlvDataObject(new TlvTag((byte) 0x12), HexString.toByteArray(getEidDg8PlainData()));
+		byte[] dateOfBirthPlainBytes;
+		
+		try {
+			dateOfBirthPlainBytes = getEidDg8PlainData().getBytes("US-ASCII");
+		} catch (UnsupportedEncodingException e) {
+			// US-ASCII is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			dateOfBirthPlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject dateOfBirth = new PrimitiveTlvDataObject(new TlvTag((byte) 0x12), dateOfBirthPlainBytes);
 		dg8Tlv.addTlvDataObject(dateOfBirth);
 		
 		CardFile eidDg8 = new ElementaryFile(new FileIdentifier(0x0108),
@@ -462,7 +501,17 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	@Override
 	protected void addEidDg10(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg10Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x6A));
-		PrimitiveTlvDataObject nationality = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), HexString.toByteArray(getEidDg10PlainData()));
+		byte[] nationalityPlainBytes;
+		
+		try {
+			nationalityPlainBytes = getEidDg10PlainData().getBytes("US-ASCII");
+		} catch (UnsupportedEncodingException e) {
+			// US-ASCII is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			nationalityPlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject nationality = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), nationalityPlainBytes);
 		dg10Tlv.addTlvDataObject(nationality);
 		
 		CardFile eidDg10 = new ElementaryFile(new FileIdentifier(0x010A),
@@ -538,7 +587,17 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	@Override
 	protected void addEidDg18(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg18Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x72));
-		PrimitiveTlvDataObject communityId = new PrimitiveTlvDataObject(new TlvTag((byte) 0x04), HexString.toByteArray(getEidDg18PlainData()));
+		byte[] communityIdPlainBytes;
+		
+		try {
+			communityIdPlainBytes = getEidDg18PlainData().getBytes("US-ASCII");
+		} catch (UnsupportedEncodingException e) {
+			// US-ASCII is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			communityIdPlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject communityId = new PrimitiveTlvDataObject(new TlvTag((byte) 0x04), communityIdPlainBytes);
 		dg18Tlv.addTlvDataObject(communityId);
 		
 		CardFile eidDg18 = new ElementaryFile(new FileIdentifier(0x0112),
@@ -552,7 +611,17 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	@Override
 	protected void addEidDg19(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg19Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x73));
-		PrimitiveTlvDataObject residencePermit1 = new PrimitiveTlvDataObject(new TlvTag((byte) 0x04), HexString.toByteArray(getEidDg19PlainData()));
+		byte[] residencePermit1PlainBytes;
+		
+		try {
+			residencePermit1PlainBytes = getEidDg19PlainData().getBytes("US-ASCII");
+		} catch (UnsupportedEncodingException e) {
+			// US-ASCII is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			residencePermit1PlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject residencePermit1 = new PrimitiveTlvDataObject(new TlvTag((byte) 0x04), residencePermit1PlainBytes);
 		dg19Tlv.addTlvDataObject(residencePermit1);
 		
 		CardFile eidDg19 = new ElementaryFile(new FileIdentifier(0x0113),
@@ -567,7 +636,17 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	@Override
 	protected void addEidDg20(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg20Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x74));
-		PrimitiveTlvDataObject residencePermit2 = new PrimitiveTlvDataObject(new TlvTag((byte) 0x04), HexString.toByteArray(getEidDg20PlainData()));
+		byte[] residencePermit2PlainBytes;
+		
+		try {
+			residencePermit2PlainBytes = getEidDg20PlainData().getBytes("US-ASCII");
+		} catch (UnsupportedEncodingException e) {
+			// US-ASCII is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			residencePermit2PlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject residencePermit2 = new PrimitiveTlvDataObject(new TlvTag((byte) 0x04), residencePermit2PlainBytes);
 		dg20Tlv.addTlvDataObject(residencePermit2);
 		
 		CardFile eidDg19 = new ElementaryFile(new FileIdentifier(0x0114),
