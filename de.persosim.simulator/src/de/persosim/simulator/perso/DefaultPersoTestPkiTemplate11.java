@@ -57,7 +57,7 @@ public class DefaultPersoTestPkiTemplate11 extends DefaultPersoTestPkiTemplate {
 
 	@Override
 	public String getDocumentNumber() {
-		return "000000001";
+		return "000000011";
 	}
 
 	@Override
