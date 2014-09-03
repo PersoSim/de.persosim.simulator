@@ -27,12 +27,14 @@ import de.persosim.simulator.documents.Mrz;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.secstatus.PaceSecurityCondition;
 import de.persosim.simulator.secstatus.SecCondition;
+import de.persosim.simulator.tlv.Asn1;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
+import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
-public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
+public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki implements Asn1 {
 	
 	/**
 	 * This method returns the default String "ID" for eID application data group 1 (Document Type) of the new German identity card.
@@ -355,7 +357,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 			givenNamesPlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject givenNames = new PrimitiveTlvDataObject(new TlvTag((byte) 0x12), givenNamesPlainBytes);
+		PrimitiveTlvDataObject givenNames = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), givenNamesPlainBytes);
 		dg4Tlv.addTlvDataObject(givenNames);
 		
 		CardFile eidDg4 = new ElementaryFile(new FileIdentifier(0x0104),
@@ -541,7 +543,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 		
 		CardFile eidDg11 = new ElementaryFile(new FileIdentifier(0x010B),
 				new ShortFileIdentifier(0x0B),
-				sex.toByteArray(),
+				dg11Tlv.toByteArray(),
 				getAccessRightReadEidDg(11),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
@@ -587,17 +589,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	@Override
 	protected void addEidDg18(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg18Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x72));
-		byte[] communityIdPlainBytes;
-		
-		try {
-			communityIdPlainBytes = getEidDg18PlainData().getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// US-ASCII is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			communityIdPlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject communityId = new PrimitiveTlvDataObject(new TlvTag((byte) 0x04), communityIdPlainBytes);
+		PrimitiveTlvDataObject communityId = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_OCTET_STRING), HexString.toByteArray(getEidDg18PlainData()));
 		dg18Tlv.addTlvDataObject(communityId);
 		
 		CardFile eidDg18 = new ElementaryFile(new FileIdentifier(0x0112),
@@ -611,6 +603,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	@Override
 	protected void addEidDg19(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg19Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x73));
+		ConstructedTlvDataObject text = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
+		dg19Tlv.addTlvDataObject(text);
 		byte[] residencePermit1PlainBytes;
 		
 		try {
@@ -621,8 +615,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 			residencePermit1PlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject residencePermit1 = new PrimitiveTlvDataObject(new TlvTag((byte) 0x04), residencePermit1PlainBytes);
-		dg19Tlv.addTlvDataObject(residencePermit1);
+		PrimitiveTlvDataObject residencePermit1 = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), residencePermit1PlainBytes);
+		text.addTlvDataObject(residencePermit1);
 		
 		CardFile eidDg19 = new ElementaryFile(new FileIdentifier(0x0113),
 				new ShortFileIdentifier(0x13),
@@ -636,6 +630,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 	@Override
 	protected void addEidDg20(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg20Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x74));
+		ConstructedTlvDataObject text = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
+		dg20Tlv.addTlvDataObject(text);
 		byte[] residencePermit2PlainBytes;
 		
 		try {
@@ -646,8 +642,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki {
 			residencePermit2PlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject residencePermit2 = new PrimitiveTlvDataObject(new TlvTag((byte) 0x04), residencePermit2PlainBytes);
-		dg20Tlv.addTlvDataObject(residencePermit2);
+		PrimitiveTlvDataObject residencePermit2 = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), residencePermit2PlainBytes);
+		text.addTlvDataObject(residencePermit2);
 		
 		CardFile eidDg19 = new ElementaryFile(new FileIdentifier(0x0114),
 				new ShortFileIdentifier(0x14),
