@@ -663,52 +663,45 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		ConstructedTlvDataObject npor = new ConstructedTlvDataObject(new TlvTag((byte) 0x30));
 		dg17.addTlvDataObject(npor);
 		
-		byte startTag = (byte) 0xAA;
-		byte currentTag = startTag;
-		ConstructedTlvDataObject seq;
+		ConstructedTlvDataObject sequenceElement;
 		PrimitiveTlvDataObject content;
 		
 		if(streetString != null) {
-			seq = new ConstructedTlvDataObject(new TlvTag(currentTag));
-			npor.addTlvDataObject(seq);
+			sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAA));
+			npor.addTlvDataObject(sequenceElement);
 			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), streetString.getBytes("UTF-8"));
-			seq.addTlvDataObject(content);
-			currentTag++;
+			sequenceElement.addTlvDataObject(content);
 		}
 		
 		if(cityString != null) {
-			seq = new ConstructedTlvDataObject(new TlvTag(currentTag));
-			npor.addTlvDataObject(seq);
+			sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAB));
+			npor.addTlvDataObject(sequenceElement);
 			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), cityString.getBytes("UTF-8"));
-			seq.addTlvDataObject(content);
-			currentTag++;
+			sequenceElement.addTlvDataObject(content);
 		}
 		
 		if(stateString != null) {
-			seq = new ConstructedTlvDataObject(new TlvTag(currentTag));
-			npor.addTlvDataObject(seq);
+			sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAC));
+			npor.addTlvDataObject(sequenceElement);
 			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), stateString.getBytes("UTF-8"));
-			seq.addTlvDataObject(content);
-			currentTag++;
+			sequenceElement.addTlvDataObject(content);
 		}
 		
 		if(countryString != null) {
-			seq = new ConstructedTlvDataObject(new TlvTag(currentTag));
-			npor.addTlvDataObject(seq);
+			sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAD));
+			npor.addTlvDataObject(sequenceElement);
 			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), countryString.getBytes("US-ASCII"));
-			seq.addTlvDataObject(content);
-			currentTag++;
+			sequenceElement.addTlvDataObject(content);
 		}
 		
 		if(zipString != null) {
-			seq = new ConstructedTlvDataObject(new TlvTag(currentTag));
-			npor.addTlvDataObject(seq);
+			sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAE));
+			npor.addTlvDataObject(sequenceElement);
 			content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), zipString.getBytes("US-ASCII"));
-			seq.addTlvDataObject(content);
-			currentTag++;
+			sequenceElement.addTlvDataObject(content);
 		}
 		
-		if(currentTag == startTag) {
+		if((streetString == null) && (cityString == null) && (stateString == null) && (countryString == null) && (zipString == null)) {
 			dg17 = new ConstructedTlvDataObject(new TlvTag((byte) 0x71));
 			npor = new ConstructedTlvDataObject(new TlvTag((byte) 0xA2));
 			PrimitiveTlvDataObject noPlace = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), (new String("keine Hauptwohnung in Deutschland")).getBytes("UTF-8"));
