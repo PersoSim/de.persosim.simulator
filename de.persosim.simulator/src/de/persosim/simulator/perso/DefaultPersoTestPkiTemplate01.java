@@ -6,21 +6,22 @@ package de.persosim.simulator.perso;
  */
 public class DefaultPersoTestPkiTemplate01 extends DefaultPersoTestPkiTemplate {
 	
-	public DefaultPersoTestPkiTemplate01() {
-		super();
-		this.persoDataContainer.setDg4PlainData("ERIKA");
-		this.persoDataContainer.setDg5PlainData("MUSTERMANN");
-		this.persoDataContainer.setDg8PlainData("19640812");
-		this.persoDataContainer.setDg9PlainData("BERLIN");
-		this.persoDataContainer.setDg11PlainData("F");
-		this.persoDataContainer.setDg13PlainData("GABLER");
-		this.persoDataContainer.setDg17StreetPlainData("HEIDESTRASSE 17");
-		this.persoDataContainer.setDg17CityPlainData("KÖLN");
-		this.persoDataContainer.setDg17CountryPlainData("D");
-		this.persoDataContainer.setDg17ZipPlainData("51147");
-		this.persoDataContainer.setDg18PlainData("02760503150000");
-		this.persoDataContainer.setDocumentNumber("000000001");
-		this.persoDataContainer.setMrzLine3Of3("MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
+	@Override
+	public void setPersoDataContainer() {
+		persoDataContainer = new PersonalizationDataDefaultContainer();
+		persoDataContainer.setDg4PlainData("ERIKA");
+		persoDataContainer.setDg5PlainData("MUSTERMANN");
+		persoDataContainer.setDg8PlainData("19640812");
+		persoDataContainer.setDg9PlainData("BERLIN");
+		persoDataContainer.setDg11PlainData("F");
+		persoDataContainer.setDg13PlainData("GABLER");
+		persoDataContainer.setDg17StreetPlainData("HEIDESTRASSE 17");
+		persoDataContainer.setDg17CityPlainData("KÖLN");
+		persoDataContainer.setDg17CountryPlainData("D");
+		persoDataContainer.setDg17ZipPlainData("51147");
+		persoDataContainer.setDg18PlainData("02760503150000");
+		persoDataContainer.setDocumentNumber("000000001");
+		persoDataContainer.setMrzLine3Of3("MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
 	}
 	
 }

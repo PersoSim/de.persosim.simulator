@@ -6,8 +6,9 @@ package de.persosim.simulator.perso;
  */
 public class DefaultPersoTestPkiTemplate10 extends DefaultPersoTestPkiTemplate {
 	
-	public DefaultPersoTestPkiTemplate10() {
-		super();
+	@Override
+	public void setPersoDataContainer() {
+		persoDataContainer = new PersonalizationDataDefaultContainer();
 		this.persoDataContainer.setDg4PlainData("GHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGHGH");
 		this.persoDataContainer.setDg5PlainData("CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD");
 		this.persoDataContainer.setDg6PlainData("STSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTSTST");

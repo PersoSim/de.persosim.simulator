@@ -38,8 +38,12 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	protected PersonalizationDataContainer persoDataContainer;
 	
-	public DefaultPersoTestPkiTemplate() {
-		this.persoDataContainer = new PersonalizationDataDefaultContainer();
+	public abstract void setPersoDataContainer();
+	
+	public void initPersonalizationDataContainer() {
+		if (persoDataContainer == null) {
+			setPersoDataContainer();
+		}
 	}
 	
 	public String getPin() {
@@ -110,6 +114,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	}
 	
 	public String getMrz() {
+		initPersonalizationDataContainer();
 		String line1 = getMrzLine1of3(persoDataContainer.getDg1PlainData(), persoDataContainer.getDg2PlainData(), persoDataContainer.getDocumentNumber());
 		String line2 = getMrzLine2of3(line1, persoDataContainer.getDg8PlainData(), persoDataContainer.getDg11PlainData(), persoDataContainer.getDg3PlainData(), persoDataContainer.getDg10PlainData());
 		String line3 = persoDataContainer.getMrzLine3Of3();
@@ -176,6 +181,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		// Aux data
 		byte[] communityId;
 		
+		initPersonalizationDataContainer();
+		
 		try {
 			communityId = persoDataContainer.getDg18PlainData().getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
@@ -198,6 +205,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg1(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg1Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x61));
 		byte[] documentTypePlainBytes;
 		
@@ -223,6 +232,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg2(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg2Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x62));
 		byte[] issuingStatePlainBytes;
 		
@@ -248,6 +259,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg3(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg3Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x63));
 		byte[] dateOfExpiryPlainBytes;
 		
@@ -273,6 +286,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg4(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg4Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x64));
 		byte[] givenNamesPlainBytes;
 		
@@ -298,6 +313,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg5(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg5Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x65));
 		byte[] familyNamesPlainBytes;
 		
@@ -324,6 +341,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg6(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg6Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x66));
 		byte[] religiousArtisticNamePlainBytes;
 		
@@ -350,6 +369,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg7(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg7Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x67));
 		byte[] academicTitlePlainBytes;
 		
@@ -375,6 +396,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg8(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg8Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x68));
 		byte[] dateOfBirthPlainBytes;
 		
@@ -400,6 +423,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg9(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg9Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x69));
 		ConstructedTlvDataObject free = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
 		
@@ -429,6 +454,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg10(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg10Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x6A));
 		byte[] nationalityPlainBytes;
 		
@@ -454,6 +481,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg11(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg11Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x6B));
 		byte[] sexPlainBytes;
 		
@@ -479,6 +508,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg13(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg13Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x6D));
 		byte[] birthNamePlainBytes;
 		
@@ -504,6 +535,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg17(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		try {
 			ConstructedTlvDataObject dg17Tlv = DefaultPersoTestPkiTemplate.createEidDg17Tlv(
 					persoDataContainer.getDg17StreetPlainData(),
@@ -526,6 +559,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg18(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg18Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x72));
 		PrimitiveTlvDataObject communityId = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_OCTET_STRING), HexString.toByteArray(persoDataContainer.getDg18PlainData()));
 		dg18Tlv.addTlvDataObject(communityId);
@@ -540,6 +575,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg19(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg19Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x73));
 		ConstructedTlvDataObject text = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
 		dg19Tlv.addTlvDataObject(text);
@@ -567,6 +604,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg20(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
 		ConstructedTlvDataObject dg20Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x74));
 		ConstructedTlvDataObject text = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
 		dg20Tlv.addTlvDataObject(text);

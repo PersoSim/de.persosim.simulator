@@ -6,8 +6,9 @@ package de.persosim.simulator.perso;
  */
 public class DefaultPersoTestPkiTemplate05 extends DefaultPersoTestPkiTemplate {
 	
-	public DefaultPersoTestPkiTemplate05() {
-		super();
+	@Override
+	public void setPersoDataContainer() {
+		persoDataContainer = new PersonalizationDataDefaultContainer();
 		this.persoDataContainer.setDg3PlainData("20161031");
 		this.persoDataContainer.setDg4PlainData("AĞÇA");
 		this.persoDataContainer.setDg5PlainData("ÖZM̂EN");
