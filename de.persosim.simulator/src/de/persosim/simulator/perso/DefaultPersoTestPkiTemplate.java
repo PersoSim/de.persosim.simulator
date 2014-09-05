@@ -36,10 +36,10 @@ import de.persosim.simulator.utils.Utils;
 
 public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki implements Asn1 {
 	
-	protected EidDataContainer persoDataContainer;
+	protected PersonalizationDataContainer persoDataContainer;
 	
 	public DefaultPersoTestPkiTemplate() {
-		this.persoDataContainer = new EidDataDefaultContainer();
+		this.persoDataContainer = new PersonalizationDataDefaultContainer();
 	}
 	
 	public String getPin() {

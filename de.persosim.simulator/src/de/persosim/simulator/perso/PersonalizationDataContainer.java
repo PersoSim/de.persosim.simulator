@@ -7,7 +7,7 @@ package de.persosim.simulator.perso;
  * @author slutters
  *
  */
-public class EidDataContainer {
+public class PersonalizationDataContainer {
 	
 	protected String dg1PlainData, dg2PlainData, dg3PlainData, dg4PlainData, dg5PlainData,
 						dg6PlainData, dg7PlainData, dg8PlainData, dg9PlainData, dg10PlainData,
@@ -16,7 +16,7 @@ public class EidDataContainer {
 						dg17CountryPlainData, dg17ZipPlainData, dg18PlainData, dg19PlainData, dg20PlainData,
 						dg21PlainData, documentNumber, mrzLine3Of3;
 	
-	public EidDataContainer() {
+	public PersonalizationDataContainer() {
 		this.dg1PlainData         = null;
 		this.dg2PlainData         = null;
 		this.dg3PlainData         = null;

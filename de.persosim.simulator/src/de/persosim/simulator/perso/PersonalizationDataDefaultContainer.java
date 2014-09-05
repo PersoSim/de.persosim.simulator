@@ -7,9 +7,9 @@ package de.persosim.simulator.perso;
  * @author slutters
  *
  */
-public class EidDataDefaultContainer extends EidDataContainer {
+public class PersonalizationDataDefaultContainer extends PersonalizationDataContainer {
 	
-	public EidDataDefaultContainer() {
+	public PersonalizationDataDefaultContainer() {
 		this.dg1PlainData = "ID";
 		this.dg2PlainData = "D";
 		this.dg3PlainData = "20201031";
