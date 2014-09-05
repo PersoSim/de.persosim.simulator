@@ -36,84 +36,11 @@ import de.persosim.simulator.utils.Utils;
 
 public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki implements Asn1 {
 	
-	/**
-	 * This method returns the default String "ID" for eID application data group 1 (Document Type) of the new German identity card.
-	 * @return the document type
-	 */
-	public String getEidDg1PlainData() {
-		return "ID";
+	protected EidDataContainer persoDataContainer;
+	
+	public DefaultPersoTestPkiTemplate() {
+		this.persoDataContainer = new EidDataDefaultContainer();
 	}
-	
-	/**
-	 * This method returns the default String "D" for eID application data group 2 (Issuing State) of the new German identity card.
-	 * @return the issuing state
-	 */
-	public String getEidDg2PlainData() {
-		return "D";
-	}
-	
-	/**
-	 * This method returns the default String "20201031" for eID application data group 3 (Date of Expiry) of the new German identity card.
-	 * @return the date of expiry
-	 */
-	public String getEidDg3PlainData() {
-		return "20201031";
-	}
-	
-	public abstract String getEidDg4PlainData();
-	public abstract String getEidDg5PlainData();
-	
-	/**
-	 * This method returns the default String "" for eID application data group 6 (Religious/Artistic Name) of the new German identity card.
-	 * @return the religious/artistic name
-	 */
-	public String getEidDg6PlainData() {
-		return "";
-	}
-	
-	/**
-	 * This method returns the default String "" for eID application data group 7 (Academic Title) of the new German identity card.
-	 * @return the academic title
-	 */
-	public String getEidDg7PlainData() {
-		return "";
-	}
-	
-	public abstract String getEidDg8PlainData();
-	public abstract String getEidDg9PlainData();
-	
-	/**
-	 * This method returns the default String "D" for eID application data group 10 (Nationality) of the new German identity card.
-	 * @return the nationality
-	 */
-	public String getEidDg10PlainData() {
-		return "D";
-	}
-	
-	public abstract String getEidDg11PlainData();
-	
-	/**
-	 * This method returns the default String "" for eID application data group 13 (Birth Name) of the new German identity card.
-	 * @return the birth name
-	 */
-	public String getEidDg13PlainData() {
-		return "";
-	}
-	
-	public abstract byte[] getEidDg17Data();
-	
-	public abstract String getEidDg18PlainData();
-	
-	public String getEidDg19PlainData() {
-		return "ResPermit1";
-	}
-	
-	public String getEidDg20PlainData() {
-		return "ResPermit2";
-	}
-	
-	public abstract String getDocumentNumber();
-	public abstract String getMrzLine3of3();
 	
 	public String getPin() {
 		return "123456";
@@ -183,9 +110,9 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	}
 	
 	public String getMrz() {
-		String line1 = getMrzLine1of3(getEidDg1PlainData(), getEidDg2PlainData(), getDocumentNumber());
-		String line2 = getMrzLine2of3(line1, getEidDg8PlainData(), getEidDg11PlainData(), getEidDg3PlainData(), getEidDg10PlainData());
-		String line3 = getMrzLine3of3();
+		String line1 = getMrzLine1of3(persoDataContainer.getDg1PlainData(), persoDataContainer.getDg2PlainData(), persoDataContainer.getDocumentNumber());
+		String line2 = getMrzLine2of3(line1, persoDataContainer.getDg8PlainData(), persoDataContainer.getDg11PlainData(), persoDataContainer.getDg3PlainData(), persoDataContainer.getDg10PlainData());
+		String line3 = persoDataContainer.getMrzLine3Of3();
 		
 		return line1 + line2 + line3;
 	}
@@ -250,16 +177,16 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] communityId;
 		
 		try {
-			communityId = getEidDg18PlainData().getBytes("US-ASCII");
+			communityId = persoDataContainer.getDg18PlainData().getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
 			// US-ASCII is a valid encoding so this is never going to happen
 			e.printStackTrace();
 			communityId = new byte[0];
 		}
 		
-		Date dateOfBirth = Utils.getDate(getEidDg8PlainData(), Utils.DATE_SET_MAX_VALUE);
+		Date dateOfBirth = Utils.getDate(persoDataContainer.getDg8PlainData(), Utils.DATE_SET_MAX_VALUE);
 		
-		Date validityDate = Utils.getDate(getEidDg3PlainData());
+		Date validityDate = Utils.getDate(persoDataContainer.getDg3PlainData());
 
 		mf.addChild(new ByteDataAuxObject(new OidIdentifier(
 				TaOid.id_CommunityID), communityId));
@@ -275,7 +202,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] documentTypePlainBytes;
 		
 		try {
-			documentTypePlainBytes = getEidDg1PlainData().getBytes("US-ASCII");
+			documentTypePlainBytes = persoDataContainer.getDg1PlainData().getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
 			// US-ASCII is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -300,7 +227,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] issuingStatePlainBytes;
 		
 		try {
-			issuingStatePlainBytes = getEidDg2PlainData().getBytes("US-ASCII");
+			issuingStatePlainBytes = persoDataContainer.getDg2PlainData().getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
 			// US-ASCII is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -325,7 +252,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] dateOfExpiryPlainBytes;
 		
 		try {
-			dateOfExpiryPlainBytes = getEidDg3PlainData().getBytes("US-ASCII");
+			dateOfExpiryPlainBytes = persoDataContainer.getDg3PlainData().getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
 			// US-ASCII is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -350,7 +277,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] givenNamesPlainBytes;
 		
 		try {
-			givenNamesPlainBytes = getEidDg4PlainData().getBytes("UTF-8");
+			givenNamesPlainBytes = persoDataContainer.getDg4PlainData().getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// UTF-8 is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -375,7 +302,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] familyNamesPlainBytes;
 		
 		try {
-			familyNamesPlainBytes = getEidDg5PlainData().getBytes("UTF-8");
+			familyNamesPlainBytes = persoDataContainer.getDg5PlainData().getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// UTF-8 is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -401,7 +328,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] religiousArtisticNamePlainBytes;
 		
 		try {
-			religiousArtisticNamePlainBytes = getEidDg6PlainData().getBytes("UTF-8");
+			religiousArtisticNamePlainBytes = persoDataContainer.getDg6PlainData().getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// UTF-8 is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -427,7 +354,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] academicTitlePlainBytes;
 		
 		try {
-			academicTitlePlainBytes = getEidDg7PlainData().getBytes("UTF-8");
+			academicTitlePlainBytes = persoDataContainer.getDg7PlainData().getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// UTF-8 is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -452,7 +379,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] dateOfBirthPlainBytes;
 		
 		try {
-			dateOfBirthPlainBytes = getEidDg8PlainData().getBytes("US-ASCII");
+			dateOfBirthPlainBytes = persoDataContainer.getDg8PlainData().getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
 			// US-ASCII is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -479,7 +406,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] placeOfBirthPlainBytes;
 		
 		try {
-			placeOfBirthPlainBytes = getEidDg9PlainData().getBytes("UTF-8");
+			placeOfBirthPlainBytes = persoDataContainer.getDg9PlainData().getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// UTF-8 is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -506,7 +433,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] nationalityPlainBytes;
 		
 		try {
-			nationalityPlainBytes = getEidDg10PlainData().getBytes("US-ASCII");
+			nationalityPlainBytes = persoDataContainer.getDg10PlainData().getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
 			// US-ASCII is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -531,7 +458,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] sexPlainBytes;
 		
 		try {
-			sexPlainBytes = getEidDg11PlainData().getBytes("US-ASCII");
+			sexPlainBytes = persoDataContainer.getDg11PlainData().getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
 			// US-ASCII is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -556,7 +483,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] birthNamePlainBytes;
 		
 		try {
-			birthNamePlainBytes = getEidDg13PlainData().getBytes("UTF-8");
+			birthNamePlainBytes = persoDataContainer.getDg13PlainData().getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// UTF-8 is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -577,19 +504,30 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg17(DedicatedFile eIdAppl) {
-		CardFile eidDg17 = new ElementaryFile(
-				new FileIdentifier(0x0111),
-				new ShortFileIdentifier(0x11),
-				getEidDg17Data(),
-				getAccessRightReadEidDg(17), getAccessRightUpdateEidDg(17),
-				Collections.<SecCondition> emptySet());
-		eIdAppl.addChild(eidDg17);
+		try {
+			ConstructedTlvDataObject dg17Tlv = DefaultPersoTestPkiTemplate.createEidDg17Tlv(
+					persoDataContainer.getDg17StreetPlainData(),
+					persoDataContainer.getDg17CityPlainData(),
+					persoDataContainer.getDg17StatePlainData(),
+					persoDataContainer.getDg17CountryPlainData(),
+					persoDataContainer.getDg17ZipPlainData());
+			
+			CardFile eidDg17 = new ElementaryFile(
+					new FileIdentifier(0x0111),
+					new ShortFileIdentifier(0x11),
+					dg17Tlv.toByteArray(),
+					getAccessRightReadEidDg(17), getAccessRightUpdateEidDg(17),
+					Collections.<SecCondition> emptySet());
+			eIdAppl.addChild(eidDg17);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	protected void addEidDg18(DedicatedFile eIdAppl) {
 		ConstructedTlvDataObject dg18Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x72));
-		PrimitiveTlvDataObject communityId = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_OCTET_STRING), HexString.toByteArray(getEidDg18PlainData()));
+		PrimitiveTlvDataObject communityId = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_OCTET_STRING), HexString.toByteArray(persoDataContainer.getDg18PlainData()));
 		dg18Tlv.addTlvDataObject(communityId);
 		
 		CardFile eidDg18 = new ElementaryFile(new FileIdentifier(0x0112),
@@ -608,7 +546,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] residencePermit1PlainBytes;
 		
 		try {
-			residencePermit1PlainBytes = getEidDg19PlainData().getBytes("US-ASCII");
+			residencePermit1PlainBytes = persoDataContainer.getDg19PlainData().getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
 			// US-ASCII is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -635,7 +573,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		byte[] residencePermit2PlainBytes;
 		
 		try {
-			residencePermit2PlainBytes = getEidDg20PlainData().getBytes("US-ASCII");
+			residencePermit2PlainBytes = persoDataContainer.getDg20PlainData().getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
 			// US-ASCII is a valid encoding so this is never going to happen
 			e.printStackTrace();
@@ -652,10 +590,6 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg19);
-	}
-	
-	public static ConstructedTlvDataObject createEidDg17Tlv() throws UnsupportedEncodingException {
-		return createEidDg17Tlv(null, null, null, null, null);
 	}
 	
 	public static ConstructedTlvDataObject createEidDg17Tlv(String streetString, String cityString, String stateString, String countryString, String zipString) throws UnsupportedEncodingException {

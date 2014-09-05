@@ -1,68 +1,25 @@
 package de.persosim.simulator.perso;
 
-import java.io.UnsupportedEncodingException;
-
-import de.persosim.simulator.tlv.ConstructedTlvDataObject;
-
 /**
  * @author slutters
  *
  */
 public class DefaultPersoTestPkiTemplate11 extends DefaultPersoTestPkiTemplate {
 	
-	@Override
-	public String getEidDg4PlainData() {
-		return "HILDEGARD";
-	}
-
-	@Override
-	public String getEidDg5PlainData() {
-		return "MÜLLER";
-	}
-
-	@Override
-	public String getEidDg8PlainData() {
-		return "19390204";
-	}
-	
-	@Override
-	public String getEidDg9PlainData() {
-		return "SAARBRÜCKEN";
-	}
-
-	@Override
-	public String getEidDg11PlainData() {
-		return "F";
-	}
-	
-	@Override
-	public byte[] getEidDg17Data() {
-		ConstructedTlvDataObject dg17Tlv; 
-		
-		try {
-			dg17Tlv = DefaultPersoTestPkiTemplate.createEidDg17Tlv("HARKORTSTR. 58", "DORTMUND", null, "D", "44225");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			dg17Tlv = null;
-		}
-		
-		return dg17Tlv.toByteArray();
-	}
-
-	@Override
-	public String getEidDg18PlainData() {
-		return "02760509130000";
-	}
-
-	@Override
-	public String getDocumentNumber() {
-		return "000000011";
-	}
-
-	@Override
-	public String getMrzLine3of3() {
-		return "MUELLER<<HILDEGARD<<<<<<<<<<<<";
+	public DefaultPersoTestPkiTemplate11() {
+		super();
+		this.persoDataContainer.setDg4PlainData("HILDEGARD");
+		this.persoDataContainer.setDg5PlainData("MÜLLER");
+		this.persoDataContainer.setDg8PlainData("19390204");
+		this.persoDataContainer.setDg9PlainData("SAARBRÜCKEN");
+		this.persoDataContainer.setDg11PlainData("F");
+		this.persoDataContainer.setDg17StreetPlainData("HARKORTSTR. 58");
+		this.persoDataContainer.setDg17CityPlainData("DORTMUND");
+		this.persoDataContainer.setDg17CountryPlainData("D");
+		this.persoDataContainer.setDg17ZipPlainData("44225");
+		this.persoDataContainer.setDg18PlainData("02760509130000");
+		this.persoDataContainer.setDocumentNumber("000000011");
+		this.persoDataContainer.setMrzLine3Of3("MUELLER<<HILDEGARD<<<<<<<<<<<<");
 	}
 
 }

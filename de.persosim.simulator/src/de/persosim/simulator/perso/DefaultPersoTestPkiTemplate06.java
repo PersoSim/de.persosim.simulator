@@ -1,83 +1,28 @@
 package de.persosim.simulator.perso;
 
-import java.io.UnsupportedEncodingException;
-
-import de.persosim.simulator.tlv.ConstructedTlvDataObject;
-
 /**
  * @author slutters
  *
  */
 public class DefaultPersoTestPkiTemplate06 extends DefaultPersoTestPkiTemplate {
 	
-	@Override
-	public String getEidDg4PlainData() {
-		return "Hans-Günther";
-	}
-
-	@Override
-	public String getEidDg5PlainData() {
-		return "von Drebenbusch-Dalgoßen";
-	}
-	
-	@Override
-	public String getEidDg6PlainData() {
-		return "Freiherr zu Möckern-Windensberg";
-	}
-	
-	@Override
-	public String getEidDg7PlainData() {
-		return "Dr.eh.Dr.";
-	}
-
-	@Override
-	public String getEidDg8PlainData() {
-		return "19460125";
-	}
-	
-	@Override
-	public String getEidDg9PlainData() {
-		return "BREMERHAVEN";
-	}
-
-	@Override
-	public String getEidDg11PlainData() {
-		return "M";
-	}
-	
-	@Override
-	public String getEidDg13PlainData() {
-		return "Weiß";
-	}
-	
-	@Override
-	public byte[] getEidDg17Data() {
-		ConstructedTlvDataObject dg17Tlv; 
-		
-		try {
-			dg17Tlv = DefaultPersoTestPkiTemplate.createEidDg17Tlv("WEG NR. 12 8E", "HAMBURG", null, "D", "22043");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			dg17Tlv = null;
-		}
-		
-		return dg17Tlv.toByteArray();
-	}
-
-	@Override
-	public String getEidDg18PlainData() {
-		return "02760200000000";
-	}
-
-	@Override
-	public String getDocumentNumber() {
-		return "000000006";
-	}
-
-	@Override
-	public String getMrzLine3of3() {
-		return "VONDREBENBUSCHDALGOSSEN<<HANS<";
+	public DefaultPersoTestPkiTemplate06() {
+		super();
+		this.persoDataContainer.setDg4PlainData("Hans-Günther");
+		this.persoDataContainer.setDg5PlainData("von Drebenbusch-Dalgoßen");
+		this.persoDataContainer.setDg6PlainData("Freiherr zu Möckern-Windensberg");
+		this.persoDataContainer.setDg7PlainData("Dr.eh.Dr.");
+		this.persoDataContainer.setDg8PlainData("19460125");
+		this.persoDataContainer.setDg9PlainData("BREMERHAVEN");
+		this.persoDataContainer.setDg11PlainData("M");
+		this.persoDataContainer.setDg13PlainData("Weiß");
+		this.persoDataContainer.setDg17StreetPlainData("WEG NR. 12 8E");
+		this.persoDataContainer.setDg17CityPlainData("HAMBURG");
+		this.persoDataContainer.setDg17CountryPlainData("D");
+		this.persoDataContainer.setDg17ZipPlainData("22043");
+		this.persoDataContainer.setDg18PlainData("02760200000000");
+		this.persoDataContainer.setDocumentNumber("000000006");
+		this.persoDataContainer.setMrzLine3Of3("VONDREBENBUSCHDALGOSSEN<<HANS<");
 	}
 
 }

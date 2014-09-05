@@ -1,73 +1,26 @@
 package de.persosim.simulator.perso;
 
-import java.io.UnsupportedEncodingException;
-
-import de.persosim.simulator.tlv.ConstructedTlvDataObject;
-
 /**
  * @author slutters
  *
  */
 public class DefaultPersoTestPkiTemplate04 extends DefaultPersoTestPkiTemplate {
 	
-	@Override
-	public String getEidDg3PlainData() {
-		return "20161031";
-	}
-	
-	@Override
-	public String getEidDg4PlainData() {
-		return "---";
-	}
-
-	@Override
-	public String getEidDg5PlainData() {
-		return "ĆOSIĆ";
-	}
-
-	@Override
-	public String getEidDg8PlainData() {
-		return "199409  ";
-	}
-	
-	@Override
-	public String getEidDg9PlainData() {
-		return "PRIŠTINA";
-	}
-
-	@Override
-	public String getEidDg11PlainData() {
-		return "M";
-	}
-	
-	@Override
-	public byte[] getEidDg17Data() {
-		ConstructedTlvDataObject dg17Tlv; 
-		
-		try {
-			dg17Tlv = DefaultPersoTestPkiTemplate.createEidDg17Tlv("F4 14-15", "MANNHEIM", null, "D", "68159");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			dg17Tlv = null;
-		}
-		
-		return dg17Tlv.toByteArray();
-	}
-
-	@Override
-	public String getEidDg18PlainData() {
-		return "02760802220000";
-	}
-
-	@Override
-	public String getDocumentNumber() {
-		return "000000004";
-	}
-
-	@Override
-	public String getMrzLine3of3() {
-		return "COSIC<<<<<<<<<<<<<<<<<<<<<<<<<";
+	public DefaultPersoTestPkiTemplate04() {
+		super();
+		this.persoDataContainer.setDg3PlainData("20161031");
+		this.persoDataContainer.setDg4PlainData("---");
+		this.persoDataContainer.setDg5PlainData("ĆOSIĆ");
+		this.persoDataContainer.setDg8PlainData("199409  ");
+		this.persoDataContainer.setDg9PlainData("PRIŠTINA");
+		this.persoDataContainer.setDg11PlainData("M");
+		this.persoDataContainer.setDg17StreetPlainData("F4 14-15");
+		this.persoDataContainer.setDg17CityPlainData("MANNHEIM");
+		this.persoDataContainer.setDg17CountryPlainData("D");
+		this.persoDataContainer.setDg17ZipPlainData("68159");
+		this.persoDataContainer.setDg18PlainData("02760802220000");
+		this.persoDataContainer.setDocumentNumber("000000004");
+		this.persoDataContainer.setMrzLine3Of3("COSIC<<<<<<<<<<<<<<<<<<<<<<<<<");
 	}
 
 }

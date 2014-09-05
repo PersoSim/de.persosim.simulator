@@ -1,72 +1,25 @@
 package de.persosim.simulator.perso;
 
-import java.io.UnsupportedEncodingException;
-
-import de.persosim.simulator.tlv.ConstructedTlvDataObject;
-
 /**
  * @author slutters
  *
  */
 public class DefaultPersoTestPkiTemplate07 extends DefaultPersoTestPkiTemplate {
 	
-	@Override
-	public String getEidDg4PlainData() {
-		return "ANNEKATHRIN";
-	}
-
-	@Override
-	public String getEidDg5PlainData() {
-		return "LERCH";
-	}
-
-	@Override
-	public String getEidDg8PlainData() {
-		return "19760705";
-	}
-	
-	@Override
-	public String getEidDg9PlainData() {
-		return "BAD KÖNIGSHOFEN I. GRABFELD";
-	}
-
-	@Override
-	public String getEidDg11PlainData() {
-		return "F";
+	public DefaultPersoTestPkiTemplate07() {
+		super();
+		this.persoDataContainer.setDg4PlainData("ANNEKATHRIN");
+		this.persoDataContainer.setDg5PlainData("LERCH");
+		this.persoDataContainer.setDg8PlainData("19760705");
+		this.persoDataContainer.setDg9PlainData("BAD KÖNIGSHOFEN I. GRABFELD");
+		this.persoDataContainer.setDg11PlainData("F");
+		this.persoDataContainer.setDg13PlainData("BJØRNSON");
+		this.persoDataContainer.setDg17CityPlainData("HALLE (SAALE)");
+		this.persoDataContainer.setDg17CountryPlainData("D");
+		this.persoDataContainer.setDg17ZipPlainData("06108");
+		this.persoDataContainer.setDg18PlainData("02760200000000");
+		this.persoDataContainer.setDocumentNumber("000000007");
+		this.persoDataContainer.setMrzLine3Of3("LERCH<<ANNEKATHRIN<<<<<<<<<<<<");
 	}
 	
-	@Override
-	public String getEidDg13PlainData() {
-		return "BJØRNSON";
-	}
-	
-	@Override
-	public byte[] getEidDg17Data() {
-		ConstructedTlvDataObject dg17Tlv; 
-		
-		try {
-			dg17Tlv = DefaultPersoTestPkiTemplate.createEidDg17Tlv(null, "HALLE (SAALE)", null, "D", "06108");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			dg17Tlv = null;
-		}
-		
-		return dg17Tlv.toByteArray();
-	}
-
-	@Override
-	public String getEidDg18PlainData() {
-		return "02760200000000";
-	}
-
-	@Override
-	public String getDocumentNumber() {
-		return "000000007";
-	}
-
-	@Override
-	public String getMrzLine3of3() {
-		return "LERCH<<ANNEKATHRIN<<<<<<<<<<<<";
-	}
 }

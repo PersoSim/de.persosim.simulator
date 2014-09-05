@@ -1,68 +1,25 @@
 package de.persosim.simulator.perso;
 
-import java.io.UnsupportedEncodingException;
-
-import de.persosim.simulator.tlv.ConstructedTlvDataObject;
-
 /**
  * @author slutters
  *
  */
 public class DefaultPersoTestPkiTemplate02 extends DefaultPersoTestPkiTemplate {
 	
-	@Override
-	public String getEidDg4PlainData() {
-		return "ANDRÉ";
-	}
-
-	@Override
-	public String getEidDg5PlainData() {
-		return "MUSTERMANN";
-	}
-
-	@Override
-	public String getEidDg8PlainData() {
-		return "19810617";
-	}
-	
-	@Override
-	public String getEidDg9PlainData() {
-		return "FRANKFURT (ODER)";
-	}
-
-	@Override
-	public String getEidDg11PlainData() {
-		return "M";
-	}
-	
-	@Override
-	public byte[] getEidDg17Data() {
-		ConstructedTlvDataObject dg17Tlv; 
-		
-		try {
-			dg17Tlv = DefaultPersoTestPkiTemplate.createEidDg17Tlv("EHM-WELK-STRAßE 33", "LÜBBENAU/SPREEWALD", null, "D", "03222");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			dg17Tlv = null;
-		}
-		
-		return dg17Tlv.toByteArray();
-	}
-
-	@Override
-	public String getEidDg18PlainData() {
-		return "02761200660196";
-	}
-
-	@Override
-	public String getDocumentNumber() {
-		return "000000002";
-	}
-
-	@Override
-	public String getMrzLine3of3() {
-		return "MUSTERMANN<<ANDRE<<<<<<<<<<<<<";
+	public DefaultPersoTestPkiTemplate02() {
+		super();
+		this.persoDataContainer.setDg4PlainData("ANDRÉ");
+		this.persoDataContainer.setDg5PlainData("MUSTERMANN");
+		this.persoDataContainer.setDg8PlainData("19810617");
+		this.persoDataContainer.setDg9PlainData("FRANKFURT (ODER)");
+		this.persoDataContainer.setDg11PlainData("M");
+		this.persoDataContainer.setDg17StreetPlainData("EHM-WELK-STRAßE 33");
+		this.persoDataContainer.setDg17CityPlainData("LÜBBENAU/SPREEWALD");
+		this.persoDataContainer.setDg17CountryPlainData("D");
+		this.persoDataContainer.setDg17ZipPlainData("03222");
+		this.persoDataContainer.setDg18PlainData("02761200660196");
+		this.persoDataContainer.setDocumentNumber("000000002");
+		this.persoDataContainer.setMrzLine3Of3("MUSTERMANN<<ANDRE<<<<<<<<<<<<<");
 	}
 
 }
