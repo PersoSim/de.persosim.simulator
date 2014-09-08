@@ -532,7 +532,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 					new FileIdentifier(0x0111),
 					new ShortFileIdentifier(0x11),
 					dg17Tlv.toByteArray(),
-					getAccessRightReadEidDg(17), getAccessRightUpdateEidDg(17),
+					getAccessRightReadEidDg(17),
+					getAccessRightUpdateEidDg(17),
 					Collections.<SecCondition> emptySet());
 			eIdAppl.addChild(eidDg17);
 		} catch (UnsupportedEncodingException e) {
@@ -551,7 +552,8 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		CardFile eidDg18 = new ElementaryFile(new FileIdentifier(0x0112),
 				new ShortFileIdentifier(0x12),
 				dg18Tlv.toByteArray(),
-				getAccessRightReadEidDg(18), getAccessRightUpdateEidDg(18),
+				getAccessRightReadEidDg(18),
+				getAccessRightUpdateEidDg(18),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg18);
 	}
