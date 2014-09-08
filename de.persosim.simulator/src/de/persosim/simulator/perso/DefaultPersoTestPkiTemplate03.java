@@ -1,5 +1,8 @@
 package de.persosim.simulator.perso;
 
+import de.persosim.simulator.crypto.CryptoUtil;
+import de.persosim.simulator.utils.HexString;
+
 /**
  * @author slutters
  *
@@ -24,6 +27,18 @@ public class DefaultPersoTestPkiTemplate03 extends DefaultPersoTestPkiTemplate {
 		persoDataContainer.setDg18PlainData("02761100000000");
 		persoDataContainer.setDocumentNumber("000000003");
 		persoDataContainer.setMrzLine3Of3("MUSTERMANN<<JOHANNA EDELTRAUT<");
+		
+		// unprivileged CA key
+		persoDataContainer.addCaKeyPair(CryptoUtil.reconstructKeyPair(13,
+				HexString.toByteArray("0419D4B7447788B0E1993DB35500999627E739A4E5E35F02D8FB07D6122E76567F17758D7A3AA6943EF23E5E2909B3E8B31BFAA4544C2CBF1FB487F31FF239C8F8"),
+				HexString.toByteArray("A07EB62E891DAA84643E0AFCC1AF006891B669B8F51E379477DBEAB8C987A610")),
+				41);
+		
+		// privileged CA key
+		persoDataContainer.addCaKeyPair(CryptoUtil.reconstructKeyPair(13,
+				HexString.toByteArray("04992622DD06173C593D84A07B9EFBCAD889483223063E3613A982503EE34285E60A10C5F0DACE211A769947C6986A415DB5FFE624F9C2961570E475A1201F35C1"),
+				HexString.toByteArray("861BA9BF16AF946D48AD045C5B55044F188E4A4633CDF5A4E438EC016C5A8719")),
+				45);
 	}
 
 }
