@@ -5,8 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -28,8 +27,6 @@ import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
-import de.persosim.simulator.crypto.DomainParameterSet;
-import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.documents.Mrz;
 import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.protocols.ri.Ri;
@@ -642,37 +639,34 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	protected void addCaKeys() {
 		initPersonalizationDataContainer();
 		
-		// CA static key pair PICC
-		DomainParameterSet domainParameterSet = StandardizedDomainParameters
-				.getDomainParameterSetById(13);
+		ArrayList<KeyPair> caKeys = persoDataContainer.getCaKeys();
+		ArrayList<Integer> caKeyIds = persoDataContainer.getCaKeyIds();
 		
-		PublicKey publicKey = domainParameterSet
-				.reconstructPublicKey(persoDataContainer.getCaPublicKeyData());
-		PrivateKey privateKey = domainParameterSet
-				.reconstructPrivateKey(persoDataContainer.getCaPrivateKeyData());
-		KeyPair keyPair = new KeyPair(publicKey, privateKey);
-
-		KeyObject caKey = new KeyObject(keyPair, new KeyIdentifier(2));
-		caKey.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128);
-		mf.addChild(caKey);
+		// CA static key pair PICC
+		KeyObject caKey;
+		for(int i=0; i<caKeys.size(); i++) {
+			caKey = new KeyObject(caKeys.get(i), new KeyIdentifier(caKeyIds.get(i)));
+			caKey.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128);
+			mf.addChild(caKey);
+		}
 	}
+	
+	
 	
 	@Override
 	protected void addRiKeys() {
 		initPersonalizationDataContainer();
 		
-		// RI static key pair PICC
-		DomainParameterSet domainParameterSet = StandardizedDomainParameters
-				.getDomainParameterSetById(13);
+		ArrayList<KeyPair> riKeys = persoDataContainer.getRiKeys();
+		ArrayList<Integer> riKeyIds = persoDataContainer.getRiKeyIds();
 		
-		PublicKey publicKey = domainParameterSet.reconstructPublicKey(persoDataContainer.getRiPublicKeyData());
-		PrivateKey privateKey = domainParameterSet
-				.reconstructPrivateKey(persoDataContainer.getRiPublicKeyData());
-		KeyPair keyPair = new KeyPair(publicKey, privateKey);
-
-		KeyObject riKey = new KeyObject(keyPair, new KeyIdentifier(1));
-		riKey.addOidIdentifier(new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)));
-		mf.addChild(riKey);
+		// RI static key pair PICC
+		KeyObject riKey;
+		for(int i=0; i<riKeys.size(); i++) {
+			riKey = new KeyObject(riKeys.get(i), new KeyIdentifier(riKeyIds.get(i)));
+			riKey.addOidIdentifier(new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)));
+			mf.addChild(riKey);
+		}
 	}
 	
 }

@@ -1,7 +1,7 @@
-/**
- * 
- */
 package de.persosim.simulator.perso;
+
+import java.security.KeyPair;
+import java.util.ArrayList;
 
 /**
  * @author slutters
@@ -16,7 +16,8 @@ public class PersonalizationDataContainer {
 						dg17CountryPlainData, dg17ZipPlainData, dg18PlainData, dg19PlainData, dg20PlainData,
 						dg21PlainData, documentNumber, mrzLine3Of3;
 	
-	protected byte[] caPublicKeyData, caPrivateKeyData, riPublicKeyData, riPrivateKeyData;
+	ArrayList<KeyPair> caKeys, riKeys;
+	ArrayList<Integer> caKeyIds, riKeyIds;
 	
 	public PersonalizationDataContainer() {
 		this.dg1PlainData         = null;
@@ -48,11 +49,21 @@ public class PersonalizationDataContainer {
 		this.documentNumber       = null;
 		this.mrzLine3Of3          = null;
 		
-		this.caPrivateKeyData     = null;
-		this.caPublicKeyData      = null;
+		this.caKeys               = new ArrayList<KeyPair>();
+		this.caKeyIds             = new ArrayList<Integer>();
 		
-		this.riPrivateKeyData     = null;
-		this.riPublicKeyData      = null;
+		this.riKeys               = new ArrayList<KeyPair>();
+		this.riKeyIds             = new ArrayList<Integer>();
+	}
+	
+	public void addCaKeyPair(KeyPair keyPair, int keyId) {
+		this.caKeys.add(keyPair);
+		this.caKeyIds.add(keyId);
+	}
+	
+	public void addRiKeyPair(KeyPair keyPair, int keyId) {
+		this.riKeys.add(keyPair);
+		this.riKeyIds.add(keyId);
 	}
 	
 	/**
@@ -303,36 +314,36 @@ public class PersonalizationDataContainer {
 		this.mrzLine3Of3 = mrzLine3Of3;
 	}
 
-	public byte[] getCaPublicKeyData() {
-		return caPublicKeyData;
+	public ArrayList<KeyPair> getCaKeys() {
+		return caKeys;
 	}
 
-	public void setCaPublicKeyData(byte[] caPublicKeyData) {
-		this.caPublicKeyData = caPublicKeyData;
+	public void setCaKeys(ArrayList<KeyPair> caKeys) {
+		this.caKeys = caKeys;
 	}
 
-	public byte[] getCaPrivateKeyData() {
-		return caPrivateKeyData;
+	public ArrayList<KeyPair> getRiKeys() {
+		return riKeys;
 	}
 
-	public void setCaPrivateKeyData(byte[] caPrivateKeyData) {
-		this.caPrivateKeyData = caPrivateKeyData;
+	public void setRiKeys(ArrayList<KeyPair> riKeys) {
+		this.riKeys = riKeys;
 	}
 
-	public byte[] getRiPublicKeyData() {
-		return riPublicKeyData;
+	public ArrayList<Integer> getCaKeyIds() {
+		return caKeyIds;
 	}
 
-	public void setRiPublicKeyData(byte[] riPublicKeyData) {
-		this.riPublicKeyData = riPublicKeyData;
+	public void setCaKeyIds(ArrayList<Integer> caKeyIds) {
+		this.caKeyIds = caKeyIds;
 	}
 
-	public byte[] getRiPrivateKeyData() {
-		return riPrivateKeyData;
+	public ArrayList<Integer> getRiKeyIds() {
+		return riKeyIds;
 	}
 
-	public void setRiPrivateKeyData(byte[] riPrivateKeyData) {
-		this.riPrivateKeyData = riPrivateKeyData;
+	public void setRiKeyIds(ArrayList<Integer> riKeyIds) {
+		this.riKeyIds = riKeyIds;
 	}
 	
 }
