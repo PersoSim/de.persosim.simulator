@@ -9,19 +9,19 @@ public class DefaultPersoTestPkiTemplate05 extends DefaultPersoTestPkiTemplate {
 	@Override
 	public void setPersoDataContainer() {
 		persoDataContainer = new PersonalizationDataDefaultContainer();
-		this.persoDataContainer.setDg3PlainData("20161031");
-		this.persoDataContainer.setDg4PlainData("AĞÇA");
-		this.persoDataContainer.setDg5PlainData("ÖZM̂EN");
-		this.persoDataContainer.setDg8PlainData("1989    ");
-		this.persoDataContainer.setDg9PlainData("DESSAU-ROßLAU");
-		this.persoDataContainer.setDg11PlainData("F");
-		this.persoDataContainer.setDg17StreetPlainData("GROßENHAINER STR. 133/135");
-		this.persoDataContainer.setDg17CityPlainData("DRESDEN");
-		this.persoDataContainer.setDg17CountryPlainData("D");
-		this.persoDataContainer.setDg17ZipPlainData("01129");
-		this.persoDataContainer.setDg18PlainData("02761406120000");
-		this.persoDataContainer.setDocumentNumber("000000005");
-		this.persoDataContainer.setMrzLine3Of3("OEZMEN<<AGCA<<<<<<<<<<<<<<<<<<");
+		persoDataContainer.setDg3PlainData("20161031");
+		persoDataContainer.setDg4PlainData("AĞÇA");
+		persoDataContainer.setDg5PlainData("ÖZM̂EN");
+		persoDataContainer.setDg8PlainData("1989    ");
+		persoDataContainer.setDg9PlainData("DESSAU-ROßLAU");
+		persoDataContainer.setDg11PlainData("F");
+		persoDataContainer.setDg17StreetPlainData("GROßENHAINER STR. 133/135");
+		persoDataContainer.setDg17CityPlainData("DRESDEN");
+		persoDataContainer.setDg17CountryPlainData("D");
+		persoDataContainer.setDg17ZipPlainData("01129");
+		persoDataContainer.setDg18PlainData("02761406120000");
+		persoDataContainer.setDocumentNumber("000000005");
+		persoDataContainer.setMrzLine3Of3("OEZMEN<<AGCA<<<<<<<<<<<<<<<<<<");
 	}
 
 }
