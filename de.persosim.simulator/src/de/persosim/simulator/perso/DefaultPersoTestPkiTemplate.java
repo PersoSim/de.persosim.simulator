@@ -454,29 +454,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg10(DedicatedFile eIdAppl) {
-		initPersonalizationDataContainer();
-		
-		ConstructedTlvDataObject dg10Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x6A));
-		byte[] nationalityPlainBytes;
-		
-		try {
-			nationalityPlainBytes = persoDataContainer.getDg10PlainData().getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// US-ASCII is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			nationalityPlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject nationality = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), nationalityPlainBytes);
-		dg10Tlv.addTlvDataObject(nationality);
-		
-		CardFile eidDg10 = new ElementaryFile(new FileIdentifier(0x010A),
-				new ShortFileIdentifier(0x0A),
-				dg10Tlv.toByteArray(),
-				getAccessRightReadEidDg(10),
-				Collections.<SecCondition> emptySet(),
-				Collections.<SecCondition> emptySet());
-		eIdAppl.addChild(eidDg10);
+		// do not create DG
 	}
 	
 	@Override
@@ -504,6 +482,11 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg11);
+	}
+	
+	@Override
+	protected void addEidDg12(DedicatedFile eIdAppl) {
+		// do not create DG
 	}
 	
 	@Override
@@ -575,60 +558,17 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg19(DedicatedFile eIdAppl) {
-		initPersonalizationDataContainer();
-		
-		ConstructedTlvDataObject dg19Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x73));
-		ConstructedTlvDataObject text = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
-		dg19Tlv.addTlvDataObject(text);
-		byte[] residencePermit1PlainBytes;
-		
-		try {
-			residencePermit1PlainBytes = persoDataContainer.getDg19PlainData().getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// US-ASCII is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			residencePermit1PlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject residencePermit1 = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), residencePermit1PlainBytes);
-		text.addTlvDataObject(residencePermit1);
-		
-		CardFile eidDg19 = new ElementaryFile(new FileIdentifier(0x0113),
-				new ShortFileIdentifier(0x13),
-				dg19Tlv.toByteArray(),
-				getAccessRightReadEidDg(19),
-				Collections.<SecCondition> emptySet(),
-				Collections.<SecCondition> emptySet());
-		eIdAppl.addChild(eidDg19);
+		// do not create DG
 	}
 	
 	@Override
 	protected void addEidDg20(DedicatedFile eIdAppl) {
-		initPersonalizationDataContainer();
-		
-		ConstructedTlvDataObject dg20Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x74));
-		ConstructedTlvDataObject text = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
-		dg20Tlv.addTlvDataObject(text);
-		byte[] residencePermit2PlainBytes;
-		
-		try {
-			residencePermit2PlainBytes = persoDataContainer.getDg20PlainData().getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// US-ASCII is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			residencePermit2PlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject residencePermit2 = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), residencePermit2PlainBytes);
-		text.addTlvDataObject(residencePermit2);
-		
-		CardFile eidDg19 = new ElementaryFile(new FileIdentifier(0x0114),
-				new ShortFileIdentifier(0x14),
-				dg20Tlv.toByteArray(),
-				getAccessRightReadEidDg(20),
-				Collections.<SecCondition> emptySet(),
-				Collections.<SecCondition> emptySet());
-		eIdAppl.addChild(eidDg19);
+		// do not create DG
+	}
+	
+	@Override
+	protected void addEidDg21(DedicatedFile eIdAppl) {
+		// do not create DG
 	}
 	
 	public static ConstructedTlvDataObject createEidDg17Tlv(String streetString, String cityString, String stateString, String countryString, String zipString) throws UnsupportedEncodingException {
