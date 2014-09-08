@@ -353,4 +353,28 @@ public class CryptoUtil {
 				Utils.getIntFromUnsignedByteArray(cofactorData.getValueField()));
 	}
 	
+	/**
+	 * This method recreates a {@link KeyPair} based on the provided domain parameter id and raw Byte arrays for public and private key.
+	 * @param standDomParamId the domain parameter id for standardized domain parameters
+	 * @param privateKeyData the raw private key data
+	 * @param publicKeyData the raw public key data
+	 * @return the reconstructed key pair
+	 */
+	public static KeyPair reconstructKeyPair(int standDomParamId, byte[] privateKeyData, byte[] publicKeyData) {
+		return reconstructKeyPair(StandardizedDomainParameters.getDomainParameterSetById(standDomParamId), privateKeyData, publicKeyData);
+	}
+	
+	/**
+	 * This method recreates a {@link KeyPair} based on the provided {@link DomainParameterSet} and raw Byte arrays for public and private key.
+	 * @param domParams the domain parameters to be used
+	 * @param privateKeyData the raw private key data
+	 * @param publicKeyData the raw public key data
+	 * @return the reconstructed key pair
+	 */
+	public static KeyPair reconstructKeyPair(DomainParameterSet domParams, byte[] privateKeyData, byte[] publicKeyData) {
+		PrivateKey privateKey = domParams.reconstructPrivateKey(privateKeyData);
+		PublicKey publicKey = domParams.reconstructPublicKey(publicKeyData);
+		return new KeyPair(publicKey, privateKey);
+	}
+	
 }
