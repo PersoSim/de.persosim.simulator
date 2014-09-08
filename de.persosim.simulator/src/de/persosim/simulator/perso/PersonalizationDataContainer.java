@@ -16,6 +16,8 @@ public class PersonalizationDataContainer {
 						dg17CountryPlainData, dg17ZipPlainData, dg18PlainData, dg19PlainData, dg20PlainData,
 						dg21PlainData, documentNumber, mrzLine3Of3;
 	
+	protected byte[] caPublicKeyData, caPrivateKeyData, riPublicKeyData, riPrivateKeyData;
+	
 	public PersonalizationDataContainer() {
 		this.dg1PlainData         = null;
 		this.dg2PlainData         = null;
@@ -45,6 +47,12 @@ public class PersonalizationDataContainer {
 		
 		this.documentNumber       = null;
 		this.mrzLine3Of3          = null;
+		
+		this.caPrivateKeyData     = null;
+		this.caPublicKeyData      = null;
+		
+		this.riPrivateKeyData     = null;
+		this.riPublicKeyData      = null;
 	}
 	
 	/**
@@ -293,6 +301,38 @@ public class PersonalizationDataContainer {
 
 	public void setMrzLine3Of3(String mrzLine3Of3) {
 		this.mrzLine3Of3 = mrzLine3Of3;
+	}
+
+	public byte[] getCaPublicKeyData() {
+		return caPublicKeyData;
+	}
+
+	public void setCaPublicKeyData(byte[] caPublicKeyData) {
+		this.caPublicKeyData = caPublicKeyData;
+	}
+
+	public byte[] getCaPrivateKeyData() {
+		return caPrivateKeyData;
+	}
+
+	public void setCaPrivateKeyData(byte[] caPrivateKeyData) {
+		this.caPrivateKeyData = caPrivateKeyData;
+	}
+
+	public byte[] getRiPublicKeyData() {
+		return riPublicKeyData;
+	}
+
+	public void setRiPublicKeyData(byte[] riPublicKeyData) {
+		this.riPublicKeyData = riPublicKeyData;
+	}
+
+	public byte[] getRiPrivateKeyData() {
+		return riPrivateKeyData;
+	}
+
+	public void setRiPrivateKeyData(byte[] riPrivateKeyData) {
+		this.riPrivateKeyData = riPrivateKeyData;
 	}
 	
 }

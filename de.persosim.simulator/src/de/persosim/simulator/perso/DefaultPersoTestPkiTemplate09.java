@@ -12,7 +12,7 @@ public class DefaultPersoTestPkiTemplate09 extends DefaultPersoTestPkiTemplate {
 		persoDataContainer.setDg3PlainData("20161031");
 		persoDataContainer.setDg4PlainData("LILLY");
 		persoDataContainer.setDg5PlainData("SCHUSTER");
-		persoDataContainer.setDg8PlainData("20020330");
+		persoDataContainer.setDg8PlainData("19980330");
 		persoDataContainer.setDg9PlainData("MÜHLHAUSEN/THÜRINGEN");
 		persoDataContainer.setDg11PlainData("F");
 		persoDataContainer.setDg13PlainData("VON MÜLLER-SCHWARZENBERG");

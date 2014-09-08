@@ -1,5 +1,7 @@
 package de.persosim.simulator.perso;
 
+import de.persosim.simulator.cardobjects.DedicatedFile;
+
 /**
  * @author slutters
  *
@@ -23,5 +25,10 @@ public class DefaultPersoTestPkiTemplate05 extends DefaultPersoTestPkiTemplate {
 		persoDataContainer.setDocumentNumber("000000005");
 		persoDataContainer.setMrzLine3Of3("OEZMEN<<AGCA<<<<<<<<<<<<<<<<<<");
 	}
-
+	
+	@Override
+	protected void addEidDg13(DedicatedFile eIdAppl) {
+		// do not create DG
+	}
+	
 }
