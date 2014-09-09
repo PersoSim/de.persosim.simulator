@@ -65,7 +65,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		return "9876543210";
 	}
 	
-	private static String getMrzLine1of3(String documentType, String issuingCountry, String documentNumber) {
+	public static String getMrzLine1of3(String documentType, String issuingCountry, String documentNumber) {
 		String line1;
 		
 		if(documentType == null) {throw new NullPointerException("document type must not be null");}
@@ -99,7 +99,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		return line1;
 	}
 	
-	private static String getMrzLine2of3(String mrzLine1, String dob, String sex, String doe, String nation) {
+	public static String getMrzLine2of3(String mrzLine1, String dob, String sex, String doe, String nation) {
 		String line2;
 		
 		String dobNew = dob.substring(2).replace(" ", Mrz.Filler);
@@ -259,33 +259,33 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	}
 	
 	/**
-	 * This method returns the TLV structure for a data group containing an ASN.1 type ICAOCountry.
+	 * This method returns the TLV structure for a data group containing an ASN.1 type ICAOString.
 	 * @param tlvTag the tag to be used for this data group
-	 * @param content the content to be placed in the ASN.1 type ICAOCountry
-	 * @return the TLV structure for a data group containing an ASN.1 type ICAOCountry
+	 * @param content the content to be placed in the ASN.1 type ICAOString
+	 * @return the TLV structure for a data group containing an ASN.1 type ICAOString
 	 */
-	public static ConstructedTlvDataObject getIcaoCountryDgTlv(TlvTag tlvTag, String content) {
-		ConstructedTlvDataObject icaoCountryDgTlv = new ConstructedTlvDataObject(tlvTag);
-		byte[] icaoCountryPlainBytes;
+	public static ConstructedTlvDataObject getIcaoStringDgTlv(TlvTag tlvTag, String content) {
+		ConstructedTlvDataObject icaoStringDgTlv = new ConstructedTlvDataObject(tlvTag);
+		byte[] icaoStringPlainBytes;
 		
 		try {
-			icaoCountryPlainBytes = content.getBytes("US-ASCII");
+			icaoStringPlainBytes = content.getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
 			// US-ASCII is a valid encoding so this is never going to happen
 			e.printStackTrace();
-			icaoCountryPlainBytes = new byte[0];
+			icaoStringPlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject icaoCountryTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), icaoCountryPlainBytes);
-		icaoCountryDgTlv.addTlvDataObject(icaoCountryTlv);
+		PrimitiveTlvDataObject icaoStringTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), icaoStringPlainBytes);
+		icaoStringDgTlv.addTlvDataObject(icaoStringTlv);
 		
-		return icaoCountryDgTlv;
+		return icaoStringDgTlv;
 	}
 	
 	@Override
 	protected void addEidDg1(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
-		ConstructedTlvDataObject dg1Tlv = getIcaoCountryDgTlv(new TlvTag((byte) 0x61), persoDataContainer.getDg1PlainData());
+		ConstructedTlvDataObject dg1Tlv = getIcaoStringDgTlv(new TlvTag((byte) 0x61), persoDataContainer.getDg1PlainData());
 		
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0101),
 				new ShortFileIdentifier(0x01),
@@ -422,47 +422,24 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg8);
 	}
 	
-	/**
-	 * This method returns the TLV structure for a data group containing an ASN.1 type PlaceOfBirth.
-	 * @param tlvTag the tag to be used for this data group
-	 * @param content the content to be placed in the ASN.1 type PlaceOfBirth
-	 * @return the TLV structure for a data group containing an ASN.1 type PlaceOfBirth
-	 */
-	public static ConstructedTlvDataObject getPlaceOfBirthDgTlv(TlvTag tlvTag, String content) {
-		ConstructedTlvDataObject placeOfBirthDgTlv = new ConstructedTlvDataObject(tlvTag);
-		ConstructedTlvDataObject free = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
-		
-		byte[] placeOfBirthPlainBytes;
-		
-		try {
-			placeOfBirthPlainBytes = content.getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// UTF-8 is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			placeOfBirthPlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject placeOfBirthTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), placeOfBirthPlainBytes);
-		placeOfBirthDgTlv.addTlvDataObject(free);
-		free.addTlvDataObject(placeOfBirthTlv);
-		
-		return placeOfBirthDgTlv;
-	}
-	
 	@Override
 	protected void addEidDg9(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
 		
-		ConstructedTlvDataObject dg9Tlv = getPlaceOfBirthDgTlv(new TlvTag((byte) 0x69), persoDataContainer.getDg9PlainData());
-		
-		CardFile eidDg9 = new ElementaryFile(
-				new FileIdentifier(0x0109),
-				new ShortFileIdentifier(0x09),
-				dg9Tlv.toByteArray(),
-				getAccessRightReadEidDg(9),
-				Collections.<SecCondition> emptySet(),
-				Collections.<SecCondition> emptySet());
-		eIdAppl.addChild(eidDg9);
+		try {
+			ConstructedTlvDataObject dg9Tlv = getGeneralPlaceDgTlv(new TlvTag((byte) 0x69), null, persoDataContainer.getDg9PlainData(), null, null, null);
+			
+			CardFile eidDg9 = new ElementaryFile(
+					new FileIdentifier(0x0109),
+					new ShortFileIdentifier(0x09),
+					dg9Tlv.toByteArray(),
+					getAccessRightReadEidDg(9),
+					Collections.<SecCondition> emptySet(),
+					Collections.<SecCondition> emptySet());
+			eIdAppl.addChild(eidDg9);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -501,53 +478,67 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	 * @param content the content to be placed in the ASN.1 type GeneralPlace
 	 * @return the TLV structure for a data group containing an ASN.1 type GeneralPlace
 	 */
-	public static ConstructedTlvDataObject createEidDg17Tlv(TlvTag tlvTag, String streetString, String cityString, String stateString, String countryString, String zipString) throws UnsupportedEncodingException {
+	public static ConstructedTlvDataObject getGeneralPlaceDgTlv(TlvTag tlvTag, String streetString, String cityString, String stateString, String countryString, String zipString) throws UnsupportedEncodingException {
 		ConstructedTlvDataObject generalPlaceDgTlv = new ConstructedTlvDataObject(tlvTag);
 		ConstructedTlvDataObject generalPlace;
 		
-		if((streetString == null) && (cityString == null) && (stateString == null) && (countryString == null) && (zipString == null)) {
+		int nullCounter = 0;
+		String place = "";
+		if (streetString == null) {nullCounter++;} else {place = streetString;};
+		if(cityString == null) {nullCounter++;} else {place = cityString;};
+		if(stateString == null) {nullCounter++;} else {place = stateString;};
+		if(countryString == null) {nullCounter++;} else {place = countryString;};
+		if(zipString == null) {nullCounter++;} else {place = zipString;};
+		
+		if(nullCounter == 5) {
 			generalPlace = new ConstructedTlvDataObject(new TlvTag((byte) 0xA2));
 			PrimitiveTlvDataObject noPlace = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), (new String("keine Hauptwohnung in Deutschland")).getBytes("UTF-8"));
 			generalPlace.addTlvDataObject(noPlace);
 		} else{
-			generalPlace = new ConstructedTlvDataObject(new TlvTag((byte) 0x30));
-			
-			ConstructedTlvDataObject sequenceElement;
-			PrimitiveTlvDataObject content;
-			
-			if(streetString != null) {
-				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAA));
-				generalPlace.addTlvDataObject(sequenceElement);
-				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), streetString.getBytes("UTF-8"));
-				sequenceElement.addTlvDataObject(content);
-			}
-			
-			if(cityString != null) {
-				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAB));
-				generalPlace.addTlvDataObject(sequenceElement);
-				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), cityString.getBytes("UTF-8"));
-				sequenceElement.addTlvDataObject(content);
-			}
-			
-			if(stateString != null) {
-				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAC));
-				generalPlace.addTlvDataObject(sequenceElement);
-				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), stateString.getBytes("UTF-8"));
-				sequenceElement.addTlvDataObject(content);
-			}
-			
-			if(countryString != null) {
-				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAD));
-				generalPlace.addTlvDataObject(sequenceElement);
-				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), countryString.getBytes("US-ASCII"));
-				sequenceElement.addTlvDataObject(content);
-			}
-			
-			if(zipString != null) {
-				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAE));
-				generalPlace.addTlvDataObject(sequenceElement);
-				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), zipString.getBytes("US-ASCII"));
-				sequenceElement.addTlvDataObject(content);
+			if(nullCounter == 4) {
+				generalPlace = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
+				PrimitiveTlvDataObject freeText = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), place.getBytes("UTF-8"));
+				generalPlace.addTlvDataObject(freeText);
+			} else{
+				generalPlace = new ConstructedTlvDataObject(new TlvTag((byte) 0x30));
+				
+				ConstructedTlvDataObject sequenceElement;
+				PrimitiveTlvDataObject content;
+				
+				if(streetString != null) {
+					sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAA));
+					generalPlace.addTlvDataObject(sequenceElement);
+					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), streetString.getBytes("UTF-8"));
+					sequenceElement.addTlvDataObject(content);
+				}
+				
+				if(cityString != null) {
+					sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAB));
+					generalPlace.addTlvDataObject(sequenceElement);
+					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), cityString.getBytes("UTF-8"));
+					sequenceElement.addTlvDataObject(content);
+				}
+				
+				if(stateString != null) {
+					sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAC));
+					generalPlace.addTlvDataObject(sequenceElement);
+					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), stateString.getBytes("UTF-8"));
+					sequenceElement.addTlvDataObject(content);
+				}
+				
+				if(countryString != null) {
+					sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAD));
+					generalPlace.addTlvDataObject(sequenceElement);
+					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), countryString.getBytes("US-ASCII"));
+					sequenceElement.addTlvDataObject(content);
+				}
+				
+				if(zipString != null) {
+					sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAE));
+					generalPlace.addTlvDataObject(sequenceElement);
+					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), zipString.getBytes("US-ASCII"));
+					sequenceElement.addTlvDataObject(content);
+				}
 			}
 		}
 		
@@ -561,7 +552,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		initPersonalizationDataContainer();
 		
 		try {
-			ConstructedTlvDataObject dg17Tlv = createEidDg17Tlv(
+			ConstructedTlvDataObject dg17Tlv = getGeneralPlaceDgTlv(
 					new TlvTag((byte) 0x71),
 					persoDataContainer.getDg17StreetPlainData(),
 					persoDataContainer.getDg17CityPlainData(),
