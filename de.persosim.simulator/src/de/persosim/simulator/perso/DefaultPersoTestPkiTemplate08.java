@@ -44,6 +44,12 @@ public class DefaultPersoTestPkiTemplate08 extends DefaultPersoTestPkiTemplate {
 	}
 	
 	@Override
+	protected void addUnmarshallerCallbacks() {
+		unmarshallerCallbacks.add(new DefectListNpaUnmarshallerCallback());
+
+	}
+	
+	@Override
 	protected void addEidDg13(DedicatedFile eIdAppl) {
 		// do not create DG
 	}

@@ -71,7 +71,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 				.findChildren(new FileIdentifier(fileIdentifier)).size() != 1;
 	}
 
-	private void createEfCardAccess(Personalization perso) {
+	protected void createEfCardAccess(Personalization perso) {
 		// collect SecInfos from protocols
 		ConstructedTlvDataObject secInfos = new ConstructedTlvDataObject(new TlvTag(Asn1.SET));
 		for (Protocol curProtocol : perso.getProtocolList()) {
@@ -88,7 +88,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 		perso.getObjectTree().addChild(efCardAccess);
 	}
 
-	private void createEfCardSecurity(Personalization perso) {
+	protected void createEfCardSecurity(Personalization perso) {
 		// collect SecInfos from protocols
 		ConstructedTlvDataObject secInfos = new ConstructedTlvDataObject(new TlvTag(Asn1.SET));
 		for (Protocol curProtocol : perso.getProtocolList()) {
@@ -106,7 +106,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 		perso.getObjectTree().addChild(efCardSecurity);
 	}
 
-	private void createEfChipSecurity(Personalization perso) {
+	protected void createEfChipSecurity(Personalization perso) {
 		// collect SecInfos from protocols
 		ConstructedTlvDataObject secInfos = new ConstructedTlvDataObject(new TlvTag(Asn1.SET));
 		for (Protocol curProtocol : perso.getProtocolList()) {
@@ -129,7 +129,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 		perso.getObjectTree().addChild(efChipSecurity);
 	}
 
-	private ConstructedTlvDataObject buildSignedDataFile(
+	protected ConstructedTlvDataObject buildSignedDataFile(
 			ConstructedTlvDataObject secInfos) {
 		
 		TlvDataObject oidTlv = new PrimitiveTlvDataObject(TAG_OID, 
