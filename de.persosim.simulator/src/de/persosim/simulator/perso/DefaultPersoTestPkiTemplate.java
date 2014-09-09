@@ -210,28 +210,82 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 				validityDate));
 	}
 	
-	public static ConstructedTlvDataObject getEidDg1Tlv(PersonalizationDataContainer persoDataContainer) {
-		ConstructedTlvDataObject dg1Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x61));
-		byte[] documentTypePlainBytes;
+	/**
+	 * This method returns the TLV structure for a data group containing an ASN.1 type UTF8String.
+	 * @param tlvTag the tag to be used for this data group
+	 * @param content the content to be placed in the ASN.1 type UTF8String
+	 * @return the TLV structure for a data group containing an ASN.1 type UTF8String
+	 */
+	public static ConstructedTlvDataObject getUtf8StringDgTlv(TlvTag tlvTag, String content) {
+		ConstructedTlvDataObject utf8DgTlv = new ConstructedTlvDataObject(tlvTag);
+		byte[] utf8StringPlainBytes;
 		
 		try {
-			documentTypePlainBytes = persoDataContainer.getDg1PlainData().getBytes("US-ASCII");
+			utf8StringPlainBytes = content.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// UTF-8 is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			utf8StringPlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject utf8StringTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), utf8StringPlainBytes);
+		utf8DgTlv.addTlvDataObject(utf8StringTlv);
+		
+		return utf8DgTlv;
+	}
+	
+	/**
+	 * This method returns the TLV structure for a data group containing an ASN.1 type Date.
+	 * @param tlvTag the tag to be used for this data group
+	 * @param content the content to be placed in the ASN.1 type Date
+	 * @return the TLV structure for a data group containing an ASN.1 type Date
+	 */
+	public static ConstructedTlvDataObject getDateDgTlv(TlvTag tlvTag, String content) {
+		ConstructedTlvDataObject dateDgTlv = new ConstructedTlvDataObject(tlvTag);
+		byte[] datePlainBytes;
+		
+		try {
+			datePlainBytes = content.getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
 			// US-ASCII is a valid encoding so this is never going to happen
 			e.printStackTrace();
-			documentTypePlainBytes = new byte[0];
+			datePlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject documentType = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), documentTypePlainBytes);
-		dg1Tlv.addTlvDataObject(documentType);
+		PrimitiveTlvDataObject dateTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_NUMERIC_STRING), datePlainBytes);
+		dateDgTlv.addTlvDataObject(dateTlv);
 		
-		return dg1Tlv;
+		return dateDgTlv;
+	}
+	
+	/**
+	 * This method returns the TLV structure for a data group containing an ASN.1 type ICAOCountry.
+	 * @param tlvTag the tag to be used for this data group
+	 * @param content the content to be placed in the ASN.1 type ICAOCountry
+	 * @return the TLV structure for a data group containing an ASN.1 type ICAOCountry
+	 */
+	public static ConstructedTlvDataObject getIcaoCountryDgTlv(TlvTag tlvTag, String content) {
+		ConstructedTlvDataObject icaoCountryDgTlv = new ConstructedTlvDataObject(tlvTag);
+		byte[] icaoCountryPlainBytes;
+		
+		try {
+			icaoCountryPlainBytes = content.getBytes("US-ASCII");
+		} catch (UnsupportedEncodingException e) {
+			// US-ASCII is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			icaoCountryPlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject icaoCountryTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), icaoCountryPlainBytes);
+		icaoCountryDgTlv.addTlvDataObject(icaoCountryTlv);
+		
+		return icaoCountryDgTlv;
 	}
 	
 	@Override
 	protected void addEidDg1(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
-		ConstructedTlvDataObject dg1Tlv = getEidDg1Tlv(persoDataContainer);
+		ConstructedTlvDataObject dg1Tlv = getIcaoCountryDgTlv(new TlvTag((byte) 0x61), persoDataContainer.getDg1PlainData());
 		
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0101),
 				new ShortFileIdentifier(0x01),
@@ -242,28 +296,34 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg1);
 	}
 	
-	public static ConstructedTlvDataObject getEidDg2Tlv(PersonalizationDataContainer persoDataContainer) {
-		ConstructedTlvDataObject dg2Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x62));
+	/**
+	 * This method returns the TLV structure for a data group containing an ASN.1 type IssuingState.
+	 * @param tlvTag the tag to be used for this data group
+	 * @param content the content to be placed in the ASN.1 type IssuingState
+	 * @return the TLV structure for a data group containing an ASN.1 type IssuingState
+	 */
+	public static ConstructedTlvDataObject getIssuingStateDgTlv(TlvTag tlvTag, String content) {
+		ConstructedTlvDataObject issuingStateDgTlv = new ConstructedTlvDataObject(tlvTag);
 		byte[] issuingStatePlainBytes;
 		
 		try {
-			issuingStatePlainBytes = persoDataContainer.getDg2PlainData().getBytes("US-ASCII");
+			issuingStatePlainBytes = content.getBytes("US-ASCII");
 		} catch (UnsupportedEncodingException e) {
 			// US-ASCII is a valid encoding so this is never going to happen
 			e.printStackTrace();
 			issuingStatePlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject issuingState = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), issuingStatePlainBytes);
-		dg2Tlv.addTlvDataObject(issuingState);
+		PrimitiveTlvDataObject issuingStateTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), issuingStatePlainBytes);
+		issuingStateDgTlv.addTlvDataObject(issuingStateTlv);
 		
-		return dg2Tlv;
+		return issuingStateDgTlv;
 	}
 	
 	@Override
 	protected void addEidDg2(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
-		ConstructedTlvDataObject dg2Tlv = getEidDg2Tlv(persoDataContainer);
+		ConstructedTlvDataObject dg2Tlv = getIssuingStateDgTlv(new TlvTag((byte) 0x62), persoDataContainer.getDg2PlainData());
 		
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0102),
 				new ShortFileIdentifier(0x02),
@@ -274,28 +334,10 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg1);
 	}
 	
-	public static ConstructedTlvDataObject getEidDg3Tlv(PersonalizationDataContainer persoDataContainer) {
-		ConstructedTlvDataObject dg3Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x63));
-		byte[] dateOfExpiryPlainBytes;
-		
-		try {
-			dateOfExpiryPlainBytes = persoDataContainer.getDg3PlainData().getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// US-ASCII is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			dateOfExpiryPlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject dateOfExpiry = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_NUMERIC_STRING), dateOfExpiryPlainBytes);
-		dg3Tlv.addTlvDataObject(dateOfExpiry);
-		
-		return dg3Tlv;
-	}
-	
 	@Override
 	protected void addEidDg3(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
-		ConstructedTlvDataObject dg3Tlv = getEidDg3Tlv(persoDataContainer);
+		ConstructedTlvDataObject dg3Tlv = getDateDgTlv(new TlvTag((byte) 0x63), persoDataContainer.getDg3PlainData());
 		
 		CardFile eidDg3 = new ElementaryFile(new FileIdentifier(0x0103),
 				new ShortFileIdentifier(0x03),
@@ -306,28 +348,10 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg3);
 	}
 	
-	public static ConstructedTlvDataObject getEidDg4Tlv(PersonalizationDataContainer persoDataContainer) {
-		ConstructedTlvDataObject dg4Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x64));
-		byte[] givenNamesPlainBytes;
-		
-		try {
-			givenNamesPlainBytes = persoDataContainer.getDg4PlainData().getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// UTF-8 is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			givenNamesPlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject givenNames = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), givenNamesPlainBytes);
-		dg4Tlv.addTlvDataObject(givenNames);
-		
-		return dg4Tlv;
-	}
-	
 	@Override
 	protected void addEidDg4(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
-		ConstructedTlvDataObject dg4Tlv = getEidDg4Tlv(persoDataContainer);
+		ConstructedTlvDataObject dg4Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x64), persoDataContainer.getDg4PlainData());
 
 		CardFile eidDg4 = new ElementaryFile(new FileIdentifier(0x0104),
 				new ShortFileIdentifier(0x04),
@@ -338,28 +362,10 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg4);
 	}
 	
-	public static ConstructedTlvDataObject getEidDg5Tlv(PersonalizationDataContainer persoDataContainer) {
-		ConstructedTlvDataObject dg5Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x65));
-		byte[] familyNamesPlainBytes;
-		
-		try {
-			familyNamesPlainBytes = persoDataContainer.getDg5PlainData().getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// UTF-8 is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			familyNamesPlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject fn = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), familyNamesPlainBytes);
-		dg5Tlv.addTlvDataObject(fn);
-		
-		return dg5Tlv;
-	}
-	
 	@Override
 	protected void addEidDg5(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
-		ConstructedTlvDataObject dg5Tlv = getEidDg5Tlv(persoDataContainer);
+		ConstructedTlvDataObject dg5Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x65), persoDataContainer.getDg5PlainData());
 		
 		CardFile eidDg5 = new ElementaryFile(
 				new FileIdentifier(0x0105),
@@ -371,28 +377,10 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg5);
 	}
 	
-	public static ConstructedTlvDataObject getEidDg6Tlv(PersonalizationDataContainer persoDataContainer) {
-		ConstructedTlvDataObject dg6Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x66));
-		byte[] religiousArtisticNamePlainBytes;
-		
-		try {
-			religiousArtisticNamePlainBytes = persoDataContainer.getDg6PlainData().getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// UTF-8 is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			religiousArtisticNamePlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject religiousArtisticName = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), religiousArtisticNamePlainBytes);
-		dg6Tlv.addTlvDataObject(religiousArtisticName);
-		
-		return dg6Tlv;
-	}
-	
 	@Override
 	protected void addEidDg6(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
-		ConstructedTlvDataObject dg6Tlv = getEidDg6Tlv(persoDataContainer);
+		ConstructedTlvDataObject dg6Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x66), persoDataContainer.getDg6PlainData());
 		
 		CardFile eidDg6 = new ElementaryFile(
 				new FileIdentifier(0x0106),
@@ -404,29 +392,11 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg6);
 	}
 	
-	public static ConstructedTlvDataObject getEidDg7Tlv(PersonalizationDataContainer persoDataContainer) {
-		ConstructedTlvDataObject dg7Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x67));
-		byte[] academicTitlePlainBytes;
-		
-		try {
-			academicTitlePlainBytes = persoDataContainer.getDg7PlainData().getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// UTF-8 is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			academicTitlePlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject academicTitle = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), academicTitlePlainBytes);
-		dg7Tlv.addTlvDataObject(academicTitle);
-		
-		return dg7Tlv;
-	}
-	
 	@Override
 	protected void addEidDg7(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
 		
-		ConstructedTlvDataObject dg7Tlv = getEidDg7Tlv(persoDataContainer);
+		ConstructedTlvDataObject dg7Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x67), persoDataContainer.getDg7PlainData());
 		
 		CardFile eidDg7 = new ElementaryFile(new FileIdentifier(0x0107),
 				new ShortFileIdentifier(0x07),
@@ -437,29 +407,11 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg7);
 	}
 	
-	public static ConstructedTlvDataObject getEidDg8Tlv(PersonalizationDataContainer persoDataContainer) {
-		ConstructedTlvDataObject dg8Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x68));
-		byte[] dateOfBirthPlainBytes;
-		
-		try {
-			dateOfBirthPlainBytes = persoDataContainer.getDg8PlainData().getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// US-ASCII is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			dateOfBirthPlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject dateOfBirth = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_NUMERIC_STRING), dateOfBirthPlainBytes);
-		dg8Tlv.addTlvDataObject(dateOfBirth);
-		
-		return dg8Tlv;
-	}
-	
 	@Override
 	protected void addEidDg8(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
 		
-		ConstructedTlvDataObject dg8Tlv = getEidDg8Tlv(persoDataContainer);
+		ConstructedTlvDataObject dg8Tlv = getDateDgTlv(new TlvTag((byte) 0x68), persoDataContainer.getDg8PlainData());
 		
 		CardFile eidDg8 = new ElementaryFile(new FileIdentifier(0x0108),
 				new ShortFileIdentifier(0x08),
@@ -470,32 +422,38 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg8);
 	}
 	
-	public static ConstructedTlvDataObject getEidDg9Tlv(PersonalizationDataContainer persoDataContainer) {
-		ConstructedTlvDataObject dg9Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x69));
+	/**
+	 * This method returns the TLV structure for a data group containing an ASN.1 type PlaceOfBirth.
+	 * @param tlvTag the tag to be used for this data group
+	 * @param content the content to be placed in the ASN.1 type PlaceOfBirth
+	 * @return the TLV structure for a data group containing an ASN.1 type PlaceOfBirth
+	 */
+	public static ConstructedTlvDataObject getPlaceOfBirthDgTlv(TlvTag tlvTag, String content) {
+		ConstructedTlvDataObject placeOfBirthDgTlv = new ConstructedTlvDataObject(tlvTag);
 		ConstructedTlvDataObject free = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
 		
 		byte[] placeOfBirthPlainBytes;
 		
 		try {
-			placeOfBirthPlainBytes = persoDataContainer.getDg9PlainData().getBytes("UTF-8");
+			placeOfBirthPlainBytes = content.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// UTF-8 is a valid encoding so this is never going to happen
 			e.printStackTrace();
 			placeOfBirthPlainBytes = new byte[0];
 		}
 		
-		PrimitiveTlvDataObject pob = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), placeOfBirthPlainBytes);
-		dg9Tlv.addTlvDataObject(free);
-		free.addTlvDataObject(pob);
+		PrimitiveTlvDataObject placeOfBirthTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), placeOfBirthPlainBytes);
+		placeOfBirthDgTlv.addTlvDataObject(free);
+		free.addTlvDataObject(placeOfBirthTlv);
 		
-		return dg9Tlv;
+		return placeOfBirthDgTlv;
 	}
 	
 	@Override
 	protected void addEidDg9(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
 		
-		ConstructedTlvDataObject dg9Tlv = getEidDg9Tlv(persoDataContainer);
+		ConstructedTlvDataObject dg9Tlv = getPlaceOfBirthDgTlv(new TlvTag((byte) 0x69), persoDataContainer.getDg9PlainData());
 		
 		CardFile eidDg9 = new ElementaryFile(
 				new FileIdentifier(0x0109),
@@ -522,41 +480,11 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		// do not create DG
 	}
 	
-	public static ConstructedTlvDataObject getEidDg13Tlv(PersonalizationDataContainer persoDataContainer) {
-		ConstructedTlvDataObject dg13Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x6D));
-		byte[] birthNamePlainBytes;
-		
-		try {
-			birthNamePlainBytes = persoDataContainer.getDg13PlainData().getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// UTF-8 is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			birthNamePlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject birthName = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), birthNamePlainBytes);
-		dg13Tlv.addTlvDataObject(birthName);
-		
-		return dg13Tlv;
-	}
-	
 	@Override
 	protected void addEidDg13(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
 		
-		ConstructedTlvDataObject dg13Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x6D));
-		byte[] birthNamePlainBytes;
-		
-		try {
-			birthNamePlainBytes = persoDataContainer.getDg13PlainData().getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// UTF-8 is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			birthNamePlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject birthName = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), birthNamePlainBytes);
-		dg13Tlv.addTlvDataObject(birthName);
+		ConstructedTlvDataObject dg13Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x6D), persoDataContainer.getDg13PlainData());
 		
 		CardFile eidDg13 = new ElementaryFile(new FileIdentifier(0x010D),
 				new ShortFileIdentifier(0x0D),
@@ -567,12 +495,74 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg13);
 	}
 	
+	/**
+	 * This method returns the TLV structure for a data group containing an ASN.1 type GeneralPlace.
+	 * @param tlvTag the tag to be used for this data group
+	 * @param content the content to be placed in the ASN.1 type GeneralPlace
+	 * @return the TLV structure for a data group containing an ASN.1 type GeneralPlace
+	 */
+	public static ConstructedTlvDataObject createEidDg17Tlv(TlvTag tlvTag, String streetString, String cityString, String stateString, String countryString, String zipString) throws UnsupportedEncodingException {
+		ConstructedTlvDataObject generalPlaceDgTlv = new ConstructedTlvDataObject(tlvTag);
+		ConstructedTlvDataObject generalPlace;
+		
+		if((streetString == null) && (cityString == null) && (stateString == null) && (countryString == null) && (zipString == null)) {
+			generalPlace = new ConstructedTlvDataObject(new TlvTag((byte) 0xA2));
+			PrimitiveTlvDataObject noPlace = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), (new String("keine Hauptwohnung in Deutschland")).getBytes("UTF-8"));
+			generalPlace.addTlvDataObject(noPlace);
+		} else{
+			generalPlace = new ConstructedTlvDataObject(new TlvTag((byte) 0x30));
+			
+			ConstructedTlvDataObject sequenceElement;
+			PrimitiveTlvDataObject content;
+			
+			if(streetString != null) {
+				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAA));
+				generalPlace.addTlvDataObject(sequenceElement);
+				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), streetString.getBytes("UTF-8"));
+				sequenceElement.addTlvDataObject(content);
+			}
+			
+			if(cityString != null) {
+				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAB));
+				generalPlace.addTlvDataObject(sequenceElement);
+				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), cityString.getBytes("UTF-8"));
+				sequenceElement.addTlvDataObject(content);
+			}
+			
+			if(stateString != null) {
+				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAC));
+				generalPlace.addTlvDataObject(sequenceElement);
+				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), stateString.getBytes("UTF-8"));
+				sequenceElement.addTlvDataObject(content);
+			}
+			
+			if(countryString != null) {
+				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAD));
+				generalPlace.addTlvDataObject(sequenceElement);
+				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), countryString.getBytes("US-ASCII"));
+				sequenceElement.addTlvDataObject(content);
+			}
+			
+			if(zipString != null) {
+				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAE));
+				generalPlace.addTlvDataObject(sequenceElement);
+				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), zipString.getBytes("US-ASCII"));
+				sequenceElement.addTlvDataObject(content);
+			}
+		}
+		
+		generalPlaceDgTlv.addTlvDataObject(generalPlace);
+		
+		return generalPlaceDgTlv;
+	}
+	
 	@Override
 	protected void addEidDg17(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
 		
 		try {
-			ConstructedTlvDataObject dg17Tlv = DefaultPersoTestPkiTemplate.createEidDg17Tlv(
+			ConstructedTlvDataObject dg17Tlv = createEidDg17Tlv(
+					new TlvTag((byte) 0x71),
 					persoDataContainer.getDg17StreetPlainData(),
 					persoDataContainer.getDg17CityPlainData(),
 					persoDataContainer.getDg17StatePlainData(),
@@ -592,19 +582,25 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		}
 	}
 	
-	public static ConstructedTlvDataObject getEidDg18Tlv(PersonalizationDataContainer persoDataContainer) {
-		ConstructedTlvDataObject dg18Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x72));
-		PrimitiveTlvDataObject communityId = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_OCTET_STRING), HexString.toByteArray(persoDataContainer.getDg18PlainData()));
-		dg18Tlv.addTlvDataObject(communityId);
+	/**
+	 * This method returns the TLV structure for a data group containing an ASN.1 type CommunityId.
+	 * @param tlvTag the tag to be used for this data group
+	 * @param content the content to be placed in the ASN.1 type CommunityId
+	 * @return the TLV structure for a data group containing an ASN.1 type CommunityId
+	 */
+	public static ConstructedTlvDataObject getCommunityIdDgTlv(TlvTag tlvTag, String content) {
+		ConstructedTlvDataObject communityIdDgTlv = new ConstructedTlvDataObject(tlvTag);
+		PrimitiveTlvDataObject communityIdTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_OCTET_STRING), HexString.toByteArray(content));
+		communityIdDgTlv.addTlvDataObject(communityIdTlv);
 		
-		return dg18Tlv;
+		return communityIdDgTlv;
 	}
 	
 	@Override
 	protected void addEidDg18(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
 		
-		ConstructedTlvDataObject dg18Tlv = getEidDg18Tlv(persoDataContainer);
+		ConstructedTlvDataObject dg18Tlv = getCommunityIdDgTlv(new TlvTag((byte) 0x72), persoDataContainer.getDg18PlainData());
 		
 		CardFile eidDg18 = new ElementaryFile(new FileIdentifier(0x0112),
 				new ShortFileIdentifier(0x12),
@@ -628,61 +624,6 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	@Override
 	protected void addEidDg21(DedicatedFile eIdAppl) {
 		// do not create DG
-	}
-	
-	public static ConstructedTlvDataObject createEidDg17Tlv(String streetString, String cityString, String stateString, String countryString, String zipString) throws UnsupportedEncodingException {
-		ConstructedTlvDataObject dg17 = new ConstructedTlvDataObject(new TlvTag((byte) 0x71));
-		ConstructedTlvDataObject npor;
-		
-		if((streetString == null) && (cityString == null) && (stateString == null) && (countryString == null) && (zipString == null)) {
-			npor = new ConstructedTlvDataObject(new TlvTag((byte) 0xA2));
-			PrimitiveTlvDataObject noPlace = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), (new String("keine Hauptwohnung in Deutschland")).getBytes("UTF-8"));
-			npor.addTlvDataObject(noPlace);
-		} else{
-			npor = new ConstructedTlvDataObject(new TlvTag((byte) 0x30));
-			
-			ConstructedTlvDataObject sequenceElement;
-			PrimitiveTlvDataObject content;
-			
-			if(streetString != null) {
-				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAA));
-				npor.addTlvDataObject(sequenceElement);
-				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), streetString.getBytes("UTF-8"));
-				sequenceElement.addTlvDataObject(content);
-			}
-			
-			if(cityString != null) {
-				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAB));
-				npor.addTlvDataObject(sequenceElement);
-				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), cityString.getBytes("UTF-8"));
-				sequenceElement.addTlvDataObject(content);
-			}
-			
-			if(stateString != null) {
-				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAC));
-				npor.addTlvDataObject(sequenceElement);
-				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), stateString.getBytes("UTF-8"));
-				sequenceElement.addTlvDataObject(content);
-			}
-			
-			if(countryString != null) {
-				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAD));
-				npor.addTlvDataObject(sequenceElement);
-				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), countryString.getBytes("US-ASCII"));
-				sequenceElement.addTlvDataObject(content);
-			}
-			
-			if(zipString != null) {
-				sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAE));
-				npor.addTlvDataObject(sequenceElement);
-				content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), zipString.getBytes("US-ASCII"));
-				sequenceElement.addTlvDataObject(content);
-			}
-		}
-		
-		dg17.addTlvDataObject(npor);
-		
-		return dg17;
 	}
 	
 	@Override
