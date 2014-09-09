@@ -466,29 +466,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addEidDg11(DedicatedFile eIdAppl) {
-		initPersonalizationDataContainer();
-		
-		ConstructedTlvDataObject dg11Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x6B));
-		byte[] sexPlainBytes;
-		
-		try {
-			sexPlainBytes = persoDataContainer.getDg11PlainData().getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// US-ASCII is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			sexPlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject sex = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), sexPlainBytes);
-		dg11Tlv.addTlvDataObject(sex);
-		
-		CardFile eidDg11 = new ElementaryFile(new FileIdentifier(0x010B),
-				new ShortFileIdentifier(0x0B),
-				dg11Tlv.toByteArray(),
-				getAccessRightReadEidDg(11),
-				Collections.<SecCondition> emptySet(),
-				Collections.<SecCondition> emptySet());
-		eIdAppl.addChild(eidDg11);
+		// do not create DG
 	}
 	
 	@Override
