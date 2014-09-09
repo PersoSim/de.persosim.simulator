@@ -367,13 +367,13 @@ public class CryptoUtil {
 	/**
 	 * This method recreates a {@link KeyPair} based on the provided {@link DomainParameterSet} and raw Byte arrays for public and private key.
 	 * @param domParams the domain parameters to be used
-	 * @param privateKeyData the raw private key data
 	 * @param publicKeyData the raw public key data
+	 * @param privateKeyData the raw private key data
 	 * @return the reconstructed key pair
 	 */
-	public static KeyPair reconstructKeyPair(DomainParameterSet domParams, byte[] privateKeyData, byte[] publicKeyData) {
-		PrivateKey privateKey = domParams.reconstructPrivateKey(privateKeyData);
+	public static KeyPair reconstructKeyPair(DomainParameterSet domParams, byte[] publicKeyData, byte[] privateKeyData) {
 		PublicKey publicKey = domParams.reconstructPublicKey(publicKeyData);
+		PrivateKey privateKey = domParams.reconstructPrivateKey(privateKeyData);
 		return new KeyPair(publicKey, privateKey);
 	}
 	
