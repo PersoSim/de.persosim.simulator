@@ -210,10 +210,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 				validityDate));
 	}
 	
-	@Override
-	protected void addEidDg1(DedicatedFile eIdAppl) {
-		initPersonalizationDataContainer();
-		
+	public static ConstructedTlvDataObject getEidDg1Tlv(PersonalizationDataContainer persoDataContainer) {
 		ConstructedTlvDataObject dg1Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x61));
 		byte[] documentTypePlainBytes;
 		
@@ -228,6 +225,14 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		PrimitiveTlvDataObject documentType = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), documentTypePlainBytes);
 		dg1Tlv.addTlvDataObject(documentType);
 		
+		return dg1Tlv;
+	}
+	
+	@Override
+	protected void addEidDg1(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		ConstructedTlvDataObject dg1Tlv = getEidDg1Tlv(persoDataContainer);
+		
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0101),
 				new ShortFileIdentifier(0x01),
 				dg1Tlv.toByteArray(),
@@ -237,10 +242,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg1);
 	}
 	
-	@Override
-	protected void addEidDg2(DedicatedFile eIdAppl) {
-		initPersonalizationDataContainer();
-		
+	public static ConstructedTlvDataObject getEidDg2Tlv(PersonalizationDataContainer persoDataContainer) {
 		ConstructedTlvDataObject dg2Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x62));
 		byte[] issuingStatePlainBytes;
 		
@@ -255,6 +257,14 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		PrimitiveTlvDataObject issuingState = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), issuingStatePlainBytes);
 		dg2Tlv.addTlvDataObject(issuingState);
 		
+		return dg2Tlv;
+	}
+	
+	@Override
+	protected void addEidDg2(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		ConstructedTlvDataObject dg2Tlv = getEidDg2Tlv(persoDataContainer);
+		
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0102),
 				new ShortFileIdentifier(0x02),
 				dg2Tlv.toByteArray(),
@@ -264,10 +274,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg1);
 	}
 	
-	@Override
-	protected void addEidDg3(DedicatedFile eIdAppl) {
-		initPersonalizationDataContainer();
-		
+	public static ConstructedTlvDataObject getEidDg3Tlv(PersonalizationDataContainer persoDataContainer) {
 		ConstructedTlvDataObject dg3Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x63));
 		byte[] dateOfExpiryPlainBytes;
 		
@@ -282,6 +289,14 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		PrimitiveTlvDataObject dateOfExpiry = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_NUMERIC_STRING), dateOfExpiryPlainBytes);
 		dg3Tlv.addTlvDataObject(dateOfExpiry);
 		
+		return dg3Tlv;
+	}
+	
+	@Override
+	protected void addEidDg3(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		ConstructedTlvDataObject dg3Tlv = getEidDg3Tlv(persoDataContainer);
+		
 		CardFile eidDg3 = new ElementaryFile(new FileIdentifier(0x0103),
 				new ShortFileIdentifier(0x03),
 				dg3Tlv.toByteArray(),
@@ -291,10 +306,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg3);
 	}
 	
-	@Override
-	protected void addEidDg4(DedicatedFile eIdAppl) {
-		initPersonalizationDataContainer();
-		
+	public static ConstructedTlvDataObject getEidDg4Tlv(PersonalizationDataContainer persoDataContainer) {
 		ConstructedTlvDataObject dg4Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x64));
 		byte[] givenNamesPlainBytes;
 		
@@ -309,6 +321,14 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		PrimitiveTlvDataObject givenNames = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), givenNamesPlainBytes);
 		dg4Tlv.addTlvDataObject(givenNames);
 		
+		return dg4Tlv;
+	}
+	
+	@Override
+	protected void addEidDg4(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		ConstructedTlvDataObject dg4Tlv = getEidDg4Tlv(persoDataContainer);
+
 		CardFile eidDg4 = new ElementaryFile(new FileIdentifier(0x0104),
 				new ShortFileIdentifier(0x04),
 				dg4Tlv.toByteArray(),
@@ -318,10 +338,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg4);
 	}
 	
-	@Override
-	protected void addEidDg5(DedicatedFile eIdAppl) {
-		initPersonalizationDataContainer();
-		
+	public static ConstructedTlvDataObject getEidDg5Tlv(PersonalizationDataContainer persoDataContainer) {
 		ConstructedTlvDataObject dg5Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x65));
 		byte[] familyNamesPlainBytes;
 		
@@ -336,6 +353,14 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		PrimitiveTlvDataObject fn = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), familyNamesPlainBytes);
 		dg5Tlv.addTlvDataObject(fn);
 		
+		return dg5Tlv;
+	}
+	
+	@Override
+	protected void addEidDg5(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		ConstructedTlvDataObject dg5Tlv = getEidDg5Tlv(persoDataContainer);
+		
 		CardFile eidDg5 = new ElementaryFile(
 				new FileIdentifier(0x0105),
 				new ShortFileIdentifier(0x05),
@@ -346,10 +371,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg5);
 	}
 	
-	@Override
-	protected void addEidDg6(DedicatedFile eIdAppl) {
-		initPersonalizationDataContainer();
-		
+	public static ConstructedTlvDataObject getEidDg6Tlv(PersonalizationDataContainer persoDataContainer) {
 		ConstructedTlvDataObject dg6Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x66));
 		byte[] religiousArtisticNamePlainBytes;
 		
@@ -364,6 +386,14 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		PrimitiveTlvDataObject religiousArtisticName = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), religiousArtisticNamePlainBytes);
 		dg6Tlv.addTlvDataObject(religiousArtisticName);
 		
+		return dg6Tlv;
+	}
+	
+	@Override
+	protected void addEidDg6(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		ConstructedTlvDataObject dg6Tlv = getEidDg6Tlv(persoDataContainer);
+		
 		CardFile eidDg6 = new ElementaryFile(
 				new FileIdentifier(0x0106),
 				new ShortFileIdentifier(0x06),
@@ -374,10 +404,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg6);
 	}
 	
-	@Override
-	protected void addEidDg7(DedicatedFile eIdAppl) {
-		initPersonalizationDataContainer();
-		
+	public static ConstructedTlvDataObject getEidDg7Tlv(PersonalizationDataContainer persoDataContainer) {
 		ConstructedTlvDataObject dg7Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x67));
 		byte[] academicTitlePlainBytes;
 		
@@ -392,6 +419,15 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		PrimitiveTlvDataObject academicTitle = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), academicTitlePlainBytes);
 		dg7Tlv.addTlvDataObject(academicTitle);
 		
+		return dg7Tlv;
+	}
+	
+	@Override
+	protected void addEidDg7(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
+		ConstructedTlvDataObject dg7Tlv = getEidDg7Tlv(persoDataContainer);
+		
 		CardFile eidDg7 = new ElementaryFile(new FileIdentifier(0x0107),
 				new ShortFileIdentifier(0x07),
 				dg7Tlv.toByteArray(),
@@ -401,10 +437,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg7);
 	}
 	
-	@Override
-	protected void addEidDg8(DedicatedFile eIdAppl) {
-		initPersonalizationDataContainer();
-		
+	public static ConstructedTlvDataObject getEidDg8Tlv(PersonalizationDataContainer persoDataContainer) {
 		ConstructedTlvDataObject dg8Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x68));
 		byte[] dateOfBirthPlainBytes;
 		
@@ -419,6 +452,15 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		PrimitiveTlvDataObject dateOfBirth = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_NUMERIC_STRING), dateOfBirthPlainBytes);
 		dg8Tlv.addTlvDataObject(dateOfBirth);
 		
+		return dg8Tlv;
+	}
+	
+	@Override
+	protected void addEidDg8(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
+		ConstructedTlvDataObject dg8Tlv = getEidDg8Tlv(persoDataContainer);
+		
 		CardFile eidDg8 = new ElementaryFile(new FileIdentifier(0x0108),
 				new ShortFileIdentifier(0x08),
 				dg8Tlv.toByteArray(),
@@ -428,10 +470,7 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		eIdAppl.addChild(eidDg8);
 	}
 	
-	@Override
-	protected void addEidDg9(DedicatedFile eIdAppl) {
-		initPersonalizationDataContainer();
-		
+	public static ConstructedTlvDataObject getEidDg9Tlv(PersonalizationDataContainer persoDataContainer) {
 		ConstructedTlvDataObject dg9Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x69));
 		ConstructedTlvDataObject free = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
 		
@@ -448,6 +487,15 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		PrimitiveTlvDataObject pob = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), placeOfBirthPlainBytes);
 		dg9Tlv.addTlvDataObject(free);
 		free.addTlvDataObject(pob);
+		
+		return dg9Tlv;
+	}
+	
+	@Override
+	protected void addEidDg9(DedicatedFile eIdAppl) {
+		initPersonalizationDataContainer();
+		
+		ConstructedTlvDataObject dg9Tlv = getEidDg9Tlv(persoDataContainer);
 		
 		CardFile eidDg9 = new ElementaryFile(
 				new FileIdentifier(0x0109),
@@ -472,6 +520,24 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	@Override
 	protected void addEidDg12(DedicatedFile eIdAppl) {
 		// do not create DG
+	}
+	
+	public static ConstructedTlvDataObject getEidDg13Tlv(PersonalizationDataContainer persoDataContainer) {
+		ConstructedTlvDataObject dg13Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x6D));
+		byte[] birthNamePlainBytes;
+		
+		try {
+			birthNamePlainBytes = persoDataContainer.getDg13PlainData().getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// UTF-8 is a valid encoding so this is never going to happen
+			e.printStackTrace();
+			birthNamePlainBytes = new byte[0];
+		}
+		
+		PrimitiveTlvDataObject birthName = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), birthNamePlainBytes);
+		dg13Tlv.addTlvDataObject(birthName);
+		
+		return dg13Tlv;
 	}
 	
 	@Override
@@ -526,13 +592,19 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		}
 	}
 	
+	public static ConstructedTlvDataObject getEidDg18Tlv(PersonalizationDataContainer persoDataContainer) {
+		ConstructedTlvDataObject dg18Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x72));
+		PrimitiveTlvDataObject communityId = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_OCTET_STRING), HexString.toByteArray(persoDataContainer.getDg18PlainData()));
+		dg18Tlv.addTlvDataObject(communityId);
+		
+		return dg18Tlv;
+	}
+	
 	@Override
 	protected void addEidDg18(DedicatedFile eIdAppl) {
 		initPersonalizationDataContainer();
 		
-		ConstructedTlvDataObject dg18Tlv = new ConstructedTlvDataObject(new TlvTag((byte) 0x72));
-		PrimitiveTlvDataObject communityId = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_OCTET_STRING), HexString.toByteArray(persoDataContainer.getDg18PlainData()));
-		dg18Tlv.addTlvDataObject(communityId);
+		ConstructedTlvDataObject dg18Tlv = getEidDg18Tlv(persoDataContainer);
 		
 		CardFile eidDg18 = new ElementaryFile(new FileIdentifier(0x0112),
 				new ShortFileIdentifier(0x12),
