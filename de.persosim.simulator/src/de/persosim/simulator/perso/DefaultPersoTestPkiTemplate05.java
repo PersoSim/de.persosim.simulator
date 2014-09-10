@@ -18,7 +18,6 @@ public class DefaultPersoTestPkiTemplate05 extends DefaultPersoTestPkiTemplate {
 		persoDataContainer.setDg5PlainData("ÖZM̂EN");
 		persoDataContainer.setDg8PlainData("1989    ");
 		persoDataContainer.setDg9PlainData("DESSAU-ROßLAU");
-		persoDataContainer.setDg11PlainData("F");
 		persoDataContainer.setDg17StreetPlainData("GROßENHAINER STR. 133/135");
 		persoDataContainer.setDg17CityPlainData("DRESDEN");
 		persoDataContainer.setDg17CountryPlainData("D");

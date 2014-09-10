@@ -19,7 +19,6 @@ public class DefaultPersoTestPkiTemplate08 extends DefaultPersoTestPkiTemplate {
 		persoDataContainer.setDg7PlainData("DR.HC.");
 		persoDataContainer.setDg8PlainData("19520617");
 		persoDataContainer.setDg9PlainData("TRIER");
-		persoDataContainer.setDg11PlainData("M");
 		persoDataContainer.setDg18PlainData("");
 		persoDataContainer.setDocumentNumber("000000008");
 		persoDataContainer.setMrzLine3Of3("GRAF<VON<LYSKY<<KARL<<<<<<<<<<");

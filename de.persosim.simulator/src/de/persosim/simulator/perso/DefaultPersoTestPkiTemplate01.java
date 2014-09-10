@@ -16,7 +16,6 @@ public class DefaultPersoTestPkiTemplate01 extends DefaultPersoTestPkiTemplate {
 		persoDataContainer.setDg5PlainData("MUSTERMANN");
 		persoDataContainer.setDg8PlainData("19640812");
 		persoDataContainer.setDg9PlainData("BERLIN");
-		persoDataContainer.setDg11PlainData("F");
 		persoDataContainer.setDg13PlainData("GABLER");
 		persoDataContainer.setDg17StreetPlainData("HEIDESTRASSE 17");
 		persoDataContainer.setDg17CityPlainData("KÖLN");

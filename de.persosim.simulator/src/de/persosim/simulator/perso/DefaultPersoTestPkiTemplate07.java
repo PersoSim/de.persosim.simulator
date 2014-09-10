@@ -16,7 +16,6 @@ public class DefaultPersoTestPkiTemplate07 extends DefaultPersoTestPkiTemplate {
 		persoDataContainer.setDg5PlainData("LERCH");
 		persoDataContainer.setDg8PlainData("19760705");
 		persoDataContainer.setDg9PlainData("BAD KÖNIGSHOFEN I. GRABFELD");
-		persoDataContainer.setDg11PlainData("F");
 		persoDataContainer.setDg13PlainData("BJØRNSON");
 		persoDataContainer.setDg17CityPlainData("HALLE (SAALE)");
 		persoDataContainer.setDg17CountryPlainData("D");
