@@ -192,7 +192,7 @@ public abstract class Utils {
 	/**
 	 * Returns a byte array that has been appended by the provided bytes
 	 * @param leadingByteArray leading byte array
-	 * @param trailignBytes one or more trailing bytes
+	 * @param trailingBytes one or more trailing bytes
 	 * @return a byte array that has been appended by the provided bytes
 	 */
 	public static byte[] appendBytes(byte[] leadingByteArray, byte... trailingBytes) {
@@ -380,13 +380,15 @@ public abstract class Utils {
 	}
 	
 	/**
-	 * Returns an unsigned int representation of the provided byte array.
-	 * The byte value is interpreted as being unsigned.
+	 * Returns an unsigned int representation of the provided byte array. The
+	 * byte value is interpreted as being unsigned. This method works for
+	 * integers up to 0xFFFFFFFF.
+	 * 
 	 * @param value
 	 * @param maxValue
 	 * @return
 	 */
-	private static int getDataTypeFromUnsignedByteArray(byte[] value, int maxValue) {
+	private static int getDataTypeFromUnsignedByteArray(byte[] value, long maxValue) {
 		if(value == null) {throw new IllegalArgumentException("value must not be null");}
 		if(value.length < 1) {throw new IllegalArgumentException("value must have byte length > 0");}
 		
@@ -394,7 +396,7 @@ public abstract class Utils {
 		
 		bigInt = new BigInteger(1, value);
 		
-		if(bigInt.compareTo(new BigInteger((new Integer(maxValue)).toString())) > 0) {
+		if (bigInt.compareTo(new BigInteger("" +maxValue)) > 0){
 			throw new IllegalArgumentException("value too big for signed data type");
 		}
 		
@@ -413,11 +415,11 @@ public abstract class Utils {
 	}
 	
 	public static int getIntFromUnsignedByteArray(byte[] value) {
-		return (int) getDataTypeFromUnsignedByteArray(value, Integer.MAX_VALUE);
+		return (int) getDataTypeFromUnsignedByteArray(value, 0x0FFFFFFFFl);
 	}
 	
 	public static short getShortFromUnsignedByteArray(byte[] value) {
-		return (short) getDataTypeFromUnsignedByteArray(value, Short.MAX_VALUE);
+		return (short) getDataTypeFromUnsignedByteArray(value, 0x0FFFFl);
 	}
 
 	/**
