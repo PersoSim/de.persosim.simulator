@@ -9,9 +9,8 @@ import de.persosim.simulator.secstatus.SecStatus;
  * This class is a container for a tree of CardObjects (e.g. DFs, EF,
  * AuthObjects like PINs).
  * 
- * It stores current selection state, handles object requests, performs checks
- * on access conditions and returns objects that restrict access according to
- * the request and current SecStatus.
+ * It stores current selection state, handles object requests and returns
+ * objects that restrict access according to the request and current SecStatus.
  * 
  * The ObjectStore is owned and initialized by the {@link CommandProcessor}.
  * Modifications to the ObjectStore and the Objects located herein are performed
