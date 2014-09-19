@@ -32,7 +32,7 @@ public interface SecCondition {
 
 	/**
 	 * This method provides a List of required {@link SecMechanism}s that the
-	 * caller of {@link #check(Collection)} needs to query freom the
+	 * caller of {@link #check(Collection)} needs to query from the
 	 * {@link SecStatus} and provide as parameter.
 	 * 
 	 * The returned Object might be immutable (e.g. immutable empty Collection)
