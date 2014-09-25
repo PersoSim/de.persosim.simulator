@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PersoSim
-Bundle-SymbolicName: de.persosim.simulator
+Bundle-SymbolicName: de.persosim.simulator;singleton:=true
 Bundle-Version: 0.1.0.qualifier
 Bundle-Vendor: HJP Consulting GmbH
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
