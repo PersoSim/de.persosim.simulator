@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_fyNxQD9FEeS_D-1xKGHHEA">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_jbTUMEIsEeS095NvfbDi9w" featurename="children" parentElementId="de.persosim.rcp.partSashContainer">
+    <elements xsi:type="basic:Part" xmi:id="_l56EoEIsEeS095NvfbDi9w" elementId="de.persosim.simulator.ui.parts.pinPad" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.parts.PersoSimGuiMain" label="PersoSim"/>
+  </fragments>
+</fragment:ModelFragments>
