@@ -44,7 +44,7 @@ import de.persosim.simulator.utils.HexString;
 
 public abstract class SecInfoCmsBuilderTest extends PersoSimTestCase {
 	
-	//FIXME add tests for DefaultSecInfoCmsBuilder
+	//TODO add tests for DefaultSecInfoCmsBuilder
 
 	/**
 	 * Creates a new instance of the SecInfoCmsBuilder implementation to test

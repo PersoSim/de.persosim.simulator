@@ -1,5 +1,7 @@
 package de.persosim.simulator.tlv;
 
+import de.persosim.simulator.utils.HexString;
+
 /**
  * This class is used to generate TLV data objects from byte[] and automatically
  * return the correct type according to the contained tag.
@@ -42,5 +44,23 @@ public class TlvDataObjectFactory {
 		}
 		
 		return tlvDataObject;
+	}
+
+	/**
+	 * Shortcut to {@link #createTLVDataObject(byte[], int, int)} using the bytes from provided HexString 
+	 * @param hexString
+	 * @return
+	 */
+	public static TlvDataObject createTLVDataObject(String hexString) {
+		return createTLVDataObject(HexString.toByteArray(hexString));
+	}
+	
+	/**
+	 * Shortcut to {@link #createTLVDataObject(byte[], int, int)} using the full byte array
+	 * @param bytes
+	 * @return
+	 */
+	public static TlvDataObject createTLVDataObject(byte[] bytes) {
+		return createTLVDataObject(bytes, 0, bytes.length);
 	}
 }

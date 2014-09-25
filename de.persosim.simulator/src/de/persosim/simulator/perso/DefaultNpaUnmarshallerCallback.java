@@ -36,8 +36,11 @@ import de.persosim.simulator.utils.HexString;
 @XmlRootElement
 public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback, TlvConstants {
 
+	private static SignedDataFileCache signedDataFileCache = SignedDataFileCache.getInstance("signedDataFileCache.xml");
+	
 	@XmlAnyElement(lax=true)
 	private SecInfoCmsBuilder cmsBuilder = new DefaultSecInfoCmsBuilder();
+	
 
 	/**
 	 * Empty default constructor using defaults for all fields
@@ -95,7 +98,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 			secInfos.addAll(curProtocol.getSecInfos(SecInfoPublicity.AUTHENTICATED, perso.getObjectTree()));
 		}
 		
-		ConstructedTlvDataObject cmsSignedData = buildSignedDataFile(secInfos);
+		TlvDataObject cmsSignedData = buildSignedDataFile(secInfos);
 
 		ElementaryFile efCardSecurity = new ElementaryFile(new FileIdentifier(
 				0x011D), new ShortFileIdentifier(0x1D),
@@ -118,7 +121,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 				TerminalType.AT, new RelativeAuthorization(
 						CertificateRole.TERMINAL, new BitField(6).flipBit(3)));
 
-		ConstructedTlvDataObject cmsSignedData = buildSignedDataFile(secInfos);
+		TlvDataObject cmsSignedData = buildSignedDataFile(secInfos);
 
 		ElementaryFile efChipSecurity = new ElementaryFile(new FileIdentifier(
 				0x011B), new ShortFileIdentifier(0x1B),
@@ -129,8 +132,12 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 		perso.getObjectTree().addChild(efChipSecurity);
 	}
 
-	private ConstructedTlvDataObject buildSignedDataFile(
+	private TlvDataObject buildSignedDataFile(
 			ConstructedTlvDataObject secInfos) {
+		// return cached value if one is available
+		if (signedDataFileCache.containsKey(secInfos)) {
+			return signedDataFileCache.get(secInfos);
+		}
 		
 		TlvDataObject oidTlv = new PrimitiveTlvDataObject(TAG_OID, 
 		HexString.toByteArray("2A 86  48 86 F7 0D 01 07 02"));
@@ -141,6 +148,9 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 		ConstructedTlvDataObject signedDataFile = new ConstructedTlvDataObject(TAG_SEQUENCE);
 		signedDataFile.addTlvDataObject(oidTlv);
 		signedDataFile.addTlvDataObject(cmsContainer);
+		
+		//put the newly generated signedDataFile into the cache
+		signedDataFileCache.put(secInfos, signedDataFile);
 		
 		return signedDataFile;
 	}
