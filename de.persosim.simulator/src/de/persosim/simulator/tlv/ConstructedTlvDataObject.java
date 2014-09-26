@@ -146,10 +146,10 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	 * Constructs an object from pre-fabricated elements. Length field is implicitly set
 	 * according to DER encoding rules by default.
 	 * @param tlvTagInput the tag to be used
-	 * @param tlvDataObjectInput the value to be used
+	 * @param tlvDataObjectInputs the value elemets to be used
 	 */
-	public ConstructedTlvDataObject(TlvTag tlvTagInput, TlvDataObject tlvDataObjectInput) {
-		this(tlvTagInput, new TlvDataObjectContainer(tlvDataObjectInput));
+	public ConstructedTlvDataObject(TlvTag tlvTagInput, TlvDataObject... tlvDataObjectInputs) {
+		this(tlvTagInput, new TlvDataObjectContainer(tlvDataObjectInputs));
 	}
 	
 	/**
