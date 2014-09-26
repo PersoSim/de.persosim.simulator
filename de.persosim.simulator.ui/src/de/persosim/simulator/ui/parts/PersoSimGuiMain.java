@@ -119,7 +119,13 @@ public class PersoSimGuiMain {
 	  		    });
 	        }
 	        
-	        txtOutput.append("Job finished");
+	        sync.syncExec(new Runnable() {
+	  		      @Override
+	  		      public void run() {
+	  		        // manipulate user interface
+	  		    	txtOutput.append("Job finished");
+	  		      }
+	        });
 	        
 	        s.close();
 		    
