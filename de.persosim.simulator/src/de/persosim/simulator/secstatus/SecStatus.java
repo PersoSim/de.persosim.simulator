@@ -14,7 +14,7 @@ import de.persosim.simulator.processing.UpdatePropagation;
  * 
  * The SecStatus is owned and managed by the {@link CommandProcessor}. The
  * active protocols can query the SecStatus through a facade provided during
- * protocol initialisation and modify by adding UpdatePropagations to the
+ * protocol initialization and modify by adding UpdatePropagations to the
  * ProcessingData.
  * 
  * @author amay

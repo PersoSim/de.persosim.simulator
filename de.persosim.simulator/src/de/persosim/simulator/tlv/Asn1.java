@@ -34,7 +34,7 @@ public interface Asn1 {
 	public static final byte UNIVERSAL_REAL = 0x09;
 	public static final byte UNIVERSAL_ENUMERATED = 0x0A;
 	public static final byte UNIVERSAL_EMBEDDED_PDV = 0x0B;
-	public static final byte UNIVERSAL_UTF8String = 0x0c;
+	public static final byte UNIVERSAL_UTF8String = 0x0C;
 	public static final byte UNIVERSAL_RELATIVE_OID = 0x0D;
 	public static final byte UNIVERSAL_SEQUENCE = 0x10;
 	public static final byte UNIVERSAL_SEQUENCE_OF = 0x10;

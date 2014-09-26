@@ -197,13 +197,13 @@ public final class TlvTag extends TlvElement implements Asn1 {
 			
 					if(((byte) (currentByte & (byte) 0x80)) == (byte) 0x00) {
 						/* if this is a 2 byte Tag */
-						if(((byte) (currentByte & (byte) 0xEF)) <= 30) {
+						if(((byte) (currentByte & (byte) 0x7F)) <= 30) {
 							/* tag number is unsigned as first bit has been checked as not set before */
 							/* error, 2 byte tag must not encode a tag number <= 30 */
 							/* tag number <= 30 would have also fit into 1-byte tag */
-				ISO7816Exception.throwIt(SW_6A80_WRONG_DATA);
-			}
-				}
+							ISO7816Exception.throwIt(SW_6A80_WRONG_DATA);
+						}
+					}
 				}
 				
 				if(((byte) (currentByte & (byte) 0x80)) == (byte) 0x00) {

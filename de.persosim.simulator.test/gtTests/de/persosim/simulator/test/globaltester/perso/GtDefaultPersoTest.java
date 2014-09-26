@@ -28,10 +28,16 @@ import de.persosim.simulator.test.globaltester.SimulatorReset;
  * 
  */
 public class GtDefaultPersoTest extends GlobalTesterTest {
-
+	
+	protected Personalization persoCache = null;
+	
 	@Override
 	public Personalization getPersonalization() {
-		return new DefaultPersoGt();
+		if(persoCache == null) {
+			persoCache = new DefaultPersoGt();
+		}
+		
+		return persoCache;
 	}
 	
 	@Override

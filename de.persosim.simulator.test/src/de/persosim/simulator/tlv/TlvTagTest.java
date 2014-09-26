@@ -49,6 +49,19 @@ public class TlvTagTest {
 	}
 	
 	/**
+	 * Positive test case: Extract 2 byte tag with minimum tag number allowed for the respective tag
+	 */
+	@Test
+	public void testConstructor_2ByteTagMinLength() {
+		/* set arbitrary but valid 2-byte tag with tag number 31 */
+		byte[] tagExpected = new byte[] { (byte) 0x1F, (byte) 0x1F };
+
+		TlvTag tagExtracted = new TlvTag(tagExpected, 0, tagExpected.length);
+		assertArrayEquals("Equals expected byte array representation",
+				tagExpected, tagExtracted.toByteArray());
+	}
+	
+	/**
 	 * Positive test case:
 	 * Extract 2 byte tag from a range out of a larger byte array.
 	 * The range is smaller than the length of the byte array and

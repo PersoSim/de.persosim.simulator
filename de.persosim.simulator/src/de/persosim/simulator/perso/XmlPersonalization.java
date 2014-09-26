@@ -1,8 +1,11 @@
 package de.persosim.simulator.perso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -11,6 +14,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.persosim.simulator.cardobjects.MasterFile;
+import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
 import de.persosim.simulator.protocols.Protocol;
 
 @XmlRootElement(name="Personalization")
@@ -60,4 +64,20 @@ public class XmlPersonalization implements Personalization {
 			}
 		}
 	}
+	
+	/**
+	 * This method writes a personalization to a file identified by a provided file name.
+	 * @param fileName the file name to use
+	 * @throws JAXBException 
+	 */
+	public void writeToFile(String fileName) throws JAXBException {
+		// instantiate marshaller
+		Marshaller m = PersoSimJaxbContextProvider.getContext().createMarshaller();
+		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+		
+		// Write to File
+		File xmlFile = new File(fileName);
+		m.marshal(this, xmlFile);
+	}
+	
 }
