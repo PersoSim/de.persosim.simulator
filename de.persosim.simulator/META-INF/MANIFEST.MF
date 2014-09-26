@@ -17,4 +17,8 @@ Export-Package: de.persosim.simulator,
  de.persosim.simulator.protocols.pace,
  de.persosim.simulator.protocols.ta,
  de.persosim.simulator.tlv,
- de.persosim.simulator.utils
+ de.persosim.simulator.utils,
+ org.bouncycastle
+Bundle-ClassPath: .,
+ lib/bcprov-jdk15on-150.jar,
+ lib/log4j-1.2.17.jar
