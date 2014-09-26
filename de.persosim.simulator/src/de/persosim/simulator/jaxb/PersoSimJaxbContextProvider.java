@@ -221,10 +221,62 @@ public class PersoSimJaxbContextProvider {
 			for (Annotation curAnnotation : curClass.getAnnotations()) {
 				if (curAnnotation.annotationType() == XmlRootElement.class) {
 					annotatedClasses.add(curClass);
+					System.out.println("annotatedClasses.add("+curClass.getName()+".class);");
 					break;
 				}
 			}
 		}
+		
+		//XXX remove this dirty hack and make the code above reliable even within DI context within de.persosim.rcp
+		annotatedClasses.add(de.persosim.simulator.cardobjects.AuthObjectIdentifier.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.ByteDataAuxObject.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.DateAuxObject.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.DateTimeCardObject.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.DedicatedFile.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.DedicatedFileIdentifier.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.DomainParameterSetCardObject.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.ElementaryFile.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.FileIdentifier.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.KeyObject.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.MasterFile.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.MasterFileIdentifier.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.MrzAuthObject.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.OidIdentifier.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.PasswordAuthObject.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.PinObject.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.TrustPointCardObject.class);
+		annotatedClasses.add(de.persosim.simulator.cardobjects.TrustPointIdentifier.class);
+		annotatedClasses.add(de.persosim.simulator.crypto.certificates.CardVerifiableCertificate.class);
+		annotatedClasses.add(de.persosim.simulator.crypto.DomainParameterSetEcdh.class);
+		annotatedClasses.add(de.persosim.simulator.crypto.EcParameterSpecAdapter.EcParameterSpecRepresentation.class);
+		annotatedClasses.add(de.persosim.simulator.perso.DefaultNpaUnmarshallerCallback.class);
+		annotatedClasses.add(de.persosim.simulator.perso.DefaultSecInfoCmsBuilder.class);
+		annotatedClasses.add(de.persosim.simulator.perso.SignedDataFileCache.class);
+		annotatedClasses.add(de.persosim.simulator.perso.XmlPersonalization.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.auxVerification.AuxProtocol.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.ca.CaOid.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.ca.CaProtocol.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.file.FileProtocol.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.Oid.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.pace.PaceOid.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.pace.PaceProtocol.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.pin.PinProtocol.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.ri.RiOid.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.ri.RiProtocol.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.ta.RelativeAuthorization.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.ta.TaOid.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.ta.TaProtocol.class);
+		annotatedClasses.add(de.persosim.simulator.secstatus.NullSecurityCondition.class);
+		annotatedClasses.add(de.persosim.simulator.secstatus.PaceSecurityCondition.class);
+		annotatedClasses.add(de.persosim.simulator.secstatus.PaceWithPasswordSecurityCondition.class);
+		annotatedClasses.add(de.persosim.simulator.secstatus.TaSecurityCondition.class);
+		annotatedClasses.add(de.persosim.simulator.utils.BitField.class);
+		
+		
+		
 		return annotatedClasses;
 	}
 }
