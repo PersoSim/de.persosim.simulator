@@ -17,7 +17,6 @@ import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.test.PersoSimTestCase;
-import de.persosim.simulator.utils.HexString;
 
 public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr03110 {
 
@@ -169,15 +168,15 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 		}
 		
 		if (can != null) {
-			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_can", HexString.encode(can));
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_can", new String(can));
 		}
 		
 		if (pin != null) {
-			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_pin", HexString.encode(pin));
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_pin", new String(pin));
 		}
 		
 		if (puk != null) {
-			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_puk", HexString.encode(puk));
+			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_puk", new String(puk));
 		}
 
 	}
