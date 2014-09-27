@@ -33,13 +33,21 @@ public class KeyObject extends AbstractCardObject {
 	@XmlAnyElement(lax=true)
 	protected Collection<CardObjectIdentifier> furtherIdentifiers = new ArrayList<>();
 	
+	@XmlElement
+	protected boolean privilegedOnly = false;
+	
 	
 	public KeyObject() {
 	}
 	
 	public KeyObject(KeyPair keyPair, KeyIdentifier identifier) {
+		this(keyPair, identifier, false);
+	}
+		
+	public KeyObject(KeyPair keyPair, KeyIdentifier identifier, boolean privilegedOnly) {
 		this.primaryIdentifier = identifier;
 		this.keyPair = keyPair;
+		this.privilegedOnly = privilegedOnly;
 	}
 	
 	@Override
@@ -66,6 +74,10 @@ public class KeyObject extends AbstractCardObject {
 
 	public KeyIdentifier getPrimaryIdentifier() {
 		return primaryIdentifier;
+	}
+	
+	public boolean isPrivilegedOnly() {
+		return privilegedOnly;
 	}
 
 }

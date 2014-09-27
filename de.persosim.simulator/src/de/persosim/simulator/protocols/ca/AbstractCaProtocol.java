@@ -14,6 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -334,7 +335,9 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		Collection<CardObject> caKeyCardObjects = mf.findChildren(
 				new KeyIdentifier(), caOidIdentifier);
 		
-		HashSet<TlvDataObject> secInfos = new HashSet<TlvDataObject>();
+		ArrayList<TlvDataObject> secInfos = new ArrayList<>();
+		ArrayList<TlvDataObject> privKeysPublicKeyInfos = new ArrayList<>();
+		ArrayList<TlvDataObject> unprivKeysPublicKeyInfos = new ArrayList<>();
 		
 		for (CardObject curKey : caKeyCardObjects) {
 			if (! (curKey instanceof KeyObject)) {
@@ -397,10 +400,33 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 				caPublicKeyInfo.addTlvDataObject(subjPubKeyInfo);
 				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 				secInfos.add(caPublicKeyInfo);
+				
+				if (((KeyObject) curKey).isPrivilegedOnly()) {
+					privKeysPublicKeyInfos.add(caPublicKeyInfo);
+				} else {
+					unprivKeysPublicKeyInfos.add(caPublicKeyInfo);
+				}
 			}
 			
-			//TODO handle privilegedTerminalInfo
 			//TODO handle duplicates?
+		}
+		
+		// add publicKeys if publicity allows
+		if ((publicity == SecInfoPublicity.AUTHENTICATED) || (publicity == SecInfoPublicity.PRIVILEGED)) {
+			secInfos.addAll(unprivKeysPublicKeyInfos);
+		}
+		
+		// add PrivilegedTerminalInfo if publicity allows
+		if ((publicity == SecInfoPublicity.PRIVILEGED)) {
+			
+			ConstructedTlvDataObject privilegedTerminalInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+			privilegedTerminalInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Tr03110.id_PT));
+			
+			ConstructedTlvDataObject privKeys = new ConstructedTlvDataObject(TAG_SET);
+			privKeys.addAll(privKeysPublicKeyInfos);
+			privilegedTerminalInfo.addTlvDataObject(privKeys);
+			
+			secInfos.add(privilegedTerminalInfo);
 		}
 		
 		return secInfos;

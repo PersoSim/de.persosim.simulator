@@ -18,6 +18,7 @@ public class PersonalizationDataContainer {
 	
 	ArrayList<KeyPair> caKeys, riKeys;
 	ArrayList<Integer> caKeyIds, riKeyIds;
+	ArrayList<Boolean> caKeyPrivileges;
 	
 	public PersonalizationDataContainer() {
 		this.dg1PlainData         = null;
@@ -56,9 +57,10 @@ public class PersonalizationDataContainer {
 		this.riKeyIds             = new ArrayList<Integer>();
 	}
 	
-	public void addCaKeyPair(KeyPair keyPair, int keyId) {
+	public void addCaKeyPair(KeyPair keyPair, int keyId, boolean privileged) {
 		this.caKeys.add(keyPair);
 		this.caKeyIds.add(keyId);
+		this.caKeyPrivileges.add(privileged);
 	}
 	
 	public void addRiKeyPair(KeyPair keyPair, int keyId) {
@@ -318,32 +320,20 @@ public class PersonalizationDataContainer {
 		return caKeys;
 	}
 
-	public void setCaKeys(ArrayList<KeyPair> caKeys) {
-		this.caKeys = caKeys;
-	}
-
 	public ArrayList<KeyPair> getRiKeys() {
 		return riKeys;
-	}
-
-	public void setRiKeys(ArrayList<KeyPair> riKeys) {
-		this.riKeys = riKeys;
 	}
 
 	public ArrayList<Integer> getCaKeyIds() {
 		return caKeyIds;
 	}
-
-	public void setCaKeyIds(ArrayList<Integer> caKeyIds) {
-		this.caKeyIds = caKeyIds;
+	
+	public ArrayList<Boolean> getCaKeyPrivileges() {
+		return caKeyPrivileges;
 	}
 
 	public ArrayList<Integer> getRiKeyIds() {
 		return riKeyIds;
-	}
-
-	public void setRiKeyIds(ArrayList<Integer> riKeyIds) {
-		this.riKeyIds = riKeyIds;
 	}
 	
 }

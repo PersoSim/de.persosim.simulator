@@ -37,6 +37,7 @@ import de.persosim.simulator.utils.BitField;
  * @author slutters
  * 
  */
+//FIXME SLS the overridden mehtods do not differ from the super methods at all, correct implementation of this class seems to be missing
 public class DefectListNpaUnmarshallerCallback extends DefaultNpaUnmarshallerCallback {
 	
 	@Override

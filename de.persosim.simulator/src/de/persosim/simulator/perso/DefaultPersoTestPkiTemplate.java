@@ -623,11 +623,12 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 		
 		ArrayList<KeyPair> caKeys = persoDataContainer.getCaKeys();
 		ArrayList<Integer> caKeyIds = persoDataContainer.getCaKeyIds();
+		ArrayList<Boolean> caKeyPriv = persoDataContainer.getCaKeyPrivileges();
 		
 		// CA static key pair PICC
 		KeyObject caKey;
 		for(int i=0; i<caKeys.size(); i++) {
-			caKey = new KeyObject(caKeys.get(i), new KeyIdentifier(caKeyIds.get(i)));
+			caKey = new KeyObject(caKeys.get(i), new KeyIdentifier(caKeyIds.get(i)), caKeyPriv.get(i));
 			caKey.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128);
 			mf.addChild(caKey);
 		}
