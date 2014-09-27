@@ -5,14 +5,41 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BjrX4EZdEeSQKqd06nTv0g" featurename="children" parentElementId="de.persosim.rcp.mainMenue">
     <elements xsi:type="menu:Menu" xmi:id="_JDxsQEZdEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.menu.selectPersoMenu" label="Select Perso">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_d8avEEZdEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set1" label="Set 01" command="_10f3IEZgEeSQKqd06nTv0g">
-        <parameters xmi:id="_AsdCsEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set1" name="de.persosim.simulator.ui.commandparameter.persoSet" value="0"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_d8avEEZdEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set01" label="Template 01" command="_10f3IEZgEeSQKqd06nTv0g">
+        <parameters xmi:id="_AsdCsEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set01" name="de.persosim.simulator.ui.commandparameter.persoSet" value="0"/>
+      </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_lVuFoEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set02" label="Template 02" command="_10f3IEZgEeSQKqd06nTv0g">
+        <parameters xmi:id="_-BGaQEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set02" name="de.persosim.simulator.ui.commandparameter.persoSet" value="1"/>
+      </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_mA3UYEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set03" label="Template 03" command="_10f3IEZgEeSQKqd06nTv0g">
+        <parameters xmi:id="_-d98cEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set03" name="de.persosim.simulator.ui.commandparameter.persoSet" value="2"/>
+      </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_mY0hYEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set04" label="Template 04" command="_10f3IEZgEeSQKqd06nTv0g">
+        <parameters xmi:id="_-z1ewEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set04" name="de.persosim.simulator.ui.commandparameter.persoSet" value="3"/>
+      </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_muZIwEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set05" label="Template 05" command="_10f3IEZgEeSQKqd06nTv0g">
+        <parameters xmi:id="__WNMAEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set05" name="de.persosim.simulator.ui.commandparameter.persoSet" value="4"/>
+      </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_nCoTYEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set06" label="Template 06" command="_10f3IEZgEeSQKqd06nTv0g">
+        <parameters xmi:id="__pi-wEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set06" name="de.persosim.simulator.ui.commandparameter.persoSet" value="5"/>
+      </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_nXmd0EZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set07" label="Template 07" command="_10f3IEZgEeSQKqd06nTv0g">
+        <parameters xmi:id="__-0EIEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set07" name="de.persosim.simulator.ui.commandparameter.persoSet" value="6"/>
+      </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_nrY8gEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set08" label="Template 08" command="_10f3IEZgEeSQKqd06nTv0g">
+        <parameters xmi:id="_AWBqQEZjEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set08" name="de.persosim.simulator.ui.commandparameter.persoSet" value="7"/>
+      </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_n8f6oEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set09" label="Template 09" command="_10f3IEZgEeSQKqd06nTv0g">
+        <parameters xmi:id="_AqZ-0EZjEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set09" name="de.persosim.simulator.ui.commandparameter.persoSet" value="8"/>
+      </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_oS0I4EZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set10" label="Template 10" command="_10f3IEZgEeSQKqd06nTv0g">
+        <parameters xmi:id="_BBdz8EZjEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set10" name="de.persosim.simulator.ui.commandparameter.persoSet" value="9"/>
       </children>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uNj68EZgEeSQKqd06nTv0g" featurename="commands" parentElementId="de.persosim.rcp.application">
     <elements xsi:type="commands:Command" xmi:id="_10f3IEZgEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.command.selectPersoCommand" commandName="Select Perso">
-      <parameters xmi:id="_5ezJMEZhEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.commandparameter.persoSet" name="PersoSet" optional="false"/>
+      <parameters xmi:id="_5ezJMEZhEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.commandparameter.persoSet" name="PersoSet" typeId="" optional="false"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7LkpgEZgEeSQKqd06nTv0g" featurename="handlers" parentElementId="de.persosim.rcp.application">
