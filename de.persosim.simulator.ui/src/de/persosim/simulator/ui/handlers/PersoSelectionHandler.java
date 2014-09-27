@@ -12,7 +12,7 @@ public class PersoSelectionHandler {
 	@Execute
 	public void execute(Shell shell) {
 		
-		
+		System.out.println("Perso Selction Handler called");
 		
 	}
 
