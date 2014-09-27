@@ -5,11 +5,15 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BjrX4EZdEeSQKqd06nTv0g" featurename="children" parentElementId="de.persosim.rcp.mainMenue">
     <elements xsi:type="menu:Menu" xmi:id="_JDxsQEZdEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.menu.selectPersoMenu" label="Select Perso">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_d8avEEZdEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set1" label="Set 01" command="_10f3IEZgEeSQKqd06nTv0g"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_d8avEEZdEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set1" label="Set 01" command="_10f3IEZgEeSQKqd06nTv0g">
+        <parameters xmi:id="_AsdCsEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set1" name="de.persosim.simulator.ui.commandparameter.persoSet" value="0"/>
+      </children>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uNj68EZgEeSQKqd06nTv0g" featurename="commands" parentElementId="de.persosim.rcp.application">
-    <elements xsi:type="commands:Command" xmi:id="_10f3IEZgEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.command.selectPersoCommand" commandName="Select Perso"/>
+    <elements xsi:type="commands:Command" xmi:id="_10f3IEZgEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.command.selectPersoCommand" commandName="Select Perso">
+      <parameters xmi:id="_5ezJMEZhEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.commandparameter.persoSet" name="PersoSet" optional="false"/>
+    </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7LkpgEZgEeSQKqd06nTv0g" featurename="handlers" parentElementId="de.persosim.rcp.application">
     <elements xsi:type="commands:Handler" xmi:id="__6nykEZgEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handler.selectPersoHandler" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.handlers.PersoSelectionHandler" command="_10f3IEZgEeSQKqd06nTv0g"/>
