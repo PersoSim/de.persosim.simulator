@@ -45,7 +45,7 @@ public class PersoSimGuiMain {
 	private PrintStream newSystemOut;
 	
     private final PipedInputStream outPipe = new PipedInputStream();
-	private final PipedInputStream inPipe = new PipedInputStream();;
+	private final PipedInputStream inPipe = new PipedInputStream();
 	
 	private PrintWriter inWriter;
 	
@@ -54,9 +54,15 @@ public class PersoSimGuiMain {
 	private boolean continueScanning;
 	
 	Composite parent;
+	
+	private static PersoSimGuiMain persoSimGuiMain;
 
 	@PostConstruct
 	public void createComposite(Composite parentComposite) {
+		if(persoSimGuiMain == null) {
+			persoSimGuiMain = this;
+		}
+		
 		parent = parentComposite;
 		
 		grabSysOut();
@@ -156,6 +162,11 @@ public class PersoSimGuiMain {
 	    
 	}
 	
+	public void write(String line) {
+		inWriter.println(line);
+		inWriter.flush();
+	}
+	
 	/**
 	 * This method deactivates redirection of System.out.
 	 */
@@ -207,6 +218,10 @@ public class PersoSimGuiMain {
 	
 	public String toString() {
 		return "OutputHandler here!";
+	}
+	
+	public static PersoSimGuiMain getInstance() {
+		return persoSimGuiMain;
 	}
 	
 }
