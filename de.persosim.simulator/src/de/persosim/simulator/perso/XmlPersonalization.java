@@ -23,33 +23,65 @@ public class XmlPersonalization implements Personalization {
 
 	@XmlElementWrapper(name = "protocols")
 	@XmlAnyElement(lax=true)
-	protected List<Protocol> protocols = new ArrayList<>();
+	protected List<Protocol> protocols = null;
 	
 	@XmlAnyElement(lax=true)
-	protected MasterFile mf = new MasterFile();
+	protected MasterFile mf = null;
 	
 	@XmlElementWrapper(name = "unmarshallerCallbacks")
 	@XmlAnyElement(lax=true)
 	protected List<PersoUnmarshallerCallback> unmarshallerCallbacks = new ArrayList<>();
 	
 	public List<Protocol> getProtocols() {
+		if (protocols == null) reset();
 		return protocols;
 	}
 
 	public MasterFile getMf() {
+		if (mf == null) reset();
 		return mf;
 	}
 
 	@Override
 	public MasterFile getObjectTree() {
-		return mf;
+		return getMf();
 	}
 
 	@Override
 	public List<Protocol> getProtocolList() {
-		return protocols;
+		return getProtocols();
+	}
+
+	@Override
+	public void reset() {
+		buildProtocolList();
+		buildObjectTree();
+		afterUnmarshal(null, null);
+	}
+
+	/**
+	 * (Re)Build the protocol list (in {@link #protocols})
+	 * <p/>
+	 * This method is called from {@link #reset()} and should be implemented at
+	 * least in all Subclasses that are used within tests that need to reset the
+	 * personalization.
+	 */
+	protected void buildProtocolList() {
+		// intentionally empty in order to not overwrite deserialized persos
+		
 	}
 	
+	/**
+	 * (Re)Build the Object tree (in {@link #mf})
+	 * <p/>
+	 * This method is called from {@link #reset()} and should be implemented at
+	 * least in all Subclasses that are used within tests that need to reset the
+	 * personalization.
+	 */
+	protected void buildObjectTree() {
+		// intentionally empty in order to not overwrite deserialized persos		
+	}
+
 	/**
 	 * JAXB callback
 	 * <p/>

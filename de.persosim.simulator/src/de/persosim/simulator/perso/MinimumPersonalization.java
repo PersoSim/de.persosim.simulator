@@ -35,14 +35,11 @@ public class MinimumPersonalization extends XmlPersonalization {
 	public MinimumPersonalization(byte[] efCardAccessValue) {
 		this.efCardAccessValue = efCardAccessValue;
 		
-		buildProtocolList();
-		buildObjectTree();
+		reset();
 	}
 	
-	/**
-	 * Build the default protocolList to only contain file management.
-	 */
-	private void buildProtocolList() {
+	@Override
+	protected void buildProtocolList() {
 		protocols = new ArrayList<>();
 
 		/* load FM protocol */
@@ -51,11 +48,7 @@ public class MinimumPersonalization extends XmlPersonalization {
 		protocols.add(fileManagementProtocol);
 	}
 	
-	/**
-	 * Build the object tree.
-	 * <p/>
-	 * This contains a valid MF with an EF.CardSecurity containing arbitrary and possibly invalid data.
-	 */
+	@Override
 	public void buildObjectTree() {
 		mf = new MasterFile(new FileIdentifier(0x3F00),
 				new DedicatedFileIdentifier(new byte[] { (byte) 0xA0, 0x0,

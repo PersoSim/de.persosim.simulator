@@ -80,11 +80,7 @@ import de.persosim.simulator.utils.HexString;
 public abstract class DefaultPersonalization extends XmlPersonalization implements Tr03110 {
 
 	public DefaultPersonalization() {
-		buildProtocolList();
-		buildObjectTree();
-
 		addUnmarshallerCallbacks();
-		afterUnmarshal(null, null);
 	}
 
 	/**
@@ -96,14 +92,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization implemen
 
 	}
 
-	/**
-	 * Build the object tree.
-	 * <p/>
-	 * This contains default data groups an objects required for the protocols.
-	 * <p/>
-	 * Subclasses can modify the object tree from within their constructor right
-	 * after it is initialized. It can be accessed through the file #mf.
-	 */
+	@Override
 	public void buildObjectTree() {
 		try {
 			mf = new MasterFile(new FileIdentifier(0x3F00),
@@ -645,13 +634,8 @@ public abstract class DefaultPersonalization extends XmlPersonalization implemen
 		return retVal;
 	}
 
-	/**
-	 * Build the default protocolList.
-	 * <p/>
-	 * This contains all required protocols. Subclasses can modify the protocol
-	 * list from within their constructor right after it is initialized.
-	 */
-	private void buildProtocolList() {
+	@Override
+	protected void buildProtocolList() {
 		protocols = new ArrayList<>();
 
 		/* load PACE protocol */

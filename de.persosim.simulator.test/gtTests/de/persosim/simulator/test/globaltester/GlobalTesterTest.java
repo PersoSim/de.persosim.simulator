@@ -63,6 +63,7 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 	
 	private void resetSimulator(){
 		stopSimulator();
+		getPersonalization().reset();
 		startSimulator();
 	}
 	
