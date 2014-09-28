@@ -31,9 +31,21 @@ public class GtDebugPersoTest extends GtDefaultPersoTest {
 		
 		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_H_01"));
 //		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_K_01"));
+//		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_L_13a"));
+//		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_L_17"));
 //		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_R_01"));
-//		retVal.add(GtConstants.SUITE_EAC2_ISO7816_P);
 
+
+		retVal.add(GtConstants.SUITE_EAC2_ISO7816_H);
+//		retVal.add(GtConstants.SUITE_EAC2_ISO7816_I);
+//		retVal.add(GtConstants.SUITE_EAC2_ISO7816_J);
+//		retVal.add(GtConstants.SUITE_EAC2_ISO7816_K);
+//		retVal.add(GtConstants.SUITE_EAC2_ISO7816_L);
+//		
+//		retVal.add(GtConstants.SUITE_EAC2_ISO7816_O);
+//		retVal.add(GtConstants.SUITE_EAC2_ISO7816_P);
+//		retVal.add(GtConstants.SUITE_EAC2_ISO7816_Q);
+//		retVal.add(GtConstants.SUITE_EAC2_ISO7816_R);
 		return retVal;
 	}
 }
