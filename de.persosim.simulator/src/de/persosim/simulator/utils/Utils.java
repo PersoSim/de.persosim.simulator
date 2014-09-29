@@ -510,6 +510,7 @@ public abstract class Utils {
 		
 		try {
 			month = Integer.parseInt(dateString.substring(4, 6));
+			month--; //set month is zero based
 		} catch (NumberFormatException e) {
 			switch (handleNonNumericCharacters) {
             	case -1: month = Calendar.JANUARY;
@@ -521,7 +522,7 @@ public abstract class Utils {
 			}
 		}
 		
-		calendar.set(Calendar.MONTH, month-1); //set month is zero based
+		calendar.set(Calendar.MONTH, month); 
 		
 		try {
 			day = Integer.parseInt(dateString.substring(6, 8));
