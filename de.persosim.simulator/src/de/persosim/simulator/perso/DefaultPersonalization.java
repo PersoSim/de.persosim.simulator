@@ -84,6 +84,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization implemen
 
 	public DefaultPersonalization() {
 		addUnmarshallerCallbacks();
+		reset();
 	}
 
 	/**
