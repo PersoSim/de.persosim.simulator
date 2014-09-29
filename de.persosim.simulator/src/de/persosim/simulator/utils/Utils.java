@@ -521,7 +521,7 @@ public abstract class Utils {
 			}
 		}
 		
-		calendar.set(Calendar.MONTH, month);
+		calendar.set(Calendar.MONTH, month-1); //set month is zero based
 		
 		try {
 			day = Integer.parseInt(dateString.substring(6, 8));
