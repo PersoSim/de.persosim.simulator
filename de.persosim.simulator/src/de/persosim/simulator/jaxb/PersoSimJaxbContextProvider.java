@@ -255,6 +255,7 @@ public class PersoSimJaxbContextProvider {
 		annotatedClasses.add(de.persosim.simulator.perso.DefaultSecInfoCmsBuilder.class);
 		annotatedClasses.add(de.persosim.simulator.perso.SignedDataFileCache.class);
 		annotatedClasses.add(de.persosim.simulator.perso.XmlPersonalization.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.NpaProtocol.class);
 		annotatedClasses.add(de.persosim.simulator.protocols.auxVerification.AuxProtocol.class);
 		annotatedClasses.add(de.persosim.simulator.protocols.ca.CaOid.class);
 		annotatedClasses.add(de.persosim.simulator.protocols.ca.CaProtocol.class);
