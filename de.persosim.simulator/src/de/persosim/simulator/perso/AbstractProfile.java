@@ -41,7 +41,7 @@ import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
-public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki implements Asn1 {
+public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn1 {
 	
 	protected PersonalizationDataContainer persoDataContainer;
 	
@@ -185,27 +185,18 @@ public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki im
 	
 	@Override
 	protected void addAuxData() {
-		// Aux data
-		byte[] communityId;
 		
 		initPersonalizationDataContainer();
 		
-		try {
-			communityId = persoDataContainer.getDg18PlainData().getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// US-ASCII is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			communityId = new byte[0];
-		}
-		
-		Date dateOfBirth = Utils.getDate(persoDataContainer.getDg8PlainData(), Utils.DATE_SET_MAX_VALUE);
-		
-		Date validityDate = Utils.getDate(persoDataContainer.getDg3PlainData());
-
+		byte[] communityId = HexString.toByteArray(persoDataContainer.getDg18PlainData());
 		mf.addChild(new ByteDataAuxObject(new OidIdentifier(
 				TaOid.id_CommunityID), communityId));
+		
+		Date dateOfBirth = Utils.getDate(persoDataContainer.getDg8PlainData(), Utils.DATE_SET_MAX_VALUE);
 		mf.addChild(new DateAuxObject(new OidIdentifier(TaOid.id_DateOfBirth),
 				dateOfBirth));
+		
+		Date validityDate = Utils.getDate(persoDataContainer.getDg3PlainData());
 		mf.addChild(new DateAuxObject(new OidIdentifier(TaOid.id_DateOfExpiry),
 				validityDate));
 	}

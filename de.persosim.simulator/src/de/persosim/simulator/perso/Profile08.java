@@ -8,7 +8,7 @@ import de.persosim.simulator.utils.HexString;
  * @author slutters
  *
  */
-public class DefaultPersoTestPkiTemplate08 extends DefaultPersoTestPkiTemplate {
+public class Profile08 extends AbstractProfile {
 	
 	@Override
 	public void setPersoDataContainer() {
@@ -19,6 +19,7 @@ public class DefaultPersoTestPkiTemplate08 extends DefaultPersoTestPkiTemplate {
 		persoDataContainer.setDg7PlainData("DR.HC.");
 		persoDataContainer.setDg8PlainData("19520617");
 		persoDataContainer.setDg9PlainData("TRIER");
+		persoDataContainer.setDg11PlainData("M"); //XXX this is needed in order to make MRZ generation work but should not be included in data groups
 		persoDataContainer.setDg18PlainData("");
 		persoDataContainer.setDocumentNumber("000000008");
 		persoDataContainer.setMrzLine3Of3("GRAF<VON<LYSKY<<KARL<<<<<<<<<<");

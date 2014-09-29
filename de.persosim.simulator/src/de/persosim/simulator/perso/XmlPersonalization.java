@@ -67,8 +67,10 @@ public class XmlPersonalization implements Personalization {
 	 * personalization.
 	 */
 	protected void buildProtocolList() {
-		// intentionally empty in order to not overwrite deserialized persos
-		
+		// initialize empty protocol list but do not overwrite a deserialized perso
+		if (protocols == null) {
+			protocols = new ArrayList<>();	
+		}
 	}
 	
 	/**
@@ -79,7 +81,10 @@ public class XmlPersonalization implements Personalization {
 	 * personalization.
 	 */
 	protected void buildObjectTree() {
-		// intentionally empty in order to not overwrite deserialized persos		
+		// initialize empty protocol list but do not overwrite a deserialized perso
+		if (mf == null) {
+			mf = new MasterFile();
+		}
 	}
 
 	/**

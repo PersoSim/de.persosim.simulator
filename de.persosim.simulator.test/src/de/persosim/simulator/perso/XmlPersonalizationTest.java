@@ -33,8 +33,6 @@ import de.persosim.simulator.test.PersoSimTestCase;
 
 public class XmlPersonalizationTest extends PersoSimTestCase {
 
-	public static final String XML_FILENAME = "./tmp/perso-jaxb.xml";
-
 	XmlPersonalization testPerso;
 
 	@Before
@@ -67,7 +65,7 @@ public class XmlPersonalizationTest extends PersoSimTestCase {
 		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 		
 		// Write to File
-		File xmlFile = new File(XML_FILENAME);
+		File xmlFile = new File(getXmlFilename());
 		xmlFile.getParentFile().mkdirs();
 		m.marshal(testPerso, xmlFile);
 
@@ -138,6 +136,11 @@ public class XmlPersonalizationTest extends PersoSimTestCase {
 		//check all CardObjects, their children and all Identifiers of the card objet tree
 		assertObjectTypes(unmarshalledPerso.getObjectTree());
 
+	}
+
+	protected String getXmlFilename() {
+		String retVal = "./tmp/" + testPerso.getClass().getSimpleName() + ".xml"; 
+		return retVal;
 	}
 
 	/**

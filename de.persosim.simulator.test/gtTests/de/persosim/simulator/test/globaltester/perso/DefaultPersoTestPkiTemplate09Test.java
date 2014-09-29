@@ -1,6 +1,6 @@
 package de.persosim.simulator.test.globaltester.perso;
 
-import de.persosim.simulator.perso.DefaultPersoTestPkiTemplate09;
+import de.persosim.simulator.perso.Profile09;
 import de.persosim.simulator.perso.Personalization;
 
 public class DefaultPersoTestPkiTemplate09Test extends TestPersoTest {
@@ -8,7 +8,7 @@ public class DefaultPersoTestPkiTemplate09Test extends TestPersoTest {
 	@Override
 	public Personalization getPersonalization() {
 		if(persoCache == null) {
-			persoCache = new DefaultPersoTestPkiTemplate09();
+			persoCache = new Profile09();
 		}
 		
 		return persoCache;

@@ -1,8 +1,11 @@
 package de.persosim.simulator.test.globaltester;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Iterator;
 
+import org.bouncycastle.util.Arrays;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -11,12 +14,18 @@ import org.junit.Test;
 
 import de.persosim.simulator.SocketSimulator;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
+import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
+import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.MrzAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
+import de.persosim.simulator.cardobjects.ShortFileIdentifier;
+import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.test.PersoSimTestCase;
+import de.persosim.simulator.utils.HexString;
 
 public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr03110 {
 
@@ -120,11 +129,45 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 		
 		//TODO configureGtServer
 		transmitPasswords();
+		transmitEidData();
 //		configureCertificates();
 //		transmitCertificates();
 //		generateCertificatesIfNeeded();
 	}
 	
+	private void transmitEidData() {
+
+		CardFile dg18 = getEidDg(0x12);
+		if(dg18 instanceof ElementaryFile) {
+			try {
+				Field f = ElementaryFile.class.getDeclaredField("content");
+				f.setAccessible(true);
+				byte[] content = (byte[]) f.get(dg18); 
+				content = Arrays.copyOfRange(content, 4, content.length);
+				gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_EAC2, "pref_epa_communityID", HexString.encode(content));
+			} catch (IOException | NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+				// ignore communityId if it can't be extracted
+			}
+		}
+			
+	}
+
+	private CardFile getEidDg(int sfid) {
+		Collection<CardObject> cardApplications = getPersonalization().getObjectTree().findChildren(new DedicatedFileIdentifier(HexString
+				.toByteArray(DefaultPersonalization.AID_EID)));
+		
+		for (Iterator<CardObject> iterator = cardApplications.iterator(); iterator.hasNext();) {
+			CardObject eidApplication = iterator.next();
+		
+			Collection<CardObject> cardFiles = eidApplication.findChildren(new ShortFileIdentifier(sfid));
+			if (!cardFiles.isEmpty()) {
+				return (CardFile) cardFiles.iterator().next();
+			}
+		}
+
+		return null;
+	}
+
 	private void transmitPasswords() throws IOException {
 		String mrz = getMrz();
 		byte[] can = getPassword(ID_CAN);
