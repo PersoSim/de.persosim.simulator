@@ -79,6 +79,9 @@ import de.persosim.simulator.utils.HexString;
  */
 public abstract class DefaultPersonalization extends XmlPersonalization implements Tr03110 {
 
+	public static final String AID_EID = "E8 07 04 00 7F 00 07 03 02";
+	
+
 	public DefaultPersonalization() {
 		addUnmarshallerCallbacks();
 	}
@@ -132,7 +135,7 @@ public abstract class DefaultPersonalization extends XmlPersonalization implemen
 		// eID application
 		DedicatedFile eIdAppl = new DedicatedFile(null,
 				new DedicatedFileIdentifier(HexString
-						.toByteArray("E8 07 04 00 7F 00 07 03 02")));
+						.toByteArray(AID_EID)));
 		mf.addChild(eIdAppl);
 		
 		addEidDg1(eIdAppl);

@@ -29,6 +29,7 @@ public class GtServerConnection {
 	
 	public static final String PREF_QUALIFIER_LOGGING = "org.globaltester.logging";
 	public static final String PREF_QUALIFIER_SECUREMESSAGING = "com.hjp.globaltester.epassport.securemessaging";
+	public static final String PREF_QUALIFIER_EAC2 = "com.hjp.globaltester.prove.eac2";
 	public static final String PREF_QUALIFIER_TESTMANAGER = "org.globaltester.testmanager";
 	
 	private static final Pattern RESULTPATTERN = Pattern.compile(
