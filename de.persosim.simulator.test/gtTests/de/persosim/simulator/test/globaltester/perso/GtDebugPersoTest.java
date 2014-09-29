@@ -29,12 +29,12 @@ public class GtDebugPersoTest extends GtDefaultPersoTest {
 		Collection<JobDescriptor> retVal = 
 		new ArrayList<JobDescriptor>();
 		
-//		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_H_01"));  //PACE - unauthenticated, CAN
-//		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_K_01"));  // TA
-//		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_L_13a")); // AT - read DG
-//		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_L_17"));  // Age verification
+		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_H_01"));  //PACE - unauthenticated, CAN
+		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_K_01"));  // TA
+		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_L_13a")); // AT - read DG
+		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_L_17"));  // Age verification
 		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_L_19"));  // CommunityID verification
-//		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_R_01"));  // RI
+		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_R_01"));  // RI
 
 
 //		retVal.add(GtConstants.SUITE_EAC2_ISO7816_H);

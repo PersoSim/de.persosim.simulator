@@ -18,6 +18,7 @@ public class DefaultPersoTestPkiTemplate03 extends DefaultPersoTestPkiTemplate {
 		persoDataContainer.setDg7PlainData("DR.");
 		persoDataContainer.setDg8PlainData("19280421");
 		persoDataContainer.setDg9PlainData("MÜNCHEN");
+		persoDataContainer.setDg11PlainData("F"); //XXX this is needed in order to make MRZ generation work but should not be included in data groups
 		persoDataContainer.setDg13PlainData("VON MÜLLER-SCHWARZENBERG");
 		persoDataContainer.setDg17StreetPlainData("BOUCHÉSTR. 68 A");
 		persoDataContainer.setDg17CityPlainData("BERLIN");
