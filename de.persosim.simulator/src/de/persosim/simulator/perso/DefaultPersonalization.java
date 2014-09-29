@@ -41,6 +41,7 @@ import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.CertificateNotParseableException;
+import de.persosim.simulator.protocols.NpaProtocol;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.protocols.auxVerification.AuxProtocol;
 import de.persosim.simulator.protocols.ca.Ca;
@@ -673,6 +674,9 @@ public abstract class DefaultPersonalization extends XmlPersonalization implemen
 		PinProtocol pinProtocol = new PinProtocol();
 		pinProtocol.init();
 		protocols.add(pinProtocol);
+
+		/* load AUX protocol */
+		protocols.add(new NpaProtocol());
 	}
 
 }

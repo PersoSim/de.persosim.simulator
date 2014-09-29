@@ -42,6 +42,8 @@ public interface TlvConstants {
 	public static final TlvTag TAG_OID = new TlvTag(Asn1.OBJECT_IDENTIFIER);
 	public static final TlvTag TAG_SEQUENCE = new TlvTag(Asn1.SEQUENCE);
 	public static final TlvTag TAG_SET = new TlvTag(Asn1.SET);
+	public static final TlvTag TAG_IA5_STRING = new TlvTag(Asn1.IA5_STRING);
+	
 	
 	public static final TlvValuePlain DER_BOOLEAN_TRUE = new TlvValuePlain(new byte [] {(byte) 0xFF});
 	public static final TlvValuePlain DER_BOOLEAN_FALSE = new TlvValuePlain(new byte [] {0});
