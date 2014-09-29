@@ -16,7 +16,7 @@ public class XmlDefaultPersoTest extends XmlPersonalizationTest {
 	public void setUp() throws Exception {
 		super.setUp();
 
-		testPerso = new DefaultPersoTestPkiTemplate01();
+		testPerso = new Profile01();
 	}
 
 }

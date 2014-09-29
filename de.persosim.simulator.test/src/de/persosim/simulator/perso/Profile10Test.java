@@ -2,14 +2,14 @@ package de.persosim.simulator.perso;
 
 import org.junit.Before;
 
-public class DefaultPersoTestPkiTemplate10Test extends XmlPersonalizationTest {
+public class Profile10Test extends XmlPersonalizationTest {
 
 	@Override
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 
-		testPerso = new DefaultPersoTestPkiTemplate10();
+		testPerso = new Profile10();
 	}
 
 }

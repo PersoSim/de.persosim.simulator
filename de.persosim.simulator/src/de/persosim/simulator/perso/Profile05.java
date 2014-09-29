@@ -8,7 +8,7 @@ import de.persosim.simulator.utils.HexString;
  * @author slutters
  *
  */
-public class DefaultPersoTestPkiTemplate05 extends DefaultPersoTestPkiTemplate {
+public class Profile05 extends AbstractProfile {
 	
 	@Override
 	public void setPersoDataContainer() {

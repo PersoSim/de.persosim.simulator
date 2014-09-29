@@ -20,7 +20,7 @@ public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetCommunityIdDgTlv() {
-		ConstructedTlvDataObject received = DefaultPersoTestPkiTemplate.getCommunityIdDgTlv(new TlvTag((byte) 0x72), "02760503150000");
+		ConstructedTlvDataObject received = AbstractProfile.getCommunityIdDgTlv(new TlvTag((byte) 0x72), "02760503150000");
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("7209040702760503150000"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
@@ -31,7 +31,7 @@ public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetCommunityIdDgTlv_Empty() {
-		ConstructedTlvDataObject received = DefaultPersoTestPkiTemplate.getCommunityIdDgTlv(new TlvTag((byte) 0x72), "");
+		ConstructedTlvDataObject received = AbstractProfile.getCommunityIdDgTlv(new TlvTag((byte) 0x72), "");
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("72020400"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
@@ -42,7 +42,7 @@ public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetDateDgTlv() {
-		ConstructedTlvDataObject received = DefaultPersoTestPkiTemplate.getDateDgTlv(new TlvTag((byte) 0x63), "20201031");
+		ConstructedTlvDataObject received = AbstractProfile.getDateDgTlv(new TlvTag((byte) 0x63), "20201031");
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("630A12083230323031303331"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
@@ -54,7 +54,7 @@ public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetGeneralPlaceDgTlv() throws UnsupportedEncodingException {
-		ConstructedTlvDataObject received = DefaultPersoTestPkiTemplate.getGeneralPlaceDgTlv(new TlvTag((byte) 0x71), "HEIDESTRASSE 17", "KÖLN", null, "D", "51147");
+		ConstructedTlvDataObject received = AbstractProfile.getGeneralPlaceDgTlv(new TlvTag((byte) 0x71), "HEIDESTRASSE 17", "KÖLN", null, "D", "51147");
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("712C302AAA110C0F484549444553545241535345203137AB070C054BC3964C4EAD03130144AE0713053531313437"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
@@ -66,7 +66,7 @@ public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetGeneralPlaceDgTlv_Empty() throws UnsupportedEncodingException {
-		ConstructedTlvDataObject received = DefaultPersoTestPkiTemplate.getGeneralPlaceDgTlv(new TlvTag((byte) 0x71), null, null, null, null, null);
+		ConstructedTlvDataObject received = AbstractProfile.getGeneralPlaceDgTlv(new TlvTag((byte) 0x71), null, null, null, null, null);
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("7125A2230C216B65696E65204861757074776F686E756E6720696E20446575747363686C616E64"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
@@ -78,7 +78,7 @@ public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetGeneralPlaceDgTlv_Simple() throws UnsupportedEncodingException {
-		ConstructedTlvDataObject received = DefaultPersoTestPkiTemplate.getGeneralPlaceDgTlv(new TlvTag((byte) 0x69), null, "BERLIN", null, null, null);
+		ConstructedTlvDataObject received = AbstractProfile.getGeneralPlaceDgTlv(new TlvTag((byte) 0x69), null, "BERLIN", null, null, null);
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("690AA1080C064245524C494E"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
@@ -89,7 +89,7 @@ public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetIcaoStringDgTlv() {
-		ConstructedTlvDataObject received = DefaultPersoTestPkiTemplate.getIcaoStringDgTlv(new TlvTag((byte) 0x61), "ID");
+		ConstructedTlvDataObject received = AbstractProfile.getIcaoStringDgTlv(new TlvTag((byte) 0x61), "ID");
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("610413024944"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
@@ -100,7 +100,7 @@ public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetIssuingStateDgTlv() {
-		ConstructedTlvDataObject received = DefaultPersoTestPkiTemplate.getIssuingStateDgTlv(new TlvTag((byte) 0x62), "D");
+		ConstructedTlvDataObject received = AbstractProfile.getIssuingStateDgTlv(new TlvTag((byte) 0x62), "D");
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("6203130144"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
@@ -111,7 +111,7 @@ public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetUtf8StringDgTlv() {
-		ConstructedTlvDataObject received = DefaultPersoTestPkiTemplate.getUtf8StringDgTlv(new TlvTag((byte) 0x64), "ERIKA");
+		ConstructedTlvDataObject received = AbstractProfile.getUtf8StringDgTlv(new TlvTag((byte) 0x64), "ERIKA");
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("64070C054552494B41"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
@@ -122,7 +122,7 @@ public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetMrzLine1Of3() {
-		String received = DefaultPersoTestPkiTemplate.getMrzLine1of3("ID", "D", "000000001");
+		String received = AbstractProfile.getMrzLine1of3("ID", "D", "000000001");
 		String expected = "IDD<<0000000011<<<<<<<<<<<<<<<";
 		
 		assertEquals(expected, received);
@@ -133,7 +133,7 @@ public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetMrzLine2Of3() {
-		String received = DefaultPersoTestPkiTemplate.getMrzLine2of3("IDD<<0000000011<<<<<<<<<<<<<<<", "19640812", "F", "20201031", "D");
+		String received = AbstractProfile.getMrzLine2of3("IDD<<0000000011<<<<<<<<<<<<<<<", "19640812", "F", "20201031", "D");
 		String expected = "6408125F2010315D<<<<<<<<<<<<<8";
 		
 		assertEquals(expected, received);

@@ -41,7 +41,7 @@ import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
-public abstract class DefaultPersoTestPkiTemplate extends DefaultPersoTestPki implements Asn1 {
+public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn1 {
 	
 	protected PersonalizationDataContainer persoDataContainer;
 	
