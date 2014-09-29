@@ -139,7 +139,7 @@ public class XmlPersonalizationTest extends PersoSimTestCase {
 	}
 
 	protected String getXmlFilename() {
-		String retVal = "./tmp/" + getClass().getName() + ".xml"; 
+		String retVal = "./tmp/" + testPerso.getClass().getSimpleName() + ".xml"; 
 		return retVal;
 	}
 
