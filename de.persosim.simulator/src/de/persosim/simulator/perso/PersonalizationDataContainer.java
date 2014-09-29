@@ -50,11 +50,12 @@ public class PersonalizationDataContainer {
 		this.documentNumber       = null;
 		this.mrzLine3Of3          = null;
 		
-		this.caKeys               = new ArrayList<KeyPair>();
-		this.caKeyIds             = new ArrayList<Integer>();
+		this.caKeys               = new ArrayList<>();
+		this.caKeyIds             = new ArrayList<>();
+		this.caKeyPrivileges      = new ArrayList<>();
 		
-		this.riKeys               = new ArrayList<KeyPair>();
-		this.riKeyIds             = new ArrayList<Integer>();
+		this.riKeys               = new ArrayList<>();
+		this.riKeyIds             = new ArrayList<>();
 	}
 	
 	public void addCaKeyPair(KeyPair keyPair, int keyId, boolean privileged) {
