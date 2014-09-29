@@ -221,6 +221,7 @@ public class PersoSimGuiMain {
 	}
 	
 	public static PersoSimGuiMain getInstance() {
+		//XXX use findPart instead of this caching mechanism
 		return persoSimGuiMain;
 	}
 	
