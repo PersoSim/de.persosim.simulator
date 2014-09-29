@@ -70,15 +70,15 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 		retVal.add(GtConstants.PROFILE_eID_DG7);
 		retVal.add(GtConstants.PROFILE_eID_DG8);
 		retVal.add(GtConstants.PROFILE_eID_DG9);
-		retVal.add(GtConstants.PROFILE_eID_DG10);
-		retVal.add(GtConstants.PROFILE_eID_DG11);
-		retVal.add(GtConstants.PROFILE_eID_DG12);
+//		retVal.add(GtConstants.PROFILE_eID_DG10);
+//		retVal.add(GtConstants.PROFILE_eID_DG11);
+//		retVal.add(GtConstants.PROFILE_eID_DG12);
 		retVal.add(GtConstants.PROFILE_eID_DG13);
 		retVal.add(GtConstants.PROFILE_eID_DG17);
 		retVal.add(GtConstants.PROFILE_eID_DG18);
-		retVal.add(GtConstants.PROFILE_eID_DG19);
-		retVal.add(GtConstants.PROFILE_eID_DG20);
-		retVal.add(GtConstants.PROFILE_eID_DG21);
+//		retVal.add(GtConstants.PROFILE_eID_DG19);
+//		retVal.add(GtConstants.PROFILE_eID_DG20);
+//		retVal.add(GtConstants.PROFILE_eID_DG21);
 		return retVal;
 	}
 	
