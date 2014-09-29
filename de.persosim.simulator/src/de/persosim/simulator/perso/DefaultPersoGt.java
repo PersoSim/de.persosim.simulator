@@ -22,7 +22,7 @@ import de.persosim.simulator.utils.HexString;
  * @author amay
  * 
  */
-public class DefaultPersoGt extends DefaultPersonalization {
+public class DefaultPersoGt extends DefaultPersoTestPkiTemplate01 {
 
 	@Override
 	protected void addTaTrustPoints() throws CertificateNotParseableException {
