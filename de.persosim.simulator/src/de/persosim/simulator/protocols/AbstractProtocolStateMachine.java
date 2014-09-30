@@ -183,6 +183,11 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 		return match;
 	}
 	
+	@Override
+	public boolean isMoveToStackRequested() {
+		return false;
+	}
+	
 	public void createNewApduSpecification(String id) {
 		this.apduSpecification = new ApduSpecification(id);
 		apduSpecification.getTags().setStrictOrder(ARBITRARY_ORDER);

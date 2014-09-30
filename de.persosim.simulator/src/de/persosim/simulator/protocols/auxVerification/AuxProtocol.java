@@ -168,5 +168,10 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 	public String getIDString() {
 		return "AUX protocol";
 	}
+	
+	@Override
+	public boolean isMoveToStackRequested() {
+		return false;
+	}
 
 }

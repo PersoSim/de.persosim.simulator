@@ -288,6 +288,14 @@ public abstract class AbstractCommandProcessor extends Layer implements
 						+ protocol.getProtocolName());
 		this.protocolStack.add(protocol);
 	}
+	
+	/**
+	 * 
+	 */
+	public boolean protocolAtPointerWantsToGetOnStack() {
+		Protocol protocol = protocols.get(protocolPointer);
+		return protocol == null ? false : protocol.isMoveToStackRequested();
+	}
 
 	/**
 	 * Method used from within state machine code.

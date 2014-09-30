@@ -42,6 +42,7 @@ import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.KeyDerivationFunction;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
+import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
@@ -233,6 +234,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 					return;
 				}
 			} catch (Exception e) {
+				//XXX check PokemonException
 				ResponseApdu resp = new ResponseApdu(
 						Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
 				this.processingData.updateResponseAPDU(this, e.getMessage(),
@@ -277,7 +279,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				if (retryCounter != retryCounterDefault) {
 					if (retryCounter == 1) {
 						ResponseApdu resp = new ResponseApdu(Iso7816.SW_63C1_COUNTER_IS_1);
-						if(isPinTemporarilyResumed()) {
+						if(isPinTemporarilyResumed(cardState)) {
 							processingData.updateResponseAPDU(this, "PIN is temporarily resumed due to preceding CAN", resp);
 						} else{
 							processingData.updateResponseAPDU(this, "PIN is suspended, use CAN first for temporary resume or unblock PIN", resp);
@@ -321,7 +323,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 *            to check
 	 * @return true, iff the combination used is allowed
 	 */
-	private boolean checkPasswordAndAccessRights(
+	public static boolean checkPasswordAndAccessRights(
 			CertificateHolderAuthorizationTemplate chat,
 			PasswordAuthObject password) {
 		switch (chat.getTerminalType()) {
@@ -564,7 +566,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			log(this, "Token received from PCD matches expected one", DEBUG);
 			
 			if(pacePassword instanceof PasswordAuthObjectWithRetryCounter) {
-				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceSuccessful();
+				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceSuccessful(pacePassword, cardState);
 				
 				sw = pinResponse.getStatusWord();
 				note = pinResponse.getResponse();
@@ -581,7 +583,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			paceSuccessful = false;
 			
 			if(pacePassword.getPasswordIdentifier() == Pace.PWD_PIN) {
-				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceFailed();
+				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) pacePassword);
 				sw = pinResponse.getStatusWord();
 				note = pinResponse.getResponse();
 			} else{
@@ -661,14 +663,12 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 * This method returns data required to send a response APDU for Mutual Authenticate if PACE was performed using PIN as password and failed.
 	 * @return data required to send a response APDU for Mutual Authenticate
 	 */
-	private ResponseData getMutualAuthenticatePinManagementResponsePaceFailed() {
-		PasswordAuthObjectWithRetryCounter pacePasswordPin = (PasswordAuthObjectWithRetryCounter) pacePassword;
-		
+	public static ResponseData getMutualAuthenticatePinManagementResponsePaceFailed(PasswordAuthObjectWithRetryCounter pacePasswordPin) {
 		int pinRetryCounter = pacePasswordPin.getRetryCounterCurrentValue();
-		log(this, "PACE with PIN has failed - PIN retry counter will be decremented, current value is: " + pinRetryCounter, DEBUG);
+		log(AbstractPaceProtocol.class, "PACE with PIN has failed - PIN retry counter will be decremented, current value is: " + pinRetryCounter, DEBUG);
 		pacePasswordPin.decrementRetryCounter();
 		pinRetryCounter = pacePasswordPin.getRetryCounterCurrentValue();
-		log(this, "PACE with PIN has failed - PIN retry counter has been decremented, current value is: " + pinRetryCounter, DEBUG);
+		log(AbstractPaceProtocol.class, "PACE with PIN has failed - PIN retry counter has been decremented, current value is: " + pinRetryCounter, DEBUG);
 		
 		short sw = (short) 0x63C0;
 		sw |= ((short) (pinRetryCounter & (short) 0x000F)); 
@@ -683,18 +683,18 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 * @responseData the response data to be sent with the response APDU
 	 * @return data required to send a response APDU for Mutual Authenticate
 	 */
-	private ResponseData getMutualAuthenticatePinManagementResponsePaceSuccessful() {
+	public static ResponseData getMutualAuthenticatePinManagementResponsePaceSuccessful(PasswordAuthObject password, CardStateAccessor cardState) {
 		short sw;
 		String note;
 		
-		if(pacePassword.getLifeCycleState() == Iso7816LifeCycleState.OPERATIONAL_ACTIVATED) {
-			PasswordAuthObjectWithRetryCounter pacePasswordPin = (PasswordAuthObjectWithRetryCounter) pacePassword;
+		if(password.getLifeCycleState() == Iso7816LifeCycleState.OPERATIONAL_ACTIVATED) {
+			PasswordAuthObjectWithRetryCounter pacePasswordPin = (PasswordAuthObjectWithRetryCounter) password;
 			int pinRetryCounter = pacePasswordPin.getRetryCounterCurrentValue();
 			int pinRetryCounterDefault = pacePasswordPin.getRetryCounterDefaultValue();
 			
 			if(pinRetryCounter != pinRetryCounterDefault) {
 				if(pinRetryCounter == 1) {
-					if (isPinTemporarilyResumed()) {
+					if (isPinTemporarilyResumed(cardState)) {
 						pacePasswordPin.resetRetryCounterToDefault();
 						sw = Iso7816.SW_9000_NO_ERROR;
 						note = "MutualAuthenticate processed successfully with password PIN after CAN - PIN retry counter has been reset from: " + pinRetryCounter + " to: " + pacePasswordPin.getRetryCounterCurrentValue();
@@ -761,7 +761,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 * This method checks whether PACE has previously been run with CAN.
 	 * @return true iff PACE has previously been run with CAN, otherwise false
 	 */
-	public boolean isPinTemporarilyResumed() {
+	public static boolean isPinTemporarilyResumed(CardStateAccessor cardState) {
 		HashSet<Class<? extends SecMechanism>> paceMechanisms = new HashSet<>();
 		paceMechanisms.add(PaceMechanism.class);
 		
@@ -770,7 +770,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
 			PasswordAuthObject previouslyUsedPwd = paceMechanism.getUsedPassword();
 			int previouslyUsedPasswordIdentifier = previouslyUsedPwd.getPasswordIdentifier();
-			log(this, "last successfull PACE run used " + getPasswordName(previouslyUsedPasswordIdentifier) + " as password with value " + HexString.encode(previouslyUsedPwd.getPassword()), DEBUG);
+			log(AbstractPaceProtocol.class, "last successfull PACE run used " + getPasswordName(previouslyUsedPasswordIdentifier) + " as password with value " + HexString.encode(previouslyUsedPwd.getPassword()), DEBUG);
 			return previouslyUsedPasswordIdentifier == Pace.PWD_CAN;
 		} else{
 			return false;

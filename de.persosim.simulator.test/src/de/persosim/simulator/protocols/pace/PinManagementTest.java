@@ -125,7 +125,7 @@ public class PinManagementTest extends PersoSimTestCase {
 			result = csmWithCan;
 		}
 	};
-		assertTrue("PIN temporarily resumed", paceProtocol.isPinTemporarilyResumed());
+		assertTrue("PIN temporarily resumed", AbstractPaceProtocol.isPinTemporarilyResumed(mockedCardStateAccessor));
 	}
 	
 	/**
@@ -142,7 +142,7 @@ public class PinManagementTest extends PersoSimTestCase {
 			result = csmWithPin;
 		}
 	};
-		assertFalse("PIN temporarily resumed", paceProtocol.isPinTemporarilyResumed());
+		assertFalse("PIN temporarily resumed", AbstractPaceProtocol.isPinTemporarilyResumed(mockedCardStateAccessor));
 	}
 	
 	/**
@@ -159,7 +159,7 @@ public class PinManagementTest extends PersoSimTestCase {
 			result = csmEmpty;
 		}
 	};
-		assertFalse("PIN temporarily resumed", paceProtocol.isPinTemporarilyResumed());
+		assertFalse("PIN temporarily resumed", AbstractPaceProtocol.isPinTemporarilyResumed(mockedCardStateAccessor));
 	}
 	
 	//ok
