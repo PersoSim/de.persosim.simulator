@@ -234,6 +234,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 					return;
 				}
 			} catch (Exception e) {
+				//XXX check PokemonException
 				ResponseApdu resp = new ResponseApdu(
 						Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
 				this.processingData.updateResponseAPDU(this, e.getMessage(),
@@ -322,7 +323,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 *            to check
 	 * @return true, iff the combination used is allowed
 	 */
-	private boolean checkPasswordAndAccessRights(
+	public static boolean checkPasswordAndAccessRights(
 			CertificateHolderAuthorizationTemplate chat,
 			PasswordAuthObject password) {
 		switch (chat.getTerminalType()) {

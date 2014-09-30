@@ -2,15 +2,14 @@ package de.persosim.simulator.protocols.pace;
 
 import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
-import static de.persosim.simulator.utils.PersoSimLogger.logException;
 
-import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
@@ -21,6 +20,8 @@ import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.Scope;
+import de.persosim.simulator.cardobjects.TrustPointCardObject;
+import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
@@ -29,18 +30,21 @@ import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ResponseData;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
+import de.persosim.simulator.protocols.ta.CertificateRole;
+import de.persosim.simulator.protocols.ta.RelativeAuthorization;
+import de.persosim.simulator.protocols.ta.TaOid;
+import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
-import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
-import de.persosim.simulator.securemessaging.SmDataProviderTr03110;
+import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvValue;
-import de.persosim.simulator.tlv.TlvValuePlain;
+import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.InfoSource;
 
@@ -63,10 +67,112 @@ import de.persosim.simulator.utils.InfoSource;
  * 
  */
 @XmlRootElement
+//XXX reduce code duplication with AbstractPaceProtocol
 public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecificationConstants,
 		InfoSource, TlvConstants {
 
+	public class SmMarkerApdu implements CommandApdu {
+
+		@Override
+		public byte getIsoFormat() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public byte getCla() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public byte getIns() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public byte getP1() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public byte getP2() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public byte getIsoCase() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public boolean isExtendedLength() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public int getNc() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public TlvValue getCommandData() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public TlvDataObjectContainer getCommandDataObjectContainer() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public int getNe() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public short getP1P2() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public byte[] getHeader() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public byte[] toByteArray() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public CommandApdu getPredecessor() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public boolean isNeZeroEncoded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+	}
+
 	private CardStateAccessor cardState;
+	private boolean pseudoSmIsActive = false;
 
 	public PaceBypassProtocol() {
 		reset();
@@ -138,8 +244,33 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		}
 		byte[] providedPassword = tlvObject.getValueField();
 		
-		//FIXME extract CHAT
+		//extract CHAT
 		CertificateHolderAuthorizationTemplate usedChat = null;
+		TrustPointCardObject trustPoint = null;
+		tlvObject = commandData.getTlvDataObject(TAG_7F4C);
+		if (tlvObject != null){
+			ConstructedTlvDataObject chatData = (ConstructedTlvDataObject) tlvObject;
+			TlvDataObject oidData = chatData.getTlvDataObject(TAG_06);
+			byte[] roleData = chatData.getTlvDataObject(TAG_53).getValueField();
+			TaOid chatOid = new TaOid(oidData.getValueField());
+			RelativeAuthorization authorization = new RelativeAuthorization(
+					CertificateRole.getFromMostSignificantBits(roleData[0]), BitField.buildFromBigEndian(
+							(roleData.length * 8) - 2, roleData));
+			usedChat = new CertificateHolderAuthorizationTemplate(chatOid,
+					authorization);
+			
+			TerminalType terminalType = usedChat.getTerminalType();
+
+			 trustPoint = (TrustPointCardObject) cardState.getObject(
+					new TrustPointIdentifier(terminalType), Scope.FROM_MF);
+			if (!AbstractPaceProtocol.checkPasswordAndAccessRights(usedChat, pacePassword)){
+				ResponseApdu resp = new ResponseApdu(
+						Iso7816.SW_6A80_WRONG_DATA);
+				processingData.updateResponseAPDU(this, "The given terminal type and password does not match the access rights", resp);
+				/* there is nothing more to be done here */
+				return;
+			}
+		}
 		
 		
 		//check passwords
@@ -179,37 +310,37 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		ResponseApdu responseApdu;
 		
 		if(paceSuccessful) {
-			ConstructedTlvDataObject constructed7C = new ConstructedTlvDataObject(TAG_7C);
+			TlvDataObjectContainer responseObjects = new TlvDataObjectContainer();
 			
 			byte[] compEphermeralPublicKey = HexString.toByteArray("0102030405060708900A0B0C0D0E0F1011121314"); //arbitrary selected value
 			TlvDataObject primitive86 = new PrimitiveTlvDataObject(TAG_86, compEphermeralPublicKey);
-			constructed7C.addTlvDataObject(primitive86);
+			responseObjects.addTlvDataObject(primitive86);
 			
-//			//add CARs to response data if available
-//			if (trustPoint != null) {
-//				if (trustPoint.getCurrentCertificate() != null
-//						&& trustPoint.getCurrentCertificate()
-//								.getCertificateHolderReference() instanceof PublicKeyReference) {
-//					constructed7C
-//							.addTlvDataObject(new PrimitiveTlvDataObject(
-//									TAG_87, trustPoint.getCurrentCertificate()
-//											.getCertificateHolderReference()
-//											.getBytes()));
-//					if (trustPoint.getPreviousCertificate() != null
-//							&& trustPoint.getPreviousCertificate()
-//									.getCertificateHolderReference() instanceof PublicKeyReference) {
-//						constructed7C
-//								.addTlvDataObject(new PrimitiveTlvDataObject(
-//										TAG_88,
-//										trustPoint
-//												.getPreviousCertificate()
-//												.getCertificateHolderReference()
-//												.getBytes()));
-//					}
-//				}
-//			}
+			//add CARs to response data if available
+			if (trustPoint != null) {
+				if (trustPoint.getCurrentCertificate() != null
+						&& trustPoint.getCurrentCertificate()
+								.getCertificateHolderReference() instanceof PublicKeyReference) {
+					responseObjects
+							.addTlvDataObject(new PrimitiveTlvDataObject(
+									TAG_87, trustPoint.getCurrentCertificate()
+											.getCertificateHolderReference()
+											.getBytes()));
+					if (trustPoint.getPreviousCertificate() != null
+							&& trustPoint.getPreviousCertificate()
+									.getCertificateHolderReference() instanceof PublicKeyReference) {
+						responseObjects
+								.addTlvDataObject(new PrimitiveTlvDataObject(
+										TAG_88,
+										trustPoint
+												.getPreviousCertificate()
+												.getCertificateHolderReference()
+												.getBytes()));
+					}
+				}
+			}
 			
-			TlvValue responseData = new TlvDataObjectContainer(constructed7C);
+			TlvValue responseData = new TlvDataObjectContainer(responseObjects);
 			
 			
 			
@@ -219,23 +350,19 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
 				
 			responseApdu = new ResponseApdu(responseData, sw);
-			processingData.updateResponseAPDU(this, "stablished PACE Bypass", responseApdu);
+			processingData.updateResponseAPDU(this, "Established PACE Bypass", responseApdu);
 		
 		} else{
 			responseApdu = new ResponseApdu(sw);
 		}
 		
 		processingData.updateResponseAPDU(this, note, responseApdu);
-
-		
-		//FIXME add info to SecStatus
-		//FIXME ensure that protocol stays on stack as long as pseudo SM is active
 	}
 
 	/**
 	 * Handle pseudo SM APDU.
 	 * <p/>
-	 * After PACE was succesfully initalized through
+	 * After PACE was successfully initialized through
 	 * {@link #processInitPaceBypass(ProcessingData)} pseudo SM is initiated,
 	 * that does not provide any kind of security. This is indicated by usage of
 	 * the otherwise unused logical Channel 3 e.g. the lowest two bits of CLA are
@@ -248,8 +375,22 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 	 * FIXME how to indicate SM responses?
 	 */
 	private void processSm(ProcessingData processingData) {
-		// FIXME Auto-generated method stub
-		//FIXME break SM Channel and remove protocol from stack
+		CommandApdu commandApdu = processingData.getCommandApdu();
+		byte cla = commandApdu.getCla();
+		if ((cla&0x03) != 0x03) {
+			if (pseudoSmIsActive) {
+				log(this, "Plain APDU received, breaking pseudo SM");
+				pseudoSmIsActive = false;
+			}
+		}
+		//ignore everything when pseudo SM is not active
+		if (!pseudoSmIsActive ) {
+			//do nothing with this APDU
+			return;
+		}
+		
+		//add a dummy APDU in the chain that indicates wasSecureMessaging()
+//		processingData.updateCommandApdu(this, "SM marker APDU added", new SmMarkerApdu(commandApdu));
 		
 	}
 
@@ -261,12 +402,12 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 	
 	@Override
 	public String getIDString() {
-		return "Restricted Identification";
+		return "PaceBypass";
 	}
 
 	@Override
 	public void reset() {
-		//nothing to reset
+		pseudoSmIsActive = false;
 	}
 
 }
