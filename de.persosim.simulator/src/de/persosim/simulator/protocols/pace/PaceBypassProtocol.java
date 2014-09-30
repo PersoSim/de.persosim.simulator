@@ -92,7 +92,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 	public void process(ProcessingData processingData) {
 		byte cla = processingData.getCommandApdu().getCla();
 		byte ins = processingData.getCommandApdu().getIns(); 
-		if (cla == 0xff && ins == INS_86_GENERAL_AUTHENTICATE) {
+		if (cla == (byte) 0xff && ins == INS_86_GENERAL_AUTHENTICATE) {
 			processInitPaceBypass(processingData);
 		} else if (cla != 0xff && ((cla&0x03) == 0x03)) {
 			processSm(processingData);
