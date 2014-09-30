@@ -74,7 +74,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 				.findChildren(new FileIdentifier(fileIdentifier)).size() != 1;
 	}
 	
-	private ConstructedTlvDataObject getSecInfos(Personalization perso, SecInfoPublicity secInfoPublicity) {
+	protected ConstructedTlvDataObject getSecInfos(Personalization perso, SecInfoPublicity secInfoPublicity) {
 		// collect SecInfos from protocols
 		ConstructedTlvDataObject secInfos = new ConstructedTlvDataObject(new TlvTag(Asn1.SET));
 		for (Protocol curProtocol : perso.getProtocolList()) {
