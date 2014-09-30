@@ -2,20 +2,16 @@ package de.persosim.simulator.ui.parts;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.Scanner;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.swt.SWT;
@@ -43,15 +39,9 @@ public class PersoSimGuiMain {
 	private final PrintStream originalSystemOut = System.out;
 	
 	private PrintStream newSystemOut;
-	
-    private final PipedInputStream outPipe = new PipedInputStream();
 	private final PipedInputStream inPipe = new PipedInputStream();
 	
 	private PrintWriter inWriter;
-	
-	private Job job;
-	
-	private boolean continueScanning;
 	
 	Composite parent;
 	
@@ -64,7 +54,6 @@ public class PersoSimGuiMain {
 		}
 		
 		parent = parentComposite;
-		
 		grabSysOut();
 		grabSysIn();
 		
@@ -77,8 +66,6 @@ public class PersoSimGuiMain {
 		txtOutput.setCursor(null);
 //		txtOutput.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 		txtOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
-		
-		initializeSystemOutScanner();
 		
 		parent.setLayout(new GridLayout(1, false));
 		
@@ -107,58 +94,33 @@ public class PersoSimGuiMain {
 		simThread.start();
 		
 	}
-	
-	public void initializeSystemOutScanner() {
-		continueScanning = true;
-		job = new Job("System Out Scanner Job") {
-		  @Override
-		  protected IStatus run(IProgressMonitor monitor) {
-		    final Scanner s = new Scanner(outPipe);
-	        while (continueScanning && s.hasNextLine()) {
-	        	// update the UI
-	        	sync.syncExec(new Runnable() {
-	  		      @Override
-	  		      public void run() {
-	  		        // manipulate user interface
-	  		    	txtOutput.append(s.nextLine() + System.lineSeparator());
-	  		      }
-	  		    });
-	        }
-	        
-	        sync.syncExec(new Runnable() {
-	  		      @Override
-	  		      public void run() {
-	  		        // manipulate user interface
-	  		    	txtOutput.append("Job finished");
-	  		      }
-	        });
-	        
-	        s.close();
-		    
-		    return Status.OK_STATUS;
-		  }
-		};
-
-		// Start the Job
-		job.schedule();
-	}
-	
+		
 	/**
 	 * This method activates redirection of System.out.
 	 */
 	private void grabSysOut() {
-	    try {
-	    	newSystemOut = new PrintStream(new PipedOutputStream(outPipe), true);
-	    	System.setOut(newSystemOut);
-	    	
-	    	if(newSystemOut != null) {
-	    		originalSystemOut.println("activated redirection of System.out");
-	    	}
-	    }
-	    catch(IOException e) {
-	    	originalSystemOut.println("Error: " + e);
-	    	return;
-	    }
+	    OutputStream out = new OutputStream() {
+			
+			@Override
+			public void write(int b) throws IOException {
+				final char value = (char) b;
+				sync.syncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						txtOutput.append(String.valueOf(value));
+					}
+				});
+			}
+		};
+
+		newSystemOut = new PrintStream(out, true);
+		
+		System.setOut(newSystemOut);
+		
+		if(newSystemOut != null) {
+			originalSystemOut.println("activated redirection of System.out");
+		}
 	    
 	}
 	
@@ -175,12 +137,14 @@ public class PersoSimGuiMain {
 			System.setOut(originalSystemOut);
 			System.out.println("deactivated redirection of System.out");
 		}
+		newSystemOut.close();
 	}
 	
 	/**
 	 * This method activates redirection of System.in.
 	 */
 	private void grabSysIn() {
+		// XXX check if redirecting the system in is actually necessary
 		try {
 	    	inWriter = new PrintWriter(new PipedOutputStream(inPipe), true);
 	    	System.setIn(inPipe);
@@ -204,8 +168,6 @@ public class PersoSimGuiMain {
 	
 	@PreDestroy
 	public void cleanUp() {
-		continueScanning = false;
-//		job.cancel();
 		releaseSysOut();
 		releaseSysIn();
 		System.exit(0);
