@@ -44,6 +44,7 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 	public Collection<String> getSupportedProfiles() {
 		HashSet<String> retVal = new HashSet<String>();
 		retVal.add(GtConstants.PROFILE_CA2);
+		retVal.add(GtConstants.PROFILE_CS);
 		retVal.add(GtConstants.PROFILE_ECDH);
 		retVal.add(GtConstants.PROFILE_PACE);
 		retVal.add(GtConstants.PROFILE_PACE_CAN);
