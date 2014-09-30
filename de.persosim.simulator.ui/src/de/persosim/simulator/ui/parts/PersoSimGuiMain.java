@@ -7,6 +7,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -100,17 +101,41 @@ public class PersoSimGuiMain {
 	 */
 	private void grabSysOut() {
 	    OutputStream out = new OutputStream() {
+
+			char [] buffer = new char [80];
+			int currentPosition = 0;
+			boolean checkNextForNewline = false;
 			
 			@Override
 			public void write(int b) throws IOException {
 				final char value = (char) b;
-				sync.syncExec(new Runnable() {
-					
-					@Override
-					public void run() {
-						txtOutput.append(String.valueOf(value));
+				
+				if (checkNextForNewline && value == '\n'){
+					checkNextForNewline = false;
+					return;
+				}
+
+				if (currentPosition < buffer.length - 1 && !(value == '\n' || value == '\r')){
+					buffer [currentPosition++] = value;
+				} else {
+					if (value == '\n' || value == '\r'){
+						if (value == '\r'){
+							checkNextForNewline = true;
+						}
+						buffer [currentPosition++] = '\n';
 					}
-				});
+
+					sync.syncExec(new Runnable() {
+						
+						@Override
+						public void run() {
+							txtOutput.append(new String(Arrays.copyOf(buffer, currentPosition)));
+						}
+					});
+					currentPosition = 0;
+				}
+				
+				
 			}
 		};
 
