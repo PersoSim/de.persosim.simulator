@@ -103,7 +103,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		byte ins = processingData.getCommandApdu().getIns(); 
 		if (cla == (byte) 0xff && ins == INS_86_GENERAL_AUTHENTICATE) {
 			processInitPaceBypass(processingData);
-		} else if (cla != 0xff && ((cla&0x03) == 0x03)) {
+		} else {
 			processSm(processingData);
 		}
 		
@@ -243,7 +243,8 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			TlvValue responseData = new TlvDataObjectContainer(responseObjects);
 			
 			
-			
+			//enable pseudo SM
+			pseudoSmIsActive = true;
 			
 			//propagate data about successfully performed SecMechanism in SecStatus 
 			PaceMechanism paceMechanism = new PaceMechanism(passwordObject, compEphermeralPublicKey, usedChat);
@@ -281,12 +282,18 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		byte cla = commandApdu.getCla();
 		if ((cla&0x03) != 0x03) {
 			if (pseudoSmIsActive) {
-				log(this, "Plain APDU received, breaking pseudo SM");
-				pseudoSmIsActive = false;
-				
-				//remove from protocol stack
-				processingData.addUpdatePropagation(this, "Pseudo SM deactivated, no need to stay on stack", new ProtocolUpdate(true));
+				//TODO reformulate this expression
+				if (!(commandApdu instanceof IsoSecureMessagingCommandApdu) || !((IsoSecureMessagingCommandApdu) commandApdu).wasSecureMessaging()){
+					
+
+					log(this, "Plain APDU received, breaking pseudo SM");
+					pseudoSmIsActive = false;
+					
+					//remove from protocol stack
+					processingData.addUpdatePropagation(this, "Pseudo SM deactivated, no need to stay on stack", new ProtocolUpdate(true));
+				}
 			}
+			return;
 		}
 		//ignore everything when pseudo SM is not active
 		if (!pseudoSmIsActive ) {
@@ -317,7 +324,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 
 	@Override
 	public void reset() {
-		pseudoSmIsActive = false;
+		//do NOT reset anything here (as this might be called when the protocol is still active on stack)
 	}
 
 }
