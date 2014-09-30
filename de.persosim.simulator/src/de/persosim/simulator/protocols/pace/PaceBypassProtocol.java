@@ -116,20 +116,17 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 	 * 
 	 */
 	private void processInitPaceBypass(ProcessingData processingData) {
-		// FIXME Auto-generated method stub
-		//FIXME validate input
-		
 		//get commandDataContainer
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 		
 		// PACE password id
-		PasswordAuthObject pacePassword; //FIXME rename this
+		PasswordAuthObject passwordObject;
 		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_83);
 		
 		CardObject pwdCandidate = cardState.getObject(new AuthObjectIdentifier(tlvObject.getValueField()), Scope.FROM_MF);
 		if (pwdCandidate instanceof PasswordAuthObject){
-			pacePassword = (PasswordAuthObject) pwdCandidate;
-			log(this, "selected password is: " + AbstractPaceProtocol.getPasswordName(pacePassword.getPasswordIdentifier()), DEBUG);
+			passwordObject = (PasswordAuthObject) pwdCandidate;
+			log(this, "selected password is: " + AbstractPaceProtocol.getPasswordName(passwordObject.getPasswordIdentifier()), DEBUG);
 		} else {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
 			processingData.updateResponseAPDU(this, "no fitting authentication object found", resp);
@@ -166,7 +163,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 
 			 trustPoint = (TrustPointCardObject) cardState.getObject(
 					new TrustPointIdentifier(terminalType), Scope.FROM_MF);
-			if (!AbstractPaceProtocol.checkPasswordAndAccessRights(usedChat, pacePassword)){
+			if (!AbstractPaceProtocol.checkPasswordAndAccessRights(usedChat, passwordObject)){
 				ResponseApdu resp = new ResponseApdu(
 						Iso7816.SW_6A80_WRONG_DATA);
 				processingData.updateResponseAPDU(this, "The given terminal type and password does not match the access rights", resp);
@@ -180,11 +177,11 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		boolean paceSuccessful;
 		short sw;
 		String note;
-		if(Arrays.equals(providedPassword, pacePassword.getPassword())) {
+		if(Arrays.equals(providedPassword, passwordObject.getPassword())) {
 			log(this, "Provided password matches expected one", DEBUG);
 			
-			if(pacePassword instanceof PasswordAuthObjectWithRetryCounter) {
-				ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pacePassword, cardState);
+			if(passwordObject instanceof PasswordAuthObjectWithRetryCounter) {
+				ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(passwordObject, cardState);
 				
 				sw = pinResponse.getStatusWord();
 				note = pinResponse.getResponse();
@@ -200,8 +197,8 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			log(this, "Provided password does NOT match expected one", DEBUG);
 			paceSuccessful = false;
 			
-			if(pacePassword.getPasswordIdentifier() == Pace.PWD_PIN) {
-				ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) pacePassword);
+			if(passwordObject.getPasswordIdentifier() == Pace.PWD_PIN) {
+				ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) passwordObject);
 				sw = pinResponse.getStatusWord();
 				note = pinResponse.getResponse();
 			} else{
@@ -249,7 +246,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			
 			
 			//propagate data about successfully performed SecMechanism in SecStatus 
-			PaceMechanism paceMechanism = new PaceMechanism(pacePassword, compEphermeralPublicKey, usedChat);
+			PaceMechanism paceMechanism = new PaceMechanism(passwordObject, compEphermeralPublicKey, usedChat);
 			processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
 				
 			responseApdu = new ResponseApdu(responseData, sw);
