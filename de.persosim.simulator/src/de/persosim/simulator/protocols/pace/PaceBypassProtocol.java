@@ -1,21 +1,47 @@
 package de.persosim.simulator.protocols.pace;
 
+import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static de.persosim.simulator.utils.PersoSimLogger.logException;
+
+import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
+import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
+import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
+import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.MasterFile;
+import de.persosim.simulator.cardobjects.PasswordAuthObject;
+import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
+import de.persosim.simulator.cardobjects.Scope;
+import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
+import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Protocol;
+import de.persosim.simulator.protocols.ResponseData;
+import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
+import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
+import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
+import de.persosim.simulator.secstatus.SecStatus.SecContext;
+import de.persosim.simulator.securemessaging.SmDataProviderTr03110;
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
+import de.persosim.simulator.tlv.TlvDataObjectContainer;
+import de.persosim.simulator.tlv.TlvValue;
+import de.persosim.simulator.tlv.TlvValuePlain;
+import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.InfoSource;
 
 /**
@@ -64,7 +90,6 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 
 	@Override
 	public void process(ProcessingData processingData) {
-		//FIXME implement
 		byte cla = processingData.getCommandApdu().getCla();
 		byte ins = processingData.getCommandApdu().getIns(); 
 		if (cla == 0xff && ins == INS_86_GENERAL_AUTHENTICATE) {
@@ -84,6 +109,125 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 	private void processInitPaceBypass(ProcessingData processingData) {
 		// FIXME Auto-generated method stub
 		//FIXME validate input
+		
+		//get commandDataContainer
+		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
+		
+		// PACE password id
+		PasswordAuthObject pacePassword; //FIXME rename this
+		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_83);
+		
+		CardObject pwdCandidate = cardState.getObject(new AuthObjectIdentifier(tlvObject.getValueField()), Scope.FROM_MF);
+		if (pwdCandidate instanceof PasswordAuthObject){
+			pacePassword = (PasswordAuthObject) pwdCandidate;
+			log(this, "selected password is: " + AbstractPaceProtocol.getPasswordName(pacePassword.getPasswordIdentifier()), DEBUG);
+		} else {
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+			processingData.updateResponseAPDU(this, "no fitting authentication object found", resp);
+			/* there is nothing more to be done here */
+			return;
+		}
+		
+		// provided password
+		tlvObject = commandData.getTlvDataObject(TAG_92);
+		if (tlvObject == null) {
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
+			processingData.updateResponseAPDU(this, "no password provided", resp);
+			/* there is nothing more to be done here */
+			return;
+		}
+		byte[] providedPassword = tlvObject.getValueField();
+		
+		//FIXME extract CHAT
+		CertificateHolderAuthorizationTemplate usedChat = null;
+		
+		
+		//check passwords
+		boolean paceSuccessful;
+		short sw;
+		String note;
+		if(Arrays.equals(providedPassword, pacePassword.getPassword())) {
+			log(this, "Provided password matches expected one", DEBUG);
+			
+			if(pacePassword instanceof PasswordAuthObjectWithRetryCounter) {
+				ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pacePassword, cardState);
+				
+				sw = pinResponse.getStatusWord();
+				note = pinResponse.getResponse();
+				
+				paceSuccessful = !Iso7816Lib.isReportingError(sw);
+			} else{
+				sw = Iso7816.SW_9000_NO_ERROR;
+				note = "MutualAuthenticate processed successfully";
+				paceSuccessful = true;
+			}
+		} else{
+			//PACE failed
+			log(this, "Provided password does NOT match expected one", DEBUG);
+			paceSuccessful = false;
+			
+			if(pacePassword.getPasswordIdentifier() == Pace.PWD_PIN) {
+				ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) pacePassword);
+				sw = pinResponse.getStatusWord();
+				note = pinResponse.getResponse();
+			} else{
+				sw = Iso7816.SW_6A80_WRONG_DATA;
+				note = "authentication token received from PCD does NOT match expected one";
+			}
+		}
+		
+		ResponseApdu responseApdu;
+		
+		if(paceSuccessful) {
+			ConstructedTlvDataObject constructed7C = new ConstructedTlvDataObject(TAG_7C);
+			
+			byte[] compEphermeralPublicKey = HexString.toByteArray("0102030405060708900A0B0C0D0E0F1011121314"); //arbitrary selected value
+			TlvDataObject primitive86 = new PrimitiveTlvDataObject(TAG_86, compEphermeralPublicKey);
+			constructed7C.addTlvDataObject(primitive86);
+			
+//			//add CARs to response data if available
+//			if (trustPoint != null) {
+//				if (trustPoint.getCurrentCertificate() != null
+//						&& trustPoint.getCurrentCertificate()
+//								.getCertificateHolderReference() instanceof PublicKeyReference) {
+//					constructed7C
+//							.addTlvDataObject(new PrimitiveTlvDataObject(
+//									TAG_87, trustPoint.getCurrentCertificate()
+//											.getCertificateHolderReference()
+//											.getBytes()));
+//					if (trustPoint.getPreviousCertificate() != null
+//							&& trustPoint.getPreviousCertificate()
+//									.getCertificateHolderReference() instanceof PublicKeyReference) {
+//						constructed7C
+//								.addTlvDataObject(new PrimitiveTlvDataObject(
+//										TAG_88,
+//										trustPoint
+//												.getPreviousCertificate()
+//												.getCertificateHolderReference()
+//												.getBytes()));
+//					}
+//				}
+//			}
+			
+			TlvValue responseData = new TlvDataObjectContainer(constructed7C);
+			
+			
+			
+			
+			//propagate data about successfully performed SecMechanism in SecStatus 
+			PaceMechanism paceMechanism = new PaceMechanism(pacePassword, compEphermeralPublicKey, usedChat);
+			processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
+				
+			responseApdu = new ResponseApdu(responseData, sw);
+			processingData.updateResponseAPDU(this, "stablished PACE Bypass", responseApdu);
+		
+		} else{
+			responseApdu = new ResponseApdu(sw);
+		}
+		
+		processingData.updateResponseAPDU(this, note, responseApdu);
+
+		
 		//FIXME add info to SecStatus
 		//FIXME ensure that protocol stays on stack as long as pseudo SM is active
 	}
