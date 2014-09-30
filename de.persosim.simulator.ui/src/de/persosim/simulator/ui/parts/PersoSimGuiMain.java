@@ -165,7 +165,6 @@ public class PersoSimGuiMain {
 			System.setOut(originalSystemOut);
 			System.out.println("deactivated redirection of System.out");
 		}
-		newSystemOut.close();
 	}
 	
 	/**
