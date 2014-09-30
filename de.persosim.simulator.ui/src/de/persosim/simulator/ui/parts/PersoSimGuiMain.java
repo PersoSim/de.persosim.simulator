@@ -125,11 +125,14 @@ public class PersoSimGuiMain {
 						buffer [currentPosition++] = '\n';
 					}
 
+					final String toPrint = new String(Arrays.copyOf(buffer, currentPosition));
+					originalSystemOut.print(toPrint);
+					
 					sync.syncExec(new Runnable() {
 						
 						@Override
 						public void run() {
-							txtOutput.append(new String(Arrays.copyOf(buffer, currentPosition)));
+							txtOutput.append(toPrint);
 						}
 					});
 					currentPosition = 0;
