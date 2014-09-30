@@ -48,6 +48,7 @@ import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.protocols.ca.CaProtocol;
 import de.persosim.simulator.protocols.file.FileProtocol;
 import de.persosim.simulator.protocols.pace.Pace;
+import de.persosim.simulator.protocols.pace.PaceBypassProtocol;
 import de.persosim.simulator.protocols.pace.PaceProtocol;
 import de.persosim.simulator.protocols.pin.PinProtocol;
 import de.persosim.simulator.protocols.ri.Ri;
@@ -647,6 +648,10 @@ public abstract class DefaultPersonalization extends XmlPersonalization implemen
 		PaceProtocol paceProtocol = new PaceProtocol();
 		paceProtocol.init();
 		protocols.add(paceProtocol);
+		
+		/* load PACE bypass protocol */
+		PaceBypassProtocol paceBypassProtocol = new PaceBypassProtocol();
+		protocols.add(paceBypassProtocol);
 
 		/* load FM protocol */
 		FileProtocol fileManagementProtocol = new FileProtocol();
