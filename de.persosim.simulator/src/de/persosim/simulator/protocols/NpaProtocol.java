@@ -38,7 +38,7 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 		ConstructedTlvDataObject cardInfoLocator = new ConstructedTlvDataObject(TAG_SEQUENCE);
 		cardInfoLocator.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Tr03110.id_CI));
 		cardInfoLocator.addTlvDataObject(new PrimitiveTlvDataObject(TAG_IA5_STRING,
-		HexString.toByteArray("68 74 74 70 73 3A 2F 2F 77 77 77 2E 68 6A 70 2D 63 6F 6E 73 75 6C 74 69 6E 67 2E 63 6F 6D 2F 68 6F 6D 65"))); 
+		HexString.toByteArray("68 74 74 70 3A 2F 2F 62 73 69 2E 62 75 6E 64 2E 64 65 2F 63 69 66 2F 6E 70 61 2E 78 6D 6C"))); 
 		secInfos.add(cardInfoLocator);
 			
 		return secInfos;
