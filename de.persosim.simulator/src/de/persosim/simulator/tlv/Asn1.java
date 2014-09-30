@@ -64,5 +64,6 @@ public interface Asn1 {
 	public static final byte OBJECT_IDENTIFIER = UNIVERSAL_OBJECT_IDENTIFIER;
 	public static final byte SEQUENCE = ENCODING_CONSTRUCTED | UNIVERSAL_SEQUENCE;
 	public static final byte SET = ENCODING_CONSTRUCTED | UNIVERSAL_SET;
+	public static final byte IA5_STRING = UNIVERSAL_IA5_STRING;
 
 }

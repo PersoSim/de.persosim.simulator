@@ -336,13 +336,16 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 				new KeyIdentifier(), caOidIdentifier);
 		
 		ArrayList<TlvDataObject> secInfos = new ArrayList<>();
-		ArrayList<TlvDataObject> privKeysPublicKeyInfos = new ArrayList<>();
-		ArrayList<TlvDataObject> unprivKeysPublicKeyInfos = new ArrayList<>();
+		ArrayList<TlvDataObject> privilegedSecInfos = new ArrayList<>();
+		ArrayList<TlvDataObject> unprivilegedPublicKeyInfos = new ArrayList<>();
+		ArrayList<TlvDataObject> privilegedPublicKeyInfos = new ArrayList<>();
 		
-		for (CardObject curKey : caKeyCardObjects) {
-			if (! (curKey instanceof KeyObject)) {
+		
+		for (CardObject curObject : caKeyCardObjects) {
+			if (! (curObject instanceof KeyObject)) {
 				continue;
 			}
+			KeyObject curKey = (KeyObject) curObject;
 			Collection<CardObjectIdentifier> identifiers = curKey.getAllIdentifiers();
 			
 			//extract keyId
@@ -369,12 +372,16 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{2}));
 					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 					
-					secInfos.add(caInfo);					
+					if (curKey.isPrivilegedOnly()) {
+						privilegedSecInfos.add(caInfo);
+					} else {
+						secInfos.add(caInfo);
+					}
 				}
 			}
 			
 			//extract required data from curKey
-			ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(((KeyObject) curKey).getKeyPair().getPublic().getEncoded());
+			ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(curKey.getKeyPair().getPublic().getEncoded());
 			ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTlvDataObject(TAG_SEQUENCE);
 			TlvDataObject subjPubKey = encKey.getTlvDataObject(TAG_BIT_STRING);
 			
@@ -386,7 +393,11 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			caDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericCaOidBytes));
 			caDomainInfo.addTlvDataObject(algIdentifier);
 			caDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
-			secInfos.add(caDomainInfo);
+			if (curKey.isPrivilegedOnly()) {
+				privilegedSecInfos.add(caDomainInfo);
+			} else {
+				secInfos.add(caDomainInfo);
+			}
 			
 			//build SubjectPublicKeyInfo
 			ConstructedTlvDataObject subjPubKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
@@ -399,32 +410,36 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Utils.concatByteArrays(Tr03110.id_PK, new byte[] {genericCaOidBytes[8]})));
 				caPublicKeyInfo.addTlvDataObject(subjPubKeyInfo);
 				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
-				secInfos.add(caPublicKeyInfo);
 				
-				if (((KeyObject) curKey).isPrivilegedOnly()) {
-					privKeysPublicKeyInfos.add(caPublicKeyInfo);
+				
+				if (curKey.isPrivilegedOnly()) {
+					privilegedPublicKeyInfos.add(caPublicKeyInfo);
 				} else {
-					unprivKeysPublicKeyInfos.add(caPublicKeyInfo);
+					unprivilegedPublicKeyInfos.add(caPublicKeyInfo);
 				}
 			}
 			
-			//TODO handle duplicates?
 		}
 		
 		// add publicKeys if publicity allows
 		if ((publicity == SecInfoPublicity.AUTHENTICATED) || (publicity == SecInfoPublicity.PRIVILEGED)) {
-			secInfos.addAll(unprivKeysPublicKeyInfos);
+			secInfos.addAll(unprivilegedPublicKeyInfos);
 		}
 		
-		// add PrivilegedTerminalInfo if publicity allows
-		if ((publicity == SecInfoPublicity.PRIVILEGED)) {
-			
+		//add PrivilegedTerminalInfo if privileged keys are available
+		if (privilegedSecInfos.size() + privilegedPublicKeyInfos.size() > 0) {
 			ConstructedTlvDataObject privilegedTerminalInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 			privilegedTerminalInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Tr03110.id_PT));
+			ConstructedTlvDataObject privilegedTerminaInfoSet = new ConstructedTlvDataObject(TAG_SET);
+			privilegedTerminalInfo.addTlvDataObject(privilegedTerminaInfoSet);
 			
-			ConstructedTlvDataObject privKeys = new ConstructedTlvDataObject(TAG_SET);
-			privKeys.addAll(privKeysPublicKeyInfos);
-			privilegedTerminalInfo.addTlvDataObject(privKeys);
+			// add all privileged infos
+			privilegedTerminaInfoSet.addAll(privilegedSecInfos);
+		
+			// add privileged public keys if publicity allows
+			if ((publicity == SecInfoPublicity.PRIVILEGED)) {
+				privilegedTerminaInfoSet.addAll(privilegedPublicKeyInfos);
+			}
 			
 			secInfos.add(privilegedTerminalInfo);
 		}

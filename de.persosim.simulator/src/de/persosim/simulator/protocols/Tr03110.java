@@ -20,6 +20,8 @@ public interface Tr03110 {
 	
 	public final static byte[] id_PK                               = Utils.appendBytes(id_BSI, new byte[]{0x02, 0x02, 0x01});
 	
+	public final static byte[] id_CI                               = Utils.appendBytes(id_BSI, new byte[]{0x02, 0x02, 0x06});
+	
 	public final static byte[] id_PT                               = Utils.appendBytes(id_BSI, new byte[]{0x02, 0x02, 0x08});
 	
 	public final static byte ID_MRZ = 1;
