@@ -78,7 +78,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 		// collect SecInfos from protocols
 		ConstructedTlvDataObject secInfos = new ConstructedTlvDataObject(new TlvTag(Asn1.SET));
 		for (Protocol curProtocol : perso.getProtocolList()) {
-			secInfos.addAll(curProtocol.getSecInfos(SecInfoPublicity.PUBLIC, perso.getObjectTree()));
+			secInfos.addAll(curProtocol.getSecInfos(secInfoPublicity, perso.getObjectTree()));
 		}
 				
 		return secInfos;
