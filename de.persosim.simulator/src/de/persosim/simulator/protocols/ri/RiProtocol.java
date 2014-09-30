@@ -441,5 +441,10 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 	public void reset() {
 		privateKeyReference = -1;
 	}
+	
+	@Override
+	public boolean isMoveToStackRequested() {
+		return false;
+	}
 
 }

@@ -63,5 +63,10 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 	public String getIDString() {
 		return "nPA protocol";
 	}
+	
+	@Override
+	public boolean isMoveToStackRequested() {
+		return false;
+	}
 
 }

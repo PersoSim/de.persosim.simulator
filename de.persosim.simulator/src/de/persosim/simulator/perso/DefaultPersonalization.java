@@ -644,15 +644,15 @@ public abstract class DefaultPersonalization extends XmlPersonalization implemen
 	protected void buildProtocolList() {
 		protocols = new ArrayList<>();
 
+		/* load PACE bypass protocol */
+		PaceBypassProtocol paceBypassProtocol = new PaceBypassProtocol();
+		protocols.add(paceBypassProtocol);
+
 		/* load PACE protocol */
 		PaceProtocol paceProtocol = new PaceProtocol();
 		paceProtocol.init();
 		protocols.add(paceProtocol);
 		
-		/* load PACE bypass protocol */
-		PaceBypassProtocol paceBypassProtocol = new PaceBypassProtocol();
-		protocols.add(paceBypassProtocol);
-
 		/* load FM protocol */
 		FileProtocol fileManagementProtocol = new FileProtocol();
 		fileManagementProtocol.init();

@@ -94,5 +94,20 @@ public interface Protocol {
 	 * created and initialized object (e.g. object created via constructor).
 	 */
 	public abstract void reset();
+
+	/**
+	 * This allows a protocol to be moved to the protocol stack even without
+	 * processing an APDU.
+	 * <p/>
+	 * This method is called every time after {@link #process(ProcessingData)}
+	 * is called when the protocol is not referenced from the protocol stack.
+	 * <p/>
+	 * When using this option keep in mind to ensure that this either returns
+	 * only true if no instance is already on the stack or the protocol
+	 * implementation is robust enough to be added to the stack multiple times.
+	 * 
+	 * @return
+	 */
+	public abstract boolean isMoveToStackRequested();
 	
 }

@@ -76,6 +76,16 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 
 	private CardStateAccessor cardState;
 	private boolean pseudoSmIsActive = false;
+	
+	/*
+	 * Move to stack relies on the order processingData is processed. If the
+	 * protocol is already on the stack it is known that the ProcessingData will
+	 * be seen at least twice before {@link #isMoveToStackRequested()} is
+	 * called. This checking is implemented at the beginning of #process and
+	 * results are stored in the following two variables.
+	 */
+	private boolean moveToStack = true;
+	private ProcessingData lastSeenProcessingData = null;
 
 	public PaceBypassProtocol() {
 		reset();
@@ -99,6 +109,14 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 
 	@Override
 	public void process(ProcessingData processingData) {
+		//check whether this processingData has been seen before
+		if (processingData == lastSeenProcessingData) {
+			moveToStack = false;
+		} else {
+			moveToStack = true;
+			lastSeenProcessingData = processingData;
+		}
+		
 		byte cla = processingData.getCommandApdu().getCla();
 		byte ins = processingData.getCommandApdu().getIns(); 
 		if (cla == (byte) 0xff && ins == INS_86_GENERAL_AUTHENTICATE) {
@@ -325,6 +343,11 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 	@Override
 	public void reset() {
 		//do NOT reset anything here (as this might be called when the protocol is still active on stack)
+	}
+	
+	@Override
+	public boolean isMoveToStackRequested() {
+		return moveToStack;
 	}
 
 }
