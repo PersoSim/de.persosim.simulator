@@ -73,13 +73,19 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 		return perso.getObjectTree()
 				.findChildren(new FileIdentifier(fileIdentifier)).size() != 1;
 	}
-
-	protected void createEfCardAccess(Personalization perso) {
+	
+	private ConstructedTlvDataObject getSecInfos(Personalization perso, SecInfoPublicity secInfoPublicity) {
 		// collect SecInfos from protocols
 		ConstructedTlvDataObject secInfos = new ConstructedTlvDataObject(new TlvTag(Asn1.SET));
 		for (Protocol curProtocol : perso.getProtocolList()) {
 			secInfos.addAll(curProtocol.getSecInfos(SecInfoPublicity.PUBLIC, perso.getObjectTree()));
 		}
+				
+		return secInfos;
+	}
+
+	protected void createEfCardAccess(Personalization perso) {
+		ConstructedTlvDataObject secInfos = getSecInfos(perso, SecInfoPublicity.PUBLIC);
 
 		// add file to object tree
 		ElementaryFile efCardAccess = new ElementaryFile(new FileIdentifier(
@@ -92,11 +98,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 	}
 
 	protected void createEfCardSecurity(Personalization perso) {
-		// collect SecInfos from protocols
-		ConstructedTlvDataObject secInfos = new ConstructedTlvDataObject(new TlvTag(Asn1.SET));
-		for (Protocol curProtocol : perso.getProtocolList()) {
-			secInfos.addAll(curProtocol.getSecInfos(SecInfoPublicity.AUTHENTICATED, perso.getObjectTree()));
-		}
+		ConstructedTlvDataObject secInfos = getSecInfos(perso, SecInfoPublicity.AUTHENTICATED);
 		
 		TlvDataObject cmsSignedData = buildSignedDataFile(secInfos);
 
@@ -110,11 +112,7 @@ public class DefaultNpaUnmarshallerCallback implements PersoUnmarshallerCallback
 	}
 
 	protected void createEfChipSecurity(Personalization perso) {
-		// collect SecInfos from protocols
-		ConstructedTlvDataObject secInfos = new ConstructedTlvDataObject(new TlvTag(Asn1.SET));
-		for (Protocol curProtocol : perso.getProtocolList()) {
-			secInfos.addAll(curProtocol.getSecInfos(SecInfoPublicity.PRIVILEGED, perso.getObjectTree()));
-		}
+		ConstructedTlvDataObject secInfos = getSecInfos(perso, SecInfoPublicity.PRIVILEGED);
 		
 		SecCondition taWithIs = new TaSecurityCondition(TerminalType.IS, null);
 		SecCondition taWithAtPrivileged = new TaSecurityCondition(
