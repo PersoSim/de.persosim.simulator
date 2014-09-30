@@ -267,14 +267,16 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 	 * After PACE was successfully initialized through
 	 * {@link #processInitPaceBypass(ProcessingData)} pseudo SM is initiated,
 	 * that does not provide any kind of security. This is indicated by usage of
-	 * the otherwise unused logical Channel 3 e.g. the lowest two bits of CLA are
-	 * set.
+	 * the otherwise unused logical Channel 3 e.g. the lowest two bits of CLA
+	 * are set.
 	 * <p/>
 	 * This method removes these flagging bits and ensures that the "decoded"
 	 * commandApdu correctly returns on
 	 * {@link IsoSecureMessagingCommandApdu#wasSecureMessaging()}
 	 * <p/>
-	 * FIXME how to indicate SM responses?
+	 * Responses are simply returned in plain. Pseudo SM is aborted when an SM
+	 * 6987 or 6988 is returned or whenever a plain (unflagged) APDU is
+	 * transmitted.
 	 */
 	private void processSm(ProcessingData processingData) {
 		CommandApdu commandApdu = processingData.getCommandApdu();
