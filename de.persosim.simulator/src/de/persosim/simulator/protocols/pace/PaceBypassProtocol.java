@@ -10,8 +10,10 @@ import java.util.Collections;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.persosim.simulator.apdu.CommandApdu;
+import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
+import de.persosim.simulator.apdu.SmMarkerApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
@@ -70,106 +72,6 @@ import de.persosim.simulator.utils.InfoSource;
 //XXX reduce code duplication with AbstractPaceProtocol
 public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecificationConstants,
 		InfoSource, TlvConstants {
-
-	public class SmMarkerApdu implements CommandApdu {
-
-		@Override
-		public byte getIsoFormat() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public byte getCla() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public byte getIns() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public byte getP1() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public byte getP2() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public byte getIsoCase() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public boolean isExtendedLength() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public int getNc() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public TlvValue getCommandData() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public TlvDataObjectContainer getCommandDataObjectContainer() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public int getNe() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public short getP1P2() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public byte[] getHeader() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public byte[] toByteArray() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public CommandApdu getPredecessor() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public boolean isNeZeroEncoded() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-	}
 
 	private CardStateAccessor cardState;
 	private boolean pseudoSmIsActive = false;
@@ -381,6 +283,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			if (pseudoSmIsActive) {
 				log(this, "Plain APDU received, breaking pseudo SM");
 				pseudoSmIsActive = false;
+				//FIXME remove from protocol stack
 			}
 		}
 		//ignore everything when pseudo SM is not active
@@ -390,8 +293,13 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		}
 		
 		//add a dummy APDU in the chain that indicates wasSecureMessaging()
-//		processingData.updateCommandApdu(this, "SM marker APDU added", new SmMarkerApdu(commandApdu));
+		SmMarkerApdu smMarkerApdu = new SmMarkerApdu(commandApdu);
+		processingData.updateCommandApdu(this, "SM marker APDU added", smMarkerApdu);
 		
+		//unmask the pseudo SM CLA and create new CommandApdu 
+		byte[] apduBytes = commandApdu.toByteArray();
+		apduBytes[0] &= (byte) 0xFC;
+		processingData.updateCommandApdu(this, "Unmasked plain APDU", CommandApduFactory.createCommandApdu(apduBytes, smMarkerApdu));
 	}
 
 	@Override
