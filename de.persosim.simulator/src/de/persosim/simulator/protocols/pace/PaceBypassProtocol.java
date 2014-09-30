@@ -30,6 +30,7 @@ import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Protocol;
+import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.ResponseData;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.CertificateRole;
@@ -285,7 +286,9 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			if (pseudoSmIsActive) {
 				log(this, "Plain APDU received, breaking pseudo SM");
 				pseudoSmIsActive = false;
-				//FIXME remove from protocol stack
+				
+				//remove from protocol stack
+				processingData.addUpdatePropagation(this, "Pseudo SM deactivated, no need to stay on stack", new ProtocolUpdate(true));
 			}
 		}
 		//ignore everything when pseudo SM is not active
