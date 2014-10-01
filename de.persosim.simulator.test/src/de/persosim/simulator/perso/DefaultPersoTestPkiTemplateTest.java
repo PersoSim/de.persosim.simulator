@@ -54,7 +54,7 @@ public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetGeneralPlaceDgTlv() throws UnsupportedEncodingException {
-		ConstructedTlvDataObject received = AbstractProfile.getGeneralPlaceDgTlv(new TlvTag((byte) 0x71), "HEIDESTRASSE 17", "KÖLN", null, "D", "51147");
+		ConstructedTlvDataObject received = AbstractProfile.getGeneralPlaceDgTlv(new TlvTag((byte) 0x71), "HEIDESTRASSE 17", "K\u00D6LN", null, "D", "51147");
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("712C302AAA110C0F484549444553545241535345203137AB070C054BC3964C4EAD03130144AE0713053531313437"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
