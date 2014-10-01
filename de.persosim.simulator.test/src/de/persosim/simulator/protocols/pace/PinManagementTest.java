@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import mockit.Deencapsulation;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
@@ -433,18 +432,13 @@ public class PinManagementTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetMutualAuthenticatePinManagementResponsePaceFailed(){
-		paceProtocol.pacePassword = pwdaoWithPinRc3Activated;
-		
 		short sw = (short) 0x63C0;
-		
-		short expectedSw, receivedSw;
-		ResponseData responseDataReceived;
-		
+
 		for(int i = 2; i > 0; i--) {
-			expectedSw = (short) (sw | ((short) (i & (short) 0x000F)));
+			ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceFailed(pwdaoWithPinRc3Activated);
 			
-			responseDataReceived = Deencapsulation.invoke(paceProtocol, "getMutualAuthenticatePinManagementResponsePaceFailed");
-			receivedSw = responseDataReceived.getStatusWord();
+			short expectedSw = (short) (sw | ((short) (i & (short) 0x000F)));
+			short receivedSw = responseDataReceived.getStatusWord();
 			
 			assertEquals("Statusword is not " + HexString.hexifyShort(expectedSw), expectedSw, receivedSw);
 		}
@@ -455,15 +449,12 @@ public class PinManagementTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetMutualAuthenticatePinManagementResponsePaceSuccessful_PinDeactivated(){
-		paceProtocol.pacePassword = pwdaoWithPinRc3Deactivated;
-		ResponseData responseDataReceived;
+		
+		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc3Deactivated, mockedCardStateAccessor);
 		
 		short expectedSw = Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE;
-		
-		responseDataReceived = Deencapsulation.invoke(paceProtocol, "getMutualAuthenticatePinManagementResponsePaceSuccessful");
 		short receivedSw = responseDataReceived.getStatusWord();
-		
-		assertEquals("Statusword is not " + HexString.hexifyShort(expectedSw), expectedSw, receivedSw);
+		assertEquals("Statusword mismatch", expectedSw, receivedSw);
 	}
 	
 	/**
@@ -471,15 +462,11 @@ public class PinManagementTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetMutualAuthenticatePinManagementResponsePaceSuccessful_PinActivatedRc3(){
-		paceProtocol.pacePassword = pwdaoWithPinRc3Activated;
-		ResponseData responseDataReceived;
+		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc3Activated, mockedCardStateAccessor);
 		
 		short expectedSw = Iso7816.SW_9000_NO_ERROR;
-		
-		responseDataReceived = Deencapsulation.invoke(paceProtocol, "getMutualAuthenticatePinManagementResponsePaceSuccessful");
 		short receivedSw = responseDataReceived.getStatusWord();
-		
-		assertEquals("Statusword is not " + HexString.hexifyShort(expectedSw), expectedSw, receivedSw);
+		assertEquals("Statusword mismatch", expectedSw, receivedSw);
 	}
 	
 	/**
@@ -487,15 +474,11 @@ public class PinManagementTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetMutualAuthenticatePinManagementResponsePaceSuccessful_PinActivatedRc2(){
-		paceProtocol.pacePassword = pwdaoWithPinRc2Activated;
-		ResponseData responseDataReceived;
+		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc2Activated, mockedCardStateAccessor);
 		
 		short expectedSw = Iso7816.SW_9000_NO_ERROR;
-		
-		responseDataReceived = Deencapsulation.invoke(paceProtocol, "getMutualAuthenticatePinManagementResponsePaceSuccessful");
 		short receivedSw = responseDataReceived.getStatusWord();
-		
-		assertEquals("Statusword is not " + HexString.hexifyShort(expectedSw), expectedSw, receivedSw);
+		assertEquals("Statusword mismatch", expectedSw, receivedSw);
 	}
 	
 	/**
@@ -515,15 +498,11 @@ public class PinManagementTest extends PersoSimTestCase {
 			}
 		};
 		
-		paceProtocol.pacePassword = pwdaoWithPinRc1Activated;
-		ResponseData responseDataReceived;
+		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc1Activated, mockedCardStateAccessor);
 		
 		short expectedSw = Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED;
-		
-		responseDataReceived = Deencapsulation.invoke(paceProtocol, "getMutualAuthenticatePinManagementResponsePaceSuccessful");
 		short receivedSw = responseDataReceived.getStatusWord();
-		
-		assertEquals("Statusword is not " + HexString.hexifyShort(expectedSw), expectedSw, receivedSw);
+		assertEquals("Statusword mismatch", expectedSw, receivedSw);
 	}
 	
 	/**
@@ -543,14 +522,10 @@ public class PinManagementTest extends PersoSimTestCase {
 			}
 		};
 		
-		paceProtocol.pacePassword = pwdaoWithPinRc1Activated;
-		ResponseData responseDataReceived;
+		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc1Activated, mockedCardStateAccessor);
 		
 		short expectedSw = Iso7816.SW_9000_NO_ERROR;
-		
-		responseDataReceived = Deencapsulation.invoke(paceProtocol, "getMutualAuthenticatePinManagementResponsePaceSuccessful");
 		short receivedSw = responseDataReceived.getStatusWord();
-		
 		assertEquals("Statusword is not " + HexString.hexifyShort(expectedSw), expectedSw, receivedSw);
 	}
 	
