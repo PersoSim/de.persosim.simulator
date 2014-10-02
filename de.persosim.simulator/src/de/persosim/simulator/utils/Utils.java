@@ -491,7 +491,7 @@ public abstract class Utils {
 	 * -1: the minimum possible value will be chosen
 	 *  0: a NumberFormatException will be thrown
 	 *  1: the maximum possible value will be chosen
-	 * Well formatted date strings will not be checked for validity, e.g. december 34th would not be discarded.
+	 * Well formatted date strings will not be checked for validity, e.g. 20140199 would not be discarded.
 	 * @param dateString the date encoded as follows: YYYYMMDD
 	 * @param handleNonNumericCharacters determine how non-numeric characters will be handled
 	 * @return a {@link Date} object
@@ -514,7 +514,7 @@ public abstract class Utils {
 		} catch (NumberFormatException e) {
 			switch (handleNonNumericCharacters) {
             	case -1: month = Calendar.JANUARY;
-                     break;
+            		break;
             	case 0:  throw e;
             	case 1:  month = Calendar.DECEMBER;
                      break;
