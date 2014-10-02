@@ -294,13 +294,9 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	
 	@Override
 	public String toString() {
-		StringBuilder sb;
+		StringBuilder sb = new StringBuilder();
 		
-		sb = new StringBuilder();
-		
-		if(this.tlvObjects.size() > 1) {
-			sb.append("(");
-		}
+		sb.append("(");
 		
 		for(TlvDataObject tlvDataObject : this.tlvObjects) {
 			sb.append("[");
@@ -308,9 +304,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 			sb.append("]");
 		}
 		
-		if(this.tlvObjects.size() > 1) {
-			sb.append(")");
-		}
+		sb.append(")");
 		
 		return sb.toString();
 	}

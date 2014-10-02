@@ -381,4 +381,40 @@ public abstract class TlvDataObject extends TlvElement implements Iso7816, Valid
 		performValidityChecks = performValidityChecksInput;
 	}
 	
+	/**
+	 * Returns a neatly indented and line wrapped version of the provided {@link TlvDataObject}
+	 * @param obj
+	 */
+	public static String dumpTlvObject(TlvDataObject obj){
+		if (obj == null) return "";
+
+		String inputStr = obj.toString();
+		StringBuilder sb = new StringBuilder();
+		
+		String indent = "";
+		
+		for (int i = 0, n = inputStr.length(); i < n; i++) {
+		    char curChar = inputStr.charAt(i);
+		    switch (curChar) {
+			case '(':
+				indent += "    ";
+				break;
+			case ')':
+				indent = indent.substring(4);
+				break;
+			case '[':
+				sb.append("\n");
+				sb.append(indent);
+				break;
+			case ']':	
+				break;
+
+			default:
+				sb.append(curChar);
+				break;
+			}
+		}
+		
+		return sb.toString();
+	}
 }
