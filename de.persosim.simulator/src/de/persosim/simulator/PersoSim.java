@@ -132,7 +132,7 @@ public class PersoSim implements Runnable {
 	 * @return the parsed arguments
 	 */
 	public static String[] parseCommand(String args) {
-		String argsInput = args.trim().toLowerCase();
+		String argsInput = args.trim();
 		
 		int index = argsInput.indexOf(" ");
 		
