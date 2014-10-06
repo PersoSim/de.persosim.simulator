@@ -128,7 +128,8 @@ public class PersoSimGuiMain {
 					final String toPrint = new String(Arrays.copyOf(buffer, currentPosition));
 					originalSystemOut.print(toPrint);
 					
-					sync.syncExec(new Runnable() {
+					//XXX MBK check why syncExec blocks (possible deadlock with System.out.print())
+					sync.asyncExec(new Runnable() {
 						
 						@Override
 						public void run() {
