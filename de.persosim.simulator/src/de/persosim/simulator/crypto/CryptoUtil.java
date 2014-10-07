@@ -356,12 +356,12 @@ public class CryptoUtil {
 	/**
 	 * This method recreates a {@link KeyPair} based on the provided domain parameter id and raw Byte arrays for public and private key.
 	 * @param standDomParamId the domain parameter id for standardized domain parameters
-	 * @param privateKeyData the raw private key data
 	 * @param publicKeyData the raw public key data
+	 * @param privateKeyData the raw private key data
 	 * @return the reconstructed key pair
 	 */
-	public static KeyPair reconstructKeyPair(int standDomParamId, byte[] privateKeyData, byte[] publicKeyData) {
-		return reconstructKeyPair(StandardizedDomainParameters.getDomainParameterSetById(standDomParamId), privateKeyData, publicKeyData);
+	public static KeyPair reconstructKeyPair(int standDomParamId, byte[] publicKeyData, byte[] privateKeyData) {
+		return reconstructKeyPair(StandardizedDomainParameters.getDomainParameterSetById(standDomParamId), publicKeyData, privateKeyData);
 	}
 	
 	/**
