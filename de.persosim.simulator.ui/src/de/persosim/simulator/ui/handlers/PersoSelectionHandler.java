@@ -28,7 +28,7 @@ public class PersoSelectionHandler {
 		String persoFileString = persoPath + persoFilePrefix + param + persoFilePostfix;
 		String persoCmdString = PersoSim.CMD_LOAD_PERSONALIZATION + " " + persoFileString;
 		
-		System.out.println("Perso Selction Handler called with param: " + param);
+		System.out.println("Perso Selection Handler called with param: " + param);
 		System.out.println("executing command: " + persoCmdString);
 		
 		persoSimGuiMain = PersoSimGuiMain.getInstance();
