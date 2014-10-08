@@ -50,6 +50,11 @@ import de.persosim.simulator.utils.Utils;
  *
  */
 public class CryptoUtil {
+	
+	public static final BigInteger ZERO = BigInteger.ZERO;
+	public static final BigInteger ONE = BigInteger.ONE;
+	public static final BigInteger TWO = BigInteger.ONE.add(BigInteger.ONE);
+	
 	public static final String CIPHER_DELIMITER = "/";
 	
 	public static final byte[] BITMASK            = new byte[]{(byte) 0x01, (byte) 0x02, (byte) 0x04, (byte) 0x08, (byte) 0x10, (byte) 0x20, (byte) 0x40, (byte) 0x80};
@@ -111,6 +116,41 @@ public class CryptoUtil {
 	 * @return the multiplied EC point
 	 */
 	public static ECPoint scalarPointMultiplication(EllipticCurve curve, ECPoint ecPoint, BigInteger multiplicator) {
+		
+		if(multiplicator.equals(ZERO)) {
+			return new ECPoint(ZERO, ZERO);
+		}
+		
+		ECPoint result;
+		
+		if((multiplicator.mod(TWO)).equals(ONE)) {
+			result = (pointAddition(curve, ecPoint, scalarPointMultiplication(curve, ecPoint, multiplicator.subtract(ONE))));
+		} else {
+			result = scalarPointMultiplication(curve, scalarPointMultiplication(curve, ecPoint, TWO), multiplicator.divide(TWO));
+		}
+		
+		BigInteger p = ((ECFieldFp) curve.getField()).getP();
+		
+		return normalize(result, p);
+	}
+	
+	public static ECPoint normalize(ECPoint ecPoint, BigInteger module) {
+		BigInteger x = ecPoint.getAffineX();
+		BigInteger y = ecPoint.getAffineY();
+		
+		return new ECPoint(x.mod(module), y.mod(module));
+	}
+	
+	/**
+	 * TODO remove BC dependency, maybe move to a dedicated helper class
+	 * 
+	 * This method performs EC scalar point multiplication
+	 * @param curve the elliptic curve to be used
+	 * @param ecPoint the point to be multiplied
+	 * @param multiplicator the scalar multiplier
+	 * @return the multiplied EC point
+	 */
+	public static ECPoint scalarPointMultiplicationBc(EllipticCurve curve, ECPoint ecPoint, BigInteger multiplicator) {
 		org.bouncycastle.math.ec.ECCurve curveBc;
 		org.bouncycastle.math.ec.ECPoint pointBc, pointBcMult;
 		
