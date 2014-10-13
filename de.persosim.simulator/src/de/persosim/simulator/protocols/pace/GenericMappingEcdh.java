@@ -15,6 +15,7 @@ import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 /**
  * This class performs the ECDH specific parts of generic mapping.
@@ -35,9 +36,16 @@ public class GenericMappingEcdh extends GenericMapping {
 		EllipticCurve curve = domainParameterSetEcdhUnMapped.getCurve();
 		ECPoint gUnMapped = domainParameterSetEcdhUnMapped.getGenerator();
 		
+		System.out.println("gUnMapped x: " + HexString.encode(Utils.toUnsignedByteArray(gUnMapped.getAffineX())));
+		System.out.println("gUnMapped y: " + HexString.encode(Utils.toUnsignedByteArray(gUnMapped.getAffineY())));
+		System.out.println("nonce S: " + HexString.encode(Utils.toUnsignedByteArray(nonceS)));
+		
 		ECPoint gspm = CryptoUtil.scalarPointMultiplication(curve, gUnMapped, nonceS);
 		
-		ECPoint  gMapped = CryptoUtil.pointAddition(curve, gspm, h);
+		System.out.println("gspm x: " + HexString.encode(Utils.toUnsignedByteArray(gspm.getAffineX())));
+		System.out.println("gspm y: " + HexString.encode(Utils.toUnsignedByteArray(gspm.getAffineY())));
+		
+		ECPoint  gMapped = CryptoUtil.addPoint(curve, gspm, h);
 		
 		DomainParameterSetEcdh domainParametersMapped = domainParameterSetEcdhUnMapped.getUpdatedDomainParameterSet(gMapped);
 		
