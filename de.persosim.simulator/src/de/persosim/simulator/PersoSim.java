@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.net.URL;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
 
 import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
 import de.persosim.simulator.perso.DefaultPersoTestPki;
@@ -67,6 +70,11 @@ public class PersoSim implements Runnable {
 	
 	public static final int DEFAULT_SIM_PORT = 9876;
 	public static final String DEFAULT_SIM_HOST = "localhost";
+	
+	public static final String persoPlugin = "platform:/plugin/de.persosim.rcp/";
+	public static final String persoPath = "personalization/profiles/";
+	public static final String persoFilePrefix = "Profile";
+	public static final String persoFilePostfix = ".xml";
 	
 	private int simPort = DEFAULT_SIM_PORT; // default
 	private boolean executeUserCommands = false;
@@ -483,6 +491,8 @@ public class PersoSim implements Runnable {
 	 * @return whether processing of the load personalization command has been successful
 	 */
 	public boolean cmdLoadPersonalization(List<String> args) {
+		System.out.println("TEST load perso");
+		
 		if((args != null) && (args.size() >= 2)) {
 			String cmd = args.get(0);
 			
@@ -491,6 +501,26 @@ public class PersoSim implements Runnable {
 				
 				args.remove(0);
     			args.remove(0);
+    			
+    			try {
+					int no = Integer.parseInt(arg);
+					
+					System.out.println("URL handling");
+					Bundle plugin = Platform.getBundle("de.persosim.simulator");
+					URL url = plugin.getEntry (persoPath + persoFilePrefix + String.format("%02d", no) + persoFilePostfix);
+					System.out.println("URL is: " + url);
+					URL resolvedURL = Platform.resolve (url);
+					System.out.println("resolved URL is: " + resolvedURL);
+					
+//					arg = persoPath + persoFilePrefix + String.format("%02d", no) + persoFilePostfix;
+					arg = resolvedURL.getPath();
+					System.out.println("arg is: " + arg);
+					System.out.println("Loading personalization profile no: " + no);
+				} catch (NumberFormatException e) {
+					System.out.println("no known profile: " + arg);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
     			
     			return loadPersonalization(arg);
 				
