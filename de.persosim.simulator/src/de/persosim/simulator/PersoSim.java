@@ -503,19 +503,16 @@ public class PersoSim implements Runnable {
     			args.remove(0);
     			
     			try {
-					int no = Integer.parseInt(arg);
+					int personalizationNumber = Integer.parseInt(arg);
 					
-					System.out.println("URL handling");
+					System.out.println("trying to load personalization profile no: " + personalizationNumber);
 					Bundle plugin = Platform.getBundle("de.persosim.simulator");
-					URL url = plugin.getEntry (persoPath + persoFilePrefix + String.format("%02d", no) + persoFilePostfix);
-					System.out.println("URL is: " + url);
+					URL url = plugin.getEntry (persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
+					System.out.println("plugin URL for selected profile is: " + url);
 					URL resolvedURL = Platform.resolve (url);
-					System.out.println("resolved URL is: " + resolvedURL);
-					
-//					arg = persoPath + persoFilePrefix + String.format("%02d", no) + persoFilePostfix;
+					System.out.println("resolved absolute URL for selected profile is: " + resolvedURL);
 					arg = resolvedURL.getPath();
 					System.out.println("arg is: " + arg);
-					System.out.println("Loading personalization profile no: " + no);
 				} catch (NumberFormatException e) {
 					System.out.println("no known profile: " + arg);
 				} catch (IOException e) {
