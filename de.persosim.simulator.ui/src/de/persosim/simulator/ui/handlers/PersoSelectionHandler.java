@@ -10,6 +10,8 @@ import de.persosim.simulator.PersoSim;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 
 /**
+ * This class implements the handler for the personalization selection menu entries.
+ * 
  * @author slutters
  *
  */
@@ -25,8 +27,7 @@ public class PersoSelectionHandler {
 	
 	@Execute
 	public void execute(@Named("de.persosim.simulator.ui.commandparameter.persoSet") String param) {
-		String persoFileString = persoPath + persoFilePrefix + param + persoFilePostfix;
-		String persoCmdString = PersoSim.CMD_LOAD_PERSONALIZATION + " " + persoFileString;
+		String persoCmdString = PersoSim.CMD_LOAD_PERSONALIZATION + " " + param;
 		
 		System.out.println("Perso Selection Handler called with param: " + param);
 		System.out.println("executing command: " + persoCmdString);
@@ -34,7 +35,7 @@ public class PersoSelectionHandler {
 		persoSimGuiMain = PersoSimGuiMain.getInstance();
 		persoSimGuiMain.write(persoCmdString);
 		
-		System.out.println("completed setting of personalization template");
+		System.out.println("finished setting of personalization template");
 	}
 
 }
