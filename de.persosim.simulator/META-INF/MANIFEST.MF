@@ -24,3 +24,4 @@ Bundle-ClassPath: .,
  lib/log4j-1.2.17.jar
 Import-Package: org.eclipse.core.runtime,
  org.osgi.framework;version="1.8.0"
+Eclipse-BundleShape: dir
