@@ -20,6 +20,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
@@ -504,15 +505,13 @@ public class PersoSim implements Runnable {
     			
     			try {
 					int personalizationNumber = Integer.parseInt(arg);
-					
 					System.out.println("trying to load personalization profile no: " + personalizationNumber);
 					Bundle plugin = Platform.getBundle("de.persosim.simulator");
 					URL url = plugin.getEntry (persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
 					System.out.println("plugin URL for selected profile is: " + url);
-					URL resolvedURL = Platform.resolve (url);
+					URL resolvedURL = FileLocator.resolve(url);
 					System.out.println("resolved absolute URL for selected profile is: " + resolvedURL);
 					arg = resolvedURL.getPath();
-					System.out.println("arg is: " + arg);
 				} catch (NumberFormatException e) {
 					System.out.println("no known profile: " + arg);
 				} catch (IOException e) {
