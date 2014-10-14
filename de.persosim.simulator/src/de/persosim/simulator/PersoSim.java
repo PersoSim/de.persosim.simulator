@@ -492,7 +492,6 @@ public class PersoSim implements Runnable {
 	 * @return whether processing of the load personalization command has been successful
 	 */
 	public boolean cmdLoadPersonalization(List<String> args) {
-		System.out.println("TEST load perso");
 		
 		if((args != null) && (args.size() >= 2)) {
 			String cmd = args.get(0);
