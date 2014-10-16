@@ -17,7 +17,7 @@ import de.persosim.simulator.ui.parts.PersoSimGuiMain;
  * @author slutters
  *
  */
-public class PersoOpenFileHandler {
+public class SelectPersoFromFileHandler {
 	
 	@Inject
 	private EPartService partService;

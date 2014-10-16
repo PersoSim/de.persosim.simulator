@@ -18,7 +18,7 @@ import de.persosim.simulator.ui.parts.PersoSimGuiMain;
  * @author slutters
  *
  */
-public class PersoSelectionHandler {
+public class SelectPersoFromTemplateHandler {
 	
 	public static final String persoPath = "personalization/profiles/";
 	public static final String persoFilePrefix = "Profile";
