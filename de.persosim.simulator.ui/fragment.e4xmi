@@ -37,14 +37,17 @@
           <parameters xmi:id="_BBdz8EZjEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set10" name="de.persosim.simulator.ui.commandparameter.persoSet" value="10"/>
         </children>
       </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_QKpL0FUEEeSxD7VZ_Y6-PA" elementId="de.persosim.simulator.ui.handledmenuitem.selectPersoFromFile" label="Select Perso from File" command="_7jTUYFUDEeSxD7VZ_Y6-PA"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uNj68EZgEeSQKqd06nTv0g" featurename="commands" parentElementId="de.persosim.rcp.application">
     <elements xsi:type="commands:Command" xmi:id="_10f3IEZgEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.command.selectPersoCommand" commandName="Select Perso">
       <parameters xmi:id="_5ezJMEZhEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.commandparameter.persoSet" name="PersoSet" typeId="" optional="false"/>
     </elements>
+    <elements xsi:type="commands:Command" xmi:id="_7jTUYFUDEeSxD7VZ_Y6-PA" elementId="de.persosim.simulator.ui.command.SelectPersoFromFileCommand" commandName="Select Perso From File"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7LkpgEZgEeSQKqd06nTv0g" featurename="handlers" parentElementId="de.persosim.rcp.application">
     <elements xsi:type="commands:Handler" xmi:id="__6nykEZgEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handler.selectPersoHandler" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.handlers.PersoSelectionHandler" command="_10f3IEZgEeSQKqd06nTv0g"/>
+    <elements xsi:type="commands:Handler" xmi:id="_F3jycFUEEeSxD7VZ_Y6-PA" elementId="de.persosim.simulator.ui.handler.selectPersoFromFileHandler" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.handlers.PersoOpenFileHandler" command="_7jTUYFUDEeSxD7VZ_Y6-PA"/>
   </fragments>
 </fragment:ModelFragments>

@@ -10,7 +10,7 @@ import de.persosim.simulator.PersoSim;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 
 /**
- * This class implements the handler for the personalization selection menu entries.
+ * This class implements the handler for the personalization select from template menu entries.
  * 
  * @author slutters
  *
@@ -35,7 +35,7 @@ public class PersoSelectionHandler {
 		persoSimGuiMain = PersoSimGuiMain.getInstance();
 		persoSimGuiMain.write(persoCmdString);
 		
-		System.out.println("finished setting of personalization template");
+		System.out.println("finished setting of personalization from template");
 	}
 
 }
