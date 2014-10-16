@@ -45,15 +45,9 @@ public class PersoSimGuiMain {
 	private PrintWriter inWriter;
 	
 	Composite parent;
-	
-	private static PersoSimGuiMain persoSimGuiMain;
 
 	@PostConstruct
 	public void createComposite(Composite parentComposite) {
-		if(persoSimGuiMain == null) {
-			persoSimGuiMain = this;
-		}
-		
 		parent = parentComposite;
 		grabSysOut();
 		grabSysIn();
@@ -74,6 +68,7 @@ public class PersoSimGuiMain {
 		txtInput.setMessage("Enter command here");
 		
 		txtInput.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyReleased(KeyEvent e) {
 				if((e.character == SWT.CR) || (e.character == SWT.LF)) {
 					String line = txtInput.getText();
@@ -206,13 +201,9 @@ public class PersoSimGuiMain {
 		txtOutput.setFocus();
 	}
 	
+	@Override
 	public String toString() {
 		return "OutputHandler here!";
-	}
-	
-	public static PersoSimGuiMain getInstance() {
-		//XXX use findPart instead of this caching mechanism
-		return persoSimGuiMain;
 	}
 	
 }

@@ -1,6 +1,10 @@
 package de.persosim.simulator.ui.handlers;
 
+import javax.inject.Inject;
+
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -15,7 +19,8 @@ import de.persosim.simulator.ui.parts.PersoSimGuiMain;
  */
 public class PersoOpenFileHandler {
 	
-	protected PersoSimGuiMain persoSimGuiMain;
+	@Inject
+	private EPartService partService;
 	
 	@Execute
 	public void execute(Shell shell){
@@ -32,8 +37,12 @@ public class PersoOpenFileHandler {
 			System.out.println("Perso Open File Handler called with param: " + fileName);
 			System.out.println("executing command: " + persoCmdString);
 			
-			persoSimGuiMain = PersoSimGuiMain.getInstance();
-			persoSimGuiMain.write(persoCmdString);
+			// ID of part as defined in fragment.e4xmi application model
+			MPart readerPart = partService.findPart("de.persosim.simulator.ui.parts.pinPad");
+			
+			if (readerPart.getObject() instanceof PersoSimGuiMain) {
+				((PersoSimGuiMain) readerPart.getObject()).write(persoCmdString);
+			}
 			
 			System.out.println("finished setting of personalization from file");
 		}
