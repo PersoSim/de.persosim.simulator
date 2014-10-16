@@ -23,16 +23,20 @@ public class PersoOpenFileHandler {
 		dialog.open();
 		
 		String fileName = dialog.getFileName();
-		String pathName = dialog.getFilterPath();
 		
-		String persoCmdString = PersoSim.CMD_LOAD_PERSONALIZATION + " " + pathName + "/" + fileName;
+		if(fileName.length() > 0) {
+			String pathName = dialog.getFilterPath();
+			
+			String persoCmdString = PersoSim.CMD_LOAD_PERSONALIZATION + " " + pathName + "/" + fileName;
+			
+			System.out.println("Perso Open File Handler called with param: " + fileName);
+			System.out.println("executing command: " + persoCmdString);
+			
+			persoSimGuiMain = PersoSimGuiMain.getInstance();
+			persoSimGuiMain.write(persoCmdString);
+			
+			System.out.println("finished setting of personalization from file");
+		}
 		
-		System.out.println("Perso Open File Handler called with param: " + fileName);
-		System.out.println("executing command: " + persoCmdString);
-		
-		persoSimGuiMain = PersoSimGuiMain.getInstance();
-		persoSimGuiMain.write(persoCmdString);
-		
-		System.out.println("finished setting of personalization from file");
 	}
 }
