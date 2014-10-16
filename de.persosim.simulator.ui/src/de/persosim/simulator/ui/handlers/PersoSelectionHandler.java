@@ -37,10 +37,10 @@ public class PersoSelectionHandler {
 		System.out.println("executing command: " + persoCmdString);
 		
 		// ID of part as defined in fragment.e4xmi application model
-		MPart readerPart = partService.findPart("de.persosim.simulator.ui.parts.pinPad");
+		MPart mainPart = partService.findPart("de.persosim.simulator.ui.parts.mainPart");
 		
-		if (readerPart.getObject() instanceof PersoSimGuiMain) {
-			((PersoSimGuiMain) readerPart.getObject()).write(persoCmdString);
+		if (mainPart.getObject() instanceof PersoSimGuiMain) {
+			((PersoSimGuiMain) mainPart.getObject()).write(persoCmdString);
 		}
 		
 		System.out.println("finished setting of personalization from template");
