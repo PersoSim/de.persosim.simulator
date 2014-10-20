@@ -105,9 +105,11 @@ public class PersoSimGuiMain {
 			public void write(int b) throws IOException {
 				final char value = (char) b;
 				
-				if (checkNextForNewline && value == '\n'){
+				if (checkNextForNewline){
 					checkNextForNewline = false;
-					return;
+					if (value == '\n'){
+						return;
+					}
 				}
 
 				if (currentPosition < buffer.length - 1 && !(value == '\n' || value == '\r')){
