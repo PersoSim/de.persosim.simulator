@@ -12,7 +12,7 @@ import de.persosim.simulator.PersoSim;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 
 /**
- * This class implements the handler for the personalization select from file menu entry.
+ * This class implements the handler for the select personalization from file menu entry.
  * 
  * @author slutters
  *

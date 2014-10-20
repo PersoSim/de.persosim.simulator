@@ -13,16 +13,12 @@ import de.persosim.simulator.PersoSim;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 
 /**
- * This class implements the handler for the personalization select from template menu entries.
+ * This class implements the handler for the select personalization from template menu entries.
  * 
  * @author slutters
  *
  */
 public class SelectPersoFromTemplateHandler {
-	
-	public static final String persoPath = "personalization/profiles/";
-	public static final String persoFilePrefix = "Profile";
-	public static final String persoFilePostfix = ".xml";
 	
 	protected PrintWriter inWriter;
 	
