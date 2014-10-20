@@ -63,11 +63,8 @@ public class dynamicPersoTemplateMenuItem {
 		try {
 			Bundle plugin = Platform.getBundle(DE_PERSOSIM_SIMULATOR_BUNDLE);
 			URL url = plugin.getEntry (PERSO_PATH);
-			System.out.println("plugin URL for selected path is: " + url);
 			URL resolvedUrl = FileLocator.resolve(url);
-			System.out.println("resolved absolute URL for selected path is: " + resolvedUrl);
 			URI resolvedUri = resolvedUrl.toURI();
-			System.out.println("resolved absolute URI for selected path is: " + resolvedUri);
 			
 			File folder = new File(resolvedUri);
 			

@@ -507,7 +507,6 @@ public class PersoSim implements Runnable {
 					System.out.println("trying to load personalization profile no: " + personalizationNumber);
 					Bundle plugin = Platform.getBundle("de.persosim.simulator");
 					URL url = plugin.getEntry (persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
-					System.out.println("plugin URL for selected profile is: " + url);
 					URL resolvedURL = FileLocator.resolve(url);
 					System.out.println("resolved absolute URL for selected profile is: " + resolvedURL);
 					arg = resolvedURL.getPath();
