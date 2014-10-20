@@ -29,11 +29,15 @@ import org.osgi.framework.Bundle;
 /**
  * This class implements a dynamically created menu item for loading personalizations from a default set.
  * 
+ * 
  * @author slutters
  *
  */
 public class dynamicPersoTemplateMenuItem {
 	
+	public static final String DE_PERSOSIM_SIMULATOR_BUNDLE = "de.persosim.simulator";
+	public static final String SELECT_COMMAND_ID = "de.persosim.simulator.ui.command.selectPersoFromTemplateCommand";
+	public static final String SELECT_COMMAND_PARAMETER_ID = "de.persosim.simulator.ui.commandparameter.persoSet";
 	public static final String PERSO_PATH = "personalization/profiles/";
 	
 //	@Inject protected ECommandService eCommandService;
@@ -59,7 +63,7 @@ public class dynamicPersoTemplateMenuItem {
 	 */
 	public void populateMenu(MMenu parentMenu) {
 		try {
-			Bundle plugin = Platform.getBundle("de.persosim.simulator");
+			Bundle plugin = Platform.getBundle(DE_PERSOSIM_SIMULATOR_BUNDLE);
 			URL url = plugin.getEntry (PERSO_PATH);
 			System.out.println("plugin URL for selected path is: " + url);
 			URL resolvedUrl = FileLocator.resolve(url);
@@ -101,7 +105,7 @@ public class dynamicPersoTemplateMenuItem {
 		if (!folder.isDirectory()) {throw new IllegalArgumentException("provided File object must be a folder");}
 		
 //		MCommand command = (MCommand) eModelService.find("de.persosim.simulator.ui.command.selectPersoFromTemplateCommand", app);
-		MCommand command = getCommand("de.persosim.simulator.ui.command.selectPersoFromTemplateCommand");
+		MCommand command = getCommand(SELECT_COMMAND_ID);
 		
 		List<MMenuElement> parentMenuItems = parentMenu.getChildren();
 		
@@ -124,9 +128,8 @@ public class dynamicPersoTemplateMenuItem {
 	    	    
 	    	    dynamicFileMenuItem.setCommand(command);
 	    	    
-	    	    
 	    	    MParameter parameter = MCommandsFactory.INSTANCE.createParameter();
-				parameter.setName("de.persosim.simulator.ui.commandparameter.persoSet");
+				parameter.setName(SELECT_COMMAND_PARAMETER_ID);
 				parameter.setValue(absolutePath);
 				dynamicFileMenuItem.getParameters().add(parameter);
 	    	    
