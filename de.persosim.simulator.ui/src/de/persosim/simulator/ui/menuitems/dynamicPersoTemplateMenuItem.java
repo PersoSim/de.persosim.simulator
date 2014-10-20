@@ -6,7 +6,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -48,7 +47,7 @@ public class dynamicPersoTemplateMenuItem {
 	public void aboutToShow(List<MMenuElement> menuItems) {
 	    MMenu dynamicMenuItem = MMenuFactory.INSTANCE.createMenu();
 	    
-	    dynamicMenuItem.setLabel("Dynamic Menu Item (" + new Date() + ")"); 
+	    dynamicMenuItem.setLabel("Select predefined Perso template"); 
 	    
 	    menuItems.add(dynamicMenuItem);
 	    
