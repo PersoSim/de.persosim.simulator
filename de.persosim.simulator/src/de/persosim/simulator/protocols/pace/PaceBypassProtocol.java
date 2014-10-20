@@ -50,6 +50,7 @@ import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.InfoSource;
+import de.persosim.simulator.utils.Utils;
 
 /**
  * In order to simplify implementation of PACE within
@@ -134,11 +135,16 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 	 * 
 	 */
 	private void processInitPaceBypass(ProcessingData processingData) {
+		//prepare the response data
+		TlvDataObjectContainer responseObjects = new TlvDataObjectContainer();
+		short sw = Iso7816.SW_9000_NO_ERROR;
+		String note;
+				
 		//get commandDataContainer
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 		
 		// PACE password id
-		PasswordAuthObject passwordObject;
+		PasswordAuthObject passwordObject = null;
 		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_83);
 		
 		CardObject pwdCandidate = cardState.getObject(new AuthObjectIdentifier(tlvObject.getValueField()), Scope.FROM_MF);
@@ -146,21 +152,23 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			passwordObject = (PasswordAuthObject) pwdCandidate;
 			log(this, "selected password is: " + AbstractPaceProtocol.getPasswordName(passwordObject.getPasswordIdentifier()), DEBUG);
 		} else {
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-			processingData.updateResponseAPDU(this, "no fitting authentication object found", resp);
-			/* there is nothing more to be done here */
-			return;
+			sw = Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND;
+			responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(sw)));
+			note = "no fitting authentication object found";
 		}
 		
 		// provided password
+		byte[] providedPassword = null;
 		tlvObject = commandData.getTlvDataObject(TAG_92);
-		if (tlvObject == null) {
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-			processingData.updateResponseAPDU(this, "no password provided", resp);
-			/* there is nothing more to be done here */
-			return;
+		if (tlvObject != null) {
+			providedPassword = tlvObject.getValueField();
+		} else {
+			if (sw == Iso7816.SW_9000_NO_ERROR) {
+				sw = Iso7816.SW_6A80_WRONG_DATA;
+				responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(sw)));
+				note = "no password provided";
+			}
 		}
-		byte[] providedPassword = tlvObject.getValueField();
 		
 		//extract CHAT
 		CertificateHolderAuthorizationTemplate usedChat = null;
@@ -182,20 +190,18 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			 trustPoint = (TrustPointCardObject) cardState.getObject(
 					new TrustPointIdentifier(terminalType), Scope.FROM_MF);
 			if (!AbstractPaceProtocol.checkPasswordAndAccessRights(usedChat, passwordObject)){
-				ResponseApdu resp = new ResponseApdu(
-						Iso7816.SW_6A80_WRONG_DATA);
-				processingData.updateResponseAPDU(this, "The given terminal type and password does not match the access rights", resp);
-				/* there is nothing more to be done here */
-				return;
+				if (sw == Iso7816.SW_9000_NO_ERROR) {
+					sw = Iso7816.SW_6A80_WRONG_DATA;
+					responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(sw)));
+					note = "The given terminal type and password does not match the access rights";
+				}
 			}
 		}
 		
 		
 		//check passwords
 		boolean paceSuccessful;
-		short sw;
-		String note;
-		if(Arrays.equals(providedPassword, passwordObject.getPassword())) {
+		if((passwordObject != null) && (providedPassword != null) && Arrays.equals(providedPassword, passwordObject.getPassword())) {
 			log(this, "Provided password matches expected one", DEBUG);
 			
 			if(passwordObject instanceof PasswordAuthObjectWithRetryCounter) {
@@ -225,11 +231,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			}
 		}
 		
-		ResponseApdu responseApdu;
-		
 		if(paceSuccessful) {
-			TlvDataObjectContainer responseObjects = new TlvDataObjectContainer();
-			
 			byte[] compEphermeralPublicKey = HexString.toByteArray("0102030405060708900A0B0C0D0E0F1011121314"); //arbitrary selected value
 			TlvDataObject primitive86 = new PrimitiveTlvDataObject(TAG_86, compEphermeralPublicKey);
 			responseObjects.addTlvDataObject(primitive86);
@@ -258,23 +260,20 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 				}
 			}
 			
-			TlvValue responseData = new TlvDataObjectContainer(responseObjects);
-			
-			
 			//enable pseudo SM
 			pseudoSmIsActive = true;
 			
 			//propagate data about successfully performed SecMechanism in SecStatus 
 			PaceMechanism paceMechanism = new PaceMechanism(passwordObject, compEphermeralPublicKey, usedChat);
 			processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
-				
-			responseApdu = new ResponseApdu(responseData, sw);
-			processingData.updateResponseAPDU(this, "Established PACE Bypass", responseApdu);
+			
+			note = "Established PACE Bypass";
 		
-		} else{
-			responseApdu = new ResponseApdu(sw);
 		}
 		
+		// build and propagate response Apdu
+		TlvValue responseData = new TlvDataObjectContainer(responseObjects);
+		ResponseApdu responseApdu = new ResponseApdu(responseData, sw);
 		processingData.updateResponseAPDU(this, note, responseApdu);
 	}
 
