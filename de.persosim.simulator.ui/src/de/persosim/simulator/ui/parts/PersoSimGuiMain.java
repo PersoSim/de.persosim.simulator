@@ -123,6 +123,8 @@ public class PersoSimGuiMain {
 							checkNextForNewline = true;
 						}
 						buffer [currentPosition++] = '\n';
+					} else {
+						buffer [currentPosition++] = value;
 					}
 
 					final String toPrint = new String(Arrays.copyOf(buffer, currentPosition));
