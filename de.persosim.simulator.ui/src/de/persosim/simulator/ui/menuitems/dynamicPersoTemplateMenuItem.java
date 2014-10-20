@@ -29,7 +29,6 @@ import org.osgi.framework.Bundle;
 /**
  * This class implements a dynamically created menu item for loading personalizations from a default set.
  * 
- * 
  * @author slutters
  *
  */
@@ -40,7 +39,6 @@ public class dynamicPersoTemplateMenuItem {
 	public static final String SELECT_COMMAND_PARAMETER_ID = "de.persosim.simulator.ui.commandparameter.persoSet";
 	public static final String PERSO_PATH = "personalization/profiles/";
 	
-//	@Inject protected ECommandService eCommandService;
 	@Inject protected MApplication app;
 	@Inject protected EModelService eModelService;
 	
@@ -101,10 +99,17 @@ public class dynamicPersoTemplateMenuItem {
 		return null;
 	}
 	
+	/**
+	 * This method lists all folders and files within the provided
+	 * {@link #folder} parameter and adds a {@link MMenu} for every folder and
+	 * an {@link MHandledMenuItem} for every file to the also provided parent
+	 * menu.
+	 * @param parentMenu the parent menu to add menu items to
+	 * @param folder the folder to list and create menu items for
+	 */
 	public void populateMenu(MMenu parentMenu, File folder) {
 		if (!folder.isDirectory()) {throw new IllegalArgumentException("provided File object must be a folder");}
 		
-//		MCommand command = (MCommand) eModelService.find("de.persosim.simulator.ui.command.selectPersoFromTemplateCommand", app);
 		MCommand command = getCommand(SELECT_COMMAND_ID);
 		
 		List<MMenuElement> parentMenuItems = parentMenu.getChildren();
@@ -124,7 +129,6 @@ public class dynamicPersoTemplateMenuItem {
 	    	    parentMenuItems.add(dynamicFileMenuItem);
 	        	
 	    	    String absolutePath = fileEntry.getAbsolutePath();
-	    	    System.out.println("absolute path: " + absolutePath);
 	    	    
 	    	    dynamicFileMenuItem.setCommand(command);
 	    	    
