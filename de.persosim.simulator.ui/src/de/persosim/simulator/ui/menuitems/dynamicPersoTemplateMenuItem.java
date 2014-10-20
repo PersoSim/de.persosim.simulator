@@ -26,6 +26,8 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.osgi.framework.Bundle;
 
+import de.persosim.simulator.ui.utils.FileComparator;
+
 /**
  * This class implements a dynamically created menu item for loading personalizations from a default set.
  * 
@@ -112,7 +114,7 @@ public class dynamicPersoTemplateMenuItem {
 		List<MMenuElement> parentMenuItems = parentMenu.getChildren();
 		
 		File[] files = folder.listFiles();
-		Arrays.sort(files);
+		Arrays.sort(files, new FileComparator());
 		
 		for (File fileEntry : files) {
 	        if (fileEntry.isDirectory()) {
