@@ -153,7 +153,6 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			log(this, "selected password is: " + AbstractPaceProtocol.getPasswordName(passwordObject.getPasswordIdentifier()), DEBUG);
 		} else {
 			sw = Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND;
-			responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(sw)));
 			note = "no fitting authentication object found";
 		}
 		
@@ -165,7 +164,6 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		} else {
 			if (sw == Iso7816.SW_9000_NO_ERROR) {
 				sw = Iso7816.SW_6A80_WRONG_DATA;
-				responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(sw)));
 				note = "no password provided";
 			}
 		}
@@ -192,11 +190,13 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			if (!AbstractPaceProtocol.checkPasswordAndAccessRights(usedChat, passwordObject)){
 				if (sw == Iso7816.SW_9000_NO_ERROR) {
 					sw = Iso7816.SW_6A80_WRONG_DATA;
-					responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(sw)));
 					note = "The given terminal type and password does not match the access rights";
 				}
 			}
 		}
+		
+		//add MseSetAT SW to response data 
+		responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(sw)));
 		
 		
 		//check passwords
