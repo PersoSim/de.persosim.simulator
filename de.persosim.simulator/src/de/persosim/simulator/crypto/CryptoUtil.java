@@ -106,216 +106,204 @@ public class CryptoUtil {
 	}
 	
 	/*--------------------------------------------------------------------------------*/
-
+	
+	/**
+	 * This method returns the X-coordinate of the point returned e.g. by point addition or point doubling.
+	 * @param p the prime used by the curve
+	 * @param lambda the lambda value specific to the calling method
+	 * @param xp the X-coordinate of input point P
+	 * @param xq the X-coordinate of input point Q
+	 * @return the X-coordinate of the point returned e.g. by point addition or point doubling
+	 */
+	private static BigInteger computeXr(BigInteger p, BigInteger lambda, BigInteger xp, BigInteger xq) {
+		return (((lambda.modPow(TWO, p).subtract(xq))).subtract(xp)).mod(p);
+	}
+	
+	/**
+	 * This method returns the X-coordinate of the point returned e.g. by point addition or point doubling.
+	 * @param p the prime used by the curve
+	 * @param lambda the lambda value specific to the calling method
+	 * @param xp the X-coordinate of input point P
+	 * @return the X-coordinate of the point returned e.g. by point addition or point doubling
+	 */
+	private static BigInteger computeXr(BigInteger p, BigInteger lambda, BigInteger xp) {
+		return computeXr(p, lambda, xp, xp);
+	}
+	
+	/**
+	 * This method returns the Y-coordinate of the point R returned e.g. by point addition or point doubling.
+	 * @param p the prime used by the curve
+	 * @param lambda lambda the lambda value specific to the calling method
+	 * @param xp the X-coordinate of input point P
+	 * @param yp the Y-coordinate of input point P
+	 * @param xr the X-coordinate of the result point R
+	 * @return
+	 */
+	private static BigInteger computeYr(BigInteger p, BigInteger lambda, BigInteger xp, BigInteger yp, BigInteger xr) {
+		return ((lambda.multiply(xp.subtract(xr)).mod(p)).subtract(yp)).mod(p);
+	}
+	
+	/**
+	 * This method performs EC point addition
+	 * @param curve the elliptic curve to be used
+	 * @param ecPointQ the first point for addition
+	 * @param ecPointP the second point for addition
+	 * @return the result of the point addition
+	 */
 	public static ECPoint addPoint(EllipticCurve curve, ECPoint ecPointQ, ECPoint ecPointP) {
+		if (ecPointQ.equals(ecPointP)) {return doublePoint(curve, ecPointQ);}
+		if (ecPointQ.equals(ECPoint.POINT_INFINITY)) {return ecPointP;}
+		if (ecPointP.equals(ECPoint.POINT_INFINITY)) {return ecPointQ;}
+		
 		BigInteger p = ((ECFieldFp) curve.getField()).getP();
 		BigInteger xq = ecPointQ.getAffineX();
 		BigInteger yq = ecPointQ.getAffineY();
 		BigInteger xp = ecPointP.getAffineX();
 		BigInteger yp = ecPointP.getAffineY();
 
-		if (ecPointQ.equals(ecPointP)) {
-			return doublePoint(curve, ecPointQ);
-		}
-		if (ecPointQ.equals(ECPoint.POINT_INFINITY)) {
-			return ecPointP;
-		}
-		if (ecPointP.equals(ECPoint.POINT_INFINITY)) {
-			return ecPointQ;
-		}
-
 		BigInteger lambda = ((yq.subtract(yp)).multiply(xq.subtract(xp).modInverse(p))).mod(p);
-		BigInteger addedX = (((lambda.modPow(TWO, p).subtract(xq))).subtract(xp)).mod(p);
-		BigInteger addedY = ((lambda.multiply(ecPointP.getAffineX().subtract(addedX)).mod(p)).subtract(yp)).mod(p);
+		BigInteger xr = computeXr(p, lambda, xp, xq);
+		BigInteger yr = computeYr(p, lambda, xp, yp, xr);
 
-		ECPoint ecPointAdded = new ECPoint(addedX, addedY);
+		ECPoint ecPointR = new ECPoint(xr, yr);
 
-		return ecPointAdded;
+		return ecPointR;
 	}
 	
 	/**
-	 * TODO remove BC dependency, maybe move to a dedicated helper class
-	 * 
-	 * This method performs EC point addition
+	 * This method performs EC point addition relying on Bouncy Castle
 	 * @param curve the elliptic curve to be used
 	 * @param ecPointQ the first point for addition
 	 * @param ecPointP the second point for addition
-	 * @return the addition result
+	 * @return the result of the point addition
 	 */
 	public static ECPoint addPointBc(EllipticCurve curve, ECPoint ecPointQ, ECPoint ecPointP) {
-		if (ecPointQ.equals(ECPoint.POINT_INFINITY)) {
-			return ecPointP;
-		}
-		if (ecPointP.equals(ECPoint.POINT_INFINITY)) {
-			return ecPointQ;
-		}
+		if (ecPointQ.equals(ECPoint.POINT_INFINITY)) {return ecPointP;}
+		if (ecPointP.equals(ECPoint.POINT_INFINITY)) {return ecPointQ;}
 		
 		org.bouncycastle.math.ec.ECCurve curveBc;
-		org.bouncycastle.math.ec.ECPoint pointBc1, pointBc2, pointBcAdd;
+		org.bouncycastle.math.ec.ECPoint ecPointQbc, ecPointPbc, ecPointRbc;
 		
 		curveBc = EC5Util.convertCurve(curve);
 		
-		pointBc1 = EC5Util.convertPoint(curveBc, ecPointQ, false);
-		pointBc2 = EC5Util.convertPoint(curveBc, ecPointP, false);
+		ecPointQbc = EC5Util.convertPoint(curveBc, ecPointQ, false);
+		ecPointPbc = EC5Util.convertPoint(curveBc, ecPointP, false);
 		
-		pointBcAdd = pointBc1.add(pointBc2);
+		ecPointRbc = ecPointQbc.add(ecPointPbc);
 		
-		ECFieldElement ecfX = pointBcAdd.normalize().getXCoord();
-		ECFieldElement ecfY = pointBcAdd.normalize().getYCoord();
+		ECFieldElement ecfX = ecPointRbc.normalize().getXCoord();
+		ECFieldElement ecfY = ecPointRbc.normalize().getYCoord();
 		
-		BigInteger x = ecfX.toBigInteger();
-		BigInteger y = ecfY.toBigInteger();
+		BigInteger rx = ecfX.toBigInteger();
+		BigInteger ry = ecfY.toBigInteger();
 		
-		ECPoint ecPointAdd = new ECPoint(x, y);
+		ECPoint ecPointR = new ECPoint(rx, ry);
 		
-		return ecPointAdd;
+		return ecPointR;
 	}
-
-	public static ECPoint doublePoint(EllipticCurve curve, ECPoint ecPoint) {
-		if (ecPoint.equals(ECPoint.POINT_INFINITY)) {
-			return ecPoint;
-		}
+	
+	/**
+	 * This method performs EC point doubling
+	 * @param curve the elliptic curve to be used
+	 * @param ecPointP the second point for addition
+	 * @return the result of the point doubling
+	 */
+	public static ECPoint doublePoint(EllipticCurve curve, ECPoint ecPointP) {
+		if (ecPointP.equals(ECPoint.POINT_INFINITY)) {return ecPointP;}
 
 		BigInteger p = ((ECFieldFp) curve.getField()).getP();
 		BigInteger a = curve.getA();
-		BigInteger x = ecPoint.getAffineX();
-		BigInteger y = ecPoint.getAffineY();
+		BigInteger xp = ecPointP.getAffineX();
+		BigInteger yp = ecPointP.getAffineY();
 
-		BigInteger lambda = ((((x.pow(2)).multiply(THREE)).add(a)).multiply((y.multiply(TWO)).modInverse(p))).mod(p);
-
-		BigInteger xDoubled = ((lambda.pow(2)).subtract(x.multiply(TWO))).mod(p);
-		BigInteger yDoubled = (((lambda.multiply(x.subtract(xDoubled)))).subtract(y)).mod(p);
-
-		ECPoint ecPointDoubled = new ECPoint(xDoubled, yDoubled);
+		BigInteger lambda = ((((xp.pow(2)).multiply(THREE)).add(a)).multiply((yp.multiply(TWO)).modInverse(p))).mod(p);
 		
-		return ecPointDoubled;
+		BigInteger xr = computeXr(p, lambda, xp);
+		BigInteger yr = computeYr(p, lambda, xp, yp, xr);
+
+		ECPoint ecPointR = new ECPoint(xr, yr);
+		
+		return ecPointR;
 	}
 	
-	public static ECPoint doublePointBc(EllipticCurve curve, ECPoint ecPoint) {
-		if (ecPoint.equals(ECPoint.POINT_INFINITY)) {
-			return ecPoint;
-		}
+	/**
+	 * This method performs EC point doubling relying on Bouncy Castle
+	 * @param curve the elliptic curve to be used
+	 * @param ecPointP the second point for addition
+	 * @return the result of the point doubling
+	 */
+	public static ECPoint doublePointBc(EllipticCurve curve, ECPoint ecPointP) {
+		if (ecPointP.equals(ECPoint.POINT_INFINITY)) {return ecPointP;}
 		
 		org.bouncycastle.math.ec.ECCurve curveBc;
-		org.bouncycastle.math.ec.ECPoint pointBc, pointBcTwice;
+		org.bouncycastle.math.ec.ECPoint ecPointPbc, ecPointRbc;
 		
 		curveBc = EC5Util.convertCurve(curve);
 		
-		pointBc = EC5Util.convertPoint(curveBc, ecPoint, false);
+		ecPointPbc = EC5Util.convertPoint(curveBc, ecPointP, false);
 		
-		pointBcTwice = pointBc.twice();
+		ecPointRbc = ecPointPbc.twice();
 		
-		ECFieldElement ecfX = pointBcTwice.normalize().getXCoord();
-		ECFieldElement ecfY = pointBcTwice.normalize().getYCoord();
+		ECFieldElement ecfX = ecPointRbc.normalize().getXCoord();
+		ECFieldElement ecfY = ecPointRbc.normalize().getYCoord();
 		
-		BigInteger x = ecfX.toBigInteger();
-		BigInteger y = ecfY.toBigInteger();
+		BigInteger rx = ecfX.toBigInteger();
+		BigInteger ry = ecfY.toBigInteger();
 		
-		ECPoint ecPointTwice = new ECPoint(x, y);
+		ECPoint ecPointR = new ECPoint(rx, ry);
 		
-		return ecPointTwice;
+		return ecPointR;
 	}
 	
 	/**
 	 * This method performs EC scalar point multiplication using Double-and-add method.
 	 * @param curve the elliptic curve to be used
-	 * @param ecPoint the point to be multiplied
-	 * @param multiplicator the scalar multiplier
+	 * @param ecPointP the point to be multiplied
+	 * @param scalar the scalar multiplier
 	 * @return the multiplied EC point
 	 */
-	public static ECPoint scalarPointMultiplication(EllipticCurve curve, ECPoint ecPoint, BigInteger multiplicator) {
-		if (ecPoint.equals(ECPoint.POINT_INFINITY)) {
-			return ecPoint;
-		}
+	public static ECPoint scalarPointMultiplication(EllipticCurve curve, ECPoint ecPointP, BigInteger scalar) {
+		if (ecPointP.equals(ECPoint.POINT_INFINITY)) {return ecPointP;}
 		
-		BigInteger p = ((ECFieldFp) curve.getField()).getP();
-		BigInteger scalar = multiplicator.mod(p);
-		ECPoint ecPointMult = ECPoint.POINT_INFINITY;
-//		ECPoint ecPointMultBc = ECPoint.POINT_INFINITY;
-		int length = scalar.bitLength();
-		System.out.println("scalar bit length by 'scalar.bitLength()': " + length);
+		ECPoint ecPointR = ECPoint.POINT_INFINITY;
 		
-		System.out.println("scalar 16: " + HexString.encode(scalar));
-		System.out.println("scalar 10: " + scalar);
-		System.out.println("scalar 02: " + scalar.toString(2));
-		
-//		ecPointMult = ecPoint;
-		
-		for (int i = length - 1; i >= 0; i--) {
-//			System.out.println("i: " + i);
-			
-			ecPointMult = doublePoint(curve, ecPointMult);
+		for (int i = (scalar.bitLength()) - 1; i >= 0; i--) {
+			ecPointR = doublePoint(curve, ecPointR);
 			
 			if (scalar.testBit(i)) {
-				ecPointMult = addPoint(curve, ecPointMult, ecPoint);
+				ecPointR = addPoint(curve, ecPointR, ecPointP);
 			}
 				
 		}
 		
-		return ecPointMult;
-	}
-	
-	public static ECPoint scalarPointMultiplication2(EllipticCurve curve, ECPoint ecPoint, BigInteger multiplicator) {
-		if (ecPoint.equals(ECPoint.POINT_INFINITY)) {
-			return ecPoint;
-		}
-		
-		BigInteger p = ((ECFieldFp) curve.getField()).getP();
-		BigInteger scalar = multiplicator.mod(p);
-		ECPoint ecPointResult = ECPoint.POINT_INFINITY;
-		int bitLength = scalar.bitLength();
-		
-		for (int i = bitLength - 1; i >= 0; i--) {
-			ecPointResult = doublePoint(curve, ecPointResult);
-			
-			if (scalar.testBit(i)) {
-				ecPointResult = addPoint(curve, ecPointResult, ecPoint);
-			}
-				
-		}
-		
-		return ecPointResult;
-	}
-	
-	public static ECPoint scalarPointMultiplication3(EllipticCurve curve, ECPoint ecPoint, BigInteger multiplicator) {
-		if (multiplicator.equals(ZERO)) {
-			return ECPoint.POINT_INFINITY;
-		}
-		
-		if(multiplicator.mod(TWO).equals(ONE)) {
-			return scalarPointMultiplication3(curve, ecPoint, multiplicator.subtract(ONE));
-		} else {
-			return scalarPointMultiplication3(curve, doublePoint(curve, ecPoint), multiplicator.divide(TWO));
-		}
+		return ecPointR;
 	}
 	
 	/**
-	 * TODO remove BC dependency, maybe move to a dedicated helper class
-	 * 
-	 * This method performs EC scalar point multiplication
+	 * This method performs EC scalar point multiplication relying on Bouncy Castle
 	 * @param curve the elliptic curve to be used
-	 * @param ecPoint the point to be multiplied
+	 * @param ecPointP the point to be multiplied
 	 * @param multiplicator the scalar multiplier
 	 * @return the multiplied EC point
 	 */
-	public static ECPoint scalarPointMultiplicationBc(EllipticCurve curve, ECPoint ecPoint, BigInteger multiplicator) {
+	public static ECPoint scalarPointMultiplicationBc(EllipticCurve curve, ECPoint ecPointP, BigInteger multiplicator) {
 		org.bouncycastle.math.ec.ECCurve curveBc;
-		org.bouncycastle.math.ec.ECPoint pointBc, pointBcMult;
+		org.bouncycastle.math.ec.ECPoint ecPointPbc, ecPointRbc;
 		
 		curveBc = EC5Util.convertCurve(curve);
-		pointBc = EC5Util.convertPoint(curveBc, ecPoint, false);
+		ecPointPbc = EC5Util.convertPoint(curveBc, ecPointP, false);
 		
-		pointBcMult = pointBc.multiply(multiplicator);
+		ecPointRbc = ecPointPbc.multiply(multiplicator);
 		
-		ECFieldElement ecfX = pointBcMult.normalize().getXCoord();
-		ECFieldElement ecfY = pointBcMult.normalize().getYCoord();
+		ECFieldElement ecfX = ecPointRbc.normalize().getXCoord();
+		ECFieldElement ecfY = ecPointRbc.normalize().getYCoord();
 		
-		BigInteger x = ecfX.toBigInteger();
-		BigInteger y = ecfY.toBigInteger();
+		BigInteger rx = ecfX.toBigInteger();
+		BigInteger ry = ecfY.toBigInteger();
 		
-		ECPoint ecPointMult = new ECPoint(x, y);
+		ECPoint ecPointR = new ECPoint(rx, ry);
 		
-		return ecPointMult;
+		return ecPointR;
 	}
 	
 	/**
