@@ -13,9 +13,9 @@ public class Profile10 extends AbstractProfile {
 	public void setPersoDataContainer() {
 		persoDataContainer = new PersonalizationDataDefaultContainer();
 		persoDataContainer.setDg4PlainData("HILDEGARD");
-		persoDataContainer.setDg5PlainData("MÜLLER");
+		persoDataContainer.setDg5PlainData("MÃœLLER");
 		persoDataContainer.setDg8PlainData("19390204");
-		persoDataContainer.setDg9PlainData("SAARBRÜCKEN");
+		persoDataContainer.setDg9PlainData("SAARBRÃœCKEN");
 		persoDataContainer.setDg11PlainData("F"); //XXX this is needed in order to make MRZ generation work but should not be included in data groups
 		persoDataContainer.setDg17StreetPlainData("HARKORTSTR. 58");
 		persoDataContainer.setDg17CityPlainData("DORTMUND");

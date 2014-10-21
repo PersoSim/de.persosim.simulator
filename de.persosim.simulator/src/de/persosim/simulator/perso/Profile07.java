@@ -17,7 +17,7 @@ public class Profile07 extends AbstractProfile {
 		persoDataContainer.setDg8PlainData("19760705");
 		persoDataContainer.setDg9PlainData("BAD KÖNIGSHOFEN I. GRABFELD");
 		persoDataContainer.setDg11PlainData("F"); //XXX this is needed in order to make MRZ generation work but should not be included in data groups
-		persoDataContainer.setDg13PlainData("BJÖRNSON");
+		persoDataContainer.setDg13PlainData("BJØRNSON");
 		persoDataContainer.setDg17CityPlainData("HALLE (SAALE)");
 		persoDataContainer.setDg17CountryPlainData("D");
 		persoDataContainer.setDg17ZipPlainData("06108");
