@@ -234,7 +234,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 					return;
 				}
 			} catch (Exception e) {
-				//XXX check PokemonException
+				//FIXME check PokemonException
 				ResponseApdu resp = new ResponseApdu(
 						Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
 				this.processingData.updateResponseAPDU(this, e.getMessage(),

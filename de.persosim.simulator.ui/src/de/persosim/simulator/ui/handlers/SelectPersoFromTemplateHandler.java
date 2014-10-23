@@ -19,6 +19,7 @@ import de.persosim.simulator.ui.parts.PersoSimGuiMain;
  *
  */
 public class SelectPersoFromTemplateHandler {
+	//FIXME duplicate code with SelectPersoFromFileHandler, these two differ only in file selection and should use common code for actual loading
 	
 	public static final String persoPath = "personalization/profiles/";
 	public static final String persoFilePrefix = "Profile";

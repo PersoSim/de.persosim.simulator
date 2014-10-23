@@ -174,7 +174,7 @@ public class CommandProcessorStateMachine extends AbstractCommandProcessor
 
 					case PROTOCOL_FROM_LIST_ACTIVE:
 						if(true){
-							if(apduHasBeenProcessed() || protocolAtPointerWantsToGetOnStack()){
+							if(apduHasBeenProcessed() || protocolAtPointerWantsToGetOnStack()){ //FIXME this change should be done in the model
 								/* Transition from PROTOCOL_FROM_LIST_ACTIVE to PROTOCOL_PROCESSED */
 								evConsumed=16;
 

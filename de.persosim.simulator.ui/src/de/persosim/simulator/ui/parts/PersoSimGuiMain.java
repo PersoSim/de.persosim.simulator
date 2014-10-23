@@ -59,7 +59,6 @@ public class PersoSimGuiMain {
 		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
 		txtOutput.setEditable(false);
 		txtOutput.setCursor(null);
-//		txtOutput.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 		txtOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		parent.setLayout(new GridLayout(1, false));
