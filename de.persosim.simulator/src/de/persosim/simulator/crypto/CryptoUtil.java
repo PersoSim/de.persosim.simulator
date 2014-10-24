@@ -257,6 +257,19 @@ public class CryptoUtil {
 	
 	/**
 	 * This method performs EC scalar point multiplication using Double-and-add method.
+	 * The method is optimized for performance performing actual multiplication with scalar.mod(order).
+	 * @param curve the elliptic curve to be used
+	 * @param order the order of the curve
+	 * @param ecPointP the point to be multiplied
+	 * @param scalar the scalar multiplier
+	 * @return the multiplied EC point
+	 */
+	public static ECPoint scalarPointMultiplication(EllipticCurve curve, BigInteger order, ECPoint ecPointP, BigInteger scalar) {
+		return scalarPointMultiplication(curve, ecPointP, scalar.mod(order));
+	}
+	
+	/**
+	 * This method performs EC scalar point multiplication using Double-and-add method.
 	 * @param curve the elliptic curve to be used
 	 * @param ecPointP the point to be multiplied
 	 * @param scalar the scalar multiplier

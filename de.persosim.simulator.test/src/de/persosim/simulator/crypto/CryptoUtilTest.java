@@ -40,7 +40,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 		
 		ECPoint expectedEcPoint = new ECPoint(expectedX, expectedY);
 		
-		ECPoint receivedEcPoint = CryptoUtil.scalarPointMultiplication(domParamsEcdh.getCurve(), ecPointP, mult);
+		ECPoint receivedEcPoint = CryptoUtil.scalarPointMultiplication(domParamsEcdh.getCurve(), domParamsEcdh.getOrder(), ecPointP, mult);
 		
 		assertEquals("mult x", expectedEcPoint.getAffineX(), receivedEcPoint.getAffineX());
 		assertEquals("mult y", expectedEcPoint.getAffineY(), receivedEcPoint.getAffineY());
