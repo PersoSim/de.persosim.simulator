@@ -5,8 +5,6 @@ import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 import java.util.LinkedList;
 
-import org.bouncycastle.util.encoders.Hex;
-
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.processing.UpdatePropagation;
@@ -72,7 +70,7 @@ public class PersoSimKernel implements InfoSource {
 		//TODO AMY move atr definition to Personalization
 		String atr = "3BE800008131FE00506572736F53696D";
 		//                            P e r s o S i m 
-		return Hex.decode(atr);
+		return HexString.toByteArray(atr);
 	}
 
 	public byte[] reset() {
