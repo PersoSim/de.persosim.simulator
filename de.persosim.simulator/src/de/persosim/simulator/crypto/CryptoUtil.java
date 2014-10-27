@@ -171,38 +171,6 @@ public class CryptoUtil {
 	}
 	
 	/**
-	 * This method performs EC point addition relying on Bouncy Castle
-	 * @param curve the elliptic curve to be used
-	 * @param ecPointQ the first point for addition
-	 * @param ecPointP the second point for addition
-	 * @return the result of the point addition
-	 */
-	public static ECPoint addPointBc(EllipticCurve curve, ECPoint ecPointQ, ECPoint ecPointP) {
-		if (ecPointQ.equals(ECPoint.POINT_INFINITY)) {return ecPointP;}
-		if (ecPointP.equals(ECPoint.POINT_INFINITY)) {return ecPointQ;}
-		
-		org.bouncycastle.math.ec.ECCurve curveBc;
-		org.bouncycastle.math.ec.ECPoint ecPointQbc, ecPointPbc, ecPointRbc;
-		
-		curveBc = EC5Util.convertCurve(curve);
-		
-		ecPointQbc = EC5Util.convertPoint(curveBc, ecPointQ, false);
-		ecPointPbc = EC5Util.convertPoint(curveBc, ecPointP, false);
-		
-		ecPointRbc = ecPointQbc.add(ecPointPbc);
-		
-		ECFieldElement ecfX = ecPointRbc.normalize().getXCoord();
-		ECFieldElement ecfY = ecPointRbc.normalize().getYCoord();
-		
-		BigInteger rx = ecfX.toBigInteger();
-		BigInteger ry = ecfY.toBigInteger();
-		
-		ECPoint ecPointR = new ECPoint(rx, ry);
-		
-		return ecPointR;
-	}
-	
-	/**
 	 * This method performs EC point doubling
 	 * @param curve the elliptic curve to be used
 	 * @param ecPointP the second point for addition
@@ -222,35 +190,6 @@ public class CryptoUtil {
 		BigInteger yr = computeYr(p, lambda, xp, yp, xr);
 
 		ECPoint ecPointR = new ECPoint(xr, yr);
-		
-		return ecPointR;
-	}
-	
-	/**
-	 * This method performs EC point doubling relying on Bouncy Castle
-	 * @param curve the elliptic curve to be used
-	 * @param ecPointP the second point for addition
-	 * @return the result of the point doubling
-	 */
-	public static ECPoint doublePointBc(EllipticCurve curve, ECPoint ecPointP) {
-		if (ecPointP.equals(ECPoint.POINT_INFINITY)) {return ecPointP;}
-		
-		org.bouncycastle.math.ec.ECCurve curveBc;
-		org.bouncycastle.math.ec.ECPoint ecPointPbc, ecPointRbc;
-		
-		curveBc = EC5Util.convertCurve(curve);
-		
-		ecPointPbc = EC5Util.convertPoint(curveBc, ecPointP, false);
-		
-		ecPointRbc = ecPointPbc.twice();
-		
-		ECFieldElement ecfX = ecPointRbc.normalize().getXCoord();
-		ECFieldElement ecfY = ecPointRbc.normalize().getYCoord();
-		
-		BigInteger rx = ecfX.toBigInteger();
-		BigInteger ry = ecfY.toBigInteger();
-		
-		ECPoint ecPointR = new ECPoint(rx, ry);
 		
 		return ecPointR;
 	}
@@ -296,33 +235,6 @@ public class CryptoUtil {
 			}
 				
 		}
-		
-		return ecPointR;
-	}
-	
-	/**
-	 * This method performs EC scalar point multiplication relying on Bouncy Castle
-	 * @param curve the elliptic curve to be used
-	 * @param ecPointP the point to be multiplied
-	 * @param multiplicator the scalar multiplier
-	 * @return the multiplied EC point
-	 */
-	public static ECPoint scalarPointMultiplicationBc(EllipticCurve curve, ECPoint ecPointP, BigInteger multiplicator) {
-		org.bouncycastle.math.ec.ECCurve curveBc;
-		org.bouncycastle.math.ec.ECPoint ecPointPbc, ecPointRbc;
-		
-		curveBc = EC5Util.convertCurve(curve);
-		ecPointPbc = EC5Util.convertPoint(curveBc, ecPointP, false);
-		
-		ecPointRbc = ecPointPbc.multiply(multiplicator);
-		
-		ECFieldElement ecfX = ecPointRbc.normalize().getXCoord();
-		ECFieldElement ecfY = ecPointRbc.normalize().getYCoord();
-		
-		BigInteger rx = ecfX.toBigInteger();
-		BigInteger ry = ecfY.toBigInteger();
-		
-		ECPoint ecPointR = new ECPoint(rx, ry);
 		
 		return ecPointR;
 	}
