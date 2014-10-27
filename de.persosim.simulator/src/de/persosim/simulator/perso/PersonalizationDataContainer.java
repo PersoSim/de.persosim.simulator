@@ -337,4 +337,24 @@ public class PersonalizationDataContainer {
 		return riKeyIds;
 	}
 	
+	/**
+	 * This method returns a {@link PersonalizationDataContainer} object with some default settings.
+	 * @return a {@link PersonalizationDataContainer} object with some default settings
+	 */
+	public static PersonalizationDataContainer getDefaultContainer() {
+		PersonalizationDataContainer pdc = new PersonalizationDataContainer();
+		
+		pdc.setDg1PlainData("ID");
+		pdc.setDg2PlainData("D");
+		pdc.setDg3PlainData("20201031");
+		pdc.setDg6PlainData("");
+		pdc.setDg7PlainData("");
+		pdc.setDg10PlainData("D");
+		pdc.setDg13PlainData("");
+		pdc.setDg19PlainData("ResPermit1");
+		pdc.setDg20PlainData("ResPermit2");
+		
+		return pdc;
+	}
+	
 }
