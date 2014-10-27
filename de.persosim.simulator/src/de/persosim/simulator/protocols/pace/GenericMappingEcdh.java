@@ -40,7 +40,7 @@ public class GenericMappingEcdh extends GenericMapping {
 		System.out.println("gUnMapped y: " + HexString.encode(Utils.toUnsignedByteArray(gUnMapped.getAffineY())));
 		System.out.println("nonce S: " + HexString.encode(Utils.toUnsignedByteArray(nonceS)));
 		
-		ECPoint gspm = CryptoUtil.scalarPointMultiplication(curve, gUnMapped, nonceS);
+		ECPoint gspm = CryptoUtil.scalarPointMultiplication(curve, domainParameterSetEcdhUnMapped.getOrder(), gUnMapped, nonceS);
 		
 		System.out.println("gspm x: " + HexString.encode(Utils.toUnsignedByteArray(gspm.getAffineX())));
 		System.out.println("gspm y: " + HexString.encode(Utils.toUnsignedByteArray(gspm.getAffineY())));
@@ -71,7 +71,7 @@ public class GenericMappingEcdh extends GenericMapping {
 		ECPrivateKey ecPrivateKeyPicc = (ECPrivateKey) privKeyPicc;
 		ECPublicKey ecPublicKeyPcd = (ECPublicKey) pubKeyPcd;
 		
-		ECPoint secretPoint = CryptoUtil.scalarPointMultiplication(domainParameterSetEcdh.getCurve(), ecPublicKeyPcd.getW(), ecPrivateKeyPicc.getS());
+		ECPoint secretPoint = CryptoUtil.scalarPointMultiplication(domainParameterSetEcdh.getCurve(), domainParameterSetEcdh.getOrder(), ecPublicKeyPcd.getW(), ecPrivateKeyPicc.getS());
 		
 		log(GenericMappingEcdh.class, "result H of ECDH key agreement is", TRACE);
 		log(GenericMappingEcdh.class, "H.x: " + HexString.encode(secretPoint.getAffineX()), TRACE);

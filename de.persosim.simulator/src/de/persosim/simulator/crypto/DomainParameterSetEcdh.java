@@ -186,7 +186,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		BigInteger publicPointWx = publicPointW.getAffineX();
 		BigInteger publicPointWy = publicPointW.getAffineY();
 		
-		ECPoint publicPointWmapped = CryptoUtil.scalarPointMultiplication(ec, gMapped, piccPrivateKeyD);
+		ECPoint publicPointWmapped = CryptoUtil.scalarPointMultiplication(ec, getOrder(), gMapped, piccPrivateKeyD);
 		
 		BigInteger publicPointWmappedX = publicPointWmapped.getAffineX();
 		BigInteger publicPointWmappedY = publicPointWmapped.getAffineY();
