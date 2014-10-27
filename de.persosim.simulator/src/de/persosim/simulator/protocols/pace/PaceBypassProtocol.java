@@ -138,7 +138,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		//prepare the response data
 		TlvDataObjectContainer responseObjects = new TlvDataObjectContainer();
 		short sw = Iso7816.SW_9000_NO_ERROR;
-		String note;
+		String note = "";
 				
 		//get commandDataContainer
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
@@ -161,6 +161,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		tlvObject = commandData.getTlvDataObject(TAG_92);
 		if (tlvObject != null) {
 			providedPassword = tlvObject.getValueField();
+			
 		} else {
 			if (sw == Iso7816.SW_9000_NO_ERROR) {
 				sw = Iso7816.SW_6A80_WRONG_DATA;
@@ -185,7 +186,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			
 			TerminalType terminalType = usedChat.getTerminalType();
 
-			 trustPoint = (TrustPointCardObject) cardState.getObject(
+			trustPoint = (TrustPointCardObject) cardState.getObject(
 					new TrustPointIdentifier(terminalType), Scope.FROM_MF);
 			if (!AbstractPaceProtocol.checkPasswordAndAccessRights(usedChat, passwordObject)){
 				if (sw == Iso7816.SW_9000_NO_ERROR) {
@@ -195,40 +196,50 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			}
 		}
 		
-		//add MseSetAT SW to response data 
-		responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(sw)));
-		
 		
 		//check passwords
-		boolean paceSuccessful;
-		if((passwordObject != null) && (providedPassword != null) && Arrays.equals(providedPassword, passwordObject.getPassword())) {
-			log(this, "Provided password matches expected one", DEBUG);
-			
-			if(passwordObject instanceof PasswordAuthObjectWithRetryCounter) {
-				ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(passwordObject, cardState);
+		boolean paceSuccessful = false;
+		
+		ResponseData responseData; 
+		if (sw == Iso7816.SW_9000_NO_ERROR && (responseData = AbstractPaceProtocol.getPasswordIsUsable(passwordObject, cardState)) != null){
+			sw = responseData.getStatusWord();
+			note = responseData.getResponse();
+			//add MseSetAT SW to response data 
+			responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(sw)));
+		}
+		
+		if (sw == Iso7816.SW_9000_NO_ERROR){
+			if((passwordObject != null) && (providedPassword != null) && Arrays.equals(providedPassword, passwordObject.getPassword())) {
+				log(this, "Provided password matches expected one", DEBUG);
 				
-				sw = pinResponse.getStatusWord();
-				note = pinResponse.getResponse();
+				if(passwordObject instanceof PasswordAuthObjectWithRetryCounter) {
+					ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(passwordObject, cardState);
+					
+					sw = pinResponse.getStatusWord();
+					note = pinResponse.getResponse();
+					
+					paceSuccessful = !Iso7816Lib.isReportingError(sw);
+				} else{
+					sw = Iso7816.SW_9000_NO_ERROR;
+					note = "MutualAuthenticate processed successfully";
+					paceSuccessful = true;
+				}
 				
-				paceSuccessful = !Iso7816Lib.isReportingError(sw);
+
 			} else{
-				sw = Iso7816.SW_9000_NO_ERROR;
-				note = "MutualAuthenticate processed successfully";
-				paceSuccessful = true;
-			}
-		} else{
-			//PACE failed
-			log(this, "Provided password does NOT match expected one", DEBUG);
-			paceSuccessful = false;
-			
-			if(passwordObject.getPasswordIdentifier() == Pace.PWD_PIN) {
-				ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) passwordObject);
-				sw = pinResponse.getStatusWord();
-				note = pinResponse.getResponse();
-			} else{
-				sw = Iso7816.SW_6A80_WRONG_DATA;
-				note = "authentication token received from PCD does NOT match expected one";
-			}
+				//PACE failed
+				log(this, "Provided password does NOT match expected one", DEBUG);
+				paceSuccessful = false;
+				
+				if(passwordObject instanceof PasswordAuthObjectWithRetryCounter) {
+					ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) passwordObject);
+					sw = pinResponse.getStatusWord();
+					note = pinResponse.getResponse();
+				} else{
+					sw = Iso7816.SW_6300_AUTHENTICATION_FAILED;
+					note = "authentication token received from PCD does NOT match expected one";
+				}
+			}	
 		}
 		
 		if(paceSuccessful) {
@@ -272,8 +283,8 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		}
 		
 		// build and propagate response Apdu
-		TlvValue responseData = new TlvDataObjectContainer(responseObjects);
-		ResponseApdu responseApdu = new ResponseApdu(responseData, sw);
+		TlvValue responseTlvData = new TlvDataObjectContainer(responseObjects);
+		ResponseApdu responseApdu = new ResponseApdu(responseTlvData, sw);
 		processingData.updateResponseAPDU(this, note, responseApdu);
 	}
 
