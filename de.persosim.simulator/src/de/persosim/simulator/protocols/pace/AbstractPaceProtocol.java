@@ -267,50 +267,59 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		log(this, "computed " + paceOid.getSymmetricCipherAlgorithmName() + " key material: " + HexString.encode(keyMaterialForEncryptionOfNonce), DEBUG);
 		
 		// If PIN is used, check for retry counter.
+		ResponseData isPasswordUsable = getPasswordIsUsable(pacePassword, cardState);
+		if (isPasswordUsable != null){
+			//create and propagate response APDU
+			ResponseApdu resp = new ResponseApdu(isPasswordUsable.getStatusWord());
+			this.processingData.updateResponseAPDU(this, isPasswordUsable.getResponse(), resp);
+			return;
+		}
+		
+		//create and propagate response APDU
+		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
+		this.processingData.updateResponseAPDU(this, "Command SetAt successfully processed", resp);
+	}
+	
+	public static ResponseData getPasswordIsUsable(PasswordAuthObject pacePassword, CardStateAccessor cardState){
 		if (pacePassword instanceof PasswordAuthObjectWithRetryCounter) {
 			PasswordAuthObjectWithRetryCounter pacePasswordWithRetryCounter = (PasswordAuthObjectWithRetryCounter) pacePassword;
 			
 			int retryCounter = pacePasswordWithRetryCounter.getRetryCounterCurrentValue();
 			short retryCounterDefault = (short) pacePasswordWithRetryCounter.getRetryCounterDefaultValue();
 			
-			log(this, "current PIN retry counter is: " + retryCounter, TRACE);
+			short sw;
+			String note;
 			
 			if (pacePassword.getLifeCycleState().equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)) {
 				if (retryCounter != retryCounterDefault) {
 					if (retryCounter == 1) {
-						ResponseApdu resp = new ResponseApdu(Iso7816.SW_63C1_COUNTER_IS_1);
+						sw = Iso7816.SW_63C1_COUNTER_IS_1;
 						if(isPinTemporarilyResumed(cardState)) {
-							processingData.updateResponseAPDU(this, "PIN is temporarily resumed due to preceding CAN", resp);
+							note = "PIN is temporarily resumed due to preceding CAN";
 						} else{
-							processingData.updateResponseAPDU(this, "PIN is suspended, use CAN first for temporary resume or unblock PIN", resp);
+							note = "PIN is suspended, use CAN first for temporary resume or unblock PIN";
 						}
 						/* there is nothing more to be done here */
-						return;
+						return new ResponseData(sw, note);
 					} else {
 						// If(retryCounterPin > 1) - 0 is not possible as this
 						// would have caused the PIN to be deactivated before.
 						// In this case this code would have never been reached
 						// due to the previous check for the PIN being activated
 
-						short sw = (short) 0x63C0;
+						sw = (short) 0x63C0;
 						sw |= ((short) (retryCounter & (short) 0x000F));
 						
-						ResponseApdu resp = new ResponseApdu(sw);
-						processingData.updateResponseAPDU(this, "PACE with PIN has previously failed - current retry counter for PIN is " + retryCounter, resp);
-						return;
+						note = "PACE with PIN has previously failed - current retry counter for PIN is " + retryCounter;
+						return new ResponseData(sw, note);
 					}
 				}
 			} else {
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6283_SELECTED_FILE_DEACTIVATED);
-				processingData.updateResponseAPDU(this, "PIN is deactivated", resp);
 				/* there is nothing more to be done here */
-				return;
+				return new ResponseData(Iso7816.SW_6283_SELECTED_FILE_DEACTIVATED, "PIN is deactivated");
 			}
 		}
-		
-		//create and propagate response APDU
-		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-		this.processingData.updateResponseAPDU(this, "Command SetAt successfully processed", resp);
+		return null;
 	}
 	
 	/**
