@@ -7,12 +7,12 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.bouncycastle.util.encoders.Hex;
-
-import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PersoSimKernel;
+import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
+//import org.bouncycastle.util.encoders.Hex;
+import de.persosim.simulator.perso.Personalization;
 
 /**
  * This class provides the socket interface to the PersoSim simulator.
@@ -191,7 +191,7 @@ public class SocketSimulator implements Runnable {
 				byte[] apdu = null;
 				byte[] response = new byte[] { 0x6F, 0x00 };
 				try {
-					apdu = Hex.decode(apduLine);
+					apdu = HexString.toByteArray(apduLine);
 				} catch (RuntimeException e) {
 					PersoSim.showExceptionToUser(e);
 					// nothing else needs to be done, will lead to an empty
@@ -203,7 +203,7 @@ public class SocketSimulator implements Runnable {
 				response = processCommand(apdu);
 
 				// encode response and return it
-				String respLine = new String(Hex.encode(response));
+				String respLine = HexString.encode(response);
 				out.println(respLine);
 				out.flush();
 
