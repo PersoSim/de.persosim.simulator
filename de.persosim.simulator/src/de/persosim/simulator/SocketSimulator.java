@@ -7,12 +7,11 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PersoSimKernel;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
-//import org.bouncycastle.util.encoders.Hex;
-import de.persosim.simulator.perso.Personalization;
 
 /**
  * This class provides the socket interface to the PersoSim simulator.
