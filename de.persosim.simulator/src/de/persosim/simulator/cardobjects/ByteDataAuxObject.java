@@ -1,6 +1,7 @@
 package de.persosim.simulator.cardobjects;
 
 import java.nio.file.AccessDeniedException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -8,8 +9,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.bouncycastle.util.Arrays;
 
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.TaOid;
