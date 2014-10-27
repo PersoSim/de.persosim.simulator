@@ -2,10 +2,10 @@ package de.persosim.simulator.test.globaltester;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.bouncycastle.util.Arrays;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
