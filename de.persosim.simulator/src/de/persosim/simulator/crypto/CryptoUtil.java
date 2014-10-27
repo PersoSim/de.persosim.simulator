@@ -1,10 +1,5 @@
 package de.persosim.simulator.crypto;
 
-import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
-import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
-import static de.persosim.simulator.utils.PersoSimLogger.logException;
-
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
@@ -28,9 +23,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
-import org.bouncycastle.jcajce.provider.asymmetric.util.EC5Util;
-import org.bouncycastle.math.ec.ECFieldElement;
-
 import de.persosim.simulator.tlv.Asn1;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -38,7 +30,6 @@ import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
-import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -237,39 +228,6 @@ public class CryptoUtil {
 		}
 		
 		return ecPointR;
-	}
-	
-	/**
-	 * TODO remove BC dependency, maybe move to a dedicated helper class
-	 * 
-	 * This method decodes a byte array and restores the represented {@link ECPoint}
-	 * @param curve the curve of the point
-	 * @param ecPointEncoding the encoding of the point
-	 * @return an {@link ECPoint} representing the encoded point
-	 */
-	public static ECPoint decode(EllipticCurve curve, byte[] ecPointEncoding) {
-		org.bouncycastle.math.ec.ECCurve curveBc;
-		org.bouncycastle.math.ec.ECPoint decodedPointBc;
-		
-		curveBc = EC5Util.convertCurve(curve);
-		
-		try {
-			decodedPointBc = curveBc.decodePoint(ecPointEncoding);
-		} catch (Exception e) {
-			log(CryptoUtil.class, "erroneous point encoding of " + ecPointEncoding.length + " bytes length is: " + HexString.encode(ecPointEncoding), DEBUG);
-			logException(CryptoUtil.class, e, ERROR);
-			throw e;
-		}
-		
-		ECFieldElement ecfX = decodedPointBc.normalize().getXCoord();
-		ECFieldElement ecfY = decodedPointBc.normalize().getYCoord();
-		
-		BigInteger x = ecfX.toBigInteger();
-		BigInteger y = ecfY.toBigInteger();
-		
-		ECPoint ecPointDecoded = new ECPoint(x, y);
-		
-		return ecPointDecoded;
 	}
 	
 	/**
