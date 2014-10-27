@@ -201,11 +201,14 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		boolean paceSuccessful = false;
 		
 		ResponseData responseData; 
-		if (sw == Iso7816.SW_9000_NO_ERROR && (responseData = AbstractPaceProtocol.getPasswordIsUsable(passwordObject, cardState)) != null){
-			sw = responseData.getStatusWord();
-			note = responseData.getResponse();
-			//add MseSetAT SW to response data 
-			responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(sw)));
+		if (sw == Iso7816.SW_9000_NO_ERROR){
+			responseData = AbstractPaceProtocol.getPasswordIsUsable(passwordObject, cardState);
+			if (responseData == null){
+				responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(SW_9000_NO_ERROR)));
+			} else {
+				//add MseSetAT SW to response data 
+				responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(responseData.getStatusWord())));
+			}
 		}
 		
 		if (sw == Iso7816.SW_9000_NO_ERROR){
@@ -274,9 +277,11 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			//enable pseudo SM
 			pseudoSmIsActive = true;
 			
-			//propagate data about successfully performed SecMechanism in SecStatus 
-			PaceMechanism paceMechanism = new PaceMechanism(passwordObject, compEphermeralPublicKey, usedChat);
-			processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
+			//propagate data about successfully performed SecMechanism in SecStatus
+			if (sw == Iso7816.SW_9000_NO_ERROR){
+				PaceMechanism paceMechanism = new PaceMechanism(passwordObject, compEphermeralPublicKey, usedChat);
+				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
+			}
 			
 			note = "Established PACE Bypass";
 		
