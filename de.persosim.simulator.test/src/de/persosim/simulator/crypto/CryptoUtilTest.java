@@ -22,10 +22,10 @@ import de.persosim.simulator.utils.Utils;
 public class CryptoUtilTest extends PersoSimTestCase {
 
 	/**
-	 * Positive test case: multiply EC point with scalar.
+	 * Positive test case: multiply EC point with scalar (with performance optimization).
 	 */
 	@Test
-	public void testScalarPointMultiplication() {
+	public void testScalarPointMultiplicationEllipticCurveBigIntegerECPointBigInteger() {
 		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
 		
 		// values originate from successful PACE test run and are checked against the implementation of scalar point multiplication by Bouncy Castle
@@ -41,6 +41,31 @@ public class CryptoUtilTest extends PersoSimTestCase {
 		ECPoint expectedEcPoint = new ECPoint(expectedX, expectedY);
 		
 		ECPoint receivedEcPoint = CryptoUtil.scalarPointMultiplication(domParamsEcdh.getCurve(), domParamsEcdh.getOrder(), ecPointP, mult);
+		
+		assertEquals("mult x", expectedEcPoint.getAffineX(), receivedEcPoint.getAffineX());
+		assertEquals("mult y", expectedEcPoint.getAffineY(), receivedEcPoint.getAffineY());
+	}
+	
+	/**
+	 * Positive test case: multiply EC point with scalar (without performance optimization).
+	 */
+	@Test
+	public void testScalarPointMultiplicationEllipticCurveECPointBigInteger() {
+		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		
+		// values originate from successful PACE test run and are checked against the implementation of scalar point multiplication by Bouncy Castle
+		BigInteger px        = new BigInteger(1, HexString.toByteArray("8BD2AEB9CB7E57CB2C4B482FFC81B7AFB9DE27E1E3BD23C23A4453BD9ACE3262"));
+		BigInteger py        = new BigInteger(1, HexString.toByteArray("547EF835C3DAC4FD97F8461A14611DC9C27745132DED8E545C1D54C72F046997"));
+		BigInteger mult      = new BigInteger(1, HexString.toByteArray("FA587945E9FE2AEB417DF0ADF951B7CBD9D5E476F8F6EF1B701C59C56B180204"));
+		
+		BigInteger expectedX = new BigInteger(1, HexString.toByteArray("874F6277A3C0621DFE106B47DA1242C0F7155905B3A1847D59A64494CF5CE0B9"));
+		BigInteger expectedY = new BigInteger(1, HexString.toByteArray("3E4EBE21E2E131D5A740037635F823DFB859AC58305CEEC9992CEE437F60A730"));
+		
+		ECPoint ecPointP = new ECPoint(px, py);
+		
+		ECPoint expectedEcPoint = new ECPoint(expectedX, expectedY);
+		
+		ECPoint receivedEcPoint = CryptoUtil.scalarPointMultiplication(domParamsEcdh.getCurve(), ecPointP, mult);
 		
 		assertEquals("mult x", expectedEcPoint.getAffineX(), receivedEcPoint.getAffineX());
 		assertEquals("mult y", expectedEcPoint.getAffineY(), receivedEcPoint.getAffineY());
