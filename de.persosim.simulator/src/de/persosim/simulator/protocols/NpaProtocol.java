@@ -109,6 +109,7 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 				if (dgNumber == null) continue;
 				
 				//read fileContent (bypassing access control enforcement)
+				//XXX do not bypass access control enforcement but use the card life cycle for accessing this data during personalization
 				byte[] fileContent = null;
 				try {
 					Class<ElementaryFile>  aClass = ElementaryFile.class;
