@@ -263,6 +263,7 @@ public class PersoSimJaxbContextProvider {
 		annotatedClasses.add(de.persosim.simulator.protocols.Oid.class);
 		annotatedClasses.add(de.persosim.simulator.protocols.pace.PaceOid.class);
 		annotatedClasses.add(de.persosim.simulator.protocols.pace.PaceProtocol.class);
+		annotatedClasses.add(de.persosim.simulator.protocols.pace.PaceBypassProtocol.class);
 		annotatedClasses.add(de.persosim.simulator.protocols.pin.PinProtocol.class);
 		annotatedClasses.add(de.persosim.simulator.protocols.ri.RiOid.class);
 		annotatedClasses.add(de.persosim.simulator.protocols.ri.RiProtocol.class);

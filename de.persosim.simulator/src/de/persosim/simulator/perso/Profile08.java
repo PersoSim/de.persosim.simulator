@@ -15,7 +15,7 @@ public class Profile08 extends AbstractProfile {
 		persoDataContainer = new PersonalizationDataDefaultContainer();
 		persoDataContainer.setDg4PlainData("KARL");
 		persoDataContainer.setDg5PlainData("HILLEBRANDT");
-		persoDataContainer.setDg6PlainData("GRAF V. L›SKY");
+		persoDataContainer.setDg6PlainData("GRAF V. L√ùSKY");
 		persoDataContainer.setDg7PlainData("DR.HC.");
 		persoDataContainer.setDg8PlainData("19520617");
 		persoDataContainer.setDg9PlainData("TRIER");

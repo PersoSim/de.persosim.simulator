@@ -12,7 +12,7 @@ import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.HexString;
 
-
+//FIXME rename this test class
 public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
 	
 	/**

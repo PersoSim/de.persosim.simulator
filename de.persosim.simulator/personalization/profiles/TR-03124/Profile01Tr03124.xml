@@ -102,10 +102,10 @@
                 <lifeCycleState>CREATION</lifeCycleState>
                 <currentCertificate>
                     <certificateProfileIdentifier>0</certificateProfileIdentifier>
-                    <certificateAuthorityReference countryCode="DE" holderMnemonic="TESTeID" sequenceNumber="00004"/>
+                    <certificateAuthorityReference countryCode="DE" holderMnemonic="CVCAeIDCT" sequenceNumber="00001"/>
                     <publicKeyOid>04007F00070202020203</publicKeyOid>
-                    <publicKey algorithm="EC">308201333081EC06072A8648CE3D02013081E0020101302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377304404207D5A0975FC2C3057EEF67530417AFFE7FB8055C126DC5C6CE94A4B44F330B5D9042026DC5C6CE94A4B44F330B5D9BBD77CBF958416295CF7E1CE6BCCDC18FF8C07B60441048BD2AEB9CB7E57CB2C4B482FFC81B7AFB9DE27E1E3BD23C23A4453BD9ACE3262547EF835C3DAC4FD97F8461A14611DC9C27745132DED8E545C1D54C72F046997022100A9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A70201010342000474FF63AB838C73C303AC003DFEE95CF8BF55F91E8FEBCB7395D942036E47CF1845EC786EC95BB453AAC288AD023B6067913CF9B63F908F49304E5CFC8B3050DD</publicKey>
-                    <certificateHolderReference countryCode="DE" holderMnemonic="TESTeID" sequenceNumber="00004"/>
+                    <publicKey algorithm="EC">308201333081EC06072A8648CE3D02013081E0020101302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377304404207D5A0975FC2C3057EEF67530417AFFE7FB8055C126DC5C6CE94A4B44F330B5D9042026DC5C6CE94A4B44F330B5D9BBD77CBF958416295CF7E1CE6BCCDC18FF8C07B60441048BD2AEB9CB7E57CB2C4B482FFC81B7AFB9DE27E1E3BD23C23A4453BD9ACE3262547EF835C3DAC4FD97F8461A14611DC9C27745132DED8E545C1D54C72F046997022100A9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A7020101034200047EC402F29B04079C9D89A8F732AD09BABC6538849128C6539B6C0F17EA4B72F56DD632376FA8CFD0E08E0DCA0F54802344F3137599121D20F9CADD358E5C3C7E</publicKey>
+                    <certificateHolderReference countryCode="DE" holderMnemonic="CVCAeIDCT" sequenceNumber="00001"/>
                     <certificateHolderAuthorizationTemplate>
                         <objectIdentifier>04007F000703010202</objectIdentifier>
                         <relativeAuthorization>
@@ -129,22 +129,22 @@
 <storedBits>true</storedBits>
 <storedBits>true</storedBits>
 <storedBits>true</storedBits>
-<storedBits>false</storedBits>
-<storedBits>false</storedBits>
-<storedBits>true</storedBits>
-<storedBits>false</storedBits>
-<storedBits>false</storedBits>
-<storedBits>false</storedBits>
 <storedBits>true</storedBits>
 <storedBits>true</storedBits>
 <storedBits>true</storedBits>
 <storedBits>true</storedBits>
+<storedBits>true</storedBits>
+<storedBits>true</storedBits>
+<storedBits>true</storedBits>
+<storedBits>true</storedBits>
+<storedBits>true</storedBits>
+<storedBits>true</storedBits>
+<storedBits>true</storedBits>
 <storedBits>false</storedBits>
 <storedBits>false</storedBits>
 <storedBits>false</storedBits>
 <storedBits>false</storedBits>
-<storedBits>false</storedBits>
-<storedBits>false</storedBits>
+<storedBits>true</storedBits>
 <storedBits>true</storedBits>
 <storedBits>true</storedBits>
 <storedBits>true</storedBits>
@@ -152,8 +152,8 @@
                             </authorization>
                         </relativeAuthorization>
                     </certificateHolderAuthorizationTemplate>
-                    <certificateEffective>2012-05-11T00:00:00+02:00</certificateEffective>
-                    <certificateExpiration>2015-05-11T00:00:00+02:00</certificateExpiration>
+                    <certificateEffective>2013-04-07T00:00:00+02:00</certificateEffective>
+                    <certificateExpiration>2016-04-06T00:00:00+02:00</certificateExpiration>
                     <certificateExtensions/>
                 </currentCertificate>
                 <identifier>
