@@ -6,26 +6,26 @@ package de.persosim.simulator.platform;
  */
  @SuppressWarnings("all")//generated code 
 
-/* Command line options: -verbose -p EA -o CommandProcessorStateMachine -l java -t commandProcessor:commandProcessorClass C:\develop\eclipse-persosim\git\de.persosim.models\exported\commandProcessor.xml   */
+/* Command line options: -verbose -p EA -o CommandProcessorStateMachine -l java -t commandProcessor:commandProcessorClass C:\develop\wd\commandProcessor.xml   */
 /* This file is generated from commandProcessor.xml - do not edit manually  */
-/* Generated on: Sun Jun 15 21:41:12 CEST 2014 / version 3.52beta2 */
+/* Generated on: Mon Oct 27 16:12:43 CET 2014 / version 3.52beta2 */
 
 
 
 public class CommandProcessorStateMachine extends AbstractCommandProcessor
 {
 
-	public static final int PROTOCOL_FROM_LIST_ACTIVE = 0;
-	public static final int END_OF_STACK_OR_EMPTY = 1;
-	public static final int START_OF_STACK = 2;
+	public static final int INITIALIZATION = 0;
+	public static final int PROTOCOL_UNABLE_TO_PROCESS_APDU = 1;
+	public static final int END_OF_STACK_OR_EMPTY = 2;
 	public static final int PROTOCOL_INACTIVE = 3;
-	public static final int WAITING_FOR_COMMAND = 4;
+	public static final int PROTOCOL_FROM_STACK_ACTIVE = 4;
 	public static final int COMMAND_PROCESSOR = 5;
-	public static final int PROTOCOL_UNABLE_TO_PROCESS_APDU = 6;
-	public static final int PROTOCOL_PROCESSED = 7;
-	public static final int WAITING_FOR_PROTOCOL_TO_PROCESS_APDU = 8;
-	public static final int PROTOCOL_FROM_STACK_ACTIVE = 9;
-	public static final int INITIALIZATION = 10;
+	public static final int PROTOCOL_PROCESSED = 6;
+	public static final int PROTOCOL_FROM_LIST_ACTIVE = 7;
+	public static final int WAITING_FOR_COMMAND = 8;
+	public static final int START_OF_STACK = 9;
+	public static final int WAITING_FOR_PROTOCOL_TO_PROCESS_APDU = 10;
 	public static final int __UNKNOWN_STATE__ = 11;
 
 
@@ -49,24 +49,24 @@ public class CommandProcessorStateMachine extends AbstractCommandProcessor
 
 	/* Helper to get innermost active state id */
 	public int getInnermostActiveState() {
-		if(isInPROTOCOL_FROM_STACK_ACTIVE()){
-			return PROTOCOL_FROM_STACK_ACTIVE;
-		}else if(isInWAITING_FOR_PROTOCOL_TO_PROCESS_APDU()){
+		if(isInWAITING_FOR_PROTOCOL_TO_PROCESS_APDU()){
 			return WAITING_FOR_PROTOCOL_TO_PROCESS_APDU;
-		}else if(isInPROTOCOL_PROCESSED()){
-			return PROTOCOL_PROCESSED;
-		}else if(isInPROTOCOL_UNABLE_TO_PROCESS_APDU()){
-			return PROTOCOL_UNABLE_TO_PROCESS_APDU;
-		}else if(isInWAITING_FOR_COMMAND()){
-			return WAITING_FOR_COMMAND;
-		}else if(isInPROTOCOL_INACTIVE()){
-			return PROTOCOL_INACTIVE;
 		}else if(isInSTART_OF_STACK()){
 			return START_OF_STACK;
-		}else if(isInEND_OF_STACK_OR_EMPTY()){
-			return END_OF_STACK_OR_EMPTY;
+		}else if(isInWAITING_FOR_COMMAND()){
+			return WAITING_FOR_COMMAND;
 		}else if(isInPROTOCOL_FROM_LIST_ACTIVE()){
 			return PROTOCOL_FROM_LIST_ACTIVE;
+		}else if(isInPROTOCOL_PROCESSED()){
+			return PROTOCOL_PROCESSED;
+		}else if(isInPROTOCOL_FROM_STACK_ACTIVE()){
+			return PROTOCOL_FROM_STACK_ACTIVE;
+		}else if(isInPROTOCOL_INACTIVE()){
+			return PROTOCOL_INACTIVE;
+		}else if(isInEND_OF_STACK_OR_EMPTY()){
+			return END_OF_STACK_OR_EMPTY;
+		}else if(isInPROTOCOL_UNABLE_TO_PROCESS_APDU()){
+			return PROTOCOL_UNABLE_TO_PROCESS_APDU;
 		}else if(isInINITIALIZATION()){
 			return INITIALIZATION;
 		}else{
@@ -75,17 +75,17 @@ public class CommandProcessorStateMachine extends AbstractCommandProcessor
 	}
 
 	// Helper(s) to find out if the machine is in a certain state
-	public boolean isInPROTOCOL_FROM_LIST_ACTIVE(){return (((stateVarCOMMAND_PROCESSOR==  PROTOCOL_FROM_LIST_ACTIVE)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
-	public boolean isInEND_OF_STACK_OR_EMPTY(){return (((stateVarCOMMAND_PROCESSOR==  END_OF_STACK_OR_EMPTY)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
-	public boolean isInSTART_OF_STACK(){return (((stateVarCOMMAND_PROCESSOR==  START_OF_STACK)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
-	public boolean isInPROTOCOL_INACTIVE(){return (((stateVarCOMMAND_PROCESSOR==  PROTOCOL_INACTIVE)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
-	public boolean isInWAITING_FOR_COMMAND(){return (((stateVarCOMMAND_PROCESSOR==  WAITING_FOR_COMMAND)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
-	public boolean isInCOMMAND_PROCESSOR(){return (((stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
-	public boolean isInPROTOCOL_UNABLE_TO_PROCESS_APDU(){return (((stateVarCOMMAND_PROCESSOR==  PROTOCOL_UNABLE_TO_PROCESS_APDU)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
-	public boolean isInPROTOCOL_PROCESSED(){return (((stateVarCOMMAND_PROCESSOR==  PROTOCOL_PROCESSED)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
-	public boolean isInWAITING_FOR_PROTOCOL_TO_PROCESS_APDU(){return (((stateVarCOMMAND_PROCESSOR==  WAITING_FOR_PROTOCOL_TO_PROCESS_APDU)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
-	public boolean isInPROTOCOL_FROM_STACK_ACTIVE(){return (((stateVarCOMMAND_PROCESSOR==  PROTOCOL_FROM_STACK_ACTIVE)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
 	public boolean isInINITIALIZATION(){return (((stateVar==  INITIALIZATION)) ? (true) : (false));}
+	public boolean isInPROTOCOL_UNABLE_TO_PROCESS_APDU(){return (((stateVarCOMMAND_PROCESSOR==  PROTOCOL_UNABLE_TO_PROCESS_APDU)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
+	public boolean isInEND_OF_STACK_OR_EMPTY(){return (((stateVarCOMMAND_PROCESSOR==  END_OF_STACK_OR_EMPTY)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
+	public boolean isInPROTOCOL_INACTIVE(){return (((stateVarCOMMAND_PROCESSOR==  PROTOCOL_INACTIVE)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
+	public boolean isInPROTOCOL_FROM_STACK_ACTIVE(){return (((stateVarCOMMAND_PROCESSOR==  PROTOCOL_FROM_STACK_ACTIVE)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
+	public boolean isInCOMMAND_PROCESSOR(){return (((stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
+	public boolean isInPROTOCOL_PROCESSED(){return (((stateVarCOMMAND_PROCESSOR==  PROTOCOL_PROCESSED)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
+	public boolean isInPROTOCOL_FROM_LIST_ACTIVE(){return (((stateVarCOMMAND_PROCESSOR==  PROTOCOL_FROM_LIST_ACTIVE)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
+	public boolean isInWAITING_FOR_COMMAND(){return (((stateVarCOMMAND_PROCESSOR==  WAITING_FOR_COMMAND)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
+	public boolean isInSTART_OF_STACK(){return (((stateVarCOMMAND_PROCESSOR==  START_OF_STACK)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
+	public boolean isInWAITING_FOR_PROTOCOL_TO_PROCESS_APDU(){return (((stateVarCOMMAND_PROCESSOR==  WAITING_FOR_PROTOCOL_TO_PROCESS_APDU)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
 
 
 

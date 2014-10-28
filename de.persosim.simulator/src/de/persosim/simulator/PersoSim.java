@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.net.URL;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
 
 import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
 import de.persosim.simulator.perso.DefaultPersoTestPki;
@@ -67,6 +71,11 @@ public class PersoSim implements Runnable {
 	
 	public static final int DEFAULT_SIM_PORT = 9876;
 	public static final String DEFAULT_SIM_HOST = "localhost";
+	
+	public static final String persoPlugin = "platform:/plugin/de.persosim.rcp/";
+	public static final String persoPath = "personalization/profiles/";
+	public static final String persoFilePrefix = "Profile";
+	public static final String persoFilePostfix = ".xml";
 	
 	private int simPort = DEFAULT_SIM_PORT; // default
 	private boolean executeUserCommands = false;
@@ -483,6 +492,7 @@ public class PersoSim implements Runnable {
 	 * @return whether processing of the load personalization command has been successful
 	 */
 	public boolean cmdLoadPersonalization(List<String> args) {
+		
 		if((args != null) && (args.size() >= 2)) {
 			String cmd = args.get(0);
 			
@@ -491,6 +501,20 @@ public class PersoSim implements Runnable {
 				
 				args.remove(0);
     			args.remove(0);
+    			
+    			try {
+					int personalizationNumber = Integer.parseInt(arg);
+					System.out.println("trying to load personalization profile no: " + personalizationNumber);
+					Bundle plugin = Platform.getBundle("de.persosim.simulator");
+					URL url = plugin.getEntry (persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
+					URL resolvedURL = FileLocator.resolve(url);
+					System.out.println("resolved absolute URL for selected profile is: " + resolvedURL);
+					arg = resolvedURL.getPath();
+				} catch (NumberFormatException e) {
+					System.out.println("no known profile: " + arg);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
     			
     			return loadPersonalization(arg);
 				

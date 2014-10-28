@@ -106,10 +106,10 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 		retVal.add(GtConstants.SUITE_EAC2_ISO7816_Q);
 		retVal.add(GtConstants.SUITE_EAC2_ISO7816_R);
 		
-//		retVal.add(GtConstants.SUITE_EAC2_DATA_A);
-//		retVal.add(GtConstants.SUITE_EAC2_DATA_B);
-//		retVal.add(GtConstants.SUITE_EAC2_DATA_C);
-//		retVal.add(GtConstants.SUITE_EAC2_EIDDATA_B);
+		retVal.add(GtConstants.SUITE_EAC2_DATA_A);
+		retVal.add(GtConstants.SUITE_EAC2_DATA_B);
+		retVal.add(GtConstants.SUITE_EAC2_DATA_C);
+		retVal.add(GtConstants.SUITE_EAC2_EIDDATA_B);
 		
 		retVal.add(GtConstants.SUITE_SAC_ISO7816_P);
 		

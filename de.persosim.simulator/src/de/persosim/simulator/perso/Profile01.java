@@ -8,6 +8,7 @@ import de.persosim.simulator.utils.HexString;
  *
  */
 public class Profile01 extends AbstractProfile {
+	//FIXME make this Profile the new DefaultPersonalisation and fix the inheritance hierarchy
 	
 	@Override
 	public void setPersoDataContainer() {
@@ -16,10 +17,10 @@ public class Profile01 extends AbstractProfile {
 		persoDataContainer.setDg5PlainData("MUSTERMANN");
 		persoDataContainer.setDg8PlainData("19640812");
 		persoDataContainer.setDg9PlainData("BERLIN");
-		persoDataContainer.setDg11PlainData("F"); //XXX this is needed in order to make MRZ generation work but should not be included in data groups
+		persoDataContainer.setDg11PlainData("F"); //FIXME this is needed in order to make MRZ generation work but should not be included in data groups
 		persoDataContainer.setDg13PlainData("GABLER");
 		persoDataContainer.setDg17StreetPlainData("HEIDESTRASSE 17");
-		persoDataContainer.setDg17CityPlainData("KÖLN");
+		persoDataContainer.setDg17CityPlainData("KÃ–LN");
 		persoDataContainer.setDg17CountryPlainData("D");
 		persoDataContainer.setDg17ZipPlainData("51147");
 		persoDataContainer.setDg18PlainData("02760503150000");
