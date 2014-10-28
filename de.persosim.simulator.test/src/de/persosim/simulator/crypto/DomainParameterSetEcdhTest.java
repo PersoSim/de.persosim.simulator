@@ -147,6 +147,33 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Negative test case: reconstruct public key from byte array encoding according to ANSI X9.62 with key material being of unexpected size.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testReconstructPublicKey_illegalKeySize() throws Exception {		
+		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		
+		byte[] publicKeyEncodingPlain = new byte[]{(byte) 0x04};
+		
+		domParamsEcdh.reconstructPublicKey(publicKeyEncodingPlain);
+	}
+	
+	/**
+	 * Negative test case: reconstruct public key from byte array encoding according to ANSI X9.62 with resulting point not being on the curve.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testReconstructPublicKey_pointNotOnCurve() throws Exception {		
+		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		
+		byte[] xArray = HexString.toByteArray("4DD4D9CCB21EA76850E96699DF3EED2FA65CE0CBB3BF7604E1C458CF71B47F5A"); // manipulated
+		byte[] yArray = HexString.toByteArray("5AF8C1A214A81761DAA6D134DE0E5EA52D54C3BE3F05944F4460F81158D89DEA");
+		
+		byte[] publicKeyEncodingPlain = Utils.concatByteArrays(new byte[]{(byte) 0x04}, xArray, yArray);
+		
+		domParamsEcdh.reconstructPublicKey(publicKeyEncodingPlain);
+	}
+	
+	/**
 	 * Positive test case: reconstruct private key from byte array encoding (plain value S).
 	 */
 	@Test
@@ -175,7 +202,7 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	 * Positive test case: reconstruct point from X9.62 uncompressed byte array encoding.
 	 */
 	@Test
-	public void testReconstructPointUncompressed() throws Exception {		
+	public void testReconstructPoint_uncompressedData() throws Exception {		
 		byte[] xArray = HexString.toByteArray("4DD4D9CCB21EA76850E96699DF3EED2FA65CE0CBB3BF7604E1C458CF71B47F59");
 		byte[] yArray = HexString.toByteArray("5AF8C1A214A81761DAA6D134DE0E5EA52D54C3BE3F05944F4460F81158D89DEA");
 		
@@ -191,6 +218,26 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 		
 		assertEquals("point x", pointExpected.getAffineX(), pointReconstructed.getAffineX());
 		assertEquals("point y", pointExpected.getAffineY(), pointReconstructed.getAffineY());
+	}
+	
+	/**
+	 * Negative test case: reconstruct point from X9.62 byte array encoding of even byte length.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testReconstructPoint_unevenDataLength() throws Exception {		
+		byte[] keyEncodingPlain = new byte[]{(byte) 0x04, (byte) 0xFF};
+		
+		DomainParameterSetEcdh.reconstructPoint(keyEncodingPlain);
+	}
+	
+	/**
+	 * Negative test case: reconstruct point from X9.62 byte array encoding indicating illegal encoding.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testReconstructPoint_illegalLeadingEncoding() throws Exception {		
+		byte[] keyEncodingPlain = new byte[]{(byte) 0x0F};
+		
+		DomainParameterSetEcdh.reconstructPoint(keyEncodingPlain);
 	}
 	
 	/**
