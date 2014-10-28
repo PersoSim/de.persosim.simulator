@@ -308,6 +308,18 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Negative test case: test update key spec of key pair for key pair with same generator as domain parameters.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testUpdateKeySpec_SameGenerator() throws Exception {
+		DomainParameterSetEcdh domParams = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		
+		KeyPair keyPair = CryptoUtil.generateKeyPair(domParams, new SecureRandom());
+	    
+	    domParams.updateKeySpec(keyPair);
+	}
+	
+	/**
 	 * Positive test case: test standardized domain parameters for base points/generators being on the curve.
 	 */
 	@Test
