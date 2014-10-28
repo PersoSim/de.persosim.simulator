@@ -10,7 +10,9 @@ import java.io.StringWriter;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECPoint;
@@ -289,6 +291,20 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 		assertEquals("public key generator", domParamsEcdhMapped.getGenerator(), keySpecPublicMapped.getParams().getGenerator());
 		assertEquals("public key order", domParamsEcdh.getOrder(), keySpecPublicMapped.getParams().getOrder());
 		assertEquals("public key cofactor", domParamsEcdh.getCofactor(), keySpecPublicMapped.getParams().getCofactor());
+	}
+	
+	/**
+	 * Negative test case: test update key spec of key pair for non-EC key pair.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void test_updateKeySpec_NonEcKeyPair() throws Exception {
+		DomainParameterSetEcdh domParams = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		
+		KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+	    gen.initialize(1024, new SecureRandom());
+	    KeyPair keyPair = gen.generateKeyPair();
+	    
+	    domParams.updateKeySpec(keyPair);
 	}
 	
 	/**
