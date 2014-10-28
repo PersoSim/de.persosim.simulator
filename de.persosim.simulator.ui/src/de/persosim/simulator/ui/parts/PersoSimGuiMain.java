@@ -45,15 +45,9 @@ public class PersoSimGuiMain {
 	private PrintWriter inWriter;
 	
 	Composite parent;
-	
-	private static PersoSimGuiMain persoSimGuiMain;
 
 	@PostConstruct
 	public void createComposite(Composite parentComposite) {
-		if(persoSimGuiMain == null) {
-			persoSimGuiMain = this;
-		}
-		
 		parent = parentComposite;
 		grabSysOut();
 		grabSysIn();
@@ -65,7 +59,6 @@ public class PersoSimGuiMain {
 		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
 		txtOutput.setEditable(false);
 		txtOutput.setCursor(null);
-//		txtOutput.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 		txtOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		parent.setLayout(new GridLayout(1, false));
@@ -74,6 +67,7 @@ public class PersoSimGuiMain {
 		txtInput.setMessage("Enter command here");
 		
 		txtInput.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyReleased(KeyEvent e) {
 				if((e.character == SWT.CR) || (e.character == SWT.LF)) {
 					String line = txtInput.getText();
@@ -110,9 +104,11 @@ public class PersoSimGuiMain {
 			public void write(int b) throws IOException {
 				final char value = (char) b;
 				
-				if (checkNextForNewline && value == '\n'){
+				if (checkNextForNewline){
 					checkNextForNewline = false;
-					return;
+					if (value == '\n'){
+						return;
+					}
 				}
 
 				if (currentPosition < buffer.length - 1 && !(value == '\n' || value == '\r')){
@@ -123,6 +119,8 @@ public class PersoSimGuiMain {
 							checkNextForNewline = true;
 						}
 						buffer [currentPosition++] = '\n';
+					} else {
+						buffer [currentPosition++] = value;
 					}
 
 					final String toPrint = new String(Arrays.copyOf(buffer, currentPosition));
@@ -206,13 +204,9 @@ public class PersoSimGuiMain {
 		txtOutput.setFocus();
 	}
 	
+	@Override
 	public String toString() {
 		return "OutputHandler here!";
-	}
-	
-	public static PersoSimGuiMain getInstance() {
-		//XXX use findPart instead of this caching mechanism
-		return persoSimGuiMain;
 	}
 	
 }

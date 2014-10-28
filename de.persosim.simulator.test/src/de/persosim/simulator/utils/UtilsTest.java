@@ -2,6 +2,8 @@ package de.persosim.simulator.utils;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 import java.util.Calendar;
@@ -142,6 +144,39 @@ public class UtilsTest {
 		Date dateExpected = calendar.getTime();
 		
 		assertEquals(dateExpected, dateReceived);
+	}
+	
+	/**
+	 * Positive test case: check data array for smaller prefix.
+	 */
+	@Test
+	public void testArrayHasPrefix_PrefixSmallerThanData() {
+		byte[] data = HexString.toByteArray("00112233445566778899");
+		byte[] prefix = HexString.toByteArray("001122");
+		
+		assertTrue(Utils.arrayHasPrefix(data, prefix));
+	}
+	
+	/**
+	 * Positive test case: check data array for same size prefix.
+	 */
+	@Test
+	public void testArrayHasPrefix_PrefixSameSizeAsData() {
+		byte[] data = HexString.toByteArray("00112233445566778899");
+		byte[] prefix = data;
+		
+		assertTrue(Utils.arrayHasPrefix(data, prefix));
+	}
+	
+	/**
+	 * Positive test case: check data array for larger prefix.
+	 */
+	@Test
+	public void testArrayHasPrefix_PrefixLargerThanData() {
+		byte[] data = HexString.toByteArray("001122");
+		byte[] prefix = HexString.toByteArray("00112233445566778899");
+		
+		assertFalse(Utils.arrayHasPrefix(data, prefix));
 	}
 
 }

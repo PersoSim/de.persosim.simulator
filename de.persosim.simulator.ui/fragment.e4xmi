@@ -1,48 +1,22 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_fyNxQD9FEeS_D-1xKGHHEA">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_jbTUMEIsEeS095NvfbDi9w" featurename="children" parentElementId="de.persosim.rcp.partSashContainer" positionInList="first">
-    <elements xsi:type="basic:Part" xmi:id="_l56EoEIsEeS095NvfbDi9w" elementId="de.persosim.simulator.ui.parts.pinPad" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.parts.PersoSimGuiMain" label="PersoSim"/>
+    <elements xsi:type="basic:Part" xmi:id="_l56EoEIsEeS095NvfbDi9w" elementId="de.persosim.simulator.ui.parts.mainPart" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.parts.PersoSimGuiMain" label="PersoSim"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BjrX4EZdEeSQKqd06nTv0g" featurename="children" parentElementId="de.persosim.rcp.mainMenue">
-    <elements xsi:type="menu:Menu" xmi:id="_JDxsQEZdEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.menu.selectPersoMenu" label="Select Perso">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_d8avEEZdEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set01" label="Template 01" command="_10f3IEZgEeSQKqd06nTv0g">
-        <parameters xmi:id="_AsdCsEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set01" name="de.persosim.simulator.ui.commandparameter.persoSet" value="01"/>
-      </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_lVuFoEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set02" label="Template 02" command="_10f3IEZgEeSQKqd06nTv0g">
-        <parameters xmi:id="_-BGaQEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set02" name="de.persosim.simulator.ui.commandparameter.persoSet" value="02"/>
-      </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_mA3UYEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set03" label="Template 03" command="_10f3IEZgEeSQKqd06nTv0g">
-        <parameters xmi:id="_-d98cEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set03" name="de.persosim.simulator.ui.commandparameter.persoSet" value="03"/>
-      </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_mY0hYEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set04" label="Template 04" command="_10f3IEZgEeSQKqd06nTv0g">
-        <parameters xmi:id="_-z1ewEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set04" name="de.persosim.simulator.ui.commandparameter.persoSet" value="04"/>
-      </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_muZIwEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set05" label="Template 05" command="_10f3IEZgEeSQKqd06nTv0g">
-        <parameters xmi:id="__WNMAEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set05" name="de.persosim.simulator.ui.commandparameter.persoSet" value="05"/>
-      </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_nCoTYEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set06" label="Template 06" command="_10f3IEZgEeSQKqd06nTv0g">
-        <parameters xmi:id="__pi-wEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set06" name="de.persosim.simulator.ui.commandparameter.persoSet" value="06"/>
-      </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_nXmd0EZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set07" label="Template 07" command="_10f3IEZgEeSQKqd06nTv0g">
-        <parameters xmi:id="__-0EIEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set07" name="de.persosim.simulator.ui.commandparameter.persoSet" value="07"/>
-      </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_nrY8gEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set08" label="Template 08" command="_10f3IEZgEeSQKqd06nTv0g">
-        <parameters xmi:id="_AWBqQEZjEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set08" name="de.persosim.simulator.ui.commandparameter.persoSet" value="08"/>
-      </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_n8f6oEZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set09" label="Template 09" command="_10f3IEZgEeSQKqd06nTv0g">
-        <parameters xmi:id="_AqZ-0EZjEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set09" name="de.persosim.simulator.ui.commandparameter.persoSet" value="09"/>
-      </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_oS0I4EZiEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handledmenuitem.set10" label="Template 10" command="_10f3IEZgEeSQKqd06nTv0g">
-        <parameters xmi:id="_BBdz8EZjEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.parameter.set10" name="de.persosim.simulator.ui.commandparameter.persoSet" value="10"/>
-      </children>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BjrX4EZdEeSQKqd06nTv0g" featurename="children" parentElementId="de.persosim.rcp.mainMenue" positionInList="after:de.persosim.rcp.mainMenue.file">
+    <elements xsi:type="menu:Menu" xmi:id="_JDxsQEZdEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.menu.selectPersoMenu" label="Select Personalization">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_QKpL0FUEEeSxD7VZ_Y6-PA" elementId="de.persosim.simulator.ui.handledmenuitem.selectPersoFromFile" label="Select Perso from File" command="_7jTUYFUDEeSxD7VZ_Y6-PA"/>
+      <children xsi:type="menu:DynamicMenuContribution" xmi:id="_4pZ40FU0EeS9UYXjeRNGFg" elementId="de.persosim.simulator.ui.menu.dynamicallySelectFromTemplate" label="Dyn Sel From Template" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.menuitems.dynamicPersoTemplateMenuItem"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uNj68EZgEeSQKqd06nTv0g" featurename="commands" parentElementId="de.persosim.rcp.application">
-    <elements xsi:type="commands:Command" xmi:id="_10f3IEZgEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.command.selectPersoCommand" commandName="Select Perso">
+    <elements xsi:type="commands:Command" xmi:id="_10f3IEZgEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.command.selectPersoFromTemplateCommand" commandName="Select Perso From Template">
       <parameters xmi:id="_5ezJMEZhEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.commandparameter.persoSet" name="PersoSet" typeId="" optional="false"/>
     </elements>
+    <elements xsi:type="commands:Command" xmi:id="_7jTUYFUDEeSxD7VZ_Y6-PA" elementId="de.persosim.simulator.ui.command.SelectPersoFromFileCommand" commandName="Select Perso From File"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7LkpgEZgEeSQKqd06nTv0g" featurename="handlers" parentElementId="de.persosim.rcp.application">
-    <elements xsi:type="commands:Handler" xmi:id="__6nykEZgEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handler.selectPersoHandler" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.handlers.PersoSelectionHandler" command="_10f3IEZgEeSQKqd06nTv0g"/>
+    <elements xsi:type="commands:Handler" xmi:id="__6nykEZgEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handler.selectPersoFromTemplateHandler" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.handlers.SelectPersoFromTemplateHandler" command="_10f3IEZgEeSQKqd06nTv0g"/>
+    <elements xsi:type="commands:Handler" xmi:id="_F3jycFUEEeSxD7VZ_Y6-PA" elementId="de.persosim.simulator.ui.handler.selectPersoFromFileHandler" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.handlers.SelectPersoFromFileHandler" command="_7jTUYFUDEeSxD7VZ_Y6-PA"/>
   </fragments>
 </fragment:ModelFragments>
