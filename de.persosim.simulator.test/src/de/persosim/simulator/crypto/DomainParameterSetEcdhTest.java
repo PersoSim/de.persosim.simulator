@@ -129,6 +129,14 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Negative test case: get byte array compressed (TR-03110) encoding of public non-EC key.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testComp_nonEcKey() throws Exception {	
+		domParamsEcdh.comp(keyPairNonEc.getPublic());
+	}
+	
+	/**
 	 * Positive test case: reconstruct public key from byte array encoding (uncompressed encoding according to ANSI X9.62).
 	 */
 	@Test
@@ -405,6 +413,48 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 		
 		//assert that the recreated object matches the input
 		assertEquals(domParamsEcdh, unmarshalledObject);
+	}
+	
+	/**
+	 * Positive test case: check equals method for identical object.
+	 */
+	@Test
+	public void testEquals_identicalObject() {
+		assertTrue(domParamsEcdh.equals(domParamsEcdh));
+	}
+	
+	/**
+	 * Positive test case: check equals method for same object.
+	 */
+	@Test
+	public void testEquals_sameObject() {
+		DomainParameterSetEcdh domParamsEcdh2 = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		assertTrue(domParamsEcdh.equals(domParamsEcdh2));
+	}
+	
+	/**
+	 * Negative test case: check equals method for different object.
+	 */
+	@Test
+	public void testEquals_differentObject() {
+		DomainParameterSetEcdh domParamsEcdh2 = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(9);
+		assertFalse(domParamsEcdh.equals(domParamsEcdh2));
+	}
+	
+	/**
+	 * Negative test case: check equals method for null object.
+	 */
+	@Test
+	public void testEquals_null() {
+		assertFalse(domParamsEcdh.equals(null));
+	}
+	
+	/**
+	 * Negative test case: check equals method for object type only related by type Object.
+	 */
+	@Test
+	public void testEquals_nonRelated() {
+		assertFalse(domParamsEcdh.equals(new String("Test")));
 	}
 	
 }
