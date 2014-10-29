@@ -11,7 +11,7 @@ public class Profile07 extends AbstractProfile {
 	
 	@Override
 	public void setPersoDataContainer() {
-		persoDataContainer = new PersonalizationDataDefaultContainer();
+		persoDataContainer = PersonalizationDataContainer.getDefaultContainer();
 		persoDataContainer.setDg4PlainData("ANNEKATHRIN");
 		persoDataContainer.setDg5PlainData("LERCH");
 		persoDataContainer.setDg8PlainData("19760705");
