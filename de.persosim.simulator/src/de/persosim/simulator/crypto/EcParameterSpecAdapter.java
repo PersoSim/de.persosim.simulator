@@ -64,7 +64,7 @@ public class EcParameterSpecAdapter extends XmlAdapter<EcParameterSpecAdapter.Ec
 		}
 
 		public ECPoint getGenerator() {
-			return CryptoUtil.decode(getCurve(), generator);
+			return DomainParameterSetEcdh.reconstructPoint(generator);
 		}
 
 		public BigInteger getOrder() {

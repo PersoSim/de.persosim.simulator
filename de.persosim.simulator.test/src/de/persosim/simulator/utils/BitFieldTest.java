@@ -4,7 +4,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.bouncycastle.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -76,7 +75,7 @@ public class BitFieldTest extends PersoSimTestCase {
 	@Test
 	public void testConcatenate(){
 		//create test data
-		byte [] concatenated = Arrays.concatenate(field1Content, field2Content);
+		byte [] concatenated = Utils.concatByteArrays(field1Content, field2Content);
 		BitField concatenatedField = new BitField(36, concatenated);
 		
 		//call mut

@@ -58,6 +58,7 @@ public class DefaultNpaUnmarshallerCallbackTest extends PersoSimTestCase {
 			}
 		};
 		
+		//XXX AMY is this necessary in the context of the bouncy castle dependency removal
 		//ensure that matching of IssuerNames works as expected
 		X500Name.setDefaultStyle(RFC4519Style.INSTANCE);
 	}

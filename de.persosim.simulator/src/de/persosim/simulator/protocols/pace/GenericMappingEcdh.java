@@ -31,7 +31,7 @@ public class GenericMappingEcdh extends GenericMapping {
 		
 		DomainParameterSetEcdh domainParameterSetEcdhUnMapped = (DomainParameterSetEcdh) domainParameterSetUnMapped;
 		
-		ECPoint h = CryptoUtil.decode(domainParameterSetEcdhUnMapped.getCurve(), secretOfKeyAgreement);
+		ECPoint h = DomainParameterSetEcdh.reconstructPoint(secretOfKeyAgreement);
 		
 		EllipticCurve curve = domainParameterSetEcdhUnMapped.getCurve();
 		ECPoint gUnMapped = domainParameterSetEcdhUnMapped.getGenerator();

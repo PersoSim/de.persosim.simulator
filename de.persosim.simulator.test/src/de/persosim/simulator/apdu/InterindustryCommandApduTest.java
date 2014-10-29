@@ -3,7 +3,8 @@ package de.persosim.simulator.apdu;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-import org.bouncycastle.util.Arrays;
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 
