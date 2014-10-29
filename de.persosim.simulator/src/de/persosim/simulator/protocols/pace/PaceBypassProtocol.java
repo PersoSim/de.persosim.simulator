@@ -240,7 +240,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 					note = pinResponse.getResponse();
 				} else{
 					sw = Iso7816.SW_6300_AUTHENTICATION_FAILED;
-					note = "authentication token received from PCD does NOT match expected one";
+					note = "Provided password does NOT match expected one";
 				}
 			}	
 		}
