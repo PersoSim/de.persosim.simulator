@@ -704,14 +704,19 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			if(pinRetryCounter != pinRetryCounterDefault) {
 				if(pinRetryCounter == 1) {
 					if (isPinTemporarilyResumed(cardState)) {
+						// everything ok, password is PIN, PIN activated, retry counter is not default value, retry counter == 1, PIN is suspended, PIN is temporarily resumed
 						pacePasswordPin.resetRetryCounterToDefault();
 						sw = Iso7816.SW_9000_NO_ERROR;
 						note = "MutualAuthenticate processed successfully with password PIN after CAN - PIN retry counter has been reset from: " + pinRetryCounter + " to: " + pacePasswordPin.getRetryCounterCurrentValue();
 					} else{
-						// everything ok, password is PIN, PIN activated, retry counter is not default value, retry counter == 1, PIN is not temporarily resumed
+						// everything ok, password is PIN, PIN activated, retry counter is not default value, retry counter == 1, PIN is suspended, PIN is not temporarily resumed
 						sw = Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED;
 						note = "MutualAuthenticate processed successfully but PIN is suspended";
 					}
+				} else if (pinRetryCounter == 0){
+					// everything ok, password is PIN, PIN activated, retry counter is not default value, retry counter == 0, PIN is blocked
+					sw = Iso7816.SW_6983_FILE_INVALID;
+					note = "MutualAuthenticate processed successfully but PIN is blocked";
 				} else{
 					// everything ok, password is PIN, PIN activated, retry counter is not default value, retry counter > 1
 					pacePasswordPin.resetRetryCounterToDefault();

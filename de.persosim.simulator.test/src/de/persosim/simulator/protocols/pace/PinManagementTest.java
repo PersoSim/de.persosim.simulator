@@ -529,4 +529,56 @@ public class PinManagementTest extends PersoSimTestCase {
 		assertEquals("Statusword is not " + HexString.hexifyShort(expectedSw), expectedSw, receivedSw);
 	}
 	
+
+	/**
+	 * Negative testcase: Perform PACE with Pin. Retry counter is 0, PIN activated
+	 */
+	@Test
+	public void testSetAtPinRc0Act_NoPrevPwd(){
+		// prepare the mock
+		new NonStrictExpectations() {
+			{
+				mockedCardStateAccessor.getCurrentMechanisms(
+						withInstanceOf(SecContext.class),
+						null);
+				
+				// previously used password
+				result = csmEmpty;
+				
+				mockedCardStateAccessor.getObject(
+						withInstanceOf(MasterFileIdentifier.class),
+						withInstanceOf(Scope.class));
+				result = mockedMf;
+
+				mockedMf.findChildren(
+						withInstanceOf(DomainParameterSetIdentifier.class),
+						withInstanceOf(OidIdentifier.class));
+				result = domainParameters0;
+
+				mockedCardStateAccessor.getObject(
+						withInstanceOf(DomainParameterSetIdentifier.class),
+						withInstanceOf(Scope.class));
+				result = domainParameters0;
+				
+				mockedCardStateAccessor.getObject(withInstanceOf(AuthObjectIdentifier.class),null);
+				
+				// currently used password
+				result = pwdaoWithPinRc0Activated;
+			}
+		};
+		
+		// select Apdu
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 01 04 83 01 03");
+		processingData.updateCommandApdu(this, "pseudo pace APDU",
+				CommandApduFactory.createCommandApdu(apduBytes));
+
+		// call mut
+		paceProtocol.process(processingData);
+
+		// check results
+		short sw = processingData.getResponseApdu().getStatusWord();
+		assertEquals("Statusword is not correct", HexString.hexifyShort(0x63C0), HexString.hexifyShort(sw));
+	}
+	
 }

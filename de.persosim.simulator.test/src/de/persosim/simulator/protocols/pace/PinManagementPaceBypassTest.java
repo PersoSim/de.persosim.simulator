@@ -403,4 +403,64 @@ public class PinManagementPaceBypassTest extends PersoSimTestCase {
 		assertEquals("Statusword is not correct", HexString.hexifyShort(0x9000), HexString.hexifyShort(sw));
 	}
 	
+	/**
+	 * Negative testcase: Perform PACE with Pin. Retry counter is 0, PIN activated
+	 */
+	@Test
+	public void testSetAtPinRc0Act_NoPrevPwd(){
+		// prepare the mock
+		new NonStrictExpectations() {
+			{
+				mockedCardStateAccessor.getCurrentMechanisms(
+						withInstanceOf(SecContext.class),
+						null);
+				
+				// previously used password
+				result = csmEmpty;
+				
+				mockedCardStateAccessor.getObject(
+						withInstanceOf(MasterFileIdentifier.class),
+						withInstanceOf(Scope.class));
+				result = mockedMf;
+
+				mockedMf.findChildren(
+						withInstanceOf(DomainParameterSetIdentifier.class),
+						withInstanceOf(OidIdentifier.class));
+				result = domainParameters0;
+
+				mockedCardStateAccessor.getObject(
+						withInstanceOf(DomainParameterSetIdentifier.class),
+						withInstanceOf(Scope.class));
+				result = domainParameters0;
+				
+				mockedCardStateAccessor.getObject(withInstanceOf(AuthObjectIdentifier.class),null);
+				
+				// currently used password
+				result = pwdaoWithPinRc0Activated;
+			}
+		};
+		
+		// select Apdu
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = HexString.toByteArray("FF 86 00 00 06 83 01 03 92 01 FF");
+		processingData.updateCommandApdu(this, "pseudo pace APDU",
+				CommandApduFactory.createCommandApdu(apduBytes));
+
+		// call mut
+		paceProtocol.process(processingData);
+
+		// check results
+		short sw = processingData.getResponseApdu().getStatusWord();
+
+		TlvValue data = processingData.getResponseApdu().getData();
+		
+		assertTrue("Encoding is valid", data.isValidBerEncoding());
+
+		TlvDataObjectContainer container = new TlvDataObjectContainer(data);
+		
+		assertEquals("setAt status word is not correct", HexString.hexifyShort(0x63C0), HexString.hexifyShort(Utils.getShortFromUnsignedByteArray(container.getTlvDataObject(TlvConstants.TAG_80).getValueField())));
+		
+		assertEquals("Statusword is not correct", HexString.hexifyShort(0x6983), HexString.hexifyShort(sw));
+	}
+	
 }
