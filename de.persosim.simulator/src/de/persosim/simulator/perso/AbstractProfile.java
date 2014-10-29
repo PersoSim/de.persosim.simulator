@@ -120,18 +120,16 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		return line2;
 	}
 	
-	public String getMrz() {
-		initPersonalizationDataContainer();
-		String line1 = getMrzLine1of3(persoDataContainer.getDg1PlainData(), persoDataContainer.getDg2PlainData(), persoDataContainer.getDocumentNumber());
-		String line2 = getMrzLine2of3(line1, persoDataContainer.getDg8PlainData(), persoDataContainer.getDg11PlainData(), persoDataContainer.getDg3PlainData(), persoDataContainer.getDg10PlainData());
-		String line3 = persoDataContainer.getMrzLine3Of3();
+	public static String getMrz(String documentType, String issuingCountry, String documentNumber, String dob, String sex, String doe, String nation, String mrzLine3) {
+		String mrzLine1 = getMrzLine1of3(documentType, issuingCountry, documentNumber);
+		String mrzLine2 = getMrzLine2of3(mrzLine1, dob, sex, doe, nation);
 		
-		return line1 + line2 + line3;
+		return mrzLine1 + mrzLine2 + mrzLine3;
 	}
 	
 	@Override
 	protected void addEpassDatagroup1(DedicatedFile ePassAppl) {
-		String mrz = getMrz();
+		String mrz = persoDataContainer.getEpassDg1PlainData();
 		byte[] mrzPlainBytes;
 		
 		try {
@@ -162,7 +160,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 			NoSuchProviderException, IOException, UnsupportedEncodingException {
 		MrzAuthObject mrz = new MrzAuthObject(
 				new AuthObjectIdentifier(1),
-				getMrz());
+				persoDataContainer.getMrz());
 		mf.addChild(mrz);
 
 		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(

@@ -14,13 +14,15 @@ public class PersonalizationDataContainer {
 						dg11PlainData, dg12PlainData, dg13PlainData, dg14PlainData, dg15PlainData,
 						dg16PlainData, dg17StreetPlainData, dg17CityPlainData, dg17StatePlainData,
 						dg17CountryPlainData, dg17ZipPlainData, dg18PlainData, dg19PlainData, dg20PlainData,
-						dg21PlainData, documentNumber, mrzLine3Of3;
+						dg21PlainData, epassDg1PlainData, mrz;
 	
 	ArrayList<KeyPair> caKeys, riKeys;
 	ArrayList<Integer> caKeyIds, riKeyIds;
 	ArrayList<Boolean> caKeyPrivileges;
 	
 	public PersonalizationDataContainer() {
+		this.mrz                  = null;
+		
 		this.dg1PlainData         = null;
 		this.dg2PlainData         = null;
 		this.dg3PlainData         = null;
@@ -47,8 +49,7 @@ public class PersonalizationDataContainer {
 		this.dg20PlainData        = null;
 		this.dg21PlainData        = null;
 		
-		this.documentNumber       = null;
-		this.mrzLine3Of3          = null;
+		this.epassDg1PlainData    = null;
 		
 		this.caKeys               = new ArrayList<>();
 		this.caKeyIds             = new ArrayList<>();
@@ -69,6 +70,14 @@ public class PersonalizationDataContainer {
 		this.riKeyIds.add(keyId);
 	}
 	
+	public String getMrz() {
+		return mrz;
+	}
+
+	public void setMrz(String mrz) {
+		this.mrz = mrz;
+	}
+
 	/**
 	 * This method returns the default String "ID" for eID application data group 1 (Document Type) of the new German identity card.
 	 * @return the document type
@@ -301,20 +310,12 @@ public class PersonalizationDataContainer {
 		this.dg21PlainData = dg21PlainData;
 	}
 
-	public String getDocumentNumber() {
-		return documentNumber;
+	public String getEpassDg1PlainData() {
+		return epassDg1PlainData;
 	}
 
-	public void setDocumentNumber(String documentNumber) {
-		this.documentNumber = documentNumber;
-	}
-
-	public String getMrzLine3Of3() {
-		return mrzLine3Of3;
-	}
-
-	public void setMrzLine3Of3(String mrzLine3Of3) {
-		this.mrzLine3Of3 = mrzLine3Of3;
+	public void setEpassDg1PlainData(String epassDg1PlainData) {
+		this.epassDg1PlainData = epassDg1PlainData;
 	}
 
 	public ArrayList<KeyPair> getCaKeys() {
@@ -335,6 +336,17 @@ public class PersonalizationDataContainer {
 
 	public ArrayList<Integer> getRiKeyIds() {
 		return riKeyIds;
+	}
+	
+	public String createMrz(String documentNumber, String sex, String mrzLine3) {
+		return AbstractProfile.getMrz(dg1PlainData,
+				dg2PlainData,
+				documentNumber,
+				dg8PlainData,
+				sex,
+				dg3PlainData,
+				dg10PlainData,
+				mrzLine3);
 	}
 	
 	/**
