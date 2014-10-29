@@ -458,6 +458,55 @@ public class PinManagementTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Positive test case: check for correct response in case of PACE with PIN, PIN active, retry counter is 1
+	 */
+	@Test
+	public void testIsPasswordUsable_PinActivatedRc1(){
+		
+		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc1Activated, mockedCardStateAccessor);
+		
+		short expectedSw = Iso7816.SW_63C1_COUNTER_IS_1;
+		short receivedSw = responseDataReceived.getStatusWord();
+		assertEquals("Statusword mismatch", HexString.hexifyShort(expectedSw), HexString.hexifyShort(receivedSw));
+	}
+	
+	/**
+	 * Positive test case: check for correct response in case of PACE with PIN, PIN active, retry counter is 2
+	 */
+	@Test
+	public void testIsPasswordUsable_PinActivatedRc2(){
+		
+		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc2Activated, mockedCardStateAccessor);
+		
+		short expectedSw = 0x63C2;
+		short receivedSw = responseDataReceived.getStatusWord();
+		assertEquals("Statusword mismatch", HexString.hexifyShort(expectedSw), HexString.hexifyShort(receivedSw));
+	}
+	
+	/**
+	 * Positive test case: check for correct response in case of PACE with PIN, PIN active, retry counter is 3
+	 */
+	@Test
+	public void testIsPasswordUsable_PinActivatedRc3(){
+		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc3Activated, mockedCardStateAccessor);
+		
+		assertEquals(null, responseDataReceived);
+	}
+	
+	/**
+	 * Positive test case: check for correct response in case of PACE with PIN, PIN inactive, retry counter is 3
+	 */
+	@Test
+	public void testIsPasswordUsable_PinDeactivatedRc3(){
+		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc3Deactivated, mockedCardStateAccessor);
+
+		
+		short expectedSw = SW_6283_SELECTED_FILE_DEACTIVATED;
+		short receivedSw = responseDataReceived.getStatusWord();
+		assertEquals("Statusword mismatch", HexString.hexifyShort(expectedSw), HexString.hexifyShort(receivedSw));
+	}
+	
+	/**
 	 * Positive test case: check Mutual Authenticate for correct response in case of PACE with PIN, PIN activated, retry counter is 3.
 	 */
 	@Test

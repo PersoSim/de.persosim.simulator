@@ -280,6 +280,16 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		this.processingData.updateResponseAPDU(this, "Command SetAt successfully processed", resp);
 	}
 	
+	/**
+	 * Get the status word for the use of the given password.
+	 * 
+	 * @param pacePassword
+	 *            the password to check
+	 * @param cardState
+	 *            the card state accessor to be used
+	 * @return the status word encoding an error or null if the password is
+	 *         usable
+	 */
 	public static ResponseData isPasswordUsable(PasswordAuthObject pacePassword, CardStateAccessor cardState){
 		if (pacePassword instanceof PasswordAuthObjectWithRetryCounter) {
 			PasswordAuthObjectWithRetryCounter pacePasswordWithRetryCounter = (PasswordAuthObjectWithRetryCounter) pacePassword;
