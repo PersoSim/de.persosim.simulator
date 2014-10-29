@@ -202,7 +202,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		
 		ResponseData responseData; 
 		if (sw == Iso7816.SW_9000_NO_ERROR){
-			responseData = AbstractPaceProtocol.getPasswordIsUsable(passwordObject, cardState);
+			responseData = AbstractPaceProtocol.isPasswordUsable(passwordObject, cardState);
 			if (responseData == null){
 				responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(SW_9000_NO_ERROR)));
 			} else {

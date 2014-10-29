@@ -267,7 +267,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		log(this, "computed " + paceOid.getSymmetricCipherAlgorithmName() + " key material: " + HexString.encode(keyMaterialForEncryptionOfNonce), DEBUG);
 		
 		// If PIN is used, check for retry counter.
-		ResponseData isPasswordUsable = getPasswordIsUsable(pacePassword, cardState);
+		ResponseData isPasswordUsable = isPasswordUsable(pacePassword, cardState);
 		if (isPasswordUsable != null){
 			//create and propagate response APDU
 			ResponseApdu resp = new ResponseApdu(isPasswordUsable.getStatusWord());
@@ -280,7 +280,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		this.processingData.updateResponseAPDU(this, "Command SetAt successfully processed", resp);
 	}
 	
-	public static ResponseData getPasswordIsUsable(PasswordAuthObject pacePassword, CardStateAccessor cardState){
+	public static ResponseData isPasswordUsable(PasswordAuthObject pacePassword, CardStateAccessor cardState){
 		if (pacePassword instanceof PasswordAuthObjectWithRetryCounter) {
 			PasswordAuthObjectWithRetryCounter pacePasswordWithRetryCounter = (PasswordAuthObjectWithRetryCounter) pacePassword;
 			
