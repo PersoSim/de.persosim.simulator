@@ -10,7 +10,9 @@ import java.io.StringWriter;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECPoint;
@@ -22,6 +24,7 @@ import java.security.spec.KeySpec;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
@@ -30,14 +33,24 @@ import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 public class DomainParameterSetEcdhTest extends PersoSimTestCase {
-
+	
+	private DomainParameterSetEcdh domParamsEcdh;
+	private KeyPair keyPairNonEc;
+	
+	@Before
+	public void setUp() throws NoSuchAlgorithmException {
+		domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		
+		KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+	    gen.initialize(1024, new SecureRandom());
+	    keyPairNonEc = gen.generateKeyPair();
+	}
+	
 	/**
 	 * Positive test case: get byte array encoding of public key.
 	 */
 	@Test
 	public void testEncodePublicKey() throws Exception {	
-		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
-		
 		byte[] xArray = HexString.toByteArray("4DD4D9CCB21EA76850E96699DF3EED2FA65CE0CBB3BF7604E1C458CF71B47F59");
 		byte[] yArray = HexString.toByteArray("5AF8C1A214A81761DAA6D134DE0E5EA52D54C3BE3F05944F4460F81158D89DEA");
 		
@@ -57,15 +70,21 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 		byte[] publicKeyEncodingPlain = domParamsEcdh.encodePublicKey(ecdhPublicKeyExpected);
 		
 		assertArrayEquals("reconstructed encoding", publicKeyEncodingPlainExpected, publicKeyEncodingPlain);
-	}	
+	}
+	
+	/**
+	 * Negative test case: get byte array encoding of public key for non-EC key.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testEncodePublicKey_NonEcKey() throws Exception {
+	    domParamsEcdh.encodePublicKey(keyPairNonEc.getPublic());
+	}
 
 	/**
 	 * Positive test case: get byte array compressed (TR-03110) encoding of public key.
 	 */
 	@Test
 	public void testComp() throws Exception {	
-		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
-		
 		byte[] xArray = HexString.toByteArray("4DD4D9CCB21EA76850E96699DF3EED2FA65CE0CBB3BF7604E1C458CF71B47F59");
 		byte[] yArray = HexString.toByteArray("5AF8C1A214A81761DAA6D134DE0E5EA52D54C3BE3F05944F4460F81158D89DEA");
 				
@@ -90,8 +109,6 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testCompShortEcdhKey() throws Exception {	
-		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
-		
 		byte[] xArray = HexString.toByteArray("0015A12C49DC3F2985AE44E5EF75AA0A1862527CD9D5B03D17CD1E2FC0290DB7");
 		byte[] yArray = HexString.toByteArray("0AF39509F439220E7EEA61D15668BB5D63DD256BD7F4E9E1F9753866C4A6BD59");
 				
@@ -112,12 +129,18 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Negative test case: get byte array compressed (TR-03110) encoding of public non-EC key.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testComp_nonEcKey() throws Exception {	
+		domParamsEcdh.comp(keyPairNonEc.getPublic());
+	}
+	
+	/**
 	 * Positive test case: reconstruct public key from byte array encoding (uncompressed encoding according to ANSI X9.62).
 	 */
 	@Test
 	public void testReconstructPublicKey() throws Exception {		
-		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
-		
 		byte[] xArray = HexString.toByteArray("4DD4D9CCB21EA76850E96699DF3EED2FA65CE0CBB3BF7604E1C458CF71B47F59");
 		byte[] yArray = HexString.toByteArray("5AF8C1A214A81761DAA6D134DE0E5EA52D54C3BE3F05944F4460F81158D89DEA");
 		
@@ -145,12 +168,31 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Negative test case: reconstruct public key from byte array encoding according to ANSI X9.62 with key material being of unexpected size.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testReconstructPublicKey_illegalKeySize() throws Exception {		
+		domParamsEcdh.reconstructPublicKey(new byte[]{(byte) 0x04});
+	}
+	
+	/**
+	 * Negative test case: reconstruct public key from byte array encoding according to ANSI X9.62 with resulting point not being on the curve.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testReconstructPublicKey_pointNotOnCurve() throws Exception {		
+		byte[] xArray = HexString.toByteArray("4DD4D9CCB21EA76850E96699DF3EED2FA65CE0CBB3BF7604E1C458CF71B47F5A"); // manipulated
+		byte[] yArray = HexString.toByteArray("5AF8C1A214A81761DAA6D134DE0E5EA52D54C3BE3F05944F4460F81158D89DEA");
+		
+		byte[] publicKeyEncodingPlain = Utils.concatByteArrays(new byte[]{(byte) 0x04}, xArray, yArray);
+		
+		domParamsEcdh.reconstructPublicKey(publicKeyEncodingPlain);
+	}
+	
+	/**
 	 * Positive test case: reconstruct private key from byte array encoding (plain value S).
 	 */
 	@Test
 	public void testReconstructPrivateKey() throws Exception {		
-		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
-		
 		byte[] ecdhPrivateKeyDataPicc = HexString.toByteArray("79 84 67 4C F3 B3 A5 24 BF 92 9C E8 A6 7F CF 22 17 3D A0 BA D5 95 EE D6 DE B7 2D 22 C5 42 FA 9D");
 		BigInteger sExpected = new BigInteger(1, ecdhPrivateKeyDataPicc);
 		
@@ -170,10 +212,18 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Negative test case: reconstruct private key from byte array encoding with unexpected length.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testReconstructPrivateKey_illegalKeySize() throws Exception {		
+		domParamsEcdh.reconstructPrivateKey(new byte[] {(byte) 0xFF});
+	}
+	
+	/**
 	 * Positive test case: reconstruct point from X9.62 uncompressed byte array encoding.
 	 */
 	@Test
-	public void testReconstructPointUncompressed() throws Exception {		
+	public void testReconstructPoint_uncompressedData() throws Exception {		
 		byte[] xArray = HexString.toByteArray("4DD4D9CCB21EA76850E96699DF3EED2FA65CE0CBB3BF7604E1C458CF71B47F59");
 		byte[] yArray = HexString.toByteArray("5AF8C1A214A81761DAA6D134DE0E5EA52D54C3BE3F05944F4460F81158D89DEA");
 		
@@ -192,12 +242,26 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Negative test case: reconstruct point from X9.62 byte array encoding of even byte length.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testReconstructPoint_unevenDataLength() throws Exception {		
+		DomainParameterSetEcdh.reconstructPoint(new byte[]{(byte) 0x04, (byte) 0xFF});
+	}
+	
+	/**
+	 * Negative test case: reconstruct point from X9.62 byte array encoding indicating illegal encoding.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testReconstructPoint_illegalLeadingEncoding() throws Exception {		
+		DomainParameterSetEcdh.reconstructPoint(new byte[]{(byte) 0x0F});
+	}
+	
+	/**
 	 * Positive test case: check that valid EC point is identified as being on the curve.
 	 */
 	@Test
 	public void testIsOnCurve() {		
-		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
-		
 		// point coordinates originate from successful PACE test run, i.e. have been verified to be on the curve
 		BigInteger publicPointX = new BigInteger(1, HexString.toByteArray("4DD4D9CCB21EA76850E96699DF3EED2FA65CE0CBB3BF7604E1C458CF71B47F59"));
 		BigInteger publicPointY = new BigInteger(1, HexString.toByteArray("5AF8C1A214A81761DAA6D134DE0E5EA52D54C3BE3F05944F4460F81158D89DEA"));
@@ -212,8 +276,6 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testIsOnCurve_WrongY() {		
-		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
-		
 		// original point coordinates originate from successful PACE test run, i.e. have been verified to be on the curve
 		// Y coordinate has been decreased by 1
 		BigInteger publicPointX = new BigInteger(1, HexString.toByteArray("4DD4D9CCB21EA76850E96699DF3EED2FA65CE0CBB3BF7604E1C458CF71B47F59"));
@@ -231,8 +293,6 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testUpdateKeySpec() {		
-		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
-		
 		// point coordinates originate from successful PACE test run, i.e. have been verified to be on the curve
 		BigInteger publicPointX = new BigInteger(1, HexString.toByteArray("4DD4D9CCB21EA76850E96699DF3EED2FA65CE0CBB3BF7604E1C458CF71B47F59"));
 		BigInteger publicPointY = new BigInteger(1, HexString.toByteArray("5AF8C1A214A81761DAA6D134DE0E5EA52D54C3BE3F05944F4460F81158D89DEA"));
@@ -292,6 +352,23 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Negative test case: test update key spec of key pair for non-EC key pair.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void test_updateKeySpec_NonEcKeyPair() throws Exception {
+		domParamsEcdh.updateKeySpec(keyPairNonEc);
+	}
+	
+	/**
+	 * Negative test case: test update key spec of key pair for key pair with same generator as domain parameters.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testUpdateKeySpec_SameGenerator() throws Exception {
+		KeyPair keyPair = CryptoUtil.generateKeyPair(domParamsEcdh, new SecureRandom());
+	    domParamsEcdh.updateKeySpec(keyPair);
+	}
+	
+	/**
 	 * Positive test case: test standardized domain parameters for base points/generators being on the curve.
 	 */
 	@Test
@@ -319,15 +396,13 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void test_JaxbMarshallUnmarshall() throws Exception {
-		DomainParameterSetEcdh input = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
-		
 		// instantiate marshaller
 		Marshaller m = PersoSimJaxbContextProvider.getContext().createMarshaller();
 		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 		
 		// Write to String
 		StringWriter strWriter = new StringWriter();
-		m.marshal(input, strWriter);
+		m.marshal(domParamsEcdh, strWriter);
 		String marshalledPerso = strWriter.toString();
 		System.out.println(marshalledPerso);
 		
@@ -337,8 +412,49 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 		Object unmarshalledObject = um.unmarshal(sr);
 		
 		//assert that the recreated object matches the input
-		assertEquals(input, unmarshalledObject);
-
+		assertEquals(domParamsEcdh, unmarshalledObject);
+	}
+	
+	/**
+	 * Positive test case: check equals method for identical object.
+	 */
+	@Test
+	public void testEquals_identicalObject() {
+		assertTrue(domParamsEcdh.equals(domParamsEcdh));
+	}
+	
+	/**
+	 * Positive test case: check equals method for same object.
+	 */
+	@Test
+	public void testEquals_sameObject() {
+		DomainParameterSetEcdh domParamsEcdh2 = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		assertTrue(domParamsEcdh.equals(domParamsEcdh2));
+	}
+	
+	/**
+	 * Negative test case: check equals method for different object.
+	 */
+	@Test
+	public void testEquals_differentObject() {
+		DomainParameterSetEcdh domParamsEcdh2 = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(9);
+		assertFalse(domParamsEcdh.equals(domParamsEcdh2));
+	}
+	
+	/**
+	 * Negative test case: check equals method for null object.
+	 */
+	@Test
+	public void testEquals_null() {
+		assertFalse(domParamsEcdh.equals(null));
+	}
+	
+	/**
+	 * Negative test case: check equals method for object type only related by type Object.
+	 */
+	@Test
+	public void testEquals_nonRelated() {
+		assertFalse(domParamsEcdh.equals(new String("Test")));
 	}
 	
 }
