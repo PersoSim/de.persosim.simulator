@@ -169,6 +169,8 @@ public class TR03110Utils implements TlvConstants {
 	 * @throws CertificateNotParseableException
 	 */
 	//XXX JUnit tests missing
+	//XXX javadoc does not reflect behavior (also accepts 8 bytes input length)
+	//FIXME inconsistent handling of 6 and 8 bytes input length - 6 bytes BCD encoded, 8 bytes system default character set encoding - either split or fix
 	public static Date parseDate(byte [] dateData) throws NotParseableException {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.MILLISECOND, 0);
