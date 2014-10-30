@@ -13,7 +13,9 @@ import java.security.spec.ECPoint;
 import java.security.spec.ECPublicKeySpec;
 import java.security.spec.EllipticCurve;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
@@ -28,6 +30,7 @@ import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
+import de.persosim.simulator.exception.NotParseableException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.protocols.pace.Pace;
 import de.persosim.simulator.protocols.pace.PaceOid;
@@ -212,6 +215,66 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 				};
 				
 		TR03110Utils.getSpecificChild(mf, oidIdentifier2, domainparameterSetIdentifier12);
+	}
+	
+	/**
+	 * Positive test: check parsing of a valid date encoding for input length 6.
+	 * @throws NotParseableException 
+	 */
+	@Test
+	public void testParseDate_inputLength6() throws NotParseableException {
+		byte[] date = HexString.toByteArray("010001010202");
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.set(2010, Calendar.NOVEMBER, 22, 0, 0, 0);
+		
+		Date expectedDate = calendar.getTime();
+		
+		Date receivedDate = TR03110Utils.parseDate(date);
+		
+		assertEquals(expectedDate, receivedDate);
+	}
+	
+	/**
+	 * Positive test: check parsing of a valid date encoding for input length 6.
+	 * @throws NotParseableException 
+	 */
+	@Test
+	public void testParseDate_inputLength8() throws NotParseableException {
+		byte[] date = HexString.toByteArray("0200010001010202");
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.set(2010, Calendar.NOVEMBER, 22, 0, 0, 0);
+		
+		Date expectedDate = calendar.getTime();
+		
+		Date receivedDate = TR03110Utils.parseDate(date);
+		
+		assertEquals(expectedDate, receivedDate);
+	}
+	
+	/**
+	 * Negative test: check parsing of a date encoding of illegal length.
+	 * @throws NotParseableException 
+	 */
+	@Test(expected = NotParseableException.class)
+	public void testParseDate_illegalLength() throws NotParseableException {
+		byte[] date = HexString.toByteArray("0100010102");
+		
+		TR03110Utils.parseDate(date);
+	}
+	
+	/**
+	 * Negative test: check parsing of a date encoding encoding non-numeric characters.
+	 * @throws NotParseableException 
+	 */
+	@Test(expected = NotParseableException.class)
+	public void testParseDate_nonNumericCharacters() throws NotParseableException {
+		byte[] date = HexString.toByteArray("01000101020A");
+		
+		TR03110Utils.parseDate(date);
 	}
 	
 }
