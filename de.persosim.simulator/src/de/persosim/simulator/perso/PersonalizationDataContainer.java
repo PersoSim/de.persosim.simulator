@@ -338,7 +338,15 @@ public class PersonalizationDataContainer {
 		return riKeyIds;
 	}
 	
-	public String createMrz(String documentNumber, String sex, String mrzLine3) {
+	/**
+	 * This method creates the 3-line 3x30 = 90 characters MRZ based on the mandatory data group data specified within this object.
+	 * The data groups used are eId DGs 1, 2, 3, 8, 10 as well as the provided document number, sex and third line of the MRZ. 
+	 * @param documentNumber the document number to be used
+	 * @param sex the sex to be used
+	 * @param mrzLine3 the third line of the MRZ
+	 * @return the 3-line 3x30 = 90 characters MRZ
+	 */
+	public String createMrzFromDgs(String documentNumber, String sex, String mrzLine3) {
 		return AbstractProfile.getMrz(dg1PlainData,
 				dg2PlainData,
 				documentNumber,

@@ -25,7 +25,7 @@ public class Profile10 extends AbstractProfile {
 		String documentNumber = "000000010";
 		String sex = "F";
 		String mrzLine3 = "MUELLER<<HILDEGARD<<<<<<<<<<<<";
-		String mrz = persoDataContainer.createMrz(documentNumber, sex, mrzLine3);
+		String mrz = persoDataContainer.createMrzFromDgs(documentNumber, sex, mrzLine3);
 		
 		persoDataContainer.setMrz(mrz);
 		persoDataContainer.setEpassDg1PlainData(mrz);
