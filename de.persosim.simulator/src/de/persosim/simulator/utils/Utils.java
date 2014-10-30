@@ -497,52 +497,61 @@ public abstract class Utils {
 	 * @return a {@link Date} object
 	 */
 	public static Date getDate(String dateString, byte handleNonNumericCharacters) {
-		if(dateString == null) {throw new NullPointerException("date must not be null");}
-		if(dateString.length() != 8) {throw new IllegalArgumentException("date must be exactly 8 characters long");}
-		
+		if (dateString == null) {throw new NullPointerException("date must not be null");}
+		if (dateString.length() != 8) {throw new IllegalArgumentException("date must be exactly 8 characters long");}
+
 		Calendar calendar = Calendar.getInstance();
-		
+
 		int year = Integer.parseInt(dateString.substring(0, 4));
-		
+
 		calendar.set(Calendar.YEAR, year);
-		
+
 		int month, day;
-		
+
 		try {
 			month = Integer.parseInt(dateString.substring(4, 6));
-			month--; //set month is zero based
+			month--; // set month is zero based
 		} catch (NumberFormatException e) {
 			switch (handleNonNumericCharacters) {
-            	case -1: month = Calendar.JANUARY;
-            		break;
-            	case 0:  throw e;
-            	case 1:  month = Calendar.DECEMBER;
-                     break;
-            	default: throw new IllegalArgumentException("invalid value for handling illegal month");
+			case -1:
+				month = Calendar.JANUARY;
+				break;
+			case 0:
+				throw e;
+			case 1:
+				month = Calendar.DECEMBER;
+				break;
+			default:
+				throw new IllegalArgumentException("invalid value for handling illegal month");
 			}
 		}
-		
-		calendar.set(Calendar.MONTH, month); 
-		
+
+		calendar.set(Calendar.MONTH, month);
+		calendar.set(Calendar.DATE, 1);
+
 		try {
 			day = Integer.parseInt(dateString.substring(6, 8));
 		} catch (NumberFormatException e) {
 			switch (handleNonNumericCharacters) {
-            	case -1: day = 1;
-                     break;
-            	case 0:  throw e;
-            	case 1:  day = calendar.getActualMaximum(Calendar.DATE);
-                     break;
-            	default: throw new IllegalArgumentException("invalid value for handling illegal day");
+			case -1:
+				day = 1;
+				break;
+			case 0:
+				throw e;
+			case 1:
+				day = calendar.getActualMaximum(Calendar.DATE);
+				break;
+			default:
+				throw new IllegalArgumentException("invalid value for handling illegal day");
 			}
 		}
-		
+
 		calendar.set(Calendar.DATE, day);
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
-		
+
 		return calendar.getTime();
 	}
 	
