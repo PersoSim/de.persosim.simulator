@@ -1,8 +1,6 @@
 package de.persosim.simulator.protocols.pace;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,20 +30,23 @@ import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
-import de.persosim.simulator.protocols.ResponseData;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
+import de.persosim.simulator.tlv.TlvConstants;
+import de.persosim.simulator.tlv.TlvDataObjectContainer;
+import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
-public class PinManagementTest extends PersoSimTestCase {
+public class PinManagementPaceBypassTest extends PersoSimTestCase {
 	
 	@Mocked
 	MasterFile mockedMf;
 	@Mocked
 	CardStateAccessor mockedCardStateAccessor;
-	DefaultPaceProtocol paceProtocol;
+	PaceBypassProtocol paceProtocol;
 	Collection<SecMechanism> csmEmpty, csmWithCan, csmWithPin;
 	PasswordAuthObject pwdaoWithCan;
 	PasswordAuthObjectWithRetryCounter pwdaoWithPinRc0Activated, pwdaoWithPinRc1Activated, pwdaoWithPinRc2Activated, pwdaoWithPinRc3Activated, pwdaoWithPinRc3Deactivated;
@@ -98,9 +99,8 @@ public class PinManagementTest extends PersoSimTestCase {
 		csmEmpty = new HashSet<SecMechanism>();
 		
 		// create and init the object under test
-		paceProtocol = new DefaultPaceProtocol();
+		paceProtocol = new PaceBypassProtocol();
 		paceProtocol.setCardStateAccessor(mockedCardStateAccessor);
-		paceProtocol.init();
 		
 		oidIdentifier0 = new OidIdentifier(Pace.OID_id_PACE_DH_GM_AES_CBC_CMAC_256);
 		domainParameterSet0 = StandardizedDomainParameters.getDomainParameterSetById(0);
@@ -108,57 +108,6 @@ public class PinManagementTest extends PersoSimTestCase {
 		domainParameters0.addOidIdentifier(oidIdentifier0);
 		domainParameterSet0Collection = new ArrayList<CardObject>();
 		domainParameterSet0Collection.add(domainParameters0);
-	}
-	
-	/**
-	 * Positive test case: check for preceding CAN, CAN preceding.
-	 */
-	@Test
-	public void testIsPinTemporarilyResumedPrecedingCan() {
-	// prepare the mock
-	new NonStrictExpectations() {
-		{
-			mockedCardStateAccessor.getCurrentMechanisms(
-					withInstanceOf(SecContext.class),
-					null);
-			result = csmWithCan;
-		}
-	};
-		assertTrue("PIN temporarily resumed", AbstractPaceProtocol.isPinTemporarilyResumed(mockedCardStateAccessor));
-	}
-	
-	/**
-	 * Negative test case: check for preceding CAN, PIN preceding.
-	 */
-	@Test
-	public void testIsPinTemporarilyResumedPrecedingPin() {
-	// prepare the mock
-	new NonStrictExpectations() {
-		{
-			mockedCardStateAccessor.getCurrentMechanisms(
-					withInstanceOf(SecContext.class),
-					null);
-			result = csmWithPin;
-		}
-	};
-		assertFalse("PIN temporarily resumed", AbstractPaceProtocol.isPinTemporarilyResumed(mockedCardStateAccessor));
-	}
-	
-	/**
-	 * Negative test case: check for preceding CAN, no password preceding.
-	 */
-	@Test
-	public void testIsPinTemporarilyResumedNoPrecedingPwd() {
-	// prepare the mock
-	new NonStrictExpectations() {
-		{
-			mockedCardStateAccessor.getCurrentMechanisms(
-					withInstanceOf(SecContext.class),
-					null);
-			result = csmEmpty;
-		}
-	};
-		assertFalse("PIN temporarily resumed", AbstractPaceProtocol.isPinTemporarilyResumed(mockedCardStateAccessor));
 	}
 	
 	//ok
@@ -201,8 +150,8 @@ public class PinManagementTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 01 04 83 01 03");
-		processingData.updateCommandApdu(this, "setAT APDU",
+		byte[] apduBytes = HexString.toByteArray("FF 86 00 00 06 83 01 03 92 01 FF");
+		processingData.updateCommandApdu(this, "pseudo pace APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
 		// call mut
@@ -210,8 +159,7 @@ public class PinManagementTest extends PersoSimTestCase {
 
 		// check results
 		short sw = processingData.getResponseApdu().getStatusWord();
-		System.out.println("sw is: " + HexString.hexifyShort(sw));
-		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, sw);
+		assertEquals("Statusword is not correct", HexString.hexifyShort(Iso7816.SW_9000_NO_ERROR), HexString.hexifyShort(sw));
 	}
 	
 	//ok
@@ -252,8 +200,8 @@ public class PinManagementTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 01 04 83 01 03");
-		processingData.updateCommandApdu(this, "setAT APDU",
+		byte[] apduBytes = HexString.toByteArray("FF 86 00 00 06 83 01 03 92 01 FF");
+		processingData.updateCommandApdu(this, "pseudo pace APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
 		// call mut
@@ -261,8 +209,16 @@ public class PinManagementTest extends PersoSimTestCase {
 
 		// check results
 		short sw = processingData.getResponseApdu().getStatusWord();
-		System.out.println("sw is: " + HexString.hexifyShort(sw));
-		assertEquals("Statusword is not 6283", Iso7816.SW_6283_SELECTED_FILE_DEACTIVATED, sw);
+
+		TlvValue data = processingData.getResponseApdu().getData();
+		
+		assertTrue("Encoding is valid", data.isValidBerEncoding());
+
+		TlvDataObjectContainer container = new TlvDataObjectContainer(data);
+		
+		assertEquals("setAt status word is not correct", HexString.hexifyShort(0x6283), HexString.hexifyShort(Utils.getShortFromUnsignedByteArray(container.getTlvDataObject(TlvConstants.TAG_80).getValueField())));
+
+		assertEquals("Statusword is not correct", HexString.hexifyShort(0x6984), HexString.hexifyShort(sw));
 	}
 	
 	//ok
@@ -305,8 +261,8 @@ public class PinManagementTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 01 04 83 01 03");
-		processingData.updateCommandApdu(this, "setAT APDU",
+		byte[] apduBytes = HexString.toByteArray("FF 86 00 00 06 83 01 03 92 01 FF");
+		processingData.updateCommandApdu(this, "pseudo pace APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
 		// call mut
@@ -314,8 +270,16 @@ public class PinManagementTest extends PersoSimTestCase {
 
 		// check results
 		short sw = processingData.getResponseApdu().getStatusWord();
-		System.out.println("sw is: " + HexString.hexifyShort(sw));
-		assertEquals("Statusword is not 63C2", (short) 0x63C2, sw);
+
+		TlvValue data = processingData.getResponseApdu().getData();
+		
+		assertTrue("Encoding is valid", data.isValidBerEncoding());
+
+		TlvDataObjectContainer container = new TlvDataObjectContainer(data);
+		
+		assertEquals("setAt status word is not correct", HexString.hexifyShort(0x63C2), HexString.hexifyShort(Utils.getShortFromUnsignedByteArray(container.getTlvDataObject(TlvConstants.TAG_80).getValueField())));
+		
+		assertEquals("Statusword is not correct", HexString.hexifyShort(0x9000), HexString.hexifyShort(sw));
 	}
 	
 	//ok
@@ -358,8 +322,8 @@ public class PinManagementTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 01 04 83 01 03");
-		processingData.updateCommandApdu(this, "setAT APDU",
+		byte[] apduBytes = HexString.toByteArray("FF 86 00 00 06 83 01 03 92 01 FF");
+		processingData.updateCommandApdu(this, "pseudo pace APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
 		// call mut
@@ -367,10 +331,16 @@ public class PinManagementTest extends PersoSimTestCase {
 
 		// check results
 		short sw = processingData.getResponseApdu().getStatusWord();
-		System.out.println("sw is: " + HexString.hexifyShort(sw));
-		System.out.println("state is: " + paceProtocol.getInnermostActiveState());
-		assertEquals("Statusword is not 63C1", Iso7816.SW_63C1_COUNTER_IS_1, sw);
-		assertEquals("State is not " + DefaultPaceProtocol.PACE_SET_AT_PROCESSED, DefaultPaceProtocol.PACE_SET_AT_PROCESSED, paceProtocol.getInnermostActiveState());
+
+		TlvValue data = processingData.getResponseApdu().getData();
+		
+		assertTrue("Encoding is valid", data.isValidBerEncoding());
+
+		TlvDataObjectContainer container = new TlvDataObjectContainer(data);
+		
+		assertEquals("setAt status word is not correct", HexString.hexifyShort(0x63C1), HexString.hexifyShort(Utils.getShortFromUnsignedByteArray(container.getTlvDataObject(TlvConstants.TAG_80).getValueField())));
+		
+		assertEquals("Statusword is not correct", HexString.hexifyShort(0x9000), HexString.hexifyShort(sw));
 	}
 	
 	/**
@@ -412,8 +382,8 @@ public class PinManagementTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 01 04 83 01 03");
-		processingData.updateCommandApdu(this, "setAT APDU",
+		byte[] apduBytes = HexString.toByteArray("FF 86 00 00 06 83 01 03 92 01 FF");
+		processingData.updateCommandApdu(this, "pseudo pace APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
 		// call mut
@@ -421,164 +391,18 @@ public class PinManagementTest extends PersoSimTestCase {
 
 		// check results
 		short sw = processingData.getResponseApdu().getStatusWord();
-		System.out.println("sw is: " + HexString.hexifyShort(sw));
-		System.out.println("state is: " + paceProtocol.getInnermostActiveState());
-		assertEquals("Statusword is not 63C1", Iso7816.SW_63C1_COUNTER_IS_1, sw);
-		assertEquals("State is not " + DefaultPaceProtocol.PACE_SET_AT_PROCESSED, DefaultPaceProtocol.PACE_SET_AT_PROCESSED, paceProtocol.getInnermostActiveState());
-	}
-	
-	/**
-	 * Positive test case: check Mutual Authenticate for correct response if PACE with PIN failed due to wrong PIN.
-	 */
-	@Test
-	public void testGetMutualAuthenticatePinManagementResponsePaceFailed(){
-		short sw = (short) 0x63C0;
 
-		for(int i = 2; i > 0; i--) {
-			ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceFailed(pwdaoWithPinRc3Activated);
-			
-			short expectedSw = (short) (sw | ((short) (i & (short) 0x000F)));
-			short receivedSw = responseDataReceived.getStatusWord();
-			
-			assertEquals("Statusword is not " + HexString.hexifyShort(expectedSw), expectedSw, receivedSw);
-		}
-	}
-	
-	/**
-	 * Positive test case: check Mutual Authenticate for correct response in case of PACE with PIN, PIN deactivated.
-	 */
-	@Test
-	public void testGetMutualAuthenticatePinManagementResponsePaceSuccessful_PinDeactivated(){
+		TlvValue data = processingData.getResponseApdu().getData();
 		
-		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc3Deactivated, mockedCardStateAccessor);
-		
-		short expectedSw = Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE;
-		short receivedSw = responseDataReceived.getStatusWord();
-		assertEquals("Statusword mismatch", expectedSw, receivedSw);
-	}
-	
-	/**
-	 * Positive test case: check for correct response in case of PACE with PIN, PIN active, retry counter is 1
-	 */
-	@Test
-	public void testIsPasswordUsable_PinActivatedRc1(){
-		
-		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc1Activated, mockedCardStateAccessor);
-		
-		short expectedSw = Iso7816.SW_63C1_COUNTER_IS_1;
-		short receivedSw = responseDataReceived.getStatusWord();
-		assertEquals("Statusword mismatch", HexString.hexifyShort(expectedSw), HexString.hexifyShort(receivedSw));
-	}
-	
-	/**
-	 * Positive test case: check for correct response in case of PACE with PIN, PIN active, retry counter is 2
-	 */
-	@Test
-	public void testIsPasswordUsable_PinActivatedRc2(){
-		
-		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc2Activated, mockedCardStateAccessor);
-		
-		short expectedSw = 0x63C2;
-		short receivedSw = responseDataReceived.getStatusWord();
-		assertEquals("Statusword mismatch", HexString.hexifyShort(expectedSw), HexString.hexifyShort(receivedSw));
-	}
-	
-	/**
-	 * Positive test case: check for correct response in case of PACE with PIN, PIN active, retry counter is 3
-	 */
-	@Test
-	public void testIsPasswordUsable_PinActivatedRc3(){
-		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc3Activated, mockedCardStateAccessor);
-		
-		assertEquals(null, responseDataReceived);
-	}
-	
-	/**
-	 * Positive test case: check for correct response in case of PACE with PIN, PIN inactive, retry counter is 3
-	 */
-	@Test
-	public void testIsPasswordUsable_PinDeactivatedRc3(){
-		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc3Deactivated, mockedCardStateAccessor);
+		assertTrue("Encoding is valid", data.isValidBerEncoding());
 
+		TlvDataObjectContainer container = new TlvDataObjectContainer(data);
 		
-		short expectedSw = SW_6283_SELECTED_FILE_DEACTIVATED;
-		short receivedSw = responseDataReceived.getStatusWord();
-		assertEquals("Statusword mismatch", HexString.hexifyShort(expectedSw), HexString.hexifyShort(receivedSw));
+		assertEquals("setAt status word is not correct", HexString.hexifyShort(0x63C1), HexString.hexifyShort(Utils.getShortFromUnsignedByteArray(container.getTlvDataObject(TlvConstants.TAG_80).getValueField())));
+		
+		assertEquals("Statusword is not correct", HexString.hexifyShort(0x9000), HexString.hexifyShort(sw));
 	}
 	
-	/**
-	 * Positive test case: check Mutual Authenticate for correct response in case of PACE with PIN, PIN activated, retry counter is 3.
-	 */
-	@Test
-	public void testGetMutualAuthenticatePinManagementResponsePaceSuccessful_PinActivatedRc3(){
-		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc3Activated, mockedCardStateAccessor);
-		
-		short expectedSw = Iso7816.SW_9000_NO_ERROR;
-		short receivedSw = responseDataReceived.getStatusWord();
-		assertEquals("Statusword mismatch", expectedSw, receivedSw);
-	}
-	
-	/**
-	 * Positive test case: check Mutual Authenticate for correct response in case of PACE with PIN, PIN activated, retry counter is 2.
-	 */
-	@Test
-	public void testGetMutualAuthenticatePinManagementResponsePaceSuccessful_PinActivatedRc2(){
-		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc2Activated, mockedCardStateAccessor);
-		
-		short expectedSw = Iso7816.SW_9000_NO_ERROR;
-		short receivedSw = responseDataReceived.getStatusWord();
-		assertEquals("Statusword mismatch", expectedSw, receivedSw);
-	}
-	
-	/**
-	 * Positive test case: check Mutual Authenticate for correct response in case of PACE with PIN, PIN activated, retry counter is 1, no previous password.
-	 */
-	@Test
-	public void testGetMutualAuthenticatePinManagementResponsePaceSuccessful_PinActivatedRc1NoPrevPwd(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getCurrentMechanisms(
-						withInstanceOf(SecContext.class),
-						null);
-
-				// previously used password
-				result = csmEmpty;
-			}
-		};
-		
-		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc1Activated, mockedCardStateAccessor);
-		
-		short expectedSw = Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED;
-		short receivedSw = responseDataReceived.getStatusWord();
-		assertEquals("Statusword mismatch", expectedSw, receivedSw);
-	}
-	
-	/**
-	 * Positive test case: check Mutual Authenticate for correct response in case of PACE with PIN, PIN activated, retry counter is 1, previous password is CAN.
-	 */
-	@Test
-	public void testGetMutualAuthenticatePinManagementResponsePaceSuccessful_PinActivatedRc1PrevCan(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getCurrentMechanisms(
-						withInstanceOf(SecContext.class),
-						null);
-
-				// previously used password
-				result = csmWithCan;
-			}
-		};
-		
-		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc1Activated, mockedCardStateAccessor);
-		
-		short expectedSw = Iso7816.SW_9000_NO_ERROR;
-		short receivedSw = responseDataReceived.getStatusWord();
-		assertEquals("Statusword is not " + HexString.hexifyShort(expectedSw), expectedSw, receivedSw);
-	}
-	
-
 	/**
 	 * Negative testcase: Perform PACE with Pin. Retry counter is 0, PIN activated
 	 */
@@ -618,7 +442,7 @@ public class PinManagementTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 01 04 83 01 03");
+		byte[] apduBytes = HexString.toByteArray("FF 86 00 00 06 83 01 03 92 01 FF");
 		processingData.updateCommandApdu(this, "pseudo pace APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
@@ -627,7 +451,16 @@ public class PinManagementTest extends PersoSimTestCase {
 
 		// check results
 		short sw = processingData.getResponseApdu().getStatusWord();
-		assertEquals("Statusword is not correct", HexString.hexifyShort(0x63C0), HexString.hexifyShort(sw));
+
+		TlvValue data = processingData.getResponseApdu().getData();
+		
+		assertTrue("Encoding is valid", data.isValidBerEncoding());
+
+		TlvDataObjectContainer container = new TlvDataObjectContainer(data);
+		
+		assertEquals("setAt status word is not correct", HexString.hexifyShort(0x63C0), HexString.hexifyShort(Utils.getShortFromUnsignedByteArray(container.getTlvDataObject(TlvConstants.TAG_80).getValueField())));
+		
+		assertEquals("Statusword is not correct", HexString.hexifyShort(0x6983), HexString.hexifyShort(sw));
 	}
 	
 }
