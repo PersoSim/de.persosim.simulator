@@ -55,6 +55,38 @@ public class UtilsTest {
 	}
 	
 	/**
+	 * Negative test case: parse date String with illegal day part and no rule for compensation.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetDateStringByte_IllegalDay() {
+		Utils.getDate("1964022X", (byte) 0);
+	}
+	
+	/**
+	 * Negative test case: parse date String with illegal day part and invalid rule for compensation.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetDateStringByte_IllegalDayInvalidCompensationRule() {
+		Utils.getDate("1964022X", (byte) 2);
+	}
+	
+	/**
+	 * Negative test case: parse date String with illegal month part and no rule for compensation.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetDateStringByte_IllegalMonth() {
+		Utils.getDate("19640X29", (byte) 0);
+	}
+	
+	/**
+	 * Negative test case: parse date String with illegal month part and invalid rule for compensation.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetDateStringByte_IllegalMonthInvalidCompensationRule() {
+		Utils.getDate("19640X29", (byte) 2);
+	}
+	
+	/**
 	 * Negative test case: parse date String longer than expected.
 	 */
 	@Test(expected = IllegalArgumentException.class)
@@ -175,6 +207,17 @@ public class UtilsTest {
 	public void testArrayHasPrefix_PrefixLargerThanData() {
 		byte[] data = HexString.toByteArray("001122");
 		byte[] prefix = HexString.toByteArray("00112233445566778899");
+		
+		assertFalse(Utils.arrayHasPrefix(data, prefix));
+	}
+	
+	/**
+	 * Negative test case: check data array for deviating prefix.
+	 */
+	@Test
+	public void testArrayHasPrefix_PrefixDeviating() {
+		byte[] data = HexString.toByteArray("00112233445566778899");
+		byte[] prefix = HexString.toByteArray("FF");
 		
 		assertFalse(Utils.arrayHasPrefix(data, prefix));
 	}
