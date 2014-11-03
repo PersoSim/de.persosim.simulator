@@ -16,14 +16,19 @@ public class Profile02 extends AbstractProfile {
 		persoDataContainer.setDg5PlainData("MUSTERMANN");
 		persoDataContainer.setDg8PlainData("19810617");
 		persoDataContainer.setDg9PlainData("FRANKFURT (ODER)");
-		persoDataContainer.setDg11PlainData("M"); //XXX this is needed in order to make MRZ generation work but should not be included in data groups
 		persoDataContainer.setDg17StreetPlainData("EHM-WELK-STRAßE 33");
 		persoDataContainer.setDg17CityPlainData("LÜBBENAU/SPREEWALD");
 		persoDataContainer.setDg17CountryPlainData("D");
 		persoDataContainer.setDg17ZipPlainData("03222");
 		persoDataContainer.setDg18PlainData("02761200660196");
-		persoDataContainer.setDocumentNumber("000000002");
-		persoDataContainer.setMrzLine3Of3("MUSTERMANN<<ANDRE<<<<<<<<<<<<<");
+		
+		String documentNumber = "000000002";
+		String sex = "M";
+		String mrzLine3 = "MUSTERMANN<<ANDRE<<<<<<<<<<<<<";
+		String mrz = persoDataContainer.createMrzFromDgs(documentNumber, sex, mrzLine3);
+		
+		persoDataContainer.setMrz(mrz);
+		persoDataContainer.setEpassDg1PlainData(mrz);
 		
 		// unprivileged CA key
 		persoDataContainer.addCaKeyPair(CryptoUtil.reconstructKeyPair(13,

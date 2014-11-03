@@ -19,10 +19,15 @@ public class Profile08 extends AbstractProfile {
 		persoDataContainer.setDg7PlainData("DR.HC.");
 		persoDataContainer.setDg8PlainData("19520617");
 		persoDataContainer.setDg9PlainData("TRIER");
-		persoDataContainer.setDg11PlainData("M"); //XXX this is needed in order to make MRZ generation work but should not be included in data groups
 		persoDataContainer.setDg18PlainData("");
-		persoDataContainer.setDocumentNumber("000000008");
-		persoDataContainer.setMrzLine3Of3("GRAF<VON<LYSKY<<KARL<<<<<<<<<<");
+		
+		String documentNumber = "000000008";
+		String sex = "M";
+		String mrzLine3 = "GRAF<VON<LYSKY<<KARL<<<<<<<<<<";
+		String mrz = persoDataContainer.createMrzFromDgs(documentNumber, sex, mrzLine3);
+		
+		persoDataContainer.setMrz(mrz);
+		persoDataContainer.setEpassDg1PlainData(mrz);
 		
 		// unprivileged CA key
 		persoDataContainer.addCaKeyPair(CryptoUtil.reconstructKeyPair(13,
