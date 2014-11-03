@@ -8,8 +8,6 @@ import java.util.HashSet;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.persosim.simulator.exception.NotParseableException;
-import de.persosim.simulator.protocols.TR03110Utils;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
@@ -67,13 +65,9 @@ public class DateAuxObject extends AuxDataObject {
 						.getDiscretionaryData()));
 				return !date.after(dateToCheck);
 			} else if (identifier.getOid().equals(TaOid.id_DateOfExpiry)) {
-				try {
-					Date dateToCheck = TR03110Utils.parseDate(current
-							.getDiscretionaryData());
-					return !date.before(dateToCheck);
-				} catch (NotParseableException e) {
-					return false;
-				}
+				Date dateToCheck = Utils.getDate(new String (current
+						.getDiscretionaryData()));
+				return !date.before(dateToCheck);
 			}
 		}
 
