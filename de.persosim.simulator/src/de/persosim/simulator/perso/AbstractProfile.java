@@ -128,6 +128,12 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
+	public void buildObjectTree() {
+		initPersonalizationDataContainer();
+		super.buildObjectTree();
+	}
+	
+	@Override
 	protected void addEpassDatagroup1(DedicatedFile ePassAppl) {
 		String mrz = persoDataContainer.getEpassDg1PlainData();
 		byte[] mrzPlainBytes;
