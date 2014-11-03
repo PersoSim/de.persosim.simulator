@@ -16,6 +16,7 @@ import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
+import de.persosim.simulator.utils.Utils;
 
 @XmlRootElement
 public class DateAuxObject extends AuxDataObject {
@@ -54,21 +55,17 @@ public class DateAuxObject extends AuxDataObject {
 					.toArray()[0];
 
 			if (identifier.getOid().equals(TaOid.id_DateOfBirth)) {
-				try {
-					if (taMechanism.getTerminalType().equals(TerminalType.ST)
-							|| (taMechanism.getTerminalType().equals(
-									TerminalType.AT) && !taMechanism
-									.getEffectiveAuthorization()
-									.getAuthorization().getBit(0))) {
-						throw new AccessDeniedException(
-								"Age verification not allowed");
-					}
-					Date dateToCheck = TR03110Utils.parseDate(current
-							.getDiscretionaryData());
-					return !date.after(dateToCheck);
-				} catch (NotParseableException e) {
-					return false;
+				if (taMechanism.getTerminalType().equals(TerminalType.ST)
+						|| (taMechanism.getTerminalType().equals(
+								TerminalType.AT) && !taMechanism
+								.getEffectiveAuthorization()
+								.getAuthorization().getBit(0))) {
+					throw new AccessDeniedException(
+							"Age verification not allowed");
 				}
+				Date dateToCheck = Utils.getDate(new String(current
+						.getDiscretionaryData()));
+				return !date.after(dateToCheck);
 			} else if (identifier.getOid().equals(TaOid.id_DateOfExpiry)) {
 				try {
 					Date dateToCheck = TR03110Utils.parseDate(current

@@ -237,25 +237,6 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test: check parsing of a valid date encoding for input length 6.
-	 * @throws NotParseableException 
-	 */
-	@Test
-	public void testParseDate_inputLength8() throws NotParseableException {
-		byte[] date = HexString.toByteArray("0200010001010202");
-		
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.MILLISECOND, 0);
-		calendar.set(2010, Calendar.NOVEMBER, 22, 0, 0, 0);
-		
-		Date expectedDate = calendar.getTime();
-		
-		Date receivedDate = TR03110Utils.parseDate(date);
-		
-		assertEquals(expectedDate, receivedDate);
-	}
-	
-	/**
 	 * Negative test: check parsing of a date encoding of illegal length.
 	 * @throws NotParseableException 
 	 */

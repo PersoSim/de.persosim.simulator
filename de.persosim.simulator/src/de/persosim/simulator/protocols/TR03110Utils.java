@@ -168,9 +168,6 @@ public class TR03110Utils implements TlvConstants {
 	 * @return a {@link Date} object containing the encoded date
 	 * @throws CertificateNotParseableException
 	 */
-	//XXX JUnit tests missing
-	//XXX javadoc does not reflect behavior (also accepts 8 bytes input length)
-	//FIXME inconsistent handling of 6 and 8 bytes input length - 6 bytes BCD encoded, 8 bytes system default character set encoding - either split or fix
 	public static Date parseDate(byte [] dateData) throws NotParseableException {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.MILLISECOND, 0);
@@ -182,12 +179,6 @@ public class TR03110Utils implements TlvConstants {
 				}
 			}
 			calendar.set(dateData[0] * 10 + dateData[1] + 2000, dateData[2] * 10 + dateData[3] - 1, dateData[4] * 10 + dateData[5], 0, 0, 0);
-		} else if (dateData.length == 8){
-			String dateString = new String(dateData);
-			int year = Integer.parseInt(dateString.substring(0, 4));
-			int month = Integer.parseInt(dateString.substring(4, 6)) - 1;
-			int day = Integer.parseInt(dateString.substring(6, 8));
-			calendar.set(year, month, day, 0, 0, 0);
 		} else {
 			throw new NotParseableException("The date could not be parsed, its length was incorrect");
 		}
