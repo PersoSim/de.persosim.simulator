@@ -8,6 +8,7 @@ import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Date;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -125,15 +126,9 @@ public class PersoSimGuiMain {
 
 					final String toPrint = new String(Arrays.copyOf(buffer, currentPosition));
 					originalSystemOut.print(toPrint);
+					appendToGui(toPrint);
 					
-					//XXX MBK check why syncExec blocks (possible deadlock with System.out.print())
-					sync.asyncExec(new Runnable() {
-						
-						@Override
-						public void run() {
-							txtOutput.append(toPrint);
-						}
-					});
+					
 					currentPosition = 0;
 				}
 				
@@ -151,6 +146,30 @@ public class PersoSimGuiMain {
 	    
 	}
 	
+	StringBuilder guiStringBuilder = new StringBuilder();
+	long lastGuiFlush = 0;
+	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
+	protected void appendToGui(String s) {
+		guiStringBuilder.append(s);
+		
+		long currentTime = new Date().getTime();
+		if (currentTime-lastGuiFlush > 100) {
+			lastGuiFlush = currentTime;
+			//XXX MBK check why syncExec blocks (possible deadlock with System.out.print())
+			final String toPrint = guiStringBuilder.toString();
+			guiStringBuilder = new StringBuilder();
+			sync.asyncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					txtOutput.append(toPrint);
+				}
+			});
+		}
+		
+		
+	}
+
 	public void write(String line) {
 		inWriter.println(line);
 		inWriter.flush();
