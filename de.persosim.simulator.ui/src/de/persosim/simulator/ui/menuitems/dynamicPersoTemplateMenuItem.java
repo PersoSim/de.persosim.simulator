@@ -2,8 +2,6 @@ package de.persosim.simulator.ui.menuitems;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -65,17 +63,13 @@ public class dynamicPersoTemplateMenuItem {
 			Bundle plugin = Platform.getBundle(DE_PERSOSIM_SIMULATOR_BUNDLE);
 			URL url = plugin.getEntry (PERSO_PATH);
 			URL resolvedUrl = FileLocator.resolve(url);
-			URI resolvedUri = resolvedUrl.toURI();
 			
-			File folder = new File(resolvedUri);
+			File folder = new File(resolvedUrl.getFile());
 			
 			if (folder.isDirectory()) {
 	            populateMenu(parentMenu, folder);
 	        }
-			
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 	}
