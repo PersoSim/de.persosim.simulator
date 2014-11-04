@@ -89,6 +89,22 @@ public class PersoSimGuiMain {
 		Thread simThread = new Thread(sim);
 		simThread.start();
 		
+		//following Thread ensures that the buffered UI contents are updated regularly
+		Thread uiBufferThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// ignore, timing is not critical here
+					}
+					appendToGui("");
+				}
+			}
+		});
+		uiBufferThread.start();
+		
 	}
 		
 	/**
@@ -153,7 +169,7 @@ public class PersoSimGuiMain {
 		guiStringBuilder.append(s);
 		
 		long currentTime = new Date().getTime();
-		if (currentTime-lastGuiFlush > 100) {
+		if (currentTime-lastGuiFlush > 50) {
 			lastGuiFlush = currentTime;
 			//XXX MBK check why syncExec blocks (possible deadlock with System.out.print())
 			final String toPrint = guiStringBuilder.toString();
