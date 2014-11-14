@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 import de.persosim.simulator.PersoSim;
-import de.persosim.simulator.ui.utils.RingBufferText;
+import de.persosim.simulator.ui.utils.TextLengthLimiter;
 
 /**
  * @author slutters
@@ -38,8 +38,7 @@ public class PersoSimGuiMain {
 	// get UISynchronize injected as field
 	@Inject UISynchronize sync;
 	
-	private Text txtInput;
-	private RingBufferText txtOutput;
+	private Text txtInput, txtOutput;
 	
 	private final InputStream originalSystemIn = System.in;
 	private final PrintStream originalSystemOut = System.out;
@@ -59,7 +58,10 @@ public class PersoSimGuiMain {
 		
 		parent.setLayout(new GridLayout(1, false));
 		
-		txtOutput = new RingBufferText(parent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		
+		TextLengthLimiter tl = new TextLengthLimiter();
+		txtOutput.addModifyListener(tl);
 		
 		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
 		txtOutput.setEditable(false);
