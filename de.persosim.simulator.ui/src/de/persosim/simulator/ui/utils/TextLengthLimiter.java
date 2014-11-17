@@ -7,20 +7,28 @@ import org.eclipse.swt.widgets.Text;
 public class TextLengthLimiter implements ModifyListener {
 	
 	public static final int TEXT_LIMIT_DEFAULT = 2000;
-	public static int counter = 0;
 	
 	protected int textLimit;
-	public boolean lock;
+	protected boolean lock;
 	
 	public TextLengthLimiter() {
 		textLimit = TEXT_LIMIT_DEFAULT;
 		lock = false;
-		counter++;
 	}
 	
 	@Override
+	/*
+	 * WARNING: do not add "System.out.print*" calls to this method. The output
+	 * will cause an implicit but delayed recursive call of this method
+	 * bypassing the lock originally intended to mitigate this problem.
+	 * 
+	 * (non-Javadoc) @see
+	 * org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events
+	 * .ModifyEvent)
+	 */
 	public void modifyText(ModifyEvent e) {
 		if((!lock) && (e.getSource() instanceof Text)) {
+			
 			Text text = (Text) e.getSource();
 			String lineDelimiter = text.getLineDelimiter();
 			
@@ -33,16 +41,15 @@ public class TextLengthLimiter implements ModifyListener {
 				do {
 					int index = content.indexOf(lineDelimiter);
 					if(index >= 0) {
-						content = content.substring(index + 1);
+						content = content.substring(index + 1); // if there is more than one line, delete oldest line
 					} else {
-						content = content.substring(content.length() - textLimit);
+						content = content.substring(content.length() - textLimit); // if there is only one line, crop beginning
 					}
 					
 					contentLength = content.length();
 				} while(contentLength > textLimit);
 				
 				text.setText(content);
-				System.out.println("!!! text shortened !!!");
 				
 				lock = false;
 			}
