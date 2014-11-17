@@ -177,6 +177,7 @@ public class PersoSim implements Runnable {
 		
 		if(newSimulator.start()) {
 			simulator = newSimulator;
+			System.out.println("The simulator has been started");
 			return true;
 		} else{
 			return false;
@@ -212,6 +213,10 @@ public class PersoSim implements Runnable {
 		if (simulator != null) {
 			simStopped = simulator.stop();
 			simulator = null;
+			
+			if(simStopped) {
+				System.out.println("The simulator has been stopped and will no longer respond to incoming APDUs until it is (re-) started");
+			}
 		}
 		
 		return simStopped;
@@ -287,7 +292,14 @@ public class PersoSim implements Runnable {
 	public boolean exitSimulator() {
 		executeUserCommands = false;
 		System.out.println(LOG_SIM_EXIT);
-		return stopSimulator();
+		
+		boolean stopped = stopSimulator();
+		
+		if(stopped) {
+			System.out.println("The simulator has been terminated and will no longer respond to incoming APDUs or commands");
+		}
+				
+		return stopped;
 	}
 
 	/**
