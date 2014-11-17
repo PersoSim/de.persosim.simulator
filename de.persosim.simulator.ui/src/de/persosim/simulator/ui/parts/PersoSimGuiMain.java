@@ -25,12 +25,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 import de.persosim.simulator.PersoSim;
+import de.persosim.simulator.ui.utils.TextLengthLimiter;
 
 /**
  * @author slutters
  *
  */
 public class PersoSimGuiMain {
+	
+	public static final int LOG_LIMIT = 1000;
 	
 	// get UISynchronize injected as field
 	@Inject UISynchronize sync;
@@ -56,6 +59,9 @@ public class PersoSimGuiMain {
 		parent.setLayout(new GridLayout(1, false));
 		
 		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		
+		TextLengthLimiter tl = new TextLengthLimiter();
+		txtOutput.addModifyListener(tl);
 		
 		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
 		txtOutput.setEditable(false);
@@ -166,24 +172,26 @@ public class PersoSimGuiMain {
 	long lastGuiFlush = 0;
 	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
 	protected void appendToGui(String s) {
-		guiStringBuilder.append(s);
-		
-		long currentTime = new Date().getTime();
-		if (currentTime-lastGuiFlush > 50) {
-			lastGuiFlush = currentTime;
-			//XXX MBK check why syncExec blocks (possible deadlock with System.out.print())
-			final String toPrint = guiStringBuilder.toString();
-			guiStringBuilder = new StringBuilder();
-			sync.asyncExec(new Runnable() {
-				
-				@Override
-				public void run() {
-					txtOutput.append(toPrint);
-				}
-			});
+		if((guiStringBuilder.length() > 0) || (s.length() > 0)) {
+			if(s.length() > 0) {
+				guiStringBuilder.append(s);
+			}
+			
+			long currentTime = new Date().getTime();
+			if (currentTime-lastGuiFlush > 50) {
+				lastGuiFlush = currentTime;
+				//XXX MBK check why syncExec blocks (possible deadlock with System.out.print())
+				final String toPrint = guiStringBuilder.toString();
+				guiStringBuilder = new StringBuilder();
+				sync.asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						txtOutput.append(toPrint);
+					}
+				});
+			}
 		}
-		
-		
 	}
 
 	public void write(String line) {

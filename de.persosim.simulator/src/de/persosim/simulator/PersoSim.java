@@ -177,6 +177,7 @@ public class PersoSim implements Runnable {
 		
 		if(newSimulator.start()) {
 			simulator = newSimulator;
+			System.out.println("The simulator has been started");
 			return true;
 		} else{
 			return false;
@@ -212,6 +213,10 @@ public class PersoSim implements Runnable {
 		if (simulator != null) {
 			simStopped = simulator.stop();
 			simulator = null;
+			
+			if(simStopped) {
+				System.out.println("The simulator has been stopped and will no longer respond to incoming APDUs until it is (re-) started");
+			}
 		}
 		
 		return simStopped;
@@ -287,7 +292,14 @@ public class PersoSim implements Runnable {
 	public boolean exitSimulator() {
 		executeUserCommands = false;
 		System.out.println(LOG_SIM_EXIT);
-		return stopSimulator();
+		
+		boolean stopped = stopSimulator();
+		
+		if(stopped) {
+			System.out.println("The simulator has been terminated and will no longer respond to incoming APDUs or commands");
+		}
+				
+		return stopped;
 	}
 
 	/**
@@ -506,10 +518,17 @@ public class PersoSim implements Runnable {
 					int personalizationNumber = Integer.parseInt(arg);
 					System.out.println("trying to load personalization profile no: " + personalizationNumber);
 					Bundle plugin = Platform.getBundle("de.persosim.simulator");
-					URL url = plugin.getEntry (persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
-					URL resolvedURL = FileLocator.resolve(url);
-					System.out.println("resolved absolute URL for selected profile is: " + resolvedURL);
-					arg = resolvedURL.getPath();
+					
+					if(plugin == null) {
+						// TODO how to handle this case? Add OSGI requirement?
+						System.out.println("unable to resolve bundle \"de.persosim.simulator\" - personalization unchanged");
+						return false;
+					} else {
+						URL url = plugin.getEntry(persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
+						URL resolvedURL = FileLocator.resolve(url);
+						System.out.println("resolved absolute URL for selected profile is: " + resolvedURL);
+						arg = resolvedURL.getPath();
+					}
 				} catch (NumberFormatException e) {
 					System.out.println("no known profile: " + arg);
 				} catch (IOException e) {
