@@ -60,8 +60,8 @@ public class PersoSimGuiMain {
 		
 		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		
-//		TextLengthLimiter tl = new TextLengthLimiter();
-//		txtOutput.addModifyListener(tl);
+		TextLengthLimiter tl = new TextLengthLimiter();
+		txtOutput.addModifyListener(tl);
 		
 		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
 		txtOutput.setEditable(false);
