@@ -76,9 +76,7 @@ public class PasswordAuthObject extends AbstractCardObject implements AuthObject
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("password " + passwordName + " is ");
-		
-		sb.append(HexString.encode(password));
+		sb.append("password " + passwordName + " is " + HexString.encode(password));
 		
 		try {
 			sb.append(" (" + (new String(password, "UTF-8")).toString() + ")");

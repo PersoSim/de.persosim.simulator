@@ -92,7 +92,7 @@ public class ProcessingStateDelta extends ProcessingState {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("processing state delta contains the following changes: ");
+		sb.append("processing state delta containing the following changes: ");
 		
 		if(commandApdu != null) {
 			sb.append("command APDU");
