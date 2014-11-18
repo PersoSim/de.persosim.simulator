@@ -75,7 +75,7 @@ public class ProcessingData implements Iso7816, InfoSource {
 				processingHistory.add(new ProcessingStateUpdate(source, message, curStateDelta));
 
 				//log modifications accordingly
-				log(source, "Processing state delta " + curStateDelta, TRACE);
+				log(source, curStateDelta.toString(), TRACE);
 				
 				// update command APDU if present
 				if (curStateDelta.getCommandApdu() != null) {
