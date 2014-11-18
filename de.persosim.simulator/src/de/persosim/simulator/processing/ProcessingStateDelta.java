@@ -87,5 +87,37 @@ public class ProcessingStateDelta extends ProcessingState {
 
 		return nrOfModifications;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("processing state delta contains the following changes: ");
+		
+		if(commandApdu != null) {
+			sb.append("command APDU");
+		}
+		
+		if(responseApdu != null) {
+			if(commandApdu != null) {
+				sb.append(", ");
+			}
+			sb.append("response APDU");
+		}
+		
+		int noOfUpdatePropagations = updatePropagations.size();
+		if(noOfUpdatePropagations > 0) {
+			if((commandApdu != null) || (responseApdu != null)) {
+				sb.append(", ");
+			}
+			sb.append(noOfUpdatePropagations + " update propagation");
+			
+			if(noOfUpdatePropagations > 1) {
+				sb.append("s");
+			}
+		}
+		
+		return sb.toString();
+	}
 
 }

@@ -1,5 +1,6 @@
 package de.persosim.simulator.cardobjects;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -9,6 +10,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import de.persosim.simulator.utils.HexString;
 
 
 /**
@@ -68,4 +71,23 @@ public class PasswordAuthObject extends AbstractCardObject implements AuthObject
 	public int getPasswordIdentifier(){
 		return identifier.getIdentifier();
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("password " + passwordName + " is ");
+		
+		sb.append(HexString.encode(password));
+		
+		try {
+			sb.append(" (" + (new String(password, "UTF-8")).toString() + ")");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return sb.toString();
+	}
+	
 }
