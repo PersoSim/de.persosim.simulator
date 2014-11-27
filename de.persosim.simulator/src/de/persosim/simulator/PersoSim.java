@@ -530,7 +530,7 @@ public class PersoSim implements Runnable {
 						arg = resolvedURL.getPath();
 					}
 				} catch (NumberFormatException e) {
-					System.out.println("no known profile: " + arg);
+					//seems to be a call to load a personalization by path
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
