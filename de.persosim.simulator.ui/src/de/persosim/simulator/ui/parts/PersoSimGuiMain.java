@@ -92,6 +92,7 @@ public class PersoSimGuiMain {
 		txtInput.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		PersoSim sim = new PersoSim();
+		sim.loadPersonalization("1"); //load default perso with valid TestPKI EF.CardSec etc. (Profile01)
 		Thread simThread = new Thread(sim);
 		simThread.start();
 		
