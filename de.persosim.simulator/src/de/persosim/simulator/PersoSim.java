@@ -514,27 +514,6 @@ public class PersoSim implements Runnable {
 				args.remove(0);
     			args.remove(0);
     			
-    			try {
-					int personalizationNumber = Integer.parseInt(arg);
-					System.out.println("trying to load personalization profile no: " + personalizationNumber);
-					Bundle plugin = Platform.getBundle("de.persosim.simulator");
-					
-					if(plugin == null) {
-						// TODO how to handle this case? Add OSGI requirement?
-						System.out.println("unable to resolve bundle \"de.persosim.simulator\" - personalization unchanged");
-						return false;
-					} else {
-						URL url = plugin.getEntry(persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
-						URL resolvedURL = FileLocator.resolve(url);
-						System.out.println("resolved absolute URL for selected profile is: " + resolvedURL);
-						arg = resolvedURL.getPath();
-					}
-				} catch (NumberFormatException e) {
-					//seems to be a call to load a personalization by path
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-    			
     			return loadPersonalization(arg);
 				
 			}
@@ -543,11 +522,32 @@ public class PersoSim implements Runnable {
 		return false;
 	}
 	
-	public boolean loadPersonalization(String fileName) {
+	public boolean loadPersonalization(String identifier) {
 		currentPersonalization = null;
+
+		//try to parse the given identifier as profile number
+		try {
+			int personalizationNumber = Integer.parseInt(identifier);
+			System.out.println("trying to load personalization profile no: " + personalizationNumber);
+			Bundle plugin = Platform.getBundle("de.persosim.simulator");
+			
+			if(plugin == null) {
+				// TODO how to handle this case? Add OSGI requirement?
+				System.out.println("unable to resolve bundle \"de.persosim.simulator\" - personalization unchanged");
+				return false;
+			} else {
+				URL url = plugin.getEntry(persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
+				URL resolvedURL = FileLocator.resolve(url);
+				System.out.println("resolved absolute URL for selected profile is: " + resolvedURL);
+				identifier = resolvedURL.getPath();
+			}
+		} catch (Exception e) {
+			//seems to be a call to load a personalization by path
+		}
+		
+		//actually load perso from the identified file
 		try{
-			Personalization perso = parsePersonalization(fileName);
-			currentPersonalization = perso; 
+			currentPersonalization = parsePersonalization(identifier);
 			if(processingCommandLineArguments) {
 				return true;
 			} else{
