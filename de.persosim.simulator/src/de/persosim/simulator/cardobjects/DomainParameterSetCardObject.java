@@ -99,5 +99,10 @@ public class DomainParameterSetCardObject extends AbstractCardObject {
 			domainParameterSet = StandardizedDomainParameters.getDomainParameterSetById(primaryIdentifier.getInteger());
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return "domain parameter set " + primaryIdentifier.getDomainParameterId();
+	}
 
 }

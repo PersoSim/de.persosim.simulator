@@ -247,7 +247,8 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		
 		this.cryptoSupport = paceOid.getCryptoSupport();
 		
-		String logString = "new OID is " + paceOid + ", new password (" + getPasswordName() + ") is " + pacePassword;
+		String logString = "new OID is " + paceOid + ", new " + pacePassword;
+		
 		log(this, logString, DEBUG);	
 
 		/* 
