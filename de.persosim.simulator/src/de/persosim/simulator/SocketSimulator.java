@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.Iso7816;
@@ -179,13 +180,19 @@ public class SocketSimulator implements Runnable {
 
 			do {
 				// read APDU from socket
-				String apduLine = in.readLine();
+				String apduLine = null;
+				try {
+					apduLine = in.readLine();
+				} catch (SocketException e){
+					//if the other side closed the the connection, this is expected behavior
+				}
+
 				if (apduLine == null) {
 					// connection closed by peer
 					isPowerOn = false;
 					break;
 				}
-
+				
 				// parse hex APDU
 				byte[] apdu = null;
 				byte[] response = new byte[] { 0x6F, 0x00 };
