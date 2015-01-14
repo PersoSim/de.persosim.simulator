@@ -142,6 +142,7 @@ public class HexString {
 	 * Converts a hexadecimal String into a byte array. 
 	 * @param inputString the hexadecimal String to be converted
 	 * @return a byte array representation of the hexadecimal String
+	 * The new modified method converts directly the hex string into a byte array
 	 */
 	public static byte[] toByteArray(String inputString) {
 		if(inputString == null) {throw new NullPointerException("string must not be null");};
@@ -150,25 +151,16 @@ public class HexString {
 		
 		if(inputString.length() == 0) {return new byte[0];};
 		
-		int arrayLength = inputString.length() / 2;
-		
-		//TODO remove detour via BigInteger, clean up this method 
-		// add leading 00-byte to prevent BigInteger constructor from interpreting highest bit as sign
-		String inputStringMod = "00" + inputString;
-		BigInteger bigInt = new BigInteger(inputStringMod, 16);
-		
-		byte[] result = Utils.toUnsignedByteArray(bigInt);
-		
-		if(arrayLength != result.length) {
-			// the String had leading 00-bytes
-			
-			byte[] tmp = new byte[arrayLength];
-			Arrays.fill(tmp, (byte) 0x00);
-			System.arraycopy(result, 0, tmp, tmp.length - result.length, result.length);
-			result = tmp;
-		}
-		
-		return result;
+			int len = inputString.length();
+		    byte[] result = new byte[len / 2];
+		    for (int i = 0; i < len; i += 2) {
+		        result[i / 2] = (byte) ((Character.digit(inputString.charAt(i), 16) << 4)
+		                             + Character.digit(inputString.charAt(i+1), 16));
+		    }
+		  
+		    return result;
+	
+	
 	}
 	
 }
