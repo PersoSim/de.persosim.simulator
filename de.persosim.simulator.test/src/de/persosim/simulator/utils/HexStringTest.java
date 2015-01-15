@@ -20,9 +20,35 @@ public class HexStringTest {
 	 * Positive test case: convert "42" to byte array
 	 */
 	@Test
-	public void testToByteArray() {
+	public void testToByteArray_Value_42() {
 		String s = "42";
 		byte[] exp = new byte[]{(byte) 0x42};
+		
+		byte[] recv = HexString.toByteArray(s);
+		
+		assertArrayEquals(exp, recv);
+	}
+	
+	/**
+	 * Positive test case: convert "99" to byte array
+	 */
+	@Test
+	public void testToByteArray_Value_99() {
+		String s = "99";
+		byte[] exp = new byte[]{(byte) 0x99};
+		
+		byte[] recv = HexString.toByteArray(s);
+		
+		assertArrayEquals(exp, recv);
+	}
+	
+	/**
+	 * Positive test case: convert "FF" to byte array
+	 */
+	@Test
+	public void testToByteArray_Number_FF() {
+		String s = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+		byte[] exp = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
 		
 		byte[] recv = HexString.toByteArray(s);
 		
@@ -37,6 +63,19 @@ public class HexStringTest {
 	public void testToByteArray_HighestBitSet() {
 		String s = "80FF00";
 		byte[] exp = new byte[]{(byte) 0x80, (byte) 0xFF, (byte) 0x00};
+		
+		byte[] recv = HexString.toByteArray(s);
+		
+		assertArrayEquals(exp, recv);
+	}
+	
+	/**
+	 * Positive test case: Lowest Hex String
+	 */
+	@Test
+	public void testToByteArray_LowestHexString() {
+		String s = "000000";
+		byte[] exp = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00};
 		
 		byte[] recv = HexString.toByteArray(s);
 		
