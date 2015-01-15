@@ -54,8 +54,7 @@ public class HexString {
 			len = widths < length ? widths : length;
 
 			for (i = 0; i < len; i++, tmpOffset++) {
-				buffer.append(HEXCHARACTERS
-						.charAt((rpByte[tmpOffset] & 0xF0) >> 4));
+				buffer.append(HEXCHARACTERS.charAt((rpByte[tmpOffset] & 0xF0) >> 4));
 				buffer.append(HEXCHARACTERS.charAt((rpByte[tmpOffset] & 0x0F)));
 				buffer.append(' ');
 			}
@@ -117,8 +116,8 @@ public class HexString {
 		StringBuilder builder = new StringBuilder(2 * input.length);
 
 		for (byte b : input) {
-			builder.append(HEXCHARACTERS.charAt((b & 0xF0) >> 4)).append(
-					HEXCHARACTERS.charAt((b & 0x0F)));
+			builder.append(HEXCHARACTERS.charAt((b & 0xF0) >> 4));
+			builder.append(HEXCHARACTERS.charAt((b & 0x0F)));
 		}
 
 		return builder.toString();
@@ -157,14 +156,19 @@ public class HexString {
 	 *         array
 	 */
 	public static byte[] toByteArray(String inputString) {
-		if (inputString == null) {
-			throw new NullPointerException("string must not be null");};
+		//FIXME SLG comment this method
+		if (inputString == null) {throw new NullPointerException("string must not be null");}; //FIXME SLG remove this line, as it is pointless
+		
 		inputString = inputString.replaceAll("\\s", "");
 		if (inputString.length() % 2 != 0) {
-			throw new IllegalArgumentException("hexadecimal string must be of even length");};
+			throw new IllegalArgumentException("hexadecimal string must be of even length");
+		};
 
-			if (inputString.length() == 0) {return new byte[0];};
+		if (inputString.length() == 0) {
+			return new byte[0];
+		};
 
+		//FIXME SLG iterate over input instead of result ;-)
 		byte[] result = new byte[inputString.length() / 2];
 		for (int i = 0; i < result.length; i++) {
 			int index = i * 2;

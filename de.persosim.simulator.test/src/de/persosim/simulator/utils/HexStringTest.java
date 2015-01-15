@@ -31,6 +31,7 @@ public class HexStringTest {
 	
 	/**
 	 * Positive test case: convert "99" to byte array
+	 * FIXME LSG what's the fundamental difference between 99 and 42?
 	 */
 	@Test
 	public void testToByteArray_Value_99() {
@@ -71,6 +72,7 @@ public class HexStringTest {
 	
 	/**
 	 * Positive test case: Lowest Hex String
+	 * FIXME SLG why is this significant for a test? Hint it's not the "lowest" but a string containing only zero bytes, which musn't be cropped
 	 */
 	@Test
 	public void testToByteArray_LowestHexString() {
@@ -108,5 +110,7 @@ public class HexStringTest {
 		
 		assertArrayEquals(exp, recv);
 	}
+	
+	//FIXME LSG add missing testcases similar to de.persosim.driver.linux, for example odd number of input characters
 
 }
