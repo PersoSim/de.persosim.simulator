@@ -43,7 +43,7 @@ public class HexStringTest {
 	}
 	
 	/**
-	 * Positive test case: convert "FF" to byte array
+	 * Positive test case: convert a very long "F" string to byte array
 	 */
 	@Test
 	public void testToByteArray_Number_FF() {

@@ -152,7 +152,7 @@ public class HexString {
 	 * 
 	 * @param inputString
 	 *            the hexadecimal String to be converted
-	 * @return a byte array representation of the hexadecimal String The new
+	 * @return a byte array representation of the hexadecimal String. The new
 	 *         modified method converts directly the hex string into a byte
 	 *         array
 	 */
