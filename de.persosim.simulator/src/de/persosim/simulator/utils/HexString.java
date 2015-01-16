@@ -1,7 +1,7 @@
 package de.persosim.simulator.utils;
 
 import java.math.BigInteger;
-import java.util.Arrays;
+import java.util.Arrays; //FIXME LSG we won't merge warnings on master ;-)
 
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
@@ -155,25 +155,28 @@ public class HexString {
 	 * @param inputString
 	 *            the hexadecimal String to be converted
 	 * @return a byte array representation of the hexadecimal String. The new
-	 *         modified method uses the HexBinaryAdapter. Method converts a 
-	 *         value type to a bound type.
-	 *         The HexBinaryAdapter provides the ability to marshal and 
-	 *         unmarshal between a String  and a byte array.
+	 *         modified method converts directly the hex string into a byte
+	 *         array
 	 */
 	public static byte[] toByteArray(String inputString) {
 
 		inputString = inputString.replaceAll("\\s", "");
 		if (inputString.length() % 2 != 0) {
-			throw new IllegalArgumentException(
-					"hexadecimal string must be of even length");
-			};
+			throw new IllegalArgumentException("hexadecimal string must be of even length");
+		};
 
 		if (inputString.length() == 0) {
 			return new byte[0];
-			};
+		};
 
-		HexBinaryAdapter adapter = new HexBinaryAdapter();
-		byte[] result = adapter.unmarshal(inputString);
+		//FIXME SLG iterate over input instead of result ;-)
+		byte[] result = new byte[inputString.length() / 2];
+		for (int i = 0; i < result.length; i++) {
+			int index = i * 2;
+			int v = Integer.parseInt(inputString.substring(index, index + 2),
+					16);
+			result[i] = (byte)v;
+		}	
 		return result;
 	}
 }

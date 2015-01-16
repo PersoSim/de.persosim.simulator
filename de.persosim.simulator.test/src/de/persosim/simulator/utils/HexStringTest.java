@@ -46,7 +46,7 @@ public class HexStringTest {
 	}
 	
 	/**
-	 * Negative test case: get IllegalArgumentException because of odd value
+	 * Negative test case: get IllegalArgumentException because of odd value FIXME LSG tis is not an odd value, but a string with odd length
 	 * entered
 	 */
 	@Test
@@ -55,9 +55,11 @@ public class HexStringTest {
 
 		boolean thrown = false;
 
+		 //FIXME LSG we won't merge warnings on master ;-)
 		byte[] exp = new byte[] { (byte) 0x0A, (byte) 0xBC };
 		byte[] recv = null;
 		try {
+			//FIXME LSG while this implementation, (catching and expecting an exception) is technically correct JUnit proivdes better means, search for "JUnit expected exception"
 
 			recv = HexString.toByteArray(s);
 		} catch (IllegalArgumentException e) {
@@ -75,7 +77,7 @@ public class HexStringTest {
 	 */
 	@Test
 	public void testToByteArray_Empty_Value() {
-		String s = " ";
+		String s = " "; //FIXME LSG this is not an empty String!!
 		byte[] exp = new byte[]{};
 		byte[] recv = HexString.toByteArray(s);
 		
@@ -83,7 +85,7 @@ public class HexStringTest {
 	}
 	
 	/**
-	 * Positive test case: convert empty string to byte array
+	 * Positive test case: convert empty string to byte array //FIXME LSG this description does not match the method content
 	 * 
 	 */
 	@Test
@@ -100,6 +102,7 @@ public class HexStringTest {
 	 */
 	@Test
 	public void testToByteArray_Value_FF() {
+		//FIXME LSG this description of the input and expected result is ugly. Try to describe them in one simple loop or similar.
 		String s = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
 				+ "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
 				+ "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
