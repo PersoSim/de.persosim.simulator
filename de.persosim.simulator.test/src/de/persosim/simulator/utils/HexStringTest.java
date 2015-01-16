@@ -1,7 +1,6 @@
 package de.persosim.simulator.utils;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -17,6 +16,21 @@ public class HexStringTest {
 	}
 	
 	/**
+	 * Positive test case: simple byte 00
+	 */
+	@Test
+	public void testToByteArray_Value_00() {
+		String s = "00";
+		byte[] exp = new byte[]{(byte) 0x00};
+		
+		byte[] recv = HexString.toByteArray(s);
+		
+		assertArrayEquals(exp, recv);
+		
+		
+	}
+	
+	/**
 	 * Positive test case: convert "42" to byte array
 	 */
 	@Test
@@ -27,17 +41,55 @@ public class HexStringTest {
 		byte[] recv = HexString.toByteArray(s);
 		
 		assertArrayEquals(exp, recv);
+		
+		
 	}
 	
 	/**
-	 * Positive test case: convert "99" to byte array
-	 * FIXME LSG what's the fundamental difference between 99 and 42?
+	 * Negative test case: get IllegalArgumentException because of odd value
+	 * entered
 	 */
 	@Test
-	public void testToByteArray_Value_99() {
-		String s = "99";
-		byte[] exp = new byte[]{(byte) 0x99};
+	public void testToByteArray_ODD_Value() {
+		String s = "ABC";
+
+		boolean thrown = false;
+
+		byte[] exp = new byte[] { (byte) 0x0A, (byte) 0xBC };
+		byte[] recv = null;
+		try {
+
+			recv = HexString.toByteArray(s);
+		} catch (IllegalArgumentException e) {
+
+			thrown = true;
+
+		}
+		assertTrue(thrown);
+
+	}
+	
+	/**
+	 * Positive test case: convert empty string to byte array
+	 * 
+	 */
+	@Test
+	public void testToByteArray_Empty_Value() {
+		String s = " ";
+		byte[] exp = new byte[]{};
+		byte[] recv = HexString.toByteArray(s);
 		
+		assertArrayEquals(exp, recv);
+	}
+	
+	/**
+	 * Positive test case: convert empty string to byte array
+	 * 
+	 */
+	@Test
+	public void testToByteArray_SingleByte_HighestBitSet() {
+		String s = "F5";
+		byte[] exp = new byte[]{(byte) 0xF5};
 		byte[] recv = HexString.toByteArray(s);
 		
 		assertArrayEquals(exp, recv);
@@ -47,12 +99,29 @@ public class HexStringTest {
 	 * Positive test case: convert a very long "F" string to byte array
 	 */
 	@Test
-	public void testToByteArray_Number_FF() {
-		String s = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
-		byte[] exp = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-		
+	public void testToByteArray_Value_FF() {
+		String s = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+				+ "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+				+ "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+		byte[] exp = new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF };
+
 		byte[] recv = HexString.toByteArray(s);
-		
+
 		assertArrayEquals(exp, recv);
 	}
 	
@@ -71,30 +140,16 @@ public class HexStringTest {
 	}
 	
 	/**
-	 * Positive test case: Lowest Hex String
-	 * FIXME SLG why is this significant for a test? Hint it's not the "lowest" but a string containing only zero bytes, which musn't be cropped
-	 */
-	@Test
-	public void testToByteArray_LowestHexString() {
-		String s = "000000";
-		byte[] exp = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00};
-		
-		byte[] recv = HexString.toByteArray(s);
-		
-		assertArrayEquals(exp, recv);
-	}
-	
-	/**
 	 * Positive test case: convert String to byte array for which the most
 	 * significant bit is expected not to be set.
 	 */
 	@Test
 	public void testToByteArray_HighestBitUnset() {
 		String s = "7FFF00";
-		byte[] exp = new byte[]{(byte) 0x7F, (byte) 0xFF, (byte) 0x00};
-		
+		byte[] exp = new byte[] { (byte) 0x7F, (byte) 0xFF, (byte) 0x00 };
+
 		byte[] recv = HexString.toByteArray(s);
-		
+
 		assertArrayEquals(exp, recv);
 	}
 	
@@ -111,6 +166,5 @@ public class HexStringTest {
 		assertArrayEquals(exp, recv);
 	}
 	
-	//FIXME LSG add missing testcases similar to de.persosim.driver.linux, for example odd number of input characters
 
 }
