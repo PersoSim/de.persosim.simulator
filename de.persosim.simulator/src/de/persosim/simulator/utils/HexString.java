@@ -165,8 +165,9 @@ public class HexString {
 
 		if (inputString.length() == 0) {
 			return new byte[0];
-			};
-			
+		};
+
+		//FIXME SLG iterate over input instead of result ;-) you haven't worked on this task, have you?
 		byte[] result = new byte[inputString.length() / 2];
 		for (int i = 0; i < result.length; i++) {
 			int index = i * 2;

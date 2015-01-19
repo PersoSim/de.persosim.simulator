@@ -52,7 +52,7 @@ public class HexStringTest {
 	 */
 	@Test(expected=IllegalArgumentException.class)
 	public void IllegalArgumentException() {
-//		String s ="ABC";
+//		String s ="ABC"; FIXME SLG, we don't like commented code on master
 //		byte[] c = HexString.toByteArray(s);
 		HexString.toByteArray("ABC");
 		
@@ -64,7 +64,7 @@ public class HexStringTest {
 	 */
 	@Test
 	public void testToByteArray_Empty_Value() {
-		String s = ""; 
+		String s = "";  //FIXME SLG why do you need this variable as variable instead of direct inclusion the upcoming line? see method below also 
 		byte[] exp = new byte[]{};
 		byte[] recv = HexString.toByteArray(s);
 		
@@ -85,7 +85,7 @@ public class HexStringTest {
 	}
 	
 	/**
-	 * Positive test case: convert the singlebyte F5
+	 * Positive test case: convert the singlebyte F5 FIXME SLG why do you select this magic value?
 	 * 
 	 */
 	@Test
@@ -97,7 +97,7 @@ public class HexStringTest {
 		assertArrayEquals(exp, recv);
 	}
 	
-	
+	//FIXME SLG why is the method with very long input missing completely?
 	/**
 	 * Positive test case: convert String to byte array for which the most
 	 * significant bit is expected to be set.
