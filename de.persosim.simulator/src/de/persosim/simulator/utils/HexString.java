@@ -1,9 +1,6 @@
 package de.persosim.simulator.utils;
 
 import java.math.BigInteger;
-import java.util.Arrays; //FIXME LSG we won't merge warnings on master ;-)
-
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 /**
  * Encapsulate methods handling String representations of byte Arrays.
@@ -162,21 +159,22 @@ public class HexString {
 
 		inputString = inputString.replaceAll("\\s", "");
 		if (inputString.length() % 2 != 0) {
-			throw new IllegalArgumentException("hexadecimal string must be of even length");
-		};
+			throw new IllegalArgumentException(
+					"hexadecimal string must be of even length");
+			};
 
 		if (inputString.length() == 0) {
 			return new byte[0];
-		};
-
-		//FIXME SLG iterate over input instead of result ;-)
+			};
+			
 		byte[] result = new byte[inputString.length() / 2];
 		for (int i = 0; i < result.length; i++) {
 			int index = i * 2;
 			int v = Integer.parseInt(inputString.substring(index, index + 2),
 					16);
-			result[i] = (byte)v;
-		}	
+			result[i] = (byte) v;
+		}
 		return result;
+
 	}
 }
