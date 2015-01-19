@@ -234,7 +234,21 @@ public class TlvLengthTest {
 		assertEquals("Equals DER encoding",
 				lengthExtracted.isValidDerEncoding(), true);
 	}
+	
 	//TODO missing testcase tesIsValidDerEncoding_2ByteLength
+	/**
+	 * Positive test case: Check DER encoded 2-byte length for DER validity
+	 */
+	@Test
+	public void testIsValidDerEncoding2byte() {
+		/* set arbitrary but valid 1-byte DER encoded length */
+		byte[] lengthExpected = new byte[] { (byte) 0x7E, (byte) 0x7E};
+
+		TlvLength lengthExtracted = new TlvLength(lengthExpected);
+		assertEquals("Equals DER encoding",
+				lengthExtracted.isValidDerEncoding(), true);
+	}
+	
 	
 	/**
 	 * Positive test case: check equals for same object and same constructor
@@ -285,5 +299,88 @@ public class TlvLengthTest {
 
 		assertEquals(lengthFieldExpected1.equals(lengthFieldExpected2), false);
 	}
+	
+	/**
+	 * Negative test case: check for lengthFieldInput = null.
+	 */
+	@Test(expected=NullPointerException.class)
+	public void lengthFieldInputnull()
+	{
+		TlvLength lengthFieldInput = new TlvLength(2);
+		byte[] testarray = null;
+		lengthFieldInput.setLengthField(testarray, 1, 2);
+	}
+	
+	/**
+	 * Negative test case: check for minOffset smaller then zero.
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void minoffsetsmallerthenzero()
+	{
+		TlvLength lengthFieldInput = new TlvLength(2);
+		byte[] testarray = new byte[4];
+		lengthFieldInput.setLengthField(testarray, -9, 2);
+		
+	}
+	
+	/**
+	 * Negative test case: check for minOffset bigger then maxOffset.
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void minoffsetbiggerthenmaxoffset()
+	{
+		TlvLength lengthFieldInput = new TlvLength(2);
+		byte[] testarray = new byte[4];
+		lengthFieldInput.setLengthField(testarray, 4, 3);
+		
+	}
+	
+	/**
+	 * Negative test case: check for lengthFieldInput.length bigger then maxoffset
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void maxoffsetbiggerthenlengthfieldinput()
+	{
+		TlvLength lengthFieldInput = new TlvLength(2);
+		byte[] testarray = new byte[4];
+		
+		lengthFieldInput.setLengthField(testarray, 2, 5);
+		
+	}
+	
+	/**
+	 * Negative test case: check for minOffset equals maxOffset.
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void minoffsetequalsmaxoffset()
+	{
+		TlvLength lengthFieldInput = new TlvLength(2);
+		byte[] testarray = new byte[4];
+		lengthFieldInput.setLengthField(testarray, 4, 4);
+		
+		
+	}
+	
+	/**
+	 * Negative test case: check for lengthfieldinput is zero.
+	 */
+	@Test(expected=NullPointerException.class)
+	public void forcelengthfieldinputiszero()
+	{
+		TlvLength tlvlength = new TlvLength(2);
+		byte[] lengthFieldInput = null;
+		tlvlength.forceLengthField(lengthFieldInput);
+	}
+	
+	/**
+	 * Negative test case: check for lengthfieldinput is zero.
+	 */
+	@Test(expected=NullPointerException.class)
+	public void indicatedLengthsmallerthenzero()
+	{
+		int i = -1;
+		TlvLength.getLengthEncoding(i);
+	}
+	
 	
 }
