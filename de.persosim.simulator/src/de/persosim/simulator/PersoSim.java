@@ -1,10 +1,10 @@
 package de.persosim.simulator;
 
+import static de.persosim.simulator.utils.PersoSimLogger.INFO;
+import static de.persosim.simulator.utils.PersoSimLogger.UI;
+import static de.persosim.simulator.utils.PersoSimLogger.WARN;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.logException;
-import static de.persosim.simulator.utils.PersoSimLogger.UI;
-import static de.persosim.simulator.utils.PersoSimLogger.INFO;
-import static de.persosim.simulator.utils.PersoSimLogger.WARN;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,7 +46,7 @@ import de.persosim.simulator.utils.PersoSimLogger;
  * @author slutters
  * 
  */
-public class PersoSim implements Runnable, Simulator {
+public class PersoSim implements Simulator {
 	
 	private SocketSimulator simulator;
 	
@@ -78,13 +78,32 @@ public class PersoSim implements Runnable, Simulator {
 		}
 	}
 	
+	public PersoSim(){
+		startPersoSim();
+	}
+	
 	public PersoSim(String... args) {
+		startPersoSim();
 		try {
 			handleArgs(args);
 		} catch (IllegalArgumentException e) {
 			log(this.getClass(), "simulation aborted, reason is: " + e.getMessage());
 		}
 		
+	}
+	
+	public void startPersoSim(){
+		System.out.println("Welcome to PersoSim");
+
+		startSimulator();
+		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				handleUserCommands();
+			}
+		}).start();
 	}
 
 	/**
@@ -96,14 +115,7 @@ public class PersoSim implements Runnable, Simulator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		(new PersoSim(args)).run();
-	}
-
-	@Override
-	public void run() {
-		log(this.getClass(), "Welcome to PersoSim", UI);
-		startSimulator();
-		handleUserCommands();
+		(new PersoSim(args)).startPersoSim();
 	}
 	
 	public static void showExceptionToUser(Exception e) {

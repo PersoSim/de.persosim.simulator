@@ -33,7 +33,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 
-import de.persosim.simulator.PersoSim;
 import de.persosim.simulator.ui.Activator;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
 
@@ -159,13 +158,6 @@ public class PersoSimGuiMain {
 				}
 			}
 		});
-		
-		
-		PersoSim sim = new PersoSim();
-		sim.loadPersonalization("1"); //load default perso with valid TestPKI EF.CardSec etc. (Profile01)
-		Thread simThread = new Thread(sim);
-		simThread.start();		
-		
 		
 		final Thread uiThread = Display.getCurrent().getThread();
 		

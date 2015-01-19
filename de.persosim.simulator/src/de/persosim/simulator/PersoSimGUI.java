@@ -95,7 +95,7 @@ public class PersoSimGUI extends JFrame implements ActionListener {
 	      });
 
 		
-		persoSim.run();
+		persoSim.startPersoSim();
 		System.exit(0);
 	}
 	

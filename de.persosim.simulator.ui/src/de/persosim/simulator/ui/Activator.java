@@ -27,7 +27,7 @@ public class Activator implements BundleActivator {
 	private LinkedList<LogReaderService> readers = new LinkedList<>();
 	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(PersoSimGuiMain.MAXIMUM_CACHED_CONSOLE_LINES);
 	private ServiceTracker<LogReaderService, LogReaderService> logReaderTracker;
-	
+	private static ServiceTracker<Simulator, Simulator> simulatorServiceTracker;
 
 	public static Simulator getSim() {
 		return sim;
@@ -99,7 +99,9 @@ public class Activator implements BundleActivator {
 				readerService.addLogListener(linkedListLogger);
 			}
 		}
-		
+				
+		simulatorServiceTracker = new ServiceTracker<Simulator, Simulator>(context, Simulator.class.getName(), null);
+		simulatorServiceTracker.open();
 
 		context.addServiceListener(simulatorServiceListener);
 		
