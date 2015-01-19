@@ -46,7 +46,7 @@ import de.persosim.simulator.utils.PersoSimLogger;
  * @author slutters
  * 
  */
-public class PersoSim implements Runnable {
+public class PersoSim implements Runnable, Simulator {
 	
 	private SocketSimulator simulator;
 	
@@ -58,25 +58,9 @@ public class PersoSim implements Runnable {
 	 */
 	private Personalization currentPersonalization = new DefaultPersoTestPki();
 	
-	public static final String CMD_START                      = "start";
-	public static final String CMD_RESTART                    = "restart";
-	public static final String CMD_STOP                       = "stop";
-	public static final String CMD_EXIT                       = "exit";
-	public static final String CMD_SET_PORT                   = "setport";
-	public static final String ARG_SET_PORT                   = "-port";
-	public static final String CMD_LOAD_PERSONALIZATION       = "loadperso";
-	public static final String ARG_LOAD_PERSONALIZATION       = "-perso";
-	public static final String CMD_SEND_APDU                  = "sendapdu";
-	public static final String CMD_HELP                       = "help";
-	public static final String ARG_HELP                       = "-h";
-	public static final String CMD_CONSOLE_ONLY               = "--consoleOnly";
-	
 	public static final String LOG_NO_OPERATION = "nothing to process";
 	public static final String LOG_SIM_EXIT     = "simulator exit";
 	public static final String LOG_UNKNOWN_ARG  = "unknown argument";
-	
-	public static final int DEFAULT_SIM_PORT = 9876;
-	public static final String DEFAULT_SIM_HOST = "localhost";
 	
 	public static final String persoPlugin = "platform:/plugin/de.persosim.rcp/";
 	public static final String persoPath = "personalization/profiles/";
@@ -163,10 +147,10 @@ public class PersoSim implements Runnable {
 		}
 	}
 	
-	/**
-	 * This method handles instantiation and (re)start of the SocketSimulator.
-	 * @return whether instantiation and starting was successful
+	/* (non-Javadoc)
+	 * @see de.persosim.simulator.Simulator1#startSimulator()
 	 */
+	@Override
 	public boolean startSimulator() {
 		if (simulator != null && simulator.isRunning()) {
 			log(this.getClass(), "Simulator already running", UI);
@@ -208,10 +192,10 @@ public class PersoSim implements Runnable {
 		return false;
 	}
 	
-	/**
-	 * Stops the simulator thread and returns when the thread is stopped.
-	 * @return whether stopping was successful
+	/* (non-Javadoc)
+	 * @see de.persosim.simulator.Simulator1#stopSimulator()
 	 */
+	@Override
 	public boolean stopSimulator() {
 		boolean simStopped = false;
 		
@@ -245,10 +229,10 @@ public class PersoSim implements Runnable {
 		return false;
 	}
 	
-	/**
-	 * This method restarts the simulator.
-	 * @return whether restarting has been successful
+	/* (non-Javadoc)
+	 * @see de.persosim.simulator.Simulator1#restartSimulator()
 	 */
+	@Override
 	public boolean restartSimulator() {
 		stopSimulator();
 		return startSimulator();
@@ -290,10 +274,10 @@ public class PersoSim implements Runnable {
 		return false;
 	}
 	
-	/**
-	 * This method stops the simulator and no longer accepts user input.
-	 * @return whether the simulator has been stopped
+	/* (non-Javadoc)
+	 * @see de.persosim.simulator.Simulator1#exitSimulator()
 	 */
+	@Override
 	public boolean exitSimulator() {
 		executeUserCommands = false;
 		log(this.getClass(), LOG_SIM_EXIT, UI);
@@ -307,17 +291,10 @@ public class PersoSim implements Runnable {
 		return stopped;
 	}
 
-	/**
-	 * This method returns the content of {@link #currentPersonalization}, the
-	 * currently used personalization. If no personalization is set, i.e. the
-	 * variable is null, it will be set to the default personalization which
-	 * will be returned thereafter. This mode of accessing personalization
-	 * opportunistic assumes that a personalization will always be set and
-	 * generating a default personalization is an overhead only to be spent as a
-	 * measure of last resort.
-	 * 
-	 * @return the currently used personalization
+	/* (non-Javadoc)
+	 * @see de.persosim.simulator.Simulator1#getPersonalization()
 	 */
+	@Override
 	public Personalization getPersonalization() {
 		return currentPersonalization;
 	}
@@ -527,6 +504,10 @@ public class PersoSim implements Runnable {
 		return false;
 	}
 	
+	/* (non-Javadoc)
+	 * @see de.persosim.simulator.Simulator1#loadPersonalization(java.lang.String)
+	 */
+	@Override
 	public boolean loadPersonalization(String identifier) {
 		currentPersonalization = null;
 
@@ -650,11 +631,10 @@ public class PersoSim implements Runnable {
 		return false;
 	}
 	
-	/**
-	 * This method implements the execution of commands initiated by user interaction.
-	 * It processes user commands based on a single String containing the whole command and all of its parameters.
-	 * @param cmd the single String command
+	/* (non-Javadoc)
+	 * @see de.persosim.simulator.Simulator1#executeUserCommands(java.lang.String)
 	 */
+	@Override
 	public void executeUserCommands(String cmd) {
 		String trimmedCmd = cmd.trim();
 		String[] args = parseCommand(trimmedCmd);
@@ -662,11 +642,10 @@ public class PersoSim implements Runnable {
 		executeUserCommands(args);
 	}
 	
-	/**
-	 * This method implements the execution of commands initiated by user interaction.
-	 * It processes user commands based on single String representing the command and all of its parameters.
-	 * @param args the parsed commands and arguments
+	/* (non-Javadoc)
+	 * @see de.persosim.simulator.Simulator1#executeUserCommands(java.lang.String)
 	 */
+	@Override
 	public void executeUserCommands(String... args) {
 		if((args == null) || (args.length == 0)) {log(this.getClass(), LOG_NO_OPERATION, INFO); return;}
 		

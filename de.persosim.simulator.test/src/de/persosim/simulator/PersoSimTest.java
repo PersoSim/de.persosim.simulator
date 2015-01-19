@@ -98,7 +98,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws IOException
 	 */
 	private String exchangeApdu(String cmdApdu) throws UnknownHostException, IOException {
-		return exchangeApdu(cmdApdu, PersoSim.DEFAULT_SIM_PORT);
+		return exchangeApdu(cmdApdu, Simulator.DEFAULT_SIM_PORT);
 	}
 	
 	/**
@@ -115,7 +115,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		String respApdu = null;
 		
 		try {
-			socket = new Socket(PersoSim.DEFAULT_SIM_HOST, port);
+			socket = new Socket(Simulator.DEFAULT_SIM_HOST, port);
 
 			PrintStream out = new PrintStream(socket.getOutputStream());
 			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -222,7 +222,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		activateStdOutRedirection();
 		
-		persoSim.executeUserCommands(PersoSim.CMD_EXIT);
+		persoSim.executeUserCommands(Simulator.CMD_EXIT);
 		
 		String response = readRedStdOut();
 
@@ -282,7 +282,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator() throws Exception {
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{Simulator.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		boolean caughtIoException = false;
 		try {
@@ -305,7 +305,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator_twice() throws Exception {
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{Simulator.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		persoSim.startSimulator();
 		assertTrue(persoSim.startSimulator());
@@ -321,7 +321,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test(expected = ConnectException.class)
 	public void testStopSimulator() throws Exception {
-		persoSim = new PersoSim(PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1);
+		persoSim = new PersoSim(Simulator.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1);
 		
 		persoSim.startSimulator();
 		
@@ -422,7 +422,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testLoadPersonalization_ValidPersonalization() throws Exception {
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{Simulator.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		persoSim.startSimulator();
 		
@@ -444,7 +444,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testArgLoadPersonalization_InvalidPersonalizationFile() throws Exception {		
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"});
+		persoSim = new PersoSim(new String[]{Simulator.ARG_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"});
 		
 		assertFalse(persoSim.startSimulator());
 	}
@@ -455,7 +455,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testArgLoadPersonalization_FileNotFound() throws Exception {
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, "non-existing.file"});
+		persoSim = new PersoSim(new String[]{Simulator.ARG_LOAD_PERSONALIZATION, "non-existing.file"});
 		
 		assertFalse(persoSim.startSimulator());
 	}
@@ -466,13 +466,13 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdSetPortNo() throws Exception {
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{Simulator.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		persoSim.startSimulator();
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
 		
-		int portPostExpected = PersoSim.DEFAULT_SIM_PORT + 1;
+		int portPostExpected = Simulator.DEFAULT_SIM_PORT + 1;
 		
 		persoSim.setPort((new Integer (portPostExpected)).toString());
 		persoSim.restartSimulator();
