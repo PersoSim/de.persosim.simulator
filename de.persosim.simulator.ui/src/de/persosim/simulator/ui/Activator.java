@@ -8,9 +8,11 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.util.tracker.ServiceTracker;
 
+import de.persosim.simulator.Simulator;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
 
@@ -19,16 +21,28 @@ import de.persosim.simulator.ui.utils.LinkedListLogListener;
  */
 public class Activator implements BundleActivator {
 
+	private static BundleContext context;
+	private static Simulator sim;
+
 	private LinkedList<LogReaderService> readers = new LinkedList<>();
 	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(PersoSimGuiMain.MAXIMUM_CACHED_CONSOLE_LINES);
 	private ServiceTracker<LogReaderService, LogReaderService> logReaderTracker;
+	
+
+	public static Simulator getSim() {
+		return sim;
+	}
+
+	static BundleContext getContext() {
+		return context;
+	}
 	
 	public static LinkedListLogListener getListLogListener(){
 		return linkedListLogger;
 	}
 	
 	// This will be used to keep track of listeners as they are un/registering
-	private ServiceListener serviceListener = new ServiceListener() {
+	private ServiceListener logServiceListener = new ServiceListener() {
 		@Override
 		public void serviceChanged(ServiceEvent event) {
 			BundleContext bundleContext = event.getServiceReference().getBundle().getBundleContext();
@@ -44,6 +58,22 @@ public class Activator implements BundleActivator {
 			}
 		}
 	};
+
+	private ServiceListener simulatorServiceListener = new ServiceListener() {
+		
+		@Override
+		public void serviceChanged(ServiceEvent event) {
+			ServiceReference<?> serviceReference = event.getServiceReference();
+			switch (event.getType()) {
+			case ServiceEvent.REGISTERED:
+				sim = (Simulator) context.getService(serviceReference);
+				break;
+			default:
+				break;
+			}
+			
+		}
+	};
 	
 	/**
 	 * The constructor
@@ -55,7 +85,10 @@ public class Activator implements BundleActivator {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(final BundleContext context) throws Exception {
+		Activator.context = context;
+				
+		
 		logReaderTracker = new ServiceTracker<>(context, LogReaderService.class.getName(), null);
 		logReaderTracker.open();
 		Object[] readers = logReaderTracker.getServices();
@@ -67,9 +100,12 @@ public class Activator implements BundleActivator {
 			}
 		}
 		
+
+		context.addServiceListener(simulatorServiceListener);
+		
         String filter = "(objectclass=" + LogReaderService.class.getName() + ")";
         try {
-            context.addServiceListener(serviceListener, filter);
+            context.addServiceListener(logServiceListener, filter);
         } catch (InvalidSyntaxException e) {
             e.printStackTrace();
         }
@@ -91,6 +127,7 @@ public class Activator implements BundleActivator {
 		
 		logReaderTracker.close();
 
+		Activator.context = null;
 	}
 
 }
