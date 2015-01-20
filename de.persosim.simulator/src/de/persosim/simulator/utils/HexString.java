@@ -79,7 +79,6 @@ public class HexString {
 			length -= len;
 		}
 		return buffer.toString();
-
 	}
 
 	/**
@@ -147,14 +146,13 @@ public class HexString {
 	}
 
 	/**
-	 * Converts a hexadecimal String into a byte array.
+	 * Converts a hexadecimal String into a byte array. The method iterates over the inputstring.
 	 * 
 	 * @param inputString
 	 *            the hexadecimal String to be converted
-	 * @return a byte array representation of the hexadecimal String. The new
-	 *         modified method converts directly the hex string into a byte
-	 *         array
+	 * @return a byte array representation of the hexadecimal String. 
 	 */
+	
 	public static byte[] toByteArray(String inputString) {
 
 		inputString = inputString.replaceAll("\\s", "");
@@ -164,18 +162,12 @@ public class HexString {
 			};
 
 		if (inputString.length() == 0) {
-			return new byte[0];
-		};
-
-		//FIXME SLG iterate over input instead of result ;-) you haven't worked on this task, have you?
+			return new byte[0];};
 		byte[] result = new byte[inputString.length() / 2];
-		for (int i = 0; i < result.length; i++) {
-			int index = i * 2;
-			int v = Integer.parseInt(inputString.substring(index, index + 2),
-					16);
-			result[i] = (byte) v;
+		for (int i = 0; i < inputString.length(); i=i+2) {
+			int v = Integer.parseInt(inputString.substring(i, i + 2),16);
+			result[i/2] = (byte) v;
 		}
 		return result;
-
 	}
 }
