@@ -52,10 +52,7 @@ public class HexStringTest {
 	 */
 	@Test(expected=IllegalArgumentException.class)
 	public void IllegalArgumentException() {
-//		String s ="ABC"; FIXME SLG, we don't like commented code on master
-//		byte[] c = HexString.toByteArray(s);
 		HexString.toByteArray("ABC");
-		
 	}
 		
 	/**
@@ -64,9 +61,8 @@ public class HexStringTest {
 	 */
 	@Test
 	public void testToByteArray_Empty_Value() {
-		String s = "";  //FIXME SLG why do you need this variable as variable instead of direct inclusion the upcoming line? see method below also 
 		byte[] exp = new byte[]{};
-		byte[] recv = HexString.toByteArray(s);
+		byte[] recv = HexString.toByteArray("");
 		
 		assertArrayEquals(exp, recv);
 	}
@@ -77,27 +73,30 @@ public class HexStringTest {
 	 */
 	@Test
 	public void testToByteArray_SPACE_Value() {
-		String s = " "; 
 		byte[] exp = new byte[]{};
-		byte[] recv = HexString.toByteArray(s);
+		byte[] recv = HexString.toByteArray(" ");
 		
 		assertArrayEquals(exp, recv);
 	}
 	
 	/**
-	 * Positive test case: convert the singlebyte F5 FIXME SLG why do you select this magic value?
-	 * 
+	 * Positive test case: converts a very long String into a byte array.
 	 */
 	@Test
-	public void testToByteArray_SingleByte_HighestBitSet() {
-		String s = "F5";
-		byte[] exp = new byte[]{(byte) 0xF5};
-		byte[] recv = HexString.toByteArray(s);
+	public void testToByteArray_LongString() {
 		
+		String s = "";
+		byte[] exp = new byte[10000];
+		for(int i = 0;i< 10000;i++)
+		{
+		 s = s+ "FF";
+		 exp[i] = (byte)0xFF;
+		 
+		}
+		byte[] recv = HexString.toByteArray(s);	
 		assertArrayEquals(exp, recv);
 	}
 	
-	//FIXME SLG why is the method with very long input missing completely?
 	/**
 	 * Positive test case: convert String to byte array for which the most
 	 * significant bit is expected to be set.
@@ -138,6 +137,4 @@ public class HexStringTest {
 		
 		assertArrayEquals(exp, recv);
 	}
-	
-
 }
