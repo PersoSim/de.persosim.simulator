@@ -439,8 +439,81 @@ public class PrimitiveTlvDataObjectTest {
 		assertArrayEquals("Equals expected byte array representation", tlvObject.toByteArray(),
 				tlvExpected2);
 	}
-
 	
+	/**
+	 * Negative test case: tlvtaginput must not be null. 
+	 */
+	@Test(expected=NullPointerException.class)
+	public void tlvTagInputequalsnull()
+	{
+		byte[] lengthExpected = new byte[] { (byte) 0x0A };
+		byte[] valueExpected = new byte[] { (byte) 0x04};
+		
+		TlvTag tag = null;
+		TlvLength length = new TlvLength(lengthExpected);
+		TlvValuePlain value = new TlvValuePlain(valueExpected);
+		
+		PrimitiveTlvDataObject tlvObject = new PrimitiveTlvDataObject(tag,length,value,true);
+	}
+	
+	/**
+	 * Negative test case: tlvlengthinput must not be null. 
+	 */
+	@Test(expected=NullPointerException.class)
+	public void tlvTagLengthequalsnull()
+	{
+		byte[] tagExpected = new byte[] { (byte) 0x80 };
+		byte[] lengthExpected = new byte[] { (byte) 0x04};
+		
+		TlvTag tag = new TlvTag(tagExpected);
+		TlvLength length = new TlvLength(lengthExpected);
+		TlvValuePlain value = null;
+		
+		PrimitiveTlvDataObject tlvObject = new PrimitiveTlvDataObject(tag,length,value,false);
+	}
+	
+	/**
+	 * Negative test case: In the setTag method the tlvtaginput must not be null. 
+	 */
+	@Test(expected=NullPointerException.class)
+	public void setTagtlvTagInputequalsnull()
+	{
+		byte[] tagExpected = new byte[] { (byte) 0x80 };
+		byte[] lengthExpected = new byte[] { (byte) 0x0A};
+		byte[] valueExpected = new byte[] { (byte) 0x04, (byte) 0x00,
+				(byte) 0x7F, (byte) 0x00, (byte) 0x07, (byte) 0x02,
+				(byte) 0x02, (byte) 0x04, (byte) 0x03, (byte) 0x04};
+		
+		TlvTag tag = new TlvTag(tagExpected);
+		TlvLength length = new TlvLength(lengthExpected);
+		TlvValuePlain value = new TlvValuePlain(valueExpected);
+		
+		PrimitiveTlvDataObject tlvObject = new PrimitiveTlvDataObject(tag,length,value,true);
+		tag = null;
+		tlvObject.setTag(tag, true);
+	}
+	
+	/**
+	 * Negative test case: In the setValue method the tlvvalueplaininput must not be null.
+	 */
+	@Test(expected=NullPointerException.class)
+	public void setValuetlvValuePlainInputequalsnull()
+	{
+		byte[] tagExpected = new byte[] { (byte) 0x80 };
+		byte[] lengthExpected = new byte[] { (byte) 0x0A};
+		byte[] valueExpected = new byte[] { (byte) 0x04, (byte) 0x00,
+				(byte) 0x7F, (byte) 0x00, (byte) 0x07, (byte) 0x02,
+				(byte) 0x02, (byte) 0x04, (byte) 0x03, (byte) 0x04};
+		
+		TlvTag tag = new TlvTag(tagExpected);
+		TlvLength length = new TlvLength(lengthExpected);
+		TlvValuePlain value = new TlvValuePlain(valueExpected);
+		
+		PrimitiveTlvDataObject tlvObject = new PrimitiveTlvDataObject(tag,length,value,true);
+		value = null;
+		tlvObject.setValue(value);
+	}
+
 	//TODO missing tests
 	// modification of value / update of length field (according to package doc this should also work if the existing value is modified and not only if a new value is set)
 }
