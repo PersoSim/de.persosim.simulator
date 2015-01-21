@@ -6,20 +6,19 @@ import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
-	private static LogService logservice;
+	private static ServiceTracker logServiceTracker;
 	
 	public static LogService getLogservice() {
-		return logservice;
+		if (logServiceTracker != null){
+			return (LogService) logServiceTracker.getService();	
+		}
+		return null;
 	}
 
 	@Override
 	public void start(BundleContext context) throws Exception {
-		ServiceTracker logServiceTracker = new ServiceTracker(context, LogService.class.getName(), null);
+		logServiceTracker = new ServiceTracker(context, LogService.class.getName(), null);
         logServiceTracker.open();
-        logservice = (LogService) logServiceTracker.getService();
-       
-        if (logservice != null)
-            logservice.log(LogService.LOG_INFO, "Log initialized");
 
 	}
 
