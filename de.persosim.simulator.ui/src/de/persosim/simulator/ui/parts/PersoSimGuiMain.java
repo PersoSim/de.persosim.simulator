@@ -1,14 +1,5 @@
 package de.persosim.simulator.ui.parts;
 
-import static de.persosim.simulator.utils.PersoSimLogger.log;
-import static de.persosim.simulator.utils.PersoSimLogger.logException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintWriter;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -49,7 +40,6 @@ public class PersoSimGuiMain {
 	
 	private Text txtInput, txtOutput;
 	
-	private final InputStream originalSystemIn = System.in;
 	
 	//maximum amount of strings saved in the buffer
 	public static final int MAXIMUM_CACHED_CONSOLE_LINES = 2000;
@@ -57,9 +47,6 @@ public class PersoSimGuiMain {
 	//maximum of lines the text field can show
 	int maxLineCount=0;
 	
-	private final PipedInputStream inPipe = new PipedInputStream();
-	
-	private PrintWriter inWriter;
 	
 	Composite parent;
 	private Button lockScroller;
@@ -69,7 +56,6 @@ public class PersoSimGuiMain {
 	@PostConstruct
 	public void createComposite(Composite parentComposite) {
 		parent = parentComposite;
-		grabSysIn();
 		
 		parent.setLayout(new GridLayout(2, false));
 		
@@ -131,9 +117,7 @@ public class PersoSimGuiMain {
 				if((e.character == SWT.CR) || (e.character == SWT.LF)) {
 					String line = txtInput.getText();
 					
-					txtOutput.append(line + System.lineSeparator());
-					inWriter.println(line);
-					inWriter.flush();
+					Activator.getSim().executeUserCommands(line);
 					
 					txtInput.setText("");
 				}
@@ -272,42 +256,9 @@ public class PersoSimGuiMain {
 		});
 
 	}
-	
-	
-	public void write(String line) {
-		inWriter.println(line);
-		inWriter.flush();
-	}
-	
-	/**
-	 * This method activates redirection of System.in.
-	 */
-	private void grabSysIn() {
-		// XXX check if redirecting the system in is actually necessary
-		try {
-	    	inWriter = new PrintWriter(new PipedOutputStream(inPipe), true);
-	    	System.setIn(inPipe);
-	    	log(this.getClass(), "activated redirection of System.in");
-	    }
-	    catch(IOException e) {
-	    	logException(this.getClass(), e);
-	    	return;
-	    }
-	}
-	
-	/**
-	 * This method deactivates redirection of System.in.
-	 */
-	private void releaseSysIn() {
-		if(originalSystemIn != null) {
-			System.setIn(originalSystemIn);
-			log(this.getClass(), "deactivated redirection of System.in");
-		}
-	}
-	
+		
 	@PreDestroy
 	public void cleanUp() {
-		releaseSysIn();
 		System.exit(0);
 	}
 
