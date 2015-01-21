@@ -320,6 +320,58 @@ public class SecureMessagingTest extends PersoSimTestCase {
 		assertArrayEquals(exp, SecureMessaging.padData(input, blockSize));
 	}
 	
+	/**
+	 * Negative test: unpadData gets a bytearray, which is null;
+	 */
+	@Test(expected=NullPointerException.class)
+	public void unpadDateinputarrayisnull()
+	{
+		byte[] testarray = null;
+		SecureMessaging secureMessaging = new SecureMessaging(0);
+		secureMessaging.unpadData(testarray, 4);
+	}
+	
+	/**
+	 * Negative test: unpadData gets a blockSize which is less 1.
+	 */
+	@Test(expected=NullPointerException.class)
+	public void unpadDateblocksizelessone()
+	{
+		byte[] testarray = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+		SecureMessaging secureMessaging = new SecureMessaging(0);
+		secureMessaging.unpadData(testarray, 0);
+	}
+	
+	/**
+	 * Negative test: In the unpadData method the currentbyte variable is not equal 0x80
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void unpadDatacurrentbyte()
+	{
+		byte[] testarray = new byte[]{(byte) 0x81};
+		SecureMessaging secureMessaging = new SecureMessaging(0);
+		secureMessaging.unpadData(testarray, 1);
+	}
+	
+	/**
+	 * Negative test: unpadData gets a blockSize which is less 1.
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void paddedDatalengthtoshort()
+	{
+		byte[] testarray = new byte[]{};
+		SecureMessaging secureMessaging = new SecureMessaging(0);
+		secureMessaging.unpadData(testarray, 1);
+	}
+	
+	/**
+	 * Positive test: the method powerOn runs properly
+	 */
+	@Test
+	public void powerOn() {
+		SecureMessaging secureMessaging = new SecureMessaging(0);
+		secureMessaging.powerOn();}
+	
 	//TODO SMTest not yet tested functionality 
 	// extendedLength in both directions
 	// incoming case4 short data extended le etc.
