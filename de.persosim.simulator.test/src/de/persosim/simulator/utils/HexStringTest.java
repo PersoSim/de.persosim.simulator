@@ -17,15 +17,83 @@ public class HexStringTest {
 	}
 	
 	/**
+	 * Positive test case: convert a simple byte with the value 00
+	 */
+	@Test
+	public void testToByteArray_Value_00() {
+		String s = "00";
+		byte[] exp = new byte[]{(byte) 0x00};
+		
+		byte[] recv = HexString.toByteArray(s);
+		
+		assertArrayEquals(exp, recv);
+		
+		
+	}
+	
+	/**
 	 * Positive test case: convert "42" to byte array
 	 */
 	@Test
-	public void testToByteArray() {
+	public void testToByteArray_Value_42() {
 		String s = "42";
 		byte[] exp = new byte[]{(byte) 0x42};
 		
 		byte[] recv = HexString.toByteArray(s);
 		
+		assertArrayEquals(exp, recv);
+		
+		
+	}
+	
+	/**
+	 * Negative test case: get IllegalArgumentException because 
+	 * of string with odd length entered
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void IllegalArgumentException() {
+		HexString.toByteArray("ABC");
+	}
+		
+	/**
+	 * Positive test case: convert empty string to byte array
+	 * 
+	 */
+	@Test
+	public void testToByteArray_Empty_Value() {
+		byte[] exp = new byte[]{};
+		byte[] recv = HexString.toByteArray("");
+		
+		assertArrayEquals(exp, recv);
+	}
+	
+	/**
+	 * Positive test case: convert space to byte array
+	 * 
+	 */
+	@Test
+	public void testToByteArray_SPACE_Value() {
+		byte[] exp = new byte[]{};
+		byte[] recv = HexString.toByteArray(" ");
+		
+		assertArrayEquals(exp, recv);
+	}
+	
+	/**
+	 * Positive test case: converts a very long String into a byte array.
+	 */
+	@Test
+	public void testToByteArray_LongString() {
+		
+		String s = "";
+		byte[] exp = new byte[10000];
+		for(int i = 0;i< 10000;i++)
+		{
+		 s = s+ "FF";
+		 exp[i] = (byte)0xFF;
+		 
+		}
+		byte[] recv = HexString.toByteArray(s);	
 		assertArrayEquals(exp, recv);
 	}
 	
@@ -50,10 +118,10 @@ public class HexStringTest {
 	@Test
 	public void testToByteArray_HighestBitUnset() {
 		String s = "7FFF00";
-		byte[] exp = new byte[]{(byte) 0x7F, (byte) 0xFF, (byte) 0x00};
-		
+		byte[] exp = new byte[] { (byte) 0x7F, (byte) 0xFF, (byte) 0x00 };
+
 		byte[] recv = HexString.toByteArray(s);
-		
+
 		assertArrayEquals(exp, recv);
 	}
 	
@@ -69,5 +137,4 @@ public class HexStringTest {
 		
 		assertArrayEquals(exp, recv);
 	}
-
 }
