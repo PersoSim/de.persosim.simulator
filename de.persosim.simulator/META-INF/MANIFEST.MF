@@ -26,3 +26,4 @@ Bundle-ClassPath: .,
 Import-Package: org.eclipse.core.runtime,
  org.osgi.framework;version="1.8.0"
 Eclipse-BundleShape: dir
+Require-Bundle: org.eclipse.osgi

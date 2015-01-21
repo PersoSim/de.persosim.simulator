@@ -11,7 +11,9 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.osgi.service.log.LogService;
 
+import de.persosim.simulator.Activator;
 import de.persosim.simulator.PersoSim;
 
 /**
@@ -228,30 +230,9 @@ public class PersoSimLogger {
 	}
 
 	private static void logPlain(String message, byte logLevel) {
-		if (logger != null) {
-			switch (logLevel) {
-			case TRACE:
-				logger.trace(message);
-				break;
-			case DEBUG:
-				logger.debug(message);
-				break;
-			case INFO:
-				logger.info(message);
-				break;
-			case WARN:
-				logger.warn(message);
-				break;
-			case ERROR:
-				logger.error(message);
-				break;
-			case FATAL:
-				logger.fatal(message);
-				break;
-			default:
-				logger.debug(message);
-				break;
-			}
+		LogService logService = Activator.getLogservice();
+		if (logService != null){
+			logService.log(logLevel, message);
 		}
 	}
 }
