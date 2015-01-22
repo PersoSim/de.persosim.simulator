@@ -224,13 +224,13 @@ public abstract class DefaultPersonalization extends XmlPersonalization implemen
 		byte[] content = HexString
 				.toByteArray("61324F0FE828BD080FA000000167455349474E500F434941207A752044462E655369676E5100730C4F0AA000000167455349474E61094F07A0000002471001610B4F09E80704007F00070302610C4F0AA000000167455349474E");
 		
-		ElementaryFile efCardAccess = new ElementaryFile(new FileIdentifier(
+		ElementaryFile efDir = new ElementaryFile(new FileIdentifier(
 				0x2F00), new ShortFileIdentifier(0x1E),
 				content,
 				Arrays.asList((SecCondition) new NullSecurityCondition()),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
-		mf.addChild(efCardAccess);
+		mf.addChild(efDir);
 	}
 	
 	/**
