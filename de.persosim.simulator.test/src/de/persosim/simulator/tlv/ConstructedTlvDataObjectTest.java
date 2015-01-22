@@ -1062,6 +1062,7 @@ public class ConstructedTlvDataObjectTest {
 		TlvTag tag = null;
 		TlvLength length = new TlvLength(lengthExpected);
 		TlvDataObjectContainer value = new TlvDataObjectContainer(valueExpected);
+		@SuppressWarnings("unused")
 		ConstructedTlvDataObject tlvObject = new ConstructedTlvDataObject(tag,
 				length, value);
 	}
@@ -1079,6 +1080,7 @@ public class ConstructedTlvDataObjectTest {
 		TlvTag tag = new TlvTag(tagExpected);
 		TlvLength length = new TlvLength(lengthExpected);
 		TlvDataObjectContainer value = null;
+		@SuppressWarnings("unused")
 		ConstructedTlvDataObject tlvObject = new ConstructedTlvDataObject(tag,
 				length, value);
 	}

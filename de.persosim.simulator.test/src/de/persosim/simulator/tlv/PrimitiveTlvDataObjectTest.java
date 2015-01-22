@@ -452,7 +452,7 @@ public class PrimitiveTlvDataObjectTest {
 		TlvTag tag = null;
 		TlvLength length = new TlvLength(lengthExpected);
 		TlvValuePlain value = new TlvValuePlain(valueExpected);
-		
+		@SuppressWarnings("unused")
 		PrimitiveTlvDataObject tlvObject = new PrimitiveTlvDataObject(tag,length,value,true);
 	}
 	
@@ -468,7 +468,7 @@ public class PrimitiveTlvDataObjectTest {
 		TlvTag tag = new TlvTag(tagExpected);
 		TlvLength length = new TlvLength(lengthExpected);
 		TlvValuePlain value = null;
-		
+		@SuppressWarnings("unused")
 		PrimitiveTlvDataObject tlvObject = new PrimitiveTlvDataObject(tag,length,value,false);
 	}
 	

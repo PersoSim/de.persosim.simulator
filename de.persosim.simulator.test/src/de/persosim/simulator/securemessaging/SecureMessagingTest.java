@@ -327,8 +327,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	public void unpadDateinputarrayisnull()
 	{
 		byte[] testarray = null;
-		SecureMessaging secureMessaging = new SecureMessaging(0);
-		secureMessaging.unpadData(testarray, 4);
+		SecureMessaging.unpadData(testarray, 4);
 	}
 	
 	/**
@@ -338,8 +337,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	public void unpadDateblocksizelessone()
 	{
 		byte[] testarray = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-		SecureMessaging secureMessaging = new SecureMessaging(0);
-		secureMessaging.unpadData(testarray, 0);
+		SecureMessaging.unpadData(testarray, 0);
 	}
 	
 	/**
@@ -349,8 +347,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	public void unpadDatacurrentbyte()
 	{
 		byte[] testarray = new byte[]{(byte) 0x81};
-		SecureMessaging secureMessaging = new SecureMessaging(0);
-		secureMessaging.unpadData(testarray, 1);
+		SecureMessaging.unpadData(testarray, 1);
 	}
 	
 	/**
@@ -360,8 +357,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	public void paddedDatalengthtoshort()
 	{
 		byte[] testarray = new byte[]{};
-		SecureMessaging secureMessaging = new SecureMessaging(0);
-		secureMessaging.unpadData(testarray, 1);
+		SecureMessaging.unpadData(testarray, 1);
 	}
 	
 	/**
