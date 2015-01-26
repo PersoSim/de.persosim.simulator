@@ -140,5 +140,6 @@ public class Activator implements BundleActivator {
 		logReaderTracker.close();
 
 		Activator.context = null;
+		serviceTracker.close();
 	}
 }
