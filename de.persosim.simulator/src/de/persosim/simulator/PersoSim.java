@@ -78,12 +78,14 @@ public class PersoSim implements Simulator {
 		}
 	}
 	
+	/**
+	 * Starts PersoSim and listens to commands on the standard input stream
+	 */
 	public PersoSim(){
 		startPersoSim();
 	}
 	
 	public PersoSim(String... args) {
-		startPersoSim();
 		try {
 			handleArgs(args);
 		} catch (IllegalArgumentException e) {
