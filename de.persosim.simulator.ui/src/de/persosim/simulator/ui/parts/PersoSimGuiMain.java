@@ -1,5 +1,8 @@
 package de.persosim.simulator.ui.parts;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,6 +12,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -171,8 +175,24 @@ public class PersoSimGuiMain {
 	
 	StringBuilder guiStringBuilder = new StringBuilder();
 	long lastGuiFlush = 0;
+	
+	//Buffer for old console outputs
+	LinkedList<String> consoleStrings = new LinkedList<String>();
+	
 	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
 	protected void appendToGui(String s) {
+		
+		//write the String into the Console Buffer
+		if (consoleStrings.size() < 1000 && !s.equals("")) {
+			consoleStrings.add(s);
+			saveFile(consoleStrings.getLast());
+		} else if(!s.equals("")){
+			//Buffer is full, delete the oldest entry before adding
+			consoleStrings.pollFirst();
+			consoleStrings.add(s);
+			saveFile(consoleStrings.getLast());
+		}
+		
 		if((guiStringBuilder.length() > 0) || (s.length() > 0)) {
 			if(s.length() > 0) {
 				guiStringBuilder.append(s);
@@ -193,6 +213,37 @@ public class PersoSimGuiMain {
 				});
 			}
 		}
+	}
+	
+	//only for testing purposes
+	public void saveFile(String s){
+		try{
+
+	        //Specify the file name and path here
+	    	File file =new File("myfile.txt");
+
+	    	/* This logic is to create the file if the
+	    	 * file is not already present
+	    	 */
+	    	if(!file.exists()){
+	    	   file.createNewFile();
+	    	}
+
+	    	//Here true is to append the content to file
+	    	FileWriter fw = new FileWriter(file,true);
+	    	//BufferedWriter writer give better performance
+	    	BufferedWriter bw = new BufferedWriter(fw);
+	    	bw.write(s);
+//	    	bw.newLine();
+	    	//Closing BufferedWriter Stream
+	    	bw.close();
+
+		
+
+	      }catch(IOException ioe){
+	         System.out.println("Exception occurred:");
+	    	 ioe.printStackTrace();
+	       }
 	}
 
 	public void write(String line) {
