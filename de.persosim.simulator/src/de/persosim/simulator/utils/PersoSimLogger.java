@@ -33,6 +33,8 @@ public class PersoSimLogger {
 	private static final byte LOGLEVEL_DFLT = DEBUG;
 	
 	private static Logger logger;
+	
+	private static boolean initializeOnNextMessage = false;
 
 	/**
 	 * Ensure that this type can not be instantiated
@@ -41,6 +43,10 @@ public class PersoSimLogger {
 	}
 	
 	public static void init() {
+		initializeOnNextMessage = true;
+	}
+	
+	private static void initializeLog4j(){
 		logger = Logger.getLogger("GTSimulatorLogger");
 		
 		logger.removeAllAppenders();
@@ -237,6 +243,10 @@ public class PersoSimLogger {
 		if (logService != null){
 			logService.log(logLevel, message);
 		} else if (logger != null) {
+			if (initializeOnNextMessage){
+				initializeOnNextMessage = false;
+				initializeLog4j();
+			}
 			switch (logLevel) {
 			case TRACE:
 				logger.trace(message);
