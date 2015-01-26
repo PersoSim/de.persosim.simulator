@@ -80,7 +80,7 @@ public class PersoSimGuiMain {
 		//configure console field
 		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);
 		
-		Activator.getTextFieldLogListener().setText(txtOutput);
+		Activator.getTextFieldLogListener().setText(txtOutput, sync);
 				
 		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
 		txtOutput.setEditable(false);
