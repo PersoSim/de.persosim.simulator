@@ -236,32 +236,33 @@ public class PersoSimLogger {
 		LogService logService = Activator.getLogservice();
 		if (logService != null){
 			logService.log(logLevel, message);
-		} else {
-			if (logger != null) {
-				switch (logLevel) {
-				case TRACE:
-					logger.trace(message);
-					break;
-				case DEBUG:
-					logger.debug(message);
-					break;
-				case INFO:
-					logger.info(message);
-					break;
-				case WARN:
-					logger.warn(message);
-					break;
-				case ERROR:
-					logger.error(message);
-					break;
-				case FATAL:
-					logger.fatal(message);
-					break;
-				default:
-					logger.debug(message);
-					break;
-				}
+		} else if (logger != null) {
+			switch (logLevel) {
+			case TRACE:
+				logger.trace(message);
+				break;
+			case DEBUG:
+				logger.debug(message);
+				break;
+			case INFO:
+				logger.info(message);
+				break;
+			case WARN:
+				logger.warn(message);
+				break;
+			case ERROR:
+				logger.error(message);
+				break;
+			case FATAL:
+				logger.fatal(message);
+				break;
+			default:
+				logger.debug(message);
+				break;
 			}
+		} else {
+			System.out.println(message);
 		}
+		
 	}
 }
