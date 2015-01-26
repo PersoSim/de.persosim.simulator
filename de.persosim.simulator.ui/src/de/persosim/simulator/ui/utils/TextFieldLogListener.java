@@ -22,7 +22,8 @@ public class TextFieldLogListener implements LogListener {
 				
 				@Override
 				public void run() {
-					text.append("\n[" + entry.getBundle().getSymbolicName() + "] " + entry.getMessage());
+					//XXX MBK check for the loglevel to be shown in PersoSim here
+					text.append("\n[" + entry.getBundle().getSymbolicName() + "] " + entry.getMessage());	
 				}
 			});
 				
