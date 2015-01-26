@@ -117,7 +117,7 @@ public class PersoSimGuiMain {
 				if((e.character == SWT.CR) || (e.character == SWT.LF)) {
 					String line = txtInput.getText();
 					
-					Activator.getSim().executeUserCommands(line);
+					Activator.executeUserCommands(line);
 					
 					txtInput.setText("");
 				}

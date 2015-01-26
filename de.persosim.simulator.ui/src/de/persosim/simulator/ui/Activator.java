@@ -7,6 +7,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogReaderService;
@@ -39,6 +40,15 @@ public class Activator implements BundleActivator {
 	
 	public static LinkedListLogListener getListLogListener(){
 		return linkedListLogger;
+	}
+	
+	public static void executeUserCommands(String command){
+		Simulator sim = (Simulator) simulatorServiceTracker.getService();
+		if (sim != null){
+			sim.executeUserCommands(command);
+		} else {
+			throw new ServiceException("The Simulator service could not be found");
+		}
 	}
 	
 	// This will be used to keep track of listeners as they are un/registering
