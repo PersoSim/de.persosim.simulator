@@ -1,5 +1,8 @@
 package de.persosim.simulator.ui.parts;
 
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static de.persosim.simulator.utils.PersoSimLogger.logException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
@@ -79,6 +82,8 @@ public class PersoSimGuiMain {
 		
 		//configure console field
 		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);
+		
+		Activator.getTextFieldLogListener().setText(txtOutput, sync);
 		
 		Activator.getTextFieldLogListener().setText(txtOutput, sync);
 				
@@ -304,10 +309,10 @@ public class PersoSimGuiMain {
 		try {
 	    	inWriter = new PrintWriter(new PipedOutputStream(inPipe), true);
 	    	System.setIn(inPipe);
-	    	System.out.println("activated redirection of System.in");
+	    	log(this.getClass(), "activated redirection of System.in");
 	    }
 	    catch(IOException e) {
-	    	System.out.println("Error: " + e);
+	    	logException(this.getClass(), e);
 	    	return;
 	    }
 	}
@@ -318,7 +323,7 @@ public class PersoSimGuiMain {
 	private void releaseSysIn() {
 		if(originalSystemIn != null) {
 			System.setIn(originalSystemIn);
-			System.out.println("deactivated redirection of System.in");
+			log(this.getClass(), "deactivated redirection of System.in");
 		}
 	}
 	

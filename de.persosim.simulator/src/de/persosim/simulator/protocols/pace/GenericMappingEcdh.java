@@ -36,14 +36,14 @@ public class GenericMappingEcdh extends GenericMapping {
 		EllipticCurve curve = domainParameterSetEcdhUnMapped.getCurve();
 		ECPoint gUnMapped = domainParameterSetEcdhUnMapped.getGenerator();
 		
-		System.out.println("gUnMapped x: " + HexString.encode(Utils.toUnsignedByteArray(gUnMapped.getAffineX())));
-		System.out.println("gUnMapped y: " + HexString.encode(Utils.toUnsignedByteArray(gUnMapped.getAffineY())));
-		System.out.println("nonce S: " + HexString.encode(Utils.toUnsignedByteArray(nonceS)));
+		log(this.getClass(), "gUnMapped x: " + HexString.encode(Utils.toUnsignedByteArray(gUnMapped.getAffineX())));
+		log(this.getClass(), "gUnMapped y: " + HexString.encode(Utils.toUnsignedByteArray(gUnMapped.getAffineY())));
+		log(this.getClass(), "nonce S: " + HexString.encode(Utils.toUnsignedByteArray(nonceS)));
 		
 		ECPoint gspm = CryptoUtil.scalarPointMultiplication(curve, domainParameterSetEcdhUnMapped.getOrder(), gUnMapped, nonceS);
 		
-		System.out.println("gspm x: " + HexString.encode(Utils.toUnsignedByteArray(gspm.getAffineX())));
-		System.out.println("gspm y: " + HexString.encode(Utils.toUnsignedByteArray(gspm.getAffineY())));
+		log(this.getClass(), "gspm x: " + HexString.encode(Utils.toUnsignedByteArray(gspm.getAffineX())));
+		log(this.getClass(), "gspm y: " + HexString.encode(Utils.toUnsignedByteArray(gspm.getAffineY())));
 		
 		ECPoint  gMapped = CryptoUtil.addPoint(curve, gspm, h);
 		

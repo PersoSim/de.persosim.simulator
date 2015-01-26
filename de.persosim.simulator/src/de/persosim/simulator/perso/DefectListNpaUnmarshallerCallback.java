@@ -6,12 +6,13 @@ import de.persosim.simulator.protocols.Protocol.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
+import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
  * This can be used as callback on an {@link XmlPersonalization} in order to
  * automatically complete SecInfo files. The SecInfo files created by this
  * Unmarshaller comply with DefectList ObjectIdentifier
- * "id­EAC2Privile­gedTerminalIn­foMissing" and "id­eIDSecurity­InfoMissing"
+ * "idï¿½EAC2Privileï¿½gedTerminalInï¿½foMissing" and "idï¿½eIDSecurityï¿½InfoMissing"
  * according to TR-03127 attachment D.
  * 
  * Documents created by this Unmarshaller differ in the following points from
@@ -31,7 +32,7 @@ public class DefectListNpaUnmarshallerCallback extends DefaultNpaUnmarshallerCal
 		ConstructedTlvDataObject originalSecInfos = super.getSecInfos(perso, secInfoPublicity);
 		ConstructedTlvDataObject mangledSecInfos = new ConstructedTlvDataObject(originalSecInfos.getTlvTag());
 		
-		System.out.println("original secInfos: " + originalSecInfos);
+		PersoSimLogger.log(this.getClass(), "original secInfos: " + originalSecInfos);
 		
 		for(TlvDataObject tlvDataObject : originalSecInfos) {
 			if(tlvDataObject instanceof ConstructedTlvDataObject) {

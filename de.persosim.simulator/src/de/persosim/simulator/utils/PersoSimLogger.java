@@ -29,6 +29,7 @@ public class PersoSimLogger {
 	public static final byte WARN = 4;
 	public static final byte ERROR = 5;
 	public static final byte FATAL = 6;
+	public static final byte UI = 120;
 	private static final byte LOGLEVEL_DFLT = DEBUG;
 	
 	private static Logger logger;

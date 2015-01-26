@@ -15,6 +15,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.persosim.simulator.Activator;
+import de.persosim.simulator.utils.PersoSimLogger;
+
 /**
  * This class provides a singleton {@link JAXBContext} that is initialized to be
  * used with all de.persosim classes known to the current classloader.
@@ -221,7 +224,7 @@ public class PersoSimJaxbContextProvider {
 			for (Annotation curAnnotation : curClass.getAnnotations()) {
 				if (curAnnotation.annotationType() == XmlRootElement.class) {
 					annotatedClasses.add(curClass);
-					System.out.println("annotatedClasses.add("+curClass.getName()+".class);");
+					PersoSimLogger.log(PersoSimJaxbContextProvider.class, "annotatedClasses.add("+curClass.getName()+".class);");
 					break;
 				}
 			}
