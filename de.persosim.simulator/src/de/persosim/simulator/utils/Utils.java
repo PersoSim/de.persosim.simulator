@@ -156,22 +156,6 @@ public abstract class Utils {
 	}
 	
 	/**
-	 * Returns a concatenation of two byte arrays
-	 * @param b1 leading byte array
-	 * @param b2 trailing byte array
-	 * @return a concatenation of two byte arrays
-	 */
-	public static byte[] concatByteArrays(byte[] b1, byte[] b2) {
-		byte[] newByteArray;
-		
-		newByteArray = new byte[b1.length + b2.length];
-		System.arraycopy(b1, 0, newByteArray, 0, b1.length);
-		System.arraycopy(b2, 0, newByteArray, b1.length, b2.length);
-		
-		return newByteArray;
-	}
-	
-	/**
 	 * Returns a concatenation of one or more byte arrays
 	 * @param byteArrays one or more byte arrays
 	 * @return a concatenation of one or more byte arrays
