@@ -439,7 +439,8 @@ public class PrimitiveTlvDataObjectTest {
 		assertArrayEquals("Equals expected byte array representation", tlvObject.toByteArray(),
 				tlvExpected2);
 	}
-	
+
+	//FIXME LSG see similar comments to the methods below in similar methods in ConstructedTlvDataObjectTest
 	/**
 	 * Negative test case: tlvtaginput must not be null. 
 	 */

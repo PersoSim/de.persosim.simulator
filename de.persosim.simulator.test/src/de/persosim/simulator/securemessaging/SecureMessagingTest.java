@@ -333,7 +333,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	/**
 	 * Negative test: unpadData gets a blockSize which is less 1.
 	 */
-	@Test(expected=NullPointerException.class)
+	@Test(expected=NullPointerException.class) //FIXME LSG why expect a NPE here, none of your test inputs is null, thsu an NPE is definitely the wrong choice
 	public void unpadDateblocksizelessone()
 	{
 		byte[] testarray = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
@@ -354,7 +354,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	 * Negative test: unpadData gets a blockSize which is less 1.
 	 */
 	@Test(expected=IllegalArgumentException.class)
-	public void paddedDatalengthtoshort()
+	public void paddedDatalengthtoshort() //FIXME LSG your method names do not conform to our conventions use testMethodName_parameterDescription() instead for all test methods
 	{
 		byte[] testarray = new byte[]{};
 		SecureMessaging.unpadData(testarray, 1);
@@ -367,6 +367,8 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	public void powerOn() {
 		SecureMessaging secureMessaging = new SecureMessaging(0);
 		secureMessaging.powerOn();}
+	//FIXME LSG where is the closing } of powerOn() ? ;-) just a formatting issue, but a very confusing one
+	
 	
 	//TODO SMTest not yet tested functionality 
 	// extendedLength in both directions

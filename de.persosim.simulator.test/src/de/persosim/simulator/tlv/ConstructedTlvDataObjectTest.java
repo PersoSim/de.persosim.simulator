@@ -1011,6 +1011,7 @@ public class ConstructedTlvDataObjectTest {
 	@Test(expected=NullPointerException.class)
 	public void setValuetlvDataObjectContainerInputisnull()
 	{
+		//FIXME LSG use TlvDataObjectFactory instead of the following lines to make test setup more readable
 		byte[] tagExpected = new byte[] { (byte) 0x21 };
 		byte[] lengthExpected = new byte[] { (byte) 0x08 };
 		byte[] valueExpected = new byte[] { (byte) 0x01, (byte) 0x02,
@@ -1032,7 +1033,7 @@ public class ConstructedTlvDataObjectTest {
 	@Test(expected=NullPointerException.class)
 	public void setTagtlvTagInputisnull()
 	{
-		
+		//FIXME LSG use TlvDataObjectFactory instead of the following lines to make test setup more readable
 		byte[] tagExpected = new byte[] { (byte) 0x21 };
 		byte[] lengthExpected = new byte[] { (byte) 0x08 };
 		byte[] valueExpected = new byte[] { (byte) 0x01, (byte) 0x02,
