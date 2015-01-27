@@ -225,6 +225,7 @@ public class UtilsTest {
 	/**
 	 * Negative test case: method appendBytes gets trailinbytes as input, which is null;
 	 */
+	//FIXME LSG why is nothing to append considered an error?
 	@Test(expected=IllegalArgumentException.class)
 	public void testAppendBytes_Trailinbytes_Is_Null()
 	{
@@ -236,6 +237,7 @@ public class UtilsTest {
 	/**
 	 * Negative test case: method appendBytes gets trailingbytes as input, which is less then 1.
 	 */
+	//FIXME LSG why is nothing to append considered an error?
 	@Test(expected=IllegalArgumentException.class)
 	public void testAppendBytes_Trailingbytes_Is_Less_One()
 	{
@@ -249,6 +251,7 @@ public class UtilsTest {
 	 * Negative test case: the method concanByteArrays gets input null.
 	 */
 	@Test(expected=NullPointerException.class)
+	//FIXME LSG why is concatenating nothing considered an error?
 	public void testConcatByteArrays_Input_Is_Null()
 	{	
 		byte[] test = null;
@@ -259,6 +262,7 @@ public class UtilsTest {
 	 * Negative test case: method toUnsignedByteArray gets an input, which is null.
 	 */
 	@Test(expected=NullPointerException.class)
+	//FIXME LSG why is an empty input considered an error here?
 	public void testToUnsignedByteArray_Input_Is_Null()
 	{
 		BigInteger test = null;
@@ -269,6 +273,7 @@ public class UtilsTest {
 	/**
 	 * Negative test case: method appendBytes gets trailingbytes as input, which is less then 1.
 	 */
+	//FIXME LSG why is an empty input considered an error here?
 	@Test(expected=IllegalArgumentException.class)
 	public void testToUnsignedByteArray_Input()
 	{
@@ -284,12 +289,14 @@ public class UtilsTest {
 	{
 		long test = 34343;
 		Utils.toUnsignedByteArray(test);
+		//FIXME LSG I can't see an actual test here, you should check the result
 	}
 	
 	/**
 	 * Positive Test case: method toUnsignedByteArray gets input of type int.
 	 */
 	@Test
+	//FIXME LSG what part of our code do you test here? Isn't this just a VM feature
 	public void testToUnsignedByteArray_Input_Int()
 	{
 		int test = 34343;
@@ -300,6 +307,7 @@ public class UtilsTest {
 	 * Positive Test case: method toUnsignedByteArray gets input of type short.
 	 */
 	@Test
+	//FIXME LSG see above method
 	public void testToUnsignedByteArray_Input_Short()
 	{
 		short test = 343;
@@ -311,6 +319,7 @@ public class UtilsTest {
 	 * Positive Test case: method toUnsignedByteArray gets input of type byte.
 	 */
 	@Test
+	//FIXME LSG see above method
 	public void testToUnsignedByteArray_Input_Byte()
 	{
 		byte test = (byte) 0xFF;
@@ -325,6 +334,7 @@ public class UtilsTest {
 	{
 		byte[] test = new byte[]{ (byte) 0xFF};
 		Utils.removeLeadingZeroBytes(test);
+		//FIXME LSG I can't see an actual test here, you should check the result
 	}
 	
 	/**
@@ -333,8 +343,9 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToShort_Input_Byte()
 	{
-		byte b = 100;
+		byte b = 100;//FIXME LSG this is not a good test value here, think about it
 		Utils.maskUnsignedByteToShort(b);
+		//FIXME LSG I can't see an actual test here, you should check the result
 	}
 	
 	/**
@@ -343,6 +354,7 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToInt_Input_Byte()
 	{
+		//FIXME LSG see comments in testMaskUnsignedByteToShort_Input_Byte
 		byte b = 100;
 		Utils.maskUnsignedByteToInt(b);
 	}
@@ -353,6 +365,7 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedShortToInt_Input_Short()
 	{
+		//FIXME LSG see comments in testMaskUnsignedByteToShort_Input_Byte
 		short b = 110;
 		Utils.maskUnsignedShortToInt(b);
 	}
@@ -365,6 +378,7 @@ public class UtilsTest {
 	{
 		byte a =1,b = 2;
 		Utils.concatenate(a, b);
+		//FIXME LSG I can't see an actual test here, you should check the result
 	}
 	
 	/**
@@ -376,8 +390,11 @@ public class UtilsTest {
 		
 	 String s = "19990801";
 	 Utils.getDate(s);
+		//FIXME LSG I can't see an actual test here, you should check the result
 	}
 	
+	
+	//FIXME LSG I stopped even looking at the methods below. First please ensure that the documentation matches teh implementation, the tests actually test something, are not duplicate of existing tests etc...
 	/**
 	 * Positive Test case: method getDate gets a null string.
 	 */
@@ -387,7 +404,6 @@ public class UtilsTest {
 		byte a = 0;
 		String s = null;
 		Utils.getDate(s, a);
-		
 	}
 	
 	/**
