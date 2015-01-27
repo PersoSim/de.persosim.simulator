@@ -52,7 +52,7 @@ public class PersoSimGuiMain {
 	private final PrintStream originalSystemOut = System.out;
 	
 	//Buffer for old console outputs
-	private LinkedList<String> consoleStrings = new LinkedList<String>();
+	private LinkedList<String> consoleStrings = new LinkedList<String>();	
 	private int maxLines = 2000;
 	
 	private PrintStream newSystemOut;
@@ -61,7 +61,8 @@ public class PersoSimGuiMain {
 	private PrintWriter inWriter;
 	
 	Composite parent;
-
+	Slider slider;
+	
 	@PostConstruct
 	public void createComposite(Composite parentComposite) {
 		parent = parentComposite;
@@ -80,31 +81,49 @@ public class PersoSimGuiMain {
 		txtOutput.setCursor(null);
 		txtOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		
-		final Slider slider = new Slider(parent, SWT.V_SCROLL);
+		consoleStrings.add("Welcome to PersoSim\n");
+		slider = new Slider(parent, SWT.V_SCROLL);
+//		final Slider slider = new Slider(parent, SWT.V_SCROLL);
 		slider.setIncrement(1);
 		slider.setPageIncrement(10);
-		slider.setMaximum(maxLines);
+		slider.setMaximum(consoleStrings.size());
 		slider.setMinimum(0);
-//		slider.setThumb(consoleStrings.size());
+		slider.setThumb(consoleStrings.size());
 		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 		
-	    SelectionListener sliderListener = new SelectionAdapter() {
-	        public void widgetSelected(SelectionEvent e) {
-	        	
-	        	txtOutput.setText("");
-				for (int i = 0; i < txtOutput.getBounds().height/txtOutput.getFont().getFontData()[0].getHeight(); i++) {
-//	        	for (int i = 0; i < 33; i++) {
-	        		consoleStrings.indexOf(consoleStrings.get(slider.getSelection()+i));
-//					System.out.print(consoleStrings.indexOf(consoleStrings.get(slider.getSelection()+i))+" "+consoleStrings.get(slider.getSelection()+i));
-//	        		System.out.print(consoleStrings.get(slider.getSelection()+i));
-	        		appendToGuiFromList((consoleStrings.get(slider.getSelection()+i)));
-				}
-	         
-	        }
-	      };
-	      
-	    slider.addSelectionListener(sliderListener);
+		SelectionListener sliderListener = new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+
+				txtOutput.setText("");
+				consoleStrings.indexOf(consoleStrings.get(slider.getSelection()));					
+				appendToGuiFromList((consoleStrings.get(slider.getSelection())));
+//				for (int i = 0; i < txtOutput.getBounds().height / txtOutput.getFont().getFontData()[0].getHeight(); i++) {
+				
+//				if (slider.getSelection() < consoleStrings.size() - 35)
+					for (int i = 0; i < 35; i++) {
+						if(slider.getSelection() + i <consoleStrings.size()){
+						consoleStrings.indexOf(consoleStrings.get(slider.getSelection() + i));
+						appendToGuiFromList((consoleStrings.get(slider.getSelection() + i)));
+						}
+						else return;
+					}
+//				else {
+//					while(slider.getSelection() < consoleStrings.size()){
+//
+//					}
+//				}
+
+			}
+		};
+	    
+		try {
+			slider.addSelectionListener(sliderListener);
+		} catch (IndexOutOfBoundsException IoobExc) {
+			// do nothing, just solve the problem
+		} finally {
+			slider.setSelection(consoleStrings.size());
+		}
+	    
 		
 		parent.setLayout(new GridLayout(2, false));
 		
@@ -215,11 +234,24 @@ public class PersoSimGuiMain {
 		//write the String into the Console Buffer
 		if (consoleStrings.size() < maxLines && !s.equals("")) {
 			consoleStrings.add(s);
+			
+			sync.asyncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					slider.setMaximum(consoleStrings.size());
+//					slider.setSelection(2);
+				}
+			});
+//			appendToGuiFromList(s);
+		}
 //			saveFile(consoleStrings.getLast());
-		} else if(!s.equals("")){
+		else if(!s.equals("")){
 			//Buffer is full, delete the oldest entry before adding
 			consoleStrings.pollFirst();
 			consoleStrings.add(s);
+//			appendToGuiFromList(s);
+			
 //			saveFile(consoleStrings.getLast());
 		}		
 //		if((guiStringBuilder.length() > 0) || (s.length() > 0)) {
