@@ -28,7 +28,7 @@ public class SecStatusTest extends PersoSimTestCase{
 	 * Positive test case: check the updateSecStatus method in the SecStatus class.
 	 */
 	@Test
-	public void updateSecStatus()
+	public void testUpdateSecStatus_Input_Is_ProcessingData_Object()
 	{
 		SecStatus test = new SecStatus();
 		ProcessingData lol = new ProcessingData();
@@ -39,7 +39,7 @@ public class SecStatusTest extends PersoSimTestCase{
 	 * Positive test case: check the getCurrentMechanisms method in the Secstatus class.
 	 */
 	@Test
-	public void getCurrentMechanisms()
+	public void testGetCurrentMechanisms()
 	{
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		@SuppressWarnings("unused")
