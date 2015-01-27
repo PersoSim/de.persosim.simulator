@@ -222,14 +222,11 @@ public class UtilsTest {
 		assertFalse(Utils.arrayHasPrefix(data, prefix));
 	}
 	
-	//FIXME LSG please remove changes to this class from the current branch and push them to a new one instead, I think this is an independent modification and should go on its own branch...
-	
-	//FIXME LSG why is this usefull behavior to test, wouldn't it be more usefull to a method user if this would be allowed???
 	/**
-	 * Negative test case: method appendBytes gets appendBytes as input, which is null;
+	 * Negative test case: method appendBytes gets trailinbytes as input, which is null;
 	 */
 	@Test(expected=IllegalArgumentException.class)
-	public void appendBytestrailinbytesisnull()
+	public void testAppendBytes_Trailinbytes_Is_Null()
 	{
 		byte[] leadingbyte = new byte[]{(byte) 0x65};
 		Utils.appendBytes(leadingbyte, null);
@@ -240,7 +237,7 @@ public class UtilsTest {
 	 * Negative test case: method appendBytes gets trailingbytes as input, which is less then 1.
 	 */
 	@Test(expected=IllegalArgumentException.class)
-	public void appendBytestrailingbytesisless1()
+	public void testAppendBytes_Trailingbytes_Is_Less_One()
 	{
 		byte[] test = new byte[]{};
 		byte[] leadingbyte = new byte[]{(byte) 0x65};
@@ -251,18 +248,18 @@ public class UtilsTest {
 	/**
 	 * Negative test case: the method concanByteArrays gets input null.
 	 */
-	@Test(expected=IllegalArgumentException.class)
-	public void concatByteArraysinputisnull()
-	{
-		Utils.concatByteArrays(null);
-		
+	@Test(expected=NullPointerException.class)
+	public void testConcatByteArrays_Input_Is_Null()
+	{	
+		byte[] test = null;
+		Utils.concatByteArrays(test);	
 	}
 	
 	/**
 	 * Negative test case: method toUnsignedByteArray gets an input, which is null.
 	 */
 	@Test(expected=NullPointerException.class)
-	public void toUnsignedByteArrayinputisnull()
+	public void testToUnsignedByteArray_Input_Is_Null()
 	{
 		BigInteger test = null;
 		Utils.toUnsignedByteArray(test);
@@ -273,9 +270,9 @@ public class UtilsTest {
 	 * Negative test case: method appendBytes gets trailingbytes as input, which is less then 1.
 	 */
 	@Test(expected=IllegalArgumentException.class)
-	public void toUnsignedByteA()
+	public void testToUnsignedByteArray_Input()
 	{
-		byte[] test = new byte[]{};
+		byte[] test = new byte[]{}; 
 		Utils.appendBytes(test, null);
 	}
 	
@@ -283,7 +280,7 @@ public class UtilsTest {
 	 * Positive Test case: method toUnsignedByteArray gets input of type long.
 	 */
 	@Test
-	public void toUnsignedByteArrayinputlong()
+	public void testToUnsignedByteArray_Input_Long()
 	{
 		long test = 34343;
 		Utils.toUnsignedByteArray(test);
@@ -293,7 +290,7 @@ public class UtilsTest {
 	 * Positive Test case: method toUnsignedByteArray gets input of type int.
 	 */
 	@Test
-	public void toUnsignedByteArrayinputint()
+	public void testToUnsignedByteArray_Input_Int()
 	{
 		int test = 34343;
 		Utils.toUnsignedByteArray(test);
@@ -303,7 +300,7 @@ public class UtilsTest {
 	 * Positive Test case: method toUnsignedByteArray gets input of type short.
 	 */
 	@Test
-	public void toUnsignedByteArrayinputshort()
+	public void testToUnsignedByteArray_Input_Short()
 	{
 		short test = 343;
 		Utils.toUnsignedByteArray(test);
@@ -314,7 +311,7 @@ public class UtilsTest {
 	 * Positive Test case: method toUnsignedByteArray gets input of type byte.
 	 */
 	@Test
-	public void toUnsignedByteArrayinputbyte()
+	public void testToUnsignedByteArray_Input_Byte()
 	{
 		byte test = (byte) 0xFF;
 		Utils.toUnsignedByteArray(test);
@@ -324,7 +321,7 @@ public class UtilsTest {
 	 * Positive Test case: method removeLeadingZeroBytes gets byte array as input.
 	 */
 	@Test
-	public void removeLeadingZeroBytes()
+	public void testRemoveLeadingZeroBytes_Input_Byte_Array()
 	{
 		byte[] test = new byte[]{ (byte) 0xFF};
 		Utils.removeLeadingZeroBytes(test);
@@ -334,7 +331,7 @@ public class UtilsTest {
 	 * Positive Test case: method maskUnsignedByteToShort gets byte value as input.
 	 */
 	@Test
-	public void maskUnsignedByteToShort()
+	public void testMaskUnsignedByteToShort_Input_Byte()
 	{
 		byte b = 100;
 		Utils.maskUnsignedByteToShort(b);
@@ -344,7 +341,7 @@ public class UtilsTest {
 	 * Positive Test case: method maskUnsignedByteToInt gets byte value as input.
 	 */
 	@Test
-	public void maskUnsignedByteToInt()
+	public void testMaskUnsignedByteToInt_Input_Byte()
 	{
 		byte b = 100;
 		Utils.maskUnsignedByteToInt(b);
@@ -354,7 +351,7 @@ public class UtilsTest {
 	 * Positive Test case: method maskUnsignedShortToInt gets short value as input.
 	 */
 	@Test
-	public void maskUnsignedShortToInt()
+	public void testMaskUnsignedShortToInt_Input_Short()
 	{
 		short b = 110;
 		Utils.maskUnsignedShortToInt(b);
@@ -364,7 +361,7 @@ public class UtilsTest {
 	 * Positive Test case: method concatenate gets 2 different bytes as input.
 	 */
 	@Test
-	public void concatenate()
+	public void testConcatenate_Input_Two_Bytes()
 	{
 		byte a =1,b = 2;
 		Utils.concatenate(a, b);
@@ -374,7 +371,7 @@ public class UtilsTest {
 	 * Positive Test case: method getDate gets a dateString as input.
 	 */
 	@Test
-	public void getDate()
+	public void testGetDate_Input_Stringdate()
 	{
 		
 	 String s = "19990801";
@@ -385,7 +382,7 @@ public class UtilsTest {
 	 * Positive Test case: method getDate gets a null string.
 	 */
 	@Test(expected=NullPointerException.class)
-	public void getDatedateStringisnull()
+	public void testGetDatedate_InputString_Is_Null()
 	{
 		byte a = 0;
 		String s = null;
@@ -394,10 +391,10 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Positive Test case: method arrayContainsEqual gets an Object array and an object as input.s
+	 * Positive Test case: method arrayContainsEqual gets an Object array and an object as input.
 	 */
 	@Test
-	public void arrayContainsEqual()
+	public void testArrayContainsEqual_Input_Stringarray_And_string()
 	{
 		String[] a =  new String[2];
 		a[1] = "1";
@@ -411,7 +408,7 @@ public class UtilsTest {
 	 * Positive Test case: method logarithm becomes an double and int input.
 	 */
 	@Test
-	public void logarithm()
+	public void testLogarithm_Input_Double_and_Base()
 	{
 		int base = 2;
 		Utils.logarithm(0, base);
@@ -421,7 +418,7 @@ public class UtilsTest {
 	 * Positive Test case: method binaryEncode becomes a byte array as input.
 	 */
 	@Test
-	public void binaryEncode()
+	public void testBinaryEncode_Input_Byte_Array()
 	{
 		byte[] test = new byte[]{(byte) 0x66, (byte) 0x66, (byte) 0x66};
 		Utils.binaryEncode(test);
@@ -431,7 +428,7 @@ public class UtilsTest {
 	 * Positive Test case: method isAnyNull becomes a null Object as input.
 	 */
 	@Test
-	public void isAnyNulltrue()
+	public void testIsAnyNulltrue_Input_Object()
 	{
 		Object a = null;
 		Utils.isAnyNull(a);
@@ -441,7 +438,7 @@ public class UtilsTest {
 	 * Positive Test case: method isAnyNull becomes a Object as input.
 	 */
 	@Test
-	public void isAnyNullfalse()
+	public void testIsAnyNullfalse_Input_Object()
 	{
 		Object a = new Object();
 		Utils.isAnyNull(a);
@@ -451,7 +448,7 @@ public class UtilsTest {
 	 * Positive Test case: method getShortFromUnsignedByteArray gets byte array as input.
 	 */
 	@Test
-	public void getShortFromUnsignedByteArray()
+	public void testGetShortFromUnsignedByteArray_Input_Byte_Array()
 	{
 		byte[] test = new byte[]{(byte) 0x66};
 		Utils.getShortFromUnsignedByteArray(test);
@@ -461,7 +458,7 @@ public class UtilsTest {
 	 * Positive Test case: method getIntFromUnsignedByteArray gets byte array as input.
 	 */
 	@Test
-	public void getIntFromUnsignedByteArray()
+	public void testGetIntFromUnsignedByteArray_Input_Byte_Array()
 	{
 		byte[] test = new byte[]{(byte) 0x66};
 		Utils.getIntFromUnsignedByteArray(test);
@@ -471,7 +468,7 @@ public class UtilsTest {
 	 * Positive Test case: method getBigIntegerFromUnsignedByteArray gets byte array as input.
 	 */
 	@Test
-	public void getBigIntegerFromUnsignedByteArray()
+	public void testGetBigIntegerFromUnsignedByteArray_Input_Byte_Array()
 	{
 		byte[] test = new byte[]{(byte) 0x66};
 		Utils.getBigIntegerFromUnsignedByteArray(test);
@@ -481,7 +478,7 @@ public class UtilsTest {
 	 * Positive Test case: method getBigIntegerFromUnsignedByteArray gets byte array as input.
 	 */
 	@Test
-	public void toUnsignedByteArra()
+	public void testToUnsignedByteArray_Input_Byte_Array()
 	{
 		byte[] test = new byte[]{(byte) 0x66};
 		Utils.getBigIntegerFromUnsignedByteArray(test);
