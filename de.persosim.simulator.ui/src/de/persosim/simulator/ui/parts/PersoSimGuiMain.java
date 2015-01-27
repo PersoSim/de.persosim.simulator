@@ -23,9 +23,13 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 
 import de.persosim.simulator.PersoSim;
@@ -47,6 +51,10 @@ public class PersoSimGuiMain {
 	private final InputStream originalSystemIn = System.in;
 	private final PrintStream originalSystemOut = System.out;
 	
+	//Buffer for old console outputs
+	private LinkedList<String> consoleStrings = new LinkedList<String>();
+	private int maxLines = 2000;
+	
 	private PrintStream newSystemOut;
 	private final PipedInputStream inPipe = new PipedInputStream();
 	
@@ -60,9 +68,9 @@ public class PersoSimGuiMain {
 		grabSysOut();
 		grabSysIn();
 		
-		parent.setLayout(new GridLayout(1, false));
+		parent.setLayout(new GridLayout(2, false));
 		
-		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.WRAP);
 		
 		TextLengthLimiter tl = new TextLengthLimiter();
 		txtOutput.addModifyListener(tl);
@@ -71,8 +79,34 @@ public class PersoSimGuiMain {
 		txtOutput.setEditable(false);
 		txtOutput.setCursor(null);
 		txtOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
+
 		
-		parent.setLayout(new GridLayout(1, false));
+		final Slider slider = new Slider(parent, SWT.V_SCROLL);
+		slider.setIncrement(1);
+		slider.setPageIncrement(10);
+		slider.setMaximum(maxLines);
+		slider.setMinimum(0);
+//		slider.setThumb(consoleStrings.size());
+		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+		
+	    SelectionListener sliderListener = new SelectionAdapter() {
+	        public void widgetSelected(SelectionEvent e) {
+	        	
+	        	txtOutput.setText("");
+				for (int i = 0; i < txtOutput.getBounds().height/txtOutput.getFont().getFontData()[0].getHeight(); i++) {
+//	        	for (int i = 0; i < 33; i++) {
+	        		consoleStrings.indexOf(consoleStrings.get(slider.getSelection()+i));
+//					System.out.print(consoleStrings.indexOf(consoleStrings.get(slider.getSelection()+i))+" "+consoleStrings.get(slider.getSelection()+i));
+//	        		System.out.print(consoleStrings.get(slider.getSelection()+i));
+	        		appendToGuiFromList((consoleStrings.get(slider.getSelection()+i)));
+				}
+	         
+	        }
+	      };
+	      
+	    slider.addSelectionListener(sliderListener);
+		
+		parent.setLayout(new GridLayout(2, false));
 		
 		txtInput = new Text(parent, SWT.BORDER);
 		txtInput.setMessage("Enter command here");
@@ -84,7 +118,6 @@ public class PersoSimGuiMain {
 					String line = txtInput.getText();
 					
 					txtOutput.append(line + System.lineSeparator());
-					
 					inWriter.println(line);
 					inWriter.flush();
 					
@@ -115,7 +148,7 @@ public class PersoSimGuiMain {
 			}
 		});
 		uiBufferThread.start();
-		
+	
 	}
 		
 	/**
@@ -175,71 +208,77 @@ public class PersoSimGuiMain {
 	
 	StringBuilder guiStringBuilder = new StringBuilder();
 	long lastGuiFlush = 0;
-	
-	//Buffer for old console outputs
-	LinkedList<String> consoleStrings = new LinkedList<String>();
-	
+
 	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
 	protected void appendToGui(String s) {
 		
 		//write the String into the Console Buffer
-		if (consoleStrings.size() < 1000 && !s.equals("")) {
+		if (consoleStrings.size() < maxLines && !s.equals("")) {
 			consoleStrings.add(s);
-			saveFile(consoleStrings.getLast());
+//			saveFile(consoleStrings.getLast());
 		} else if(!s.equals("")){
 			//Buffer is full, delete the oldest entry before adding
 			consoleStrings.pollFirst();
 			consoleStrings.add(s);
-			saveFile(consoleStrings.getLast());
+//			saveFile(consoleStrings.getLast());
+		}		
+//		if((guiStringBuilder.length() > 0) || (s.length() > 0)) {
+//			if(s.length() > 0) {
+//				guiStringBuilder.append(s);
+//			}
+//			
+//			long currentTime = new Date().getTime();
+//			if (currentTime-lastGuiFlush > 50) {
+//				lastGuiFlush = currentTime;
+//				//XXX MBK check why syncExec blocks (possible deadlock with System.out.print())
+//				final String toPrint = guiStringBuilder.toString();
+//				guiStringBuilder = new StringBuilder();
+//				sync.asyncExec(new Runnable() {
+//					
+//					@Override
+//					public void run() {
+//						txtOutput.append(toPrint);
+//					}
+//				});
+//			}
+//		}
+	}
+	
+	protected void appendToGuiFromList(String s){
+		if((guiStringBuilder.length() > 0) || (s.length() > 0)) {
+		if(s.length() > 0) {
+			guiStringBuilder.append(s);
 		}
 		
-		if((guiStringBuilder.length() > 0) || (s.length() > 0)) {
-			if(s.length() > 0) {
-				guiStringBuilder.append(s);
-			}
-			
-			long currentTime = new Date().getTime();
-			if (currentTime-lastGuiFlush > 50) {
-				lastGuiFlush = currentTime;
-				//XXX MBK check why syncExec blocks (possible deadlock with System.out.print())
-				final String toPrint = guiStringBuilder.toString();
-				guiStringBuilder = new StringBuilder();
-				sync.asyncExec(new Runnable() {
-					
-					@Override
-					public void run() {
-						txtOutput.append(toPrint);
-					}
-				});
-			}
+		long currentTime = new Date().getTime();
+		if (currentTime-lastGuiFlush > 50) {
+			lastGuiFlush = currentTime;
+			//XXX MBK check why syncExec blocks (possible deadlock with System.out.print())
+			final String toPrint = guiStringBuilder.toString();
+			guiStringBuilder = new StringBuilder();
+			sync.asyncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					txtOutput.append(toPrint);
+				}
+			});
 		}
+	}
 	}
 	
 	//only for testing purposes
 	public void saveFile(String s){
 		try{
-
-	        //Specify the file name and path here
 	    	File file =new File("myfile.txt");
 
-	    	/* This logic is to create the file if the
-	    	 * file is not already present
-	    	 */
 	    	if(!file.exists()){
 	    	   file.createNewFile();
 	    	}
-
-	    	//Here true is to append the content to file
 	    	FileWriter fw = new FileWriter(file,true);
-	    	//BufferedWriter writer give better performance
 	    	BufferedWriter bw = new BufferedWriter(fw);
 	    	bw.write(s);
-//	    	bw.newLine();
-	    	//Closing BufferedWriter Stream
 	    	bw.close();
-
-		
-
 	      }catch(IOException ioe){
 	         System.out.println("Exception occurred:");
 	    	 ioe.printStackTrace();
