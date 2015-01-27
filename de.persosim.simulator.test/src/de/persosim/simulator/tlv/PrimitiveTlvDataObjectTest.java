@@ -440,12 +440,11 @@ public class PrimitiveTlvDataObjectTest {
 				tlvExpected2);
 	}
 
-	//FIXME LSG see similar comments to the methods below in similar methods in ConstructedTlvDataObjectTest
 	/**
 	 * Negative test case: tlvtaginput must not be null. 
 	 */
 	@Test(expected=NullPointerException.class)
-	public void tlvTagInputequalsnull()
+	public void testTlvTag_Input_Equal_Null()
 	{
 		byte[] lengthExpected = new byte[] { (byte) 0x0A };
 		byte[] valueExpected = new byte[] { (byte) 0x04};
@@ -461,7 +460,7 @@ public class PrimitiveTlvDataObjectTest {
 	 * Negative test case: tlvlengthinput must not be null. 
 	 */
 	@Test(expected=NullPointerException.class)
-	public void tlvTagLengthequalsnull()
+	public void testTlvTagLength_Equals_Null()
 	{
 		byte[] tagExpected = new byte[] { (byte) 0x80 };
 		byte[] lengthExpected = new byte[] { (byte) 0x04};
@@ -477,7 +476,7 @@ public class PrimitiveTlvDataObjectTest {
 	 * Negative test case: In the setTag method the tlvtaginput must not be null. 
 	 */
 	@Test(expected=NullPointerException.class)
-	public void setTagtlvTagInputequalsnull()
+	public void testSetTag_TlvTagInput_Equals_Null()
 	{
 		byte[] tagExpected = new byte[] { (byte) 0x80 };
 		byte[] lengthExpected = new byte[] { (byte) 0x0A};
@@ -498,7 +497,7 @@ public class PrimitiveTlvDataObjectTest {
 	 * Negative test case: In the setValue method the tlvvalueplaininput must not be null.
 	 */
 	@Test(expected=NullPointerException.class)
-	public void setValuetlvValuePlainInputequalsnull()
+	public void testSetValue_TlvValuePlainInput_Equals_Null()
 	{
 		byte[] tagExpected = new byte[] { (byte) 0x80 };
 		byte[] lengthExpected = new byte[] { (byte) 0x0A};
