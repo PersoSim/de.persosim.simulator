@@ -331,6 +331,17 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Negative test: unpadData gets a blockSize which is less 1.
+	 */
+	@Test(expected=NullPointerException.class) //FIXME LSG why expect a NPE here, none of your test inputs is null, thsu an NPE is definitely the wrong choice
+	//FIXME LSG do not just remove the testcase, but fix the issue instead ;-)
+	public void unpadDateblocksizelessone()
+	{
+		byte[] testarray = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+		SecureMessaging.unpadData(testarray, 0);
+	}
+	
+	/**
 	 * Negative test: In the unpadData method the currentbyte variable is not equal 0x80
 	 */
 	@Test(expected=IllegalArgumentException.class)

@@ -1029,6 +1029,7 @@ public class ConstructedTlvDataObjectTest {
 	 * Negative test case: the method ConstructedTlvDataObject is getting tlvTagInput as input, which is null.
 	 */
 	@Test(expected=NullPointerException.class)
+	//FIXME LSG why still test redundant code?
 	public void testConstructedTlvDataObject_TlvTagInput_Is_Null()
 	{
 		byte[] lengthExpected = new byte[] { (byte) 0x08 };
@@ -1048,6 +1049,7 @@ public class ConstructedTlvDataObjectTest {
 	 * Negative test case: the method ConstructedTlvDataObject is getting tlvDateObjectContainer as input, which is null.
 	 */
 	@Test(expected=NullPointerException.class)
+	//FIXME LSG why still test redundant code?
 	public void testConstructedTlvDataObject_ContainerInput_Is_Null()
 	{
 		
