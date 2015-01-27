@@ -312,13 +312,54 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	 * Positive test: input length matches blocksize
 	 */
 	@Test
-	public void testPaddData_inputMatchesBlocksize() {
+	public void testPaddData_Input_Matches_Blocksize() {
 		byte[] input = HexString.toByteArray("0011223344556677");
 		int blockSize = 8;
 		byte[] exp = HexString.toByteArray("00112233445566778000000000000000");
 
 		assertArrayEquals(exp, SecureMessaging.padData(input, blockSize));
 	}
+	
+	/**
+	 * Negative test: unpadData gets a bytearray, which is null;
+	 */
+	@Test(expected=NullPointerException.class)
+	public void testUnpadDate_Input_Array_Is_Null()
+	{
+		byte[] testarray = null;
+		SecureMessaging.unpadData(testarray, 4);
+	}
+	
+	/**
+	 * Negative test: In the unpadData method the currentbyte variable is not equal 0x80
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void testUnpadDatacurrentbyte_Is_Not_Equal_0x80()
+	{
+		byte[] testarray = new byte[]{(byte) 0x81};
+		SecureMessaging.unpadData(testarray, 1);
+	}
+	
+	/**
+	 * Negative test: unpadData gets a blockSize which is less 1.
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void testPnpadData_Method_Gets_Blocksize_Less_One()
+	{
+		byte[] testarray = new byte[]{};
+		SecureMessaging.unpadData(testarray, 1);
+	}
+	
+	/**
+	 * Positive test: the method powerOn runs properly
+	 */
+	@Test
+	public void testpPowerOn_ObjectsecureMessaging_Calls_PowerOn_Method() {
+		SecureMessaging secureMessaging = new SecureMessaging(0);
+		secureMessaging.powerOn()
+		;}
+
+	
 	
 	//TODO SMTest not yet tested functionality 
 	// extendedLength in both directions
