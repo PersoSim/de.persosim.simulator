@@ -441,81 +441,27 @@ public class PrimitiveTlvDataObjectTest {
 	}
 
 	/**
-	 * Negative test case: tlvtaginput must not be null. 
-	 */
-	//FIXME LSG why still test redundant code?
-	@Test(expected=NullPointerException.class)
-	public void testConstructor_TagNull()
-	{
-		byte[] lengthExpected = new byte[] { (byte) 0x0A };
-		byte[] valueExpected = new byte[] { (byte) 0x04};
-		
-		TlvTag tag = null; //remove
-		TlvLength length = new TlvLength(lengthExpected);
-		TlvValuePlain value = new TlvValuePlain(valueExpected);
-		@SuppressWarnings("unused") //FIXME LSG don't assign the result and you won'T need to suppress a warning
-		PrimitiveTlvDataObject tlvObject = new PrimitiveTlvDataObject(tag,length,value,true);
-	}
-	
-	/**
-	 * Negative test case: tlvlengthinput must not be null. 
-	 */
-	//FIXME LSG why still test redundant code?
-	@Test(expected=NullPointerException.class)
-	public void testTlvTagLength_Equals_Null()
-	{
-		byte[] tagExpected = new byte[] { (byte) 0x80 };
-		byte[] lengthExpected = new byte[] { (byte) 0x04};
-		
-		TlvTag tag = new TlvTag(tagExpected);
-		TlvLength length = new TlvLength(lengthExpected);
-		TlvValuePlain value = null;
-		@SuppressWarnings("unused") //FIXME LSG don't assign the result and you won'T need to suppress a warning
-		PrimitiveTlvDataObject tlvObject = new PrimitiveTlvDataObject(tag,length,value,false);
-	}
-	
-	/**
-	 * Negative test case: In the setTag method the tlvtaginput must not be null. 
+	 * Negative test case: In the setTag method the TlvTagInput must not be null. 
 	 */
 	@Test(expected=NullPointerException.class)
 	public void testSetTag_TlvTagInput_Equals_Null()
-	{
-		//FIXME LSG use TlvDataObjectFactory instead of the following lines!!! and check the input you need (use a minimal input)
-		byte[] tagExpected = new byte[] { (byte) 0x80 };
-		byte[] lengthExpected = new byte[] { (byte) 0x0A};
-		byte[] valueExpected = new byte[] { (byte) 0x04, (byte) 0x00,
-				(byte) 0x7F, (byte) 0x00, (byte) 0x07, (byte) 0x02,
-				(byte) 0x02, (byte) 0x04, (byte) 0x03, (byte) 0x04};
-		
-		TlvTag tag = new TlvTag(tagExpected);
-		TlvLength length = new TlvLength(lengthExpected);
-		TlvValuePlain value = new TlvValuePlain(valueExpected);
-		
-		PrimitiveTlvDataObject tlvObject = new PrimitiveTlvDataObject(tag,length,value,true);
-		tag = null;
-		tlvObject.setTag(tag, true);
+	{	
+		TlvTag tag = null;
+		PrimitiveTlvDataObject tlv2Object = (PrimitiveTlvDataObject) TlvDataObjectFactory.createTLVDataObject("800A04007F00070202040304");
+		tlv2Object.setTag(tag);
 	}
 	
 	/**
-	 * Negative test case: In the setValue method the tlvvalueplaininput must not be null.
+	 * Negative test case: In the setValue method the TlvValuePlainInput must
+	 * not be null.
 	 */
-	@Test(expected=NullPointerException.class)
-	public void testSetValue_TlvValuePlainInput_Equals_Null()
+	@Test(expected = NullPointerException.class)
+	public void testSetValue_TlvValuePlainInput_Equals_Null() 
 	{
-		//FIXME LSG use TlvDataObjectFactory instead of the following lines!!! and check the input you need (use a minimal input)
-		byte[] tagExpected = new byte[] { (byte) 0x80 };
-		byte[] lengthExpected = new byte[] { (byte) 0x0A};
-		byte[] valueExpected = new byte[] { (byte) 0x04, (byte) 0x00,
-				(byte) 0x7F, (byte) 0x00, (byte) 0x07, (byte) 0x02,
-				(byte) 0x02, (byte) 0x04, (byte) 0x03, (byte) 0x04};
 		
-		TlvTag tag = new TlvTag(tagExpected);
-		TlvLength length = new TlvLength(lengthExpected);
-		TlvValuePlain value = new TlvValuePlain(valueExpected);
-		
-		PrimitiveTlvDataObject tlvObject = new PrimitiveTlvDataObject(tag,length,value,true);
-		value = null;
-		tlvObject.setValue(value);
+		TlvValuePlain value = null;
+		PrimitiveTlvDataObject tlv2Object = (PrimitiveTlvDataObject) TlvDataObjectFactory.createTLVDataObject("800A04007F00070202040304");
+		tlv2Object.setValue(value);
 	}
 
 	//TODO missing tests
