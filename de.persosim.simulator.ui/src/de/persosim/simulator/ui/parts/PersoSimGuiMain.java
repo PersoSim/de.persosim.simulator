@@ -95,7 +95,7 @@ public class PersoSimGuiMain {
 		
 		SelectionListener sliderListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-
+				
 				// clean text field before filling it with the requested data
 				txtOutput.setText("");
 				// consoleStrings.indexOf(consoleStrings.get(slider.getSelection()));
@@ -116,18 +116,12 @@ public class PersoSimGuiMain {
 				 */
 				for (int i = 0; i < 26; i++) {
 
-					/*
-					 * checks: 1.: is the next node from the list is the last
-					 * one? 2.: is txtOutput already full?
-					 */
-//					if (slider.getSelection() + i < consoleStrings.size()
-//							&& txtOutput.getLineCount() < maxLineCount) {
 					if (slider.getSelection() + i < consoleStrings.size()) {
 
 						// take the next entry from the List and print it
 						//show consoleStrings.get(slider.getSelection() + i)
 						appendToGuiFromList(consoleStrings.indexOf(consoleStrings.get(slider.getSelection() + i))+"x "+(consoleStrings.get(slider.getSelection() + i)));
-						txtInput.setText("Possible lines:"+i+" amount of appends:"+i+" Slider Value:"+slider.getSelection());
+						txtInput.setText("SizeStrings:"+consoleStrings.size()+" Slider Value:"+slider.getSelection()+ " max value:"+slider.getMaximum()+" Thumb:"+slider.getThumb());
 					} else break;
 				}
 
@@ -251,10 +245,11 @@ public class PersoSimGuiMain {
 				@Override
 				public void run() {
 					slider.setMaximum(consoleStrings.size());
+					
 				}
 			});
 
-			// if scrolled down
+			// if scrolled down refresh txtoutput
 			showNewOutput(s);
 		}
 
@@ -263,7 +258,7 @@ public class PersoSimGuiMain {
 			consoleStrings.pollFirst();
 			consoleStrings.add(s);
 
-			// if scrolled down
+			// if scrolled down refresh txtoutput
 			showNewOutput(s);
 		}
 	}
@@ -276,9 +271,11 @@ public class PersoSimGuiMain {
 		sync.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				if (slider.getSelection() == slider.getMaximum()) {
+//				int sliderRealMax=slider.getMaximum()-slider.getThumb();
+//				if (slider.getSelection() == slider.getMaximum()-slider.getThumb()) {
 					appendToGuiFromList(s);
-				}
+					slider.setSelection(slider.getMaximum()-slider.getThumb());
+//				}
 			}
 		});
 
