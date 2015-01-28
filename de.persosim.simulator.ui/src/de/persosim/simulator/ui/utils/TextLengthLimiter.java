@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Text;
 
 public class TextLengthLimiter implements ModifyListener {
 	
-	public static final int TEXT_LIMIT_DEFAULT = 2000;
+	public static final int TEXT_LIMIT_DEFAULT = 3000;
 	
 	protected int textLimit;
 	protected boolean lock;

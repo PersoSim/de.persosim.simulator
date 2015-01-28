@@ -17,7 +17,6 @@ import java.util.LinkedList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.security.auth.callback.TextOutputCallback;
 
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -96,7 +95,7 @@ public class PersoSimGuiMain {
 		 * add an entry because consoleStrings.length has to be bigger than the
 		 * minimum value from the slider
 		 */
-		consoleStrings.add("Welcome to PersoSim\n");
+//		consoleStrings.add("Welcome to PersoSim\n");
 		
 		SelectionListener sliderListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -107,7 +106,7 @@ public class PersoSimGuiMain {
 
 				// print first entry in the Linked list. Index in List = value
 				// from slider
-				appendToGuiFromList((consoleStrings.get(slider.getSelection())));
+//				appendToGuiFromList((consoleStrings.get(slider.getSelection())));
 
 				// how many lines of text can the text field show without
 				// cutting?
@@ -191,7 +190,7 @@ public class PersoSimGuiMain {
 	private void grabSysOut() {
 	    OutputStream out = new OutputStream() {
 
-			char [] buffer = new char [80];
+			char [] buffer = new char [200];
 			int currentPosition = 0;
 			boolean checkNextForNewline = false;
 			
