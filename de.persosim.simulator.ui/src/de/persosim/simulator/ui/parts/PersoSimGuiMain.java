@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.security.auth.callback.TextOutputCallback;
 
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -53,6 +54,7 @@ public class PersoSimGuiMain {
 	
 	//Buffer for old console outputs
 	private LinkedList<String> consoleStrings = new LinkedList<String>();	
+	//maximum amount of strings saved in the buffer
 	private int maxLines = 2000;
 	
 	private PrintStream newSystemOut;
@@ -80,10 +82,9 @@ public class PersoSimGuiMain {
 		txtOutput.setEditable(false);
 		txtOutput.setCursor(null);
 		txtOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-		consoleStrings.add("Welcome to PersoSim\n");
+		
+		//configure the slider
 		slider = new Slider(parent, SWT.V_SCROLL);
-//		final Slider slider = new Slider(parent, SWT.V_SCROLL);
 		slider.setIncrement(1);
 		slider.setPageIncrement(10);
 		slider.setMaximum(consoleStrings.size());
@@ -91,39 +92,53 @@ public class PersoSimGuiMain {
 		slider.setThumb(consoleStrings.size());
 		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 		
+		/*
+		 * add an entry because consoleStrings.length has to be bigger than the
+		 * minimum value from the slider
+		 */
+		consoleStrings.add("Welcome to PersoSim\n");
+		
 		SelectionListener sliderListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 
+				// clean text field before filling it with the requested data
 				txtOutput.setText("");
-				consoleStrings.indexOf(consoleStrings.get(slider.getSelection()));					
+				// consoleStrings.indexOf(consoleStrings.get(slider.getSelection()));
+
+				// print first entry in the Linked list. Index in List = value
+				// from slider
 				appendToGuiFromList((consoleStrings.get(slider.getSelection())));
-//				for (int i = 0; i < txtOutput.getBounds().height / txtOutput.getFont().getFontData()[0].getHeight(); i++) {
-				
-//				if (slider.getSelection() < consoleStrings.size() - 35)
-					for (int i = 0; i < 35; i++) {
-						if(slider.getSelection() + i <consoleStrings.size()){
-						consoleStrings.indexOf(consoleStrings.get(slider.getSelection() + i));
-						appendToGuiFromList((consoleStrings.get(slider.getSelection() + i)));
-						}
-						else return;
-					}
-//				else {
-//					while(slider.getSelection() < consoleStrings.size()){
-//
-//					}
-//				}
+
+				// how many lines of text can the text field show without
+				// cutting?
+				// Max lines = (height of the text field) / (height of the font)
+				int maxLineCount = txtOutput.getBounds().height
+						/ txtOutput.getFont().getFontData()[0].getHeight();
+
+				/*
+				 * After showing the selected entry, also show following entries
+				 * until the text field is full.
+				 */
+				for (int i = 0; i < maxLineCount; i++) {
+
+					/*
+					 * checks: 1.: is the next node from the list is the last
+					 * one? 2.: is txtOutput already full?
+					 */
+//					if (slider.getSelection() + i < consoleStrings.size()
+//							&& txtOutput.getLineCount() < maxLineCount) {
+					if (slider.getSelection() + i < consoleStrings.size()) {
+
+						// take the next entry from the List and print it
+						appendToGuiFromList(i+(consoleStrings.get(slider.getSelection() + i)));
+						txtInput.setText("Possible lines:"+i+" amount of appends:"+i+" Slider Value:"+slider.getSelection());
+					} else break;
+				}
 
 			}
 		};
-	    
-		try {
-			slider.addSelectionListener(sliderListener);
-		} catch (IndexOutOfBoundsException IoobExc) {
-			// do nothing, just solve the problem
-		} finally {
-			slider.setSelection(consoleStrings.size());
-		}
-	    
+
+		slider.addSelectionListener(sliderListener);  
 		
 		parent.setLayout(new GridLayout(2, false));
 		
@@ -144,7 +159,7 @@ public class PersoSimGuiMain {
 				}
 			}
 		});
-		
+
 		txtInput.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		PersoSim sim = new PersoSim();
