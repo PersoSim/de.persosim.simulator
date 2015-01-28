@@ -326,46 +326,48 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	@Test(expected=NullPointerException.class)
 	public void testUnpadDate_Input_Array_Is_Null()
 	{
-		byte[] testarray = null;
-		SecureMessaging.unpadData(testarray, 4);
+		byte[] bytearray = null;
+		SecureMessaging.unpadData(bytearray, 4);
 	}
 	
 	/**
 	 * Negative test: unpadData gets a blockSize which is less 1.
 	 */
-	@Test(expected=NullPointerException.class) //FIXME LSG why expect a NPE here, none of your test inputs is null, thsu an NPE is definitely the wrong choice
-	//FIXME LSG do not just remove the testcase, but fix the issue instead ;-)
-	public void unpadDateblocksizelessone()
+	
+	@Test(expected=Exception.class) 
+	public void unpadDatablocksizelessone()
 	{
-		byte[] testarray = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-		SecureMessaging.unpadData(testarray, 0);
+		byte[] bytearray = new byte[]{};
+		SecureMessaging.unpadData(bytearray, 0);
 	}
 	
 	/**
-	 * Negative test: In the unpadData method the currentbyte variable is not equal 0x80
+	 * Negative test: method unpadData gets bytearray with length less 1.
 	 */
-	@Test(expected=IllegalArgumentException.class)
-	public void testUnpadDatacurrentbyte_Is_Not_Equal_0x80()
+	
+	@Test(expected=IllegalArgumentException.class) 
+	public void testUnpadData_Bytearray_Is_Less_One()
 	{
-		byte[] testarray = new byte[]{(byte) 0x81};
-		SecureMessaging.unpadData(testarray, 1);
+		byte[] bytearray = new byte[]{};
+		SecureMessaging.unpadData(bytearray, 1);
 	}
 	
 	/**
-	 * Negative test: unpadData gets a blockSize which is less 1.
+	 * Negative test: In the unpadData method the current byte variable is not equal 0x80
 	 */
 	@Test(expected=IllegalArgumentException.class)
-	public void testPnpadData_Method_Gets_Blocksize_Less_One()
+	public void testUnpadData_Currentbyte_Is_Not_Equal_0x80()
 	{
-		byte[] testarray = new byte[]{};
-		SecureMessaging.unpadData(testarray, 1);
+		byte[] bytearray = new byte[]{(byte) 0x81};
+		SecureMessaging.unpadData(bytearray, 1);
 	}
 	
 	/**
 	 * Positive test: the method powerOn runs properly
 	 */
 	@Test
-	public void testpPowerOn_ObjectsecureMessaging_Calls_PowerOn_Method() {
+	public void testPowerOn_ObjectsecureMessaging_Calls_PowerOn_Method()
+	{
 		SecureMessaging secureMessaging = new SecureMessaging(0);
 		secureMessaging.powerOn()
 		;}
