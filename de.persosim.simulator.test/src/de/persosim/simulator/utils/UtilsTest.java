@@ -9,6 +9,9 @@ import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 
+import junit.framework.Assert;
+
+import org.bouncycastle.util.Arrays;
 import org.junit.Test;
 
 public class UtilsTest {
@@ -287,31 +290,42 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArray_Input_Long()
 	{
-		long test = 34343;
-		Utils.toUnsignedByteArray(test);
-		//FIXME LSG I can't see an actual test here, you should check the result
+		long test = 1;
+		byte[] actual = Utils.toUnsignedByteArray(test);
+		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x01};
+		
+		assertArrayEquals(expected, actual);
 	}
 	
 	/**
 	 * Positive Test case: method toUnsignedByteArray gets input of type int.
 	 */
 	@Test
-	//FIXME LSG what part of our code do you test here? Isn't this just a VM feature
 	public void testToUnsignedByteArray_Input_Int()
 	{
-		int test = 34343;
-		Utils.toUnsignedByteArray(test);
+		int test = 1;
+		byte[] actual = Utils.toUnsignedByteArray(test);
+		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x01};
+		
+		assertArrayEquals(expected, actual);
+		
+		
 	}
 	
 	/**
 	 * Positive Test case: method toUnsignedByteArray gets input of type short.
 	 */
 	@Test
-	//FIXME LSG see above method
 	public void testToUnsignedByteArray_Input_Short()
 	{
-		short test = 343;
-		Utils.toUnsignedByteArray(test);
+		short test = 1;
+		byte[] actual = Utils.toUnsignedByteArray(test);
+		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x01};
+		
+		System.out.println(actual[0]);
+		System.out.println(expected[0]);
+		
+		assertArrayEquals(expected, actual);
 	}
 	
 	
@@ -319,11 +333,16 @@ public class UtilsTest {
 	 * Positive Test case: method toUnsignedByteArray gets input of type byte.
 	 */
 	@Test
-	//FIXME LSG see above method
 	public void testToUnsignedByteArray_Input_Byte()
 	{
-		byte test = (byte) 0xFF;
-		Utils.toUnsignedByteArray(test);
+		byte test = (byte) 0x01;
+		byte[] actual = Utils.toUnsignedByteArray(test);
+		byte[] expected = new byte[]{(byte) 0x01};
+		
+		System.out.println(actual[0]);
+		System.out.println(expected[0]);
+		
+		assertArrayEquals(expected, actual);
 	}
 	
 	/**
@@ -343,9 +362,16 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToShort_Input_Byte()
 	{
-		byte b = 100;//FIXME LSG this is not a good test value here, think about it
-		Utils.maskUnsignedByteToShort(b);
-		//FIXME LSG I can't see an actual test here, you should check the result
+		byte b = (byte) 0x01;
+		
+		short actual = Utils.maskUnsignedByteToShort(b);
+		short expected = 1;
+		
+		System.out.println(actual);
+		System.out.println(expected);
+		
+		//FIXME LSG
+		
 	}
 	
 	/**
@@ -376,8 +402,11 @@ public class UtilsTest {
 	@Test
 	public void testConcatenate_Input_Two_Bytes()
 	{
-		byte a =1,b = 2;
-		Utils.concatenate(a, b);
+		byte a = 1,b = 2;
+	 short s = Utils.concatenate(a, b);
+		
+		System.out.println(s);
+	//	System.out.println(b);
 		//FIXME LSG I can't see an actual test here, you should check the result
 	}
 	
@@ -426,8 +455,11 @@ public class UtilsTest {
 	@Test
 	public void testLogarithm_Input_Double_and_Base()
 	{
-		int base = 2;
-		Utils.logarithm(0, base);
+		int base = 1;
+		double doublevalue = 1;
+		double actual = Utils.logarithm(doublevalue, base);
+		double expected = 1;
+		assertEquals(expected, actual);
 	}
 	
 	/**
@@ -436,8 +468,14 @@ public class UtilsTest {
 	@Test
 	public void testBinaryEncode_Input_Byte_Array()
 	{
-		byte[] test = new byte[]{(byte) 0x66, (byte) 0x66, (byte) 0x66};
-		Utils.binaryEncode(test);
+		byte[] test = new byte[]{(byte) 0x01, (byte) 0x01, (byte) 0x01};
+		String actual  = Utils.binaryEncode(test);
+		String expected = "00000001 00000001 00000001";
+		
+		//System.out.println(s);
+		//System.out.println();
+		assertEquals(expected, actual);
+		
 	}
 	
 	/**
