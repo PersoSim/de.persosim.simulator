@@ -91,10 +91,6 @@ public class PersoSimGuiMain {
 		slider.setThumb(consoleStrings.size());
 		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 		
-		/*
-		 * add an entry because consoleStrings.length has to be bigger than the
-		 * minimum value from the slider
-		 */
 //		consoleStrings.add("Welcome to PersoSim\n");
 		
 		SelectionListener sliderListener = new SelectionAdapter() {
@@ -106,7 +102,7 @@ public class PersoSimGuiMain {
 
 				// print first entry in the Linked list. Index in List = value
 				// from slider
-//				appendToGuiFromList((consoleStrings.get(slider.getSelection())));
+				appendToGuiFromList((consoleStrings.get(slider.getSelection())));
 
 				// how many lines of text can the text field show without
 				// cutting?
@@ -118,7 +114,7 @@ public class PersoSimGuiMain {
 				 * After showing the selected entry, also show following entries
 				 * until the text field is full.
 				 */
-				for (int i = 0; i < maxLineCount; i++) {
+				for (int i = 0; i < 26; i++) {
 
 					/*
 					 * checks: 1.: is the next node from the list is the last
@@ -129,7 +125,8 @@ public class PersoSimGuiMain {
 					if (slider.getSelection() + i < consoleStrings.size()) {
 
 						// take the next entry from the List and print it
-						appendToGuiFromList(i+(consoleStrings.get(slider.getSelection() + i)));
+						//show consoleStrings.get(slider.getSelection() + i)
+						appendToGuiFromList(consoleStrings.indexOf(consoleStrings.get(slider.getSelection() + i))+"x "+(consoleStrings.get(slider.getSelection() + i)));
 						txtInput.setText("Possible lines:"+i+" amount of appends:"+i+" Slider Value:"+slider.getSelection());
 					} else break;
 				}
@@ -243,74 +240,72 @@ public class PersoSimGuiMain {
 	long lastGuiFlush = 0;
 
 	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
-	protected void appendToGui(String s) {
-		
-		//write the String into the Console Buffer
+	protected void appendToGui(final String s) {
+
+		// write the String into the Console Buffer
 		if (consoleStrings.size() < maxLines && !s.equals("")) {
 			consoleStrings.add(s);
-			
+
 			sync.asyncExec(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					slider.setMaximum(consoleStrings.size());
-//					slider.setSelection(2);
 				}
 			});
-//			appendToGuiFromList(s);
+
+			// if scrolled down
+			showNewOutput(s);
 		}
-//			saveFile(consoleStrings.getLast());
-		else if(!s.equals("")){
-			//Buffer is full, delete the oldest entry before adding
+
+		else if (!s.equals("")) {
+			// Buffer is full, delete the oldest entry before adding
 			consoleStrings.pollFirst();
 			consoleStrings.add(s);
-//			appendToGuiFromList(s);
-			
-//			saveFile(consoleStrings.getLast());
-		}		
-//		if((guiStringBuilder.length() > 0) || (s.length() > 0)) {
-//			if(s.length() > 0) {
-//				guiStringBuilder.append(s);
-//			}
-//			
-//			long currentTime = new Date().getTime();
-//			if (currentTime-lastGuiFlush > 50) {
-//				lastGuiFlush = currentTime;
-//				//XXX MBK check why syncExec blocks (possible deadlock with System.out.print())
-//				final String toPrint = guiStringBuilder.toString();
-//				guiStringBuilder = new StringBuilder();
-//				sync.asyncExec(new Runnable() {
-//					
-//					@Override
-//					public void run() {
-//						txtOutput.append(toPrint);
-//					}
-//				});
-//			}
-//		}
+
+			// if scrolled down
+			showNewOutput(s);
+		}
 	}
 	
-	protected void appendToGuiFromList(String s){
-		if((guiStringBuilder.length() > 0) || (s.length() > 0)) {
-		if(s.length() > 0) {
-			guiStringBuilder.append(s);
-		}
-		
-		long currentTime = new Date().getTime();
-		if (currentTime-lastGuiFlush > 50) {
-			lastGuiFlush = currentTime;
-			//XXX MBK check why syncExec blocks (possible deadlock with System.out.print())
-			final String toPrint = guiStringBuilder.toString();
-			guiStringBuilder = new StringBuilder();
-			sync.asyncExec(new Runnable() {
-				
-				@Override
-				public void run() {
-					txtOutput.append(toPrint);
+	/**
+	 * Shows new incoming Strings if the console is scrolled down.
+	 */
+	public void showNewOutput(final String s) {
+
+		sync.asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (slider.getSelection() == slider.getMaximum()) {
+					appendToGuiFromList(s);
 				}
-			});
-		}
+			}
+		});
+
 	}
+	
+	protected void appendToGuiFromList(String s) {
+		if ((guiStringBuilder.length() > 0) || (s.length() > 0)) {
+			if (s.length() > 0) {
+				guiStringBuilder.append(s);
+			}
+
+			long currentTime = new Date().getTime();
+			if (currentTime - lastGuiFlush > 50) {
+				lastGuiFlush = currentTime;
+				// XXX MBK check why syncExec blocks (possible deadlock with
+				// System.out.print())
+				final String toPrint = guiStringBuilder.toString();
+				guiStringBuilder = new StringBuilder();
+				sync.asyncExec(new Runnable() {
+
+					@Override
+					public void run() {
+						txtOutput.append(toPrint);
+					}
+				});
+			}
+		}
 	}
 	
 	//only for testing purposes
