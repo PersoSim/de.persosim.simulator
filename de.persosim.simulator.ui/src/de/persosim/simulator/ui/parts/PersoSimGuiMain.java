@@ -1,8 +1,5 @@
 package de.persosim.simulator.ui.parts;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,7 +25,10 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 
@@ -48,6 +48,7 @@ public class PersoSimGuiMain {
 	
 	private Text txtInput, txtOutput;
 	
+	
 	private final InputStream originalSystemIn = System.in;
 	private final PrintStream originalSystemOut = System.out;
 	
@@ -62,6 +63,8 @@ public class PersoSimGuiMain {
 	private PrintWriter inWriter;
 	
 	Composite parent;
+	private Button lockScroller;
+	Boolean locked = false;
 	Slider slider;
 	
 	@PostConstruct
@@ -98,7 +101,6 @@ public class PersoSimGuiMain {
 				
 				// clean text field before filling it with the requested data
 				txtOutput.setText("");
-				// consoleStrings.indexOf(consoleStrings.get(slider.getSelection()));
 
 				// print first entry in the Linked list. Index in List = value
 				// from slider
@@ -120,8 +122,8 @@ public class PersoSimGuiMain {
 
 						// take the next entry from the List and print it
 						//show consoleStrings.get(slider.getSelection() + i)
-						appendToGuiFromList(consoleStrings.indexOf(consoleStrings.get(slider.getSelection() + i))+"x "+(consoleStrings.get(slider.getSelection() + i)));
-						txtInput.setText("SizeStrings:"+consoleStrings.size()+" Slider Value:"+slider.getSelection()+ " max value:"+slider.getMaximum()+" Thumb:"+slider.getThumb());
+						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
+//						txtInput.setText("SizeStrings:"+consoleStrings.size()+" Slider Value:"+slider.getSelection()+ " max value:"+slider.getMaximum()+" Thumb:"+slider.getThumb());
 					} else break;
 				}
 
@@ -132,8 +134,15 @@ public class PersoSimGuiMain {
 		
 		parent.setLayout(new GridLayout(2, false));
 		
+//		Composite bottom = new Composite(parent, SWT.NONE);
+//		bottom.setLayout(new GridLayout(2, false));
+		
+		// TODO JKH width of input textfield is broken
 		txtInput = new Text(parent, SWT.BORDER);
 		txtInput.setMessage("Enter command here");
+		
+//		GridData data = new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1);
+//		txtInput.setLayoutData(data);
 		
 		txtInput.addKeyListener(new KeyAdapter() {
 			@Override
@@ -151,6 +160,25 @@ public class PersoSimGuiMain {
 		});
 
 		txtInput.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
+		lockScroller = new Button(parent, SWT.TOGGLE);
+		lockScroller.setText("  lock  ");
+//		lockScroller.setSize("locked".length(), txtInput.getSize().y);
+		lockScroller.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent (Event e) {
+				
+				if(locked){
+					lockScroller.setText("lock");
+					locked=false;
+				}else{
+					lockScroller.setText("locked");
+					locked=true;
+				}
+			}
+		});
+		
 		
 		PersoSim sim = new PersoSim();
 		sim.loadPersonalization("1"); //load default perso with valid TestPKI EF.CardSec etc. (Profile01)
@@ -215,8 +243,7 @@ public class PersoSimGuiMain {
 					
 					currentPosition = 0;
 				}
-				
-				
+
 			}
 		};
 
@@ -235,7 +262,7 @@ public class PersoSimGuiMain {
 
 	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
 	protected void appendToGui(final String s) {
-
+		// TODO JKH change name of method
 		// write the String into the Console Buffer
 		if (consoleStrings.size() < maxLines && !s.equals("")) {
 			consoleStrings.add(s);
@@ -249,8 +276,8 @@ public class PersoSimGuiMain {
 				}
 			});
 
-			// if scrolled down refresh txtoutput
-			showNewOutput(s);
+			// if not locked: refresh txtoutput
+			if(!locked) showNewOutput(s);
 		}
 
 		else if (!s.equals("")) {
@@ -258,8 +285,8 @@ public class PersoSimGuiMain {
 			consoleStrings.pollFirst();
 			consoleStrings.add(s);
 
-			// if scrolled down refresh txtoutput
-			showNewOutput(s);
+			// if not locked: refresh txtoutput
+			if(!locked) showNewOutput(s);
 		}
 	}
 	
@@ -267,15 +294,12 @@ public class PersoSimGuiMain {
 	 * Shows new incoming Strings if the console is scrolled down.
 	 */
 	public void showNewOutput(final String s) {
-
+		// TODO JKH bug, it doesn't scroll to the real bottom, there are still some lines below
 		sync.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-//				int sliderRealMax=slider.getMaximum()-slider.getThumb();
-//				if (slider.getSelection() == slider.getMaximum()-slider.getThumb()) {
 					appendToGuiFromList(s);
 					slider.setSelection(slider.getMaximum()-slider.getThumb());
-//				}
 			}
 		});
 
@@ -303,25 +327,7 @@ public class PersoSimGuiMain {
 				});
 			}
 		}
-	}
-	
-	//only for testing purposes
-	public void saveFile(String s){
-		try{
-	    	File file =new File("myfile.txt");
-
-	    	if(!file.exists()){
-	    	   file.createNewFile();
-	    	}
-	    	FileWriter fw = new FileWriter(file,true);
-	    	BufferedWriter bw = new BufferedWriter(fw);
-	    	bw.write(s);
-	    	bw.close();
-	      }catch(IOException ioe){
-	         System.out.println("Exception occurred:");
-	    	 ioe.printStackTrace();
-	       }
-	}
+	}	
 
 	public void write(String line) {
 		inWriter.println(line);
