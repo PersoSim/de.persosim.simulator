@@ -1025,6 +1025,44 @@ public class ConstructedTlvDataObjectTest {
 		tlvObject.setTag(null, true);
 	}
 	
+	/**
+	 * Negative test case: the method ConstructedTlvDataObject is getting tlvTagInput as input, which is null.
+	 */
+	@Test(expected=NullPointerException.class)
+	//FIXME LSG why still test redundant code? I won't let you geet away with simply removing the testcase. Take appropriate actions either on your tests or on the code. Why did you add this testcase in the first place?
+	public void testConstructedTlvDataObject_TlvTagInput_Is_Null()
+	{
+		byte[] lengthExpected = new byte[] { (byte) 0x08 };
+		byte[] valueExpected = new byte[] { (byte) 0x01, (byte) 0x02,
+				(byte) 0xFF, (byte) 0xFF, (byte) 0x02, (byte) 0x02,
+				(byte) 0xEE, (byte) 0xEE };
+
+		TlvTag tag = null;
+		TlvLength length = new TlvLength(lengthExpected);
+		TlvDataObjectContainer value = new TlvDataObjectContainer(valueExpected);
+		@SuppressWarnings("unused")
+		ConstructedTlvDataObject tlvObject = new ConstructedTlvDataObject(tag,
+				length, value);
+	}
+	
+	/**
+	 * Negative test case: the method ConstructedTlvDataObject is getting tlvDateObjectContainer as input, which is null.
+	 */
+	@Test(expected=NullPointerException.class)
+	//FIXME LSG why still test redundant code?
+	public void testConstructedTlvDataObject_ContainerInput_Is_Null()
+	{
+		
+		byte[] tagExpected = new byte[] { (byte) 0x21 };
+		byte[] lengthExpected = new byte[] { (byte) 0x08 };
+		
+		TlvTag tag = new TlvTag(tagExpected);
+		TlvLength length = new TlvLength(lengthExpected);
+		TlvDataObjectContainer value = null;
+		@SuppressWarnings("unused")
+		ConstructedTlvDataObject tlvObject = new ConstructedTlvDataObject(tag,
+				length, value);
+	}
 	//TODO missing tests
 	// modification of child values / update of length field
 	// expected methods like testGetLength_ChildLenghtIncreased and testGetLength_ChildLengthDecreased

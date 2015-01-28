@@ -334,7 +334,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	 * Negative test: unpadData gets a blockSize which is less 1.
 	 */
 	
-	@Test(expected=Exception.class) 
+	@Test(expected=Exception.class)//FIXME LSG generic Exception is an unacceptable expected result for a testcase you should know in more detail what to expect here
 	public void unpadDatablocksizelessone()
 	{
 		byte[] bytearray = new byte[]{};
@@ -366,8 +366,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	 * Positive test: the method powerOn runs properly
 	 */
 	@Test
-	public void testPowerOn_ObjectsecureMessaging_Calls_PowerOn_Method()
-	{
+	public void testpPowerOn_ObjectsecureMessaging_Calls_PowerOn_Method() {
 		SecureMessaging secureMessaging = new SecureMessaging(0);
 		secureMessaging.powerOn()
 		;}
