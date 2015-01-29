@@ -97,8 +97,6 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	public ConstructedTlvDataObject(TlvTag tlvTagInput, TlvLength tlvLengthInput, TlvDataObjectContainer tlvDataObjectContainerInput, boolean performValidityChecksInput) {
 		super(performValidityChecksInput);
 		
-		if(tlvDataObjectContainerInput == null) {throw new NullPointerException("value must not be null");}
-		
 		this.setTag(tlvTagInput, performValidityChecksInput);
 		this.setValue(tlvDataObjectContainerInput);
 		
