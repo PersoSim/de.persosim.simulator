@@ -222,9 +222,6 @@ public class UtilsTest {
 		assertFalse(Utils.arrayHasPrefix(data, prefix));
 	}
 	
-	//FIXME LSG please remove changes to this class from the current branch and push them to a new one instead, I think this is an independent modification and should go on its own branch...
-	
-	//FIXME LSG why is this usefull behavior to test, wouldn't it be more usefull to a method user if this would be allowed???
 	/**
 	 * Negative test case: method appendBytes gets appendBytes as input, which is null;
 	 */
