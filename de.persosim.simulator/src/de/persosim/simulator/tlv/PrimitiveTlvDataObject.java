@@ -83,7 +83,6 @@ public class PrimitiveTlvDataObject extends TlvDataObject {
 	public PrimitiveTlvDataObject(TlvTag tlvTagInput, TlvLength tlvLengthInput, TlvValuePlain tlvValuePlainInput, boolean performValidityChecksInput) {
 		super(performValidityChecksInput);
 		
-		if(tlvTagInput == null) {throw new NullPointerException("tag must not be null");}
 		if(tlvValuePlainInput == null) {throw new NullPointerException("value must not be null");}
 		
 		this.setTag(tlvTagInput, performValidityChecksInput);
