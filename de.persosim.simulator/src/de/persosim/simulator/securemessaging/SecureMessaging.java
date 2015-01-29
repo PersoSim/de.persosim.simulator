@@ -580,7 +580,7 @@ public class SecureMessaging extends Layer {
 	 */
 	public static byte[] unpadData(byte[] paddedData, int blockSize) {
 		if(paddedData == null) {throw new NullPointerException("padded data must not be null");}
-		if(blockSize < 1) {throw new NullPointerException("block size must be > 0");}
+		if(blockSize < 1) {throw new IllegalArgumentException("block size must be > 0");}
 		if(paddedData.length < 1) {throw new IllegalArgumentException("padded data is too short");}
 		
 		byte[] unpaddedData;
