@@ -20,6 +20,8 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -89,7 +91,7 @@ public class PersoSimGuiMain {
 		slider = new Slider(parent, SWT.V_SCROLL);
 		slider.setIncrement(1);
 		slider.setPageIncrement(10);
-		slider.setMaximum(consoleStrings.size());
+		slider.setMaximum(consoleStrings.size()+slider.getThumb());
 		slider.setMinimum(0);
 		slider.setThumb(consoleStrings.size());
 		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));
@@ -116,33 +118,66 @@ public class PersoSimGuiMain {
 				 * After showing the selected entry, also show following entries
 				 * until the text field is full.
 				 */
-				for (int i = 0; i < 26; i++) {
+				
+				
+				for (int i = 0; i < maxLineCount; i++) {
 
 					if (slider.getSelection() + i < consoleStrings.size()) {
 
 						// take the next entry from the List and print it
 						//show consoleStrings.get(slider.getSelection() + i)
 						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
-//						txtInput.setText("SizeStrings:"+consoleStrings.size()+" Slider Value:"+slider.getSelection()+ " max value:"+slider.getMaximum()+" Thumb:"+slider.getThumb());
+//						txtInput.setText("SizeStrings:"+consoleStrings.size()+" Slider Value:"+slider.getSelection()+ " max value:"+slider.getMaximum()+" Thumb:"+slider.getThumb()+" "+maxLineCount);
+												
 					} else break;
 				}
+				
+				
 
 			}
 		};
 
-		slider.addSelectionListener(sliderListener);  
+		slider.addSelectionListener(sliderListener);
 		
-		parent.setLayout(new GridLayout(2, false));
+		txtOutput.addMouseWheelListener(new MouseWheelListener() {
+			
+			@Override
+			public void mouseScrolled(MouseEvent e) {
+				int count = e.count;
+				slider.setSelection(slider.getSelection()-count);
+				
+				txtOutput.setText("");
+				int maxLineCount = txtOutput.getBounds().height
+						/ txtOutput.getFont().getFontData()[0].getHeight();
+
+				/*
+				 * After showing the selected entry, also show following entries
+				 * until the text field is full.
+				 */
+
+				for (int i = 0; i < maxLineCount; i++) {
+
+					if (slider.getSelection() + i < consoleStrings.size()) {
+
+						// take the next entry from the List and print it
+						//show consoleStrings.get(slider.getSelection() + i)
+						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
+					} 
+
+				}
+				
+//				txtOutput.update();
+				
+				String strTester = new String(txtOutput.getText()+" "+txtOutput.getText().length());
+				txtInput.setText(strTester);
+//				if(txtOutput.getText().equals("")) txtInput.setText("bin null");
+			}
+		});
 		
-//		Composite bottom = new Composite(parent, SWT.NONE);
-//		bottom.setLayout(new GridLayout(2, false));
+		parent.setLayout(new GridLayout(2, false));		
 		
-		// TODO JKH width of input textfield is broken
 		txtInput = new Text(parent, SWT.BORDER);
 		txtInput.setMessage("Enter command here");
-		
-//		GridData data = new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1);
-//		txtInput.setLayoutData(data);
 		
 		txtInput.addKeyListener(new KeyAdapter() {
 			@Override
@@ -209,7 +244,7 @@ public class PersoSimGuiMain {
 	private void grabSysOut() {
 	    OutputStream out = new OutputStream() {
 
-			char [] buffer = new char [200];
+			char [] buffer = new char [300];
 			int currentPosition = 0;
 			boolean checkNextForNewline = false;
 			
@@ -288,6 +323,15 @@ public class PersoSimGuiMain {
 			// if not locked: refresh txtoutput
 			if(!locked) showNewOutput(s);
 		}
+		
+		sync.asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				
+				slider.setMaximum(consoleStrings.size() + slider.getThumb() -1);
+			}
+		});
+
 	}
 	
 	/**
@@ -299,7 +343,12 @@ public class PersoSimGuiMain {
 			@Override
 			public void run() {
 					appendToGuiFromList(s);
-					slider.setSelection(slider.getMaximum()-slider.getThumb());
+					slider.setSelection(slider.getMaximum());	
+					
+//					for (int i = 0; i<slider.getThumb();i++){
+//						
+//					}
+					
 			}
 		});
 
