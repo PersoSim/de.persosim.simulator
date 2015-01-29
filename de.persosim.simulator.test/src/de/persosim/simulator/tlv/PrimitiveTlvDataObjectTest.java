@@ -441,40 +441,6 @@ public class PrimitiveTlvDataObjectTest {
 	}
 
 	/**
-	 * Negative test case: tlvtaginput must not be null. 
-	 */
-	//FIXME LSG why still test redundant code? I won't let you geet away with simply removing the testcase. Take appropriate actions either on your tests or on the code. Why did you add this testcase in the first place?
-	@Test(expected=NullPointerException.class)
-	public void testConstructor_TagNull()
-	{
-		byte[] lengthExpected = new byte[] { (byte) 0x0A };
-		byte[] valueExpected = new byte[] { (byte) 0x04};
-		
-		TlvTag tag = null; //remove
-		TlvLength length = new TlvLength(lengthExpected);
-		TlvValuePlain value = new TlvValuePlain(valueExpected);
-		@SuppressWarnings("unused") //FIXME LSG don't assign the result and you won'T need to suppress a warning
-		PrimitiveTlvDataObject tlvObject = new PrimitiveTlvDataObject(tag,length,value,true);
-	}
-	
-	/**
-	 * Negative test case: tlvlengthinput must not be null. 
-	 */
-	//FIXME LSG why still test redundant code?
-	@Test(expected=NullPointerException.class)
-	public void testTlvTagLength_Equals_Null()
-	{
-		byte[] tagExpected = new byte[] { (byte) 0x80 };
-		byte[] lengthExpected = new byte[] { (byte) 0x04};
-		
-		TlvTag tag = new TlvTag(tagExpected);
-		TlvLength length = new TlvLength(lengthExpected);
-		TlvValuePlain value = null;
-		@SuppressWarnings("unused") //FIXME LSG don't assign the result and you won'T need to suppress a warning
-		PrimitiveTlvDataObject tlvObject = new PrimitiveTlvDataObject(tag,length,value,false);
-	}
-	
-	/**
 	 * Negative test case: In the setTag method the tlvtaginput must not be null. 
 	 */
 	@Test(expected=NullPointerException.class)
