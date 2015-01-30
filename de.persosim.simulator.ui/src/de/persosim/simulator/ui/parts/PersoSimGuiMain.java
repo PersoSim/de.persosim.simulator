@@ -125,7 +125,8 @@ public class PersoSimGuiMain {
 						// take the next entry from the List and print it
 						// show consoleStrings.get(slider.getSelection() + i)
 						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
-						txtInput.setText("SizeStrings:"+consoleStrings.size()+" Slider Value:"+slider.getSelection()+ " max value:"+slider.getMaximum()+" Thumb:"+slider.getThumb()+" "+maxLineCount);
+						txtInput.setText("SizeStrings:"+consoleStrings.size()+" Slider Value:"+slider.getSelection()+ " max value:"+slider.getMaximum()
+								+" Thumb:"+slider.getThumb()+" "+maxLineCount+ " last str"+consoleStrings.getLast());
 						
 						txtOutput.setSelection(txtOutput.getText().length());
 						
@@ -334,7 +335,7 @@ public class PersoSimGuiMain {
 	}
 	
 	/**
-	 * Shows new incoming Strings if the console is scrolled down.
+	 * Shows new incoming Strings at the end of the console when scrolling is enabled
 	 */
 	public void showNewOutput(final String s) {
 		// TODO JKH bug, it doesn't scroll to the real bottom, there are still some lines below
@@ -342,11 +343,7 @@ public class PersoSimGuiMain {
 			@Override
 			public void run() {
 					appendToGuiFromList(s);
-					slider.setSelection(slider.getMaximum());	
-					
-////					for (int i = 0; i<slider.getThumb();i++){
-//						
-//					}
+					slider.setSelection(slider.getMaximum());						
 					
 			}
 		});
