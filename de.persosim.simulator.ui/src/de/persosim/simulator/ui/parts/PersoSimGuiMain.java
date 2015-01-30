@@ -96,9 +96,7 @@ public class PersoSimGuiMain {
 		slider.setMaximum(consoleStrings.size()+slider.getThumb());
 		slider.setMinimum(0);
 		slider.setThumb(consoleStrings.size());
-		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-		
-//		consoleStrings.add("Welcome to PersoSim\n");
+		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));		
 		
 		SelectionListener sliderListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -106,8 +104,7 @@ public class PersoSimGuiMain {
 				// clean text field before filling it with the requested data
 				txtOutput.setText("");
 
-				// print first entry in the Linked list. Index in List = value
-				// from slider
+				// print first entry in the Linked list. Index in List = value from slider
 				appendToGuiFromList((consoleStrings.get(slider.getSelection())));
 
 				// how many lines of text can the text field show without
@@ -126,12 +123,12 @@ public class PersoSimGuiMain {
 					if (slider.getSelection() + i < consoleStrings.size()) {
 
 						// take the next entry from the List and print it
-						//show consoleStrings.get(slider.getSelection() + i)
+						// show consoleStrings.get(slider.getSelection() + i)
 						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
-						txtInput.setText(maxLineCount+"");
-//						txtInput.setText("SizeStrings:"+consoleStrings.size()+" Slider Value:"+slider.getSelection()+ " max value:"+slider.getMaximum()+" Thumb:"+slider.getThumb()+" "+maxLineCount);
+						txtInput.setText("SizeStrings:"+consoleStrings.size()+" Slider Value:"+slider.getSelection()+ " max value:"+slider.getMaximum()+" Thumb:"+slider.getThumb()+" "+maxLineCount);
+						
 						txtOutput.setSelection(txtOutput.getText().length());
-						txtOutput.setTopIndex(txtOutput.getLineCount() - 1);
+						
 					} else break;
 				}
 				
@@ -165,16 +162,13 @@ public class PersoSimGuiMain {
 						// take the next entry from the List and print it
 						//show consoleStrings.get(slider.getSelection() + i)
 						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
-//						txtOutput.setSelection(txtOutput.getText().length());
 						txtOutput.setSelection(txtOutput.getText().length());
-//						txtOutput.setTopIndex(txtOutput.getLineCount() - 1);
+
 					} 
 
-				}
+				}				
 				
-//				txtOutput.update();
-				
-				String strTester = new String(txtOutput.getText()+" "+txtOutput.getText().length());
+//				String strTester = new String(txtOutput.getText()+" "+txtOutput.getText().length());
 //				txtInput.setText(strTester);
 //				if(txtOutput.getText().equals("")) txtInput.setText("bin null");
 			}
@@ -204,7 +198,6 @@ public class PersoSimGuiMain {
 		
 		lockScroller = new Button(parent, SWT.TOGGLE);
 		lockScroller.setText("  lock  ");
-//		lockScroller.setSize("locked".length(), txtInput.getSize().y);
 		lockScroller.addListener(SWT.Selection, new Listener() {
 			
 			@Override
