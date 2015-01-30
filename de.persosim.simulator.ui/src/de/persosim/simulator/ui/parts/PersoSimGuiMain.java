@@ -86,6 +86,8 @@ public class PersoSimGuiMain {
 		txtOutput.setEditable(false);
 		txtOutput.setCursor(null);
 		txtOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
+		txtOutput.setSelection(txtOutput.getText().length());
+		txtOutput.setTopIndex(txtOutput.getLineCount() - 1);
 		
 		//configure the slider
 		slider = new Slider(parent, SWT.V_SCROLL);
@@ -111,9 +113,8 @@ public class PersoSimGuiMain {
 				// how many lines of text can the text field show without
 				// cutting?
 				// Max lines = (height of the text field) / (height of the font)
-				int maxLineCount = txtOutput.getBounds().height
-						/ txtOutput.getFont().getFontData()[0].getHeight();
 
+				int maxLineCount = txtOutput.getBounds().height / txtOutput.getLineHeight();
 				/*
 				 * After showing the selected entry, also show following entries
 				 * until the text field is full.
@@ -127,8 +128,10 @@ public class PersoSimGuiMain {
 						// take the next entry from the List and print it
 						//show consoleStrings.get(slider.getSelection() + i)
 						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
+						txtInput.setText(maxLineCount+"");
 //						txtInput.setText("SizeStrings:"+consoleStrings.size()+" Slider Value:"+slider.getSelection()+ " max value:"+slider.getMaximum()+" Thumb:"+slider.getThumb()+" "+maxLineCount);
-												
+						txtOutput.setSelection(txtOutput.getText().length());
+						txtOutput.setTopIndex(txtOutput.getLineCount() - 1);
 					} else break;
 				}
 				
@@ -162,6 +165,9 @@ public class PersoSimGuiMain {
 						// take the next entry from the List and print it
 						//show consoleStrings.get(slider.getSelection() + i)
 						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
+//						txtOutput.setSelection(txtOutput.getText().length());
+						txtOutput.setSelection(txtOutput.getText().length());
+//						txtOutput.setTopIndex(txtOutput.getLineCount() - 1);
 					} 
 
 				}
@@ -169,7 +175,7 @@ public class PersoSimGuiMain {
 //				txtOutput.update();
 				
 				String strTester = new String(txtOutput.getText()+" "+txtOutput.getText().length());
-				txtInput.setText(strTester);
+//				txtInput.setText(strTester);
 //				if(txtOutput.getText().equals("")) txtInput.setText("bin null");
 			}
 		});
@@ -345,7 +351,7 @@ public class PersoSimGuiMain {
 					appendToGuiFromList(s);
 					slider.setSelection(slider.getMaximum());	
 					
-//					for (int i = 0; i<slider.getThumb();i++){
+////					for (int i = 0; i<slider.getThumb();i++){
 //						
 //					}
 					
