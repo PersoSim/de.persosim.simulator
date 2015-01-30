@@ -89,6 +89,7 @@ public class PersoSimGuiMain {
 		txtOutput.setSelection(txtOutput.getText().length());
 		txtOutput.setTopIndex(txtOutput.getLineCount() - 1);
 		
+		
 		//configure the slider
 		slider = new Slider(parent, SWT.V_SCROLL);
 		slider.setIncrement(1);
@@ -104,12 +105,12 @@ public class PersoSimGuiMain {
 				// clean text field before filling it with the requested data
 				txtOutput.setText("");
 
-				// print first entry in the Linked list. Index in List = value from slider
+				// print first entry in the Linked list. 
+				// Index from LinkedList = value from slider
 				appendToGuiFromList((consoleStrings.get(slider.getSelection())));
 
-				// how many lines of text can the text field show without
-				// cutting?
-				// Max lines = (height of the text field) / (height of the font)
+				// calculates how many lines of text can the text field show
+				// without cutting
 
 				int maxLineCount = txtOutput.getBounds().height / txtOutput.getLineHeight();
 				/*
@@ -125,15 +126,19 @@ public class PersoSimGuiMain {
 						// take the next entry from the List and print it
 						// show consoleStrings.get(slider.getSelection() + i)
 						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
-						txtInput.setText("SizeStrings:"+consoleStrings.size()+" Slider Value:"+slider.getSelection()+ " max value:"+slider.getMaximum()
-								+" Thumb:"+slider.getThumb()+" "+maxLineCount+ " last str"+consoleStrings.getLast());
 						
+						//just some info for testing purposes
+						txtInput.setText("SizeStrings:" + consoleStrings.size()
+								+ " Slider Value:" + slider.getSelection()
+								+ " max value:" + slider.getMaximum()
+								+ " Thumb:" + slider.getThumb() + " "
+								+ maxLineCount + " last str"
+								+ consoleStrings.getLast());
+
 						txtOutput.setSelection(txtOutput.getText().length());
 						
 					} else break;
 				}
-				
-				
 
 			}
 		};
@@ -148,23 +153,22 @@ public class PersoSimGuiMain {
 				slider.setSelection(slider.getSelection()-count);
 				
 				txtOutput.setText("");
-				int maxLineCount = txtOutput.getBounds().height
-						/ txtOutput.getFont().getFontData()[0].getHeight();
-
+				int maxLineCount = txtOutput.getBounds().height / txtOutput.getLineHeight();
+				
 				/*
 				 * After showing the selected entry, also show following entries
 				 * until the text field is full.
 				 */
 
 				for (int i = 0; i < maxLineCount; i++) {
-
+					
 					if (slider.getSelection() + i < consoleStrings.size()) {
-
+						
 						// take the next entry from the List and print it
-						//show consoleStrings.get(slider.getSelection() + i)
+						// show consoleStrings.get(slider.getSelection() + i)
 						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
 						txtOutput.setSelection(txtOutput.getText().length());
-
+						
 					} 
 
 				}				
@@ -244,7 +248,7 @@ public class PersoSimGuiMain {
 	private void grabSysOut() {
 	    OutputStream out = new OutputStream() {
 
-			char [] buffer = new char [300];
+			char [] buffer = new char [150];
 			int currentPosition = 0;
 			boolean checkNextForNewline = false;
 			
@@ -298,6 +302,7 @@ public class PersoSimGuiMain {
 	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
 	protected void appendToGui(final String s) {
 		// TODO JKH change name of method
+		
 		// write the String into the Console Buffer
 		if (consoleStrings.size() < maxLines && !s.equals("")) {
 			consoleStrings.add(s);
@@ -336,14 +341,17 @@ public class PersoSimGuiMain {
 	
 	/**
 	 * Shows new incoming Strings at the end of the console when scrolling is enabled
+	 * 
+	 * @param message is the new String
 	 */
-	public void showNewOutput(final String s) {
+	public void showNewOutput(final String message) {
 		// TODO JKH bug, it doesn't scroll to the real bottom, there are still some lines below
 		sync.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-					appendToGuiFromList(s);
-					slider.setSelection(slider.getMaximum());						
+					appendToGuiFromList(message);
+					slider.setMaximum(slider.getMaximum()+slider.getThumb()+1);
+					slider.setSelection(slider.getMaximum());
 					
 			}
 		});
