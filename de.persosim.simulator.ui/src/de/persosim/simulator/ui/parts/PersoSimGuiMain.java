@@ -55,7 +55,9 @@ public class PersoSimGuiMain {
 	private final PrintStream originalSystemOut = System.out;
 	
 	//Buffer for old console outputs
-	private LinkedList<String> consoleStrings = new LinkedList<String>();	
+	private LinkedList<String> consoleStrings = new LinkedList<String>();
+	private StringBuilder strConsoleStrings = new StringBuilder();
+	
 	//maximum amount of strings saved in the buffer
 	private int maxLines = 2000;
 	
@@ -96,18 +98,14 @@ public class PersoSimGuiMain {
 		slider.setPageIncrement(10);
 		slider.setMaximum(consoleStrings.size()+slider.getThumb());
 		slider.setMinimum(0);
-		slider.setThumb(consoleStrings.size());
+//		slider.setThumb(consoleStrings.size());
 		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));		
 		
 		SelectionListener sliderListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				
 				// clean text field before filling it with the requested data
-				txtOutput.setText("");
-
-				// print first entry in the Linked list. 
-				// Index from LinkedList = value from slider
-				appendToGuiFromList((consoleStrings.get(slider.getSelection())));
+				strConsoleStrings= new StringBuilder();
 
 				// calculates how many lines of text can the text field show
 				// without cutting. Should be 33 with standard settings.
@@ -118,25 +116,33 @@ public class PersoSimGuiMain {
 				 * until the text field is full.
 				 */
 				
+				// print first entry in the Linked list. 
+				// Index from LinkedList = value from slider
+//				appendToGuiFromList((consoleStrings.get(slider.getSelection())));
+				strConsoleStrings=strConsoleStrings.append(consoleStrings.get(slider.getSelection()));
 				
 				for (int i = 0; i < maxLineCount; i++) {
 
 					if (slider.getSelection() + i < consoleStrings.size()) {
 
 						// take the next entry from the List and print it
-						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
+//						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
+						
+						//stringbuilder
+						strConsoleStrings=strConsoleStrings.append(consoleStrings.get(slider.getSelection() + i));
 						
 						//just some info for testing purposes
-						txtInput.setText("SizeStrings:" + consoleStrings.size()
-								+ " Slider Value:" + slider.getSelection()
-								+ " max value:" + slider.getMaximum()
-								+ " Thumb size:" + slider.getThumb() 
-								+ " last str" + consoleStrings.getLast());
+//						txtInput.setText("SizeStrings:" + consoleStrings.size()
+//								+ " Slider Value:" + slider.getSelection()
+//								+ " max value:" + slider.getMaximum()
+//								+ " Thumb size:" + slider.getThumb() 
+//								+ " last str" + consoleStrings.getLast());
 
 						txtOutput.setSelection(txtOutput.getText().length());
 						
 					} else break;
 				}
+				appendToGuiFromList(strConsoleStrings.toString());
 
 			}
 		};
@@ -149,34 +155,7 @@ public class PersoSimGuiMain {
 			public void mouseScrolled(MouseEvent e) {
 				int count = e.count;
 				slider.setSelection(slider.getSelection()-count);
-				
-				txtOutput.setText("");
-				int maxLineCount = txtOutput.getBounds().height / txtOutput.getLineHeight();
-				
-				/*
-				 * After showing the selected entry, also show following entries
-				 * until the text field is full.
-				 */
-
-				for (int i = 0; i < maxLineCount; i++) {
-					
-					if (slider.getSelection() + i < consoleStrings.size()) {
-						
-						// take the next entry from the List and print it
-						// show consoleStrings.get(slider.getSelection() + i)
-						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
-						txtOutput.setSelection(txtOutput.getText().length());
-						
-						//just some info for testing purposes
-						txtInput.setText("SizeStrings:" + consoleStrings.size()
-								+ " Slider Value:" + slider.getSelection()
-								+ " max value:" + slider.getMaximum()
-								+ " Thumb size:" + slider.getThumb() 
-								+ " last str" + consoleStrings.getLast());
-						
-					} 
-
-				}				
+				slider.notifyListeners(SWT.Selection, null);			
 				
 			}
 		});
@@ -297,9 +276,6 @@ public class PersoSimGuiMain {
 		}
 	    
 	}
-	
-	StringBuilder guiStringBuilder = new StringBuilder();
-	long lastGuiFlush = 0;
 
 	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
 	protected void appendToGui(final String s) {
@@ -359,6 +335,9 @@ public class PersoSimGuiMain {
 		});
 
 	}
+	
+	StringBuilder guiStringBuilder = new StringBuilder();
+	long lastGuiFlush = 0;
 	
 	protected void appendToGuiFromList(String s) {
 		if ((guiStringBuilder.length() > 0) || (s.length() > 0)) {
