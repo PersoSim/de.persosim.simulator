@@ -110,7 +110,7 @@ public class PersoSimGuiMain {
 				appendToGuiFromList((consoleStrings.get(slider.getSelection())));
 
 				// calculates how many lines of text can the text field show
-				// without cutting
+				// without cutting. Should be 33 with standard settings.
 
 				int maxLineCount = txtOutput.getBounds().height / txtOutput.getLineHeight();
 				/*
@@ -124,16 +124,14 @@ public class PersoSimGuiMain {
 					if (slider.getSelection() + i < consoleStrings.size()) {
 
 						// take the next entry from the List and print it
-						// show consoleStrings.get(slider.getSelection() + i)
 						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
 						
 						//just some info for testing purposes
 						txtInput.setText("SizeStrings:" + consoleStrings.size()
 								+ " Slider Value:" + slider.getSelection()
 								+ " max value:" + slider.getMaximum()
-								+ " Thumb:" + slider.getThumb() + " "
-								+ maxLineCount + " last str"
-								+ consoleStrings.getLast());
+								+ " Thumb size:" + slider.getThumb() 
+								+ " last str" + consoleStrings.getLast());
 
 						txtOutput.setSelection(txtOutput.getText().length());
 						
@@ -169,13 +167,17 @@ public class PersoSimGuiMain {
 						appendToGuiFromList(consoleStrings.get(slider.getSelection() + i));
 						txtOutput.setSelection(txtOutput.getText().length());
 						
+						//just some info for testing purposes
+						txtInput.setText("SizeStrings:" + consoleStrings.size()
+								+ " Slider Value:" + slider.getSelection()
+								+ " max value:" + slider.getMaximum()
+								+ " Thumb size:" + slider.getThumb() 
+								+ " last str" + consoleStrings.getLast());
+						
 					} 
 
 				}				
 				
-//				String strTester = new String(txtOutput.getText()+" "+txtOutput.getText().length());
-//				txtInput.setText(strTester);
-//				if(txtOutput.getText().equals("")) txtInput.setText("bin null");
 			}
 		});
 		
