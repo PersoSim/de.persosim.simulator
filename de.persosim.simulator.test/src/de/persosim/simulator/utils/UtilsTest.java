@@ -228,60 +228,26 @@ public class UtilsTest {
 	/**
 	 * Negative test case: method appendBytes gets trailinbytes as input, which is null;
 	 */
-	//FIXME LSG why is nothing to append considered an error?
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected=NullPointerException.class)
 	public void testAppendBytes_Trailinbytes_Is_Null()
 	{
 		byte[] leadingbyte = new byte[]{(byte) 0x65};
 		Utils.appendBytes(leadingbyte, null);
-		
 	}
 	
 	/**
-	 * Negative test case: method appendBytes gets trailingbytes as input, which is less then 1.
-	 */
-	//FIXME LSG why is nothing to append considered an error?
-	@Test(expected=IllegalArgumentException.class)
-	public void testAppendBytes_Trailingbytes_Is_Less_One()
-	{
-		byte[] test = new byte[]{};
-		byte[] leadingbyte = new byte[]{(byte) 0x65};
-		
-		Utils.appendBytes(leadingbyte, test);
-	}
-	
-	/**
-	 * Negative test case: the method concanByteArrays gets input null.
+	 * Negative test case: the method concatByteArrays gets input null.
 	 */
 	@Test(expected=NullPointerException.class)
 	//FIXME LSG why is concatenating nothing considered an error?
 	public void testConcatByteArrays_Input_Is_Null()
 	{	
-		byte[] test = null;
-		Utils.concatByteArrays(test);	
-	}
-	
-	/**
-	 * Negative test case: method toUnsignedByteArray gets an input, which is null.
-	 */
-	@Test(expected=NullPointerException.class)
-	//FIXME LSG why is an empty input considered an error here?
-	public void testToUnsignedByteArray_Input_Is_Null()
-	{
-		BigInteger test = null;
-		Utils.toUnsignedByteArray(test);
-		
-	}
-	
-	/**
-	 * Negative test case: method appendBytes gets trailingbytes as input, which is less then 1.
-	 */
-	//FIXME LSG why is an empty input considered an error here?
-	@Test(expected=IllegalArgumentException.class)
-	public void testToUnsignedByteArray_Input()
-	{
-		byte[] test = new byte[]{}; 
-		Utils.appendBytes(test, null);
+		byte[] actual = null;
+		byte[] testarray2 = new byte[]{};
+		byte[] expected = new byte[]{};
+		byte[] lol = Utils.concatByteArrays(actual,testarray2);
+		assertArrayEquals(expected, lol);
+		System.out.println(lol);
 	}
 	
 	/**
@@ -321,10 +287,7 @@ public class UtilsTest {
 		short test = 1;
 		byte[] actual = Utils.toUnsignedByteArray(test);
 		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x01};
-		
-		System.out.println(actual[0]);
-		System.out.println(expected[0]);
-		
+	
 		assertArrayEquals(expected, actual);
 	}
 	
@@ -339,9 +302,6 @@ public class UtilsTest {
 		byte[] actual = Utils.toUnsignedByteArray(test);
 		byte[] expected = new byte[]{(byte) 0x01};
 		
-		System.out.println(actual[0]);
-		System.out.println(expected[0]);
-		
 		assertArrayEquals(expected, actual);
 	}
 	
@@ -351,9 +311,12 @@ public class UtilsTest {
 	@Test
 	public void testRemoveLeadingZeroBytes_Input_Byte_Array()
 	{
-		byte[] test = new byte[]{ (byte) 0xFF};
-		Utils.removeLeadingZeroBytes(test);
-		//FIXME LSG I can't see an actual test here, you should check the result
+		byte[] test = new byte[]{(byte) 0x00, (byte) 0x09};
+		byte[] actual = Utils.removeLeadingZeroBytes(test);
+		 
+		byte[] expected = new byte[]{(byte) 0x09};	
+		
+		assertArrayEquals(expected, actual);
 	}
 	
 	/**
@@ -362,15 +325,12 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToShort_Input_Byte()
 	{
-		byte b = (byte) 0x01;
+		byte b = (byte) 0xAA;
 		
 		short actual = Utils.maskUnsignedByteToShort(b);
-		short expected = 1;
+		short expected = 170;
 		
-		System.out.println(actual);
-		System.out.println(expected);
-		
-		//FIXME LSG
+		assertEquals(expected, actual);
 		
 	}
 	
@@ -380,9 +340,11 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToInt_Input_Byte()
 	{
-		//FIXME LSG see comments in testMaskUnsignedByteToShort_Input_Byte
-		byte b = 100;
-		Utils.maskUnsignedByteToInt(b);
+		byte b = 0x01;
+		int actual = Utils.maskUnsignedByteToInt(b);
+		int expected = 1;
+		
+		assertEquals(expected, actual);
 	}
 	
 	/**
@@ -391,9 +353,11 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedShortToInt_Input_Short()
 	{
-		//FIXME LSG see comments in testMaskUnsignedByteToShort_Input_Byte
-		short b = 110;
-		Utils.maskUnsignedShortToInt(b);
+		short b = 1;
+		int actual  = Utils.maskUnsignedShortToInt(b);
+		int expected = 1;
+		assertEquals(expected, actual);
+		
 	}
 	
 	/**
@@ -402,12 +366,11 @@ public class UtilsTest {
 	@Test
 	public void testConcatenate_Input_Two_Bytes()
 	{
-		byte a = 1,b = 2;
-	 short s = Utils.concatenate(a, b);
+		byte a = 0x04,b = 0x04;
+		short actual = Utils.concatenate(a, b);
+		short expected = 1028;
+		assertEquals(expected, actual);
 		
-		System.out.println(s);
-	//	System.out.println(b);
-		//FIXME LSG I can't see an actual test here, you should check the result
 	}
 	
 	/**
@@ -418,21 +381,21 @@ public class UtilsTest {
 	{
 		
 	 String s = "19990801";
-	 Utils.getDate(s);
-		//FIXME LSG I can't see an actual test here, you should check the result
+	 Date actual  = Utils.getDate(s);
+	 Date expected = new Date(1999, 9, 01, 00, 00, 00);
 	}
 	
-	
-	//FIXME LSG I stopped even looking at the methods below. First please ensure that the documentation matches teh implementation, the tests actually test something, are not duplicate of existing tests etc...
 	/**
 	 * Positive Test case: method getDate gets a null string.
 	 */
 	@Test(expected=NullPointerException.class)
 	public void testGetDatedate_InputString_Is_Null()
 	{
-		byte a = 0;
+		byte a = 1;
 		String s = null;
 		Utils.getDate(s, a);
+		
+		
 	}
 	
 	/**
@@ -446,20 +409,24 @@ public class UtilsTest {
 		a[0] = "1";
 		String b = "1";
 		
-		Utils.arrayContainsEqual(a, b);
+		boolean actual  = Utils.arrayContainsEqual(a, b);
+		
+		assertTrue(actual);
 	}
 	
 	/**
-	 * Positive Test case: method logarithm becomes an double and int input.
+	 * Positive Test case: method logarithm becomes a double as input and int for the base input.
 	 */
 	@Test
 	public void testLogarithm_Input_Double_and_Base()
 	{
-		int base = 1;
-		double doublevalue = 1;
+		int base = 10;
+		double doublevalue = 20;
+		double DELTA = 1e-15;
 		double actual = Utils.logarithm(doublevalue, base);
-		double expected = 1;
-		assertEquals(expected, actual);
+		double expected = 1.3010299956639813;
+		assertEquals(expected, actual,DELTA);
+		
 	}
 	
 	/**
@@ -472,8 +439,6 @@ public class UtilsTest {
 		String actual  = Utils.binaryEncode(test);
 		String expected = "00000001 00000001 00000001";
 		
-		//System.out.println(s);
-		//System.out.println();
 		assertEquals(expected, actual);
 		
 	}
@@ -485,7 +450,9 @@ public class UtilsTest {
 	public void testIsAnyNulltrue_Input_Object()
 	{
 		Object a = null;
-		Utils.isAnyNull(a);
+		boolean actual  = Utils.isAnyNull(a);
+		
+		assertTrue(actual);
 	}
 	
 	/**
@@ -495,7 +462,9 @@ public class UtilsTest {
 	public void testIsAnyNullfalse_Input_Object()
 	{
 		Object a = new Object();
-		Utils.isAnyNull(a);
+		boolean actual = Utils.isAnyNull(a);
+		
+		assertFalse(actual);
 	}
 	
 	/**
@@ -504,8 +473,10 @@ public class UtilsTest {
 	@Test
 	public void testGetShortFromUnsignedByteArray_Input_Byte_Array()
 	{
-		byte[] test = new byte[]{(byte) 0x66};
-		Utils.getShortFromUnsignedByteArray(test);
+		byte[] test = new byte[]{(byte) 0x01};
+		short actual = Utils.getShortFromUnsignedByteArray(test);
+		short expected = 1;
+		assertEquals(expected, actual);
 	}
 	
 	/**
@@ -514,8 +485,10 @@ public class UtilsTest {
 	@Test
 	public void testGetIntFromUnsignedByteArray_Input_Byte_Array()
 	{
-		byte[] test = new byte[]{(byte) 0x66};
-		Utils.getIntFromUnsignedByteArray(test);
+		byte[] test = new byte[]{(byte) 0x01};
+		int actual = Utils.getIntFromUnsignedByteArray(test);
+		int expected = 1;
+		assertEquals(expected, actual);
 	}
 	
 	/**
@@ -524,17 +497,12 @@ public class UtilsTest {
 	@Test
 	public void testGetBigIntegerFromUnsignedByteArray_Input_Byte_Array()
 	{
-		byte[] test = new byte[]{(byte) 0x66};
-		Utils.getBigIntegerFromUnsignedByteArray(test);
+		byte[] test = new byte[]{(byte) 0x01};
+		BigInteger actual = Utils.getBigIntegerFromUnsignedByteArray(test);
+		BigInteger expected = BigInteger.ONE;
+		System.out.println(actual);
+		
+		assertEquals(expected, actual);
 	}
 	
-	/**
-	 * Positive Test case: method getBigIntegerFromUnsignedByteArray gets byte array as input.
-	 */
-	@Test
-	public void testToUnsignedByteArray_Input_Byte_Array()
-	{
-		byte[] test = new byte[]{(byte) 0x66};
-		Utils.getBigIntegerFromUnsignedByteArray(test);
-	}
 }
