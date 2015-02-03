@@ -195,7 +195,6 @@ public class PersoSimGuiMain {
 			
 			@Override
 			public void run() {
-//				slider.setMaximum(countedLines+slider.getThumb());
 				slider.setMaximum(consoleStrings.size()-20);
 			}
 		});
@@ -313,12 +312,13 @@ public class PersoSimGuiMain {
 		
 		// write the String into the Console Buffer
 		if (consoleStrings.size() < maxLines && !s.equals("")) {
-			
-			// TODO JKH check for multiple occurrence
-			if(s.contains("\n") || s.contains("\r")){
+						
+			// splitten at \n or \r
+			String[] splitResult = s.split("\n|\r"); 
+			for(int i=0; i<splitResult.length; i++){
 				countedLines++;
 				consoleStrings.add(s);
-			}
+			}			
 			
 			rebuildSlider();
 
@@ -348,16 +348,6 @@ public class PersoSimGuiMain {
 			}
 
 		}
-		
-//		sync.asyncExec(new Runnable() {
-//			@Override
-//			public void run() {
-//				
-////				slider.setMaximum(consoleStrings.size() + slider.getThumb());
-//				slider.setMaximum(countedLines + slider.getThumb());
-//			}
-//		});
-//		rebuildSlider();
 
 	}
 	
@@ -367,7 +357,7 @@ public class PersoSimGuiMain {
 	 * @param message is the new String
 	 */
 	public void showNewOutput(final String message) {
-		// TODO JKH bug, it doesn't scroll to the real bottom, there are still some lines below
+
 		sync.asyncExec(new Runnable() {
 			@Override
 			public void run() {
