@@ -179,7 +179,7 @@ public class PersoSimGuiMain {
 					} catch (InterruptedException e) {
 						// ignore, timing is not critical here
 					}
-					appendToGui("");
+					saveConsoleStrings("");
 				}
 			}
 		});
@@ -228,11 +228,11 @@ public class PersoSimGuiMain {
 
 				txtOutput.setSelection(txtOutput.getText().length());
 
-				txtInput.setText("SizeStrings:" + consoleStrings.size()
-						+ " Slider Value:" + slider.getSelection()
-						+ " max value:" + slider.getMaximum() + " Thumb:"
-						+ slider.getThumb() + " " + maxLineCount + " countet"
-						+ countedLines);
+//				txtInput.setText("SizeStrings:" + consoleStrings.size()
+//						+ " Slider Value:" + slider.getSelection()
+//						+ " max value:" + slider.getMaximum() + " Thumb:"
+//						+ slider.getThumb() + " " + maxLineCount + " countet"
+//						+ countedLines);
 
 			} else
 				break;
@@ -287,7 +287,7 @@ public class PersoSimGuiMain {
 
 					final String toPrint = new String(Arrays.copyOf(buffer, currentPosition));
 					originalSystemOut.print(toPrint);
-					appendToGui(toPrint);
+					saveConsoleStrings(toPrint);
 					
 					
 					currentPosition = 0;
@@ -307,13 +307,12 @@ public class PersoSimGuiMain {
 	}
 
 	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
-	protected void appendToGui(final String s) {
-		// TODO JKH change name of method
+	protected void saveConsoleStrings(final String s) {
 		
 		// write the String into the Console Buffer
 		if (consoleStrings.size() < maxLines && !s.equals("")) {
 						
-			// splitten at \n or \r
+			// split at \n or \r
 			String[] splitResult = s.split("\n|\r"); 
 			for(int i=0; i<splitResult.length; i++){
 				countedLines++;
