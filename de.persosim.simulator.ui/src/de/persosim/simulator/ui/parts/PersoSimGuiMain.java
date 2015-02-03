@@ -195,7 +195,8 @@ public class PersoSimGuiMain {
 			
 			@Override
 			public void run() {
-				slider.setMaximum(countedLines+slider.getThumb());			
+//				slider.setMaximum(countedLines+slider.getThumb());
+				slider.setMaximum(consoleStrings.size()-20);
 			}
 		});
 	}
@@ -312,7 +313,8 @@ public class PersoSimGuiMain {
 		
 		// write the String into the Console Buffer
 		if (consoleStrings.size() < maxLines && !s.equals("")) {
-	
+			
+			// TODO JKH check for multiple occurrence
 			if(s.contains("\n") || s.contains("\r")){
 				countedLines++;
 				consoleStrings.add(s);
@@ -374,7 +376,7 @@ public class PersoSimGuiMain {
 					slider.setMaximum(slider.getMaximum()+slider.getThumb()+1);
 					slider.setSelection(slider.getMaximum());
 					buildNewConsoleContent();
-					
+					rebuildSlider();
 					
 			}
 		});
