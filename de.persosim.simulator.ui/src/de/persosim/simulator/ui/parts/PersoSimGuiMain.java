@@ -80,11 +80,8 @@ public class PersoSimGuiMain {
 		
 		parent.setLayout(new GridLayout(2, false));
 		
-		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.WRAP);
-//		
-//		TextLengthLimiter tl = new TextLengthLimiter();
-//		txtOutput.addModifyListener(tl);
-		
+		//configure console field
+		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.WRAP);		
 		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
 		txtOutput.setEditable(false);
 		txtOutput.setCursor(null);
@@ -97,7 +94,6 @@ public class PersoSimGuiMain {
 		slider = new Slider(parent, SWT.V_SCROLL);
 		slider.setIncrement(1);
 		slider.setPageIncrement(10);
-//		slider.setMaximum(consoleStrings.size()+slider.getThumb());
 		slider.setMaximum(countedLines+slider.getThumb());
 		slider.setMinimum(0);
 		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));		
@@ -195,7 +191,7 @@ public class PersoSimGuiMain {
 			
 			@Override
 			public void run() {
-				slider.setMaximum(consoleStrings.size()-20);
+				slider.setMaximum(consoleStrings.size()-25);
 			}
 		});
 	}
@@ -210,8 +206,8 @@ public class PersoSimGuiMain {
 		// clean text field before filling it with the requested data
 		final StringBuilder strConsoleStrings = new StringBuilder();
 
-		// calculates how many lines of text can the text field show
-		// without cutting.
+		// calculates how many lines can be shown by the text field
+		// without cutting it.
 		int maxLineCount = txtOutput.getBounds().height / txtOutput.getLineHeight();
 
 		/*
@@ -228,24 +224,16 @@ public class PersoSimGuiMain {
 
 				txtOutput.setSelection(txtOutput.getText().length());
 
-//				txtInput.setText("SizeStrings:" + consoleStrings.size()
-//						+ " Slider Value:" + slider.getSelection()
-//						+ " max value:" + slider.getMaximum() + " Thumb:"
-//						+ slider.getThumb() + " " + maxLineCount + " countet"
-//						+ countedLines);
-
-			} else
-				break;
+			} else break;
 		}
 
-		// send the StrinBuilder data to the console field
+		// send the StringBuilder data to the console field
 		sync.asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
 
 				txtOutput.setText(strConsoleStrings.toString());
-				
 
 			}
 		});
@@ -308,35 +296,35 @@ public class PersoSimGuiMain {
 
 	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
 	protected void saveConsoleStrings(final String s) {
-		
+
 		// write the String into the Console Buffer
 		if (consoleStrings.size() < maxLines && !s.equals("")) {
-						
+
 			// split at \n or \r
-			String[] splitResult = s.split("\n|\r"); 
-			for(int i=0; i<splitResult.length; i++){
+			String[] splitResult = s.split("\n|\r");
+			for (int i = 0; i < splitResult.length; i++) {
 				countedLines++;
 				consoleStrings.add(s);
-			}			
-			
+			}
+
 			rebuildSlider();
 
 			// if not locked: refresh txtoutput
-			if(!locked) showNewOutput(s);
+			if (!locked)
+				showNewOutput(s);
 		}
 
 		else if (!s.equals("")) {
 			// Buffer is full, delete the oldest entry before adding
 			consoleStrings.pollFirst();
-			
+
 			consoleStrings.add(s);
-			
+
 			rebuildSlider();
-			
+
 			// if not locked: refresh txtoutput
-			if(!locked){ 
-				
-				
+			if (!locked) {
+
 				sync.asyncExec(new Runnable() {
 
 					@Override
@@ -360,13 +348,11 @@ public class PersoSimGuiMain {
 		sync.asyncExec(new Runnable() {
 			@Override
 			public void run() {
+				slider.setMaximum(slider.getMaximum() + slider.getThumb() + 1);
+				slider.setSelection(slider.getMaximum());
+				buildNewConsoleContent();
+				rebuildSlider();
 
-//					appendToGuiFromList(message);
-					slider.setMaximum(slider.getMaximum()+slider.getThumb()+1);
-					slider.setSelection(slider.getMaximum());
-					buildNewConsoleContent();
-					rebuildSlider();
-					
 			}
 		});
 
