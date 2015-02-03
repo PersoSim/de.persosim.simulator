@@ -9,9 +9,6 @@ import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 
-import junit.framework.Assert;
-
-import org.bouncycastle.util.Arrays;
 import org.junit.Test;
 
 public class UtilsTest {
@@ -236,21 +233,6 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Negative test case: the method concatByteArrays gets input null.
-	 */
-	@Test(expected=NullPointerException.class)
-	//FIXME LSG why is concatenating nothing considered an error?
-	public void testConcatByteArrays_Input_Is_Null()
-	{	
-		byte[] actual = null;
-		byte[] testarray2 = new byte[]{};
-		byte[] expected = new byte[]{};
-		byte[] lol = Utils.concatByteArrays(actual,testarray2);
-		assertArrayEquals(expected, lol);
-		System.out.println(lol);
-	}
-	
-	/**
 	 * Positive Test case: method toUnsignedByteArray gets input of type long.
 	 */
 	@Test
@@ -382,7 +364,20 @@ public class UtilsTest {
 		
 	 String s = "19990801";
 	 Date actual  = Utils.getDate(s);
-	 Date expected = new Date(1999, 9, 01, 00, 00, 00);
+	 
+	 
+	 	Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, 1999);
+		calendar.set(Calendar.MONTH, Calendar.AUGUST);
+		calendar.set(Calendar.DATE, 01);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		
+		assertEquals(calendar.getTime(), actual);
+		
 	}
 	
 	/**
