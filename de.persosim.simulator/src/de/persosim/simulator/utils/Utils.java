@@ -81,6 +81,7 @@ public abstract class Utils {
 	 * @param c the array to be checked
 	 * @return true if at least one occurrence of duplicate elements has been found, false otherwise
 	 */
+	//XXX LSG Method isnt beeing used anywhere
 	public static <T extends Comparable<T>>boolean containsDuplicateElements(T[] c) {
 		if(c == null) {
 			throw new ClassCastException();
@@ -110,6 +111,7 @@ public abstract class Utils {
 	 * +1 - c2 contains more than all of c1's elements
 	 * 
 	 */
+	//XXX LSG Method isnt beeing used anywhere
 	public static <T extends Comparable<T>>byte compareSets(T[] c1, T[] c2) {
 		boolean match;
 		
@@ -156,28 +158,13 @@ public abstract class Utils {
 	}
 	
 	/**
-	 * Returns a concatenation of two byte arrays
-	 * @param b1 leading byte array
-	 * @param b2 trailing byte array
-	 * @return a concatenation of two byte arrays
-	 */
-	public static byte[] concatByteArrays(byte[] b1, byte[] b2) {
-		byte[] newByteArray;
-		
-		newByteArray = new byte[b1.length + b2.length];
-		System.arraycopy(b1, 0, newByteArray, 0, b1.length);
-		System.arraycopy(b2, 0, newByteArray, b1.length, b2.length);
-		
-		return newByteArray;
-	}
-	
-	/**
 	 * Returns a concatenation of one or more byte arrays
 	 * @param byteArrays one or more byte arrays
 	 * @return a concatenation of one or more byte arrays
 	 */
 	public static byte[] concatByteArrays(byte[]... byteArrays) {
-		if ( byteArrays == null || byteArrays.length == 0 ) {throw new IllegalArgumentException( "parameters must not be null or empty" );}
+		if ( byteArrays == null ) {throw new NullPointerException( "parameters must not be null" );}
+		if ( byteArrays.length == 0 ) {throw new IllegalArgumentException( "parameters must not be empty" );}
 		
 		ByteArrayOutputStream outputStream;
 		
@@ -201,7 +188,8 @@ public abstract class Utils {
 	 * @return a byte array that has been appended by the provided bytes
 	 */
 	public static byte[] appendBytes(byte[] leadingByteArray, byte... trailingBytes) {
-		if ( trailingBytes == null || trailingBytes.length == 0 ) {throw new IllegalArgumentException( "parameters must not be null or empty" );}
+		if ( trailingBytes == null ) {throw new NullPointerException( "parameters must not be null or empty" );}
+		
 		
 		ByteArrayOutputStream outputStream;
 		
@@ -225,6 +213,7 @@ public abstract class Utils {
 	 * @param in the byte array to be converted
 	 * @return a byte array converted to a boolean array in binary representation
 	 */
+	//XXX LSG Method isnt beeing used anywhere
 	public static boolean[] binaryEncodeByteArray(byte[] in) {
 		boolean[] out;
 		byte bitMask;
@@ -240,6 +229,7 @@ public abstract class Utils {
 	    return out;
 	}
 	
+	//XXX LSG Method isnt beeing used anywhere
 	public static String binaryEncode(byte[] in) {
 		boolean[] out;
 		StringBuilder sb;
@@ -319,6 +309,7 @@ public abstract class Utils {
 	 * @param input the long
 	 * @return the unsigned byte array representation of the unsigned long
 	 */
+	//XXX LSG Method isnt beeing used anywhere
 	public static byte[] toUnsignedByteArray(long input) {
 		return new byte[]{
 				(byte) ((input & 0xFF00000000000000L) >> 56),
@@ -433,6 +424,7 @@ public abstract class Utils {
 	 * @param toTest
 	 * @return true, iff one of the given objects is null
 	 */
+	//XXX LSG Method isnt beeing used anywhere
 	public static boolean isAnyNull(Object ...toTest) {
 		for(Object o : toTest){
 			if (o == null){
@@ -451,6 +443,7 @@ public abstract class Utils {
 	 * @return true, iff one of the arrays entries {@link #equals(Object)} the
 	 *         given object.
 	 */
+	//XXX LSG Method isnt beeing used anywhere
 	public static boolean arrayContainsEqual(Object[] array, Object object) {
 		for (Object current : array) {
 			if (current.equals(object)) {
