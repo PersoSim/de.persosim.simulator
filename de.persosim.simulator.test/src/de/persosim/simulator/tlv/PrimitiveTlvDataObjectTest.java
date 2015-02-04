@@ -440,7 +440,30 @@ public class PrimitiveTlvDataObjectTest {
 				tlvExpected2);
 	}
 
+	/**
+	 * Negative test case: In the setTag method the tlvtaginput must not be null. 
+	 */
+	@Test(expected=NullPointerException.class)
+	public void testSetTag_TlvTagInput_Equals_Null()
+	{	
+		TlvTag tag = null;
+		PrimitiveTlvDataObject tlv2Object = (PrimitiveTlvDataObject) TlvDataObjectFactory.createTLVDataObject("800A04007F00070202040304");
+		tlv2Object.setTag(tag);
+	}
 	
+	/**
+	 * Negative test case: In the setValue method the TlvValuePlainInput must
+	 * not be null.
+	 */
+	@Test(expected = NullPointerException.class)
+	public void testSetValue_TlvValuePlainInput_Equals_Null() 
+	{
+		
+		TlvValuePlain value = null;
+		PrimitiveTlvDataObject tlv2Object = (PrimitiveTlvDataObject) TlvDataObjectFactory.createTLVDataObject("800A04007F00070202040304");
+		tlv2Object.setValue(value);
+	}
+
 	//TODO missing tests
 	// modification of value / update of length field (according to package doc this should also work if the existing value is modified and not only if a new value is set)
 }

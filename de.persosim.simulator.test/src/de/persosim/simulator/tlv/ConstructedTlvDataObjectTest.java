@@ -1005,6 +1005,26 @@ public class ConstructedTlvDataObjectTest {
 						+ tlvObject13.getLength());
 	}
 	
+	/**
+	 * Negative test case: the method setValue is getting the tlvDataObjectContainerInput, which is null.
+	 */
+	@Test(expected=NullPointerException.class)
+	public void testSetValue_tlvDataObject_ContainerInput_Is_Null()
+	{
+		ConstructedTlvDataObject tlvObject = (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("21080102FFFF0202EEEE");
+		tlvObject.setValue(null);	
+	}
+	
+	/**
+	 * Negative test case: the method setTag is getting the tlvTagInput, which is null.
+	 */
+	@Test(expected=NullPointerException.class)
+	public void testSetTag_TlvTag_Input_Is_Null()
+	{
+		ConstructedTlvDataObject tlvObject = (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("21080102FFFF0202EEEE");
+		tlvObject.setTag(null, true);
+	}
+	
 	//TODO missing tests
 	// modification of child values / update of length field
 	// expected methods like testGetLength_ChildLenghtIncreased and testGetLength_ChildLengthDecreased
