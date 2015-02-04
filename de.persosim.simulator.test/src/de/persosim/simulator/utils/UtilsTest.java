@@ -310,7 +310,7 @@ public class UtilsTest {
 		byte b = (byte) 0xAA;
 		
 		short actual = Utils.maskUnsignedByteToShort(b);
-		short expected = 170;
+		short expected = 170; //FIXME LSG can't see that this is matching 0xAA immediately, choose other representation
 		
 		assertEquals(expected, actual);
 		
@@ -350,7 +350,7 @@ public class UtilsTest {
 	{
 		byte a = 0x04,b = 0x04;
 		short actual = Utils.concatenate(a, b);
-		short expected = 1028;
+		short expected = 1028; //FIXME LSG can't see that this is corect
 		assertEquals(expected, actual);
 		
 	}
@@ -366,6 +366,7 @@ public class UtilsTest {
 	 Date actual  = Utils.getDate(s);
 	 
 	 
+	 //FIXME LSG this looks weird, try asserting the parts instead of building a second object
 	 	Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 1999);
 		calendar.set(Calendar.MONTH, Calendar.AUGUST);
@@ -373,8 +374,7 @@ public class UtilsTest {
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		
+		calendar.set(Calendar.MILLISECOND, 0);		
 		
 		assertEquals(calendar.getTime(), actual);
 		
@@ -395,6 +395,7 @@ public class UtilsTest {
 	
 	/**
 	 * Positive Test case: method arrayContainsEqual gets an Object array and an object as input.
+	 * FIXME LSG use JavaDoc links where possible in order to not break readability when refactoring
 	 */
 	@Test
 	public void testArrayContainsEqual_Input_Stringarray_And_string()
@@ -419,10 +420,12 @@ public class UtilsTest {
 		double doublevalue = 20;
 		double DELTA = 1e-15;
 		double actual = Utils.logarithm(doublevalue, base);
-		double expected = 1.3010299956639813;
+		double expected = 1.3010299956639813; //FIXME LSG why use this strange value?
 		assertEquals(expected, actual,DELTA);
 		
 	}
+	
+	//FIXME LSG several general formating/readability. ask me about this
 	
 	/**
 	 * Positive Test case: method binaryEncode becomes a byte array as input.
