@@ -163,9 +163,6 @@ public abstract class Utils {
 	 * @return a concatenation of one or more byte arrays
 	 */
 	public static byte[] concatByteArrays(byte[]... byteArrays) {
-		//FIXME SLG why not allow these inputs?
-		if ( byteArrays == null ) {throw new NullPointerException( "parameters must not be null" );}
-		if ( byteArrays.length == 0 ) {throw new IllegalArgumentException( "parameters must not be empty" );}
 		
 		ByteArrayOutputStream outputStream;
 		
@@ -189,9 +186,6 @@ public abstract class Utils {
 	 * @return a byte array that has been appended by the provided bytes
 	 */
 	public static byte[] appendBytes(byte[] leadingByteArray, byte... trailingBytes) {
-		//FIXME LSG why not allow this input?
-		if ( trailingBytes == null ) {throw new NullPointerException( "parameters must not be null or empty" );}
-		
 		
 		ByteArrayOutputStream outputStream;
 		
