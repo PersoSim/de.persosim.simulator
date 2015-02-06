@@ -466,6 +466,8 @@ public abstract class Utils {
 	 * The provided String is expected to be exactly 8 characters long and encoded as follows: YYYYMMDD.
 	 * If the String parts for month or day contain non-numeric characters a NumberFormatException will be thrown
 	 * Well formatted date strings will not be checked for validity, e.g. december 34th would not be discarded.
+	 * @category If using the Calendar, values for HOUR_OF_DAY, MINUTE, SECONDS and MILISECONDS must be entered. 
+	 * By not doing this, these values will be set randomly.
 	 * @param dateString the date encoded as follows: YYYYMMDD
 	 * @return a {@link Date} object
 	 */
