@@ -307,10 +307,10 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToShort_Input_Byte()
 	{
-		byte b = (byte) 0xAA;
+		byte b = (byte) 0x09;
 		
 		short actual = Utils.maskUnsignedByteToShort(b);
-		short expected = 170; //FIXME LSG can't see that this is matching 0xAA immediately, choose other representation
+		short expected = 9; 
 		
 		assertEquals(expected, actual);
 		
@@ -348,9 +348,9 @@ public class UtilsTest {
 	@Test
 	public void testConcatenate_Input_Two_Bytes()
 	{
-		byte a = 0x04,b = 0x04;
+		byte a = 0x01,b = 0x02;
 		short actual = Utils.concatenate(a, b);
-		short expected = 1028; //FIXME LSG can't see that this is corect
+		short expected = 258; 
 		assertEquals(expected, actual);
 		
 	}
@@ -359,25 +359,24 @@ public class UtilsTest {
 	 * Positive Test case: method getDate gets a dateString as input.
 	 */
 	@Test
-	public void testGetDate_Input_Stringdate()
+	public void testGetDate_Input_Stringdate() 
 	{
-		
-	 String s = "19990801";
-	 Date actual  = Utils.getDate(s);
-	 
-	 
-	 //FIXME LSG this looks weird, try asserting the parts instead of building a second object
-	 	Calendar calendar = Calendar.getInstance();
+		String s = "19990801";
+		Date actual = Utils.getDate(s);
+
+		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 1999);
 		calendar.set(Calendar.MONTH, Calendar.AUGUST);
 		calendar.set(Calendar.DATE, 01);
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);		
-		
-		assertEquals(calendar.getTime(), actual);
-		
+		calendar.set(Calendar.MILLISECOND, 0);
+
+		Date date = calendar.getTime();
+
+		assertEquals(date, actual);
+
 	}
 	
 	/**
@@ -395,7 +394,9 @@ public class UtilsTest {
 	
 	/**
 	 * Positive Test case: method arrayContainsEqual gets an Object array and an object as input.
-	 * FIXME LSG use JavaDoc links where possible in order to not break readability when refactoring
+	 * @param String array
+	 * @param string value
+	 * @return true, if one of the arrays entries equals the given object.
 	 */
 	@Test
 	public void testArrayContainsEqual_Input_Stringarray_And_string()
@@ -411,24 +412,25 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Positive Test case: method logarithm becomes a double as input and int for the base input.
+	 * Positive Test case: method logarithm gets a double as input and int for the base input.
+	 * @param value the value
+	 * @param base the base
+	 * @return the logarithm of the given value to the given base
 	 */
 	@Test
 	public void testLogarithm_Input_Double_and_Base()
 	{
-		int base = 10;
-		double doublevalue = 20;
+		int base = 100;
+		double doublevalue = 10;
 		double DELTA = 1e-15;
 		double actual = Utils.logarithm(doublevalue, base);
-		double expected = 1.3010299956639813; //FIXME LSG why use this strange value?
+		double expected = 0.5;
 		assertEquals(expected, actual,DELTA);
 		
 	}
 	
-	//FIXME LSG several general formating/readability. ask me about this
-	
 	/**
-	 * Positive Test case: method binaryEncode becomes a byte array as input.
+	 * Positive Test case: method binaryEncode gets a byte array as input.
 	 */
 	@Test
 	public void testBinaryEncode_Input_Byte_Array()
@@ -454,7 +456,7 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Positive Test case: method isAnyNull becomes a Object as input.
+	 * Positive Test case: method isAnyNull gets a Object as input.
 	 */
 	@Test
 	public void testIsAnyNullfalse_Input_Object()
@@ -498,7 +500,6 @@ public class UtilsTest {
 		byte[] test = new byte[]{(byte) 0x01};
 		BigInteger actual = Utils.getBigIntegerFromUnsignedByteArray(test);
 		BigInteger expected = BigInteger.ONE;
-		System.out.println(actual);
 		
 		assertEquals(expected, actual);
 	}
