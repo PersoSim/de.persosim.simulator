@@ -6,8 +6,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 public class TextLengthLimiter implements ModifyListener {
+	//FIXME JKH is this class still needed?
 	
-	public static final int TEXT_LIMIT_DEFAULT = 3000;
+	public static final int TEXT_LIMIT_DEFAULT = 3000; //FIXME JKH please document or rename this value! What unit is used here?
 	
 	protected int textLimit;
 	protected boolean lock;

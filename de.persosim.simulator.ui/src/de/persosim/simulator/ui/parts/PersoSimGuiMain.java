@@ -150,7 +150,7 @@ public class PersoSimGuiMain {
 			public void handleEvent (Event e) {
 				
 				if(locked){
-					lockScroller.setText("lock");
+					lockScroller.setText("lock");//FIXME JKH these two button labels are to ambiguous
 					locked=false;
 				}else{
 					lockScroller.setText("locked");
@@ -175,7 +175,7 @@ public class PersoSimGuiMain {
 					} catch (InterruptedException e) {
 						// ignore, timing is not critical here
 					}
-					saveConsoleStrings("");
+					saveConsoleStrings(""); //FIXME JKH this line sounds odd after renaming the method: why would you replace the console with an empty string every 100 ms?
 				}
 			}
 		});
@@ -216,7 +216,7 @@ public class PersoSimGuiMain {
 		 */
 		for (int i = 0; i <= maxLineCount; i++) {
 
-			if (slider.getSelection() + i < consoleStrings.size()) {
+			if (slider.getSelection() + i < consoleStrings.size()) {//FIXME JKH why this expensive condition here? move it out of the loop. Lets have a quick chat on this whole method tomorrow...
 
 				// put entry with the value i in the StringBuilder
 				strConsoleStrings.append(consoleStrings.get(slider
@@ -294,7 +294,9 @@ public class PersoSimGuiMain {
 	    
 	}
 
+	//FIXME JKH consider "low hanging fruits": the tasks below can be easily handled as part of your modifications 
 	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
+	//FIXME JKH document this method, clean it up, remove redundancy
 	protected void saveConsoleStrings(final String s) {
 
 		// write the String into the Console Buffer
@@ -358,6 +360,7 @@ public class PersoSimGuiMain {
 
 	}
 	
+	//FIXME JKH remove obsolete code!
 	StringBuilder guiStringBuilder = new StringBuilder();
 	long lastGuiFlush = 0;
 	
