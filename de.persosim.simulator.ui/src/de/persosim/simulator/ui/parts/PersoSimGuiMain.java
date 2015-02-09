@@ -311,7 +311,7 @@ public class PersoSimGuiMain {
 	protected void saveConsoleStrings(final String s) {
 
 		// write the String into the Console Buffer
-		if (consoleStrings.size() < maxLines && !s.equals("")) {
+		if (consoleStrings.size() < maxLines && s.length()>0) {
 
 			// split at \n or \r
 			String[] splitResult = s.split("\n|\r");
@@ -327,7 +327,7 @@ public class PersoSimGuiMain {
 				showNewOutput(s);
 		}
 
-		else if (!s.equals("")) {
+		else if (s.length()>0) {
 			// Buffer is full, delete the oldest entry before adding
 			consoleStrings.pollFirst();
 
@@ -371,34 +371,6 @@ public class PersoSimGuiMain {
 
 	}
 	
-	//FIXME JKH remove obsolete code!
-	StringBuilder guiStringBuilder = new StringBuilder();
-	long lastGuiFlush = 0;
-	
-	protected void appendToGuiFromList(String s) {
-		if ((guiStringBuilder.length() > 0) || (s.length() > 0)) {
-			if (s.length() > 0) {
-				guiStringBuilder.append(s);
-			}
-
-			long currentTime = new Date().getTime();
-			if (currentTime - lastGuiFlush > 50) {
-				lastGuiFlush = currentTime;
-				// XXX MBK check why syncExec blocks (possible deadlock with
-				// System.out.print())
-				final String toPrint = guiStringBuilder.toString();
-				guiStringBuilder = new StringBuilder();
-				sync.asyncExec(new Runnable() {
-
-					@Override
-					public void run() {
-						txtOutput.append(toPrint);
-					}
-				});
-			}
-		}
-	}	
-
 	public void write(String line) {
 		inWriter.println(line);
 		inWriter.flush();
