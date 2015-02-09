@@ -161,9 +161,6 @@ public class PersoSim implements Simulator {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see de.persosim.simulator.Simulator1#startSimulator()
-	 */
 	@Override
 	public boolean startSimulator() {
 		if (simulator != null && simulator.isRunning()) {
@@ -206,9 +203,6 @@ public class PersoSim implements Simulator {
 		return false;
 	}
 	
-	/* (non-Javadoc)
-	 * @see de.persosim.simulator.Simulator1#stopSimulator()
-	 */
 	@Override
 	public boolean stopSimulator() {
 		boolean simStopped = false;
@@ -243,9 +237,6 @@ public class PersoSim implements Simulator {
 		return false;
 	}
 	
-	/* (non-Javadoc)
-	 * @see de.persosim.simulator.Simulator1#restartSimulator()
-	 */
 	@Override
 	public boolean restartSimulator() {
 		stopSimulator();
@@ -288,9 +279,6 @@ public class PersoSim implements Simulator {
 		return false;
 	}
 	
-	/* (non-Javadoc)
-	 * @see de.persosim.simulator.Simulator1#exitSimulator()
-	 */
 	@Override
 	public boolean exitSimulator() {
 		executeUserCommands = false;
@@ -305,9 +293,6 @@ public class PersoSim implements Simulator {
 		return stopped;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.persosim.simulator.Simulator1#getPersonalization()
-	 */
 	@Override
 	public Personalization getPersonalization() {
 		return currentPersonalization;
@@ -518,9 +503,6 @@ public class PersoSim implements Simulator {
 		return false;
 	}
 	
-	/* (non-Javadoc)
-	 * @see de.persosim.simulator.Simulator1#loadPersonalization(java.lang.String)
-	 */
 	@Override
 	public boolean loadPersonalization(String identifier) {
 		currentPersonalization = null;
@@ -645,9 +627,6 @@ public class PersoSim implements Simulator {
 		return false;
 	}
 	
-	/* (non-Javadoc)
-	 * @see de.persosim.simulator.Simulator1#executeUserCommands(java.lang.String)
-	 */
 	@Override
 	public void executeUserCommands(String cmd) {
 		String trimmedCmd = cmd.trim();
@@ -656,9 +635,6 @@ public class PersoSim implements Simulator {
 		executeUserCommands(args);
 	}
 	
-	/* (non-Javadoc)
-	 * @see de.persosim.simulator.Simulator1#executeUserCommands(java.lang.String)
-	 */
 	@Override
 	public void executeUserCommands(String... args) {
 		if((args == null) || (args.length == 0)) {log(this.getClass(), LOG_NO_OPERATION, INFO); return;}
