@@ -91,7 +91,6 @@ public class PersoSimGuiMain {
 		slider = new Slider(parent, SWT.V_SCROLL);
 		slider.setIncrement(1);
 		slider.setPageIncrement(10);
-//		slider.setMaximum(countedLines+slider.getThumb());
 		slider.setMaximum(consoleStrings.size()+slider.getThumb());
 		slider.setMinimum(0);
 		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));		
