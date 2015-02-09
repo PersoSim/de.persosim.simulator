@@ -191,6 +191,14 @@ public class PersoSimGuiMain {
 			
 			@Override
 			public void run() {
+				
+				/*
+				 * The 20 is important to make sure that the text field does not
+				 * cut off the output. This can happen after too many
+				 * "very long" Strings without line breaks were written. If the
+				 * variable maxLines needs to be changes this value (possibly)
+				 * needs to be re-adjusted too!
+				 */
 				slider.setMaximum(consoleStrings.size()-20);
 			}
 		});
