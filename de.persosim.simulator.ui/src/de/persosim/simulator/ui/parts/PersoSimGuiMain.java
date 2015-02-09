@@ -195,10 +195,8 @@ public class PersoSimGuiMain {
 		// clean text field before filling it with the requested data
 		final StringBuilder strConsoleStrings = new StringBuilder();
 
-		// calculates how many lines can be shown by the text field
-		// without cutting it.
+		// calculates how many lines can be shown without cutting
 		int maxLineCount = txtOutput.getBounds().height / txtOutput.getLineHeight();
-
 		
 		int listSize = consoleStrings.size();
 		
