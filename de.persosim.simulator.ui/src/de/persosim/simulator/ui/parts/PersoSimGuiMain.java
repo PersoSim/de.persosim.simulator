@@ -200,19 +200,15 @@ public class PersoSimGuiMain {
 		// without cutting it.
 		int maxLineCount = txtOutput.getBounds().height / txtOutput.getLineHeight();
 
-		/*
-		 * Show the selected entry and the following entries until the text
-		 * field is full
-		 */
+		
+		int listSize = consoleStrings.size();
+		
+		// Fill text field with selected data
 		for (int i = 0; i <= maxLineCount; i++) {
 
-			if (slider.getSelection() + i < consoleStrings.size()) {//FIXME JKH why this expensive condition here? move it out of the loop. Lets have a quick chat on this whole method tomorrow...
+			if (slider.getSelection() + i < listSize) {
 
-				// put entry with the value i in the StringBuilder
-				strConsoleStrings.append(consoleStrings.get(slider
-						.getSelection() + i));
-
-				txtOutput.setSelection(txtOutput.getText().length());
+				strConsoleStrings.append(consoleStrings.get(slider.getSelection() + i));
 
 			} else break;
 		}
