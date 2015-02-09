@@ -303,7 +303,7 @@ public class PersoSimGuiMain {
 	protected void saveConsoleStrings(final String s) {
 
 		// write the String into the Console Buffer
-		if (consoleStrings.size() < maxLines+1 && s.length()>0) {
+		if (consoleStrings.size() < maxLines+1) {
 
 			// split at \n or \r
 			String[] splitResult = s.split("\n|\r");
@@ -319,7 +319,7 @@ public class PersoSimGuiMain {
 				showNewOutput(s);
 		}
 
-		else if (s.length()>0) {
+		else{
 			// Buffer is full, delete the oldest entry before adding
 			consoleStrings.pollFirst();
 
