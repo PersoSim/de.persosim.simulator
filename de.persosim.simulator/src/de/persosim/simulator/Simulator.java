@@ -2,6 +2,13 @@ package de.persosim.simulator;
 
 import de.persosim.simulator.perso.Personalization;
 
+/**
+ * This interface defines the methods used for controlling the simulator. It is
+ * used in the OSGi service definitions.
+ * 
+ * @author mboonk
+ *
+ */
 public interface Simulator {
 
 	public static final String CMD_START = "start";
@@ -20,19 +27,22 @@ public interface Simulator {
 	public static final String DEFAULT_SIM_HOST = "localhost";
 
 	/**
-	 * This method handles instantiation and (re)start of the SocketSimulator.
+	 * This method handles instantiation and start of the SocketSimulator.
+	 * Calling this method on an already running simulator does nothing.
+	 * 
 	 * @return whether instantiation and starting was successful
 	 */
 	public abstract boolean startSimulator();
 
 	/**
 	 * Stops the simulator thread and returns when the thread is stopped.
+	 * Calling this method on an already stopped simulator does nothing.
 	 * @return whether stopping was successful
 	 */
 	public abstract boolean stopSimulator();
 
 	/**
-	 * This method restarts the simulator.
+	 * This method restarts the simulator. It works on independent of running state.
 	 * @return whether restarting has been successful
 	 */
 	public abstract boolean restartSimulator();
@@ -56,6 +66,15 @@ public interface Simulator {
 	 */
 	public abstract Personalization getPersonalization();
 
+	/**
+	 * The given identifier is parsed and the corresponding personalization is
+	 * loaded. If the identifier is a number, the profile with this number is
+	 * loaded. Other inputs are interpreted as file names of personalization
+	 * files.
+	 * 
+	 * @param identifier, the number or file name of the profile to load
+	 * @return true, if the profile loading was successful
+	 */
 	public abstract boolean loadPersonalization(String identifier);
 
 	/**
