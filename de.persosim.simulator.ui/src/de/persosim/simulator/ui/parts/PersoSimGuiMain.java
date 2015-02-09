@@ -165,22 +165,6 @@ public class PersoSimGuiMain {
 		Thread simThread = new Thread(sim);
 		simThread.start();
 		
-		//following Thread ensures that the buffered UI contents are updated regularly
-		Thread uiBufferThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						// ignore, timing is not critical here
-					}
-					saveConsoleStrings(""); //FIXME JKH this line sounds odd after renaming the method: why would you replace the console with an empty string every 100 ms?
-				}
-			}
-		});
-		uiBufferThread.start();
-	
 	}
 	
 	/**
