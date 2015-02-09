@@ -311,7 +311,7 @@ public class PersoSimGuiMain {
 	protected void saveConsoleStrings(final String s) {
 
 		// write the String into the Console Buffer
-		if (consoleStrings.size() < maxLines && s.length()>0) {
+		if (consoleStrings.size() < maxLines+1 && s.length()>0) {
 
 			// split at \n or \r
 			String[] splitResult = s.split("\n|\r");
