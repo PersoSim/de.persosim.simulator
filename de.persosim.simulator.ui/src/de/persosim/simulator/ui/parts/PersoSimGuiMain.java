@@ -296,7 +296,18 @@ public class PersoSimGuiMain {
 
 	//FIXME JKH consider "low hanging fruits": the tasks below can be easily handled as part of your modifications 
 	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
-	//FIXME JKH document this method, clean it up, remove redundancy
+	//FIXME JKH document this method, clean it up, remove redundancy	
+	/**
+	 * saves and manages Strings grabbed by {@link #grabSysOut()} in a
+	 * LinkedList. This is necessary because they are not saved in the text
+	 * field all the time. Writing all of them directly in the text field would
+	 * slow down the whole application. Taking the Strings from the List and
+	 * adding them to the text field (if needed) is done by
+	 * {@link #buildNewConsoleContent()}.
+	 * 
+	 * @param s
+	 *            is the String that should be saved in the List
+	 */
 	protected void saveConsoleStrings(final String s) {
 
 		// write the String into the Console Buffer
