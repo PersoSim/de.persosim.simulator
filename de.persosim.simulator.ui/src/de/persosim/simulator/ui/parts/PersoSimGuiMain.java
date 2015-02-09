@@ -191,7 +191,7 @@ public class PersoSimGuiMain {
 			
 			@Override
 			public void run() {
-				slider.setMaximum(consoleStrings.size()-25);
+				slider.setMaximum(consoleStrings.size()-20);
 			}
 		});
 	}
