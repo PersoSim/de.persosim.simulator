@@ -143,14 +143,14 @@ public class PersoSimGuiMain {
 		txtInput.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		lockScroller = new Button(parent, SWT.TOGGLE);
-		lockScroller.setText("  lock  ");
+		lockScroller.setText("unlocked");
 		lockScroller.addListener(SWT.Selection, new Listener() {
 			
 			@Override
 			public void handleEvent (Event e) {
 				
 				if(locked){
-					lockScroller.setText("lock");//FIXME JKH these two button labels are to ambiguous
+					lockScroller.setText("unlocked");
 					locked=false;
 				}else{
 					lockScroller.setText("locked");
@@ -322,12 +322,10 @@ public class PersoSimGuiMain {
 		else{
 			// Buffer is full, delete the oldest entry before adding
 			consoleStrings.pollFirst();
-
 			consoleStrings.add(s);
-
 			rebuildSlider();
 
-			// if not locked: refresh txtoutput
+			// if not locked: refresh txtoutput to show the new text
 			if (!locked) {
 
 				sync.asyncExec(new Runnable() {
