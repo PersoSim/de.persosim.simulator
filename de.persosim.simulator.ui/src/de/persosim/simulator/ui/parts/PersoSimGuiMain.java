@@ -8,7 +8,6 @@ import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
@@ -60,8 +59,6 @@ public class PersoSimGuiMain {
 	//maximum amount of strings saved in the buffer
 	private int maxLines = 2000;
 	
-	private int countedLines=0;
-	
 	private PrintStream newSystemOut;
 	private final PipedInputStream inPipe = new PipedInputStream();
 	
@@ -94,7 +91,8 @@ public class PersoSimGuiMain {
 		slider = new Slider(parent, SWT.V_SCROLL);
 		slider.setIncrement(1);
 		slider.setPageIncrement(10);
-		slider.setMaximum(countedLines+slider.getThumb());
+//		slider.setMaximum(countedLines+slider.getThumb());
+		slider.setMaximum(consoleStrings.size()+slider.getThumb());
 		slider.setMinimum(0);
 		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));		
 		
@@ -171,7 +169,7 @@ public class PersoSimGuiMain {
 	 * changes the maximum of the slider
 	 */
 	private void rebuildSlider(){
-		sync.asyncExec(new Runnable() {
+		sync.syncExec(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -286,59 +284,32 @@ public class PersoSimGuiMain {
 	    
 	}
 
-	//FIXME JKH consider "low hanging fruits": the tasks below can be easily handled as part of your modifications 
 	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
-	//FIXME JKH document this method, clean it up, remove redundancy	
 	/**
 	 * saves and manages Strings grabbed by {@link #grabSysOut()} in a
 	 * LinkedList. This is necessary because they are not saved in the text
 	 * field all the time. Writing all of them directly in the text field would
 	 * slow down the whole application. Taking the Strings from the List and
 	 * adding them to the text field (if needed) is done by
-	 * {@link #buildNewConsoleContent()}.
+	 * {@link #buildNewConsoleContent()} which is called by {@link #showNewOutput()}.
 	 * 
-	 * @param s
-	 *            is the String that should be saved in the List
+	 * @param s is the String that should be saved in the List
 	 */
 	protected void saveConsoleStrings(final String s) {
 
-		// write the String into the Console Buffer
-		if (consoleStrings.size() < maxLines+1) {
+		String[] splitResult = s.split("(?=/n|/r)");
 
-			// split at \n or \r
-			String[] splitResult = s.split("\n|\r");
-			for (int i = 0; i < splitResult.length; i++) {
-				countedLines++;
-				consoleStrings.add(s);
+		for (int i = 0; i < splitResult.length; i++) {
+			consoleStrings.add(splitResult[i]);
+
+			if (consoleStrings.size() > maxLines) {
+				consoleStrings.removeFirst();
 			}
 
-			rebuildSlider();
-
-			// if not locked: refresh txtoutput
-			if (!locked)
-				showNewOutput(s);
-		}
-
-		else{
-			// Buffer is full, delete the oldest entry before adding
-			consoleStrings.pollFirst();
-			consoleStrings.add(s);
-			rebuildSlider();
-
-			// if not locked: refresh txtoutput to show the new text
 			if (!locked) {
-
-				sync.asyncExec(new Runnable() {
-
-					@Override
-					public void run() {
-						buildNewConsoleContent();
-					}
-				});
+				showNewOutput();
 			}
-
 		}
-
 	}
 	
 	/**
@@ -346,7 +317,7 @@ public class PersoSimGuiMain {
 	 * 
 	 * @param message is the new String
 	 */
-	public void showNewOutput(final String message) {
+	public void showNewOutput() {
 
 		sync.asyncExec(new Runnable() {
 			@Override
