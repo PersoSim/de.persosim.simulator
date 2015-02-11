@@ -243,6 +243,7 @@ public class PersoSimLogger {
 		if (logService != null){
 			logService.log(logLevel, message);
 		} else if (logger != null) {
+			// TODO this branch could be obsolete if PersoSim becomes OSGi-only. 
 			if (initializeOnNextMessage){
 				initializeOnNextMessage = false;
 				initializeLog4j();
