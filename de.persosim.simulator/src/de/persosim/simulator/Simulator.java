@@ -82,6 +82,7 @@ public interface Simulator {
 	 * It processes user commands based on a single String containing the whole command and all of its parameters.
 	 * @param cmd the single String command
 	 */
+	//FIXME MBK present the underlying functionality directly and move parsing of commands to callers (e.g. UI)
 	public abstract void executeUserCommands(String cmd);
 
 	/**
