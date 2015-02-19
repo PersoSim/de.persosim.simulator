@@ -26,8 +26,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
 import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
@@ -511,17 +509,16 @@ public class PersoSim implements Simulator {
 		try {
 			int personalizationNumber = Integer.parseInt(identifier);
 			log(this.getClass(), "trying to load personalization profile no: " + personalizationNumber, INFO);
-			Bundle plugin = Platform.getBundle("de.persosim.simulator");
+			Bundle plugin = Activator.getContext().getBundle();
 			
 			if(plugin == null) {
 				// TODO how to handle this case? Add OSGI requirement?
 				log(this.getClass(), "unable to resolve bundle \"de.persosim.simulator\" - personalization unchanged", INFO);
 				return false;
 			} else {
-				URL url = plugin.getEntry(persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
-				URL resolvedURL = FileLocator.resolve(url);
-				log(this.getClass(), "resolved absolute URL for selected profile is: " + resolvedURL, INFO);
-				identifier = resolvedURL.getPath();
+				URL url = plugin.getResource(persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
+				System.out.println("resolved absolute URL for selected profile is: " + url);
+				identifier = url.getPath();
 			}
 		} catch (Exception e) {
 			//seems to be a call to load a personalization by path
