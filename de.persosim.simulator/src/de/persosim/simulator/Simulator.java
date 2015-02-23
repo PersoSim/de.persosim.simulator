@@ -10,19 +10,6 @@ import de.persosim.simulator.perso.Personalization;
  *
  */
 public interface Simulator {
-
-	public static final String CMD_START = "start";
-	public static final String CMD_RESTART = "restart";
-	public static final String CMD_STOP = "stop";
-	public static final String CMD_EXIT = "exit";
-	public static final String CMD_SET_PORT = "setport";
-	public static final String ARG_SET_PORT = "-port";
-	public static final String CMD_LOAD_PERSONALIZATION = "loadperso";
-	public static final String ARG_LOAD_PERSONALIZATION = "-perso";
-	public static final String CMD_SEND_APDU = "sendapdu";
-	public static final String CMD_HELP = "help";
-	public static final String ARG_HELP = "-h";
-	public static final String CMD_CONSOLE_ONLY = "--consoleOnly";
 	public static final int DEFAULT_SIM_PORT = 9876;
 	public static final String DEFAULT_SIM_HOST = "localhost";
 
@@ -77,19 +64,18 @@ public interface Simulator {
 	 */
 	public abstract boolean loadPersonalization(String identifier);
 
-	/**
-	 * This method implements the execution of commands initiated by user interaction.
-	 * It processes user commands based on a single String containing the whole command and all of its parameters.
-	 * @param cmd the single String command
-	 */
-	//FIXME MBK present the underlying functionality directly and move parsing of commands to callers (e.g. UI)
-	public abstract void executeUserCommands(String cmd);
 
 	/**
-	 * This method implements the execution of commands initiated by user interaction.
-	 * It processes user commands based on single String representing the command and all of its parameters.
-	 * @param args the parsed commands and arguments
+	 * This method sets a new port for the simulator to be used at the next start.
+	 * In order for the changes to take effect, the simulator needs to be restarted.
+	 * @param newPortString the new port to be used
 	 */
-	public abstract void executeUserCommands(String... args);
+	public abstract void setPort(int newPort);
+	
+	/**
+	 * This method gets the currently configured port.
+	 * @param newPortString the new port to be used
+	 */
+	public abstract int getPort();
 
 }

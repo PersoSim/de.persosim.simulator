@@ -13,6 +13,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.util.tracker.ServiceTracker;
 
+import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.Simulator;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
@@ -45,7 +46,7 @@ public class Activator implements BundleActivator {
 	public static void executeUserCommands(String command){
 		Simulator sim = (Simulator) simulatorServiceTracker.getService();
 		if (sim != null){
-			sim.executeUserCommands(command);
+			CommandParser.executeUserCommands(sim, command);
 		} else {
 			throw new ServiceException("The Simulator service could not be found");
 		}
@@ -140,6 +141,6 @@ public class Activator implements BundleActivator {
 		logReaderTracker.close();
 
 		Activator.context = null;
-		serviceTracker.close();
+		simulatorServiceTracker.close();
 	}
 }

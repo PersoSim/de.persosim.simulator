@@ -2,25 +2,14 @@ package de.persosim.simulator;
 
 import static de.persosim.simulator.utils.PersoSimLogger.INFO;
 import static de.persosim.simulator.utils.PersoSimLogger.UI;
-import static de.persosim.simulator.utils.PersoSimLogger.WARN;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.logException;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.net.Socket;
 import java.net.URL;
 import java.security.Security;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -58,7 +47,6 @@ public class PersoSim implements Simulator {
 	
 	public static final String LOG_NO_OPERATION = "nothing to process";
 	public static final String LOG_SIM_EXIT     = "simulator exit";
-	public static final String LOG_UNKNOWN_ARG  = "unknown argument";
 	
 	public static final String persoPlugin = "platform:/plugin/de.persosim.rcp/";
 	public static final String persoPath = "personalization/profiles/";
@@ -66,8 +54,6 @@ public class PersoSim implements Simulator {
 	public static final String persoFilePostfix = ".xml";
 	
 	private int simPort = DEFAULT_SIM_PORT; // default
-	private boolean executeUserCommands = false;
-	private boolean processingCommandLineArguments = false;
 	
 	static {
 		//register BouncyCastle provider
@@ -85,7 +71,7 @@ public class PersoSim implements Simulator {
 	
 	public PersoSim(String... args) {
 		try {
-			handleArgs(args);
+			CommandParser.handleArgs(this, args);
 		} catch (IllegalArgumentException e) {
 			log(this.getClass(), "simulation aborted, reason is: " + e.getMessage());
 		}
@@ -96,67 +82,15 @@ public class PersoSim implements Simulator {
 		System.out.println("Welcome to PersoSim");
 
 		startSimulator();
+		final Simulator sim = this;
 		
 		new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
-				handleUserCommands();
+				CommandParser.handleUserCommands(sim);
 			}
 		}).start();
-	}
-
-	/**
-	 * Default command line main method.
-	 * 
-	 * This starts the PersoSim simulator within its own thread and accepts user
-	 * commands to control it on the existing thread on a simple command prompt.
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		(new PersoSim(args)).startPersoSim();
-	}
-	
-	public static void showExceptionToUser(Exception e) {
-		log(PersoSim.class, "Exception: " + e.getMessage(), UI);
-		e.printStackTrace();
-	}
-	
-	/**
-	 * This method parses the provided String object for commands and possible
-	 * arguments. First the provided String is trimmed. If the String is empty,
-	 * the returned array will be of length 0. If the String does not contain at
-	 * least one space character ' ', the whole String will be returned as first
-	 * and only element of an array of length 1. If the String does contain at
-	 * least one space character ' ', the substring up to but not including the
-	 * position of the first occurrence will be the first element of the
-	 * returned array. The rest of the String will be trimmed and, if not of
-	 * length 0, form the second array element.
-	 * 
-	 * IMPL extend to parse for multiple arguments add recognition of "
-	 * characters as indication of file names allowing white spaces in between.
-	 * 
-	 * @param args
-	 *            the argument String to be parsed
-	 * @return the parsed arguments
-	 */
-	public static String[] parseCommand(String args) {
-		String argsInput = args.trim();
-		
-		int index = argsInput.indexOf(" ");
-		
-		if(index >= 0) {
-			String cmd = argsInput.substring(0, index);
-			String params = argsInput.substring(index).trim();
-			return new String[]{cmd, params};
-		} else{
-			if(argsInput.length() > 0) {
-				return new String[]{argsInput};
-			} else{
-				return new String[0];
-			}
-		}
 	}
 	
 	@Override
@@ -183,24 +117,6 @@ public class PersoSim implements Simulator {
 
 	}
 	
-	/**
-	 * This method processes the command for starting the simulator.
-	 * @param args arguments that may contain a start command
-	 * @return whether instantiation and starting was successful
-	 */
-	public boolean cmdStartSimulator(List<String> args) {
-		if((args != null) && (args.size() >= 1)) {
-			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_START)) {
-				args.remove(0);
-				return startSimulator();
-			}
-		}
-		
-		return false;
-	}
-	
 	@Override
 	public boolean stopSimulator() {
 		boolean simStopped = false;
@@ -217,69 +133,14 @@ public class PersoSim implements Simulator {
 		return simStopped;
 	}
 	
-	/**
-	 * This method processes the command for stopping the simulator.
-	 * @param args arguments that may contain a stop command
-	 * @return whether stopping was successful
-	 */
-	public boolean cmdStopSimulator(List<String> args) {
-		if((args != null) && (args.size() >= 1)) {
-			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_STOP)) {
-				args.remove(0);
-				return stopSimulator();
-			}
-		}
-		
-		return false;
-	}
-	
 	@Override
 	public boolean restartSimulator() {
 		stopSimulator();
 		return startSimulator();
 	}
 	
-	/**
-	 * This method processes the command for restarting the simulator.
-	 * @param args arguments that may contain a restart command
-	 * @return whether restarting was successful
-	 */
-	public boolean cmdRestartSimulator(List<String> args) {
-		if((args != null) && (args.size() >= 1)) {
-			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_RESTART)) {
-				args.remove(0);
-				return restartSimulator();
-			}
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * This method processes the command for exiting the simulator.
-	 * @param args arguments that may contain an exit command
-	 * @return whether exiting was successful
-	 */
-	public boolean cmdExitSimulator(List<String> args) {
-		if((args != null) && (args.size() >= 1)) {
-			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_EXIT)) {
-				args.remove(0);
-				return exitSimulator();
-			}
-		}
-		
-		return false;
-	}
-	
 	@Override
 	public boolean exitSimulator() {
-		executeUserCommands = false;
 		log(this.getClass(), LOG_SIM_EXIT, UI);
 		
 		boolean stopped = stopSimulator();
@@ -311,196 +172,6 @@ public class PersoSim implements Simulator {
 		return (Personalization) um.unmarshal(new FileReader(persoFile));
 	}
 	
-	/**
-	 * This method sets a new port for the simulator to be used at the next start.
-	 * In order for the changes to take effect, the simulator needs to be restarted.
-	 * @param newPortString the new port to be used
-	 */
-	public void setPort(String newPortString) {
-		if(newPortString == null) {throw new NullPointerException("port parameter must not be null");}
-		int newPort = Integer.parseInt(newPortString);
-		if(newPort < 0) {throw new IllegalArgumentException("port number must be positive");}
-		
-		simPort = newPort;
-		
-		log(this.getClass(), "new port set to " + newPort + " after restart of simulation.", UI);
-		
-		//IMPL check for port being unused
-	}
-
-	/**
-	 * Transmit an APDU to the card
-	 * 
-	 * @param cmd
-	 *            string containing the command
-	 * @return the response
-	 */
-	private String sendCmdApdu(String cmd) {
-		cmd = cmd.trim();
-
-		Pattern cmdSendApduPattern = Pattern
-				.compile("^send[aA]pdu ([0-9a-fA-F\\s]+)$");
-		Matcher matcher = cmdSendApduPattern.matcher(cmd);
-		if (!matcher.matches()) {
-			throw new RuntimeException("invalid arguments to sendApdu");
-		}
-		String apdu = matcher.group(1);
-		return exchangeApdu(apdu);
-
-	}
-	
-	/**
-	 * This method processes the send APDU command according to the provided arguments.
-	 * @param args the arguments provided for processing
-	 * @return whether processing has been successful
-	 */
-	public String cmdSendApdu(List<String> args) {
-		if((args != null) && (args.size() >= 2)) {
-			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_SEND_APDU)) {
-				String result;
-				
-				try{
-	    			result = sendCmdApdu("sendApdu " + args.get(1));
-	    			args.remove(0);
-	    			args.remove(0);
-	    			return result;
-	    		} catch(RuntimeException e) {
-	    			result = "unable to send APDU, reason is: " + e.getMessage();
-	    			args.remove(0);
-	    			return result;
-	    		}
-			} else{
-				return "no send APDU command";
-			}
-		} else{
-			return "missing parameter for APDU content";
-		}
-	}
-	
-	/**
-	 * Transmit the given APDU to the simulator, which processes it and returns
-	 * the response. The response APDU is received from the simulator via its
-	 * socket interface and returned to the caller as HexString.
-	 * 
-	 * @param cmdApdu
-	 *            HexString containing the CommandAPDU
-	 * @return
-	 */
-	private String exchangeApdu(String cmdApdu) {
-		return exchangeApdu(cmdApdu, DEFAULT_SIM_HOST, simPort);
-	}
-
-	/**
-	 * Transmit the given APDU to the simulator identified by host name and port
-	 * number, where it will be processed and answered by a response. The
-	 * response APDU is received from the simulator via its socket interface and
-	 * returned to the caller as HexString.
-	 * 
-	 * @param cmdApdu
-	 *            HexString containing the CommandAPDU
-	 * @param host
-	 *            the host to contact
-	 * @param port
-	 *            the port to query
-	 * @return the response
-	 */
-	private String exchangeApdu(String cmdApdu, String host, int port) {
-		cmdApdu = cmdApdu.replaceAll("\\s", ""); // remove any whitespace
-
-		Socket socket;
-		try {
-			socket = new Socket(host, port);
-		} catch (IOException e) {
-			socket = null;
-			showExceptionToUser(e);
-			return null;
-		}
-
-		PrintStream out = null;
-		BufferedReader in = null;
-		try {
-			out = new PrintStream(socket.getOutputStream());
-			in = new BufferedReader(new InputStreamReader(
-					socket.getInputStream()));
-		} catch (IOException e) {
-			showExceptionToUser(e);
-		}
-
-		out.println(cmdApdu);
-		out.flush();
-
-		String respApdu = null;
-		try {
-			respApdu = in.readLine();
-		} catch (IOException e) {
-			showExceptionToUser(e);
-		} finally {
-			log(this.getClass(), "> " + cmdApdu, UI);
-			log(this.getClass(), "< " + respApdu, UI);
-			if (socket != null) {
-				try {
-					socket.close();
-				} catch (IOException e) {
-					showExceptionToUser(e);
-				}
-			}
-		}
-
-		return respApdu;
-		
-	}
-	
-	/**
-	 * This method prints the help menu to the command line.
-	 */
-	private void printHelpArgs() {
-		log(this.getClass(), "Available commands:", UI);
-		log(this.getClass(), ARG_LOAD_PERSONALIZATION + " <file name>", UI);
-		log(this.getClass(), ARG_SET_PORT + " <port number>", UI);
-		log(this.getClass(), ARG_HELP, UI);
-	}
-	
-	/**
-	 * This method prints the help menu to the user command line.
-	 */
-	private void printHelpCmd() {
-		log(this.getClass(), "Available commands:", UI);
-		log(this.getClass(), CMD_SEND_APDU + " <hexstring>", UI);
-		log(this.getClass(), CMD_LOAD_PERSONALIZATION + " <file name>", UI);
-		log(this.getClass(), CMD_SET_PORT + " <port number>", UI);
-		log(this.getClass(), CMD_START, UI);
-		log(this.getClass(), CMD_RESTART, UI);
-		log(this.getClass(), CMD_STOP, UI);
-		log(this.getClass(), CMD_EXIT, UI);
-		log(this.getClass(), CMD_HELP, UI);
-	}
-	
-	/**
-	 * This method processes the load personalization command according to the provided arguments.
-	 * @param args the arguments provided for processing the load personalization command
-	 * @return whether processing of the load personalization command has been successful
-	 */
-	public boolean cmdLoadPersonalization(List<String> args) {
-		
-		if((args != null) && (args.size() >= 2)) {
-			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_LOAD_PERSONALIZATION) || cmd.equals(ARG_LOAD_PERSONALIZATION)) {
-				String arg = args.get(1);
-				
-				args.remove(0);
-    			args.remove(0);
-    			
-    			return loadPersonalization(arg);
-				
-			}
-		}
-		
-		return false;
-	}
-	
 	@Override
 	public boolean loadPersonalization(String identifier) {
 		currentPersonalization = null;
@@ -527,11 +198,7 @@ public class PersoSim implements Simulator {
 		//actually load perso from the identified file
 		try{
 			currentPersonalization = parsePersonalization(identifier);
-			if(processingCommandLineArguments) {
-				return true;
-			} else{
-				return restartSimulator();
-			}
+			return restartSimulator();
 		} catch(FileNotFoundException | JAXBException e) {
 			logException(this.getClass(), e);
 			stopSimulator();
@@ -540,186 +207,14 @@ public class PersoSim implements Simulator {
 		}
 	}
 	
-	/**
-	 * This method processes the set port command according to the provided arguments.
-	 * @param args the arguments provided for processing the set port command
-	 * @return whether processing of the set port command has been successful
-	 */
-	public boolean cmdSetPortNo(List<String> args) {
-		if((args != null) && (args.size() >= 2)) {
-			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_SET_PORT) || cmd.equals(ARG_SET_PORT)) {
-				String arg = args.get(1);
-				args.remove(0);
-    			args.remove(0);
-				
-				try{
-	    			setPort(arg);
-	    			
-	    			if(processingCommandLineArguments) {
-	    				return true;
-	    			} else{
-	    				return restartSimulator();
-	    			}
-	    		} catch(IllegalArgumentException | NullPointerException e) {
-	    			logException(this.getClass(), e);
-	    			return false;
-	    		}
-			}
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * This method implements the behavior of the user command prompt. E.g.
-	 * prints the prompt, reads the user commands and forwards this to the the
-	 * execution method for processing. Only one command per invocation of the
-	 * execution method is allowed. The first argument provided must be the
-	 * command, followed by an arbitrary number of parameters. If the number of
-	 * provided parameters is higher than the number expected by the command,
-	 * the surplus parameters will be ignored.
-	 */
-	private void handleUserCommands() {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-		executeUserCommands = true;
-		while (executeUserCommands) {
-			log(this.getClass(), "PersoSim commandline: ", UI);
-			String cmd = null;
-			try {
-				cmd = br.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			try {
-				if (cmd != null) {
-					cmd = cmd.trim();
-					String[] args = parseCommand(cmd);
-					executeUserCommands(args);
-				}
-			} catch (RuntimeException e) {
-				showExceptionToUser(e);
-			}
-		}
-	}
-	
-	public boolean cmdHelp(List<String> args) {
-		if((args != null) && (args.size() >= 1)) {
-			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_HELP) || cmd.equals(ARG_HELP)) {
-				args.remove(0);
-				
-				if(processingCommandLineArguments) {
-					printHelpArgs();
-				} else{
-					printHelpCmd();
-				}
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
 	@Override
-	public void executeUserCommands(String cmd) {
-		String trimmedCmd = cmd.trim();
-		String[] args = parseCommand(trimmedCmd);
-		
-		executeUserCommands(args);
-	}
-	
-	@Override
-	public void executeUserCommands(String... args) {
-		if((args == null) || (args.length == 0)) {log(this.getClass(), LOG_NO_OPERATION, INFO); return;}
-		
-		ArrayList<String> currentArgs = new ArrayList<String>(Arrays.asList(args)); // plain return value of Arrays.asList() does not support required remove operation
-		
-		for(int i = currentArgs.size() - 1; i >= 0; i--) {
-			if(currentArgs.get(i) == null) {
-				currentArgs.remove(i);
-			}
-		}
-		
-		if(currentArgs.size() == 0) {log(this.getClass(), LOG_NO_OPERATION, INFO); return;}
-		
-		int noOfArgsWhenCheckedLast;
-		while(currentArgs.size() > 0) {
-			noOfArgsWhenCheckedLast = currentArgs.size();
-			
-			cmdLoadPersonalization(currentArgs);
-			cmdSetPortNo(currentArgs);
-			cmdSendApdu(currentArgs);
-			cmdStartSimulator(currentArgs);
-			cmdRestartSimulator(currentArgs);
-			cmdStopSimulator(currentArgs);
-			cmdExitSimulator(currentArgs);
-			cmdHelp(currentArgs);
-			
-			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
-				//first command in queue has not been processed
-				String currentArgument = currentArgs.get(0);
-				log(this.getClass(), LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped", WARN);
-				currentArgs.remove(0);
-				printHelpCmd();
-				break;
-			}
-		}
-		
-	}
-	
-	/**
-	 * This method implements the execution of commands initiated by command line arguments.
-	 * @param args the parsed commands and arguments
-	 */
-	public void handleArgs(String... args) {
-		if((args == null) || (args.length == 0)) {log(this.getClass(), LOG_NO_OPERATION, INFO); return;}
-		
-		processingCommandLineArguments = true;
-		
-		List<String> currentArgs = Arrays.asList(args);
-		// the list returned by Arrays.asList() does not support optional but required remove operation
-		currentArgs = new ArrayList<String>(currentArgs);
-		
-		for(int i = currentArgs.size() - 1; i >= 0; i--) {
-			if(currentArgs.get(i) == null) {
-				currentArgs.remove(i);
-			}
-		}
-		
-		if(currentArgs.size() == 0) {log(this.getClass(), LOG_NO_OPERATION, INFO); return;}
-		
-		int noOfArgsWhenCheckedLast;
-		while(currentArgs.size() > 0) {
-			noOfArgsWhenCheckedLast = currentArgs.size();
-			
-			cmdLoadPersonalization(currentArgs);
-			cmdSetPortNo(currentArgs);
-			cmdHelp(currentArgs);
-			
-			if(currentArgs.size() > 0) {
-				if(currentArgs.get(0).equals(CMD_CONSOLE_ONLY)) {
-					// do no actual processing, i.e. prevent simulator from logging unknown command error as command has already been processed
-		        	// command is passed on as part of unprocessed original command line arguments
-		        	currentArgs.remove(0);
-				}
-			}
-			
-			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
-				//first command in queue has not been processed
-				String currentArgument = currentArgs.get(0);
-				log(this.getClass(), LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped", WARN);
-				currentArgs.remove(0);
-				printHelpCmd();
-				break;
-			}
-		}
-		
-		processingCommandLineArguments = false;
-		
+	public void setPort(int newPort) {
+		simPort = newPort;
 	}
 
+	@Override
+	public int getPort() {
+		return simPort;
+	}
 }

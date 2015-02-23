@@ -177,7 +177,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		String response = readRedStdOut();
 		
-		assertTrue(response.contains(PersoSim.LOG_NO_OPERATION));
+		assertTrue(response.contains(CommandParser.LOG_NO_OPERATION));
 	}
 	
 	/**
@@ -192,7 +192,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		String response = readRedStdOut();
 		
-		assertTrue(response.contains(PersoSim.LOG_NO_OPERATION));
+		assertTrue(response.contains(CommandParser.LOG_NO_OPERATION));
 	}
 	
 	/**
@@ -205,11 +205,11 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		activateStdOutRedirection();
 		
-		persoSim.executeUserCommands("");
+		CommandParser.executeUserCommands(persoSim, "");
 		
 		String response = readRedStdOut();
 
-		assertTrue(response.contains(PersoSim.LOG_NO_OPERATION));
+		assertTrue(response.contains(CommandParser.LOG_NO_OPERATION));
 	}
 	
 	/**
@@ -222,7 +222,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		activateStdOutRedirection();
 		
-		persoSim.executeUserCommands(Simulator.CMD_EXIT);
+		CommandParser.executeUserCommands(persoSim, CommandParser.CMD_EXIT);
 		
 		String response = readRedStdOut();
 
@@ -239,11 +239,11 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		activateStdOutRedirection();
 		
-		persoSim.executeUserCommands("unknown");
+		CommandParser.executeUserCommands(persoSim, "unknown");
 		
 		String response = readRedStdOut();
 		
-		assertTrue(response.contains(PersoSim.LOG_UNKNOWN_ARG));
+		assertTrue(response.contains(CommandParser.LOG_UNKNOWN_ARG));
 	}
 	
 	/**
@@ -282,7 +282,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator() throws Exception {
-		persoSim = new PersoSim(new String[]{Simulator.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		boolean caughtIoException = false;
 		try {
@@ -305,7 +305,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator_twice() throws Exception {
-		persoSim = new PersoSim(new String[]{Simulator.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		persoSim.startSimulator();
 		assertTrue(persoSim.startSimulator());
@@ -321,7 +321,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test(expected = ConnectException.class)
 	public void testStopSimulator() throws Exception {
-		persoSim = new PersoSim(Simulator.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1);
+		persoSim = new PersoSim(CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1);
 		
 		persoSim.startSimulator();
 		
@@ -338,7 +338,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testParseCommandEmptyString() {
-		String[] result = PersoSim.parseCommand("");
+		String[] result = CommandParser.parseCommand("");
 		
 		assertEquals(result.length, 0);
 	}
@@ -349,7 +349,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	@Test(expected = NullPointerException.class)
 	public void testParseCommandNull() {
 		System.out.println("test007");
-		PersoSim.parseCommand(null);
+		CommandParser.parseCommand(null);
 	}
 	
 	/**
@@ -358,7 +358,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	@Test
 	public void testParseCommand_UntrimmedCoherentString() {
 		String arg = "string";
-		String[] result = PersoSim.parseCommand(" " + arg + "  ");
+		String[] result = CommandParser.parseCommand(" " + arg + "  ");
 		
 		assertEquals(result.length, 1);
 		assertEquals(result[0], arg);
@@ -371,7 +371,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testParseCommand_IncoherentString() {
 		String arg1 = "string1";
 		String arg2 = "string 2";
-		String[] result = PersoSim.parseCommand(" " + arg1 + "  " + arg2);
+		String[] result = CommandParser.parseCommand(" " + arg1 + "  " + arg2);
 		
 		assertEquals(result.length, 2);
 		assertEquals(result[0], arg1);
@@ -422,7 +422,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testLoadPersonalization_ValidPersonalization() throws Exception {
-		persoSim = new PersoSim(new String[]{Simulator.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		
 		persoSim.startSimulator();
 		
@@ -444,7 +444,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testArgLoadPersonalization_InvalidPersonalizationFile() throws Exception {		
-		persoSim = new PersoSim(new String[]{Simulator.ARG_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"});
+		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"});
 		
 		assertFalse(persoSim.startSimulator());
 	}
@@ -455,7 +455,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testArgLoadPersonalization_FileNotFound() throws Exception {
-		persoSim = new PersoSim(new String[]{Simulator.ARG_LOAD_PERSONALIZATION, "non-existing.file"});
+		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, "non-existing.file"});
 		
 		assertFalse(persoSim.startSimulator());
 	}
@@ -466,7 +466,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdSetPortNo() throws Exception {
-		persoSim = new PersoSim(new String[]{Simulator.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
 		persoSim.startSimulator();
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
@@ -474,7 +474,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		int portPostExpected = Simulator.DEFAULT_SIM_PORT + 1;
 		
-		persoSim.setPort((new Integer (portPostExpected)).toString());
+		CommandParser.setPort(persoSim, (new Integer (portPostExpected)).toString());
 		persoSim.restartSimulator();
 		
 		responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU, portPostExpected));

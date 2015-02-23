@@ -51,6 +51,7 @@ public class SocketSimulator implements Runnable {
 
 		kernel = new PersoSimKernel(perso);
 		kernel.init();
+		Activator.addForTermination(this);
 	}
 
 	/**
@@ -108,7 +109,7 @@ public class SocketSimulator implements Runnable {
 			try {
 				server.close();
 			} catch (IOException e) {
-				PersoSim.showExceptionToUser(e);
+				CommandParser.showExceptionToUser(e);
 			}
 		}
 		
@@ -117,7 +118,7 @@ public class SocketSimulator implements Runnable {
 			try {
 				clientSocket.close();
 			} catch (IOException e) {
-				PersoSim.showExceptionToUser(e);
+				CommandParser.showExceptionToUser(e);
 			}
 		}
 
@@ -126,7 +127,7 @@ public class SocketSimulator implements Runnable {
 			try {
 				simThread.join();
 			} catch (InterruptedException e) {
-				PersoSim.showExceptionToUser(e);
+				CommandParser.showExceptionToUser(e);
 			}
 		}
 		
@@ -139,7 +140,7 @@ public class SocketSimulator implements Runnable {
 		try {
 			server = new ServerSocket(port);
 		} catch (IOException e) {
-			PersoSim.showExceptionToUser(e);
+			CommandParser.showExceptionToUser(e);
 			return; // without an open ServerSocket this method is done
 		}
 
@@ -154,7 +155,7 @@ public class SocketSimulator implements Runnable {
 			try {
 				server.close();
 			} catch (IOException e) {
-				PersoSim.showExceptionToUser(e);
+				CommandParser.showExceptionToUser(e);
 			}
 		}
 
@@ -199,7 +200,7 @@ public class SocketSimulator implements Runnable {
 				try {
 					apdu = HexString.toByteArray(apduLine);
 				} catch (RuntimeException e) {
-					PersoSim.showExceptionToUser(e);
+					CommandParser.showExceptionToUser(e);
 					// nothing else needs to be done, will lead to an empty
 					// apdu==null, thus no processing is done and the default SW
 					// 6F00 is returned
@@ -218,14 +219,14 @@ public class SocketSimulator implements Runnable {
 		} catch (IOException e) {
 			//show the exception only if the server is still running, otherwise it is expected behavior
 			if (isRunning) {
-				PersoSim.showExceptionToUser(e);
+				CommandParser.showExceptionToUser(e);
 			}
 		} finally {
 			if (clientSocket != null) {
 				try {
 					clientSocket.close();
 				} catch (IOException e) {
-					PersoSim.showExceptionToUser(e);
+					CommandParser.showExceptionToUser(e);
 				}
 			}
 		}

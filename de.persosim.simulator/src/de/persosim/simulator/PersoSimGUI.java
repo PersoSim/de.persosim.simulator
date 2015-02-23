@@ -110,13 +110,13 @@ public class PersoSimGUI extends JFrame implements ActionListener {
 		boolean startConsoleOnly = false;
 		
 		for (String curArg : args) {
-			if (Simulator.CMD_CONSOLE_ONLY.equals(curArg)) {
+			if (CommandParser.CMD_CONSOLE_ONLY.equals(curArg)) {
 				startConsoleOnly = true;
 			} 
 		}
 		
 		if (startConsoleOnly) {
-			PersoSim.main(args);
+			(new PersoSim(args)).startPersoSim();
 		} else {
 			PersoSim sim = new PersoSim(args);
 			new PersoSimGUI(sim);
