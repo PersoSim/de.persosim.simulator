@@ -173,7 +173,7 @@ public class PersoSimGuiMain {
 			@Override
 			public void run() {
 				
-				/*
+				/* FIXME JKH I still don't like this magic value here, lets discuss other options once again, maybe horizontal scrolling is an option
 				 * The 20 is important to make sure that the text field does not
 				 * cut off the output. This can happen after too many
 				 * "very long" Strings without line breaks were written. If the
@@ -203,7 +203,7 @@ public class PersoSimGuiMain {
 		// Fill text field with selected data
 		for (int i = 0; i <= maxLineCount; i++) {
 
-			if (slider.getSelection() + i < listSize) {
+			if (slider.getSelection() + i < listSize) { //FIXME JKH why this expensive condition here? move it out of the loop.
 
 				strConsoleStrings.append(consoleStrings.get(slider.getSelection() + i));
 
