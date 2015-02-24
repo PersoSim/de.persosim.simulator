@@ -232,6 +232,8 @@ public class UtilsTest {
 		Utils.appendBytes(leadingbyte, null);
 	}
 	
+	//FIXME LSG test method appendBytes completely!
+	
 	/**
 	 * Positive Test case: method toUnsignedByteArray gets input of type long.
 	 */
@@ -307,7 +309,7 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToShort_Input_Byte()
 	{
-		byte b = (byte) 0x09;
+		byte b = (byte) 0x09; //FIXME LSG why change previous value 0xAA to this one? 0xAA is better 
 		
 		short actual = Utils.maskUnsignedByteToShort(b);
 		short expected = 9; 
@@ -350,7 +352,7 @@ public class UtilsTest {
 	{
 		byte a = 0x01,b = 0x02;
 		short actual = Utils.concatenate(a, b);
-		short expected = 258; 
+		short expected = 258; //FIXME LSG this is essentially not different to the previous state! I cant immediately see that this is correct
 		assertEquals(expected, actual);
 		
 	}
@@ -364,7 +366,9 @@ public class UtilsTest {
 		String s = "19990801";
 		Date actual = Utils.getDate(s);
 
-		Calendar calendar = Calendar.getInstance();
+		//FIXME LSG why did you remove the comment below without any change to the code?
+		//FIXME LSG this looks weird, try asserting the parts instead of building a second object
+	 	Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 1999);
 		calendar.set(Calendar.MONTH, Calendar.AUGUST);
 		calendar.set(Calendar.DATE, 01);
@@ -394,6 +398,8 @@ public class UtilsTest {
 	
 	/**
 	 * Positive Test case: method arrayContainsEqual gets an Object array and an object as input.
+	 * FIXME LSG use JavaDoc links where possible in order to not break readability when refactoring
+	 * FIXME LSG params and return below don't match actual method
 	 * @param String array
 	 * @param string value
 	 * @return true, if one of the arrays entries equals the given object.

@@ -163,6 +163,7 @@ public abstract class Utils {
 	 * @return a concatenation of one or more byte arrays
 	 */
 	public static byte[] concatByteArrays(byte[]... byteArrays) {
+		//FIXME LSG you removed code without adding appropriate tests here...
 		
 		ByteArrayOutputStream outputStream;
 		
@@ -466,6 +467,7 @@ public abstract class Utils {
 	 * The provided String is expected to be exactly 8 characters long and encoded as follows: YYYYMMDD.
 	 * If the String parts for month or day contain non-numeric characters a NumberFormatException will be thrown
 	 * Well formatted date strings will not be checked for validity, e.g. december 34th would not be discarded.
+	 * FIXME LSG what does the addition below mean? why category? Where shall those values be added?
 	 * @category If using the Calendar, values for HOUR_OF_DAY, MINUTE, SECONDS and MILISECONDS must be entered. 
 	 * By not doing this, these values will be set randomly.
 	 * @param dateString the date encoded as follows: YYYYMMDD
