@@ -3,21 +3,11 @@ package de.persosim.simulator;
 import static de.persosim.simulator.utils.PersoSimLogger.INFO;
 import static de.persosim.simulator.utils.PersoSimLogger.UI;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
-import static de.persosim.simulator.utils.PersoSimLogger.logException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.net.URL;
 import java.security.Security;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.osgi.framework.Bundle;
 
-import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
 import de.persosim.simulator.perso.DefaultPersoTestPki;
 import de.persosim.simulator.perso.MinimumPersonalization;
 import de.persosim.simulator.perso.Personalization;
@@ -87,6 +77,7 @@ public class PersoSim implements Simulator {
 		System.out.println("Welcome to PersoSim");
 
 
+
 		startSimulator();
 		final Simulator sim = this;
 		
@@ -152,55 +143,11 @@ public class PersoSim implements Simulator {
 	public Personalization getPersonalization() {
 		return currentPersonalization;
 	}
-	
-	/**
-	 * This method parses a {@link Personalization} object from a file identified by its name.
-	 * @param persoFileName the name of the file to contain the personalization
-	 * @return the parsed personalization
-	 * @throws FileNotFoundException 
-	 * @throws JAXBException if parsing of personalization not successful
-	 */
-	public static Personalization parsePersonalization(String persoFileName) throws FileNotFoundException, JAXBException {
-		File persoFile = new File(persoFileName);
-		
-		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-		log(PersoSim.class, "Parsing personalization from file " + persoFileName, INFO);
-		return (Personalization) um.unmarshal(new FileReader(persoFile));
-	}
-	
-	@Override
-	public boolean loadPersonalization(String identifier) {
-		currentPersonalization = null;
 
-		//try to parse the given identifier as profile number
-		try {
-			int personalizationNumber = Integer.parseInt(identifier);
-			log(this.getClass(), "trying to load personalization profile no: " + personalizationNumber, INFO);
-			Bundle plugin = Activator.getContext().getBundle();
-			
-			if(plugin == null) {
-				// TODO how to handle this case? Add OSGI requirement?
-				log(this.getClass(), "unable to resolve bundle \"de.persosim.simulator\" - personalization unchanged", INFO);
-				return false;
-			} else {
-				URL url = plugin.getResource(persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
-				System.out.println("resolved absolute URL for selected profile is: " + url);
-				identifier = url.getPath();
-			}
-		} catch (Exception e) {
-			//seems to be a call to load a personalization by path
-		}
-		
-		//actually load perso from the identified file
-		try{
-			currentPersonalization = parsePersonalization(identifier);
-			return restartSimulator();
-		} catch(FileNotFoundException | JAXBException e) {
-			logException(this.getClass(), e);
-			stopSimulator();
-			log(this.getClass(), "simulation is stopped", INFO);
-			return false;
-		}
+	@Override
+	public boolean loadPersonalization(Personalization personalization) {
+		currentPersonalization = personalization;
+		return restartSimulator();
 	}
 
 	@Override

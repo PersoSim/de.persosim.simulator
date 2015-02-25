@@ -365,7 +365,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testParsePersonalization_ValidFile() throws Exception {
-		Personalization perso = PersoSim.parsePersonalization(DUMMY_PERSONALIZATION_FILE);
+		Personalization perso = CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE);
 		
 		assertNotNull(perso);
 	}
@@ -376,7 +376,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test(expected = FileNotFoundException.class)
 	public void testParsePersonalization_FileNotFound() throws Exception {
-		PersoSim.parsePersonalization("file not found");
+		CommandParser.parsePersonalization("file not found");
 	}
 	
 	/**
@@ -385,7 +385,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test(expected = JAXBException.class)
 	public void testParsePersonalization_InvalidFile() throws Exception {
-		PersoSim.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
+		CommandParser.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
 	}
 	
 	/**
@@ -407,7 +407,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		persoSim.startSimulator();
 		
-		persoSim.loadPersonalization(DUMMY_PERSONALIZATION_FILE);
+		persoSim.loadPersonalization(CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE));
 
 		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
 		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), response);
@@ -426,8 +426,8 @@ public class PersoSimTest extends PersoSimTestCase {
 	@Test
 	public void testArgLoadPersonalization_InvalidPersonalizationFile() throws Exception {		
 		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"});
-		
-		assertFalse(persoSim.startSimulator());
+		assertFalse(persoSim.isRunning());
+		assertTrue(persoSim.getPersonalization() instanceof MinimumPersonalization);
 	}
 	
 	/**
@@ -437,8 +437,8 @@ public class PersoSimTest extends PersoSimTestCase {
 	@Test
 	public void testArgLoadPersonalization_FileNotFound() throws Exception {
 		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, "non-existing.file"});
-		
-		assertFalse(persoSim.startSimulator());
+		assertFalse(persoSim.isRunning());
+		assertTrue(persoSim.getPersonalization() instanceof MinimumPersonalization);
 	}
 
 }

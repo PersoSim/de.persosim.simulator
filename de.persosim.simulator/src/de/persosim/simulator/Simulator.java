@@ -67,7 +67,7 @@ public interface Simulator {
 	 * @param identifier, the number or file name of the profile to load
 	 * @return true, if the profile loading was successful
 	 */
-	public abstract boolean loadPersonalization(String identifier);
+	public abstract boolean loadPersonalization(Personalization personalization);
 	
 	/**
 	 * Handles APDUs. Control APDUs are filtered and the respective methods of
