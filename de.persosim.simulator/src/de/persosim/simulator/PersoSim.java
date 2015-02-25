@@ -58,7 +58,6 @@ public class PersoSim implements Simulator {
 	public static final String persoFilePostfix = ".xml";
 	
 	private PersoSimKernel kernel;
-	private int simPort;
 	
 	static {
 		//register BouncyCastle provider
@@ -203,17 +202,6 @@ public class PersoSim implements Simulator {
 			return false;
 		}
 	}
-	
-
-	@Override
-	public void setPort(int newPort) {
-		simPort = newPort;
-	}
-
-	@Override
-	public int getPort() {
-		return simPort;
-	}
 
 	@Override
 	public byte[] processCommand(byte[] apdu) {
@@ -239,5 +227,10 @@ public class PersoSim implements Simulator {
 			// PersoSimKernel
 			return kernel.process(apdu);
 		}
+	}
+
+	@Override
+	public boolean isRunning() {
+		return kernel != null;
 	}
 }
