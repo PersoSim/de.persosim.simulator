@@ -36,11 +36,9 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	@Mocked DefaultPersoTestPki defaultPersoTestPki;
 	
-	public static final byte[] EF_CS_CONTENT_1 = HexString.toByteArray("FF010203");
-	public static final byte[] EF_CS_CONTENT_2 = HexString.toByteArray("FF030201");
+	public static final byte[] EF_CS_CONTENT = HexString.toByteArray("FF010203");
 	
-	public static final String DUMMY_PERSONALIZATION_FILE_1 = "tmp/dummyPersonalization1.xml";
-	public static final String DUMMY_PERSONALIZATION_FILE_2 = "tmp/dummyPersonalization2.xml";
+	public static final String DUMMY_PERSONALIZATION_FILE = "tmp/dummyPersonalization1.xml";
 	
 	public static final String SELECT_APDU = "00A4020C02011C";
 	public static final String READ_BINARY_APDU = "00B0000005";
@@ -55,11 +53,8 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void setUp() {
 		origOut	= System.out;
 		
-		MinimumPersonalization perso1 = new MinimumPersonalization(EF_CS_CONTENT_1);
-		perso1.writeToFile(DUMMY_PERSONALIZATION_FILE_1);
-		
-		MinimumPersonalization perso2 = new MinimumPersonalization(EF_CS_CONTENT_2);
-		perso2.writeToFile(DUMMY_PERSONALIZATION_FILE_2);
+		MinimumPersonalization perso1 = new MinimumPersonalization(EF_CS_CONTENT);
+		perso1.writeToFile(DUMMY_PERSONALIZATION_FILE);
 	}
 	
 	@After
@@ -290,7 +285,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator_twice() throws Exception {
-		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE});
 		
 		persoSim.startSimulator();
 		assertTrue(persoSim.startSimulator());
@@ -306,7 +301,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test(expected = ConnectException.class)
 	public void testStopSimulator() throws Exception {
-		persoSim = new PersoSim(CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1);
+		persoSim = new PersoSim(CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE);
 		
 		persoSim.startSimulator();
 		
@@ -369,7 +364,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testParsePersonalization_ValidFile() throws Exception {
-		Personalization perso = PersoSim.parsePersonalization(DUMMY_PERSONALIZATION_FILE_1);
+		Personalization perso = PersoSim.parsePersonalization(DUMMY_PERSONALIZATION_FILE);
 		
 		assertNotNull(perso);
 	}
@@ -407,18 +402,18 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testLoadPersonalization_ValidPersonalization() throws Exception {
-		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim();
 		
 		persoSim.startSimulator();
 		
-		persoSim.loadPersonalization(DUMMY_PERSONALIZATION_FILE_2);
+		persoSim.loadPersonalization(DUMMY_PERSONALIZATION_FILE);
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
 		
 		String responseReadBinary = (extractResponse(exchangeApdu(READ_BINARY_APDU))).toUpperCase();
 		
-		String responseReadBinaryExpected = (HexString.encode(EF_CS_CONTENT_2)).toUpperCase();
+		String responseReadBinaryExpected = (HexString.encode(EF_CS_CONTENT)).toUpperCase();
 		
 		assertEquals(responseReadBinaryExpected, responseReadBinary);
 	}
@@ -451,7 +446,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommandsCmdSetPortNo() throws Exception {
-		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim();
 		persoSim.startSimulator();
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
