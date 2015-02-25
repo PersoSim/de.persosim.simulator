@@ -23,7 +23,6 @@ import mockit.Mocked;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.persosim.simulator.perso.DefaultPersoTestPki;
@@ -440,32 +439,6 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, "non-existing.file"});
 		
 		assertFalse(persoSim.startSimulator());
-	}
-	
-	/**
-	 * Positive test case: test setting of new port via user arguments.
-	 * @throws Exception
-	 */
-	@Test
-	@Ignore
-	//FIXME MBK move this test to the proper position in the SocketAdapter test package
-	public void testExecuteUserCommandsCmdSetPortNo() throws Exception {
-		persoSim = new PersoSim();
-		persoSim.startSimulator();
-		
-		
-		
-		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect);
-		
-		int portPostExpected = Simulator.DEFAULT_SIM_PORT + 1;
-		
-		CommandParser.setPort(persoSim, (new Integer (portPostExpected)).toString());
-		persoSim.restartSimulator();
-		
-		responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU, portPostExpected));
-		
-		assertEquals(SW_NO_ERROR, responseSelect);
 	}
 
 }
