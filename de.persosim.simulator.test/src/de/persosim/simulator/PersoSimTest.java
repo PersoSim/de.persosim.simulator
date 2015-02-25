@@ -19,7 +19,6 @@ import java.net.UnknownHostException;
 import javax.xml.bind.JAXBException;
 
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 import org.junit.After;
 import org.junit.Before;
@@ -44,7 +43,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	public static final String DUMMY_PERSONALIZATION_FILE_2 = "tmp/dummyPersonalization2.xml";
 	
 	public static final String SELECT_APDU = "00A4020C02011C";
-	public static final String READ_BINARY_APDU = "00B0000004";
+	public static final String READ_BINARY_APDU = "00B0000005";
 	public static final String SW_NO_ERROR = "9000";
 	
 	static PrintStream	origOut;
@@ -251,27 +250,14 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws Exception
 	 */
 	@Test
-	public void testImplicitSettingOfDefaultPersonalization() throws Exception {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				defaultPersoTestPki.getObjectTree();
-				result = new MinimumPersonalization(EF_CS_CONTENT_1).getObjectTree();
-			}
-			
-			{
-				defaultPersoTestPki.getProtocolList();
-				result = new MinimumPersonalization(EF_CS_CONTENT_1).getProtocolList();
-			}
-		};
-		
-		persoSim = new PersoSim((String) null);
+	public void testImplicitSettingOfMinimumPersonalization() throws Exception {
+		persoSim = new PersoSim();
 		persoSim.startSimulator();
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);
 		
-		String responseReadBinaryExpected = (HexString.encode(EF_CS_CONTENT_1)).toUpperCase();
+		String responseReadBinaryExpected = (HexString.encode(MinimumPersonalization.DEFAULT_EF_CA_VALUE)).toUpperCase();
 		String responseReadBinary = (extractResponse(exchangeApdu(READ_BINARY_APDU))).toUpperCase();
 		assertEquals(responseReadBinaryExpected, responseReadBinary);
 	}
@@ -282,7 +268,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator() throws Exception {
-		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim();
 		
 		boolean caughtIoException = false;
 		try {
@@ -295,8 +281,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		persoSim.startSimulator();
 		
-		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect);
+		exchangeApdu(SELECT_APDU);
 	}
 	
 	/**
