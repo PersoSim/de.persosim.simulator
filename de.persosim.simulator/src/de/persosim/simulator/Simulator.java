@@ -77,5 +77,15 @@ public interface Simulator {
 	 * @param newPortString the new port to be used
 	 */
 	public abstract int getPort();
+	
+	/**
+	 * Handles APDUs. Control APDUs are filtered and the respective methods of
+	 * the kernel are called. All other APDUs are simply forwarded to the
+	 * kernels process() method.
+	 * 
+	 * @param apdu
+	 * @return
+	 */
+	public abstract byte[] processCommand(byte[] apdu);
 
 }

@@ -241,7 +241,7 @@ public class SocketSimulator implements Runnable {
 	 * @param apdu
 	 * @return
 	 */
-	private byte[] processCommand(byte[] apdu) {
+	byte[] processCommand(byte[] apdu) {
 		int clains = Utils.maskUnsignedShortToInt(Utils.concatenate(apdu[0], apdu[1]));
 		switch (clains) {
 		case 0xFF00:
