@@ -9,7 +9,7 @@ import de.persosim.simulator.Simulator;
 public class Activator implements BundleActivator, SimulatorProvider {
 
 	private static BundleContext context;
-	private static SocketSimulator simulator;
+	private static SocketAdapter simulator;
 	private static ServiceTracker<Simulator, Simulator> serviceTracker;
 	private static final int SIM_PORT = 9876;
 
@@ -25,7 +25,7 @@ public class Activator implements BundleActivator, SimulatorProvider {
 		Activator.context = bundleContext;
 		serviceTracker = new ServiceTracker<Simulator, Simulator>(bundleContext, Simulator.class.getName(), null);
 		serviceTracker.open();
-		simulator = new SocketSimulator(this, SIM_PORT);
+		simulator = new SocketAdapter(this, SIM_PORT);
 		simulator.start();
 	}
 

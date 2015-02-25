@@ -25,7 +25,7 @@ import de.persosim.simulator.utils.HexString;
  * @author amay
  * 
  */
-public class SocketSimulator implements Runnable {
+public class SocketAdapter implements Runnable {
 
 	private int port;
 	private Thread simThread = null;
@@ -40,7 +40,7 @@ public class SocketSimulator implements Runnable {
 	 * @param simPort
 	 *            port the server socket should listen on
 	 */
-	public SocketSimulator(SimulatorProvider simProvider, int simPort) {
+	public SocketAdapter(SimulatorProvider simProvider, int simPort) {
 		this.simProvider = simProvider;
 		this.port = simPort;
 	}

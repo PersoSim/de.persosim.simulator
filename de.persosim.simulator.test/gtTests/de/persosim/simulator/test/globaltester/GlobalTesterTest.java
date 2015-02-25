@@ -15,7 +15,7 @@ import org.junit.Test;
 import de.persosim.simulator.PersoSim;
 import de.persosim.simulator.Simulator;
 import de.persosim.simulator.adapter.socket.SimulatorProvider;
-import de.persosim.simulator.adapter.socket.SocketSimulator;
+import de.persosim.simulator.adapter.socket.SocketAdapter;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -60,7 +60,7 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 		}
 	}
 
-	private SocketSimulator simulator;
+	private SocketAdapter simulator;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -106,7 +106,7 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 
 	private void startSimulator() {
 		if (simulator == null) {
-			simulator = new SocketSimulator(new SimulatorProvider() {
+			simulator = new SocketAdapter(new SimulatorProvider() {
 				@Override
 				public Simulator getSimulator() {
 					return new PersoSim();
