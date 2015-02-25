@@ -12,7 +12,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.persosim.simulator.SocketSimulator;
+import de.persosim.simulator.PersoSim;
+import de.persosim.simulator.Simulator;
+import de.persosim.simulator.adapter.socket.SimulatorProvider;
+import de.persosim.simulator.adapter.socket.SocketSimulator;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -103,7 +106,12 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 
 	private void startSimulator() {
 		if (simulator == null) {
-			simulator = new SocketSimulator(getPersonalization(), SIM_PORT);
+			simulator = new SocketSimulator(new SimulatorProvider() {
+				@Override
+				public Simulator getSimulator() {
+					return new PersoSim();
+				}
+			}, SIM_PORT);
 		}
 		
 		if (!simulator.isRunning()) {

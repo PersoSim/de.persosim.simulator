@@ -5,7 +5,8 @@ Bundle-SymbolicName: de.persosim.simulator.test
 Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: HJP Consulting GmbH
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: de.persosim.simulator;bundle-version="[0.1.0,1.0.0)"
+Require-Bundle: de.persosim.simulator;bundle-version="[0.1.0,1.0.0)",
+ de.persosim.simulator.adapter.socket
 Export-Package: de.persosim.simulator.protocols,
  de.persosim.simulator.test,
  de.persosim.simulator.test.globaltester,

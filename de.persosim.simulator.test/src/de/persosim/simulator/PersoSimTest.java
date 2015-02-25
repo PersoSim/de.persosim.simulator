@@ -1,5 +1,6 @@
 package de.persosim.simulator;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -22,13 +23,16 @@ import mockit.Mocked;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.persosim.simulator.perso.DefaultPersoTestPki;
 import de.persosim.simulator.perso.MinimumPersonalization;
 import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 public class PersoSimTest extends PersoSimTestCase {
 	
@@ -36,7 +40,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	@Mocked DefaultPersoTestPki defaultPersoTestPki;
 	
-	public static final byte[] EF_CS_CONTENT = HexString.toByteArray("FF010203");
+	public static final byte[] EF_CS_CONTENT = HexString.toByteArray("FF01020304");
 	
 	public static final String DUMMY_PERSONALIZATION_FILE = "tmp/dummyPersonalization1.xml";
 	
@@ -249,12 +253,13 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim = new PersoSim();
 		persoSim.startSimulator();
 		
-		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect);
+		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), response);
 		
-		String responseReadBinaryExpected = (HexString.encode(MinimumPersonalization.DEFAULT_EF_CA_VALUE)).toUpperCase();
-		String responseReadBinary = (extractResponse(exchangeApdu(READ_BINARY_APDU))).toUpperCase();
-		assertEquals(responseReadBinaryExpected, responseReadBinary);
+		byte[] responseReadBinaryExpected = Utils.concatByteArrays(MinimumPersonalization.DEFAULT_EF_CA_VALUE, Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR));
+		
+		response = persoSim.processCommand(HexString.toByteArray(READ_BINARY_APDU));
+		assertArrayEquals(responseReadBinaryExpected, response);
 	}
 	
 	/**
@@ -265,18 +270,15 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testStartSimulator() throws Exception {
 		persoSim = new PersoSim();
 		
-		boolean caughtIoException = false;
-		try {
-			exchangeApdu(SELECT_APDU);
-		} catch (IOException e) {
-			caughtIoException = true;
-		}
+		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
 		
-		assertTrue(caughtIoException);
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN), response);
 		
 		persoSim.startSimulator();
 		
-		exchangeApdu(SELECT_APDU);
+		response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
+		
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), response);
 	}
 	
 	/**
@@ -291,8 +293,8 @@ public class PersoSimTest extends PersoSimTestCase {
 		assertTrue(persoSim.startSimulator());
 		
 		//ensure that the simulator is responding
-		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect);
+		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), response);
 	}
 	
 	/**
@@ -407,15 +409,15 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim.startSimulator();
 		
 		persoSim.loadPersonalization(DUMMY_PERSONALIZATION_FILE);
+
+		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), response);
 		
-		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect);
+		response = persoSim.processCommand(HexString.toByteArray(READ_BINARY_APDU));
 		
-		String responseReadBinary = (extractResponse(exchangeApdu(READ_BINARY_APDU))).toUpperCase();
+		byte [] responseReadBinaryExpected = Utils.concatByteArrays(EF_CS_CONTENT, Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR));
 		
-		String responseReadBinaryExpected = (HexString.encode(EF_CS_CONTENT)).toUpperCase();
-		
-		assertEquals(responseReadBinaryExpected, responseReadBinary);
+		assertArrayEquals(responseReadBinaryExpected, response);
 	}
 	
 	/**
@@ -445,9 +447,13 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws Exception
 	 */
 	@Test
+	@Ignore
+	//FIXME MBK move this test to the proper position in the SocketAdapter test package
 	public void testExecuteUserCommandsCmdSetPortNo() throws Exception {
 		persoSim = new PersoSim();
 		persoSim.startSimulator();
+		
+		
 		
 		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
 		assertEquals(SW_NO_ERROR, responseSelect);

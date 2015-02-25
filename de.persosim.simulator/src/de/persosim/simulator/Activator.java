@@ -8,6 +8,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
+import de.persosim.simulator.adapter.socket.SocketSimulator;
+
 public class Activator implements BundleActivator {
 	private static ServiceTracker<LogService, LogService> logServiceTracker;
 	private static BundleContext context;
@@ -25,7 +27,6 @@ public class Activator implements BundleActivator {
 		Activator.context = context;
 		logServiceTracker = new ServiceTracker<LogService, LogService>(context, LogService.class.getName(), null);
         logServiceTracker.open();
-
 	}
 
 	@Override
