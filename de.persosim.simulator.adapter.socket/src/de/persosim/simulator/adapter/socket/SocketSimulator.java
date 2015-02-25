@@ -30,8 +30,6 @@ public class SocketSimulator implements Runnable {
 	private int port;
 	private Thread simThread = null;
 	private boolean isRunning;
-
-	private boolean isPowerOn;
 	private ServerSocket server;
 	private Socket clientSocket;
 	private SimulatorProvider simProvider;
@@ -95,7 +93,6 @@ public class SocketSimulator implements Runnable {
 
 	public boolean stop() {
 		isRunning = false;
-		isPowerOn = false;
 		
 		//stop listening for new connections
 		if (server != null) {
@@ -183,7 +180,6 @@ public class SocketSimulator implements Runnable {
 
 				if (apduLine == null) {
 					// connection closed by peer
-					isPowerOn = false;
 					break;
 				}
 				
@@ -211,7 +207,7 @@ public class SocketSimulator implements Runnable {
 				out.println(respLine);
 				out.flush();
 
-			} while (isPowerOn);
+			} while (isRunning);
 
 		} catch (IOException e) {
 			//show the exception only if the server is still running, otherwise it is expected behavior
