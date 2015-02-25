@@ -205,7 +205,6 @@ public class CommandParser {
 			noOfArgsWhenCheckedLast = currentArgs.size();
 			
 			cmdLoadPersonalization(sim, currentArgs);
-			cmdSetPortNo(sim, currentArgs);
 			cmdSendApdu(sim, currentArgs);
 			cmdStartSimulator(sim, currentArgs);
 			cmdRestartSimulator(sim, currentArgs);
@@ -223,38 +222,6 @@ public class CommandParser {
 			}
 		}
 		
-	}
-	
-	/**
-	 * This method processes the set port command according to the provided arguments.
-	 * @param args the arguments provided for processing the set port command
-	 * @return whether processing of the set port command has been successful
-	 */
-	public static boolean cmdSetPortNo(Simulator sim, List<String> args) {
-		if((args != null) && (args.size() >= 2)) {
-			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_SET_PORT) || cmd.equals(ARG_SET_PORT)) {
-				String arg = args.get(1);
-				args.remove(0);
-    			args.remove(0);
-				
-				try{
-	    			setPort(sim, arg);
-	    			
-	    			if(processingCommandLineArguments) {
-	    				return true;
-	    			} else{
-	    				return sim.restartSimulator();
-	    			}
-	    		} catch(IllegalArgumentException | NullPointerException e) {
-	    			System.out.println("unable to set port, reason is: " + e.getMessage());
-	    			return false;
-	    		}
-			}
-		}
-		
-		return false;
 	}
 	
 	/**
@@ -283,7 +250,6 @@ public class CommandParser {
 			noOfArgsWhenCheckedLast = currentArgs.size();
 			
 			cmdLoadPersonalization(sim, currentArgs);
-			cmdSetPortNo(sim, currentArgs);
 			cmdHelp(currentArgs);
 			
 			if(currentArgs.size() > 0) {
@@ -358,7 +324,8 @@ public class CommandParser {
 	 * @return
 	 */
 	private static String exchangeApdu(Simulator sim, String cmdApdu) {
-		return exchangeApdu(cmdApdu, Simulator.DEFAULT_SIM_HOST, sim.getPort());
+		//FIXME: remove this method or move the CommandParser
+		return exchangeApdu(cmdApdu, Simulator.DEFAULT_SIM_HOST, Simulator.DEFAULT_SIM_PORT);
 	}
 
 	/**
@@ -500,20 +467,5 @@ public class CommandParser {
 				showExceptionToUser(e);
 			}
 		}
-	}
-	
-	/**
-	 * This method sets a new port for the simulator to be used at the next start.
-	 * In order for the changes to take effect, the simulator needs to be restarted.
-	 * @param newPortString the new port to be used
-	 */
-	public static void setPort(Simulator sim, String newPortString) {
-		if(newPortString == null) {throw new NullPointerException("port parameter must not be null");}
-		int newPort = Integer.parseInt(newPortString);
-		if(newPort < 0) {throw new IllegalArgumentException("port number must be positive");}
-		
-		System.out.println("new port set to " + newPort + " after restart of simulation.");
-		sim.setPort(newPort);
-		//IMPL check for port being unused
 	}
 }

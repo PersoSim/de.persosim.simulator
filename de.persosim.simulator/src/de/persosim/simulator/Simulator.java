@@ -41,6 +41,11 @@ public interface Simulator {
 	public abstract boolean exitSimulator();
 
 	/**
+	 * @return whether the simulator is currently active
+	 */
+	public abstract boolean isRunning();
+	
+	/**
 	 * This method returns the content of {@link #currentPersonalization}, the
 	 * currently used personalization. If no personalization is set, i.e. the
 	 * variable is null, it will be set to the default personalization which
@@ -63,20 +68,6 @@ public interface Simulator {
 	 * @return true, if the profile loading was successful
 	 */
 	public abstract boolean loadPersonalization(String identifier);
-
-
-	/**
-	 * This method sets a new port for the simulator to be used at the next start.
-	 * In order for the changes to take effect, the simulator needs to be restarted.
-	 * @param newPortString the new port to be used
-	 */
-	public abstract void setPort(int newPort);
-	
-	/**
-	 * This method gets the currently configured port.
-	 * @param newPortString the new port to be used
-	 */
-	public abstract int getPort();
 	
 	/**
 	 * Handles APDUs. Control APDUs are filtered and the respective methods of
