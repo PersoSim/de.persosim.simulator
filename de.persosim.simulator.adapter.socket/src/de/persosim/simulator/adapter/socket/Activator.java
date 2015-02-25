@@ -26,6 +26,7 @@ public class Activator implements BundleActivator, SimulatorProvider {
 		serviceTracker = new ServiceTracker<Simulator, Simulator>(bundleContext, Simulator.class.getName(), null);
 		serviceTracker.open();
 		simulator = new SocketSimulator(this, SIM_PORT);
+		simulator.start();
 	}
 
 	/*
@@ -40,7 +41,6 @@ public class Activator implements BundleActivator, SimulatorProvider {
 
 	@Override
 	public Simulator getSimulator() {
-		// TODO Auto-generated method stub
-		return null;
+		return serviceTracker.getService();
 	}
 }
