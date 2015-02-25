@@ -113,6 +113,8 @@ public class Activator implements BundleActivator {
 				
 		simulatorServiceTracker = new ServiceTracker<Simulator, Simulator>(context, Simulator.class.getName(), null);
 		simulatorServiceTracker.open();
+		simulatorServiceTracker.getService().loadPersonalization("personalization/profiles/Profile01.xml");
+		simulatorServiceTracker.getService().startSimulator();
 
 		context.addServiceListener(simulatorServiceListener);
 		
