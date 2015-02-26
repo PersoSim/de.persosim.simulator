@@ -58,7 +58,7 @@ public class PersoSimGuiMain {
 
 	
 	//maximum amount of strings saved in the buffer
-	private int maxLines =2000;
+	private int maxLines = 2000;
 	
 	//maximum of lines the text field can show
 	int maxLineCount=0;
@@ -116,8 +116,6 @@ public class PersoSimGuiMain {
 				slider.setSelection(slider.getSelection()-count);
 				
 				buildNewConsoleContent();	
-				
-				// TODO JKH remove before asking for review
 				txtInput.setText(slider.getSelection()+" "+ consoleStrings.size()+" "+slider.getThumb());
 				
 			}
@@ -213,7 +211,17 @@ public class PersoSimGuiMain {
 		
 		//FIXME JKH why this expensive condition here? move it out of the loop.
 		for (int i = 0; i < linesToShow; i++) {
+			
+			try{	
 				strConsoleStrings.append(consoleStrings.get(slider.getSelection() + i));
+			}catch(IndexOutOfBoundsException ioobe){
+				
+				/* Sometimes when PersoSim is under heavy load (e.g. when a bigger GT test
+				 * suite is running) an IndexOutOfBoundsException gets thrown. Since PersoSim
+				 * continuous to run without any problem the exception could be ignored.
+				 */
+			}
+			
 		}
 
 		// send the StringBuilder data to the console field
