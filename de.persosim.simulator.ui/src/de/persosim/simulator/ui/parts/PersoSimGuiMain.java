@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.security.auth.callback.TextOutputCallback;
 
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -57,7 +58,10 @@ public class PersoSimGuiMain {
 
 	
 	//maximum amount of strings saved in the buffer
-	private int maxLines = 2000;
+	private int maxLines =2000;
+	
+	//maximum of lines the text field can show
+	int maxLineCount=0;
 	
 	private PrintStream newSystemOut;
 	private final PipedInputStream inPipe = new PipedInputStream();
@@ -78,14 +82,13 @@ public class PersoSimGuiMain {
 		parent.setLayout(new GridLayout(2, false));
 		
 		//configure console field
-		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.WRAP);		
+		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);		
 		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
 		txtOutput.setEditable(false);
 		txtOutput.setCursor(null);
 		txtOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
 		txtOutput.setSelection(txtOutput.getText().length());
 		txtOutput.setTopIndex(txtOutput.getLineCount() - 1);
-		
 		
 		//configure the slider
 		slider = new Slider(parent, SWT.V_SCROLL);
@@ -112,7 +115,10 @@ public class PersoSimGuiMain {
 				int count = e.count;
 				slider.setSelection(slider.getSelection()-count);
 				
-				buildNewConsoleContent();		
+				buildNewConsoleContent();	
+				
+				// TODO JKH remove before asking for review
+				txtInput.setText(slider.getSelection()+" "+ consoleStrings.size()+" "+slider.getThumb());
 				
 			}
 		});
@@ -180,7 +186,7 @@ public class PersoSimGuiMain {
 				 * variable maxLines needs to be changes this value (possibly)
 				 * needs to be re-adjusted too!
 				 */
-				slider.setMaximum(consoleStrings.size()-20);
+				slider.setMaximum(consoleStrings.size()+slider.getThumb()-maxLineCount+1);
 			}
 		});
 	}
@@ -196,18 +202,18 @@ public class PersoSimGuiMain {
 		final StringBuilder strConsoleStrings = new StringBuilder();
 
 		// calculates how many lines can be shown without cutting
-		int maxLineCount = txtOutput.getBounds().height / txtOutput.getLineHeight();
+		maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
 		
 		int listSize = consoleStrings.size();
 		
+		// value is needed to stop writing in the console when the end in the list is reached
+		int linesToShow=maxLineCount;
+		linesToShow = listSize-slider.getMaximum()+slider.getThumb();
 		// Fill text field with selected data
-		for (int i = 0; i <= maxLineCount; i++) {
-
-			if (slider.getSelection() + i < listSize) { //FIXME JKH why this expensive condition here? move it out of the loop.
-
+		
+		//FIXME JKH why this expensive condition here? move it out of the loop.
+		for (int i = 0; i < linesToShow; i++) {
 				strConsoleStrings.append(consoleStrings.get(slider.getSelection() + i));
-
-			} else break;
 		}
 
 		// send the StringBuilder data to the console field
