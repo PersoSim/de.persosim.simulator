@@ -115,9 +115,7 @@ public class PersoSimGuiMain {
 				int count = e.count;
 				slider.setSelection(slider.getSelection()-count);
 				
-				buildNewConsoleContent();	
-				txtInput.setText(slider.getSelection()+" "+ consoleStrings.size()+" "+slider.getThumb());
-				
+				buildNewConsoleContent();					
 			}
 		});
 		
