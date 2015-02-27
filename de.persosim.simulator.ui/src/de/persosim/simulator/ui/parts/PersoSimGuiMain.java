@@ -13,7 +13,6 @@ import java.util.LinkedList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.security.auth.callback.TextOutputCallback;
 
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -201,20 +200,20 @@ public class PersoSimGuiMain {
 		// Fill text field with selected data		
 		for (int i = 0; i < linesToShow; i++) {
 			
-			try{	
+//			try{	
 				strConsoleStrings.append(consoleStrings.get(slider.getSelection() + i));
-			}catch(IndexOutOfBoundsException ioobe){
+//			}catch(IndexOutOfBoundsException ioobe){
 				
 				/* Sometimes when PersoSim is under heavy load (e.g. when a bigger GT test
 				 * suite is running) an IndexOutOfBoundsException gets thrown. Since PersoSim
 				 * continuous to run without any problem the exception could be ignored.
-				 */
-			}
+				 */				
+//			}
 			
 		}
 
 		// send the StringBuilder data to the console field
-		sync.asyncExec(new Runnable() {
+		sync.syncExec(new Runnable() {
 
 			@Override
 			public void run() {
