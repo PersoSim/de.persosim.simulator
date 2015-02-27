@@ -169,7 +169,7 @@ public class PersoSimGuiMain {
 	 * changes the maximum of the slider
 	 */
 	private void rebuildSlider(){
-		sync.syncExec(new Runnable() {
+		sync.asyncExec(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -317,7 +317,7 @@ public class PersoSimGuiMain {
 		sync.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				slider.setMaximum(slider.getMaximum() + slider.getThumb() + 1);
+//				slider.setMaximum(slider.getMaximum() + slider.getThumb() + 1);
 				slider.setSelection(slider.getMaximum());
 				buildNewConsoleContent();
 				rebuildSlider();
