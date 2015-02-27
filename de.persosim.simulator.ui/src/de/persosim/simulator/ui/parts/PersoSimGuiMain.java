@@ -313,7 +313,8 @@ public class PersoSimGuiMain {
 	 * @param message is the new String
 	 */
 	public void showNewOutput() {
-
+		
+		// TODO JKH changing this to sync removes flickering but suddenly there would be pauses between the test cases
 		sync.asyncExec(new Runnable() {
 			@Override
 			public void run() {
