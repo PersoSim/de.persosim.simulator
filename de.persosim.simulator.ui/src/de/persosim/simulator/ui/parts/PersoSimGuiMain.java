@@ -54,7 +54,6 @@ public class PersoSimGuiMain {
 	
 	//Buffer for old console outputs
 	private LinkedList<String> consoleStrings = new LinkedList<String>();
-
 	
 	//maximum amount of strings saved in the buffer
 	private int maxLines = 2000;
@@ -191,27 +190,23 @@ public class PersoSimGuiMain {
 		// calculates how many lines can be shown without cutting
 		maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
 		
-		int listSize = consoleStrings.size();
-		
-		// value is needed to stop writing in the console when the end in the list is reached
-		int linesToShow=maxLineCount;
-		linesToShow = listSize-slider.getMaximum()+slider.getThumb();
-		
-		// Fill text field with selected data		
-		for (int i = 0; i < linesToShow; i++) {
-			
-//			try{	
-				strConsoleStrings.append(consoleStrings.get(slider.getSelection() + i));
-//			}catch(IndexOutOfBoundsException ioobe){
-				
-				/* Sometimes when PersoSim is under heavy load (e.g. when a bigger GT test
-				 * suite is running) an IndexOutOfBoundsException gets thrown. Since PersoSim
-				 * continuous to run without any problem the exception could be ignored.
-				 */				
-//			}
-			
-		}
+		//synchronized is used to avoid IndexOutOfBoundsExceptions 
+		synchronized (consoleStrings) {
+			int listSize = consoleStrings.size();
 
+			// value is needed to stop writing in the console when the end in
+			// the list is reached
+			int linesToShow = maxLineCount;
+			linesToShow = listSize - slider.getMaximum() + slider.getThumb();
+
+			// Fill text field with selected data
+			for (int i = 0; i < linesToShow; i++) {
+
+				strConsoleStrings.append(consoleStrings.get(slider
+						.getSelection() + i));
+
+			}
+		}
 		// send the StringBuilder data to the console field
 		sync.syncExec(new Runnable() {
 
@@ -295,12 +290,18 @@ public class PersoSimGuiMain {
 		String[] splitResult = s.split("(?=/n|/r)");
 
 		for (int i = 0; i < splitResult.length; i++) {
-			consoleStrings.add(splitResult[i]);
 
 			if (consoleStrings.size() > maxLines) {
-				consoleStrings.removeFirst();
-			}
+				
+				//synchronized is used to avoid IndexOutOfBoundsExceptions 
+				synchronized (consoleStrings) {
+					consoleStrings.removeFirst();
+					consoleStrings.add(splitResult[i]);	
+				}
 
+			}else{
+			consoleStrings.add(splitResult[i]);
+			}
 			if (!locked) {
 				showNewOutput();
 			}
@@ -314,7 +315,7 @@ public class PersoSimGuiMain {
 	 */
 	public void showNewOutput() {
 		
-		// TODO JKH changing this to sync removes flickering but suddenly there would be pauses between the test cases
+		// TODO JKH changing this to sync removes flickering but suddenly there would be pauses between the test cases...
 		sync.asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -322,7 +323,6 @@ public class PersoSimGuiMain {
 				slider.setSelection(slider.getMaximum());
 				buildNewConsoleContent();
 				rebuildSlider();
-
 			}
 		});
 
