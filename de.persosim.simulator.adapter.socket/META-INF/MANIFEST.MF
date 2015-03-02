@@ -10,4 +10,5 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: de.persosim.simulator.adapter.socket
-Import-Package: de.persosim.simulator
+Import-Package: de.persosim.simulator,
+ org.osgi.util.tracker;version="1.5.1"
