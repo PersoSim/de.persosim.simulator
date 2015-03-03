@@ -10,8 +10,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import de.persosim.simulator.apdu.ResponseApdu;
-import de.persosim.simulator.apdumatching.ApduSpecification;
-import de.persosim.simulator.apdumatching.TlvSpecification;
 import de.persosim.simulator.cardobjects.AuxDataObject;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.MasterFile;

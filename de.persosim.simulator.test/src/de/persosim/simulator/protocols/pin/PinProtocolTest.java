@@ -19,6 +19,7 @@ import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Tr03110;
+import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
@@ -172,7 +173,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110{
 				
 				mockedCardStateAccessor.getCurrentMechanisms(
 						withInstanceOf(SecContext.class), 
-						withInstanceOf(HashSet.class));
+						withInstanceLike(new HashSet<Class<? extends SecMechanism>>()));
 				result = new HashSet<>();
 			}
 		};
