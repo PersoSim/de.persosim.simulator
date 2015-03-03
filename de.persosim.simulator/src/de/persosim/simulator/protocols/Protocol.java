@@ -2,7 +2,6 @@ package de.persosim.simulator.protocols;
 
 import java.util.Collection;
 
-import de.persosim.simulator.apdumatching.ApduSpecification;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ObjectStore;
 import de.persosim.simulator.platform.CardStateAccessor;
@@ -84,8 +83,6 @@ public interface Protocol {
 	 *         {@link Collection} shall not be altered by the calling entity as
 	 *         it may be immutable.
 	 */
-	public abstract Collection<ApduSpecification> getApduSet();
-
 	
 	/**
 	 * Reset the {@link Protocol} to it's initial configuration.

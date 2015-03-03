@@ -144,22 +144,6 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 	}
 
 	@Override
-	public Collection<ApduSpecification> getApduSet() {
-		HashSet<ApduSpecification> apdus = new HashSet<>();
-		ApduSpecification apduSpecification = new ApduSpecification("Verify");
-		apduSpecification.setIsoCase(ISO_CASE_2);
-		apduSpecification.setChaining(false);
-		apduSpecification.setIns(INS_20_VERIFY);
-		apduSpecification.setP1((byte) 0x80);
-		apduSpecification.setP2((byte) 0x00);
-		TlvSpecification tagSpecification = new TlvSpecification(TAG_06);
-		apduSpecification.addTag(tagSpecification);
-		apduSpecification.setInitialApdu();
-		apdus.add(apduSpecification);
-		return apdus;
-	}
-
-	@Override
 	public void reset() {
 		
 	}
