@@ -74,6 +74,7 @@ public interface Protocol {
 	 */
 	public abstract void process(ProcessingData processingData);
 
+	//FIXME JGE what is this JavaDoc for???
 	/**
 	 * Returns collection of supported APDUs. The protocol is expected to be
 	 * able to handle each APDU that matches one of these specifications.

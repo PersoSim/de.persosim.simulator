@@ -39,7 +39,7 @@ import de.persosim.simulator.utils.Utils;
 @XmlRootElement(name="PinManagement")
 public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, ApduSpecificationConstants, InfoSource{
 	
-	protected HashMap<String, ApduSpecification> apdus  = new HashMap<>();
+	protected HashMap<String, ApduSpecification> apdus  = new HashMap<>(); //FIXME JGE where do you need this?
 	protected ApduSpecification apduSpecification;
 	protected CardStateAccessor cardState;
 	protected ProcessingData processingData; 
@@ -49,21 +49,25 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		reset();
 	}
 	
+	@Override //FIXME JGE add missing @Override annotations throughout the file
 	public String getProtocolName() {
 		return "PIN";
 	}
 
 
+	@Override
 	public void setCardStateAccessor(CardStateAccessor cardState) {
 		this.cardState = cardState;
 	}
 
 
+	@Override
 	public Collection<? extends TlvDataObject> getSecInfos(
 			SecInfoPublicity publicity, MasterFile mf) {
 		return Collections.emptySet();
 	}
 	
+	@Override
 	public void process(ProcessingData processingData) {
 		this.processingData = processingData;
 		
@@ -81,6 +85,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		}
 	}
 	
+	//FIXME JGE clean up this mess (inherited from the previous state machine handling, no longer needed)
 	public int processEvent(int msg){
 		if(isAPDU("Activate PIN")){
 			
@@ -342,7 +347,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 	}
 	
 	private void processCommandVerifyPin() {
-		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
+		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF); //FIXME JGE why use a constant password Identifier here? What about checking other Pin-objects?
 		
 		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
@@ -354,7 +359,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		
 		ResponseApdu resp = new ResponseApdu((short) (SW_63C0_COUNTER_IS_0 + (pinObject.getRetryCounterCurrentValue())));
 		
-		this.processingData.updateResponseAPDU(this, "new PIN retry counter is: " + pinObject.getRetryCounterCurrentValue(), resp);
+		this.processingData.updateResponseAPDU(this, "new PIN retry counter is: " + pinObject.getRetryCounterCurrentValue(), resp); //FIXME JGE adapt the output string (this value is not new and maybe it's not even PIN
 		
 		log(this, "processed COMMAND_VERIFY_PIN", DEBUG);
 	}
