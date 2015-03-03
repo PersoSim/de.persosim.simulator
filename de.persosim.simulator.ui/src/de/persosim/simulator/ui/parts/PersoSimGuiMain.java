@@ -175,7 +175,8 @@ public class PersoSimGuiMain {
 						public void run() {
 
 								if (Calendar.getInstance().get(
-										Calendar.MILLISECOND) % 100 == 0) {
+										Calendar.MILLISECOND) % 100 == 0
+										&& !locked) {
 									buildNewConsoleContent();
 								}
 								rebuildSlider();
