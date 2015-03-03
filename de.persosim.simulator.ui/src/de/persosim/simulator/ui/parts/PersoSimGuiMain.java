@@ -165,15 +165,15 @@ public class PersoSimGuiMain {
 		
 		//sets rebuilds the console field if it is not locked
 		//this happens every 100 ms
-	    Thread updateThread = new Thread() {
-	        public void run() {
-	            while (true) {
+		Thread updateThread = new Thread() {
+			public void run() {
+				while (true) {
 
-	                sync.syncExec(new Runnable() {
+					sync.syncExec(new Runnable() {
 
-	                    @Override
-	                    public void run() {
-	                    	
+						@Override
+						public void run() {
+
 							if (!locked) {
 
 								if (Calendar.getInstance().get(
@@ -182,13 +182,12 @@ public class PersoSimGuiMain {
 								}
 								rebuildSlider();
 							}
-	                    }
-	                });
+						}
+					});
 
-
-	            }
-	        }
-	    };
+				}
+			}
+		};
 	    updateThread.start();
 		
 	}
@@ -337,12 +336,11 @@ public class PersoSimGuiMain {
 		}
 	}
 	
-	/*
-	 * Shows new incoming Strings at the end of the console when scrolling is enabled
+	/**
+	 * controls slider selection (auto scrolling)
 	 */
 	public void showNewOutput() {
 		
-		// TODO FIXME JKH changing this to sync removes flickering but suddenly there would be pauses between the test cases...
 		sync.syncExec(new Runnable() {
 			@Override
 			public void run() {
