@@ -174,14 +174,11 @@ public class PersoSimGuiMain {
 						@Override
 						public void run() {
 
-							if (!locked) {
-
 								if (Calendar.getInstance().get(
 										Calendar.MILLISECOND) % 100 == 0) {
 									buildNewConsoleContent();
 								}
 								rebuildSlider();
-							}
 						}
 					});
 
