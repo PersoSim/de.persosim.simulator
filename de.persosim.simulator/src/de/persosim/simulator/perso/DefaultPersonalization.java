@@ -677,7 +677,6 @@ public abstract class DefaultPersonalization extends XmlPersonalization implemen
 
 		/* load PIN-Management protocol */
 		PinProtocol pinProtocol = new PinProtocol();
-		pinProtocol.init();
 		protocols.add(pinProtocol);
 
 		/* load nPA protocol */
