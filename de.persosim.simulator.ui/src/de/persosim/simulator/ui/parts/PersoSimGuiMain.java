@@ -8,6 +8,7 @@ import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
@@ -160,7 +161,35 @@ public class PersoSimGuiMain {
 		PersoSim sim = new PersoSim();
 		sim.loadPersonalization("1"); //load default perso with valid TestPKI EF.CardSec etc. (Profile01)
 		Thread simThread = new Thread(sim);
-		simThread.start();
+		simThread.start();		
+		
+		//sets rebuilds the console field if it is not locked
+		//this happens every 100 ms
+	    Thread updateThread = new Thread() {
+	        public void run() {
+	            while (true) {
+
+	                sync.syncExec(new Runnable() {
+
+	                    @Override
+	                    public void run() {
+	                    	
+							if (!locked) {
+
+								if (Calendar.getInstance().get(
+										Calendar.MILLISECOND) % 100 == 0) {
+									buildNewConsoleContent();
+								}
+								rebuildSlider();
+							}
+	                    }
+	                });
+
+
+	            }
+	        }
+	    };
+	    updateThread.start();
 		
 	}
 	
@@ -308,20 +337,16 @@ public class PersoSimGuiMain {
 		}
 	}
 	
-	/**
+	/*
 	 * Shows new incoming Strings at the end of the console when scrolling is enabled
-	 * 
-	 * @param message is the new String
 	 */
 	public void showNewOutput() {
 		
-		// TODO JKH changing this to sync removes flickering but suddenly there would be pauses between the test cases...
-		sync.asyncExec(new Runnable() {
+		// TODO FIXME JKH changing this to sync removes flickering but suddenly there would be pauses between the test cases...
+		sync.syncExec(new Runnable() {
 			@Override
 			public void run() {
-//				slider.setMaximum(slider.getMaximum() + slider.getThumb() + 1);
-				slider.setSelection(slider.getMaximum());
-				buildNewConsoleContent();
+				slider.setSelection(slider.getMaximum());							
 				rebuildSlider();
 			}
 		});
