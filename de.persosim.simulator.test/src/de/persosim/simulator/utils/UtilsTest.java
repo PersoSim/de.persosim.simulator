@@ -1,10 +1,6 @@
 package de.persosim.simulator.utils;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import static org.junit.Assert.*;
 import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,7 +10,7 @@ import org.junit.Test;
 public class UtilsTest {
 
 	@Test
-	public void testToUnsignedByteArray_BigIntegerZero() {
+	public void testToUnsignedByteArrayBigIntegerZero() {
 		byte[] exp = new byte[]{(byte) 0x00};
 		byte[] recv = Utils.toUnsignedByteArray(BigInteger.ZERO);
 		assertArrayEquals(exp, recv);
@@ -223,42 +219,185 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Negative test case: method appendBytes gets trailinbytes as input, which is null;
+	 * Positive Test case: method appendBytes gets an empty value and a byte array as input.
+	 * The result should be a new object which has the same content as trailingByteArray.
 	 */
-	@Test(expected=NullPointerException.class)
-	public void testAppendBytes_Trailinbytes_Is_Null()
+	@Test
+	public void testAppendBytes_leadingByteEmpty()
 	{
-		byte[] leadingbyte = new byte[]{(byte) 0x65};
-		Utils.appendBytes(leadingbyte, null);
+		byte[] leadingByteArray = new byte[]{};
+		byte[] trailingByteArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		byte[] expectedArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		
+		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
+		
+		assertNotSame("method returns the same object", trailingByteArray, result);
+		assertArrayEquals(expectedArray, result);	
+		
 	}
 	
-	//FIXME LSG test method appendBytes completely!
+	/**
+	 * Positive Test case: method appendBytes gets an empty array and a byte array as input.
+	 * The result should be a new object which has the same content as trailingByteArray.
+	 */
+	@Test
+	public void testAppendBytes_TrailingByteEmpty()
+	{
+		byte[] leadingByteArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		byte[] trailingByteArray = new byte[]{};
+		byte[] expectedArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		
+		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
+		
+		assertNotSame("method returns the same object", trailingByteArray, result);
+		assertArrayEquals(expectedArray, result);	
+		
+	}
+	
+	/**
+	 * Positive case: method appendBytes gets an byte array and null as input.
+	 * The result should be a new object which has the same content as leadingByteArray.
+	 */
+	@Test
+	public void testAppendBytes_trailingByteArrayNull()
+	{
+		byte[] leadingByteArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		byte[] trailingByteArray = null;
+		byte[] expectedArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		
+		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
+		
+		assertNotSame("method returns the same object", leadingByteArray, result);
+		assertArrayEquals(expectedArray, result);
+		
+	}
+	
+	/**
+	 * Positive case: method appendBytes gets an byte array and null as input.
+	 * The result should be a new object which has the same content as the trailingByteArray.
+	 */
+	@Test
+	public void testAppendBytes_leadingByteArrayNull()
+	{
+		byte[] leadingByteArray = null;
+		byte[] trailingByteArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		byte[] expectedArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		
+		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
+		
+		assertNotSame("method returns the same object", leadingByteArray, result);
+		assertArrayEquals(expectedArray, result);	
+		
+	}
+	
+	/**
+	 * Positive Test case: method appendBytes gets two empty arrays as input.
+	 * The result should be a new object, which content is empty.
+	 */
+	@Test
+	public void testAppendBytesleadingByteArrayEmptyAndtrailingByteArrayEmpty()
+	{
+		byte[] leadingByteArray = new byte[]{};
+		byte[] trailingByteArray = new byte[]{};
+		byte[] expectedArray = new byte[]{};
+		
+		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
+		
+		assertNotSame("method returns the same object", leadingByteArray, result);
+		assertNotSame("method returns the same object", trailingByteArray, result);
+		assertArrayEquals(expectedArray, result);	
+		
+	}
+	
+	/**
+	 * Positive Test case: method appendBytes gets two byte arrays as input.
+	 * The result should be a new object which doens't skip the zeros and has the content 
+	 * of the leadingByteArray and trailingByteArray in the right order.
+	 */
+	@Test
+	public void testAppendBytes_leadingByteArrayZero()
+	{
+		byte[] leadingByteArray = new byte[]{0x00,0x00};
+		byte[] trailingByteArray = new byte[]{(byte)0xFF,(byte) 0xFF};
+		byte[] expectedArray = new byte[]{0x00,0x00,(byte)0xFF,(byte) 0xFF};
+		
+		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
+		
+		assertArrayEquals(expectedArray, result);	
+		
+	}
+	
+	/**
+	 * Positive Test case: method appendBytes gets two byte arrays as input.
+	 * The result should be a new object which doesn't ignore the zeros on the end 
+	 * and has the content of the leadingByteArray and trailingBytArray in the right order.
+	 */
+	@Test
+	public void testAppendBytes_trailingByteArrayZero()
+	{
+		byte[] leadingByteArray = new byte[]{(byte)0xFF,(byte) 0xFF};
+		byte[] trailingByteArray = new byte[]{0x00,0x00};
+		byte[] expectedArray = new byte[]{(byte)0xFF,(byte) 0xFF,0x00,0x00};
+		
+		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
+		
+		assertArrayEquals(expectedArray, result);
+		
+	}
 	
 	/**
 	 * Positive Test case: method toUnsignedByteArray gets input of type long.
 	 */
 	@Test
-	public void testToUnsignedByteArray_Input_Long()
+	public void testToUnsignedByteArrayLongLowestValue()
 	{
-		long test = 1;
+		long test = 0x00;
 		byte[] actual = Utils.toUnsignedByteArray(test);
-		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x01};
+		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00};
 		
 		assertArrayEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method toUnsignedByteArray gets input of type long.
+	 */
+	@Test
+	public void testToUnsignedByteArrayLongHigestValue()
+	{
+		long test = 0xFF;
+		byte[] actual = Utils.toUnsignedByteArray(test);
+		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0xFF};
+		
+		assertArrayEquals(expected, actual);
+		
+	}
+
+	/**
+	 * Positive Test case: method toUnsignedByteArray gets input of type int.
+	 */
+	@Test
+	public void testToUnsignedByteArrayIntLowestValue()
+	{
+		int test = 0x00;
+		byte[] actual = Utils.toUnsignedByteArray(test);
+		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00};
+		
+		assertArrayEquals(expected, actual);
+		
 	}
 	
 	/**
 	 * Positive Test case: method toUnsignedByteArray gets input of type int.
 	 */
 	@Test
-	public void testToUnsignedByteArray_Input_Int()
+	public void testToUnsignedByteArrayIntHighestValue()
 	{
-		int test = 1;
+		int test = 0xFF;
 		byte[] actual = Utils.toUnsignedByteArray(test);
-		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x01};
+		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0xFF};
 		
 		assertArrayEquals(expected, actual);
-		
 		
 	}
 	
@@ -266,53 +405,173 @@ public class UtilsTest {
 	 * Positive Test case: method toUnsignedByteArray gets input of type short.
 	 */
 	@Test
-	public void testToUnsignedByteArray_Input_Short()
+	public void testToUnsignedByteArrayShortHighestValue()
 	{
-		short test = 1;
+		short test = 0xFF;
 		byte[] actual = Utils.toUnsignedByteArray(test);
-		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x01};
+		byte[] expected = new byte[]{(byte) 0x00,(byte) 0xFF};
 	
 		assertArrayEquals(expected, actual);
+		
 	}
 	
+	/**
+	 * Positive Test case: method toUnsignedByteArray gets input of type short.
+	 */
+	@Test
+	public void testToUnsignedByteArrayShortLowestValue()
+	{
+		short test = 0x00;
+		byte[] actual = Utils.toUnsignedByteArray(test);
+		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00};
+	
+		assertArrayEquals(expected, actual);
+		
+	}
 	
 	/**
 	 * Positive Test case: method toUnsignedByteArray gets input of type byte.
 	 */
 	@Test
-	public void testToUnsignedByteArray_Input_Byte()
+	public void testToUnsignedByteArrayByteHighestValue()
 	{
-		byte test = (byte) 0x01;
+		byte test = (byte) 0xFF;
 		byte[] actual = Utils.toUnsignedByteArray(test);
-		byte[] expected = new byte[]{(byte) 0x01};
+		byte[] expected = new byte[]{(byte) 0xFF};
 		
 		assertArrayEquals(expected, actual);
+		
 	}
 	
 	/**
-	 * Positive Test case: method removeLeadingZeroBytes gets byte array as input.
+	 * Positive Test case: method toUnsignedByteArray gets input of type byte.
 	 */
 	@Test
-	public void testRemoveLeadingZeroBytes_Input_Byte_Array()
+	public void testToUnsignedByteArrayByteLowestValue()
 	{
-		byte[] test = new byte[]{(byte) 0x00, (byte) 0x09};
+		byte test = (byte) 0x00;
+		byte[] actual = Utils.toUnsignedByteArray(test);
+		byte[] expected = new byte[]{(byte) 0x00};
+		
+		assertArrayEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method toUnsignedByteArray gets input of type byte.
+	 */
+	@Test
+	public void testToUnsignedByteArrayByteRangeLimit()
+	{
+		byte test = (byte) 0x7F;
+		byte[] actual = Utils.toUnsignedByteArray(test);
+		byte[] expected = new byte[]{(byte) 0x7F};
+		
+		assertArrayEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method toUnsignedByteArray gets input of type byte.
+	 */
+	@Test
+	public void testToUnsignedByteArrayPassByteRange()
+	{
+		byte test = (byte) 0x80;
+		byte[] actual = Utils.toUnsignedByteArray(test);
+		byte[] expected = new byte[]{(byte) 0x80};
+		
+		assertArrayEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method removeLeadingZeroBytes gets an byte array as input.
+	 */
+	@Test
+	public void testRemoveLeadingZeroBytesByteArrayZero()
+	{
+		byte[] test = new byte[]{(byte) 0x00, (byte) 0x00};
+		byte[] expected = new byte[]{(byte) 0x00};
+		
+		byte[] actual = Utils.removeLeadingZeroBytes(test);	 	
+		
+		assertArrayEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method removeLeadingZeroBytes gets an byte array as input.
+	 * The result should be the array without the leading zero bytes.
+	 */
+	@Test
+	public void testRemoveLeadingZeroBytesByteArray()
+	{
+		byte[] test = new byte[]{(byte) 0x00, (byte) 0xFF};
 		byte[] actual = Utils.removeLeadingZeroBytes(test);
 		 
-		byte[] expected = new byte[]{(byte) 0x09};	
+		byte[] expected = new byte[]{(byte) 0xFF};	
 		
 		assertArrayEquals(expected, actual);
+		
 	}
 	
 	/**
-	 * Positive Test case: method maskUnsignedByteToShort gets byte value as input.
+	 * Positive Test case: method maskUnsignedByteToShort gets a byte as input.
 	 */
 	@Test
-	public void testMaskUnsignedByteToShort_Input_Byte()
+	public void testMaskUnsignedByteToShortHighestByte() 
 	{
-		byte b = (byte) 0x09; //FIXME LSG why change previous value 0xAA to this one? 0xAA is better 
+		byte b = (byte) 0xFF;
+		short expected = 0xFF;
 		
 		short actual = Utils.maskUnsignedByteToShort(b);
-		short expected = 9; 
+		
+		assertEquals(expected, actual);
+		
+	}
+
+	/**
+	 * Positive Test case: method maskUnsignedByteToShort gets a byte as input.
+	 */
+	@Test
+	public void testMaskUnsignedByteToShortByteZero() 
+	{
+		
+		byte b = (byte) 0x00;
+		short expected = 0x00;
+
+		short actual = Utils.maskUnsignedByteToShort(b);
+		
+		assertEquals(expected, actual);
+		
+	}
+
+	/**
+	 * Positive Test case: method maskUnsignedByteToShort gets a byte as input.
+	 */
+	@Test
+	public void testMaskUnsignedByteToShortByteByteRangeLimit() 
+	{
+		byte b = (byte) 0x7F;
+
+		short actual = Utils.maskUnsignedByteToShort(b);;
+		short expected = 0x7F;
+
+		assertEquals(expected, actual);
+		
+	}
+
+	/**
+	 * Positive Test case: method maskUnsignedByteToShort gets a byte as input.
+	 */
+	@Test
+	public void testMaskUnsignedByteToShortBytePassRange() 
+	{
+		byte b = (byte) 0x80;
+		short expected = 0x80;
+		
+		short actual = Utils.maskUnsignedByteToShort(b);
 		
 		assertEquals(expected, actual);
 		
@@ -322,90 +581,214 @@ public class UtilsTest {
 	 * Positive Test case: method maskUnsignedByteToInt gets byte value as input.
 	 */
 	@Test
-	public void testMaskUnsignedByteToInt_Input_Byte()
+	public void testMaskUnsignedByteToIntByteHighestValue()
 	{
-		byte b = 0x01;
+		byte b = (byte)0xFF;
+		int expected = 0xFF;
+		
 		int actual = Utils.maskUnsignedByteToInt(b);
-		int expected = 1;
 		
 		assertEquals(expected, actual);
+		
 	}
 	
 	/**
-	 * Positive Test case: method maskUnsignedShortToInt gets short value as input.
+	 * Positive Test case: method maskUnsignedByteToInt gets byte value as input.
 	 */
 	@Test
-	public void testMaskUnsignedShortToInt_Input_Short()
+	public void testMaskUnsignedByteToIntByteLowestValue()
 	{
-		short b = 1;
+		byte b = 0x00;
+		int expected = 0x00;
+		
+		int actual = Utils.maskUnsignedByteToInt(b);
+		
+		assertEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method maskUnsignedByteToInt gets byte value as input.
+	 */
+	@Test
+	public void testMaskUnsignedByteToIntByteRangeLimit()
+	{
+		byte b = 0x7F;
+		int expected = 0x7F;
+		
+		int actual = Utils.maskUnsignedByteToInt(b);
+		
+		assertEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method maskUnsignedByteToInt gets byte value as input.
+	 */
+	@Test
+	public void testMaskUnsignedByteToIntBytePassRange()
+	{
+		byte b = (byte)0x80;
+		int expected = 0x80;
+		
+		int actual = Utils.maskUnsignedByteToInt(b);
+		
+		assertEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method maskUnsignedShortToInt gets a short as input.
+	 */
+	@Test
+	public void testMaskUnsignedShortToIntShortHighestValue()
+	{
+		short b = 0xFF;
+		int expected = 0xFF;
+		
 		int actual  = Utils.maskUnsignedShortToInt(b);
-		int expected = 1;
+		
 		assertEquals(expected, actual);
 		
 	}
 	
 	/**
-	 * Positive Test case: method concatenate gets 2 different bytes as input.
+	 * Positive Test case: method maskUnsignedShortToInt gets a short as input.
 	 */
 	@Test
-	public void testConcatenate_Input_Two_Bytes()
+	public void testMaskUnsignedShortToIntShortLowestValue()
 	{
-		byte a = 0x01,b = 0x02;
-		short actual = Utils.concatenate(a, b);
-		short expected = 258; //FIXME LSG this is essentially not different to the previous state! I cant immediately see that this is correct
+		short b = 0x00;
+		int expected = 0x00;
+		
+		int actual  = Utils.maskUnsignedShortToInt(b);
+		
 		assertEquals(expected, actual);
 		
 	}
 	
+	/**
+	 * Positive Test case: method concatenate gets the highest and lowest byte as input.
+	 */
+	@Test
+	public void testConcatenateHighestAndLowestByte()
+	{
+		byte a = (byte) 0xFF;
+		byte b = (byte) 0x00;
+		short expected = (short) 0xFF00;
+		
+		short actual = Utils.concatenate(a, b);
+		
+		assertEquals(expected, actual);	
+		
+	}
+	
+	/**
+	 * Positive Test case: method concatenate gets the lowest and highest byte as input.
+	 */
+	@Test
+	public void testConcatenateLowestAndHighestByte()
+	{
+		byte a = (byte) 0x00;
+		byte b = (byte) 0xFF;
+		short expected = (short) 0xFF;
+		
+		short actual = Utils.concatenate(a, b);
+		
+		assertEquals(expected, actual);	
+		
+	}
+	
+	/**
+	 * Positive Test case: method concatenate gets two lowest bytes as input.
+	 */
+	@Test
+	public void testConcatenateTwoLowestBytes()
+	{
+		byte a = (byte) 0x00;
+		byte b = (byte) 0x00;
+		short expected = (short) 0x00;
+		
+		short actual = Utils.concatenate(a, b);
+		
+		assertEquals(expected, actual);	
+		
+	}
+	
+	/**
+	 * Positive Test case: method concatenate gets two highest bytes as input.
+	 */
+	@Test
+	public void testConcatenateTwoHighestBytes()
+	{
+		byte a = (byte) 0xFF;
+		byte b = (byte) 0xFF;
+		short expected = (short) 0xFFFF;
+		
+		short actual = Utils.concatenate(a, b);
+		
+		assertEquals(expected, actual);	
+		
+	}
+	
+	/**
+	 * Positive Test case: method concatenate gets the two bytes as input.
+	 * the result should be a new object which content is the concatenation of the two bytes in the right order.
+	 */
+	@Test
+	public void testConcatenateTwoBytes()
+	{
+		byte a = (byte) 0x01;
+		byte b = (byte) 0x01;
+		short expected = (short) 0x101;
+		
+		short result = Utils.concatenate(a, b);
+		
+		assertEquals(expected, result);	
+		
+	}
+
 	/**
 	 * Positive Test case: method getDate gets a dateString as input.
+	 * The result should be the 1.08.1999 with the time 00:00:00:00
 	 */
 	@Test
-	public void testGetDate_Input_Stringdate() 
+	public void testGetDateStringdate() 
 	{
 		String s = "19990801";
 		Date actual = Utils.getDate(s);
-
-		//FIXME LSG why did you remove the comment below without any change to the code?
-		//FIXME LSG this looks weird, try asserting the parts instead of building a second object
 	 	Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.YEAR, 1999);
-		calendar.set(Calendar.MONTH, Calendar.AUGUST);
-		calendar.set(Calendar.DATE, 01);
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-
-		Date date = calendar.getTime();
-
-		assertEquals(date, actual);
-
+	 	calendar.setTime(actual);
+	 	
+	 	assertEquals("year", 1999, calendar.get(Calendar.YEAR));
+	 	assertEquals("month", 7, calendar.get(Calendar.MONTH));
+	 	assertEquals("day", 1, calendar.get(Calendar.DAY_OF_MONTH));
+	 	assertEquals("hour", 00, calendar.get(Calendar.HOUR));
+	 	assertEquals("minute", 00, calendar.get(Calendar.MINUTE));
+	 	assertEquals("second", 00, calendar.get(Calendar.SECOND));
+	 	assertEquals("millisecond", 00, calendar.get(Calendar.MILLISECOND));
+	 	
 	}
 	
 	/**
-	 * Positive Test case: method getDate gets a null string.
+	 * Negative Test case: method getDate gets a null string.
+	 * The result should be a NPE cause of the string which is null.
 	 */
 	@Test(expected=NullPointerException.class)
-	public void testGetDatedate_InputString_Is_Null()
+	public void testGetDateString()
 	{
 		byte a = 1;
 		String s = null;
-		Utils.getDate(s, a);
-		
+		Utils.getDate(s, a);	
 		
 	}
 	
 	/**
-	 * Positive Test case: method arrayContainsEqual gets an Object array and an object as input.
-	 * FIXME LSG use JavaDoc links where possible in order to not break readability when refactoring
-	 * FIXME LSG params and return below don't match actual method
-	 * @param String array
-	 * @param string value
-	 * @return true, if one of the arrays entries equals the given object.
+	 * Positive Test case: method arrayContainsEqual gets an Object array and an string value as input.
+	 * The result is the boolean value, which depends on if the entries of the array are equal to the object.
 	 */
 	@Test
-	public void testArrayContainsEqual_Input_Stringarray_And_string()
+	public void testArrayContainsEqualStringArrayAndString()
 	{
 		String[] a =  new String[2];
 		a[1] = "1";
@@ -415,99 +798,319 @@ public class UtilsTest {
 		boolean actual  = Utils.arrayContainsEqual(a, b);
 		
 		assertTrue(actual);
+		
 	}
 	
 	/**
 	 * Positive Test case: method logarithm gets a double as input and int for the base input.
-	 * @param value the value
-	 * @param base the base
-	 * @return the logarithm of the given value to the given base
+	 * The result is the the logarithm of the double value with the base of type int.
 	 */
 	@Test
-	public void testLogarithm_Input_Double_and_Base()
+	public void testLogarithmDoubleAndBase()
 	{
 		int base = 100;
 		double doublevalue = 10;
 		double DELTA = 1e-15;
 		double actual = Utils.logarithm(doublevalue, base);
 		double expected = 0.5;
+		
 		assertEquals(expected, actual,DELTA);
 		
 	}
 	
 	/**
 	 * Positive Test case: method binaryEncode gets a byte array as input.
+	 * The result should be value in binary.
 	 */
 	@Test
-	public void testBinaryEncode_Input_Byte_Array()
+	public void testBinaryEncodeByteArrayLowestValue()
 	{
-		byte[] test = new byte[]{(byte) 0x01, (byte) 0x01, (byte) 0x01};
+		byte[] test = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00};
 		String actual  = Utils.binaryEncode(test);
-		String expected = "00000001 00000001 00000001";
+		String expected = "00000000 00000000 00000000";
 		
 		assertEquals(expected, actual);
 		
 	}
 	
 	/**
-	 * Positive Test case: method isAnyNull becomes a null Object as input.
+	 * Positive Test case: method binaryEncode gets a byte array as input.
+	 * The result should be value in binary.
 	 */
 	@Test
-	public void testIsAnyNulltrue_Input_Object()
+	public void testBinaryEncodeByteArrayHighestValue()
+	{
+		byte[] test = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+		String actual  = Utils.binaryEncode(test);
+		String expected = "11111111 11111111 11111111";
+		
+		assertEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method isAnyNull gets a null Object as input.
+	 * The result should be the true.
+	 */
+	@Test
+	public void testIsAnyNulltrueObject()
 	{
 		Object a = null;
 		boolean actual  = Utils.isAnyNull(a);
 		
 		assertTrue(actual);
+		
 	}
 	
 	/**
 	 * Positive Test case: method isAnyNull gets a Object as input.
+	 * The result should be false, because the Object isn't null.
 	 */
 	@Test
-	public void testIsAnyNullfalse_Input_Object()
+	public void testIsAnyNullfalseObject()
 	{
 		Object a = new Object();
 		boolean actual = Utils.isAnyNull(a);
 		
 		assertFalse(actual);
+		
 	}
 	
 	/**
 	 * Positive Test case: method getShortFromUnsignedByteArray gets byte array as input.
+	 * 
 	 */
 	@Test
-	public void testGetShortFromUnsignedByteArray_Input_Byte_Array()
+	public void testGetShortFromUnsignedByteArrayByteArrayLowestByte()
 	{
-		byte[] test = new byte[]{(byte) 0x01};
+		byte[] test = new byte[]{(byte) 0x00};
 		short actual = Utils.getShortFromUnsignedByteArray(test);
-		short expected = 1;
+		short expected = 0x00;
+
 		assertEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method getShortFromUnsignedByteArray gets byte array as input.
+	 * 
+	 */
+	@Test
+	public void testGetShortFromUnsignedByteArrayByteArrayHighestByte()
+	{
+		byte[] test = new byte[]{(byte) 0xFF};
+		short actual = Utils.getShortFromUnsignedByteArray(test);
+		short expected = 0xFF;
+
+		assertEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method getShortFromUnsignedByteArray gets byte array as input.
+	 * 
+	 */
+	@Test
+	public void testGetShortFromUnsignedByteArrayByteArrayByteRangeLimit()
+	{
+		byte[] test = new byte[]{(byte) 0x7F};
+		short actual = Utils.getShortFromUnsignedByteArray(test);
+		short expected = 0x7F;
+
+		assertEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method getShortFromUnsignedByteArray gets byte array as input.
+	 * 
+	 */
+	@Test
+	public void testGetShortFromUnsignedByteArrayByteArrayPassByteRange()
+	{
+		byte[] test = new byte[]{(byte) 0x80};
+		short actual = Utils.getShortFromUnsignedByteArray(test);
+		short expected = 0x80;
+
+		assertEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method getIntFromUnsignedByteArray gets byte array with the lowest value as input.
+	 */
+	@Test
+	public void testGetIntFromUnsignedByteArrayByteArrayLowestByte()
+	{
+		byte[] test = new byte[]{(byte) 0x00};
+		int actual = Utils.getIntFromUnsignedByteArray(test);
+		int expected = 0x00;
+		
+		assertEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method getIntFromUnsignedByteArray gets byte array with the highest value as input.
+	 */
+	@Test
+	public void testGetIntFromUnsignedByteArrayByteArrayHighestByte()
+	{
+		byte[] test = new byte[]{(byte) 0xFF};
+		int actual = Utils.getIntFromUnsignedByteArray(test);
+		int expected = 0xFF;
+		
+		assertEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method getIntFromUnsignedByteArray gets byte array with the  as input.
+	 */
+	@Test
+	public void testGetIntFromUnsignedByteArrayByteArrayByteRangeLimit()
+	{
+		byte[] test = new byte[]{(byte) 0x7F};
+		int actual = Utils.getIntFromUnsignedByteArray(test);
+		int expected = 0x7F;
+		
+		assertEquals(expected, actual);
+		
 	}
 	
 	/**
 	 * Positive Test case: method getIntFromUnsignedByteArray gets byte array as input.
 	 */
 	@Test
-	public void testGetIntFromUnsignedByteArray_Input_Byte_Array()
+	public void testGetIntFromUnsignedByteArrayByteArrayPassByteRange()
 	{
-		byte[] test = new byte[]{(byte) 0x01};
+		byte[] test = new byte[]{(byte) 0x80};
 		int actual = Utils.getIntFromUnsignedByteArray(test);
-		int expected = 1;
+		int expected = 0x80;
+		
 		assertEquals(expected, actual);
+		
 	}
 	
 	/**
 	 * Positive Test case: method getBigIntegerFromUnsignedByteArray gets byte array as input.
 	 */
 	@Test
-	public void testGetBigIntegerFromUnsignedByteArray_Input_Byte_Array()
+	public void testGetBigIntegerFromUnsignedByteArrayByteArrayHighestValue()
 	{
-		byte[] test = new byte[]{(byte) 0x01};
+		byte[] test = new byte[]{(byte) 0xFF};
+		long exp = 0xFF;
+		BigInteger expected = BigInteger.valueOf(exp);
+		
 		BigInteger actual = Utils.getBigIntegerFromUnsignedByteArray(test);
-		BigInteger expected = BigInteger.ONE;
 		
 		assertEquals(expected, actual);
+		
 	}
 	
+	/**
+	 * Positive Test case: method getBigIntegerFromUnsignedByteArray gets byte array as input.
+	 */
+	@Test
+	public void testGetBigIntegerFromUnsignedByteArrayByteArrayLowestValue()
+	{
+		byte[] test = new byte[]{(byte) 0x00};
+		long exp = 0x00;
+		BigInteger expected = BigInteger.valueOf(exp);
+		
+		BigInteger actual = Utils.getBigIntegerFromUnsignedByteArray(test);
+				
+		assertEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method concatByteArrays gets three byte arrays, 
+	 * which are empty and returns a concatenation of them.
+	 */
+	@Test
+	public void testConcatByteArraysEmptyByteArrays()
+	{
+		byte[] array1 = new byte[]{};
+		byte[] array2 = new byte[]{};
+		byte[] array3 = new byte[]{};	
+		byte[] expected = new byte[]{};
+
+		byte[] actual = Utils.concatByteArrays(array1,array2,array3);
+	
+		assertArrayEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method concatByteArrays gets three byte arrays as input.
+	 * The result is the concatenation of these three arrays.
+	 */
+	@Test
+	public void testConcatByteArraysLowestByteArrays()
+	{
+		byte[] array1 = new byte[]{0x00};
+		byte[] array2 = new byte[]{0x00};
+		byte[] array3 = new byte[]{0x00};
+		byte[] expected = new byte[]{0x00,0x00,0x00};
+		
+		byte[] actual = Utils.concatByteArrays(array1,array2,array3);
+		
+		assertArrayEquals(expected, actual);	
+		
+	}
+	
+	/**
+	 * Positive Test case: method concatByteArrays gets three byte arrays as input.
+	 * The result should be the concatenation of them.
+	 */
+	@Test
+	public void testConcatByteArraysHighestByteArrays() 
+	{
+		byte[] array1 = new byte[]{(byte) 0xFF};
+		byte[] array2 = new byte[]{(byte) 0xFF};
+		byte[] array3 = new byte[]{(byte) 0xFF};
+		byte[] expected = new byte[]{(byte) 0xFF,(byte) 0xFF,(byte) 0xFF};
+
+		byte[] result = Utils.concatByteArrays(array1,array2,array3);
+		
+		assertArrayEquals(expected, result);
+		
+	}
+	
+	/**
+	 * Positive Test case: method concatByteArrays gets three byte arrays, the first element has the value null.
+	 * The result should be a new object with the 2 byte arrays in the right order without the null element.
+	 */
+	@Test
+	public void testConcatByteArraysNull()
+	{
+		byte[] array1 = null;
+		byte[] array2 = new byte[]{(byte) 0xFF};
+		byte[] array3 = new byte[]{(byte) 0xFF};
+		byte[] expected =  new byte[]{(byte)0xFF,(byte)0xFF};
+		
+		byte[] result = Utils.concatByteArrays(array1,array2,array3);
+		
+		assertArrayEquals(expected, result);
+		
+	}
+	
+	/**
+	 * Positive Test case: method concatByteArrays gets three byte arrays, the last element has the value null.
+	 * The result should be a new object with the 2 byte arrays in the right order without the null element.
+	 */
+	@Test
+	public void testConcatByteArrays_2ndNull()
+	{
+		byte[] array1 =  new byte[]{(byte) 0xFF};
+		byte[] array3 = new byte[]{(byte) 0xFF};
+		byte[] array2 = null;
+		byte[] expected =  new byte[]{(byte)0xFF,(byte)0xFF};
+		
+		byte[] result = Utils.concatByteArrays(array1,array2,array3);
+		
+		assertArrayEquals(expected, result);
+		
+	}
 }
