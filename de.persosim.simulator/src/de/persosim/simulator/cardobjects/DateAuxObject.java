@@ -1,10 +1,10 @@
 package de.persosim.simulator.cardobjects;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;

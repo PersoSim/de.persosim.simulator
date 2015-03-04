@@ -65,8 +65,6 @@ public class PersoSim implements Simulator {
 	public void startPersoSim(){
 		System.out.println("Welcome to PersoSim");
 
-
-
 		startSimulator();
 		final Simulator sim = this;
 		

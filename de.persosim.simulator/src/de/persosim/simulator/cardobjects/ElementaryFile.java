@@ -1,10 +1,10 @@
 package de.persosim.simulator.cardobjects;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;

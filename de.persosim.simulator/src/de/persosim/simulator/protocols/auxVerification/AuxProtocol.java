@@ -1,7 +1,6 @@
 package de.persosim.simulator.protocols.auxVerification;
 
 import java.io.FileNotFoundException;
-import java.nio.file.AccessDeniedException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,6 +11,7 @@ import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.Scope;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.VerificationException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;

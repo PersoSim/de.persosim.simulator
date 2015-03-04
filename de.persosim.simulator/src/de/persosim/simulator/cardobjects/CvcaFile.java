@@ -1,9 +1,9 @@
 package de.persosim.simulator.cardobjects;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Collection;
 
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 
