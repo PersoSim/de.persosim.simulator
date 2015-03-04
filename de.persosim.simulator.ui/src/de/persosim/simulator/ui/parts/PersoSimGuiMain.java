@@ -181,7 +181,7 @@ public class PersoSimGuiMain {
 						}
 					});
 					try {
-						Thread.sleep(250);
+						Thread.sleep(500);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -198,7 +198,7 @@ public class PersoSimGuiMain {
 	 * changes the maximum of the slider
 	 */
 	private void rebuildSlider(){
-		sync.syncExec(new Runnable() { // TODO JKH does this cost too much perf?
+		sync.syncExec(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -305,7 +305,6 @@ public class PersoSimGuiMain {
 	    
 	}
 
-	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
 	/**
 	 * saves and manages Strings grabbed by {@link #grabSysOut()} in a
 	 * LinkedList. This is necessary because they are not saved in the text
