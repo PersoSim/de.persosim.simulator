@@ -5,7 +5,6 @@ import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,27 +38,22 @@ import de.persosim.simulator.utils.Utils;
 @XmlRootElement(name="PinManagement")
 public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, ApduSpecificationConstants, InfoSource{
 	
-	protected HashMap<String, ApduSpecification> apdus  = new HashMap<>(); //FIXME JGE where do you need this?
 	protected ApduSpecification apduSpecification;
 	protected CardStateAccessor cardState;
 	protected ProcessingData processingData; 
 	
 	public PinProtocol() {
-		registerApdus();
-		reset();
 	}
 	
-	@Override //FIXME JGE add missing @Override annotations throughout the file
+	@Override
 	public String getProtocolName() {
 		return "PIN";
 	}
-
 
 	@Override
 	public void setCardStateAccessor(CardStateAccessor cardState) {
 		this.cardState = cardState;
 	}
-
 
 	@Override
 	public Collection<? extends TlvDataObject> getSecInfos(
@@ -70,141 +64,56 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 	@Override
 	public void process(ProcessingData processingData) {
 		this.processingData = processingData;
-		
-		if (processingData.isReportingError()) {
-			
-			 /*
-			 * Due to a processing error there is no guarantee that there is
-			 * anything like an INS byte that could be set. Set dummy INS byte
-			 * 0xFF instead;
-			 */
-			
-			processEvent((byte) 0xFF);
-		} else {
-			processEvent(processingData.getCommandApdu().getIns());
+		if (processingData != null) {
+		byte ins = processingData.getCommandApdu().getIns();
+			switch(ins){
+			case 0x20:
+				processCommandVerifyPin();
+				break;
+			case 0x2C:
+				byte p1 = processingData.getCommandApdu().getP1();
+				byte p2 = processingData.getCommandApdu().getP2();
+				/* because the CAN can also be changed valid vaues fpr p2 are 0x02 and 0x02 */
+				if (p1 == 0x02 && (p2 == 0x02 || p2 == 0x03)){
+					processCommandChangePin();
+					break; 
+				}
+				/* because unblocking the CAN is not necessary regarding ISO 7816 p2 must be 0x03 */
+				else if (p1 == 0x03 && p2 == 0x03){
+					processCommandUnblockPin();
+					break;
+				}
+			case 0x44:
+				processCommandActivatePin();
+				break;
+			case 0x04:
+				processCommandDeactivatePin();
+				break;
+			default:
+				log(this, "APDU matching failed due to APDU \"" + HexString.encode(processingData.getCommandApdu().getHeader()) + "\" being unknown", DEBUG);
+				break;
+			}
 		}
-	}
-	
-	//FIXME JGE clean up this mess (inherited from the previous state machine handling, no longer needed)
-	public int processEvent(int msg){
-		if(isAPDU("Activate PIN")){
-			
-			logs("ACTIVATE_PIN_RECEIVED");
-			processCommandActivatePin();
-
-		}else if(isAPDU("Change PIN")){
-			
-			logs("CHANGE_PASSWORD_RECEIVED");
-			processCommandChangePin();
-
-		}else if(isAPDU("Deactivate PIN")){
-			
-			logs("DEACTIVATE_PIN_RECEIVED");
-			processCommandDeactivatePin();
-
-		}else if(isAPDU("Unblock PIN")){
-			
-			logs("UNBLOCK_PIN_RECEIVED");
-			processCommandUnblockPin();
-		}else if(isAPDU("Verify PIN")){
-			
-			logs("VERIFY_PIN_RECEIVED");
-			processCommandVerifyPin();
-		}
-		return msg;
-	}
-	
-	public boolean isAPDU(String apduId) {
-		CommandApdu apdu;
-		
-		ApduSpecification apduSpec = apdus.get(apduId);
-		
-		if(apduSpec == null) {
-			log(this, "APDU matching failed due to command \"" + apduId + "\" being unknown", DEBUG);
-			return false;
-		}
-		
-		if(processingData == null) {
+		else {
 			log(this, "APDU matching failed due to missing processing data", DEBUG);
-			return false;
 		}
-		apdu = processingData.getCommandApdu();
-		boolean match = apduSpec.matchesFullApdu(apdu);
-		
-		if(match) {
-			log(this, "received APDU matches definition of command \"" + apduId + "\"", DEBUG);
-		}
-		return match;
 	}
 	
-	//public Collection<ApduSpecification> getApduSet() {
-	//	return apdus.values();
-	//}
-
+	@Override
 	public void reset() {
-		processEvent((byte) 0xFF); // handle the first transition
 	}
-
+	
+	@Override
 	public boolean isMoveToStackRequested() {
 		return false;
 	}
 	
-	private void registerApdus(){
-		ApduSpecification apduSpecification = new ApduSpecification("Activate PIN");
-		apduSpecification.setInitialAPDU(true);
-		apduSpecification.setIsoFormat(ISO_FORMAT_FIRSTINTERINDUSTRY);
-		apduSpecification.setIsoCase(ISO_CASE_1);
-		apduSpecification.setIns(INS_44_ACTIVATE_FILE);
-		apduSpecification.setP1((byte) 0x10);
-		apduSpecification.setP2(ID_PIN);
-		apdus.put(apduSpecification.getId(), apduSpecification);
-		
-		apduSpecification = new ApduSpecification("Change PIN");
-		apduSpecification.setInitialAPDU(true);
-		apduSpecification.setIsoFormat(ISO_FORMAT_FIRSTINTERINDUSTRY);
-		apduSpecification.setIsoCase(ISO_CASE_3);
-		apduSpecification.setP1(P1_RESET_RETRY_COUNTER_NEW_DATA);
-		apduSpecification.setIns(INS_2C_RESET_RETRY_COUNTER);
-		apdus.put(apduSpecification.getId(), apduSpecification);
-		
-		apduSpecification = new ApduSpecification("Deactivate PIN");
-		apduSpecification.setInitialAPDU(true);
-		apduSpecification.setIsoFormat(ISO_FORMAT_FIRSTINTERINDUSTRY);
-		apduSpecification.setIsoCase(ISO_CASE_1);
-		apduSpecification.setIns(INS_04_DEACTIVATE_FILE);
-		apduSpecification.setP1((byte) 0x10);
-		apduSpecification.setP2(ID_PIN);
-		apdus.put(apduSpecification.getId(), apduSpecification);
-		
-		apduSpecification = new ApduSpecification("Unblock PIN");
-		apduSpecification.setInitialAPDU(true);
-		apduSpecification.setIsoFormat(ISO_FORMAT_FIRSTINTERINDUSTRY);
-		apduSpecification.setIsoCase(ISO_CASE_1);
-		apduSpecification.setIns(INS_2C_RESET_RETRY_COUNTER);
-		apduSpecification.setP1(P1_RESET_RETRY_COUNTER_ABSENT_DATA);
-		apduSpecification.setP2(ID_PIN);
-		apdus.put(apduSpecification.getId(), apduSpecification);
-		
-		apduSpecification = new ApduSpecification("Verify PIN");
-		apduSpecification.setInitialAPDU(true);
-		apduSpecification.setIsoFormat(ISO_FORMAT_FIRSTINTERINDUSTRY);
-		apduSpecification.setIsoCase(ISO_CASE_1);
-		apduSpecification.setIns(INS_20_VERIFY);
-		apduSpecification.setP1(P1_SELECT_FILE_MF_DF_EF);
-		apduSpecification.setP2(ID_PIN);
-		apdus.put(apduSpecification.getId(), apduSpecification);
-	}
-	
-	public void logs(String state) {
-		log(this, "State changed to " + state, DEBUG);
-	}
-	
+	@Override
 	public String getIDString() {
 		return "Personal Identification Number";
 	}
 	
 	private void processCommandActivatePin() {
-			
 		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
 		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
@@ -321,7 +230,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		}
 		
 		PinObject pinObject = (PinObject) object;
-		
+
 		log(this, "old PIN retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
 		
 		try {
@@ -347,7 +256,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 	}
 	
 	private void processCommandVerifyPin() {
-		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF); //FIXME JGE why use a constant password Identifier here? What about checking other Pin-objects?
+		Object object = cardState.getObject(new AuthObjectIdentifier(P2_VERIFY), Scope.FROM_MF);
 		
 		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
@@ -356,12 +265,10 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			return;
 		}
 		PinObject pinObject = (PinObject) object;
-		
 		ResponseApdu resp = new ResponseApdu((short) (SW_63C0_COUNTER_IS_0 + (pinObject.getRetryCounterCurrentValue())));
 		
-		this.processingData.updateResponseAPDU(this, "new PIN retry counter is: " + pinObject.getRetryCounterCurrentValue(), resp); //FIXME JGE adapt the output string (this value is not new and maybe it's not even PIN
+		this.processingData.updateResponseAPDU(this, "retry counter is: " + pinObject.getRetryCounterCurrentValue(), resp);
 		
 		log(this, "processed COMMAND_VERIFY_PIN", DEBUG);
 	}
-	
 }

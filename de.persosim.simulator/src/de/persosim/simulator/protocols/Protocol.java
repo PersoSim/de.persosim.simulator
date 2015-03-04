@@ -73,17 +73,6 @@ public interface Protocol {
 	 * @param processingData
 	 */
 	public abstract void process(ProcessingData processingData);
-
-	//FIXME JGE what is this JavaDoc for???
-	/**
-	 * Returns collection of supported APDUs. The protocol is expected to be
-	 * able to handle each APDU that matches one of these specifications.
-	 * 
-	 * 
-	 * @return collection of supported {@link ApduSpecification}s. The returned
-	 *         {@link Collection} shall not be altered by the calling entity as
-	 *         it may be immutable.
-	 */
 	
 	/**
 	 * Reset the {@link Protocol} to it's initial configuration.
