@@ -29,6 +29,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Slider;
@@ -167,25 +168,28 @@ public class PersoSimGuiMain {
 		//this happens every 100 ms
 		Thread updateThread = new Thread() {
 			public void run() {
-				while (true) {
 
+				while (true) {					
 					sync.syncExec(new Runnable() {
 
 						@Override
 						public void run() {
-
-								if (Calendar.getInstance().get(
-										Calendar.MILLISECOND) % 100 == 0
-										&& !locked) {
-									buildNewConsoleContent();
-								}
-								rebuildSlider();
+							
+							 if(!locked) {
+								 buildNewConsoleContent();
+							 }
 						}
 					});
-
+					try {
+						Thread.sleep(250);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		};
+		updateThread.setDaemon(true);
 	    updateThread.start();
 		
 	}
@@ -194,10 +198,11 @@ public class PersoSimGuiMain {
 	 * changes the maximum of the slider
 	 */
 	private void rebuildSlider(){
-		sync.asyncExec(new Runnable() {
+		sync.syncExec(new Runnable() { // TODO JKH does this cost too much perf?
 			
 			@Override
 			public void run() {
+				
 				slider.setMaximum(consoleStrings.size()+slider.getThumb()-maxLineCount+1);
 			}
 		});
@@ -342,8 +347,8 @@ public class PersoSimGuiMain {
 		sync.syncExec(new Runnable() {
 			@Override
 			public void run() {
-				slider.setSelection(slider.getMaximum());							
 				rebuildSlider();
+				slider.setSelection(slider.getMaximum());							
 			}
 		});
 
