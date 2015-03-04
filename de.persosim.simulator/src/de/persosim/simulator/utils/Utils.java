@@ -163,22 +163,23 @@ public abstract class Utils {
 	 * @return a concatenation of one or more byte arrays
 	 */
 	public static byte[] concatByteArrays(byte[]... byteArrays) {
-		//FIXME LSG you removed code without adding appropriate tests here...
 		
 		ByteArrayOutputStream outputStream;
-		
 		outputStream = new ByteArrayOutputStream();
-		
-		for(byte[] currentByteArray : byteArrays) {
+		for (byte[] currentByteArray : byteArrays) {
+			if (currentByteArray == null) continue;
+			
 			try {
+
 				outputStream.write(currentByteArray);
 			} catch (IOException e) {
 				logException(Utils.class, e);
 			}
 		}
-		
+
 		return outputStream.toByteArray();
 	}
+	
 	
 	/**
 	 * Returns a byte array that has been appended by the provided bytes
@@ -188,21 +189,8 @@ public abstract class Utils {
 	 */
 	public static byte[] appendBytes(byte[] leadingByteArray, byte... trailingBytes) {
 		
-		ByteArrayOutputStream outputStream;
-		
-		outputStream = new ByteArrayOutputStream();
-		
-		try {
-			outputStream.write(leadingByteArray);
-		} catch (IOException e) {
-			logException(Utils.class, e);
-		}
-		
-		for(byte currentByte : trailingBytes) {
-			outputStream.write(currentByte);
-		}
-		
-		return outputStream.toByteArray();
+		 byte[] result = concatByteArrays(leadingByteArray,trailingBytes);
+		 return result;
 	}
 	
 	/**
@@ -467,9 +455,7 @@ public abstract class Utils {
 	 * The provided String is expected to be exactly 8 characters long and encoded as follows: YYYYMMDD.
 	 * If the String parts for month or day contain non-numeric characters a NumberFormatException will be thrown
 	 * Well formatted date strings will not be checked for validity, e.g. december 34th would not be discarded.
-	 * FIXME LSG what does the addition below mean? why category? Where shall those values be added?
-	 * @category If using the Calendar, values for HOUR_OF_DAY, MINUTE, SECONDS and MILISECONDS must be entered. 
-	 * By not doing this, these values will be set randomly.
+	 * For detailed description of the usage of getDate, especially with the time see {@link #getDate(String, byte)}
 	 * @param dateString the date encoded as follows: YYYYMMDD
 	 * @return a {@link Date} object
 	 */
@@ -485,6 +471,8 @@ public abstract class Utils {
 	 *  0: a NumberFormatException will be thrown
 	 *  1: the maximum possible value will be chosen
 	 * Well formatted date strings will not be checked for validity, e.g. 20140199 would not be discarded.
+	 * When using getDate, the hour, minutes, seconds and milliseconds have to be set, otherwise the return object 
+	 * will get the actual current time.
 	 * @param dateString the date encoded as follows: YYYYMMDD
 	 * @param handleNonNumericCharacters determine how non-numeric characters will be handled
 	 * @return a {@link Date} object
