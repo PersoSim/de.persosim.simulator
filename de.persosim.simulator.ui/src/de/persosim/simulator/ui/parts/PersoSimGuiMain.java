@@ -164,12 +164,13 @@ public class PersoSimGuiMain {
 		Thread simThread = new Thread(sim);
 		simThread.start();		
 		
-		//sets rebuilds the console field if it is not locked
-		//this happens every 100 ms
+		
+		final Thread uiThread = Display.getCurrent().getThread();
+		
 		Thread updateThread = new Thread() {
-			public void run() {
-
-				while (true) {					
+			public void run() {				
+				
+				while (uiThread.isAlive()) {					
 					sync.syncExec(new Runnable() {
 
 						@Override
