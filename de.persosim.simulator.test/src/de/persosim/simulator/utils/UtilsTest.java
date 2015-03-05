@@ -237,6 +237,7 @@ public class UtilsTest {
 	}
 	
 	/**
+	 * FIXME LSG why is this JavaDoc identical to that of method above?
 	 * Positive Test case: method appendBytes gets an empty array and a byte array as input.
 	 * The result should be a new object which has the same content as trailingByteArray.
 	 */
@@ -249,7 +250,7 @@ public class UtilsTest {
 		
 		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
 		
-		assertNotSame("method returns the same object", trailingByteArray, result);
+		assertNotSame("method returns the same object", trailingByteArray, result); //FIXME LSG this check is nonsense, but another specific check is needed here ;-)
 		assertArrayEquals(expectedArray, result);	
 		
 	}
@@ -285,7 +286,7 @@ public class UtilsTest {
 		
 		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
 		
-		assertNotSame("method returns the same object", leadingByteArray, result);
+		assertNotSame("method returns the same object", leadingByteArray, result); //FIXME LSG this check is nonsense, but another specific check is needed here ;-)
 		assertArrayEquals(expectedArray, result);	
 		
 	}
@@ -365,7 +366,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayLongHigestValue()
 	{
-		long test = 0xFF;
+		long test = 0xFF; //FIXME LSG this is not the highest value (not even close to it)
 		byte[] actual = Utils.toUnsignedByteArray(test);
 		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0xFF};
 		
@@ -393,7 +394,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayIntHighestValue()
 	{
-		int test = 0xFF;
+		int test = 0xFF;//FIXME LSG this is not the highest value (not even close to it)
 		byte[] actual = Utils.toUnsignedByteArray(test);
 		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0xFF};
 		
@@ -407,7 +408,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayShortHighestValue()
 	{
-		short test = 0xFF;
+		short test = 0xFF;//FIXME LSG this is not the highest value (not even close to it)
 		byte[] actual = Utils.toUnsignedByteArray(test);
 		byte[] expected = new byte[]{(byte) 0x00,(byte) 0xFF};
 	
@@ -532,6 +533,7 @@ public class UtilsTest {
 	}
 
 	/**
+	 * FIXME LSG why is this JavaDoc identical to the one above? (check other methods as well) 
 	 * Positive Test case: method maskUnsignedByteToShort gets a byte as input.
 	 */
 	@Test
@@ -643,7 +645,7 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedShortToIntShortHighestValue()
 	{
-		short b = 0xFF;
+		short b = 0xFF; //FIXME LSG this is not the highest value (BTW, why call the variable b?)
 		int expected = 0xFF;
 		
 		int actual  = Utils.maskUnsignedShortToInt(b);
@@ -748,6 +750,8 @@ public class UtilsTest {
 		
 	}
 
+	//FIXME LSG move the tests here up to the other test concerning getDate
+	
 	/**
 	 * Positive Test case: method getDate gets a dateString as input.
 	 * The result should be the 1.08.1999 with the time 00:00:00:00
@@ -761,7 +765,7 @@ public class UtilsTest {
 	 	calendar.setTime(actual);
 	 	
 	 	assertEquals("year", 1999, calendar.get(Calendar.YEAR));
-	 	assertEquals("month", 7, calendar.get(Calendar.MONTH));
+	 	assertEquals("month", 1, calendar.get(Calendar.MONTH)); //FIXME LSG better/safe to use a Calendar constant here
 	 	assertEquals("day", 1, calendar.get(Calendar.DAY_OF_MONTH));
 	 	assertEquals("hour", 00, calendar.get(Calendar.HOUR));
 	 	assertEquals("minute", 00, calendar.get(Calendar.MINUTE));
@@ -921,6 +925,8 @@ public class UtilsTest {
 		
 	}
 	
+	//FIXME LSG missing tests for getXxxFromUnsignedByteArray checking more than one byte
+	
 	/**
 	 * Positive Test case: method getShortFromUnsignedByteArray gets byte array as input.
 	 * 
@@ -1037,6 +1043,8 @@ public class UtilsTest {
 		byte[] expected = new byte[]{};
 
 		byte[] actual = Utils.concatByteArrays(array1,array2,array3);
+		
+		//FIXME LSG missing assert notSame
 	
 		assertArrayEquals(expected, actual);
 		
@@ -1105,7 +1113,7 @@ public class UtilsTest {
 	{
 		byte[] array1 =  new byte[]{(byte) 0xFF};
 		byte[] array3 = new byte[]{(byte) 0xFF};
-		byte[] array2 = null;
+		byte[] array2 = null; //FIXME LSG why define the variables in this strange order?
 		byte[] expected =  new byte[]{(byte)0xFF,(byte)0xFF};
 		
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
@@ -1113,4 +1121,9 @@ public class UtilsTest {
 		assertArrayEquals(expected, result);
 		
 	}
+	
+	//FIXME LSG missing tests 
+	// concatByteArrays last param null
+	// concatByteArrays all params null
+	// concatByteArrays ensure order of concatenation
 }
