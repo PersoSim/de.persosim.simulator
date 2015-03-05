@@ -74,7 +74,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 				processCommandVerifyPin();
 				break;
 			case 0x2C:
-				/* because the CAN can also be changed valid values for p2 are 0x02 and 0x02 */
+				/* because the CAN can also be changed valid values for p2 are 0x02 and 0x02 */ //FIXME JGE but why can't I change password with ID 42 for example? shouldn't this be allowed by the protocol? 
 				if (p1 == 0x02 && (p2 == 0x02 || p2 == 0x03)){
 					processCommandChangePin();
 					break; 
@@ -110,7 +110,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			}
 		}
 		else {
-			log(this, "APDU matching failed due to missing processing data", DEBUG);
+			log(this, "APDU matching failed due to missing processing data", DEBUG); //FIXME JGE "matching failed" indicates some error behavior, instead this protocol is just not applicable, reword (all) these messages
 		}
 	}
 	
@@ -270,7 +270,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 	}
 	
 	private void processCommandVerifyPin() {
-		Object object = cardState.getObject(new AuthObjectIdentifier(P2_VERIFY), Scope.FROM_MF);
+		Object object = cardState.getObject(new AuthObjectIdentifier(P2_VERIFY), Scope.FROM_MF);//FIXME JGE why use a constant password Identifier here? What about checking other Pin-objects?
 		
 		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
