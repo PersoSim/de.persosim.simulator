@@ -66,14 +66,15 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		this.processingData = processingData;
 		if (processingData != null) {
 		byte ins = processingData.getCommandApdu().getIns();
+		byte p1 = processingData.getCommandApdu().getP1();
+		byte p2 = processingData.getCommandApdu().getP2();
+		
 			switch(ins){
 			case 0x20:
 				processCommandVerifyPin();
 				break;
 			case 0x2C:
-				byte p1 = processingData.getCommandApdu().getP1();
-				byte p2 = processingData.getCommandApdu().getP2();
-				/* because the CAN can also be changed valid vaues fpr p2 are 0x02 and 0x02 */
+				/* because the CAN can also be changed valid values for p2 are 0x02 and 0x02 */
 				if (p1 == 0x02 && (p2 == 0x02 || p2 == 0x03)){
 					processCommandChangePin();
 					break; 
@@ -83,12 +84,26 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 					processCommandUnblockPin();
 					break;
 				}
+				else {
+					log(this, "APDU matching failed due to APDU \"" + HexString.encode(processingData.getCommandApdu().getHeader()) + "\" being unknown", DEBUG);
+					break;
+				}
 			case 0x44:
-				processCommandActivatePin();
-				break;
+				if (p1 == 0x10) {
+					processCommandActivatePin();
+					break;
+				} else {
+					log(this, "APDU matching failed due to APDU \"" + HexString.encode(processingData.getCommandApdu().getHeader()) + "\" being unknown", DEBUG);
+					break;
+				}
 			case 0x04:
-				processCommandDeactivatePin();
-				break;
+				if (p1 == 0x10) {
+					processCommandDeactivatePin();
+					break;
+				} else {
+					log(this, "APDU matching failed due to APDU \"" + HexString.encode(processingData.getCommandApdu().getHeader()) + "\" being unknown", DEBUG);
+					break;
+				}
 			default:
 				log(this, "APDU matching failed due to APDU \"" + HexString.encode(processingData.getCommandApdu().getHeader()) + "\" being unknown", DEBUG);
 				break;
@@ -174,7 +189,6 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			/* there is nothing more to be done here */
 			return;
 		}
-		
 		log(this, "new " + passwordName + " is: " + HexString.dump(newPasswordPlain), DEBUG);
 		
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
@@ -266,8 +280,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		}
 		PinObject pinObject = (PinObject) object;
 		ResponseApdu resp = new ResponseApdu((short) (SW_63C0_COUNTER_IS_0 + (pinObject.getRetryCounterCurrentValue())));
-		
-		this.processingData.updateResponseAPDU(this, "retry counter is: " + pinObject.getRetryCounterCurrentValue(), resp);
+		this.processingData.updateResponseAPDU(this,pinObject.getPasswordName() + " retry counter is: " + pinObject.getRetryCounterCurrentValue(), resp);
 		
 		log(this, "processed COMMAND_VERIFY_PIN", DEBUG);
 	}
