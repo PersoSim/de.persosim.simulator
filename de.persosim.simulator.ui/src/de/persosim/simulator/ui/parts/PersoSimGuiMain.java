@@ -8,7 +8,7 @@ import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -19,13 +19,22 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseWheelListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 
 import de.persosim.simulator.PersoSim;
-import de.persosim.simulator.ui.utils.TextLengthLimiter;
 
 /**
  * @author slutters
@@ -40,8 +49,18 @@ public class PersoSimGuiMain {
 	
 	private Text txtInput, txtOutput;
 	
+	
 	private final InputStream originalSystemIn = System.in;
 	private final PrintStream originalSystemOut = System.out;
+	
+	//Buffer for old console outputs
+	private LinkedList<String> consoleStrings = new LinkedList<String>();
+	
+	//maximum amount of strings saved in the buffer
+	private int maxLines = 2000;
+	
+	//maximum of lines the text field can show
+	int maxLineCount=0;
 	
 	private PrintStream newSystemOut;
 	private final PipedInputStream inPipe = new PipedInputStream();
@@ -49,26 +68,57 @@ public class PersoSimGuiMain {
 	private PrintWriter inWriter;
 	
 	Composite parent;
-
+	private Button lockScroller;
+	Boolean locked = false;
+	Slider slider;
+	
 	@PostConstruct
 	public void createComposite(Composite parentComposite) {
 		parent = parentComposite;
 		grabSysOut();
 		grabSysIn();
 		
-		parent.setLayout(new GridLayout(1, false));
+		parent.setLayout(new GridLayout(2, false));
 		
-		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		
-		TextLengthLimiter tl = new TextLengthLimiter();
-		txtOutput.addModifyListener(tl);
-		
+		//configure console field
+		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);		
 		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
 		txtOutput.setEditable(false);
 		txtOutput.setCursor(null);
 		txtOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
+		txtOutput.setSelection(txtOutput.getText().length());
+		txtOutput.setTopIndex(txtOutput.getLineCount() - 1);
 		
-		parent.setLayout(new GridLayout(1, false));
+		//configure the slider
+		slider = new Slider(parent, SWT.V_SCROLL);
+		slider.setIncrement(1);
+		slider.setPageIncrement(10);
+		slider.setMaximum(consoleStrings.size()+slider.getThumb());
+		slider.setMinimum(0);
+		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));		
+		
+		SelectionListener sliderListener = new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				
+				buildNewConsoleContent();
+
+			}
+		};
+
+		slider.addSelectionListener(sliderListener);
+		
+		txtOutput.addMouseWheelListener(new MouseWheelListener() {
+			
+			@Override
+			public void mouseScrolled(MouseEvent e) {
+				int count = e.count;
+				slider.setSelection(slider.getSelection()-count);
+				
+				buildNewConsoleContent();					
+			}
+		});
+		
+		parent.setLayout(new GridLayout(2, false));		
 		
 		txtInput = new Text(parent, SWT.BORDER);
 		txtInput.setMessage("Enter command here");
@@ -80,7 +130,6 @@ public class PersoSimGuiMain {
 					String line = txtInput.getText();
 					
 					txtOutput.append(line + System.lineSeparator());
-					
 					inWriter.println(line);
 					inWriter.flush();
 					
@@ -88,30 +137,117 @@ public class PersoSimGuiMain {
 				}
 			}
 		});
-		
+
 		txtInput.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
+		lockScroller = new Button(parent, SWT.TOGGLE);
+		lockScroller.setText("unlocked");
+		lockScroller.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent (Event e) {
+				
+				if(locked){
+					lockScroller.setText("unlocked");
+					locked=false;
+				}else{
+					lockScroller.setText("locked");
+					locked=true;
+				}
+			}
+		});
+		
 		
 		PersoSim sim = new PersoSim();
 		sim.loadPersonalization("1"); //load default perso with valid TestPKI EF.CardSec etc. (Profile01)
 		Thread simThread = new Thread(sim);
-		simThread.start();
+		simThread.start();		
 		
-		//following Thread ensures that the buffered UI contents are updated regularly
-		Thread uiBufferThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
+		
+		final Thread uiThread = Display.getCurrent().getThread();
+		
+		Thread updateThread = new Thread() {
+			public void run() {				
+				
+				while (uiThread.isAlive()) {					
+					sync.syncExec(new Runnable() {
+
+						@Override
+						public void run() {
+							
+							 if(!locked) {
+								 buildNewConsoleContent();
+							 }
+						}
+					});
 					try {
-						Thread.sleep(100);
+						Thread.sleep(250);
 					} catch (InterruptedException e) {
-						// ignore, timing is not critical here
+						// sleep interrupted, doesn't matter
 					}
-					appendToGui("");
 				}
 			}
-		});
-		uiBufferThread.start();
+		};
+		updateThread.setDaemon(true);
+	    updateThread.start();
 		
+	}
+	
+	/**
+	 * changes the maximum of the slider
+	 */
+	private void rebuildSlider(){
+		sync.syncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				
+				slider.setMaximum(consoleStrings.size()+slider.getThumb()-maxLineCount+1);
+			}
+		});
+	}
+	
+	
+	/**
+	 * takes the selected value from the Slider and prints the fitting messages
+	 * from the LinkedList until the Text field is full
+	 */
+	private void buildNewConsoleContent() {
+
+		// clean text field before filling it with the requested data
+		final StringBuilder strConsoleStrings = new StringBuilder();
+
+		// calculates how many lines can be shown without cutting
+		maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
+		
+		//synchronized is used to avoid IndexOutOfBoundsExceptions 
+		synchronized (consoleStrings) {
+			int listSize = consoleStrings.size();
+
+			// value is needed to stop writing in the console when the end in
+			// the list is reached
+			int linesToShow = maxLineCount;
+			linesToShow = listSize - slider.getMaximum() + slider.getThumb();
+
+			// Fill text field with selected data
+			for (int i = 0; i < linesToShow; i++) {
+
+				strConsoleStrings.append(consoleStrings.get(slider
+						.getSelection() + i));
+
+			}
+		}
+		// send the StringBuilder data to the console field
+		sync.syncExec(new Runnable() {
+
+			@Override
+			public void run() {
+
+				txtOutput.setText(strConsoleStrings.toString());
+
+			}
+		});
+
 	}
 		
 	/**
@@ -120,7 +256,7 @@ public class PersoSimGuiMain {
 	private void grabSysOut() {
 	    OutputStream out = new OutputStream() {
 
-			char [] buffer = new char [80];
+			char [] buffer = new char [200];
 			int currentPosition = 0;
 			boolean checkNextForNewline = false;
 			
@@ -149,13 +285,12 @@ public class PersoSimGuiMain {
 
 					final String toPrint = new String(Arrays.copyOf(buffer, currentPosition));
 					originalSystemOut.print(toPrint);
-					appendToGui(toPrint);
+					saveConsoleStrings(toPrint);
 					
 					
 					currentPosition = 0;
 				}
-				
-				
+
 			}
 		};
 
@@ -168,33 +303,55 @@ public class PersoSimGuiMain {
 		}
 	    
 	}
-	
-	StringBuilder guiStringBuilder = new StringBuilder();
-	long lastGuiFlush = 0;
-	//XXX ensure that this method is called often enough, so that the last updates are correctly reflected
-	protected void appendToGui(String s) {
-		if((guiStringBuilder.length() > 0) || (s.length() > 0)) {
-			if(s.length() > 0) {
-				guiStringBuilder.append(s);
+
+	/**
+	 * saves and manages Strings grabbed by {@link #grabSysOut()} in a
+	 * LinkedList. This is necessary because they are not saved in the text
+	 * field all the time. Writing all of them directly in the text field would
+	 * slow down the whole application. Taking the Strings from the List and
+	 * adding them to the text field (if needed) is done by
+	 * {@link #buildNewConsoleContent()} which is called by {@link #showNewOutput()}.
+	 * 
+	 * @param s is the String that should be saved in the List
+	 */
+	protected void saveConsoleStrings(final String s) {
+
+		String[] splitResult = s.split("(?=/n|/r)");
+
+		for (int i = 0; i < splitResult.length; i++) {
+
+			if (consoleStrings.size() > maxLines) {
+				
+				//synchronized is used to avoid IndexOutOfBoundsExceptions 
+				synchronized (consoleStrings) {
+					consoleStrings.removeFirst();
+					consoleStrings.add(splitResult[i]);	
+				}
+
+			}else{
+			consoleStrings.add(splitResult[i]);
 			}
-			
-			long currentTime = new Date().getTime();
-			if (currentTime-lastGuiFlush > 50) {
-				lastGuiFlush = currentTime;
-				//XXX MBK check why syncExec blocks (possible deadlock with System.out.print())
-				final String toPrint = guiStringBuilder.toString();
-				guiStringBuilder = new StringBuilder();
-				sync.asyncExec(new Runnable() {
-					
-					@Override
-					public void run() {
-						txtOutput.append(toPrint);
-					}
-				});
+			if (!locked) {
+				showNewOutput();
 			}
 		}
 	}
+	
+	/**
+	 * controls slider selection (auto scrolling)
+	 */
+	public void showNewOutput() {
+		
+		sync.syncExec(new Runnable() {
+			@Override
+			public void run() {
+				rebuildSlider();
+				slider.setSelection(slider.getMaximum());							
+			}
+		});
 
+	}
+	
 	public void write(String line) {
 		inWriter.println(line);
 		inWriter.flush();
