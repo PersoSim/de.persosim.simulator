@@ -141,7 +141,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	}
 	
 	@Test
-	/* Negative test case. Send changePin APDU with no pin to the simulator amd receives 6A80 (wrong data). */
+	/* Negative test case. Send changePin APDU with no pin to the simulator (tlvData is empty) and receives 6A80. */
 	public void testProcessCommandChangePin_TlvDataIsNull() {
 		// prepare the mock
 		new Expectations() {
@@ -170,6 +170,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	}
 	
 	@Test
+	/* Positive test case. Send apdu to unblock PIN and receives 9000 */
 	public void testProcessCommandUnblockPin_PinBlocked() {
 		// prepare the mock
 		new Expectations() {
@@ -203,7 +204,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	}
 	
 	@Test
-	/* Negative test case. */
+	/* Negative test case. Send apdu to unblock PIN but the PIN is already unblocked*/
 	public void testProcessCommandUnblockPin_PinUnblocked() {
 		// prepare the mock
 		new Expectations() {
@@ -237,6 +238,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	}
 	
 	@Test
+	/* Positive test case. Sends a 00441003 to the simulator and receives a 9000 */
 	public void testProcessCommandActivatePin() {
 		// prepare the mock
 		new Expectations() {
@@ -262,6 +264,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	}
 	
 	@Test
+	/* Positive test case. Send apdu 00041003 to the simulator, receives 9000. */
 	public void testProcessCommandDeactivatePin() {
 		// prepare the mock
 		new Expectations() {
@@ -292,6 +295,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	}
 	
 	@Test
+	/* Negative test case. Send apdu 00041003 to the simulator but the security status is not satisfied (TA not performed correctly) so we receive a 6982. */
 	public void testProcessCommandDeactivatePin_SecStatusNotSatisfied() {
 		// prepare the mock
 		new Expectations() {
