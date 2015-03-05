@@ -8,7 +8,6 @@ import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
@@ -184,8 +183,7 @@ public class PersoSimGuiMain {
 					try {
 						Thread.sleep(250);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						// sleep interrupted, doesn't matter
 					}
 				}
 			}
