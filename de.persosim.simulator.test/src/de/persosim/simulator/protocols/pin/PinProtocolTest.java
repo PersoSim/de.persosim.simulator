@@ -10,10 +10,12 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
+import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.Scope;
@@ -28,41 +30,50 @@ import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
 
 public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
-	
-	@Mocked CardStateAccessor mockedCardStateAccessor;
-	@Mocked PasswordAuthObjectWithRetryCounter mokedAuthObject;
-	@Mocked PinObject mokedPinObject;
-	@Mocked TerminalAuthenticationMechanism mockedTaMechanism;
-	@Mocked TerminalType mockedTaType;
-	@Mocked Collection<SecMechanism> mockedCurrentMechanisms;
+	@Mocked
+	CardStateAccessor mockedCardStateAccessor;
+	@Mocked
+	PasswordAuthObjectWithRetryCounter mokedAuthObject;
+	@Mocked
+	PasswordAuthObject mokedAuthObjectNoRetry;
+	@Mocked
+	PinObject mokedPinObject;
+	@Mocked
+	TerminalAuthenticationMechanism mockedTaMechanism;
+	@Mocked
+	TerminalType mockedTaType;
+	@Mocked
+	Collection<SecMechanism> mockedCurrentMechanisms;
 	PinProtocol protocol;
-	
+
 	@Before
 	public void setUp() throws UnsupportedEncodingException {
-		
 		protocol = new PinProtocol();
 		protocol.setCardStateAccessor(mockedCardStateAccessor);
 	}
 	
 	@Test
-	/* Positive test case. Send verify APDU to the simulator and receives a 63Cx where x stands for the number of left retries. */
+	/*
+	 * Positive test case. Send verify APDU to the simulator and receives a 63Cx
+	 * where x stands for the number of left retries.
+	 */
 	public void testProcessCommandVerifyPin() {
 		// prepare the mock
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject (
-						withInstanceOf(AuthObjectIdentifier.class), 
+				mockedCardStateAccessor.getObject(
+						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = mokedPinObject; //new PinObject();
-
-				mokedPinObject.getRetryCounterCurrentValue();
-				result = 3;
+				result = mokedPinObject; // new PinObject();
 				
 				mokedPinObject.getPasswordName();
 				result = "PIN";
 				
 				mokedPinObject.getRetryCounterCurrentValue();
 				result = 3;
+				
+				mokedPinObject.getRetryCounterCurrentValue();
+				result = 3;
 			}
 		};
 		
@@ -76,19 +87,23 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 63C3", SW_63C3_COUNTER_IS_3, processingData.getResponseApdu().getStatusWord()); 
+		assertEquals("Statusword is 63C3", SW_63C3_COUNTER_IS_3, processingData
+				.getResponseApdu().getStatusWord());
 	}
-	
+
 	@Test
-	/* Negative test case. Send verify apdu to the simulator but the PinObject is null */
+	/*
+	 * Negative test case. Send verify apdu to the simulator but the PinObject
+	 * is null
+	 */
 	public void testProcessCommandVerifyPin_PinObjectIsNull() {
 		// prepare the mock
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject (
-						withInstanceOf(AuthObjectIdentifier.class), 
+				mockedCardStateAccessor.getObject(
+						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = null; //new PinObject();
+				result = null; // new PinObject();
 			}
 		};
 		
@@ -102,19 +117,23 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 6984", SW_6984_REFERENCE_DATA_NOT_USABLE, processingData.getResponseApdu().getStatusWord()); 
+		assertEquals("Statusword is 6984", SW_6984_REFERENCE_DATA_NOT_USABLE,
+				processingData.getResponseApdu().getStatusWord());
 	}
-	
+
 	@Test
-	/* Positive test case. Send changePin APDU to the simulator and receives a 9000 if the PIN was successfully changed. */
+	/*
+	 * Positive test case. Send changePin APDU to the simulator and receives a
+	 * 9000 if the PIN was successfully changed.
+	 */
 	public void testProcessCommandChangePin() {
 		// prepare the mock
 		new Expectations() {
 			{
 				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class), 
+						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = mokedAuthObject; //new PasswordAuthObjectWithRetryCounter();
+				result = mokedAuthObject; // new PasswordAuthObjectWithRetryCounter();
 				
 				mokedAuthObject.getPasswordName();
 				result = "PIN";
@@ -122,8 +141,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mokedAuthObject.getPassword();
 				result = HexString.toByteArray("313233343536");
 				
-				mokedAuthObject.setPassword(
-						withInstanceOf(byte[].class));
+				mokedAuthObject.setPassword(withInstanceOf(byte[].class));
 			}
 		};
 		
@@ -137,20 +155,50 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord()); 
+		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData
+				.getResponseApdu().getStatusWord());
 	}
 	
 	@Test
-	/* Negative test case. Send changePin APDU with no pin to the simulator (tlvData is empty) and receives 6A80. */
+	public void testProcessCommandChangePin_NoRertyCnt() {
+		// prepare the mock
+		new Expectations() {
+			{
+				mockedCardStateAccessor.getObject(
+						withInstanceOf(AuthObjectIdentifier.class),
+						withInstanceOf(Scope.class));
+				result = mokedAuthObjectNoRetry; // new PasswordAuthObject();
+			}
+		};
+		
+		// select Apdu
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = HexString.toByteArray("002C020306313432353336");
+		processingData.updateCommandApdu(this, "select file APDU",
+				CommandApduFactory.createCommandApdu(apduBytes));
+		
+		// call mut
+		protocol.process(processingData);
+		
+		// check results
+		assertEquals("Statusword is 6984", SW_6984_REFERENCE_DATA_NOT_USABLE, processingData
+				.getResponseApdu().getStatusWord());
+	}
+
+	@Test
+	/*
+	 * Negative test case. Send changePin APDU with no pin to the simulator and
+	 * receives 6A80 (wrong data).
+	 */
 	public void testProcessCommandChangePin_TlvDataIsNull() {
 		// prepare the mock
 		new Expectations() {
 			{
 				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class), 
+						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = mokedAuthObject; //new PasswordAuthObjectWithRetryCounter();
-				
+				result = mokedAuthObject; // new
+											// PasswordAuthObjectWithRetryCounter();
 				mokedAuthObject.getPasswordName();
 				result = "PIN";
 			}
@@ -166,19 +214,22 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 6A80", SW_6A80_WRONG_DATA, processingData.getResponseApdu().getStatusWord()); 
+		assertEquals("Statusword is 6A80", SW_6A80_WRONG_DATA, processingData
+				.getResponseApdu().getStatusWord());
 	}
-	
+
 	@Test
-	/* Positive test case. Send apdu to unblock PIN and receives 9000 */
 	public void testProcessCommandUnblockPin_PinBlocked() {
 		// prepare the mock
 		new Expectations() {
 			{
 				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class), 
+						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = mokedPinObject; //new PinObject();
+				result = mokedPinObject; // new PinObject();
+				
+				mokedPinObject.getPasswordName();
+				result = "PIN";
 				
 				mokedPinObject.getRetryCounterCurrentValue();
 				result = 0;
@@ -200,19 +251,23 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord()); 
+		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData
+				.getResponseApdu().getStatusWord());
 	}
-	
+
 	@Test
-	/* Negative test case. Send apdu to unblock PIN but the PIN is already unblocked*/
+	/* Negative test case. */
 	public void testProcessCommandUnblockPin_PinUnblocked() {
 		// prepare the mock
 		new Expectations() {
 			{
 				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class), 
+						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = mokedPinObject; //new PinObject();
+				result = mokedPinObject; // new PinObject();
+				
+				mokedPinObject.getPasswordName();
+				result = "PIN";
 				
 				mokedPinObject.getRetryCounterCurrentValue();
 				result = 3;
@@ -234,19 +289,19 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord()); 
+		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData
+				.getResponseApdu().getStatusWord());
 	}
-	
+
 	@Test
-	/* Positive test case. Sends a 00441003 to the simulator and receives a 9000 */
 	public void testProcessCommandActivatePin() {
 		// prepare the mock
 		new Expectations() {
 			{
 				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class), 
+						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = mokedPinObject; //new PinObject();
+				result = mokedPinObject; // new PinObject();
 			}
 		};
 		
@@ -260,23 +315,24 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord()); 
+		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData
+				.getResponseApdu().getStatusWord());
 	}
-	
+
 	@Test
-	/* Positive test case. Send apdu 00041003 to the simulator, receives 9000. */
 	public void testProcessCommandDeactivatePin() {
 		// prepare the mock
 		new Expectations() {
 			{
 				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class), 
+						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = mokedPinObject; //new PinObject();
+				result = mokedPinObject; // new PinObject();
 				
-				mockedCardStateAccessor.getCurrentMechanisms(
-						withInstanceOf(SecContext.class), 
-						withInstanceLike(new HashSet<Class<? extends SecMechanism>>()));
+				mockedCardStateAccessor
+						.getCurrentMechanisms(
+								withInstanceOf(SecContext.class),
+								withInstanceLike(new HashSet<Class<? extends SecMechanism>>()));
 				result = new HashSet<>();
 			}
 		};
@@ -291,23 +347,24 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
+		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData
+				.getResponseApdu().getStatusWord());
 	}
-	
+
 	@Test
-	/* Negative test case. Send apdu 00041003 to the simulator but the security status is not satisfied (TA not performed correctly) so we receive a 6982. */
 	public void testProcessCommandDeactivatePin_SecStatusNotSatisfied() {
 		// prepare the mock
 		new Expectations() {
 			{
 				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class), 
+						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = mokedPinObject; //new PinObject();
+				result = mokedPinObject; // new PinObject();
 				
-				mockedCardStateAccessor.getCurrentMechanisms(
-						withInstanceOf(SecContext.class), 
-						withInstanceLike(new HashSet<Class<? extends SecMechanism>>()));
+				mockedCardStateAccessor
+						.getCurrentMechanisms(
+								withInstanceOf(SecContext.class),
+								withInstanceLike(new HashSet<Class<? extends SecMechanism>>()));
 				result = mockedCurrentMechanisms;
 				
 				mockedCurrentMechanisms.size();
@@ -331,6 +388,8 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 6982", SW_6982_SECURITY_STATUS_NOT_SATISFIED, processingData.getResponseApdu().getStatusWord());
+		assertEquals("Statusword is 6982",
+				SW_6982_SECURITY_STATUS_NOT_SATISFIED, processingData
+						.getResponseApdu().getStatusWord());
 	}
 }
