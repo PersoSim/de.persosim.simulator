@@ -71,17 +71,17 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		
 			switch(ins){
 			case 0x20:
-				processCommandVerifyPin();
+				processCommandVerifyPassword();
 				break;
 			case 0x2C:
 				/* Values for p2 must be less than 0x1F */
 				if (p1 == 0x02 && p2 < 0x1F) {
-					processCommandChangePin();
+					processCommandChangePassword();
 					break; 
 				}
 				/* Because unblocking the CAN is not necessary regarding ISO 7816 p2 must be 0x03 */
 				else if (p1 == 0x03 && p2 == 0x03) {
-					processCommandUnblockPin();
+					processCommandUnblockPassword();
 					break;
 				}
 				else {
@@ -90,7 +90,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 				}
 			case 0x44:
 				if (p1 == 0x10) {
-					processCommandActivatePin();
+					processCommandActivatePassword();
 					break;
 				} else {
 					log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
@@ -98,7 +98,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 				}
 			case 0x04:
 				if (p1 == 0x10) {
-					processCommandDeactivatePin();
+					processCommandDeactivatePassword();
 					break;
 				} else {
 					log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
@@ -128,8 +128,12 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		return "Personal Identification Number";
 	}
 	
-	private void processCommandActivatePin() {
-		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
+	private void processCommandActivatePassword() {
+		CommandApdu cApdu = processingData.getCommandApdu();
+		
+		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
+		
+		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
 		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
 			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
@@ -138,14 +142,14 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		}
 		
 		((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
-		String name = ((PinObject) object).getPasswordName();
+		String passwordName = ((PinObject) object).getPasswordName();
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
-		this.processingData.updateResponseAPDU(this, name + " successfully activated", resp);
+		this.processingData.updateResponseAPDU(this, passwordName + " successfully activated", resp);
 		
-		log(this, "processed COMMAND_ACTIVATE_PIN", DEBUG);
+		log(this, "processed COMMAND_ACTIVATE_PASSWORD", DEBUG);
 	}
 	
-	private void processCommandChangePin() {
+	private void processCommandChangePassword() {
 		CommandApdu cApdu = processingData.getCommandApdu();
 		TlvValue tlvData = cApdu.getCommandData();
 		
@@ -160,7 +164,6 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		}
 		
 		ChangeablePasswordAuthObject passwordObject = (ChangeablePasswordAuthObject) object;
-		
 		String passwordName = passwordObject.getPasswordName();
 		
 		if(tlvData == null) {
@@ -194,11 +197,14 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, passwordName + " successfully changed", resp);
 		
-		log(this, "processed COMMAND_CHANGE_" + passwordName, DEBUG);
+		log(this, "processed COMMAND_CHANGE_PASSWORD", DEBUG);
 	}
 	
-	private void processCommandDeactivatePin() {
-		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
+	private void processCommandDeactivatePassword() {
+		CommandApdu cApdu = processingData.getCommandApdu();
+		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
+		
+		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
 		
 		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
@@ -207,7 +213,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			return;
 		}
 		
-		String name = ((PinObject) object).getPasswordName();
+		String passwordName = ((PinObject) object).getPasswordName();
 		//XXX this check should be done by the objects themself
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(TerminalAuthenticationMechanism.class);
@@ -222,20 +228,23 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			if (!(taMechanism.getTerminalType().equals(TerminalType.AT) && taMechanism
 					.getEffectiveAuthorization().getAuthorization().getBit(5))) {
 				ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-				this.processingData.updateResponseAPDU(this, name + " management rights from TA required to perform Deactivate", resp);
+				this.processingData.updateResponseAPDU(this, passwordName + " management rights from TA required to perform Deactivate", resp);
 				return;
 			}
 		}
 		((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
 		
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
-		this.processingData.updateResponseAPDU(this, name + " successfully deactivated", resp);
+		this.processingData.updateResponseAPDU(this, passwordName + " successfully deactivated", resp);
 		
-		log(this, "processed COMMAND_DEACTIVATE_" + name, DEBUG);
+		log(this, "processed COMMAND_DEACTIVATE_PASSWORD" , DEBUG);
 	}
 	
-	private void processCommandUnblockPin() {
-		Object object = cardState.getObject(new AuthObjectIdentifier(Tr03110.ID_PIN), Scope.FROM_MF);
+	private void processCommandUnblockPassword() {
+		CommandApdu cApdu = processingData.getCommandApdu();
+		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
+		
+		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF); //Tr03110.ID_PIN
 		
 		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
@@ -245,9 +254,9 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		}
 		
 		PinObject pinObject = (PinObject) object;
-		String name =  pinObject.getPasswordName();
+		String passwordName =  pinObject.getPasswordName();
 		
-		log(this, "old " + name +" retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
+		log(this, "old " + passwordName +" retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
 		
 		try {
 			pinObject.resetRetryCounterToDefault();
@@ -263,15 +272,15 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			return;
 		}
 		
-		log(this, "new PIN retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
+		log(this, "new " + passwordName + " retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
 		
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
-		this.processingData.updateResponseAPDU(this, name +" successfully unblocked", resp);
+		this.processingData.updateResponseAPDU(this, passwordName +" successfully unblocked", resp);
 		
-		log(this, "processed COMMAND_UNBLOCK_"+name, DEBUG);
+		log(this, "processed COMMAND_UNBLOCK_PASSWORD", DEBUG);
 	}
 	
-	private void processCommandVerifyPin() {
+	private void processCommandVerifyPassword() {
 		CommandApdu cApdu = processingData.getCommandApdu();		
 		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
 		
@@ -284,10 +293,10 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			return;
 		}
 		PinObject pinObject = (PinObject) object;
-		String name = pinObject.getPasswordName();
+		String passwordName = pinObject.getPasswordName();
 		ResponseApdu resp = new ResponseApdu((short) (SW_63C0_COUNTER_IS_0 + (pinObject.getRetryCounterCurrentValue())));
-		this.processingData.updateResponseAPDU(this, name + " retry counter is: " + pinObject.getRetryCounterCurrentValue(), resp);
+		this.processingData.updateResponseAPDU(this, passwordName + " retry counter is: " + pinObject.getRetryCounterCurrentValue(), resp);
 		
-		log(this, "processed COMMAND_VERIFY_" + name, DEBUG);
+		log(this, "processed COMMAND_VERIFY_PASSWORD", DEBUG);
 	}
 }
