@@ -317,7 +317,7 @@ public class UtilsTest {
 	 * The result should be a new object, which content is empty.
 	 */
 	@Test
-	public void testAppendBytes_LeadingByteArrayEmptyAndTrailingByteArrayEmpty()
+	public void testAppendBytes_LeadingByteArrayEmptyAndTrailingByteArrayEmpty() //FIXME LSG you can find a much more distinct name here
 	{
 		byte[] leadingByteArray = new byte[]{};
 		byte[] trailingByteArray = new byte[]{};
@@ -389,7 +389,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayLong_HigestValue()
 	{
-		long longvalue = 0x7FFFFFFFFFFFFFFFL;
+		long longvalue = 0x7FFFFFFFFFFFFFFFL; //FIXME LSG why the leading 7?
 		byte[] actual = Utils.toUnsignedByteArray(longvalue);
 		byte[] expected = new byte[]{(byte) 0x7F,(byte) 0xFF,(byte) 0x00,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF};
 		
@@ -418,7 +418,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayInt_HighestValue()
 	{
-		int intvalue = (byte)0x7FFFFFFF;
+		int intvalue = (byte)0x7FFFFFFF; //FIXME LSG why the leading 7 and the cast to byte?
 		byte[] actual = Utils.toUnsignedByteArray(intvalue);
 		byte[] expected = new byte[]{(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF};
 		
@@ -432,7 +432,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayShort_HighestValue()
 	{
-		short shortvalue = 0x7FFF;
+		short shortvalue = 0x7FFF; //FIXME LSG why the leading 7?
 		byte[] actual = Utils.toUnsignedByteArray(shortvalue);
 		byte[] expected = new byte[]{(byte) 0x7F,(byte) 0xFF,};
 	
@@ -652,7 +652,7 @@ public class UtilsTest {
 	 * Positive Test case: method maskUnsignedByteToInt gets value, which is one value above the range of signed byte.
 	 */
 	@Test
-	public void testMaskUnsignedByteToIntByte_PassRange()
+	public void testMaskUnsignedByteToIntByte_PassRange() //FIXME LSG I don't get the meaning of this method name
 	{
 		byte b = (byte)0x80;
 		int expected = 0x80;
@@ -669,7 +669,7 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedShortToIntShort_HighestValue()
 	{
-		short s =  0x7FFF;
+		short s =  0x7FFF; //FIXME LSG why the leading 7?
 		int expected = 0x7FFF;
 		
 		int actual  = Utils.maskUnsignedShortToInt(s);
@@ -751,7 +751,7 @@ public class UtilsTest {
 	@Test
 	public void testConcatenateByte_TwoHighestBytes()
 	{
-		byte bytevalue1 = (byte) 0xFF;
+		byte bytevalue1 = (byte) 0xFF; //FIXME LSG why rename distinct variable names to these mistakable names? (check rest of file)
 		byte bytevalue2 = (byte) 0xFF;
 		short expected = (short) 0xFFFF;
 		
@@ -777,6 +777,8 @@ public class UtilsTest {
 		assertEquals(expected, result);	
 		
 	}
+
+	//FIXME LSG move the test here up to the other test concerning getDate
 	
 	/**
 	 * Negative Test case: method getDate gets a null string.
@@ -861,7 +863,7 @@ public class UtilsTest {
 	 * The result should be the true.
 	 */
 	@Test
-	public void testIsAnyNull_TrueObject()
+	public void testIsAnyNull_TrueObject() //FIXME LSG why the meaningless Object as last part of the name? (same below)
 	{
 		Object nullobject = null;
 		boolean actual  = Utils.isAnyNull(nullobject);
@@ -915,7 +917,7 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Positive Test case: method getShortFromUnsignedByteArray gets byte array with max value for the range of signed byte.
+	 * Positive Test case: method getShortFromUnsignedByteArray gets byte array with max value for the range of signed byte. FIXME LSG whyt do you mean by "range of signed byte"
 	 * 
 	 */
 	@Test
@@ -1072,7 +1074,7 @@ public class UtilsTest {
 	 * The result should be a new object of the type BigInteger.
 	 */
 	@Test
-	public void testGetBigIntegerFromUnsignedByteArrayByteArray_2Bytes()
+	public void testGetBigIntegerFromUnsignedByteArrayByteArray_2Bytes() //FIXME LSG why 2 bytes? why are they identical?
 	{
 		byte[] bytearray = new byte[]{(byte) 0xFF,(byte) 0xFF};
 		long exp = 0xFFFF;
@@ -1216,7 +1218,7 @@ public class UtilsTest {
 		
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
 		
-		assertNotSame("method returns the same object", array1, result);
+		assertNotSame("method returns the same object", array1, result); //FIXME LSG this check is nonsense
 		assertArrayEquals(expected, result);
 		
 	}
@@ -1235,7 +1237,7 @@ public class UtilsTest {
 		byte[] expected = new byte[]{(byte)0xFF,(byte)0xFF, (byte)0xFF};
 		
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
-		for (int i = 0; i <= 2; i++) {
+		for (int i = 0; i <= 2; i++) { //FIXME LSG I can't see any reason for this loop (nor this whole testcase)
 			assertEquals(expected[i], result[i]);
 			assertEquals(expected[i], result[i]);
 			assertEquals(expected[i], result[i]);
@@ -1245,4 +1247,6 @@ public class UtilsTest {
 		assertArrayEquals(expected, result);
 		
 	}
+	//FIXME LSG rethink cornercases
+	//FIXME LSG change values to ensure correct order of bytes in several testcases
 }
