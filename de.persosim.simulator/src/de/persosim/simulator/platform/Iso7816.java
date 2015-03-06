@@ -193,8 +193,6 @@ public interface Iso7816 {
 	public static final byte P2_SELECT_FMD_TEMPLATE                    = (byte) 0b1000;
 	public static final byte P2_SELECT_NO_OR_PROPRIETARY               = (byte) 0b1100;
 	
-	public static final byte P2_VERIFY							       = (byte) 0x03; //FIXME JGE P2 of an ISO verify is defined as a password id, you shouldn't define a constant for that
-	
 	
 	/*
 	 * SW1-SW2 according to ISO7816-4

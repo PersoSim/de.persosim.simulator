@@ -74,18 +74,18 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 				processCommandVerifyPin();
 				break;
 			case 0x2C:
-				/* because the CAN can also be changed valid values for p2 are 0x02 and 0x02 */ //FIXME JGE but why can't I change password with ID 42 for example? shouldn't this be allowed by the protocol? 
-				if (p1 == 0x02 && (p2 == 0x02 || p2 == 0x03)){
+				/* Values for p2 must be less than 0x1F */
+				if (p1 == 0x02 && p2 < 0x1F) {
 					processCommandChangePin();
 					break; 
 				}
-				/* because unblocking the CAN is not necessary regarding ISO 7816 p2 must be 0x03 */
-				else if (p1 == 0x03 && p2 == 0x03){
+				/* Because unblocking the CAN is not necessary regarding ISO 7816 p2 must be 0x03 */
+				else if (p1 == 0x03 && p2 == 0x03) {
 					processCommandUnblockPin();
 					break;
 				}
 				else {
-					log(this, "APDU matching failed due to APDU \"" + HexString.encode(processingData.getCommandApdu().getHeader()) + "\" being unknown", DEBUG);
+					log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
 					break;
 				}
 			case 0x44:
@@ -93,7 +93,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 					processCommandActivatePin();
 					break;
 				} else {
-					log(this, "APDU matching failed due to APDU \"" + HexString.encode(processingData.getCommandApdu().getHeader()) + "\" being unknown", DEBUG);
+					log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
 					break;
 				}
 			case 0x04:
@@ -101,16 +101,16 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 					processCommandDeactivatePin();
 					break;
 				} else {
-					log(this, "APDU matching failed due to APDU \"" + HexString.encode(processingData.getCommandApdu().getHeader()) + "\" being unknown", DEBUG);
+					log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
 					break;
 				}
 			default:
-				log(this, "APDU matching failed due to APDU \"" + HexString.encode(processingData.getCommandApdu().getHeader()) + "\" being unknown", DEBUG);
+				log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
 				break;
 			}
 		}
 		else {
-			log(this, "APDU matching failed due to missing processing data", DEBUG); //FIXME JGE "matching failed" indicates some error behavior, instead this protocol is just not applicable, reword (all) these messages
+			log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
 		}
 	}
 	
@@ -138,9 +138,9 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		}
 		
 		((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
-		
+		String name = ((PinObject) object).getPasswordName();
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
-		this.processingData.updateResponseAPDU(this, "PIN successfully activated", resp);
+		this.processingData.updateResponseAPDU(this, name + " successfully activated", resp);
 		
 		log(this, "processed COMMAND_ACTIVATE_PIN", DEBUG);
 	}
@@ -194,7 +194,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, passwordName + " successfully changed", resp);
 		
-		log(this, "processed COMMAND_CHANGE_PASSWORD", DEBUG);
+		log(this, "processed COMMAND_CHANGE_" + passwordName, DEBUG);
 	}
 	
 	private void processCommandDeactivatePin() {
@@ -207,6 +207,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			return;
 		}
 		
+		String name = ((PinObject) object).getPasswordName();
 		//XXX this check should be done by the objects themself
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(TerminalAuthenticationMechanism.class);
@@ -221,16 +222,16 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			if (!(taMechanism.getTerminalType().equals(TerminalType.AT) && taMechanism
 					.getEffectiveAuthorization().getAuthorization().getBit(5))) {
 				ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-				this.processingData.updateResponseAPDU(this, "PIN management rights from TA required to perform Deactivate", resp);
+				this.processingData.updateResponseAPDU(this, name + " management rights from TA required to perform Deactivate", resp);
 				return;
 			}
 		}
 		((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
 		
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
-		this.processingData.updateResponseAPDU(this, "PIN successfully deactivated", resp);
+		this.processingData.updateResponseAPDU(this, name + " successfully deactivated", resp);
 		
-		log(this, "processed COMMAND_DEACTIVATE_PIN", DEBUG);
+		log(this, "processed COMMAND_DEACTIVATE_" + name, DEBUG);
 	}
 	
 	private void processCommandUnblockPin() {
@@ -244,8 +245,9 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		}
 		
 		PinObject pinObject = (PinObject) object;
-
-		log(this, "old PIN retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
+		String name =  pinObject.getPasswordName();
+		
+		log(this, "old " + name +" retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
 		
 		try {
 			pinObject.resetRetryCounterToDefault();
@@ -264,13 +266,16 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		log(this, "new PIN retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
 		
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
-		this.processingData.updateResponseAPDU(this, "PIN successfully unblocked", resp);
+		this.processingData.updateResponseAPDU(this, name +" successfully unblocked", resp);
 		
-		log(this, "processed COMMAND_UNBLOCK_PIN", DEBUG);
+		log(this, "processed COMMAND_UNBLOCK_"+name, DEBUG);
 	}
 	
 	private void processCommandVerifyPin() {
-		Object object = cardState.getObject(new AuthObjectIdentifier(P2_VERIFY), Scope.FROM_MF);//FIXME JGE why use a constant password Identifier here? What about checking other Pin-objects?
+		CommandApdu cApdu = processingData.getCommandApdu();		
+		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
+		
+		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
 		
 		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
@@ -279,9 +284,10 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			return;
 		}
 		PinObject pinObject = (PinObject) object;
+		String name = pinObject.getPasswordName();
 		ResponseApdu resp = new ResponseApdu((short) (SW_63C0_COUNTER_IS_0 + (pinObject.getRetryCounterCurrentValue())));
-		this.processingData.updateResponseAPDU(this,pinObject.getPasswordName() + " retry counter is: " + pinObject.getRetryCounterCurrentValue(), resp);
+		this.processingData.updateResponseAPDU(this, name + " retry counter is: " + pinObject.getRetryCounterCurrentValue(), resp);
 		
-		log(this, "processed COMMAND_VERIFY_PIN", DEBUG);
+		log(this, "processed COMMAND_VERIFY_" + name, DEBUG);
 	}
 }
