@@ -14,18 +14,14 @@ import org.osgi.service.log.LogListener;
  */
 public class LinkedListLogListener implements LogListener {
 
-	private LinkedList<String> list;
+	private LinkedList<String> list = new LinkedList<String>();
 	private int maxLines;
 	private LinkedList<String> bundleFilters = new LinkedList<String>();
 	
-	public void setMaxLines(int lines) {
-		maxLines = lines;
+	public LinkedListLogListener(int maxLines) {
+		this.maxLines = maxLines;
 	}
-
-	public void setLinkedList(LinkedList<String> list) {
-		this.list = list;
-	}
-	
+		
 	/**
 	 * Filter the incoming strings. All added filters allow the corresponding
 	 * messages to be added to the list.
@@ -41,6 +37,14 @@ public class LinkedListLogListener implements LogListener {
 	 */
 	public void cleanBundleFilters(){
 		bundleFilters = new LinkedList<String>();
+	}
+	
+	public int getNumberOfCachedLines(){
+		return list.size();
+	}
+	
+	public String getLine(int index){
+		return list.get(index);
 	}
 	
 	
@@ -64,13 +68,13 @@ public class LinkedListLogListener implements LogListener {
 					if (list.size() > maxLines) {
 
 						// synchronized is used to avoid IndexOutOfBoundsExceptions
-						synchronized (list) {
+						synchronized (this) {
 							list.removeFirst();
 							list.add(splitResult[i]);
 						}
 
 					} else {
-						synchronized (list) {
+						synchronized (this) {
 							list.add(splitResult[i]);
 						}
 					}

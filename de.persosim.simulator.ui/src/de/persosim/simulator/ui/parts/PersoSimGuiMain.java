@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
-import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -56,11 +55,8 @@ public class PersoSimGuiMain {
 	
 	private final InputStream originalSystemIn = System.in;
 	
-	//Buffer for old console outputs
-	private LinkedList<String> consoleStrings = new LinkedList<String>();
-	
 	//maximum amount of strings saved in the buffer
-	private int maxLines = 2000;
+	public static final int MAXIMUM_CACHED_CONSOLE_LINES = 2000;
 	
 	//maximum of lines the text field can show
 	int maxLineCount=0;
@@ -81,13 +77,11 @@ public class PersoSimGuiMain {
 		
 		parent.setLayout(new GridLayout(2, false));
 		
-		//configure console field
+		//configure console field		
 		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);
 		
 		LinkedListLogListener listener = Activator.getListLogListener();
 		if (listener != null){
-			listener.setLinkedList(consoleStrings);
-			listener.setMaxLines(maxLines);
 			listener.addFilter("de.persosim.simulator");	
 		}
 		
@@ -102,7 +96,9 @@ public class PersoSimGuiMain {
 		slider = new Slider(parent, SWT.V_SCROLL);
 		slider.setIncrement(1);
 		slider.setPageIncrement(10);
-		slider.setMaximum(consoleStrings.size()+slider.getThumb());
+		if (Activator.getListLogListener() != null){
+			slider.setMaximum(Activator.getListLogListener().getNumberOfCachedLines()+slider.getThumb());	
+		}
 		slider.setMinimum(0);
 		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));		
 		
@@ -213,8 +209,12 @@ public class PersoSimGuiMain {
 			
 			@Override
 			public void run() {
-				
-				slider.setMaximum(consoleStrings.size()+slider.getThumb()-maxLineCount+1);
+				if (Activator.getListLogListener() != null) {
+					slider.setMaximum(Activator.getListLogListener()
+							.getNumberOfCachedLines()
+							+ slider.getThumb()
+							- maxLineCount + 1);
+				}
 				slider.setSelection(slider.getMaximum());	
 			}
 		});
@@ -226,6 +226,10 @@ public class PersoSimGuiMain {
 	 * from the LinkedList until the Text field is full
 	 */
 	private void buildNewConsoleContent() {
+		if (Activator.getListLogListener() == null){
+			// if there is no log listener there is no content to be printed.
+			return;
+		}
 
 		// clean text field before filling it with the requested data
 		final StringBuilder strConsoleStrings = new StringBuilder();
@@ -233,9 +237,9 @@ public class PersoSimGuiMain {
 		// calculates how many lines can be shown without cutting
 		maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
 		
-		//synchronized is used to avoid IndexOutOfBoundsExceptions 
-		synchronized (consoleStrings) {
-			int listSize = consoleStrings.size();
+		//synchronized is used to avoid IndexOutOfBoundsExceptions
+		synchronized (Activator.getListLogListener()) {
+			int listSize = Activator.getListLogListener().getNumberOfCachedLines();
 
 			// value is needed to stop writing in the console when the end in
 			// the list is reached
@@ -245,7 +249,7 @@ public class PersoSimGuiMain {
 			// Fill text field with selected data
 			for (int i = 0; i < linesToShow; i++) {
 
-				strConsoleStrings.append(consoleStrings.get(slider
+				strConsoleStrings.append(Activator.getListLogListener().getLine(slider
 						.getSelection() + i));
 				strConsoleStrings.append("\n");
 

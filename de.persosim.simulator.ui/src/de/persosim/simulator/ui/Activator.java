@@ -11,6 +11,7 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.util.tracker.ServiceTracker;
 
+import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
 
 /**
@@ -19,7 +20,7 @@ import de.persosim.simulator.ui.utils.LinkedListLogListener;
 public class Activator implements BundleActivator {
 
 	private LinkedList<LogReaderService> readers = new LinkedList<>();
-	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener();
+	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(PersoSimGuiMain.MAXIMUM_CACHED_CONSOLE_LINES);
 	private ServiceTracker<LogReaderService, LogReaderService> logReaderTracker;
 	
 	public static LinkedListLogListener getListLogListener(){
