@@ -197,6 +197,19 @@ public class UtilsTest {
 	}
 	
 	/**
+	 * Negative Test case: method getDate gets a null string.
+	 * The result should be a NPE cause of the string which is null.
+	 */
+	@Test(expected=NullPointerException.class)
+	public void testGetDateString()
+	{
+		byte bytevalue = 1;
+		String nullstring = null;
+		Utils.getDate(nullstring, bytevalue);	
+		
+	}
+	
+	/**
 	 * Positive test case: check data array for smaller prefix.
 	 */
 	@Test
@@ -317,7 +330,7 @@ public class UtilsTest {
 	 * The result should be a new object, which content is empty.
 	 */
 	@Test
-	public void testAppendBytes_LeadingByteArrayEmptyAndTrailingByteArrayEmpty() //FIXME LSG you can find a much more distinct name here
+	public void testAppendBytes_EmptyArrays()
 	{
 		byte[] leadingByteArray = new byte[]{};
 		byte[] trailingByteArray = new byte[]{};
@@ -374,8 +387,8 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayLong_LowestValue()
 	{
-		long longvalue = 0x00;
-		byte[] actual = Utils.toUnsignedByteArray(longvalue);
+		long longVar = 0x00;
+		byte[] actual = Utils.toUnsignedByteArray(longVar);
 		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00};
 		
 		assertArrayEquals(expected, actual);
@@ -383,14 +396,29 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Positive Test case: method toUnsignedByteArray gets input of type long with the highest value.
+	 * Positive Test case: method toUnsignedByteArray gets input of the limit of signed long.
 	 * The result is a new object of the type byte.
 	 */
 	@Test
-	public void testToUnsignedByteArrayLong_HigestValue()
+	public void testToUnsignedByteArrayLong_SignedLongLimit()
 	{
-		long longvalue = 0x7FFFFFFFFFFFFFFFL; //FIXME LSG why the leading 7?
-		byte[] actual = Utils.toUnsignedByteArray(longvalue);
+		long longVar = 9223372036854775807l;
+		byte[] actual = Utils.toUnsignedByteArray(longVar);
+		byte[] expected = new byte[]{(byte) 0x7F,(byte) 0xFF,(byte) 0x00,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF};
+		
+		assertArrayEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method toUnsignedByteArray gets input, which exceeds the limits of signed long.
+	 * The result is a new object of the type byte.
+	 */
+	@Test
+	public void testToUnsignedByteArrayLong_ExceedLimitSignedLong()
+	{
+		long longVar = 0x7FFFFFFFFFFFFFFFl;
+		byte[] actual = Utils.toUnsignedByteArray(longVar);
 		byte[] expected = new byte[]{(byte) 0x7F,(byte) 0xFF,(byte) 0x00,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF};
 		
 		assertArrayEquals(expected, actual);
@@ -404,8 +432,8 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayInt_LowestValue()
 	{
-		int intvalue = 0x00;
-		byte[] actual = Utils.toUnsignedByteArray(intvalue);
+		int intVar = 0x00;
+		byte[] actual = Utils.toUnsignedByteArray(intVar);
 		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00};
 		
 		assertArrayEquals(expected, actual);
@@ -414,12 +442,13 @@ public class UtilsTest {
 	
 	/**
 	 * Positive Test case: method toUnsignedByteArray gets input with the highest value of the type int.
+	 * The result should be a new object of the type byte.
 	 */
 	@Test
 	public void testToUnsignedByteArrayInt_HighestValue()
 	{
-		int intvalue = (byte)0x7FFFFFFF; //FIXME LSG why the leading 7 and the cast to byte?
-		byte[] actual = Utils.toUnsignedByteArray(intvalue);
+		int intVar = 0xFFFFFFFF; 
+		byte[] actual = Utils.toUnsignedByteArray(intVar);
 		byte[] expected = new byte[]{(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF};
 		
 		assertArrayEquals(expected, actual);
@@ -427,14 +456,75 @@ public class UtilsTest {
 	}
 	
 	/**
+	 * Positive Test case: method toUnsignedByteArray gets input of the limit of signed int.
+	 * The result should be a new object of the type byte. 
+	 */
+	@Test
+	public void testToUnsignedByteArrayInt_SignedIntLimit()
+	{
+		int intVar = 0x7FFFFFFF; 
+		byte[] actual = Utils.toUnsignedByteArray(intVar);
+		byte[] expected = new byte[]{(byte) 0x7F,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF};
+		
+		assertArrayEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method toUnsignedByteArray gets input, which exceeds the limit of signed int.
+	 * The result should be a new object of the type byte. 
+	 */
+	@Test
+	public void testToUnsignedByteArrayInt_ExceedLimitSignedInt()
+	{
+		int intVar = 0x80000000; 
+		byte[] actual = Utils.toUnsignedByteArray(intVar);
+		byte[] expected = new byte[]{(byte) 0x80,(byte) 0x00,(byte) 0x00,(byte) 0x00};
+		
+		assertArrayEquals(expected, actual);
+		
+	}
+	
+	/**
 	 * Positive Test case: method toUnsignedByteArray gets input with the highest value of type short.
+	 * The result should be a new object of type byte.
 	 */
 	@Test
 	public void testToUnsignedByteArrayShort_HighestValue()
 	{
-		short shortvalue = 0x7FFF; //FIXME LSG why the leading 7?
-		byte[] actual = Utils.toUnsignedByteArray(shortvalue);
-		byte[] expected = new byte[]{(byte) 0x7F,(byte) 0xFF,};
+		short shortVar = (byte)0xFFFF;
+		byte[] actual = Utils.toUnsignedByteArray(shortVar);
+		byte[] expected = new byte[]{(byte) 0xFF,(byte) 0xFF};
+	
+		assertArrayEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method toUnsignedByteArray gets input of the limit of signed short.
+	 * The result should be a new object of type byte.
+	 */
+	@Test
+	public void testToUnsignedByteArrayShort_SignedShortLimit()
+	{
+		short shortVar = 0x7FFF;
+		byte[] actual = Utils.toUnsignedByteArray(shortVar);
+		byte[] expected = new byte[]{(byte) 0x7F,(byte) 0xFF};
+	
+		assertArrayEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: method toUnsignedByteArray gets input, which exceeds the limit of signed short.
+	 * The result should be a new object of type byte.
+	 */
+	@Test
+	public void testToUnsignedByteArrayShort_ExceedLimitSignedShort()
+	{
+		short shortVar = (short) 0x8000;
+		byte[] actual = Utils.toUnsignedByteArray(shortVar);
+		byte[] expected = new byte[]{(byte) 0x80,(byte) 0x00};
 	
 		assertArrayEquals(expected, actual);
 		
@@ -447,8 +537,8 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayShort_LowestValue()
 	{
-		short shortvalue = 0x00;
-		byte[] actual = Utils.toUnsignedByteArray(shortvalue);
+		short shortVar = 0x00;
+		byte[] actual = Utils.toUnsignedByteArray(shortVar);
 		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00};
 	
 		assertArrayEquals(expected, actual);
@@ -457,12 +547,13 @@ public class UtilsTest {
 	
 	/**
 	 * Positive Test case: method toUnsignedByteArray gets input with highest value of type byte.
+	 * The result should be a new object of type byte.
 	 */
 	@Test
 	public void testToUnsignedByteArrayByte_HighestValue()
 	{
-		byte bytevalue = (byte) 0xFF;
-		byte[] actual = Utils.toUnsignedByteArray(bytevalue);
+		byte byteVar = (byte) 0xFF;
+		byte[] actual = Utils.toUnsignedByteArray(byteVar);
 		byte[] expected = new byte[]{(byte) 0xFF};
 		
 		assertArrayEquals(expected, actual);
@@ -471,12 +562,13 @@ public class UtilsTest {
 	
 	/**
 	 * Positive Test case: method toUnsignedByteArray gets input of type byte.
+	 * The result should be a new object of type byte.
 	 */
 	@Test
 	public void testToUnsignedByteArrayByte_LowestValue()
 	{
-		byte bytevalue = (byte) 0x00;
-		byte[] actual = Utils.toUnsignedByteArray(bytevalue);
+		byte byteVar = (byte) 0x00;
+		byte[] actual = Utils.toUnsignedByteArray(byteVar);
 		byte[] expected = new byte[]{(byte) 0x00};
 		
 		assertArrayEquals(expected, actual);
@@ -484,13 +576,14 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Positive Test case: method toUnsignedByteArray gets input of type byte.
+	 * Positive Test case: method toUnsignedByteArray gets input of the limit of signed byte.
+	 * The result should be a new object of type byte.
 	 */
 	@Test
-	public void testToUnsignedByteArrayByte_RangeLimit()
+	public void testToUnsignedByteArrayByte_SignedByteLimit()
 	{
-		byte bytevalue = (byte) 0x7F;
-		byte[] actual = Utils.toUnsignedByteArray(bytevalue);
+		byte byteVar = (byte) 0x7F;
+		byte[] actual = Utils.toUnsignedByteArray(byteVar);
 		byte[] expected = new byte[]{(byte) 0x7F};
 		
 		assertArrayEquals(expected, actual);
@@ -498,13 +591,14 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Positive Test case: method toUnsignedByteArray gets input of type byte.
+	 * Positive Test case: method toUnsignedByteArray gets input of type byte, which exceed the limit of signed byte.
+	 * The result should be a new object of type byte.
 	 */
 	@Test
-	public void testToUnsignedByteArrayPassByteRange()
+	public void testToUnsignedByteArrayByte_ExceedLimitSignedByte()
 	{
-		byte bytevalue = (byte) 0x80;
-		byte[] actual = Utils.toUnsignedByteArray(bytevalue);
+		byte byteVar = (byte) 0x80;
+		byte[] actual = Utils.toUnsignedByteArray(byteVar);
 		byte[] expected = new byte[]{(byte) 0x80};
 		
 		assertArrayEquals(expected, actual);
@@ -544,14 +638,15 @@ public class UtilsTest {
 	
 	/**
 	 * Positive Test case: method maskUnsignedByteToShort gets byte with the highest value as input.
+	 * The result should be a new object of type short.
 	 */
 	@Test
 	public void testMaskUnsignedByteToShortByte_HighestByte() 
 	{
-		byte bytevalue = (byte) 0xFF;
+		byte byteVar = (byte) 0xFF;
 		short expected = 0xFF;
 		
-		short actual = Utils.maskUnsignedByteToShort(bytevalue);
+		short actual = Utils.maskUnsignedByteToShort(byteVar);
 		
 		assertEquals(expected, actual);
 		
@@ -559,29 +654,31 @@ public class UtilsTest {
 
 	/**
 	 * Positive Test case: method maskUnsignedByteToShort gets a byte with the lowest value as input.
+	 * The result should be a new object of type short.
 	 */
 	@Test
 	public void testMaskUnsignedByteToShortByte_LowestValue() 
 	{
 		
-		byte bytevalue = (byte) 0x00;
+		byte byteVar = (byte) 0x00;
 		short expected = 0x00;
 
-		short actual = Utils.maskUnsignedByteToShort(bytevalue);
+		short actual = Utils.maskUnsignedByteToShort(byteVar);
 		
 		assertEquals(expected, actual);
 		
 	}
 
 	/**
-	 * Positive Test case: method maskUnsignedByteToShort gets max value for the range of signed byte.
+	 * Positive Test case: method maskUnsignedByteToShort gets input of the limit of signed byte.
+	 * The result should be a new object of type short.
 	 */
 	@Test
-	public void testMaskUnsignedByteToShortByte_ByteRangeLimit() 
+	public void testMaskUnsignedByteToShortByte_SignedByteLimit() 
 	{
-		byte bytevalue = (byte) 0x7F;
+		byte byteVar = (byte) 0x7F;
 
-		short actual = Utils.maskUnsignedByteToShort(bytevalue);;
+		short actual = Utils.maskUnsignedByteToShort(byteVar);;
 		short expected = 0x7F;
 
 		assertEquals(expected, actual);
@@ -589,75 +686,80 @@ public class UtilsTest {
 	}
 
 	/**
-	 * Positive Test case: method maskUnsignedByteToShort gets value, which is one value above the range of signed byte.
+	 * Positive Test case: method maskUnsignedByteToShort gets input, which exceeds the limit of signed byte.
+	 * The result should be a new object of type short.
 	 */
 	@Test
-	public void testMaskUnsignedByteToShortByte_PassByteRange() 
+	public void testMaskUnsignedByteToShortByte_ExceedLimitSignedByte() 
 	{
-		byte bytevalue = (byte) 0x80;
+		byte byteVar = (byte) 0x80;
 		short expected = 0x80;
 		
-		short actual = Utils.maskUnsignedByteToShort(bytevalue);
+		short actual = Utils.maskUnsignedByteToShort(byteVar);
 		
 		assertEquals(expected, actual);
 		
 	}
 	
 	/**
-	 * Positive Test case: method maskUnsignedByteToInt gets byte value as input.
+	 * Positive Test case: method maskUnsignedByteToInt gets the highest byte as input.
+	 * The result should be a new object of type int.
 	 */
 	@Test
 	public void testMaskUnsignedByteToIntByte_HighestValue()
 	{
-		byte bytevalue = (byte)0xFF;
+		byte byteVar = (byte)0xFF;
 		int expected = 0xFF;
 		
-		int actual = Utils.maskUnsignedByteToInt(bytevalue);
+		int actual = Utils.maskUnsignedByteToInt(byteVar);
 		
 		assertEquals(expected, actual);
 		
 	}
 	
 	/**
-	 * Positive Test case: method maskUnsignedByteToInt gets byte value as input.
+	 * Positive Test case: method maskUnsignedByteToInt gets the lowest byte as input.
+	 * The result should be a new object of type int.
 	 */
 	@Test
 	public void testMaskUnsignedByteToIntByte_LowestValue()
 	{
-		byte bytevalue = 0x00;
+		byte byteVar = 0x00;
 		int expected = 0x00;
 		
-		int actual = Utils.maskUnsignedByteToInt(bytevalue);
+		int actual = Utils.maskUnsignedByteToInt(byteVar);
 		
 		assertEquals(expected, actual);
 		
 	}
 	
 	/**
-	 * Positive Test case: method maskUnsignedByteToInt gets max value for the range of signed byte.
+	 * Positive Test case: method maskUnsignedByteToInt gets input of the limit of signed byte.
+	 * The result should be a new object of type int.
 	 */
 	@Test
-	public void testMaskUnsignedByteToIntByte_RangeLimit()
+	public void testMaskUnsignedByteToIntByte_SignedByteLimit()
 	{
-		byte b = 0x7F;
+		byte byteVar = 0x7F;
 		int expected = 0x7F;
 		
-		int actual = Utils.maskUnsignedByteToInt(b);
+		int actual = Utils.maskUnsignedByteToInt(byteVar);
 		
 		assertEquals(expected, actual);
 		
 	}
 	
 	/**
-	 * Positive Test case: method maskUnsignedByteToInt gets value, which is one value above the range of signed byte.
+	 * Positive Test case: method maskUnsignedByteToInt gets input, which exceeds the limit of signed byte.
+	 * The result should be a new object of type int.
 	 */
 	@Test
-	public void testMaskUnsignedByteToIntByte_PassRange() //FIXME LSG I don't get the meaning of this method name
+	public void testMaskUnsignedByteToIntByte_ExceedLimitSignedByte()
 	{
-		byte b = (byte)0x80;
+		byte byteVar = (byte)0x80;
 		int expected = 0x80;
 		
-		int actual = Utils.maskUnsignedByteToInt(b);
+		int actual = Utils.maskUnsignedByteToInt(byteVar);
 		
 		assertEquals(expected, actual);
 		
@@ -665,14 +767,15 @@ public class UtilsTest {
 	
 	/**
 	 * Positive Test case: method maskUnsignedShortToInt gets a short with the highest value of type short.
+	 * The result should be a new object of type int.
 	 */
 	@Test
 	public void testMaskUnsignedShortToIntShort_HighestValue()
 	{
-		short s =  0x7FFF; //FIXME LSG why the leading 7?
-		int expected = 0x7FFF;
+		short shortVar = (byte)0xFFFF; 
+		int expected = 0xFFFF;
 		
-		int actual  = Utils.maskUnsignedShortToInt(s);
+		int actual  = Utils.maskUnsignedShortToInt(shortVar);
 		
 		assertEquals(expected, actual);
 		
@@ -680,14 +783,15 @@ public class UtilsTest {
 	
 	/**
 	 * Positive Test case: method maskUnsignedShortToInt gets a short with the lowest value of type short.
+	 * The result should be a new object of type int.
 	 */
 	@Test
 	public void testMaskUnsignedShortToIntShort_LowestValue()
 	{
-		short shortvalue = 0x00;
+		short shortVar = 0x00;
 		int expected = 0x00;
 		
-		int actual  = Utils.maskUnsignedShortToInt(shortvalue);
+		int actual  = Utils.maskUnsignedShortToInt(shortVar);
 		
 		assertEquals(expected, actual);
 		
@@ -700,11 +804,11 @@ public class UtilsTest {
 	@Test
 	public void testConcatenateByte_HighestAndLowestByte()
 	{
-		byte bytevalue1 = (byte) 0xFF;
-		byte bytevalue2 = (byte) 0x00;
+		byte byteVar1 = (byte) 0xFF;
+		byte byteVar2 = (byte) 0x00;
 		short expected = (short) 0xFF00;
 		
-		short actual = Utils.concatenate(bytevalue1, bytevalue2);
+		short actual = Utils.concatenate(byteVar1, byteVar2);
 		
 		assertEquals(expected, actual);
 		
@@ -717,11 +821,11 @@ public class UtilsTest {
 	@Test
 	public void testConcatenateByte_LowestAndHighestByte()
 	{
-		byte bytevalue1 = (byte) 0x00;
-		byte bytevalue2 = (byte) 0xFF;
+		byte byteVar1 = (byte) 0x00;
+		byte byteVar2 = (byte) 0xFF;
 		short expected = (short) 0xFF;
 		
-		short actual = Utils.concatenate(bytevalue1, bytevalue2);
+		short actual = Utils.concatenate(byteVar1, byteVar2);
 		
 		assertEquals(expected, actual);	
 		
@@ -734,11 +838,11 @@ public class UtilsTest {
 	@Test
 	public void testConcatenateByte_TwoLowestBytes()
 	{
-		byte bytevalue1 = (byte) 0x00;
-		byte bytevalue2 = (byte) 0x00;
+		byte byteVar1 = (byte) 0x00;
+		byte byteVar2 = (byte) 0x00;
 		short expected = (short) 0x00;
 		
-		short actual = Utils.concatenate(bytevalue1, bytevalue2);
+		short actual = Utils.concatenate(byteVar1, byteVar2);
 		
 		assertEquals(expected, actual);	
 		
@@ -751,11 +855,11 @@ public class UtilsTest {
 	@Test
 	public void testConcatenateByte_TwoHighestBytes()
 	{
-		byte bytevalue1 = (byte) 0xFF; //FIXME LSG why rename distinct variable names to these mistakable names? (check rest of file)
-		byte bytevalue2 = (byte) 0xFF;
+		byte byteVar1  = (byte) 0xFF; 
+		byte byteVar2 = (byte) 0xFF;
 		short expected = (short) 0xFFFF;
 		
-		short actual = Utils.concatenate(bytevalue1, bytevalue2);
+		short actual = Utils.concatenate(byteVar1, byteVar2);
 		
 		assertEquals(expected, actual);	
 		
@@ -768,31 +872,16 @@ public class UtilsTest {
 	@Test
 	public void testConcatenateByte_TwoBytes()
 	{
-		byte bytevalue1 = (byte) 0x01;
-		byte bytevalue2 = (byte) 0x01;
+		byte byteVar1 = (byte) 0x01;
+		byte byteVar2 = (byte) 0x01;
 		short expected = (short) 0x101;
 		
-		short result = Utils.concatenate(bytevalue1, bytevalue2);
+		short result = Utils.concatenate(byteVar1, byteVar2);
 		
 		assertEquals(expected, result);	
 		
 	}
 
-	//FIXME LSG move the test here up to the other test concerning getDate
-	
-	/**
-	 * Negative Test case: method getDate gets a null string.
-	 * The result should be a NPE cause of the string which is null.
-	 */
-	@Test(expected=NullPointerException.class)
-	public void testGetDateString()
-	{
-		byte bytevalue = 1;
-		String nullstring = null;
-		Utils.getDate(nullstring, bytevalue);	
-		
-	}
-	
 	/**
 	 * Positive Test case: method arrayContainsEqual gets an Object array and an string value as input.
 	 * The result is the boolean value, which depends on if the entries of the array are equal to the object.
@@ -819,9 +908,9 @@ public class UtilsTest {
 	public void testLogarithm_DoubleAndBase()
 	{
 		int base = 100;
-		double doublevalue = 10;
+		double doubleVar = 10;
 		double DELTA = 1e-15;
-		double actual = Utils.logarithm(doublevalue, base);
+		double actual = Utils.logarithm(doubleVar, base);
 		double expected = 0.5;
 		
 		assertEquals(expected, actual,DELTA);
@@ -863,7 +952,7 @@ public class UtilsTest {
 	 * The result should be the true.
 	 */
 	@Test
-	public void testIsAnyNull_TrueObject() //FIXME LSG why the meaningless Object as last part of the name? (same below)
+	public void testIsAnyNull_True() 
 	{
 		Object nullobject = null;
 		boolean actual  = Utils.isAnyNull(nullobject);
@@ -877,7 +966,7 @@ public class UtilsTest {
 	 * The result should be false, because the Object isn't null.
 	 */
 	@Test
-	public void testIsAnyNull_FalseObject()
+	public void testIsAnyNull_False()
 	{
 		Object test = new Object();
 		boolean actual = Utils.isAnyNull(test);
@@ -893,8 +982,8 @@ public class UtilsTest {
 	@Test
 	public void testGetShortFromUnsignedByteArrayByteArray_LowestByte()
 	{
-		byte[] test = new byte[]{(byte) 0x00};
-		short actual = Utils.getShortFromUnsignedByteArray(test);
+		byte[] bytearray = new byte[]{(byte) 0x00};
+		short actual = Utils.getShortFromUnsignedByteArray(bytearray);
 		short expected = 0x00;
 
 		assertEquals(expected, actual);
@@ -917,11 +1006,11 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Positive Test case: method getShortFromUnsignedByteArray gets byte array with max value for the range of signed byte. FIXME LSG whyt do you mean by "range of signed byte"
-	 * 
+	 * Positive Test case: method getShortFromUnsignedByteArray gets input of the limit of signed byte.
+	 * The result should be a new object of type short.
 	 */
 	@Test
-	public void testGetShortFromUnsignedByteArrayByteArray_ByteRangeLimit()
+	public void testGetShortFromUnsignedByteArrayByteArray_SignedByteLimit()
 	{
 		byte[] bytearray = new byte[]{(byte) 0x7F};
 		short actual = Utils.getShortFromUnsignedByteArray(bytearray);
@@ -933,6 +1022,7 @@ public class UtilsTest {
 	
 	/**
 	 * Positive Test case: method getShortFromUnsignedByteArray gets two byte arrays with the highest value.
+	 * The result should be a new object of type short.
 	 * 
 	 */
 	@Test
@@ -947,11 +1037,12 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Positive Test case: method getShortFromUnsignedByteArray gets byte array which is one value above the range of signed byte.
+	 * Positive Test case: method getShortFromUnsignedByteArray gets input, which exceeds the limit of signed byte.
+	 * The result should be a new object of type short.
 	 * 
 	 */
 	@Test
-	public void testGetShortFromUnsignedByteArrayByteArray_PassByteRange()
+	public void testGetShortFromUnsignedByteArrayByteArray_ExceedLimitSignedByte()
 	{
 		byte[] bytearray = new byte[]{(byte) 0x80};
 		short actual = Utils.getShortFromUnsignedByteArray(bytearray);
@@ -1007,11 +1098,11 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Positive Test case: method getIntFromUnsignedByteArray gets byte array with max value for the range of signed byte.
+	 * Positive Test case: method getIntFromUnsignedByteArray gets input of limit of signed byte.
 	 * The result should be a new object with the same value of type int.
 	 */
 	@Test
-	public void testGetIntFromUnsignedByteArrayByteArray_ByteRangeLimit()
+	public void testGetIntFromUnsignedByteArrayByteArray_SingedByteLimit()
 	{
 		byte[] bytearray = new byte[]{(byte) 0x7F};
 		int actual = Utils.getIntFromUnsignedByteArray(bytearray);
@@ -1022,10 +1113,11 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Positive Test case: method getIntFromUnsignedByteArray gets byte array which is one value above the range of signed byte.
+	 * Positive Test case: method getIntFromUnsignedByteArray gets input of the limit of signed byte.
+	 * The result should be a new object of type int.
 	 */
 	@Test
-	public void testGetIntFromUnsignedByteArrayByteArray_PassByteRange()
+	public void testGetIntFromUnsignedByteArrayByteArray_ExceedLimitSignedByte()
 	{
 		byte[] bytearray = new byte[]{(byte) 0x80};
 		int actual = Utils.getIntFromUnsignedByteArray(bytearray);
@@ -1070,14 +1162,14 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Positive Test case: method getBigIntegerFromUnsignedByteArray gets byte array with the highest byte value as input.
+	 * Positive Test case: method getBigIntegerFromUnsignedByteArray gets byte array with 2 bytes as input.
 	 * The result should be a new object of the type BigInteger.
 	 */
 	@Test
-	public void testGetBigIntegerFromUnsignedByteArrayByteArray_2Bytes() //FIXME LSG why 2 bytes? why are they identical?
+	public void testGetBigIntegerFromUnsignedByteArrayByteArray_2Bytes() 
 	{
-		byte[] bytearray = new byte[]{(byte) 0xFF,(byte) 0xFF};
-		long exp = 0xFFFF;
+		byte[] bytearray = new byte[]{(byte) 0xFF,(byte) 0x7F};
+		long exp = 0xFF7F;
 		BigInteger expected = BigInteger.valueOf(exp);
 		
 		BigInteger actual = Utils.getBigIntegerFromUnsignedByteArray(bytearray);
@@ -1152,9 +1244,9 @@ public class UtilsTest {
 	public void testConcatByteArraysByteArrays_FirstElementIsNull()
 	{
 		byte[] array1 = null;
-		byte[] array2 = new byte[]{(byte) 0xFF};
+		byte[] array2 = new byte[]{(byte) 0x7F};
 		byte[] array3 = new byte[]{(byte) 0xFF};
-		byte[] expected =  new byte[]{(byte)0xFF,(byte)0xFF};
+		byte[] expected =  new byte[]{(byte)0x7F,(byte)0xFF};
 		
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
 		
@@ -1170,11 +1262,11 @@ public class UtilsTest {
 	@Test
 	public void testConcatByteArraysByteArrays_SecondElementIsNull()
 	{
-		byte[] array1 =  new byte[]{(byte) 0xFF};
+		byte[] array1 =  new byte[]{(byte) 0x7F};
 		byte[] array2 = null;
 		byte[] array3 = new byte[]{(byte) 0xFF};
 		
-		byte[] expected =  new byte[]{(byte)0xFF,(byte)0xFF};
+		byte[] expected =  new byte[]{(byte)0x7F,(byte)0xFF};
 		
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
 		
@@ -1190,11 +1282,11 @@ public class UtilsTest {
 	@Test
 	public void testConcatByteArraysByteArrays_ThirdElementIsNull()
 	{
-		byte[] array1 =  new byte[]{(byte) 0xFF};
+		byte[] array1 =  new byte[]{(byte) 0x7F};
 		byte[] array2 = new byte[]{(byte) 0xFF};
 		byte[] array3 = null;
 		
-		byte[] expected =  new byte[]{(byte)0xFF,(byte)0xFF};
+		byte[] expected =  new byte[]{(byte)0x7F,(byte)0xFF};
 		
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
 		
@@ -1208,7 +1300,7 @@ public class UtilsTest {
 	 * The result should be a new object without the null elements from array1-3.
 	 */
 	@Test
-	public void testConcatByteArraysByteArrays_AllElemtentAreNull()
+	public void testConcatByteArraysByteArrays_AllElemtentsAreNull()
 	{
 		byte[] array1 = null;
 		byte[] array2 = null;
@@ -1218,8 +1310,8 @@ public class UtilsTest {
 		
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
 		
-		assertNotSame("method returns the same object", array1, result); //FIXME LSG this check is nonsense
 		assertArrayEquals(expected, result);
+		assertNotNull("The return object is null",result);
 		
 	}
 	
@@ -1231,22 +1323,15 @@ public class UtilsTest {
 	public void testConcatByteArraysByteArrays_EnsureArrayConcatination()
 	{
 		byte[] array1 = new byte[]{(byte) 0xFF};
-		byte[] array2 = new byte[]{(byte) 0xFF};
-		byte[] array3 = new byte[]{(byte) 0xFF};
+		byte[] array2 = new byte[]{(byte) 0x7F};
+		byte[] array3 = new byte[]{(byte) 0x00};
 		
-		byte[] expected = new byte[]{(byte)0xFF,(byte)0xFF, (byte)0xFF};
+		byte[] expected = new byte[]{(byte)0xFF,(byte)0x7F, (byte)0x00};
 		
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
-		for (int i = 0; i <= 2; i++) { //FIXME LSG I can't see any reason for this loop (nor this whole testcase)
-			assertEquals(expected[i], result[i]);
-			assertEquals(expected[i], result[i]);
-			assertEquals(expected[i], result[i]);
-		}
-		
+
+		assertArrayEquals("The elements are not in the right order",expected, result);
 		assertNotSame("method returns the same object", array1, result);
-		assertArrayEquals(expected, result);
 		
 	}
-	//FIXME LSG rethink cornercases
-	//FIXME LSG change values to ensure correct order of bytes in several testcases
 }
