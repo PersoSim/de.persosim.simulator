@@ -5,6 +5,13 @@ import java.util.LinkedList;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 
+/**
+ * This {@link LogListener} implementation is used to write log entries by line
+ * into a given {@link LinkedList} using a maximum number of cached lines.
+ * 
+ * @author mboonk
+ *
+ */
 public class LinkedListLogListener implements LogListener {
 
 	private LinkedList<String> list;
