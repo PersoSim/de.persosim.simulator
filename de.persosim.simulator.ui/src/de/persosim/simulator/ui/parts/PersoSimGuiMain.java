@@ -83,9 +83,8 @@ public class PersoSimGuiMain {
 		//configure console field
 		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);
 		
-		Activator.getTextFieldLogListener().setText(txtOutput, sync);
-		
-		Activator.getTextFieldLogListener().setText(txtOutput, sync);
+		Activator.getListLogListener().setLinkedList(consoleStrings);
+		Activator.getListLogListener().setMaxLines(maxLines);
 				
 		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
 		txtOutput.setEditable(false);
@@ -183,11 +182,12 @@ public class PersoSimGuiMain {
 							 if(updateNeeded) {
 								 updateNeeded=false;
 								 buildNewConsoleContent();
+								 showNewOutput();
 							 }
 						}
 					});
 					try {
-						Thread.sleep(250);
+						Thread.sleep(50);
 					} catch (InterruptedException e) {
 						// sleep interrupted, doesn't matter
 					}
@@ -242,6 +242,7 @@ public class PersoSimGuiMain {
 
 				strConsoleStrings.append(consoleStrings.get(slider
 						.getSelection() + i));
+				strConsoleStrings.append("\n");
 
 			}
 		}
@@ -269,6 +270,7 @@ public class PersoSimGuiMain {
 	 * 
 	 * @param s is the String that should be saved in the List
 	 */
+	/*
 	protected void saveConsoleStrings(final String s) {
 
 		String[] splitResult = s.split("(?=/n|/r)");
@@ -294,7 +296,23 @@ public class PersoSimGuiMain {
 				rebuildSlider();
 			}
 		}
+	}*/
+
+	/**
+	 * controls slider selection (auto scrolling)
+	 */
+	public void showNewOutput() {
+		
+		sync.syncExec(new Runnable() {
+			@Override
+			public void run() {
+				rebuildSlider();
+				slider.setSelection(slider.getMaximum());							
+			}
+		});
+
 	}
+	
 	
 	public void write(String line) {
 		inWriter.println(line);

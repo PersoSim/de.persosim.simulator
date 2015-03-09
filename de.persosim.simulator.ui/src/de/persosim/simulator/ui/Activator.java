@@ -11,7 +11,7 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.util.tracker.ServiceTracker;
 
-import de.persosim.simulator.ui.utils.TextFieldLogListener;
+import de.persosim.simulator.ui.utils.LinkedListLogListener;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -19,11 +19,11 @@ import de.persosim.simulator.ui.utils.TextFieldLogListener;
 public class Activator implements BundleActivator {
 
 	private LinkedList<LogReaderService> readers = new LinkedList<>();
-	private static TextFieldLogListener textFieldLogger = new TextFieldLogListener();
+	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener();
 	private ServiceTracker<LogReaderService, LogReaderService> logReaderTracker;
 	
-	public static TextFieldLogListener getTextFieldLogListener(){
-		return textFieldLogger;
+	public static LinkedListLogListener getListLogListener(){
+		return linkedListLogger;
 	}
 	
 	// This will be used to keep track of listeners as they are un/registering
@@ -35,9 +35,9 @@ public class Activator implements BundleActivator {
 			if (readerService != null){
 				if (event.getType() == ServiceEvent.REGISTERED){
 					readers.add(readerService);
-					readerService.addLogListener(textFieldLogger);
+					readerService.addLogListener(linkedListLogger);
 				} else if (event.getType() == ServiceEvent.UNREGISTERING){
-					readerService.removeLogListener(textFieldLogger);
+					readerService.removeLogListener(linkedListLogger);
 					readers.remove(readerService);
 				}
 			}
@@ -62,7 +62,7 @@ public class Activator implements BundleActivator {
 			for (int i=0; i<readers.length; i++){
 				LogReaderService readerService = (LogReaderService) readers [i];
 				this.readers.add(readerService);
-				readerService.addLogListener(textFieldLogger);
+				readerService.addLogListener(linkedListLogger);
 			}
 		}
 		
@@ -84,7 +84,7 @@ public class Activator implements BundleActivator {
         while (iterator.hasNext())
         {
             LogReaderService readerService = iterator.next();
-            readerService.removeLogListener(textFieldLogger);
+            readerService.removeLogListener(linkedListLogger);
             iterator.remove();
         }
 		
