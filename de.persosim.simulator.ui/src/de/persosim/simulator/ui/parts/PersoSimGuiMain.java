@@ -83,9 +83,10 @@ public class PersoSimGuiMain {
 		LinkedListLogListener listener = Activator.getListLogListener();
 		if (listener != null){
 			listener.addFilter("de.persosim.simulator");	
+		} else {
+			txtOutput.setText("The OSGi logging service can not be used.\nPlease check the availability and OSGi configuration" + System.lineSeparator());
 		}
 		
-		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
 		txtOutput.setEditable(false);
 		txtOutput.setCursor(null);
 		txtOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
