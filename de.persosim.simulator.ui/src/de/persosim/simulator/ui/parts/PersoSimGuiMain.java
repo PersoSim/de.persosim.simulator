@@ -49,6 +49,8 @@ public class PersoSimGuiMain {
 	
 	private Text txtInput, txtOutput;
 	
+	//flag to prevent the console from unnecessary refreshing 
+	Boolean updateNeeded = false;
 	
 	private final InputStream originalSystemIn = System.in;
 	private final PrintStream originalSystemOut = System.out;
@@ -175,8 +177,9 @@ public class PersoSimGuiMain {
 						@Override
 						public void run() {
 							
-							 if(!locked) {
+							 if(!locked && updateNeeded) {
 								 buildNewConsoleContent();
+								 updateNeeded=false;
 							 }
 						}
 					});
@@ -331,6 +334,9 @@ public class PersoSimGuiMain {
 			}else{
 			consoleStrings.add(splitResult[i]);
 			}
+			
+			updateNeeded=true;
+			
 			if (!locked) {
 				showNewOutput();
 			}
