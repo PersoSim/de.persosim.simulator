@@ -141,17 +141,17 @@ public class PersoSimGuiMain {
 		txtInput.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		lockScroller = new Button(parent, SWT.TOGGLE);
-		lockScroller.setText("unlocked");
+		lockScroller.setText(" lock ");
 		lockScroller.addListener(SWT.Selection, new Listener() {
 			
 			@Override
 			public void handleEvent (Event e) {
 				
 				if(locked){
-					lockScroller.setText("unlocked");
+					lockScroller.setText(" lock ");
 					locked=false;
 				}else{
-					lockScroller.setText("locked");
+					lockScroller.setText("unlock");
 					locked=true;
 				}
 			}
