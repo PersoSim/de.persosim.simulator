@@ -39,10 +39,18 @@ public class LinkedListLogListener implements LogListener {
 		bundleFilters = new LinkedList<String>();
 	}
 	
+	/**
+	 * @return the number of lines currently in the cache
+	 */
 	public int getNumberOfCachedLines(){
 		return list.size();
 	}
 	
+	/**
+	 * @param index
+	 *            of the line to return
+	 * @return the content of the cached line at the given index
+	 */
 	public String getLine(int index){
 		return list.get(index);
 	}
