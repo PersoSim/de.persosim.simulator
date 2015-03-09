@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Text;
 
 import de.persosim.simulator.PersoSim;
 import de.persosim.simulator.ui.Activator;
+import de.persosim.simulator.ui.utils.LinkedListLogListener;
 
 /**
  * @author slutters
@@ -83,9 +84,13 @@ public class PersoSimGuiMain {
 		//configure console field
 		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);
 		
-		Activator.getListLogListener().setLinkedList(consoleStrings);
-		Activator.getListLogListener().setMaxLines(maxLines);
-				
+		LinkedListLogListener listener = Activator.getListLogListener();
+		if (listener != null){
+			listener.setLinkedList(consoleStrings);
+			listener.setMaxLines(maxLines);
+			listener.addFilter("de.persosim.simulator");	
+		}
+		
 		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
 		txtOutput.setEditable(false);
 		txtOutput.setCursor(null);
