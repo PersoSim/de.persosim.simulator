@@ -34,6 +34,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	@Mocked TerminalType mockedTaType;
 	@Mocked Collection<SecMechanism> mockedCurrentMechanisms;
 	
+	//FIXME JGE you should initialize all testdata in @Before or the specific testcases to ensure that it is clean for each and every test.
 	PasswordAuthObject authObject = new PasswordAuthObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN");
 	PinObject pinObject = new PinObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), 6, 6, 3);
 	PasswordAuthObjectWithRetryCounter authObjectRetry = new PasswordAuthObjectWithRetryCounter (new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN", 6, 6, 3);
@@ -57,7 +58,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = pinObject; // new PinObject();
+				result = pinObject; // new PinObject(); FIXME JGE why commented code here?
 				
 			}
 		};
@@ -89,7 +90,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = null; // new PinObject();
+				result = null; // new PinObject(); FIXME JGE why commented code here?
 			}
 		};
 		
@@ -113,7 +114,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 */
 	@Test
 	public void testProcessCommandChangePassword() {
-		authObjectRetry.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+		authObjectRetry.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED); //FIXME JGE I guess this line will become redundant after fixing issues above ;-)
 		
 		// prepare the mock
 		new Expectations() {
@@ -153,7 +154,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = authObject; // new PasswordAuthObject();
+				result = authObject; // new PasswordAuthObject(); FIXME JGE why commented code here?
 			}
 		};
 		
@@ -184,7 +185,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = authObjectRetry; // new PasswordAuthObjectWithRetryCounter();
+				result = authObjectRetry; // new PasswordAuthObjectWithRetryCounter(); FIXME JGE why commented code here?
 			}
 		};
 		
@@ -215,7 +216,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = pinObject; // new PinObject();
+				result = pinObject; // new PinObject(); FIXME JGE why commented code here?
 			}
 		};
 		
@@ -246,7 +247,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = pinObject; // new PinObject();
+				result = pinObject; // new PinObject(); FIXME JGE why commented code here?
 				
 			}
 		};
@@ -270,6 +271,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 * Positive test case. Send apdu to activate the PIN and receives
 	 * a 9000.
 	 */
+	//FIXME JGE ensure that the pinObject is in deactivated sate before the command is executed
 	@Test
 	public void testProcessCommandActivatePassword() {
 		// prepare the mock
@@ -278,7 +280,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = pinObject; // new PinObject();
+				result = pinObject; // new PinObject(); FIXME JGE why commented code here?
 				
 			}
 		};
@@ -302,6 +304,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	/**
 	 * Positive test case. Send apdu to deactivate the PIN an receives a 9000.
 	 */
+	//FIXME JGE ensure that the pinObject is in deactivated sate before the command is executed
 	@Test
 	public void testProcessCommandDeactivatePassword() {
 		// prepare the mock
@@ -310,7 +313,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = pinObject; // new PinObject();
+				result = pinObject; // new PinObject(); FIXME JGE why commented code here?
 				
 				mockedCardStateAccessor
 						.getCurrentMechanisms(
@@ -347,13 +350,13 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = pinObject; // new PinObject();
+				result = pinObject; // new PinObject(); FIXME JGE why commented code here?
 				
 				mockedCardStateAccessor
 						.getCurrentMechanisms(
 								withInstanceOf(SecContext.class),
 								withInstanceLike(new HashSet<Class<? extends SecMechanism>>()));
-				result = mockedCurrentMechanisms;
+				result = mockedCurrentMechanisms; //FIXME JGE isn't it easier to return a full object here instead of mocking all methods?
 				
 				mockedCurrentMechanisms.size();
 				result = 1;
@@ -380,4 +383,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				SW_6982_SECURITY_STATUS_NOT_SATISFIED, processingData
 						.getResponseApdu().getStatusWord());
 	}
+	
+	//FIXME JGE some assert messages are missleading if the testcase fails
+	//FIXME JGE add message to distinguish the two asserts within this method
 }

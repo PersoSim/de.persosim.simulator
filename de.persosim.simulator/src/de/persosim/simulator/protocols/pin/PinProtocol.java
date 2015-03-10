@@ -244,7 +244,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		CommandApdu cApdu = processingData.getCommandApdu();
 		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
 		
-		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF); //Tr03110.ID_PIN
+		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF); //Tr03110.ID_PIN FIXME JGE what does this comment mean here?
 		
 		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
