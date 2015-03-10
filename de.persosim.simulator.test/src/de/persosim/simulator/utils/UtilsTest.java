@@ -261,8 +261,8 @@ public class UtilsTest {
 	public void testAppendBytes_LeadingByteEmpty()
 	{
 		byte[] leadingByteArray = new byte[]{};
-		byte[] trailingByteArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
-		byte[] expectedArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		byte[] trailingByteArray = new byte[]{(byte) 0x01,(byte) 0x02,(byte) 0x03};
+		byte[] expectedArray = new byte[]{(byte) 0x01,(byte) 0x02,(byte) 0x03};
 		
 		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
 		
@@ -278,9 +278,9 @@ public class UtilsTest {
 	@Test
 	public void testAppendBytes_TrailingByteEmpty()
 	{
-		byte[] leadingByteArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		byte[] leadingByteArray = new byte[]{(byte) 0x01,(byte) 0x02,(byte) 0x03};
 		byte[] trailingByteArray = new byte[]{};
-		byte[] expectedArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		byte[] expectedArray = new byte[]{(byte) 0x01,(byte) 0x02,(byte) 0x03};
 		
 		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
 		
@@ -296,9 +296,9 @@ public class UtilsTest {
 	@Test
 	public void testAppendBytes_TrailingByteArrayNull()
 	{
-		byte[] leadingByteArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		byte[] leadingByteArray = new byte[]{(byte) 0x01,(byte) 0x02,(byte) 0x03};
 		byte[] trailingByteArray = null;
-		byte[] expectedArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		byte[] expectedArray = new byte[]{(byte) 0x01,(byte) 0x02,(byte) 0x03};
 		
 		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
 		
@@ -315,8 +315,8 @@ public class UtilsTest {
 	public void testAppendBytes_LeadingByteArrayNull()
 	{
 		byte[] leadingByteArray = null;
-		byte[] trailingByteArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
-		byte[] expectedArray = new byte[]{(byte) 0x01,(byte) 0x01,(byte) 0x01};
+		byte[] trailingByteArray = new byte[]{(byte) 0x01,(byte) 0x02,(byte) 0x03};
+		byte[] expectedArray = new byte[]{(byte) 0x01,(byte) 0x02,(byte) 0x03};
 		
 		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
 		
@@ -353,8 +353,8 @@ public class UtilsTest {
 	public void testAppendBytes_LeadingByteArrayZero()
 	{
 		byte[] leadingByteArray = new byte[]{0x00,0x00};
-		byte[] trailingByteArray = new byte[]{(byte)0xFF,(byte) 0xFF};
-		byte[] expectedArray = new byte[]{0x00,0x00,(byte)0xFF,(byte) 0xFF};
+		byte[] trailingByteArray = new byte[]{(byte)0x7F,(byte) 0xFF};
+		byte[] expectedArray = new byte[]{0x00,0x00,(byte)0x7F,(byte) 0xFF};
 		
 		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
 		
@@ -370,9 +370,9 @@ public class UtilsTest {
 	@Test
 	public void testAppendBytes_TrailingByteArrayZero()
 	{
-		byte[] leadingByteArray = new byte[]{(byte)0xFF,(byte) 0xFF};
+		byte[] leadingByteArray = new byte[]{(byte) 0x7F,(byte) 0xFF};
 		byte[] trailingByteArray = new byte[]{0x00,0x00};
-		byte[] expectedArray = new byte[]{(byte)0xFF,(byte) 0xFF,0x00,0x00};
+		byte[] expectedArray = new byte[]{(byte)0x7F,(byte) 0xFF,0x00,0x00};
 		
 		byte[] result = Utils.appendBytes(leadingByteArray, trailingByteArray);
 		
@@ -387,8 +387,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayLong_LowestValue()
 	{
-		long longVar = 0x00;
-		byte[] actual = Utils.toUnsignedByteArray(longVar);
+		byte[] actual = Utils.toUnsignedByteArray((long) 0x00);
 		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00};
 		
 		assertArrayEquals(expected, actual);
@@ -402,9 +401,8 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayLong_SignedLongLimit()
 	{
-		long longVar = 9223372036854775807l;
-		byte[] actual = Utils.toUnsignedByteArray(longVar);
-		byte[] expected = new byte[]{(byte) 0x7F,(byte) 0xFF,(byte) 0x00,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF};
+		byte[] actual = Utils.toUnsignedByteArray((long) 0x7FFFFFFFFFFFFFFFL);
+		byte[] expected = new byte[]{(byte) 0x7F,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF};
 		
 		assertArrayEquals(expected, actual);
 		
@@ -417,9 +415,8 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayLong_ExceedLimitSignedLong()
 	{
-		long longVar = 0x7FFFFFFFFFFFFFFFl;
-		byte[] actual = Utils.toUnsignedByteArray(longVar);
-		byte[] expected = new byte[]{(byte) 0x7F,(byte) 0xFF,(byte) 0x00,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF};
+		byte[] actual = Utils.toUnsignedByteArray((long) 0x8000000000000000l);
+		byte[] expected = new byte[]{(byte) 0x80,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00};
 		
 		assertArrayEquals(expected, actual);
 		
@@ -432,8 +429,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayInt_LowestValue()
 	{
-		int intVar = 0x00;
-		byte[] actual = Utils.toUnsignedByteArray(intVar);
+		byte[] actual = Utils.toUnsignedByteArray((int) 0x00);
 		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00};
 		
 		assertArrayEquals(expected, actual);
@@ -447,8 +443,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayInt_HighestValue()
 	{
-		int intVar = 0xFFFFFFFF; 
-		byte[] actual = Utils.toUnsignedByteArray(intVar);
+		byte[] actual = Utils.toUnsignedByteArray((int) 0xFFFFFFFF);
 		byte[] expected = new byte[]{(byte) 0xFF,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF};
 		
 		assertArrayEquals(expected, actual);
@@ -462,8 +457,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayInt_SignedIntLimit()
 	{
-		int intVar = 0x7FFFFFFF; 
-		byte[] actual = Utils.toUnsignedByteArray(intVar);
+		byte[] actual = Utils.toUnsignedByteArray((int) 0x7FFFFFFF);
 		byte[] expected = new byte[]{(byte) 0x7F,(byte) 0xFF,(byte) 0xFF,(byte) 0xFF};
 		
 		assertArrayEquals(expected, actual);
@@ -477,8 +471,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayInt_ExceedLimitSignedInt()
 	{
-		int intVar = 0x80000000; 
-		byte[] actual = Utils.toUnsignedByteArray(intVar);
+		byte[] actual = Utils.toUnsignedByteArray((int) 0x80000000);
 		byte[] expected = new byte[]{(byte) 0x80,(byte) 0x00,(byte) 0x00,(byte) 0x00};
 		
 		assertArrayEquals(expected, actual);
@@ -492,8 +485,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayShort_HighestValue()
 	{
-		short shortVar = (byte)0xFFFF;
-		byte[] actual = Utils.toUnsignedByteArray(shortVar);
+		byte[] actual = Utils.toUnsignedByteArray((short) 0xFFFF);
 		byte[] expected = new byte[]{(byte) 0xFF,(byte) 0xFF};
 	
 		assertArrayEquals(expected, actual);
@@ -507,8 +499,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayShort_SignedShortLimit()
 	{
-		short shortVar = 0x7FFF;
-		byte[] actual = Utils.toUnsignedByteArray(shortVar);
+		byte[] actual = Utils.toUnsignedByteArray((short) 0x7FFF);
 		byte[] expected = new byte[]{(byte) 0x7F,(byte) 0xFF};
 	
 		assertArrayEquals(expected, actual);
@@ -522,8 +513,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayShort_ExceedLimitSignedShort()
 	{
-		short shortVar = (short) 0x8000;
-		byte[] actual = Utils.toUnsignedByteArray(shortVar);
+		byte[] actual = Utils.toUnsignedByteArray((short) 0x8000);
 		byte[] expected = new byte[]{(byte) 0x80,(byte) 0x00};
 	
 		assertArrayEquals(expected, actual);
@@ -537,8 +527,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayShort_LowestValue()
 	{
-		short shortVar = 0x00;
-		byte[] actual = Utils.toUnsignedByteArray(shortVar);
+		byte[] actual = Utils.toUnsignedByteArray((short) 0x00);
 		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x00};
 	
 		assertArrayEquals(expected, actual);
@@ -552,8 +541,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayByte_HighestValue()
 	{
-		byte byteVar = (byte) 0xFF;
-		byte[] actual = Utils.toUnsignedByteArray(byteVar);
+		byte[] actual = Utils.toUnsignedByteArray((byte) 0xFF);
 		byte[] expected = new byte[]{(byte) 0xFF};
 		
 		assertArrayEquals(expected, actual);
@@ -567,9 +555,8 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayByte_LowestValue()
 	{
-		byte byteVar = (byte) 0x00;
-		byte[] actual = Utils.toUnsignedByteArray(byteVar);
-		byte[] expected = new byte[]{(byte) 0x00};
+		byte[] actual = Utils.toUnsignedByteArray((byte) 0x00);
+		byte[] expected = new byte[]{(byte)0x00};
 		
 		assertArrayEquals(expected, actual);
 		
@@ -582,8 +569,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayByte_SignedByteLimit()
 	{
-		byte byteVar = (byte) 0x7F;
-		byte[] actual = Utils.toUnsignedByteArray(byteVar);
+		byte[] actual = Utils.toUnsignedByteArray((byte) 0x7F);
 		byte[] expected = new byte[]{(byte) 0x7F};
 		
 		assertArrayEquals(expected, actual);
@@ -597,8 +583,7 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayByte_ExceedLimitSignedByte()
 	{
-		byte byteVar = (byte) 0x80;
-		byte[] actual = Utils.toUnsignedByteArray(byteVar);
+		byte[] actual = Utils.toUnsignedByteArray((byte) 0x80);
 		byte[] expected = new byte[]{(byte) 0x80};
 		
 		assertArrayEquals(expected, actual);
@@ -643,10 +628,8 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToShortByte_HighestByte() 
 	{
-		byte byteVar = (byte) 0xFF;
+		short actual = Utils.maskUnsignedByteToShort((byte) 0xFF);
 		short expected = 0xFF;
-		
-		short actual = Utils.maskUnsignedByteToShort(byteVar);
 		
 		assertEquals(expected, actual);
 		
@@ -659,11 +642,8 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToShortByte_LowestValue() 
 	{
-		
-		byte byteVar = (byte) 0x00;
 		short expected = 0x00;
-
-		short actual = Utils.maskUnsignedByteToShort(byteVar);
+		short actual = Utils.maskUnsignedByteToShort((byte) 0x00);
 		
 		assertEquals(expected, actual);
 		
@@ -676,9 +656,7 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToShortByte_SignedByteLimit() 
 	{
-		byte byteVar = (byte) 0x7F;
-
-		short actual = Utils.maskUnsignedByteToShort(byteVar);;
+		short actual = Utils.maskUnsignedByteToShort((byte) 0x7F);;
 		short expected = 0x7F;
 
 		assertEquals(expected, actual);
@@ -692,10 +670,8 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToShortByte_ExceedLimitSignedByte() 
 	{
-		byte byteVar = (byte) 0x80;
+		short actual = Utils.maskUnsignedByteToShort((byte) 0x80);
 		short expected = 0x80;
-		
-		short actual = Utils.maskUnsignedByteToShort(byteVar);
 		
 		assertEquals(expected, actual);
 		
@@ -708,10 +684,8 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToIntByte_HighestValue()
 	{
-		byte byteVar = (byte)0xFF;
+		int actual = Utils.maskUnsignedByteToInt((byte) 0xFF);
 		int expected = 0xFF;
-		
-		int actual = Utils.maskUnsignedByteToInt(byteVar);
 		
 		assertEquals(expected, actual);
 		
@@ -724,10 +698,8 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToIntByte_LowestValue()
 	{
-		byte byteVar = 0x00;
+		int actual = Utils.maskUnsignedByteToInt((byte) 0x00);
 		int expected = 0x00;
-		
-		int actual = Utils.maskUnsignedByteToInt(byteVar);
 		
 		assertEquals(expected, actual);
 		
@@ -740,10 +712,8 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToIntByte_SignedByteLimit()
 	{
-		byte byteVar = 0x7F;
+		int actual = Utils.maskUnsignedByteToInt((byte) 0x7F);
 		int expected = 0x7F;
-		
-		int actual = Utils.maskUnsignedByteToInt(byteVar);
 		
 		assertEquals(expected, actual);
 		
@@ -756,10 +726,8 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedByteToIntByte_ExceedLimitSignedByte()
 	{
-		byte byteVar = (byte)0x80;
+		int actual = Utils.maskUnsignedByteToInt((byte) 0x80);
 		int expected = 0x80;
-		
-		int actual = Utils.maskUnsignedByteToInt(byteVar);
 		
 		assertEquals(expected, actual);
 		
@@ -772,10 +740,8 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedShortToIntShort_HighestValue()
 	{
-		short shortVar = (byte)0xFFFF; 
+		int actual  = Utils.maskUnsignedShortToInt((short) 0xFFFF);
 		int expected = 0xFFFF;
-		
-		int actual  = Utils.maskUnsignedShortToInt(shortVar);
 		
 		assertEquals(expected, actual);
 		
@@ -788,10 +754,8 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedShortToIntShort_LowestValue()
 	{
-		short shortVar = 0x00;
+		int actual  = Utils.maskUnsignedShortToInt((short) 0x00);
 		int expected = 0x00;
-		
-		int actual  = Utils.maskUnsignedShortToInt(shortVar);
 		
 		assertEquals(expected, actual);
 		
@@ -804,11 +768,8 @@ public class UtilsTest {
 	@Test
 	public void testConcatenateByte_HighestAndLowestByte()
 	{
-		byte byteVar1 = (byte) 0xFF;
-		byte byteVar2 = (byte) 0x00;
+		short actual = Utils.concatenate((byte) 0xFF, (byte) 0x00);
 		short expected = (short) 0xFF00;
-		
-		short actual = Utils.concatenate(byteVar1, byteVar2);
 		
 		assertEquals(expected, actual);
 		
@@ -820,12 +781,9 @@ public class UtilsTest {
 	 */
 	@Test
 	public void testConcatenateByte_LowestAndHighestByte()
-	{
-		byte byteVar1 = (byte) 0x00;
-		byte byteVar2 = (byte) 0xFF;
+	{ 
+		short actual = Utils.concatenate((byte) 0x00, (byte) 0xFF);
 		short expected = (short) 0xFF;
-		
-		short actual = Utils.concatenate(byteVar1, byteVar2);
 		
 		assertEquals(expected, actual);	
 		
@@ -838,11 +796,8 @@ public class UtilsTest {
 	@Test
 	public void testConcatenateByte_TwoLowestBytes()
 	{
-		byte byteVar1 = (byte) 0x00;
-		byte byteVar2 = (byte) 0x00;
+		short actual = Utils.concatenate((byte) 0x00, (byte) 0x00);
 		short expected = (short) 0x00;
-		
-		short actual = Utils.concatenate(byteVar1, byteVar2);
 		
 		assertEquals(expected, actual);	
 		
@@ -855,11 +810,8 @@ public class UtilsTest {
 	@Test
 	public void testConcatenateByte_TwoHighestBytes()
 	{
-		byte byteVar1  = (byte) 0xFF; 
-		byte byteVar2 = (byte) 0xFF;
+		short actual = Utils.concatenate((byte) 0xFF, (byte) 0xFF);
 		short expected = (short) 0xFFFF;
-		
-		short actual = Utils.concatenate(byteVar1, byteVar2);
 		
 		assertEquals(expected, actual);	
 		
@@ -872,11 +824,8 @@ public class UtilsTest {
 	@Test
 	public void testConcatenateByte_TwoBytes()
 	{
-		byte byteVar1 = (byte) 0x01;
-		byte byteVar2 = (byte) 0x01;
+		short result = Utils.concatenate((byte) 0x01, (byte) 0x01);
 		short expected = (short) 0x101;
-		
-		short result = Utils.concatenate(byteVar1, byteVar2);
 		
 		assertEquals(expected, result);	
 		
@@ -1028,7 +977,7 @@ public class UtilsTest {
 	@Test
 	public void testGetShortFromUnsignedByteArrayByteArray_TwoBytes()
 	{
-		byte[] bytearray = new byte[]{(byte) 0xFF,(byte)0xFF};
+		byte[] bytearray = new byte[]{(byte) 0xFF,(byte) 0xFF};
 		short actual = Utils.getShortFromUnsignedByteArray(bytearray);
 		short expected = (byte)0xFFFF;
 
@@ -1074,9 +1023,9 @@ public class UtilsTest {
 	@Test
 	public void testGetIntFromUnsignedByteArrayByteArray_TwoBytes()
 	{
-		byte[] bytearray = new byte[]{(byte) 0xFF,(byte)0xFF};
+		byte[] bytearray = new byte[]{(byte) 0x7F,(byte) 0xFF};
 		int actual = Utils.getIntFromUnsignedByteArray(bytearray);
-		int expected = 0xFFFF;
+		int expected = 0x7FFF;
 		
 		assertEquals(expected, actual);
 		
@@ -1195,7 +1144,7 @@ public class UtilsTest {
 		assertNotSame("method returns the same object", array1, actual);
 		assertNotSame("method returns the same object",	array2, actual);
 		assertNotSame("method returns the same object", array3, actual);
-		assertArrayEquals(expected, actual);
+		assertArrayEquals("The elements are not in the right order",expected, actual);
 		
 	}
 	
@@ -1213,7 +1162,7 @@ public class UtilsTest {
 		
 		byte[] actual = Utils.concatByteArrays(array1,array2,array3);
 		
-		assertArrayEquals(expected, actual);	
+		assertArrayEquals("The elements are not in the right order",expected, actual);	
 		
 	}
 	
@@ -1232,7 +1181,7 @@ public class UtilsTest {
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
 		
 		assertNotSame("method returns the same object", array1, result);
-		assertArrayEquals(expected, result);
+		assertArrayEquals("The elements are not in the right order",expected, result);
 		
 	}
 	
@@ -1251,7 +1200,7 @@ public class UtilsTest {
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
 		
 		assertNotSame("method returns the same object", array2, result);
-		assertArrayEquals(expected, result);
+		assertArrayEquals("The elements are not in the right order",expected, result);
 		
 	}
 	
@@ -1271,7 +1220,7 @@ public class UtilsTest {
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
 		
 		assertNotSame("method returns the same object", array1, result);
-		assertArrayEquals(expected, result);
+		assertArrayEquals("The elements are not in the right order",expected, result);
 		
 	}
 	
@@ -1291,7 +1240,7 @@ public class UtilsTest {
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
 		
 		assertNotSame("method returns the same object", array1, result);
-		assertArrayEquals(expected, result);
+		assertArrayEquals("The elements are not in the right order",expected, result);
 		
 	}
 	
@@ -1310,7 +1259,7 @@ public class UtilsTest {
 		
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
 		
-		assertArrayEquals(expected, result);
+		assertArrayEquals("The elements are not in the right order",expected, result);
 		assertNotNull("The return object is null",result);
 		
 	}
