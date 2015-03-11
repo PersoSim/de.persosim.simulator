@@ -862,9 +862,9 @@ public class UtilsTest {
 	@Test
 	public void testGetShortFromUnsignedByteArrayByteArray_LeadingByteZero()
 	{
-		byte[] bytearray = new byte[]{(byte) 0xFF};
+		byte[] bytearray = new byte[]{(byte) 0x00,(byte) 0x01, (byte) 0x02};
 		short actual = Utils.getShortFromUnsignedByteArray(bytearray);
-		short expected = 0xFF;
+		short expected = 0x0102;
 
 		assertEquals(expected, actual);
 		
