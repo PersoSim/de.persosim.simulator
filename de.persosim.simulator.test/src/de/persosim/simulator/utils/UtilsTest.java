@@ -864,7 +864,7 @@ public class UtilsTest {
 	{
 		byte[] bytearray = new byte[]{(byte) 0x00,(byte) 0x01, (byte) 0x02};
 		short actual = Utils.getShortFromUnsignedByteArray(bytearray);
-		short expected = 0x0102;
+		short expected = 0x000102;
 
 		assertEquals(expected, actual);
 		
