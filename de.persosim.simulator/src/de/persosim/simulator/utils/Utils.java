@@ -189,8 +189,8 @@ public abstract class Utils {
 	 */
 	public static byte[] appendBytes(byte[] leadingByteArray, byte... trailingBytes) {
 		
-		 byte[] result = concatByteArrays(leadingByteArray,trailingBytes); //FIXME LSG you don't need a local variable here
-		 return result;
+		 return concatByteArrays(leadingByteArray,trailingBytes);
+		 
 	}
 	
 	/**
@@ -299,7 +299,7 @@ public abstract class Utils {
 		return new byte[]{
 				(byte) ((input & 0xFF00000000000000L) >> 56),
 				(byte) ((input & 0x00FF000000000000L) >> 48),
-				(byte) ((input & 0x0000FF0000000000L) >> 50),
+				(byte) ((input & 0x0000FF0000000000L) >> 40),
 				(byte) ((input & 0x000000FF00000000L) >> 32),
 				(byte) ((input & 0x00000000FF000000L) >> 24),
 				(byte) ((input & 0x0000000000FF0000L) >> 16),
@@ -451,12 +451,7 @@ public abstract class Utils {
 	}
 	
 	/**
-	 * FIXME LSG remove this whole text of this JavaDoc, link to the {@link #getDate(String, byte)} and describe the specifics here only
-	 * This method creates a {@link Date} object from a {@link String} representation with respect to year, month and day.
-	 * The provided String is expected to be exactly 8 characters long and encoded as follows: YYYYMMDD.
-	 * If the String parts for month or day contain non-numeric characters a NumberFormatException will be thrown
-	 * Well formatted date strings will not be checked for validity, e.g. december 34th would not be discarded.
-	 * For detailed description of the usage of getDate, especially with the time see {@link #getDate(String, byte)}
+	 * For detailed description of the method see {@link #getDate(String, byte)}.
 	 * @param dateString the date encoded as follows: YYYYMMDD
 	 * @return a {@link Date} object
 	 */
@@ -473,7 +468,7 @@ public abstract class Utils {
 	 *  1: the maximum possible value will be chosen
 	 * Well formatted date strings will not be checked for validity, e.g. 20140199 would not be discarded.
 	 * When using getDate, the hour, minutes, seconds and milliseconds have to be set, otherwise the return object 
-	 * will get the actual current time. //FIXME LSG and it will be set to what???
+	 * will set the current time for these four values.
 	 * @param dateString the date encoded as follows: YYYYMMDD
 	 * @param handleNonNumericCharacters determine how non-numeric characters will be handled
 	 * @return a {@link Date} object
