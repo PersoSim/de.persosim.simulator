@@ -39,10 +39,8 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	PasswordAuthObjectWithRetryCounter authObjectRetry;
 	PinProtocol protocol;
 	
-//	TerminalType taType;
 	TerminalAuthenticationMechanism taMechanism;
-	HashSet<SecMechanism> currentMechanisms; // = new HashSet<Class<? extends SecMechanism>>();
-	
+	HashSet<SecMechanism> currentMechanisms;
 	
 	@Before
 	public void setUp() {
@@ -212,7 +210,6 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		assertEquals("Statusword", SW_6A80_WRONG_DATA, processingData
 				.getResponseApdu().getStatusWord());
 		assertArrayEquals("Password", "111111".getBytes(), authObjectRetry.getPassword());
-		
 	}
 	
 	/** 
