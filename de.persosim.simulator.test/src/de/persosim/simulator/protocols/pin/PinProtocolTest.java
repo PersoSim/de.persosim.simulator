@@ -2,7 +2,7 @@ package de.persosim.simulator.protocols.pin;
 
 import static org.junit.Assert.*;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import mockit.Expectations;
@@ -21,6 +21,8 @@ import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Tr03110;
+import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
+import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.SecMechanism;
@@ -30,20 +32,31 @@ import de.persosim.simulator.utils.HexString;
 
 public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	@Mocked CardStateAccessor mockedCardStateAccessor;
-	@Mocked TerminalAuthenticationMechanism mockedTaMechanism;
-	@Mocked TerminalType mockedTaType;
-	@Mocked Collection<SecMechanism> mockedCurrentMechanisms;
+
 	
-	//FIXME JGE you should initialize all testdata in @Before or the specific testcases to ensure that it is clean for each and every test.
-	PasswordAuthObject authObject = new PasswordAuthObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN");
-	PinObject pinObject = new PinObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), 6, 6, 3);
-	PasswordAuthObjectWithRetryCounter authObjectRetry = new PasswordAuthObjectWithRetryCounter (new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN", 6, 6, 3);
+	PasswordAuthObject authObject;
+	PinObject pinObject;
+	PasswordAuthObjectWithRetryCounter authObjectRetry;
 	PinProtocol protocol;
+	
+//	TerminalType taType;
+	TerminalAuthenticationMechanism taMechanism;
+	HashSet<SecMechanism> currentMechanisms; // = new HashSet<Class<? extends SecMechanism>>();
+	
 	
 	@Before
 	public void setUp() {
 		protocol = new PinProtocol();
 		protocol.setCardStateAccessor(mockedCardStateAccessor);
+		
+		authObject = new PasswordAuthObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN");
+		pinObject = new PinObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), 6, 6, 3);
+		authObjectRetry = new PasswordAuthObjectWithRetryCounter (new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN", 6, 6, 3);
+		authObjectRetry.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+		
+		currentMechanisms = new HashSet<>();
+		taMechanism = new TerminalAuthenticationMechanism(new byte[]{1,2,3}, TerminalType.IS, new RelativeAuthorization(), new ArrayList<AuthenticatedAuxiliaryData>(), new byte[]{1,2,3}, new byte[]{1,2,3}, "test");
+		currentMechanisms.add(taMechanism);
 	}
 	
 	/** 
@@ -58,8 +71,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = pinObject; // new PinObject(); FIXME JGE why commented code here?
-				
+				result = pinObject;
 			}
 		};
 		
@@ -73,9 +85,9 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 63C3", SW_63C3_COUNTER_IS_3, processingData
+		assertEquals("Statusword", SW_63C3_COUNTER_IS_3, processingData
 				.getResponseApdu().getStatusWord());
-		assertEquals(3, pinObject.getRetryCounterCurrentValue());
+		assertEquals("RetryCounterValue", 3, pinObject.getRetryCounterCurrentValue());
 	}
 	
 	/**
@@ -90,7 +102,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = null; // new PinObject(); FIXME JGE why commented code here?
+				result = null;
 			}
 		};
 		
@@ -104,7 +116,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 6984", SW_6984_REFERENCE_DATA_NOT_USABLE,
+		assertEquals("Statusword", SW_6984_REFERENCE_DATA_NOT_USABLE,
 				processingData.getResponseApdu().getStatusWord());
 	}
 	
@@ -114,8 +126,6 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 */
 	@Test
 	public void testProcessCommandChangePassword() {
-		authObjectRetry.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED); //FIXME JGE I guess this line will become redundant after fixing issues above ;-)
-		
 		// prepare the mock
 		new Expectations() {
 			{
@@ -137,9 +147,9 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData
+		assertEquals("Statusword", SW_9000_NO_ERROR, processingData
 				.getResponseApdu().getStatusWord());
-		assertArrayEquals("222222".getBytes(), authObjectRetry.getPassword());
+		assertArrayEquals("Password", "222222".getBytes(), authObjectRetry.getPassword());
 	}
 	
 	/**
@@ -154,7 +164,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = authObject; // new PasswordAuthObject(); FIXME JGE why commented code here?
+				result = authObject;
 			}
 		};
 		
@@ -168,9 +178,9 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 6984", SW_6984_REFERENCE_DATA_NOT_USABLE, processingData
+		assertEquals("Statusword", SW_6984_REFERENCE_DATA_NOT_USABLE, processingData
 				.getResponseApdu().getStatusWord());
-		assertArrayEquals("111111".getBytes(), authObject.getPassword());
+		assertArrayEquals("Password", "111111".getBytes(), authObject.getPassword());
 	}
 	
 	/** 
@@ -185,7 +195,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = authObjectRetry; // new PasswordAuthObjectWithRetryCounter(); FIXME JGE why commented code here?
+				result = authObjectRetry;
 			}
 		};
 		
@@ -199,9 +209,9 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 6A80", SW_6A80_WRONG_DATA, processingData
+		assertEquals("Statusword", SW_6A80_WRONG_DATA, processingData
 				.getResponseApdu().getStatusWord());
-		assertArrayEquals("111111".getBytes(), authObjectRetry.getPassword());
+		assertArrayEquals("Password", "111111".getBytes(), authObjectRetry.getPassword());
 		
 	}
 	
@@ -216,7 +226,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = pinObject; // new PinObject(); FIXME JGE why commented code here?
+				result = pinObject;
 			}
 		};
 		
@@ -232,7 +242,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		// check results
 		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData
 				.getResponseApdu().getStatusWord());
-		assertEquals(3, pinObject.getRetryCounterCurrentValue());
+		assertEquals("RetryCounterValue", 3, pinObject.getRetryCounterCurrentValue());
 	}
 	
 	/**
@@ -247,7 +257,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = pinObject; // new PinObject(); FIXME JGE why commented code here?
+				result = pinObject;
 				
 			}
 		};
@@ -262,25 +272,25 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData
+		assertEquals("Statusword", SW_9000_NO_ERROR, processingData
 				.getResponseApdu().getStatusWord());
-		assertEquals(3, pinObject.getRetryCounterCurrentValue());
+		assertEquals("RetryCounterValue", 3, pinObject.getRetryCounterCurrentValue());
 	}
 	
 	/**
 	 * Positive test case. Send apdu to activate the PIN and receives
 	 * a 9000.
 	 */
-	//FIXME JGE ensure that the pinObject is in deactivated sate before the command is executed
 	@Test
 	public void testProcessCommandActivatePassword() {
 		// prepare the mock
+		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
 		new Expectations() {
 			{
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = pinObject; // new PinObject(); FIXME JGE why commented code here?
+				result = pinObject;
 				
 			}
 		};
@@ -295,16 +305,15 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData
+		assertEquals("Statusword", SW_9000_NO_ERROR, processingData
 				.getResponseApdu().getStatusWord());
 		
-		assertEquals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED, pinObject.getLifeCycleState());
+		assertEquals("Lifecycle", Iso7816LifeCycleState.OPERATIONAL_ACTIVATED, pinObject.getLifeCycleState());
 	}
 	
 	/**
 	 * Positive test case. Send apdu to deactivate the PIN an receives a 9000.
 	 */
-	//FIXME JGE ensure that the pinObject is in deactivated sate before the command is executed
 	@Test
 	public void testProcessCommandDeactivatePassword() {
 		// prepare the mock
@@ -313,7 +322,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = pinObject; // new PinObject(); FIXME JGE why commented code here?
+				result = pinObject;
 				
 				mockedCardStateAccessor
 						.getCurrentMechanisms(
@@ -333,9 +342,9 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 9000", SW_9000_NO_ERROR, processingData
+		assertEquals("Statusword", SW_9000_NO_ERROR, processingData
 				.getResponseApdu().getStatusWord());
-		assertEquals(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED, pinObject.getLifeCycleState());
+		assertEquals("Lifecycle", Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED, pinObject.getLifeCycleState());
 	}
 	
 	/**
@@ -350,22 +359,13 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getObject(
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
-				result = pinObject; // new PinObject(); FIXME JGE why commented code here?
+				result = pinObject;
 				
 				mockedCardStateAccessor
 						.getCurrentMechanisms(
 								withInstanceOf(SecContext.class),
 								withInstanceLike(new HashSet<Class<? extends SecMechanism>>()));
-				result = mockedCurrentMechanisms; //FIXME JGE isn't it easier to return a full object here instead of mocking all methods?
-				
-				mockedCurrentMechanisms.size();
-				result = 1;
-				
-				mockedCurrentMechanisms.toArray();
-				result = mockedTaMechanism;
-				
-				mockedTaMechanism.getTerminalType();
-				result = mockedTaType;
+				result = currentMechanisms;
 			}
 		};
 		
@@ -379,11 +379,8 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword is 6982",
+		assertEquals("Statusword",
 				SW_6982_SECURITY_STATUS_NOT_SATISFIED, processingData
 						.getResponseApdu().getStatusWord());
 	}
-	
-	//FIXME JGE some assert messages are missleading if the testcase fails
-	//FIXME JGE add message to distinguish the two asserts within this method
 }
