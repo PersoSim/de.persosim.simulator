@@ -197,7 +197,8 @@ public class PersoSimGuiMain {
 	}
 	
 	/**
-	 * changes the maximum of the slider
+	 * changes the maximum of the slider and selects the 
+	 * new Maximum to display the latest log messages
 	 */
 	private void rebuildSlider(){
 		sync.syncExec(new Runnable() {
@@ -205,6 +206,7 @@ public class PersoSimGuiMain {
 			@Override
 			public void run() {
 				
+				slider.setMaximum(consoleStrings.size()+slider.getThumb()-maxLineCount+1);
 				slider.setSelection(slider.getMaximum());	
 			}
 		});
@@ -342,21 +344,6 @@ public class PersoSimGuiMain {
 				rebuildSlider();
 			}
 		}
-	}
-	
-	/**
-	 * controls slider selection (auto scrolling)
-	 */
-	public void showNewOutput() {
-		
-		sync.syncExec(new Runnable() {
-			@Override
-			public void run() {
-				rebuildSlider();
-				slider.setSelection(slider.getMaximum());							
-			}
-		});
-
 	}
 	
 	public void write(String line) {
