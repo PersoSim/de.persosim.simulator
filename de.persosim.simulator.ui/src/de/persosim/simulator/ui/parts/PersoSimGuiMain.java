@@ -177,7 +177,7 @@ public class PersoSimGuiMain {
 						@Override
 						public void run() {
 							
-							 if(!locked && updateNeeded) {
+							 if(updateNeeded) {
 								 buildNewConsoleContent();
 								 updateNeeded=false;
 							 }
@@ -205,7 +205,7 @@ public class PersoSimGuiMain {
 			@Override
 			public void run() {
 				
-				slider.setMaximum(consoleStrings.size()+slider.getThumb()-maxLineCount+1);
+				slider.setSelection(slider.getMaximum());	
 			}
 		});
 	}
@@ -335,10 +335,11 @@ public class PersoSimGuiMain {
 			consoleStrings.add(splitResult[i]);
 			}
 			
-			updateNeeded=true;
+			
 			
 			if (!locked) {
-				showNewOutput();
+				updateNeeded=true;
+				rebuildSlider();
 			}
 		}
 	}
