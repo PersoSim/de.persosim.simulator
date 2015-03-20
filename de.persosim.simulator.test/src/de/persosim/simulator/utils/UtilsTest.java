@@ -401,8 +401,8 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayLong_HighestBit()
 	{
-		byte[] actual = Utils.toUnsignedByteArray((long) 0x1011223344556617L);
-		byte[] expected = new byte[]{(byte) 0x10,(byte) 0x11,(byte) 0x22,(byte) 0x33,(byte) 0x44,(byte) 0x55,(byte) 0x66,(byte) 0x17};
+		byte[] actual = Utils.toUnsignedByteArray((long) 0x8011223344556677L);
+		byte[] expected = new byte[]{(byte) 0x80,(byte) 0x11,(byte) 0x22,(byte) 0x33,(byte) 0x44,(byte) 0x55,(byte) 0x66,(byte) 0x77};
 		
 		assertArrayEquals(expected, actual);
 		
@@ -429,8 +429,8 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayInt_HighestBit()
 	{
-		byte[] actual = Utils.toUnsignedByteArray((int) 0x10112213);
-		byte[] expected = new byte[]{(byte) 0x10,(byte) 0x11,(byte) 0x22,(byte) 0x13};
+		byte[] actual = Utils.toUnsignedByteArray((int) 0x80112213);
+		byte[] expected = new byte[]{(byte) 0x80,(byte) 0x11,(byte) 0x22,(byte) 0x13};
 		
 		assertArrayEquals(expected, actual);
 		
@@ -457,8 +457,8 @@ public class UtilsTest {
 	@Test
 	public void testToUnsignedByteArrayShort_HighestBit()
 	{
-		byte[] actual = Utils.toUnsignedByteArray((short) 0x1012);
-		byte[] expected = new byte[]{(byte) 0x10,(byte) 0x12};
+		byte[] actual = Utils.toUnsignedByteArray((short) 0x8012);
+		byte[] expected = new byte[]{(byte) 0x80,(byte) 0x12};
 	
 		assertArrayEquals(expected, actual);
 		
@@ -544,6 +544,21 @@ public class UtilsTest {
 	public void testRemoveLeadingZeroBytesByteArray_EnsureOrder()
 	{
 		byte[] bytearray = new byte[]{(byte) 0x00, (byte) 0x01, (byte) 0x10,(byte) 0x02};
+		byte[] actual = Utils.removeLeadingZeroBytes(bytearray);
+		 
+		byte[] expected = new byte[]{(byte) 0x01, (byte) 0x10,(byte) 0x02};	
+		
+		assertArrayEquals(expected, actual);
+		
+	}
+	
+	/**
+	 * Positive Test case: remove more than one leading zero
+	 */
+	@Test
+	public void testRemoveLeadingZeroBytesByteArray_MultipleBytesToCut()
+	{
+		byte[] bytearray = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x10,(byte) 0x02};
 		byte[] actual = Utils.removeLeadingZeroBytes(bytearray);
 		 
 		byte[] expected = new byte[]{(byte) 0x01, (byte) 0x10,(byte) 0x02};	
@@ -685,8 +700,8 @@ public class UtilsTest {
 	@Test
 	public void testMaskUnsignedShortToIntShort_HighestBit()
 	{
-		int actual  = Utils.maskUnsignedShortToInt((short) 0x1001);
-		int expected = 0x1001;
+		int actual  = Utils.maskUnsignedShortToInt((short) 0x8001);
+		int expected = 0x8001;
 		
 		assertEquals(expected, actual);
 		
@@ -907,9 +922,9 @@ public class UtilsTest {
 	@Test
 	public void testGetIntFromUnsignedByteArrayByteArray_HighestBit()
 	{
-		byte[] bytearray = new byte[]{(byte) 0x10, (byte) 0x02, (byte) 0x03};
+		byte[] bytearray = new byte[]{(byte) 0x80, (byte) 0x02, (byte) 0x03};
 		int actual = Utils.getIntFromUnsignedByteArray(bytearray);
-		int expected = 0x100203;
+		int expected = 0x800203;
 		
 		assertEquals(expected, actual);
 		
@@ -1090,9 +1105,9 @@ public class UtilsTest {
 	{
 		byte[] array1 = new byte[]{(byte) 0x01};
 		byte[] array2 = new byte[]{(byte) 0x02};
-		byte[] array3 = new byte[]{(byte) 0x10};
+		byte[] array3 = new byte[]{(byte) 0x80};
 		
-		byte[] expected = new byte[]{(byte)0x01,(byte)0x02, (byte)0x10};
+		byte[] expected = new byte[]{(byte)0x01,(byte)0x02, (byte)0x80};
 		
 		byte[] result = Utils.concatByteArrays(array1,array2,array3);
 

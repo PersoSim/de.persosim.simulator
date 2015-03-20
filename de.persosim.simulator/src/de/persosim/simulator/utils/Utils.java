@@ -451,7 +451,10 @@ public abstract class Utils {
 	}
 	
 	/**
-	 * For detailed description of the method see {@link #getDate(String, byte)}.
+	 * 
+	 * If string does not encode a data as expected (YYYYMMDD) a {@link NumerFormatException} is thrown.
+	 * 
+	 * @see {@link #getDate(String, byte)}
 	 * @param dateString the date encoded as follows: YYYYMMDD
 	 * @return a {@link Date} object
 	 */
@@ -463,12 +466,17 @@ public abstract class Utils {
 	 * This method creates a {@link Date} object from a {@link String} representation with respect to year, month and day.
 	 * The provided String is expected to be exactly 8 characters long and encoded as follows: YYYYMMDD.
 	 * If the String parts for month or day contain non-numeric characters, they will be handled according to the second provided parameter:
-	 * -1: the minimum possible value will be chosen
-	 *  0: a NumberFormatException will be thrown
-	 *  1: the maximum possible value will be chosen
+	 * <ul>
+	 * <li>-1: the minimum possible value will be chosen</li>
+	 * <li> 0: a NumberFormatException will be thrown</li>
+	 * <li> 1: the maximum possible value will be chosen</li>
+	 * </ul>
+	 * <br/>
 	 * Well formatted date strings will not be checked for validity, e.g. 20140199 would not be discarded.
-	 * When using getDate, the hour, minutes, seconds and milliseconds have to be set, otherwise the return object 
-	 * will set the current time for these four values.
+	 * <br/>
+	 * All parts not specified within the input string (hour, minutes, seconds and milliseconds) will be set to zero in order to retrieve comparable return values.
+	 * When calling this method twice with the same input the return values will be distinct but .equals() evaluates to true;
+	 * 
 	 * @param dateString the date encoded as follows: YYYYMMDD
 	 * @param handleNonNumericCharacters determine how non-numeric characters will be handled
 	 * @return a {@link Date} object
