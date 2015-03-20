@@ -81,6 +81,7 @@ public abstract class Utils {
 	 * @param c the array to be checked
 	 * @return true if at least one occurrence of duplicate elements has been found, false otherwise
 	 */
+	//XXX LSG Method isnt beeing used anywhere
 	public static <T extends Comparable<T>>boolean containsDuplicateElements(T[] c) {
 		if(c == null) {
 			throw new ClassCastException();
@@ -110,6 +111,7 @@ public abstract class Utils {
 	 * +1 - c2 contains more than all of c1's elements
 	 * 
 	 */
+	//XXX LSG Method isnt beeing used anywhere
 	public static <T extends Comparable<T>>byte compareSets(T[] c1, T[] c2) {
 		boolean match;
 		
@@ -161,22 +163,23 @@ public abstract class Utils {
 	 * @return a concatenation of one or more byte arrays
 	 */
 	public static byte[] concatByteArrays(byte[]... byteArrays) {
-		if ( byteArrays == null || byteArrays.length == 0 ) {throw new IllegalArgumentException( "parameters must not be null or empty" );}
 		
 		ByteArrayOutputStream outputStream;
-		
 		outputStream = new ByteArrayOutputStream();
-		
-		for(byte[] currentByteArray : byteArrays) {
+		for (byte[] currentByteArray : byteArrays) {
+			if (currentByteArray == null) continue;
+			
 			try {
+
 				outputStream.write(currentByteArray);
 			} catch (IOException e) {
 				logException(Utils.class, e);
 			}
 		}
-		
+
 		return outputStream.toByteArray();
 	}
+	
 	
 	/**
 	 * Returns a byte array that has been appended by the provided bytes
@@ -185,23 +188,9 @@ public abstract class Utils {
 	 * @return a byte array that has been appended by the provided bytes
 	 */
 	public static byte[] appendBytes(byte[] leadingByteArray, byte... trailingBytes) {
-		if ( trailingBytes == null || trailingBytes.length == 0 ) {throw new IllegalArgumentException( "parameters must not be null or empty" );}
 		
-		ByteArrayOutputStream outputStream;
-		
-		outputStream = new ByteArrayOutputStream();
-		
-		try {
-			outputStream.write(leadingByteArray);
-		} catch (IOException e) {
-			logException(Utils.class, e);
-		}
-		
-		for(byte currentByte : trailingBytes) {
-			outputStream.write(currentByte);
-		}
-		
-		return outputStream.toByteArray();
+		 return concatByteArrays(leadingByteArray,trailingBytes);
+		 
 	}
 	
 	/**
@@ -209,6 +198,7 @@ public abstract class Utils {
 	 * @param in the byte array to be converted
 	 * @return a byte array converted to a boolean array in binary representation
 	 */
+	//XXX LSG Method isnt beeing used anywhere
 	public static boolean[] binaryEncodeByteArray(byte[] in) {
 		boolean[] out;
 		byte bitMask;
@@ -224,6 +214,7 @@ public abstract class Utils {
 	    return out;
 	}
 	
+	//XXX LSG Method isnt beeing used anywhere
 	public static String binaryEncode(byte[] in) {
 		boolean[] out;
 		StringBuilder sb;
@@ -303,11 +294,12 @@ public abstract class Utils {
 	 * @param input the long
 	 * @return the unsigned byte array representation of the unsigned long
 	 */
+	//XXX LSG Method isnt beeing used anywhere
 	public static byte[] toUnsignedByteArray(long input) {
 		return new byte[]{
 				(byte) ((input & 0xFF00000000000000L) >> 56),
 				(byte) ((input & 0x00FF000000000000L) >> 48),
-				(byte) ((input & 0x0000FF0000000000L) >> 50),
+				(byte) ((input & 0x0000FF0000000000L) >> 40),
 				(byte) ((input & 0x000000FF00000000L) >> 32),
 				(byte) ((input & 0x00000000FF000000L) >> 24),
 				(byte) ((input & 0x0000000000FF0000L) >> 16),
@@ -417,6 +409,7 @@ public abstract class Utils {
 	 * @param toTest
 	 * @return true, iff one of the given objects is null
 	 */
+	//XXX LSG Method isnt beeing used anywhere
 	public static boolean isAnyNull(Object ...toTest) {
 		for(Object o : toTest){
 			if (o == null){
@@ -435,6 +428,7 @@ public abstract class Utils {
 	 * @return true, iff one of the arrays entries {@link #equals(Object)} the
 	 *         given object.
 	 */
+	//XXX LSG Method isnt beeing used anywhere
 	public static boolean arrayContainsEqual(Object[] array, Object object) {
 		for (Object current : array) {
 			if (current.equals(object)) {
@@ -457,10 +451,10 @@ public abstract class Utils {
 	}
 	
 	/**
-	 * This method creates a {@link Date} object from a {@link String} representation with respect to year, month and day.
-	 * The provided String is expected to be exactly 8 characters long and encoded as follows: YYYYMMDD.
-	 * If the String parts for month or day contain non-numeric characters a NumberFormatException will be thrown
-	 * Well formatted date strings will not be checked for validity, e.g. december 34th would not be discarded.
+	 * 
+	 * If string does not encode a data as expected (YYYYMMDD) a {@link NumerFormatException} is thrown.
+	 * 
+	 * @see {@link #getDate(String, byte)}
 	 * @param dateString the date encoded as follows: YYYYMMDD
 	 * @return a {@link Date} object
 	 */
@@ -472,10 +466,17 @@ public abstract class Utils {
 	 * This method creates a {@link Date} object from a {@link String} representation with respect to year, month and day.
 	 * The provided String is expected to be exactly 8 characters long and encoded as follows: YYYYMMDD.
 	 * If the String parts for month or day contain non-numeric characters, they will be handled according to the second provided parameter:
-	 * -1: the minimum possible value will be chosen
-	 *  0: a NumberFormatException will be thrown
-	 *  1: the maximum possible value will be chosen
+	 * <ul>
+	 * <li>-1: the minimum possible value will be chosen</li>
+	 * <li> 0: a NumberFormatException will be thrown</li>
+	 * <li> 1: the maximum possible value will be chosen</li>
+	 * </ul>
+	 * <br/>
 	 * Well formatted date strings will not be checked for validity, e.g. 20140199 would not be discarded.
+	 * <br/>
+	 * All parts not specified within the input string (hour, minutes, seconds and milliseconds) will be set to zero in order to retrieve comparable return values.
+	 * When calling this method twice with the same input the return values will be distinct but .equals() evaluates to true;
+	 * 
 	 * @param dateString the date encoded as follows: YYYYMMDD
 	 * @param handleNonNumericCharacters determine how non-numeric characters will be handled
 	 * @return a {@link Date} object
