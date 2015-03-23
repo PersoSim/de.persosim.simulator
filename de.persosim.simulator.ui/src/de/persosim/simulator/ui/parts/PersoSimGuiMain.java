@@ -49,6 +49,8 @@ public class PersoSimGuiMain {
 	
 	private Text txtInput, txtOutput;
 	
+	//flag to prevent the console from unnecessary refreshing 
+	Boolean updateNeeded = false;
 	
 	private final InputStream originalSystemIn = System.in;
 	private final PrintStream originalSystemOut = System.out;
@@ -175,7 +177,8 @@ public class PersoSimGuiMain {
 						@Override
 						public void run() {
 							
-							 if(!locked) {
+							 if(updateNeeded) {
+								 updateNeeded=false;
 								 buildNewConsoleContent();
 							 }
 						}
@@ -194,7 +197,8 @@ public class PersoSimGuiMain {
 	}
 	
 	/**
-	 * changes the maximum of the slider
+	 * changes the maximum of the slider and selects the 
+	 * new Maximum to display the latest log messages
 	 */
 	private void rebuildSlider(){
 		sync.syncExec(new Runnable() {
@@ -203,6 +207,7 @@ public class PersoSimGuiMain {
 			public void run() {
 				
 				slider.setMaximum(consoleStrings.size()+slider.getThumb()-maxLineCount+1);
+				slider.setSelection(slider.getMaximum());	
 			}
 		});
 	}
@@ -331,25 +336,14 @@ public class PersoSimGuiMain {
 			}else{
 			consoleStrings.add(splitResult[i]);
 			}
+			
+			
+			
 			if (!locked) {
-				showNewOutput();
+				updateNeeded=true;
+				rebuildSlider();
 			}
 		}
-	}
-	
-	/**
-	 * controls slider selection (auto scrolling)
-	 */
-	public void showNewOutput() {
-		
-		sync.syncExec(new Runnable() {
-			@Override
-			public void run() {
-				rebuildSlider();
-				slider.setSelection(slider.getMaximum());							
-			}
-		});
-
 	}
 	
 	public void write(String line) {
