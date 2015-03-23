@@ -178,8 +178,8 @@ public class PersoSimGuiMain {
 						public void run() {
 							
 							 if(updateNeeded) {
-								 buildNewConsoleContent();
 								 updateNeeded=false;
+								 buildNewConsoleContent();
 							 }
 						}
 					});
