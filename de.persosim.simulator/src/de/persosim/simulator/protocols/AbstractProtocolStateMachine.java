@@ -6,7 +6,6 @@ import static de.persosim.simulator.utils.PersoSimLogger.log;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
@@ -70,11 +69,6 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 	@Override
 	public void setCardStateAccessor(CardStateAccessor cardState){
 		this.cardState = cardState;
-	}
-
-	@Override
-	public Collection<ApduSpecification> getApduSet() {
-		return new HashSet<ApduSpecification>(apdus.values());
 	}
 
 	@Override

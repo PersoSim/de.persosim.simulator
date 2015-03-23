@@ -211,6 +211,8 @@ public interface Iso7816 {
 	public static final short SW_6300_AUTHENTICATION_FAILED              = (short) 0x6300;
 	public static final short SW_63C0_COUNTER_IS_0                       = (short) 0x63C0;
 	public static final short SW_63C1_COUNTER_IS_1                       = (short) 0x63C1;
+	public static final short SW_63C2_COUNTER_IS_2                       = (short) 0x63C2;
+	public static final short SW_63C3_COUNTER_IS_3                       = (short) 0x63C3;
 	/*--------------------------------------------------------------------------------*/
 	/* Execution error */
 	public static final short SW_6400_EXECUTION_ERROR                    = (short) 0x6400;

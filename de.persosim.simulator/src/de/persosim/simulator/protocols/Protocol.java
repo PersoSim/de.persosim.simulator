@@ -2,7 +2,6 @@ package de.persosim.simulator.protocols;
 
 import java.util.Collection;
 
-import de.persosim.simulator.apdumatching.ApduSpecification;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ObjectStore;
 import de.persosim.simulator.platform.CardStateAccessor;
@@ -74,18 +73,6 @@ public interface Protocol {
 	 * @param processingData
 	 */
 	public abstract void process(ProcessingData processingData);
-
-	/**
-	 * Returns collection of supported APDUs. The protocol is expected to be
-	 * able to handle each APDU that matches one of these specifications.
-	 * 
-	 * 
-	 * @return collection of supported {@link ApduSpecification}s. The returned
-	 *         {@link Collection} shall not be altered by the calling entity as
-	 *         it may be immutable.
-	 */
-	public abstract Collection<ApduSpecification> getApduSet();
-
 	
 	/**
 	 * Reset the {@link Protocol} to it's initial configuration.

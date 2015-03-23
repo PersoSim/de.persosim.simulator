@@ -14,7 +14,6 @@ import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdu.SmMarkerApdu;
-import de.persosim.simulator.apdumatching.ApduSpecification;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -342,12 +341,6 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		byte[] apduBytes = commandApdu.toByteArray();
 		apduBytes[0] &= (byte) 0xFC;
 		processingData.updateCommandApdu(this, "Unmasked plain APDU", CommandApduFactory.createCommandApdu(apduBytes, smMarkerApdu));
-	}
-
-	@Override
-	public Collection<ApduSpecification> getApduSet() {
-		//currently not implemented (not required)
-		return Collections.emptySet();
 	}
 	
 	@Override

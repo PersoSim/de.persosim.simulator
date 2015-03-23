@@ -10,8 +10,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import de.persosim.simulator.apdu.ResponseApdu;
-import de.persosim.simulator.apdumatching.ApduSpecification;
-import de.persosim.simulator.apdumatching.TlvSpecification;
 import de.persosim.simulator.cardobjects.AuxDataObject;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.MasterFile;
@@ -141,22 +139,6 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 			}
 			throw new VerificationException("no auxiliary data verified successfully");
 		}
-	}
-
-	@Override
-	public Collection<ApduSpecification> getApduSet() {
-		HashSet<ApduSpecification> apdus = new HashSet<>();
-		ApduSpecification apduSpecification = new ApduSpecification("Verify");
-		apduSpecification.setIsoCase(ISO_CASE_2);
-		apduSpecification.setChaining(false);
-		apduSpecification.setIns(INS_20_VERIFY);
-		apduSpecification.setP1((byte) 0x80);
-		apduSpecification.setP2((byte) 0x00);
-		TlvSpecification tagSpecification = new TlvSpecification(TAG_06);
-		apduSpecification.addTag(tagSpecification);
-		apduSpecification.setInitialApdu();
-		apdus.add(apduSpecification);
-		return apdus;
 	}
 
 	@Override

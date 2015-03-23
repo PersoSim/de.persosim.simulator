@@ -15,9 +15,7 @@ import javax.crypto.KeyAgreement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.persosim.simulator.apdu.ResponseApdu;
-import de.persosim.simulator.apdumatching.ApduSpecification;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
-import de.persosim.simulator.apdumatching.TlvSpecification;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
@@ -57,7 +55,6 @@ import de.persosim.simulator.utils.Utils;
 public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants,
 		InfoSource, Ri, TlvConstants {
 
-	private HashSet<ApduSpecification> apdus = null;
 	private CardStateAccessor cardState;
 	private int privateKeyReference;
 
@@ -392,46 +389,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 		processingData.updateResponseAPDU(this, "Command SetAt successfully processed", resp);
 	}
-
-	@Override
-	public Collection<ApduSpecification> getApduSet() {
-		if (apdus == null) {
-			apdus = createApduSpecifications();
-		}
-		return apdus;
-	}
-
-	private HashSet<ApduSpecification> createApduSpecifications() {
-		HashSet<ApduSpecification> apdus = new HashSet<>();
-		ApduSpecification apduSpecification = new ApduSpecification("Set AT");
-		apduSpecification.setIsoFormat(ISO_FORMAT_FIRSTINTERINDUSTRY);
-		apduSpecification.setIsoCase(ISO_CASE_3);
-		apduSpecification.setChaining(false);
-		apduSpecification.setIns(INS_22_MANAGE_SECURITY_ENVIRONMENT);
-		apduSpecification.setP1((byte) 0xC1);
-		apduSpecification.setP2((byte) 0xA4);
-		TlvSpecification tagSpecification = new TlvSpecification(TAG_80);
-		apduSpecification.addTag(tagSpecification);
-		tagSpecification = new TlvSpecification(TAG_84);
-		tagSpecification.setRequired(REQ_OPTIONAL);
-		apduSpecification.addTag(tagSpecification);
-		apduSpecification.setInitialApdu();
-		apdus.add(apduSpecification);
-		
-
-		apduSpecification = new ApduSpecification("General Authenticate");
-		apduSpecification.setIsoFormat(ISO_FORMAT_FIRSTINTERINDUSTRY);
-		apduSpecification.setIsoCase(ISO_CASE_3);
-		apduSpecification.setChaining(false);
-		apduSpecification.setIns(INS_86_GENERAL_AUTHENTICATE);
-		apduSpecification.setP1((byte) 0x00);
-		apduSpecification.setP2((byte) 0x00);
-		tagSpecification = new TlvSpecification(TAG_7C);
-		apduSpecification.addTag(tagSpecification);
-		apdus.add(apduSpecification);
-		return apdus;
-	}
-
+	
 	@Override
 	public String getIDString() {
 		return "Restricted Identification";

@@ -98,8 +98,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = new byte[] { 0x00, (byte) 0xA4, 0x02, 0x0C, 0x02,
-				0x01, 0x1A };
+		byte[] apduBytes = HexString.toByteArray("00A4020C02011A");
 		processingData.updateCommandApdu(this, "select file APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
