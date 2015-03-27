@@ -1,9 +1,13 @@
 package de.persosim.simulator.crypto;
 
+import java.security.Provider;
+
+import de.persosim.simulator.Activator;
+
 /**
  * This class is intended to be used as source for the CryptoProvider in order
  * to allow using the code base as single source solution when porting to
- * Androir. 
+ * Android. 
  * 
  * TODO verify how this can work as single source solution on Android
  * 
@@ -16,10 +20,11 @@ public class Crypto {
 	/*--------------------------------------------------------------------------------*/
 
 	public static String getCryptoProvider() {
-		return provider;
+		return Activator.objectImplementingInterface.getCryptoProviderString();
 	}
-
-	public static void setCryptoProvider(String newProvider) {
-		provider = newProvider;
+	
+	public static Provider getCryptoProviderObject() {
+		return Activator.objectImplementingInterface.getCryptoProviderObject();
 	}
+	
 }
