@@ -25,7 +25,8 @@ Bundle-ClassPath: .,
 Import-Package: org.osgi.framework
 Eclipse-BundleShape: dir
 Require-Bundle: org.eclipse.osgi,
- org.eclipse.equinox.registry
+ org.eclipse.equinox.registry,
+ org.globaltester.cryptoprovider;bundle-version="1.0.3"
 Service-Component: OSGI-INF/SimulatorComponent.xml
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: de.persosim.simulator.Activator
