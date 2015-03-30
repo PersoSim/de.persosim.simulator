@@ -185,7 +185,7 @@ public class SocketAdapter implements Runnable {
 				
 				// parse hex APDU
 				byte[] apdu = null;
-				byte[] response = new byte[] { 0x6F, 0x00 };
+				byte[] response = new byte[] { 0x6F, 0x23 };
 				try {
 					apdu = HexString.toByteArray(apduLine);
 				} catch (RuntimeException e) {

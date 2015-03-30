@@ -120,7 +120,7 @@ public class PersoSimKernel implements InfoSource {
 		if (lastHardwareResponseUpdate != null && lastHardwareResponseUpdate instanceof HardwareResponseApduPropagation) {
 			retVal =  ((HardwareResponseApduPropagation)lastHardwareResponseUpdate).getResponseApdu();
 		} else {
-			retVal = Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN);
+			retVal = Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN+0x45);
 		}
 		
 		log(this, "finished processing APDU");

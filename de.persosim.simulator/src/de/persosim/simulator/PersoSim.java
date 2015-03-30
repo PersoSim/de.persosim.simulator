@@ -144,20 +144,29 @@ public class PersoSim implements Simulator {
 	
 		if (kernel == null){
 			log(this.getClass(), "The simulator is stopped and the APDU was ignored", INFO);
-			return NACK;
+			return new byte[]{0x6f, 0x78};
 		}
 		
 		int clains = Utils.maskUnsignedShortToInt(Utils.concatenate(apdu[0], apdu[1]));
 		switch (clains) {
 		case 0xFF00:
+			if (!stopSimulator()) {
+				return new byte[] {0x6F, 0x01};
+			}
 			return kernel.powerOff();
 		case 0xFF01:
+			if (!startSimulator()) {
+				return new byte[] {0x6F, 0x02};
+			}
 			return kernel.powerOn();
 		case 0xFF6F:
 			return NACK;
 		case 0xFF90:
 			return ACK;
 		case 0xFFFF:
+			if (!startSimulator()) {
+				return new byte[] {0x6F, 0x03};
+			}
 			return kernel.reset();
 		default:
 			// all other (unknown) APDUs are forwarded to the
