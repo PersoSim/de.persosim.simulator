@@ -67,11 +67,7 @@ public class Activator implements BundleActivator {
 		
 		objectImplementingInterface = (Cryptoprovider) serviceTracker.getService();
 		
-		System.out.println("objectImplementingInterface: " + objectImplementingInterface);
-		
 		cryptoProvider = objectImplementingInterface.getCryptoProviderObject();
-		
-		System.out.println("cryptoProvider: " + cryptoProvider);
 		
 		// register BouncyCastle provider
 		Security.addProvider(cryptoProvider);

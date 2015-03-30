@@ -1,12 +1,6 @@
 package de.persosim.simulator;
 
-import static de.persosim.simulator.utils.PersoSimLogger.INFO;
-import static de.persosim.simulator.utils.PersoSimLogger.UI;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
-
-import java.security.Security;
-
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import static de.persosim.simulator.utils.PersoSimLogger.*;
 
 import de.persosim.simulator.perso.DefaultPersoTestPki;
 import de.persosim.simulator.perso.MinimumPersonalization;
@@ -28,6 +22,7 @@ import de.persosim.simulator.utils.Utils;
  * 
  */
 public class PersoSim implements Simulator {
+
 	private static final byte[] ACK = Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR);
 	private static final byte[] NACK = Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN);
 	
@@ -48,13 +43,6 @@ public class PersoSim implements Simulator {
 	public static final String persoFilePostfix = ".xml";
 	
 	private PersoSimKernel kernel;
-	
-	static {
-		//register BouncyCastle provider
-		if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-			Security.addProvider(new BouncyCastleProvider());
-		}
-	}
 	
 	/**
 	 * This constructor is used by the OSGi-service instantiation
@@ -158,6 +146,7 @@ public class PersoSim implements Simulator {
 			log(this.getClass(), "The simulator is stopped and the APDU was ignored", INFO);
 			return NACK;
 		}
+		
 		int clains = Utils.maskUnsignedShortToInt(Utils.concatenate(apdu[0], apdu[1]));
 		switch (clains) {
 		case 0xFF00:
