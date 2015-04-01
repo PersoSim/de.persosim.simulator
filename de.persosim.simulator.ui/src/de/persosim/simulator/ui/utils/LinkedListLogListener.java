@@ -43,7 +43,9 @@ public class LinkedListLogListener implements LogListener {
 	 * @return the number of lines currently in the cache
 	 */
 	public int getNumberOfCachedLines(){
-		return list.size();
+		synchronized (this) {
+			return list.size();	
+		}
 	}
 	
 	/**
@@ -52,7 +54,9 @@ public class LinkedListLogListener implements LogListener {
 	 * @return the content of the cached line at the given index
 	 */
 	public String getLine(int index){
-		return list.get(index);
+		synchronized (this) {
+			return list.get(index);			
+		}
 	}
 	
 	
