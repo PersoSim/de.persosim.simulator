@@ -105,6 +105,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 						break;
 					}
 				}
+				
 				if (keyId == -1) continue; // skip keys that dont't provide a keyId
 				
 				//cached values
@@ -116,21 +117,59 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 						byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
 						genericRiOidBytes = Arrays.copyOfRange(oidBytes, 0, 9);
 						
-						//define params
+						// define ProtocolParams
+						
+						/*
+						 * ProtocolParams ::= SEQUENCE {
+						 * 		version         INTEGER, -- MUST be 1
+						 * 		keyId           INTEGER,
+						 * 		authorizedOnly  BOOLEAN
+						 * }
+						 */
+						
+						// create SEQUENCE
 						ConstructedTlvDataObject params = new ConstructedTlvDataObject(TAG_SEQUENCE);
+						// add "version"
 						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{1}));
+						// add "keyId"
 						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 						
+						// add "authorizedOnly"
 						if(curKey.isPrivilegedOnly()) {
 							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, new byte[]{0x01})); //IMPL RI handle authorizedOnly
 						} else {
 							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, new byte[]{0x00}));
 						}
 						
+						// define RestrictedIdentificationInfo
+						
+						/*
+						 * RestrictedIdentificationInfo ::= SEQUENCE {
+						 * 		protocol  OBJECT IDENTIFIER(
+						 *           id-RI-DH-SHA-1  |
+						 *           id-RI-DH-SHA-224  |
+						 *           id-RI-DH-SHA-256  |
+						 *           id-RI-DH-SHA-384 |
+						 *           id-RI-DH-SHA-512 |
+						 *           id-RI-ECDH-SHA-1  |
+						 *           id-RI-ECDH-SHA-224  |
+						 *           id-RI-ECDH-SHA-256 |
+						 *           id-RI-ECDH-SHA-384 |
+						 *           id-RI-ECDH-SHA-512),
+						 * 		params    ProtocolParams,
+						 * 		maxKeyLen INTEGER OPTIONAL
+						 * }
+						 */
+						
+						// create SEQUENCE
 						ConstructedTlvDataObject riInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+						// add "protocol"
 						riInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
+						// add "params"
 						riInfo.addTlvDataObject(params);
+						// add "maxKeyLen"
 						//IMPL RI handle maxKeyLen
+//						riInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{xxx}));
 						
 						secInfos.add(riInfo);					
 					}
@@ -143,12 +182,23 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 				//using standardized domain parameters if possible
 				algIdentifier = StandardizedDomainParameters.simplifyAlgorithmIdentifier(algIdentifier);
 				
-				//add RiDomainParameterInfo
-				ConstructedTlvDataObject riDomainInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-				riDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericRiOidBytes));
-				riDomainInfo.addTlvDataObject(algIdentifier);
-				secInfos.add(riDomainInfo);
+				// define RestrictedIdentificationDomainParameterInfo
 				
+				/*
+				 * RestrictedIdentificationDomainParameterInfo ::= SEQUENCE {
+				 *   protocol        OBJECT IDENTIFIER(id-RI-DH  |  id-RI-ECDH),
+				 *   domainParameter AlgorithmIdentifier
+				 * }
+				 */
+				
+				// create SEQUENCE
+				ConstructedTlvDataObject riDomainInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+				// add "protocol"
+				riDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericRiOidBytes));
+				// add "domainParameter"
+				riDomainInfo.addTlvDataObject(algIdentifier);
+				
+				secInfos.add(riDomainInfo);
 			}
 			
 			return secInfos;
