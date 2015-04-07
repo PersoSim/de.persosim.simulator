@@ -88,10 +88,13 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 			
 			HashSet<TlvDataObject> secInfos = new HashSet<TlvDataObject>();
 			
-			for (CardObject curKey : riKeyCardObjects) {
-				if (! (curKey instanceof KeyObject)) {
+			for (CardObject curCardObject : riKeyCardObjects) {
+				if (! (curCardObject instanceof KeyObject)) {
 					continue;
 				}
+				
+				KeyObject curKey = (KeyObject) curCardObject;
+				
 				Collection<CardObjectIdentifier> identifiers = curKey.getAllIdentifiers();
 				
 				//extract keyId
@@ -117,6 +120,9 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 						ConstructedTlvDataObject params = new ConstructedTlvDataObject(TAG_SEQUENCE);
 						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{1}));
 						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
+						
+//						curKey.isPrivilegedOnly()
+						
 						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, new byte[]{0x00})); //IMPL RI handle authorizedOnly
 						
 						ConstructedTlvDataObject riInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
