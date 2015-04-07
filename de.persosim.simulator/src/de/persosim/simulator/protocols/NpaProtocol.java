@@ -16,6 +16,7 @@ import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
+import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.perso.DefaultPersoGt;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
@@ -81,7 +82,7 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 		
 		//add the concrete hashes
 		try {
-			MessageDigest md = MessageDigest.getInstance(hashAlg);
+			MessageDigest md = MessageDigest.getInstance(hashAlg, Crypto.getCryptoProvider());
 			
 			DedicatedFileIdentifier eidAppIdentifier = new DedicatedFileIdentifier(
 					HexString.toByteArray(DefaultPersoGt.AID_EID));
@@ -126,9 +127,7 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 				currentDgHash.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OCTET_STRING, digest));
 				dgHashes.addTlvDataObject(currentDgHash);
 			}
-		} catch (NoSuchAlgorithmException e) {
-			logException(getClass(), e);
-		} catch (NullPointerException e) {
+		} catch (NoSuchAlgorithmException | NullPointerException e) {
 			//abort adding DG hashes if not possible
 			logException(getClass(), e);
 		}

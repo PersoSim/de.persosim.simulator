@@ -19,8 +19,12 @@ public class Crypto {
 
 	/*--------------------------------------------------------------------------------*/
 
-	public static String getCryptoProvider() {
-		return Activator.objectImplementingInterface.getCryptoProviderString();
+//	public static String getCryptoProvider() {
+//		return Activator.objectImplementingInterface.getCryptoProviderString();
+//	}
+	
+	public static Provider getCryptoProvider() {
+		return Activator.objectImplementingInterface.getCryptoProviderObject();
 	}
 	
 	public static Provider getCryptoProviderObject() {
