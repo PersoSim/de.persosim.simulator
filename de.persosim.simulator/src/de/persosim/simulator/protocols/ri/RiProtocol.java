@@ -121,9 +121,11 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{1}));
 						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 						
-//						curKey.isPrivilegedOnly()
-						
-						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, new byte[]{0x00})); //IMPL RI handle authorizedOnly
+						if(curKey.isPrivilegedOnly()) {
+							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, new byte[]{0x01})); //IMPL RI handle authorizedOnly
+						} else {
+							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, new byte[]{0x00}));
+						}
 						
 						ConstructedTlvDataObject riInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 						riInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
