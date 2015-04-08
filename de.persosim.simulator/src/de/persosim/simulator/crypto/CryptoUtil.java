@@ -278,7 +278,7 @@ public class CryptoUtil {
 	public static KeyPair generateKeyPair(DomainParameterSet domParamSet, SecureRandom secRandom) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
 		KeyPairGenerator keyPairGenerator;
 		
-		keyPairGenerator = KeyPairGenerator.getInstance(domParamSet.getKeyAgreementAlgorithm(), Crypto.getCryptoProviderObject());
+		keyPairGenerator = KeyPairGenerator.getInstance(domParamSet.getKeyAgreementAlgorithm(), Crypto.getCryptoProvider());
 		keyPairGenerator.initialize(domParamSet.getKeySpec(), secRandom);
 		
 		return keyPairGenerator.generateKeyPair();
@@ -299,7 +299,7 @@ public class CryptoUtil {
 		KeySpec mappedPublicKeySpec = keySpecsPiccMapped[1];
 		
 		// Actually create keys from key specs
-		KeyFactory keyFactory = KeyFactory.getInstance(domainParametersMapped.getKeyAgreementAlgorithm(), Crypto.getCryptoProviderObject());
+		KeyFactory keyFactory = KeyFactory.getInstance(domainParametersMapped.getKeyAgreementAlgorithm(), Crypto.getCryptoProvider());
 		PrivateKey mappedPrivateKey = keyFactory.generatePrivate(mappedPrivateKeySpec);
 		PublicKey mappedPublicKey = keyFactory.generatePublic(mappedPublicKeySpec);
 		return new KeyPair(mappedPublicKey, mappedPrivateKey);
@@ -359,7 +359,7 @@ public class CryptoUtil {
 
 
 		ECPublicKeySpec keySpec = new ECPublicKeySpec(publicPoint, paramSpec);
-		return (ECPublicKey) KeyFactory.getInstance("EC", Crypto.getCryptoProviderObject())
+		return (ECPublicKey) KeyFactory.getInstance("EC", Crypto.getCryptoProvider())
 				.generatePublic(keySpec);
 	}
 

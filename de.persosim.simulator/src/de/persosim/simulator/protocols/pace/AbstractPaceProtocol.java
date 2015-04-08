@@ -544,7 +544,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		log(this, "pcd  token raw data " + pcdTokenInput, DEBUG);
 		
 		try {
-			KeyAgreement keyAgreement = KeyAgreement.getInstance(paceOid.getKeyAgreementName(), Crypto.getCryptoProviderObject());
+			KeyAgreement keyAgreement = KeyAgreement.getInstance(paceOid.getKeyAgreementName(), Crypto.getCryptoProvider());
 			keyAgreement.init(this.ephemeralKeyPairPicc.getPrivate());
 			keyAgreement.doPhase(this.ephemeralPublicKeyPcd, true);
 			

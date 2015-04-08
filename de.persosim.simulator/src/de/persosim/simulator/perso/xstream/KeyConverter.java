@@ -3,7 +3,6 @@ package de.persosim.simulator.perso.xstream;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -75,7 +74,7 @@ public class KeyConverter implements Converter {
 					pk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePublic(ks_pub);
 				else if (keyType.equals("privatekey"))
 					sk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePrivate(ks_priv);
-			} catch (InvalidKeySpecException| NoSuchAlgorithmException | NoSuchProviderException e) {
+			} catch (InvalidKeySpecException| NoSuchAlgorithmException e) {
 				// FIXME JGE Auto-generated catch block
 				e.printStackTrace();
 			}

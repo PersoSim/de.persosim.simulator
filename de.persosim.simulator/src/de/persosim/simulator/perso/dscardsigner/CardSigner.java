@@ -83,7 +83,7 @@ public class CardSigner {
     }
 	
 	private byte[] getDigest(String algorithm, byte[] data) throws NoSuchAlgorithmException, NoSuchProviderException {
-		MessageDigest mda = MessageDigest.getInstance(algorithm, Crypto.getCryptoProviderObject());
+		MessageDigest mda = MessageDigest.getInstance(algorithm, Crypto.getCryptoProvider());
 		return mda.digest(data);
 	}
 	

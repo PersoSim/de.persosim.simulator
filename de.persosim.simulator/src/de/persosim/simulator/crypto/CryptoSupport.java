@@ -65,7 +65,7 @@ public abstract class CryptoSupport {
 		this.cipherAlgorithmNameModePadding = cipherAlgorithmNameModePadding;
 		
 		try {
-			this.cipher = Cipher.getInstance(this.cipherAlgorithmNameModePadding, Crypto.getCryptoProviderObject());
+			this.cipher = Cipher.getInstance(this.cipherAlgorithmNameModePadding, Crypto.getCryptoProvider());
 		} catch (GeneralSecurityException e) {
 			logException(getClass(), e);
 			throw new IllegalArgumentException(e);
@@ -76,7 +76,7 @@ public abstract class CryptoSupport {
 		this.macName = macName;
 		
 		try {
-			this.mac = Mac.getInstance(this.macName, Crypto.getCryptoProviderObject());
+			this.mac = Mac.getInstance(this.macName, Crypto.getCryptoProvider());
 		} catch (GeneralSecurityException e) {
 			throw new IllegalArgumentException(e);
 		}

@@ -244,7 +244,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		byte[] sharedSecret = null;
 		
 		try {
-			keyAgreement = KeyAgreement.getInstance(caOid.getKeyAgreementName(), Crypto.getCryptoProviderObject());
+			keyAgreement = KeyAgreement.getInstance(caOid.getKeyAgreementName(), Crypto.getCryptoProvider());
 			keyAgreement.init(staticPrivateKeyPicc);
 			keyAgreement.doPhase(ephemeralPublicKeyPcd, true);
 			sharedSecret = keyAgreement.generateSecret();

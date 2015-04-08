@@ -14,7 +14,7 @@ import de.persosim.simulator.Activator;
  */
 public class Crypto {
 	
-	public static Provider getCryptoProviderObject() {
+	public static Provider getCryptoProvider() {
 		return Activator.objectImplementingInterface.getCryptoProviderObject();
 	}
 	

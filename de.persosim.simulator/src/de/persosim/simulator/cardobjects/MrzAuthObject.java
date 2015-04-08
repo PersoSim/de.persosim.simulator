@@ -64,7 +64,7 @@ public class MrzAuthObject extends PasswordAuthObject {
 		sb.append(mrz.getDateOfExpiryCd());
 
 		
-		MessageDigest md = MessageDigest.getInstance("SHA-1", Crypto.getCryptoProviderObject());
+		MessageDigest md = MessageDigest.getInstance("SHA-1", Crypto.getCryptoProvider());
 		return md.digest(sb.toString().getBytes("UTF-8"));
 	}
 

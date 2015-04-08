@@ -302,7 +302,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 				byte [] secondSectorPublicKeyHash = taMechanism.getSecondSectorPublicKeyHash();
 				MessageDigest publicKeyCheckingHash;
 				try {
-					publicKeyCheckingHash = MessageDigest.getInstance(taMechanism.getSectorPublicKeyHashAlgorithm(), Crypto.getCryptoProviderObject());
+					publicKeyCheckingHash = MessageDigest.getInstance(taMechanism.getSectorPublicKeyHashAlgorithm(), Crypto.getCryptoProvider());
 				} catch (GeneralSecurityException e) {
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);

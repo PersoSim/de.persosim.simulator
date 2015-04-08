@@ -82,7 +82,7 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 		
 		//add the concrete hashes
 		try {
-			MessageDigest md = MessageDigest.getInstance(hashAlg, Crypto.getCryptoProviderObject());
+			MessageDigest md = MessageDigest.getInstance(hashAlg, Crypto.getCryptoProvider());
 			
 			DedicatedFileIdentifier eidAppIdentifier = new DedicatedFileIdentifier(
 					HexString.toByteArray(DefaultPersoGt.AID_EID));
