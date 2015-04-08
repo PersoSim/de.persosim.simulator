@@ -9,19 +9,10 @@ import de.persosim.simulator.Activator;
  * to allow using the code base as single source solution when porting to
  * Android. 
  * 
- * TODO verify how this can work as single source solution on Android
- * 
  * @author slutters
  * 
  */
 public class Crypto {
-	protected static String provider = "BC";
-
-	/*--------------------------------------------------------------------------------*/
-
-	public static String getCryptoProvider() {
-		return Activator.objectImplementingInterface.getCryptoProviderString();
-	}
 	
 	public static Provider getCryptoProviderObject() {
 		return Activator.objectImplementingInterface.getCryptoProviderObject();
