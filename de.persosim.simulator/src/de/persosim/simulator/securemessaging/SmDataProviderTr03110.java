@@ -36,7 +36,7 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 		keyEnc = cipherKey;
 		keyMac = macKey;
 		
-		cipher = Cipher.getInstance(keyEnc.getAlgorithm(), Crypto.getCryptoProvider());
+		cipher = Cipher.getInstance(keyEnc.getAlgorithm(), Crypto.getCryptoProviderObject());
 		
 		// XXX AMY use new Crypto wrappers here
 		// According to developer consens we want to create wrapper objects that
@@ -51,10 +51,10 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 		if (CryptoUtil.getCipherNameAsString(cipher.getAlgorithm()).equals(
 				"DESede")) {
 			// 3DES
-			mac = Mac.getInstance("ISO9797ALG3", Crypto.getCryptoProvider());
+			mac = Mac.getInstance("ISO9797ALG3", Crypto.getCryptoProviderObject());
 		} else {
 			//AES
-			mac = Mac.getInstance(keyMac.getAlgorithm(), Crypto.getCryptoProvider());
+			mac = Mac.getInstance(keyMac.getAlgorithm(), Crypto.getCryptoProviderObject());
 		}
 		
 		

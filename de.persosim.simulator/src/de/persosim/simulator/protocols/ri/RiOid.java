@@ -100,9 +100,9 @@ public class RiOid extends Oid implements Ri, TlvConstants {
 			NoSuchProviderException {
 		switch (this.getKeyAgreementAsByte()) {
 		case Ca.DH:
-			return KeyAgreement.getInstance("DH", Crypto.getCryptoProvider());
+			return KeyAgreement.getInstance("DH", Crypto.getCryptoProviderObject());
 		case Ca.ECDH:
-			return KeyAgreement.getInstance("ECDH", Crypto.getCryptoProvider());
+			return KeyAgreement.getInstance("ECDH", Crypto.getCryptoProviderObject());
 		default:
 			throw new InvalidParameterException(
 					"no or invalid key agreement selected");
@@ -120,19 +120,19 @@ public class RiOid extends Oid implements Ri, TlvConstants {
 		switch (getHashAsByte()) {
 		case SHA_1:
 			return MessageDigest.getInstance("SHA-1",
-					Crypto.getCryptoProvider());
+					Crypto.getCryptoProviderObject());
 		case SHA_224:
 			return MessageDigest.getInstance("SHA-224",
-					Crypto.getCryptoProvider());
+					Crypto.getCryptoProviderObject());
 		case SHA_256:
 			return MessageDigest.getInstance("SHA-256",
-					Crypto.getCryptoProvider());
+					Crypto.getCryptoProviderObject());
 		case SHA_384:
 			return MessageDigest.getInstance("SHA-384",
-					Crypto.getCryptoProvider());
+					Crypto.getCryptoProviderObject());
 		case SHA_512:
 			return MessageDigest.getInstance("SHA-512",
-					Crypto.getCryptoProvider());
+					Crypto.getCryptoProviderObject());
 		default:
 			throw new InvalidParameterException(
 					"no or invalid hash function selected");

@@ -284,7 +284,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		
 		PublicKey mappedPublicKey;
 		try {
-			KeyFactory keyFactory = KeyFactory.getInstance(getKeyAgreementAlgorithm());
+			KeyFactory keyFactory = KeyFactory.getInstance(getKeyAgreementAlgorithm(), Crypto.getCryptoProviderObject());
 			mappedPublicKey = keyFactory.generatePublic(reconstructedPublicKeySpec);
 		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalArgumentException("invalid key agreement algorithm");
@@ -309,7 +309,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		
 		PrivateKey privateKey;
 		try {
-			KeyFactory keyFactory = KeyFactory.getInstance(getKeyAgreementAlgorithm());
+			KeyFactory keyFactory = KeyFactory.getInstance(getKeyAgreementAlgorithm(), Crypto.getCryptoProviderObject());
 			privateKey = keyFactory.generatePrivate(reconstructedPrivateKeySpec);
 		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalArgumentException("invalid key agreement algorithm");

@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import javax.smartcardio.CardException;
 
+import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.utils.HexString;
 
 
@@ -82,7 +83,7 @@ public class CardSigner {
     }
 	
 	private byte[] getDigest(String algorithm, byte[] data) throws NoSuchAlgorithmException, NoSuchProviderException {
-		MessageDigest mda = MessageDigest.getInstance(algorithm, "BC");
+		MessageDigest mda = MessageDigest.getInstance(algorithm, Crypto.getCryptoProviderObject());
 		return mda.digest(data);
 	}
 	

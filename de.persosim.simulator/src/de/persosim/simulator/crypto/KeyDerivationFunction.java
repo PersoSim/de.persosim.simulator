@@ -49,9 +49,9 @@ public class KeyDerivationFunction {
 		
 		try {
 			if(keyLengthInBytes <= 16) {
-				this.messageDigest =  MessageDigest.getInstance(DIGEST_ORDER[0]);
+				this.messageDigest =  MessageDigest.getInstance(DIGEST_ORDER[0], Crypto.getCryptoProviderObject());
 			} else{
-				this.messageDigest =  MessageDigest.getInstance(DIGEST_ORDER[1]);
+				this.messageDigest =  MessageDigest.getInstance(DIGEST_ORDER[1], Crypto.getCryptoProviderObject());
 			}
 		} catch (NoSuchAlgorithmException e) {
 			/* this is not supposed to happen */

@@ -31,6 +31,7 @@ import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.MasterFileIdentifier;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.Scope;
+import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.KeyDerivationFunction;
@@ -243,7 +244,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		byte[] sharedSecret = null;
 		
 		try {
-			keyAgreement = KeyAgreement.getInstance(caOid.getKeyAgreementName());
+			keyAgreement = KeyAgreement.getInstance(caOid.getKeyAgreementName(), Crypto.getCryptoProviderObject());
 			keyAgreement.init(staticPrivateKeyPicc);
 			keyAgreement.doPhase(ephemeralPublicKeyPcd, true);
 			sharedSecret = keyAgreement.generateSecret();
