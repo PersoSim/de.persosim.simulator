@@ -35,6 +35,7 @@ import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
+import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -309,6 +310,13 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 			TerminalAuthenticationMechanism taMechanism = null;
 			if (currentMechanisms.size() > 0){
 				taMechanism = (TerminalAuthenticationMechanism) currentMechanisms.toArray()[0];
+				
+				if (!(taMechanism.getTerminalType().equals(TerminalType.AT))) {
+					// create and propagate response APDU
+					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+					processingData.updateResponseAPDU(this, "Restricted Identification only allowed for Authorization Terminals", resp);
+					return;
+				}
 
 				byte [] firstSectorPublicKeyHash = taMechanism.getFirstSectorPublicKeyHash();
 				byte [] secondSectorPublicKeyHash = taMechanism.getSecondSectorPublicKeyHash();
@@ -346,13 +354,19 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 
 					}
 					if (dynamicAuthenticationData.getTlvDataObject(RI_SECOND_SECTOR_KEY_TAG) != null) {
-						responseData.addTlvDataObject(handleSectorKey(
-										RI_SECOND_SECTOR_KEY_TAG,
-										staticPrivateKey,
-										dynamicAuthenticationData,
-										publicKeyCheckingHash,
-										secondSectorPublicKeyHash,
-										TlvConstants.TAG_83));
+						taMechanism.getEffectiveAuthorization().getAuthorization();
+						
+//						if() {
+							responseData.addTlvDataObject(handleSectorKey(
+									RI_SECOND_SECTOR_KEY_TAG,
+									staticPrivateKey,
+									dynamicAuthenticationData,
+									publicKeyCheckingHash,
+									secondSectorPublicKeyHash,
+									TlvConstants.TAG_83));
+//						} else {
+//							
+//						}
 					}
 				} catch (GeneralSecurityException e) {
 					// create and propagate response APDU
@@ -366,6 +380,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 					processingData.updateResponseAPDU(this,
 							"the given public key is invalid", resp);
 				}
+				
 				if (responseData.getNoOfElements() > 0) {
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(new TlvDataObjectContainer(responseData), Iso7816.SW_9000_NO_ERROR);
