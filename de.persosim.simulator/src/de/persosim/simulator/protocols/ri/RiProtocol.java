@@ -337,8 +337,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 				ConstructedTlvDataObject responseData = new ConstructedTlvDataObject(
 						TlvConstants.TAG_7C);
 				try {
-					if (dynamicAuthenticationData
-							.getTlvDataObject(RI_FIRST_SECTOR_KEY_TAG) != null) {
+					if (dynamicAuthenticationData.getTlvDataObject(RI_FIRST_SECTOR_KEY_TAG) != null) {
 						responseData.addTlvDataObject(handleSectorKey(
 								RI_FIRST_SECTOR_KEY_TAG, staticPrivateKey,
 								dynamicAuthenticationData,
@@ -346,10 +345,8 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 								firstSectorPublicKeyHash, TlvConstants.TAG_81));
 
 					}
-					if (dynamicAuthenticationData
-							.getTlvDataObject(RI_SECOND_SECTOR_KEY_TAG) != null) {
-						responseData
-								.addTlvDataObject(handleSectorKey(
+					if (dynamicAuthenticationData.getTlvDataObject(RI_SECOND_SECTOR_KEY_TAG) != null) {
+						responseData.addTlvDataObject(handleSectorKey(
 										RI_SECOND_SECTOR_KEY_TAG,
 										staticPrivateKey,
 										dynamicAuthenticationData,
@@ -382,10 +379,12 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 							"no sector identifiers could be calculated becaus of missing or incorrect input data", resp);
 					return;
 				}
+			} else {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+				processingData.updateResponseAPDU(this, "Restricted Identification requires preceding Terminal Authentication", resp);
 			}
 		}
-		
-		
 
 	}
 
