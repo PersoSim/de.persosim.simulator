@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ByteDataAuxObject;
@@ -31,13 +32,18 @@ import de.persosim.simulator.documents.Mrz;
 import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.protocols.ri.Ri;
 import de.persosim.simulator.protocols.ri.RiOid;
+import de.persosim.simulator.protocols.ta.CertificateRole;
+import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TaOid;
+import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.PaceSecurityCondition;
 import de.persosim.simulator.secstatus.SecCondition;
+import de.persosim.simulator.secstatus.TaSecurityCondition;
 import de.persosim.simulator.tlv.Asn1;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
+import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
@@ -639,9 +645,21 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		
 		// RI static key pair PICC
 		KeyObject riKey;
+		boolean authorizedOnly;
+		HashSet<SecCondition> secCondition;
 		for(int i=0; i<riKeys.size(); i++) {
-			riKey = new KeyObject(riKeys.get(i), new KeyIdentifier(riKeyIds.get(i)), riKeyAuthorizedOnly.get(i));
+			secCondition = new HashSet<>();
+			authorizedOnly = riKeyAuthorizedOnly.get(i);
+			
+			if(authorizedOnly) {	
+				secCondition.add(new TaSecurityCondition(TerminalType.AT, new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(2))));
+			} else {
+				secCondition.add(new TaSecurityCondition(TerminalType.AT, new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38))));
+			}
+			
+			riKey = new KeyObject(riKeys.get(i), new KeyIdentifier(riKeyIds.get(i)), authorizedOnly, secCondition);
 			riKey.addOidIdentifier(new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)));
+			
 			mf.addChild(riKey);
 		}
 	}
