@@ -1,5 +1,9 @@
 package de.persosim.simulator.protocols.ri;
 
+import static de.persosim.simulator.utils.PersoSimLogger.WARN;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+
+import java.nio.file.AccessDeniedException;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -35,7 +39,6 @@ import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
-import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -177,7 +180,15 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 				}
 				
 				//extract required data from curKey
-				ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(((KeyObject) curKey).getKeyPair().getPublic().getEncoded());
+				KeyPair curKeyPair;
+				try {
+					curKeyPair = curKey.getKeyPair();
+				} catch (AccessDeniedException e) {
+					log(this, "skipped processing of CA key due to access restrictions: " + e.getMessage(), WARN);
+					e.printStackTrace();
+					continue;
+				}
+				ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(curKeyPair.getPublic().getEncoded());
 				ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTlvDataObject(TAG_SEQUENCE);
 				
 				//using standardized domain parameters if possible
@@ -310,13 +321,6 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 			TerminalAuthenticationMechanism taMechanism = null;
 			if (currentMechanisms.size() > 0){
 				taMechanism = (TerminalAuthenticationMechanism) currentMechanisms.toArray()[0];
-				
-				if (!(taMechanism.getTerminalType().equals(TerminalType.AT))) {
-					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-					processingData.updateResponseAPDU(this, "Restricted Identification only allowed for Authorization Terminals", resp);
-					return;
-				}
 
 				byte [] firstSectorPublicKeyHash = taMechanism.getFirstSectorPublicKeyHash();
 				byte [] secondSectorPublicKeyHash = taMechanism.getSecondSectorPublicKeyHash();
@@ -332,15 +336,19 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 				}
 
 				if (staticKeyPair == null){
+					/*
+					 * {@link staticKeyPair} may be null either if setAt has not yet been executed or failed.
+					 * SetAt may fail due to unsatisfied access conditions e.g. if required preceding TA has not been performed.
+					 */
+					
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(PlatformUtil.SW_4A80_WRONG_DATA);
 					processingData.updateResponseAPDU(this,
-							"The static key pair was not set correctly, probably because of missing setAT execution", resp);
+							"The static key pair was not set correctly, probably due to missing or failed execution of setAT command", resp);
 					return;
 				}
 				
-				PrivateKey staticPrivateKey = (PrivateKey) staticKeyPair
-						.getPrivate();
+				PrivateKey staticPrivateKey = (PrivateKey) staticKeyPair.getPrivate();
 				
 				ConstructedTlvDataObject responseData = new ConstructedTlvDataObject(
 						TlvConstants.TAG_7C);
@@ -356,17 +364,13 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 					if (dynamicAuthenticationData.getTlvDataObject(RI_SECOND_SECTOR_KEY_TAG) != null) {
 						taMechanism.getEffectiveAuthorization().getAuthorization();
 						
-//						if() {
-							responseData.addTlvDataObject(handleSectorKey(
-									RI_SECOND_SECTOR_KEY_TAG,
-									staticPrivateKey,
-									dynamicAuthenticationData,
-									publicKeyCheckingHash,
-									secondSectorPublicKeyHash,
-									TlvConstants.TAG_83));
-//						} else {
-//							
-//						}
+						responseData.addTlvDataObject(handleSectorKey(
+								RI_SECOND_SECTOR_KEY_TAG,
+								staticPrivateKey,
+								dynamicAuthenticationData,
+								publicKeyCheckingHash,
+								secondSectorPublicKeyHash,
+								TlvConstants.TAG_83));
 					}
 				} catch (GeneralSecurityException e) {
 					// create and propagate response APDU
@@ -441,8 +445,17 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 					Scope.FROM_MF);
 
 			if ((cardObject instanceof KeyObject)) {
-				KeyObject KeyObject = (KeyObject) cardObject;
-				staticKeyPair = KeyObject.getKeyPair();
+				KeyObject keyObject = (KeyObject) cardObject;
+				try {
+					staticKeyPair = keyObject.getKeyPair();
+				} catch (AccessDeniedException e) {
+					// create and propagate response APDU
+					ResponseApdu resp = new ResponseApdu(
+							Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+					processingData.updateResponseAPDU(this,
+							"Security conditions not satisfied: " + e.getMessage(), resp);
+					return;
+				}
 			} else {
 				ResponseApdu resp = new ResponseApdu(
 						Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
