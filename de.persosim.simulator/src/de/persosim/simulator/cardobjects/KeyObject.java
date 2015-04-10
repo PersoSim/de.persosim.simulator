@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.persosim.simulator.jaxb.KeyPairAdapter;
 import de.persosim.simulator.secstatus.SecCondition;
+import de.persosim.simulator.secstatus.SecStatus.SecContext;
 
 /**
  * This object wraps key objects for storing them in the object store.
@@ -78,9 +79,20 @@ public class KeyObject extends AbstractCardObject {
 	public void addOidIdentifier(OidIdentifier oidIdentifier) {
 		furtherIdentifiers.add(oidIdentifier);
 	}
-
+	
+	/**
+	 * This method returns the stored {@link #keyPair} iff access conditions are satisfied otherwise null will be returned
+	 * @return stored {@link #keyPair} if accessible or null
+	 */
 	public KeyPair getKeyPair() {
-		//IMPL add checks for access conditions
+		for (SecCondition condition : readingConditions){
+			if (!condition.check(securityStatus.getCurrentMechanisms(SecContext.APPLICATION, condition.getNeededMechanisms()))){
+				//DEV return null or throw (un-) checked exception?
+//				throw new AccessDeniedException("Access forbidden");
+				return null;
+			}
+		}
+		
 		return keyPair;
 	}
 
