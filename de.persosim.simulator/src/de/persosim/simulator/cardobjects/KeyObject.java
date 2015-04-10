@@ -82,7 +82,7 @@ public class KeyObject extends AbstractCardObject {
 	}
 	
 	/**
-	 * This method returns the stored {@link #keyPair} iff access conditions are satisfied otherwise null will be returned
+	 * This method returns the stored {@link #keyPair} iff access conditions are satisfied otherwise an exception is thrown
 	 * @return stored {@link #keyPair} if accessible otherwise an exception is thrown
 	 * @throws AccessDeniedException 
 	 */
