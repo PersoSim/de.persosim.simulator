@@ -4,9 +4,11 @@ import static de.persosim.simulator.protocols.TR03110Utils.buildAuthenticationTo
 import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
 import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
+import static de.persosim.simulator.utils.PersoSimLogger.WARN;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.logException;
 
+import java.nio.file.AccessDeniedException;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -144,7 +146,14 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		KeyObject keyObject;
 		if((cardObject instanceof KeyObject)) {
 			keyObject = (KeyObject) cardObject;
-			staticKeyPairPicc = keyObject.getKeyPair();
+			try {
+				staticKeyPairPicc = keyObject.getKeyPair();
+			} catch (AccessDeniedException e) {
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
+				/* there is nothing more to be done here */
+				return;
+			}
 			keyReference = keyObject.getPrimaryIdentifier().getInteger();
 		} else{
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
@@ -381,7 +390,15 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			}
 			
 			//extract required data from curKey
-			ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(curKey.getKeyPair().getPublic().getEncoded());
+			KeyPair curKeyPair;
+			try {
+				curKeyPair = curKey.getKeyPair();
+			} catch (AccessDeniedException e) {
+				log(this, "skipped processing of CA key due to access restrictions: " + e.getMessage(), WARN);
+				e.printStackTrace();
+				continue;
+			}
+			ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(curKeyPair.getPublic().getEncoded());
 			ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTlvDataObject(TAG_SEQUENCE);
 			TlvDataObject subjPubKey = encKey.getTlvDataObject(TAG_BIT_STRING);
 			
