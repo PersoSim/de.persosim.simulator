@@ -1,5 +1,6 @@
 package de.persosim.simulator.cardobjects;
 
+import java.nio.file.AccessDeniedException;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,14 +83,14 @@ public class KeyObject extends AbstractCardObject {
 	
 	/**
 	 * This method returns the stored {@link #keyPair} iff access conditions are satisfied otherwise null will be returned
-	 * @return stored {@link #keyPair} if accessible or null
+	 * @return stored {@link #keyPair} if accessible otherwise an exception is thrown
+	 * @throws AccessDeniedException 
 	 */
-	public KeyPair getKeyPair() {
+	public KeyPair getKeyPair() throws AccessDeniedException {
 		for (SecCondition condition : readingConditions){
 			if (!condition.check(securityStatus.getCurrentMechanisms(SecContext.APPLICATION, condition.getNeededMechanisms()))){
 				//DEV return null or throw (un-) checked exception?
-//				throw new AccessDeniedException("Access forbidden");
-				return null;
+				throw new AccessDeniedException("Access forbidden");
 			}
 		}
 		
