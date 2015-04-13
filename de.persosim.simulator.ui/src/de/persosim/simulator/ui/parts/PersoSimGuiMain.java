@@ -50,9 +50,6 @@ public class PersoSimGuiMain {
 	
 	private Text txtInput, txtOutput;
 	
-	//flag to prevent the console from unnecessary refreshing 
-	Boolean updateNeeded = false;
-	
 	private final InputStream originalSystemIn = System.in;
 	
 	//maximum amount of strings saved in the buffer
@@ -80,7 +77,7 @@ public class PersoSimGuiMain {
 		//configure console field		
 		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);
 		
-		LinkedListLogListener listener = Activator.getListLogListener();
+		final LinkedListLogListener listener = Activator.getListLogListener();
 		if (listener != null){
 			listener.addFilter("de.persosim.simulator");	
 		} else {
@@ -181,8 +178,8 @@ public class PersoSimGuiMain {
 						@Override
 						public void run() {
 							
-							 if(updateNeeded) {
-								 updateNeeded=false;
+							 if(listener.getRefreshNeeded()) {
+								 listener.resetRefreshState();
 								 buildNewConsoleContent();
 								 showNewOutput();
 							 }
@@ -269,45 +266,6 @@ public class PersoSimGuiMain {
 
 	}
 		
-
-	/**
-	 * saves and manages Strings grabbed by {@link #grabSysOut()} in a
-	 * LinkedList. This is necessary because they are not saved in the text
-	 * field all the time. Writing all of them directly in the text field would
-	 * slow down the whole application. Taking the Strings from the List and
-	 * adding them to the text field (if needed) is done by
-	 * {@link #buildNewConsoleContent()} which is called by {@link #showNewOutput()}.
-	 * 
-	 * @param s is the String that should be saved in the List
-	 */
-	/*
-	protected void saveConsoleStrings(final String s) {
-
-		String[] splitResult = s.split("(?=/n|/r)");
-
-		for (int i = 0; i < splitResult.length; i++) {
-
-			if (consoleStrings.size() > maxLines) {
-				
-				//synchronized is used to avoid IndexOutOfBoundsExceptions 
-				synchronized (consoleStrings) {
-					consoleStrings.removeFirst();
-					consoleStrings.add(splitResult[i]);	
-				}
-
-			}else{
-			consoleStrings.add(splitResult[i]);
-			}
-			
-			
-			
-			if (!locked) {
-				updateNeeded=true;
-				rebuildSlider();
-			}
-		}
-	}*/
-
 	/**
 	 * controls slider selection (auto scrolling)
 	 */

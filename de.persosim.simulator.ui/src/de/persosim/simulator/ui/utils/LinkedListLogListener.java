@@ -17,6 +17,7 @@ public class LinkedListLogListener implements LogListener {
 	private LinkedList<String> list = new LinkedList<String>();
 	private int maxLines;
 	private LinkedList<String> bundleFilters = new LinkedList<String>();
+	private boolean needsUpdate;
 	
 	public LinkedListLogListener(int maxLines) {
 		this.maxLines = maxLines;
@@ -59,6 +60,13 @@ public class LinkedListLogListener implements LogListener {
 		}
 	}
 	
+	public void resetRefreshState(){
+		needsUpdate = false;
+	}
+	
+	public boolean getRefreshNeeded(){
+		return needsUpdate;
+	}
 	
 	@Override
 	public void logged(final LogEntry entry) {
@@ -76,6 +84,7 @@ public class LinkedListLogListener implements LogListener {
 			String[] splitResult = logEntry.split("(\\n|\\r)");
 
 			for (int i = 0; i < splitResult.length; i++) {
+				needsUpdate = true;
 				if (list != null) {
 					if (list.size() > maxLines) {
 
