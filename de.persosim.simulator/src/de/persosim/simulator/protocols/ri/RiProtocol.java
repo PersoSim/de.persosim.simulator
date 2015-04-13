@@ -35,6 +35,7 @@ import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
+import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -310,6 +311,13 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 			TerminalAuthenticationMechanism taMechanism = null;
 			if (currentMechanisms.size() > 0){
 				taMechanism = (TerminalAuthenticationMechanism) currentMechanisms.toArray()[0];
+				
+				if (!(taMechanism.getTerminalType().equals(TerminalType.AT))) {
+					// create and propagate response APDU
+					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+					processingData.updateResponseAPDU(this, "Restricted Identification only allowed for Authorization Terminals", resp);
+					return;
+				}
 
 				byte [] firstSectorPublicKeyHash = taMechanism.getFirstSectorPublicKeyHash();
 				byte [] secondSectorPublicKeyHash = taMechanism.getSecondSectorPublicKeyHash();
