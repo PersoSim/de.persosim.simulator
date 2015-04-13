@@ -15,7 +15,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.persosim.simulator.Activator;
 import de.persosim.simulator.utils.PersoSimLogger;
 
 /**

@@ -20,7 +20,7 @@ public class Activator implements BundleActivator {
 
 	private LinkedList<LogReaderService> readers = new LinkedList<>();
 	private static TextFieldLogListener textFieldLogger = new TextFieldLogListener();
-	private ServiceTracker logReaderTracker;
+	private ServiceTracker<LogReaderService, LogReaderService> logReaderTracker;
 	
 	public static TextFieldLogListener getTextFieldLogListener(){
 		return textFieldLogger;
