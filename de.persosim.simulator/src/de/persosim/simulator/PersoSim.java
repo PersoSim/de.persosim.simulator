@@ -118,7 +118,6 @@ public class PersoSim implements Runnable {
 	@Override
 	public void run() {
 		log(this.getClass(), "Welcome to PersoSim", UI);
-		PersoSimLogger.init();
 		startSimulator();
 		handleUserCommands();
 	}

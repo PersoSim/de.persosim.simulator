@@ -1,20 +1,8 @@
 package de.persosim.simulator.utils;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.osgi.service.log.LogService;
 
 import de.persosim.simulator.Activator;
-import de.persosim.simulator.PersoSim;
 
 /**
  * This class is used as primary Logger throughout all PersoSim classes.
@@ -31,46 +19,11 @@ public class PersoSimLogger {
 	public static final byte FATAL = 6;
 	public static final byte UI = 120;
 	private static final byte LOGLEVEL_DFLT = DEBUG;
-	
-	private static Logger logger;
-	
-	private static boolean initializeOnNextMessage = false;
 
 	/**
 	 * Ensure that this type can not be instantiated
 	 */
 	private PersoSimLogger() {
-	}
-	
-	public static void init() {
-		initializeOnNextMessage = true;
-	}
-	
-	private static void initializeLog4j(){
-		logger = Logger.getLogger("GTSimulatorLogger");
-		
-		logger.removeAllAppenders();
-
-		//common log layout
-		Layout layout = new PatternLayout("%d %-5p - %m%n");
-
-		// log to stdOut
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		consoleAppender.setFollow(true);
-		consoleAppender.activateOptions();
-		logger.addAppender(consoleAppender);
-
-		// log to file
-		try {
-			String logFileName = "logs" + File.separator + "PersoSim_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".log";
-			FileAppender fileAppender = new FileAppender(layout, logFileName, false);
-			logger.addAppender(fileAppender);
-		} catch (IOException e) {
-			PersoSim.showExceptionToUser(e);
-		}
-
-		// ALL | DEBUG | INFO | WARN | ERROR | FATAL | OFF:
-		logger.setLevel(Level.ALL);
 	}
 
 	/**
@@ -242,35 +195,6 @@ public class PersoSimLogger {
 		LogService logService = Activator.getLogservice();
 		if (logService != null){
 			logService.log(logLevel, message);
-		} else if (logger != null) {
-			// TODO this branch could be obsolete if PersoSim becomes OSGi-only. 
-			if (initializeOnNextMessage){
-				initializeOnNextMessage = false;
-				initializeLog4j();
-			}
-			switch (logLevel) {
-			case TRACE:
-				logger.trace(message);
-				break;
-			case DEBUG:
-				logger.debug(message);
-				break;
-			case INFO:
-				logger.info(message);
-				break;
-			case WARN:
-				logger.warn(message);
-				break;
-			case ERROR:
-				logger.error(message);
-				break;
-			case FATAL:
-				logger.fatal(message);
-				break;
-			default:
-				logger.debug(message);
-				break;
-			}
 		} else {
 			System.out.println(message);
 		}

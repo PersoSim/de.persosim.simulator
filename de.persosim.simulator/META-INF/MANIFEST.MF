@@ -21,8 +21,7 @@ Export-Package: de.persosim.simulator,
  org.bouncycastle,
  org.bouncycastle.jce.provider
 Bundle-ClassPath: .,
- lib/bcprov-jdk15on-150.jar,
- lib/log4j-1.2.17.jar
+ lib/bcprov-jdk15on-150.jar
 Import-Package: org.eclipse.core.runtime,
  org.osgi.framework;version="1.8.0"
 Eclipse-BundleShape: dir

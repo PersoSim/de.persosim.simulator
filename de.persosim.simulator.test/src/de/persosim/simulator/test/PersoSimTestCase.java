@@ -7,7 +7,6 @@ import org.junit.BeforeClass;
 
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.utils.InfoSource;
-import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
  * Superclass for all test cases PersoSim.
@@ -28,9 +27,6 @@ public class PersoSimTestCase implements InfoSource, Iso7816 {
 	
 	@BeforeClass
 	public static void setUpClass() {
-		//setup logging
-		PersoSimLogger.init();
-		
 		//register BouncyCastle provider
 		if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
 			Security.addProvider(new BouncyCastleProvider());
