@@ -1,10 +1,8 @@
 package de.persosim.simulator.cardobjects;
 
-import java.nio.file.AccessDeniedException;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
@@ -13,8 +11,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.persosim.simulator.jaxb.KeyPairAdapter;
-import de.persosim.simulator.secstatus.SecCondition;
-import de.persosim.simulator.secstatus.SecStatus.SecContext;
 
 /**
  * This object wraps key objects for storing them in the object store.
@@ -40,10 +36,6 @@ public class KeyObject extends AbstractCardObject {
 	@XmlElement
 	protected boolean privilegedOnly = false;
 	
-	@XmlElementWrapper
-	@XmlAnyElement(lax=true)
-	private Collection<SecCondition> readingConditions;
-	
 	
 	public KeyObject() {
 	}
@@ -53,14 +45,9 @@ public class KeyObject extends AbstractCardObject {
 	}
 		
 	public KeyObject(KeyPair keyPair, KeyIdentifier identifier, boolean privilegedOnly) {
-		this(keyPair, identifier, privilegedOnly, Collections.<SecCondition> emptySet());
-	}
-	
-	public KeyObject(KeyPair keyPair, KeyIdentifier identifier, boolean privilegedOnly, Collection<SecCondition> readingConditions) {
 		this.primaryIdentifier = identifier;
 		this.keyPair = keyPair;
 		this.privilegedOnly = privilegedOnly;
-		this.readingConditions = readingConditions;
 	}
 	
 	@Override
@@ -80,20 +67,8 @@ public class KeyObject extends AbstractCardObject {
 	public void addOidIdentifier(OidIdentifier oidIdentifier) {
 		furtherIdentifiers.add(oidIdentifier);
 	}
-	
-	/**
-	 * This method returns the stored {@link #keyPair} iff access conditions are satisfied otherwise an exception is thrown
-	 * @return stored {@link #keyPair} if accessible otherwise an exception is thrown
-	 * @throws AccessDeniedException 
-	 */
-	public KeyPair getKeyPair() throws AccessDeniedException {
-		for (SecCondition condition : readingConditions){
-			if (!condition.check(securityStatus.getCurrentMechanisms(SecContext.APPLICATION, condition.getNeededMechanisms()))){
-				//DEV return null or throw (un-) checked exception?
-				throw new AccessDeniedException("Access forbidden");
-			}
-		}
-		
+
+	public KeyPair getKeyPair() {
 		return keyPair;
 	}
 

@@ -1,9 +1,5 @@
 package de.persosim.simulator.protocols.ri;
 
-import static de.persosim.simulator.utils.PersoSimLogger.WARN;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
-
-import java.nio.file.AccessDeniedException;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -180,14 +176,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 				}
 				
 				//extract required data from curKey
-				KeyPair curKeyPair;
-				try {
-					curKeyPair = curKey.getKeyPair();
-				} catch (AccessDeniedException e) {
-					log(this, "skipped processing of CA key due to access restrictions: " + e.getMessage(), WARN);
-					e.printStackTrace();
-					continue;
-				}
+				KeyPair curKeyPair = curKey.getKeyPair();
 				ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(curKeyPair.getPublic().getEncoded());
 				ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTlvDataObject(TAG_SEQUENCE);
 				
@@ -446,16 +435,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 
 			if ((cardObject instanceof KeyObject)) {
 				KeyObject keyObject = (KeyObject) cardObject;
-				try {
-					staticKeyPair = keyObject.getKeyPair();
-				} catch (AccessDeniedException e) {
-					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(
-							Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-					processingData.updateResponseAPDU(this,
-							"Security conditions not satisfied: " + e.getMessage(), resp);
-					return;
-				}
+				staticKeyPair = keyObject.getKeyPair();
 			} else {
 				ResponseApdu resp = new ResponseApdu(
 						Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
