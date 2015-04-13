@@ -2,12 +2,9 @@ package de.persosim.simulator.ui.parts;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
@@ -35,6 +32,7 @@ import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 
 import de.persosim.simulator.PersoSim;
+import de.persosim.simulator.ui.Activator;
 
 /**
  * @author slutters
@@ -53,7 +51,6 @@ public class PersoSimGuiMain {
 	Boolean updateNeeded = false;
 	
 	private final InputStream originalSystemIn = System.in;
-	private final PrintStream originalSystemOut = System.out;
 	
 	//Buffer for old console outputs
 	private LinkedList<String> consoleStrings = new LinkedList<String>();
@@ -64,7 +61,6 @@ public class PersoSimGuiMain {
 	//maximum of lines the text field can show
 	int maxLineCount=0;
 	
-	private PrintStream newSystemOut;
 	private final PipedInputStream inPipe = new PipedInputStream();
 	
 	private PrintWriter inWriter;
@@ -77,13 +73,15 @@ public class PersoSimGuiMain {
 	@PostConstruct
 	public void createComposite(Composite parentComposite) {
 		parent = parentComposite;
-		grabSysOut();
 		grabSysIn();
 		
 		parent.setLayout(new GridLayout(2, false));
 		
 		//configure console field
-		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);		
+		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);
+		
+		Activator.getTextFieldLogListener().setText(txtOutput);
+				
 		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
 		txtOutput.setEditable(false);
 		txtOutput.setCursor(null);
@@ -255,59 +253,6 @@ public class PersoSimGuiMain {
 
 	}
 		
-	/**
-	 * This method activates redirection of System.out.
-	 */
-	private void grabSysOut() {
-	    OutputStream out = new OutputStream() {
-
-			char [] buffer = new char [200];
-			int currentPosition = 0;
-			boolean checkNextForNewline = false;
-			
-			@Override
-			public void write(int b) throws IOException {
-				final char value = (char) b;
-				
-				if (checkNextForNewline){
-					checkNextForNewline = false;
-					if (value == '\n'){
-						return;
-					}
-				}
-
-				if (currentPosition < buffer.length - 1 && !(value == '\n' || value == '\r')){
-					buffer [currentPosition++] = value;
-				} else {
-					if (value == '\n' || value == '\r'){
-						if (value == '\r'){
-							checkNextForNewline = true;
-						}
-						buffer [currentPosition++] = '\n';
-					} else {
-						buffer [currentPosition++] = value;
-					}
-
-					final String toPrint = new String(Arrays.copyOf(buffer, currentPosition));
-					originalSystemOut.print(toPrint);
-					saveConsoleStrings(toPrint);
-					
-					
-					currentPosition = 0;
-				}
-
-			}
-		};
-
-		newSystemOut = new PrintStream(out, true);
-		
-		System.setOut(newSystemOut);
-		
-		if(newSystemOut != null) {
-			originalSystemOut.println("activated redirection of System.out");
-		}
-	    
-	}
 
 	/**
 	 * saves and manages Strings grabbed by {@link #grabSysOut()} in a
@@ -352,16 +297,6 @@ public class PersoSimGuiMain {
 	}
 	
 	/**
-	 * This method deactivates redirection of System.out.
-	 */
-	private void releaseSysOut() {
-		if(originalSystemOut != null) {
-			System.setOut(originalSystemOut);
-			System.out.println("deactivated redirection of System.out");
-		}
-	}
-	
-	/**
 	 * This method activates redirection of System.in.
 	 */
 	private void grabSysIn() {
@@ -369,7 +304,7 @@ public class PersoSimGuiMain {
 		try {
 	    	inWriter = new PrintWriter(new PipedOutputStream(inPipe), true);
 	    	System.setIn(inPipe);
-	    	originalSystemOut.println("activated redirection of System.in");
+	    	System.out.println("activated redirection of System.in");
 	    }
 	    catch(IOException e) {
 	    	System.out.println("Error: " + e);
@@ -383,13 +318,12 @@ public class PersoSimGuiMain {
 	private void releaseSysIn() {
 		if(originalSystemIn != null) {
 			System.setIn(originalSystemIn);
-			originalSystemOut.println("deactivated redirection of System.in");
+			System.out.println("deactivated redirection of System.in");
 		}
 	}
 	
 	@PreDestroy
 	public void cleanUp() {
-		releaseSysOut();
 		releaseSysIn();
 		System.exit(0);
 	}
