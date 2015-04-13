@@ -657,7 +657,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				secCondition.add(new TaSecurityCondition(TerminalType.AT, new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38))));
 			}
 			
-			riKey = new KeyObject(riKeys.get(i), new KeyIdentifier(riKeyIds.get(i)), authorizedOnly, secCondition);
+			riKey = new KeyObject(riKeys.get(i), new KeyIdentifier(riKeyIds.get(i)), authorizedOnly);
 			riKey.addOidIdentifier(new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)));
 			
 			mf.addChild(riKey);
