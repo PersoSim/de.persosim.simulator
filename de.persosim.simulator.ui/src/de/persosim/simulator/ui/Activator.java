@@ -20,6 +20,7 @@ public class Activator implements BundleActivator {
 
 	private LinkedList<LogReaderService> readers = new LinkedList<>();
 	private static TextFieldLogListener textFieldLogger = new TextFieldLogListener();
+	private ServiceTracker logReaderTracker;
 	
 	public static TextFieldLogListener getTextFieldLogListener(){
 		return textFieldLogger;
@@ -54,7 +55,7 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
-		ServiceTracker logReaderTracker = new ServiceTracker<>(context, LogReaderService.class.getName(), null);
+		logReaderTracker = new ServiceTracker<>(context, LogReaderService.class.getName(), null);
 		logReaderTracker.open();
 		Object[] readers = logReaderTracker.getServices();
 		if (readers != null){
@@ -64,8 +65,6 @@ public class Activator implements BundleActivator {
 				readerService.addLogListener(textFieldLogger);
 			}
 		}
-		
-		logReaderTracker.close();
 		
         String filter = "(objectclass=" + LogReaderService.class.getName() + ")";
         try {
@@ -88,6 +87,8 @@ public class Activator implements BundleActivator {
             readerService.removeLogListener(textFieldLogger);
             iterator.remove();
         }
+		
+		logReaderTracker.close();
 
 	}
 
