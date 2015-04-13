@@ -36,6 +36,7 @@ import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 public class RiProtocolTest extends PersoSimTestCase {
 
@@ -189,4 +190,39 @@ public class RiProtocolTest extends PersoSimTestCase {
 		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
 		assertArrayEquals(HexString.toByteArray("7C06810401020304"), processingData.getResponseApdu().getData().toByteArray());
 	}
+	
+	/**
+	 * Negative test: process General Authenticate command when preceding TA was performed for non-AT terminal type.
+	 * @throws Exception
+	 */
+	@Test
+	public void testGeneralAuthenticate_NonAtTerminalType() throws Exception{
+		// prepare the mock
+		final HashSet<SecMechanism> mechanisms = new HashSet<>();
+		mechanisms.add(taMechanism);
+		
+		final HashSet<Class<? extends SecMechanism>> requestedMechanisms = new HashSet<>();
+		requestedMechanisms.add(TerminalAuthenticationMechanism.class);
+		
+		new NonStrictExpectations() {
+			{
+				taMechanism.getTerminalType();
+				result = TerminalType.IS;
+				cardStateAccessor.getCurrentMechanisms((SecContext)any, requestedMechanisms);
+				result = mechanisms;
+			}
+		};
+		
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = HexString.toByteArray("00 86 00 00 00 01 25 7C 82 01 21 A0 82 01 1D 06 0A 04 00 7F 00 07 02 02 05 02 03 81 20 A9 FB 57 DB A1 EE A9 BC 3E 66 0A 90 9D 83 8D 72 6E 3B F6 23 D5 26 20 28 20 13 48 1D 1F 6E 53 77 82 20 7D 5A 09 75 FC 2C 30 57 EE F6 75 30 41 7A FF E7 FB 80 55 C1 26 DC 5C 6C E9 4A 4B 44 F3 30 B5 D9 83 20 26 DC 5C 6C E9 4A 4B 44 F3 30 B5 D9 BB D7 7C BF 95 84 16 29 5C F7 E1 CE 6B CC DC 18 FF 8C 07 B6 84 41 04 8B D2 AE B9 CB 7E 57 CB 2C 4B 48 2F FC 81 B7 AF B9 DE 27 E1 E3 BD 23 C2 3A 44 53 BD 9A CE 32 62 54 7E F8 35 C3 DA C4 FD 97 F8 46 1A 14 61 1D C9 C2 77 45 13 2D ED 8E 54 5C 1D 54 C7 2F 04 69 97 85 20 A9 FB 57 DB A1 EE A9 BC 3E 66 0A 90 9D 83 8D 71 8C 39 7A A3 B5 61 A6 F7 90 1E 0E 82 97 48 56 A7 86 41 04 5D 3B 49 C8 EE 25 02 95 F7 C0 EF 6A 1A E8 10 C4 B9 E1 F5 F8 0D 31 6D C9 AD AD 16 08 0C 17 84 CF 88 1E E0 A3 75 BC A1 B5 3C 98 F3 AC 39 FD 0C A9 0C E3 1D 2D 82 76 D3 CF B3 2B 31 6B A0 22 10 23 87 01 01 00 00");		
+				
+		processingData.updateCommandApdu(this, "general authenticate APDU", CommandApduFactory.createCommandApdu(apduBytes));
+
+		// call mut
+		protocol.process(processingData);
+
+		// check results
+		assertArrayEquals("Statusword is not 6985", Utils.toUnsignedByteArray(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED), processingData.getResponseApdu().toByteArray());
+	}
+	
 }
