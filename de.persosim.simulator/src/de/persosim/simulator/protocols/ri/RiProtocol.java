@@ -359,15 +359,21 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 
 					}
 					if (dynamicAuthenticationData.getTlvDataObject(RI_SECOND_SECTOR_KEY_TAG) != null) {
-						taMechanism.getEffectiveAuthorization().getAuthorization();
-						
-						responseData.addTlvDataObject(handleSectorKey(
-								RI_SECOND_SECTOR_KEY_TAG,
-								staticPrivateKey,
-								dynamicAuthenticationData,
-								publicKeyCheckingHash,
-								secondSectorPublicKeyHash,
-								TlvConstants.TAG_83));
+						// check for Restricted Identification bit
+						if (taMechanism.getEffectiveAuthorization().getAuthorization().getBit(2)) {
+							responseData.addTlvDataObject(handleSectorKey(
+									RI_SECOND_SECTOR_KEY_TAG,
+									staticPrivateKey,
+									dynamicAuthenticationData,
+									publicKeyCheckingHash,
+									secondSectorPublicKeyHash,
+									TlvConstants.TAG_83));
+						} else {
+							// create and propagate response APDU
+							ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+							processingData.updateResponseAPDU(this, "Restricted Identification only allowed for Authorization Terminals", resp);
+							return;
+						}
 					}
 				} catch (GeneralSecurityException e) {
 					// create and propagate response APDU
