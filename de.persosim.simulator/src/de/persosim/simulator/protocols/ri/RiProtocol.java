@@ -371,7 +371,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 						} else {
 							// create and propagate response APDU
 							ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-							processingData.updateResponseAPDU(this, "Restricted Identification only allowed for Authorization Terminals", resp);
+							processingData.updateResponseAPDU(this, "Restricted Identification only allowed for authorized terminals", resp);
 							return;
 						}
 					}
@@ -440,9 +440,39 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 		}
 
 		if (privateKeyReferenceData != null) {
+			//get necessary information stored in TA
+			HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
+			previousMechanisms.add(TerminalAuthenticationMechanism.class);
+			Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+			TerminalAuthenticationMechanism taMechanism = null;
+			if (currentMechanisms.size() > 0){
+				taMechanism = (TerminalAuthenticationMechanism) currentMechanisms.toArray()[0];
+				
+				if (!(taMechanism.getTerminalType().equals(TerminalType.AT))) {
+					// create and propagate response APDU
+					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+					processingData.updateResponseAPDU(this, "Restricted Identification only allowed for Authorization Terminals", resp);
+					return;
+				}
+			} else {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+				processingData.updateResponseAPDU(this, "Restricted Identification requires preceding Terminal Authentication", resp);
+			}
+			
 			privateKeyReference = Utils
 					.getIntFromUnsignedByteArray(privateKeyReferenceData
 							.getValueField());
+			
+			if(privateKeyReference==2) {
+				if (!(taMechanism.getEffectiveAuthorization().getAuthorization().getBit(2))) {
+					// create and propagate response APDU
+					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+					processingData.updateResponseAPDU(this, "Restricted Identification only allowed for authorized terminals", resp);
+					return;
+				}
+			}
+			
 			KeyIdentifier keyIdentifier = new KeyIdentifier(privateKeyReference);
 			CardObject cardObject = cardState.getObject(keyIdentifier,
 					Scope.FROM_MF);
