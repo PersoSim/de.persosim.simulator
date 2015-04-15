@@ -23,6 +23,14 @@ import org.osgi.framework.Bundle;
 import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
 import de.persosim.simulator.perso.Personalization;
 
+/**
+ * This class provides methods that parse console commands for the controle of
+ * the Simulator and calls the corresponding methods of the {@link Simulator}
+ * interface.
+ * 
+ * @author mboonk
+ *
+ */
 public class CommandParser {
 
 

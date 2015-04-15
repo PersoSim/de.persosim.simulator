@@ -6,6 +6,13 @@ import org.osgi.util.tracker.ServiceTracker;
 
 import de.persosim.simulator.Simulator;
 
+/**
+ * This bundle activator tracks the {@link Simulator} service provided via OSGi
+ * and manages the lifecycle of the socket.
+ * 
+ * @author mboonk
+ *
+ */
 public class Activator implements BundleActivator, SimulatorProvider {
 
 	private static BundleContext context;
