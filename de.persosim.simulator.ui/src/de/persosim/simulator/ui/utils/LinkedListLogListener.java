@@ -64,7 +64,7 @@ public class LinkedListLogListener implements LogListener {
 		needsUpdate = false;
 	}
 	
-	public boolean getRefreshNeeded(){
+	public boolean isRefreshNeeded(){
 		return needsUpdate;
 	}
 	

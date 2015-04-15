@@ -178,7 +178,7 @@ public class PersoSimGuiMain {
 						@Override
 						public void run() {
 							
-							 if(listener.getRefreshNeeded()) {
+							 if(listener.isRefreshNeeded()) {
 								 listener.resetRefreshState();
 								 buildNewConsoleContent();
 								 showNewOutput();
