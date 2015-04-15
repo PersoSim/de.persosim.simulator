@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.apdu.CommandApduFactory;
+import de.persosim.simulator.cardobjects.KeyObject;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
@@ -53,6 +54,8 @@ public class RiProtocolTest extends PersoSimTestCase {
 	@Mocked
 	KeyPair keypair;
 	@Mocked
+	KeyObject keyObject;
+	@Mocked
 	TerminalAuthenticationMechanism taMechanism;
 	@Mocked
 	RiOid oid;
@@ -63,6 +66,8 @@ public class RiProtocolTest extends PersoSimTestCase {
 	public void setUp(){
 		protocol = new RiProtocol();
 		protocol.setCardStateAccessor(cardStateAccessor);
+		
+		keyObject = new KeyObject();
 	}
 	
 	/**
@@ -154,6 +159,8 @@ public class RiProtocolTest extends PersoSimTestCase {
 				result = TerminalType.AT;
 				cardStateAccessor.getCurrentMechanisms((SecContext)any, (Collection<Class<? extends SecMechanism>>) any);
 				result = mechanisms;
+				keyObject.getKeyPair();
+				result=keypair;
 				keypair.getPrivate();
 				result = privateKey;
 				messageDigest.digest((byte[]) any);
@@ -175,7 +182,8 @@ public class RiProtocolTest extends PersoSimTestCase {
 				result = messageDigest;
 			}
 		};
-		Deencapsulation.setField(protocol, keypair);
+		Deencapsulation.setField(protocol, keyObject);
+		Deencapsulation.setField(keyObject, keypair);
 		
 		
 		ProcessingData processingData = new ProcessingData();
@@ -225,10 +233,10 @@ public class RiProtocolTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Negative test: process Manage Security Environment command when preceding TA was performed for non-AT terminal type.
+	 * Negative test: process Manage Security Environment for command APDU missing tag 80 (cryptographic mechanism reference data).
 	 */
 	@Test
-	public void testManageSecurityEnvironment_NonAtTerminalType() throws Exception{
+	public void testManageSecurityEnvironment_MissingCryptoMechRefData() throws Exception{
 		// prepare the mock
 		final HashSet<SecMechanism> mechanisms = new HashSet<>();
 		mechanisms.add(taMechanism);
@@ -239,14 +247,14 @@ public class RiProtocolTest extends PersoSimTestCase {
 		new NonStrictExpectations() {
 			{
 				taMechanism.getTerminalType();
-				result = TerminalType.IS;
+				result = TerminalType.AT;
 				cardStateAccessor.getCurrentMechanisms((SecContext)any, requestedMechanisms);
 				result = mechanisms;
 			}
 		};
 		
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("002241A40F800A04007F00070202030202840129");		
+		byte[] apduBytes = HexString.toByteArray("002241A403840129");		
 				
 		processingData.updateCommandApdu(this, "general authenticate APDU", CommandApduFactory.createCommandApdu(apduBytes));
 
@@ -254,7 +262,7 @@ public class RiProtocolTest extends PersoSimTestCase {
 		protocol.process(processingData);
 
 		// check results
-		assertArrayEquals("Statusword is not 6985", Utils.toUnsignedByteArray(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED), processingData.getResponseApdu().toByteArray());
+		assertArrayEquals("Statusword is not 6A88", Utils.toUnsignedByteArray(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND), processingData.getResponseApdu().toByteArray());
 	}
 	
 }
