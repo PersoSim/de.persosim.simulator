@@ -1,5 +1,11 @@
 package de.persosim.simulator;
 
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static de.persosim.simulator.utils.PersoSimLogger.logException;
+import static de.persosim.simulator.utils.PersoSimLogger.UI;
+import static de.persosim.simulator.utils.PersoSimLogger.INFO;
+import static de.persosim.simulator.utils.PersoSimLogger.WARN;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -92,7 +98,7 @@ public class PersoSim implements Runnable {
 		try {
 			handleArgs(args);
 		} catch (IllegalArgumentException e) {
-			System.out.println("simulation aborted, reason is: " + e.getMessage());
+			log(this.getClass(), "simulation aborted, reason is: " + e.getMessage());
 		}
 		
 	}
@@ -111,14 +117,13 @@ public class PersoSim implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Welcome to PersoSim");
-		PersoSimLogger.init();
+		log(this.getClass(), "Welcome to PersoSim", UI);
 		startSimulator();
 		handleUserCommands();
 	}
 	
 	public static void showExceptionToUser(Exception e) {
-		System.out.println("Exception: " + e.getMessage());
+		log(PersoSim.class, "Exception: " + e.getMessage(), UI);
 		e.printStackTrace();
 	}
 	
@@ -164,12 +169,12 @@ public class PersoSim implements Runnable {
 	 */
 	public boolean startSimulator() {
 		if (simulator != null && simulator.isRunning()) {
-			System.out.println("Simulator already running");
+			log(this.getClass(), "Simulator already running", UI);
 			return true;
 		}
 		
 		if (getPersonalization() == null) {
-			System.out.println("No personalization available, please load a valid personalization before starting the simulator");
+			log(this.getClass(), "No personalization available, please load a valid personalization before starting the simulator", PersoSimLogger.UI);
 			return false;
 		}
 		
@@ -177,7 +182,7 @@ public class PersoSim implements Runnable {
 		
 		if(newSimulator.start()) {
 			simulator = newSimulator;
-			System.out.println("The simulator has been started");
+			log(this.getClass(), "The simulator has been started", UI);
 			return true;
 		} else{
 			return false;
@@ -215,7 +220,7 @@ public class PersoSim implements Runnable {
 			simulator = null;
 			
 			if(simStopped) {
-				System.out.println("The simulator has been stopped and will no longer respond to incoming APDUs until it is (re-) started");
+				log(this.getClass(), "The simulator has been stopped and will no longer respond to incoming APDUs until it is (re-) started", UI);
 			}
 		}
 		
@@ -291,12 +296,12 @@ public class PersoSim implements Runnable {
 	 */
 	public boolean exitSimulator() {
 		executeUserCommands = false;
-		System.out.println(LOG_SIM_EXIT);
+		log(this.getClass(), LOG_SIM_EXIT, UI);
 		
 		boolean stopped = stopSimulator();
 		
 		if(stopped) {
-			System.out.println("The simulator has been terminated and will no longer respond to incoming APDUs or commands");
+			log(this.getClass(), "The simulator has been terminated and will no longer respond to incoming APDUs or commands", UI);
 		}
 				
 		return stopped;
@@ -328,7 +333,7 @@ public class PersoSim implements Runnable {
 		File persoFile = new File(persoFileName);
 		
 		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-		System.out.println("Parsing personalization from file " + persoFileName);
+		log(PersoSim.class, "Parsing personalization from file " + persoFileName, INFO);
 		return (Personalization) um.unmarshal(new FileReader(persoFile));
 	}
 	
@@ -344,7 +349,7 @@ public class PersoSim implements Runnable {
 		
 		simPort = newPort;
 		
-		System.out.println("new port set to " + newPort + " after restart of simulation.");
+		log(this.getClass(), "new port set to " + newPort + " after restart of simulation.", UI);
 		
 		//IMPL check for port being unused
 	}
@@ -458,8 +463,8 @@ public class PersoSim implements Runnable {
 		} catch (IOException e) {
 			showExceptionToUser(e);
 		} finally {
-			System.out.println("> " + cmdApdu);
-			System.out.println("< " + respApdu);
+			log(this.getClass(), "> " + cmdApdu, UI);
+			log(this.getClass(), "< " + respApdu, UI);
 			if (socket != null) {
 				try {
 					socket.close();
@@ -477,25 +482,25 @@ public class PersoSim implements Runnable {
 	 * This method prints the help menu to the command line.
 	 */
 	private void printHelpArgs() {
-		System.out.println("Available commands:");
-		System.out.println(ARG_LOAD_PERSONALIZATION + " <file name>");
-		System.out.println(ARG_SET_PORT + " <port number>");
-		System.out.println(ARG_HELP);
+		log(this.getClass(), "Available commands:", UI);
+		log(this.getClass(), ARG_LOAD_PERSONALIZATION + " <file name>", UI);
+		log(this.getClass(), ARG_SET_PORT + " <port number>", UI);
+		log(this.getClass(), ARG_HELP, UI);
 	}
 	
 	/**
 	 * This method prints the help menu to the user command line.
 	 */
 	private void printHelpCmd() {
-		System.out.println("Available commands:");
-		System.out.println(CMD_SEND_APDU + " <hexstring>");
-		System.out.println(CMD_LOAD_PERSONALIZATION + " <file name>");
-		System.out.println(CMD_SET_PORT + " <port number>");
-		System.out.println(CMD_START);
-		System.out.println(CMD_RESTART);
-		System.out.println(CMD_STOP);
-		System.out.println(CMD_EXIT);
-		System.out.println(CMD_HELP);
+		log(this.getClass(), "Available commands:", UI);
+		log(this.getClass(), CMD_SEND_APDU + " <hexstring>", UI);
+		log(this.getClass(), CMD_LOAD_PERSONALIZATION + " <file name>", UI);
+		log(this.getClass(), CMD_SET_PORT + " <port number>", UI);
+		log(this.getClass(), CMD_START, UI);
+		log(this.getClass(), CMD_RESTART, UI);
+		log(this.getClass(), CMD_STOP, UI);
+		log(this.getClass(), CMD_EXIT, UI);
+		log(this.getClass(), CMD_HELP, UI);
 	}
 	
 	/**
@@ -528,17 +533,17 @@ public class PersoSim implements Runnable {
 		//try to parse the given identifier as profile number
 		try {
 			int personalizationNumber = Integer.parseInt(identifier);
-			System.out.println("trying to load personalization profile no: " + personalizationNumber);
+			log(this.getClass(), "trying to load personalization profile no: " + personalizationNumber, INFO);
 			Bundle plugin = Platform.getBundle("de.persosim.simulator");
 			
 			if(plugin == null) {
 				// TODO how to handle this case? Add OSGI requirement?
-				System.out.println("unable to resolve bundle \"de.persosim.simulator\" - personalization unchanged");
+				log(this.getClass(), "unable to resolve bundle \"de.persosim.simulator\" - personalization unchanged", INFO);
 				return false;
 			} else {
 				URL url = plugin.getEntry(persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
 				URL resolvedURL = FileLocator.resolve(url);
-				System.out.println("resolved absolute URL for selected profile is: " + resolvedURL);
+				log(this.getClass(), "resolved absolute URL for selected profile is: " + resolvedURL, INFO);
 				identifier = resolvedURL.getPath();
 			}
 		} catch (Exception e) {
@@ -554,9 +559,9 @@ public class PersoSim implements Runnable {
 				return restartSimulator();
 			}
 		} catch(FileNotFoundException | JAXBException e) {
-			System.out.println("unable to set personalization, reason is: " + e.getMessage());
+			logException(this.getClass(), e);
 			stopSimulator();
-			System.out.println("simulation is stopped");
+			log(this.getClass(), "simulation is stopped", INFO);
 			return false;
 		}
 	}
@@ -584,7 +589,7 @@ public class PersoSim implements Runnable {
 	    				return restartSimulator();
 	    			}
 	    		} catch(IllegalArgumentException | NullPointerException e) {
-	    			System.out.println("unable to set port, reason is: " + e.getMessage());
+	    			logException(this.getClass(), e);
 	    			return false;
 	    		}
 			}
@@ -607,7 +612,7 @@ public class PersoSim implements Runnable {
 
 		executeUserCommands = true;
 		while (executeUserCommands) {
-			System.out.println("PersoSim commandline: ");
+			log(this.getClass(), "PersoSim commandline: ", UI);
 			String cmd = null;
 			try {
 				cmd = br.readLine();
@@ -663,7 +668,7 @@ public class PersoSim implements Runnable {
 	 * @param args the parsed commands and arguments
 	 */
 	public void executeUserCommands(String... args) {
-		if((args == null) || (args.length == 0)) {System.out.println(LOG_NO_OPERATION); return;}
+		if((args == null) || (args.length == 0)) {log(this.getClass(), LOG_NO_OPERATION, INFO); return;}
 		
 		ArrayList<String> currentArgs = new ArrayList<String>(Arrays.asList(args)); // plain return value of Arrays.asList() does not support required remove operation
 		
@@ -673,7 +678,7 @@ public class PersoSim implements Runnable {
 			}
 		}
 		
-		if(currentArgs.size() == 0) {System.out.println(LOG_NO_OPERATION); return;}
+		if(currentArgs.size() == 0) {log(this.getClass(), LOG_NO_OPERATION, INFO); return;}
 		
 		int noOfArgsWhenCheckedLast;
 		while(currentArgs.size() > 0) {
@@ -691,7 +696,7 @@ public class PersoSim implements Runnable {
 			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
 				//first command in queue has not been processed
 				String currentArgument = currentArgs.get(0);
-				System.out.println(LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped");
+				log(this.getClass(), LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped", WARN);
 				currentArgs.remove(0);
 				printHelpCmd();
 				break;
@@ -705,7 +710,7 @@ public class PersoSim implements Runnable {
 	 * @param args the parsed commands and arguments
 	 */
 	public void handleArgs(String... args) {
-		if((args == null) || (args.length == 0)) {System.out.println(LOG_NO_OPERATION); return;}
+		if((args == null) || (args.length == 0)) {log(this.getClass(), LOG_NO_OPERATION, INFO); return;}
 		
 		processingCommandLineArguments = true;
 		
@@ -719,7 +724,7 @@ public class PersoSim implements Runnable {
 			}
 		}
 		
-		if(currentArgs.size() == 0) {System.out.println(LOG_NO_OPERATION); return;}
+		if(currentArgs.size() == 0) {log(this.getClass(), LOG_NO_OPERATION, INFO); return;}
 		
 		int noOfArgsWhenCheckedLast;
 		while(currentArgs.size() > 0) {
@@ -740,7 +745,7 @@ public class PersoSim implements Runnable {
 			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
 				//first command in queue has not been processed
 				String currentArgument = currentArgs.get(0);
-				System.out.println(LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped");
+				log(this.getClass(), LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped", WARN);
 				currentArgs.remove(0);
 				printHelpCmd();
 				break;

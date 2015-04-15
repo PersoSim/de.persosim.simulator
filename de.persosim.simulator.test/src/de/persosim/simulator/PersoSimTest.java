@@ -177,7 +177,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		String response = readRedStdOut();
 		
-		assertEquals(PersoSim.LOG_NO_OPERATION, response);
+		assertTrue(response.contains(PersoSim.LOG_NO_OPERATION));
 	}
 	
 	/**
@@ -192,7 +192,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		String response = readRedStdOut();
 		
-		assertEquals(PersoSim.LOG_NO_OPERATION, response);
+		assertTrue(response.contains(PersoSim.LOG_NO_OPERATION));
 	}
 	
 	/**
@@ -208,8 +208,8 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim.executeUserCommands("");
 		
 		String response = readRedStdOut();
-		
-		assertEquals(PersoSim.LOG_NO_OPERATION, response);
+
+		assertTrue(response.contains(PersoSim.LOG_NO_OPERATION));
 	}
 	
 	/**
@@ -225,8 +225,8 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim.executeUserCommands(PersoSim.CMD_EXIT);
 		
 		String response = readRedStdOut();
-		
-		assertEquals(PersoSim.LOG_SIM_EXIT, response);
+
+		assertTrue(response.contains(PersoSim.LOG_SIM_EXIT));
 	}
 	
 	/**
@@ -243,7 +243,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		String response = readRedStdOut();
 		
-		assertTrue(response.startsWith(PersoSim.LOG_UNKNOWN_ARG));
+		assertTrue(response.contains(PersoSim.LOG_UNKNOWN_ARG));
 	}
 	
 	/**

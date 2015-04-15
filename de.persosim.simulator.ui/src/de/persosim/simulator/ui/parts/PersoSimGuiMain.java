@@ -1,14 +1,13 @@
 package de.persosim.simulator.ui.parts;
 
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static de.persosim.simulator.utils.PersoSimLogger.logException;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -35,6 +34,8 @@ import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 
 import de.persosim.simulator.PersoSim;
+import de.persosim.simulator.ui.Activator;
+import de.persosim.simulator.ui.utils.LinkedListLogListener;
 
 /**
  * @author slutters
@@ -49,22 +50,14 @@ public class PersoSimGuiMain {
 	
 	private Text txtInput, txtOutput;
 	
-	//flag to prevent the console from unnecessary refreshing 
-	Boolean updateNeeded = false;
-	
 	private final InputStream originalSystemIn = System.in;
-	private final PrintStream originalSystemOut = System.out;
-	
-	//Buffer for old console outputs
-	private LinkedList<String> consoleStrings = new LinkedList<String>();
 	
 	//maximum amount of strings saved in the buffer
-	private int maxLines = 2000;
+	public static final int MAXIMUM_CACHED_CONSOLE_LINES = 2000;
 	
 	//maximum of lines the text field can show
 	int maxLineCount=0;
 	
-	private PrintStream newSystemOut;
 	private final PipedInputStream inPipe = new PipedInputStream();
 	
 	private PrintWriter inWriter;
@@ -77,14 +70,20 @@ public class PersoSimGuiMain {
 	@PostConstruct
 	public void createComposite(Composite parentComposite) {
 		parent = parentComposite;
-		grabSysOut();
 		grabSysIn();
 		
 		parent.setLayout(new GridLayout(2, false));
 		
-		//configure console field
-		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);		
-		txtOutput.setText("PersoSim GUI" + System.lineSeparator());
+		//configure console field		
+		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);
+		
+		final LinkedListLogListener listener = Activator.getListLogListener();
+		if (listener != null){
+			listener.addFilter("de.persosim.simulator");	
+		} else {
+			txtOutput.setText("The OSGi logging service can not be used.\nPlease check the availability and OSGi configuration" + System.lineSeparator());
+		}
+		
 		txtOutput.setEditable(false);
 		txtOutput.setCursor(null);
 		txtOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -95,7 +94,9 @@ public class PersoSimGuiMain {
 		slider = new Slider(parent, SWT.V_SCROLL);
 		slider.setIncrement(1);
 		slider.setPageIncrement(10);
-		slider.setMaximum(consoleStrings.size()+slider.getThumb());
+		if (Activator.getListLogListener() != null){
+			slider.setMaximum(Activator.getListLogListener().getNumberOfCachedLines()+slider.getThumb());	
+		}
 		slider.setMinimum(0);
 		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));		
 		
@@ -177,14 +178,15 @@ public class PersoSimGuiMain {
 						@Override
 						public void run() {
 							
-							 if(updateNeeded) {
-								 updateNeeded=false;
+							 if(listener.isRefreshNeeded()) {
+								 listener.resetRefreshState();
 								 buildNewConsoleContent();
+								 showNewOutput();
 							 }
 						}
 					});
 					try {
-						Thread.sleep(250);
+						Thread.sleep(50);
 					} catch (InterruptedException e) {
 						// sleep interrupted, doesn't matter
 					}
@@ -205,8 +207,12 @@ public class PersoSimGuiMain {
 			
 			@Override
 			public void run() {
-				
-				slider.setMaximum(consoleStrings.size()+slider.getThumb()-maxLineCount+1);
+				if (Activator.getListLogListener() != null) {
+					slider.setMaximum(Activator.getListLogListener()
+							.getNumberOfCachedLines()
+							+ slider.getThumb()
+							- maxLineCount + 1);
+				}
 				slider.setSelection(slider.getMaximum());	
 			}
 		});
@@ -218,6 +224,10 @@ public class PersoSimGuiMain {
 	 * from the LinkedList until the Text field is full
 	 */
 	private void buildNewConsoleContent() {
+		if (Activator.getListLogListener() == null){
+			// if there is no log listener there is no content to be printed.
+			return;
+		}
 
 		// clean text field before filling it with the requested data
 		final StringBuilder strConsoleStrings = new StringBuilder();
@@ -225,9 +235,9 @@ public class PersoSimGuiMain {
 		// calculates how many lines can be shown without cutting
 		maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
 		
-		//synchronized is used to avoid IndexOutOfBoundsExceptions 
-		synchronized (consoleStrings) {
-			int listSize = consoleStrings.size();
+		//synchronized is used to avoid IndexOutOfBoundsExceptions
+		synchronized (Activator.getListLogListener()) {
+			int listSize = Activator.getListLogListener().getNumberOfCachedLines();
 
 			// value is needed to stop writing in the console when the end in
 			// the list is reached
@@ -237,8 +247,9 @@ public class PersoSimGuiMain {
 			// Fill text field with selected data
 			for (int i = 0; i < linesToShow; i++) {
 
-				strConsoleStrings.append(consoleStrings.get(slider
+				strConsoleStrings.append(Activator.getListLogListener().getLine(slider
 						.getSelection() + i));
+				strConsoleStrings.append("\n");
 
 			}
 		}
@@ -256,109 +267,24 @@ public class PersoSimGuiMain {
 	}
 		
 	/**
-	 * This method activates redirection of System.out.
+	 * controls slider selection (auto scrolling)
 	 */
-	private void grabSysOut() {
-	    OutputStream out = new OutputStream() {
-
-			char [] buffer = new char [200];
-			int currentPosition = 0;
-			boolean checkNextForNewline = false;
-			
+	public void showNewOutput() {
+		
+		sync.syncExec(new Runnable() {
 			@Override
-			public void write(int b) throws IOException {
-				final char value = (char) b;
-				
-				if (checkNextForNewline){
-					checkNextForNewline = false;
-					if (value == '\n'){
-						return;
-					}
-				}
-
-				if (currentPosition < buffer.length - 1 && !(value == '\n' || value == '\r')){
-					buffer [currentPosition++] = value;
-				} else {
-					if (value == '\n' || value == '\r'){
-						if (value == '\r'){
-							checkNextForNewline = true;
-						}
-						buffer [currentPosition++] = '\n';
-					} else {
-						buffer [currentPosition++] = value;
-					}
-
-					final String toPrint = new String(Arrays.copyOf(buffer, currentPosition));
-					originalSystemOut.print(toPrint);
-					saveConsoleStrings(toPrint);
-					
-					
-					currentPosition = 0;
-				}
-
-			}
-		};
-
-		newSystemOut = new PrintStream(out, true);
-		
-		System.setOut(newSystemOut);
-		
-		if(newSystemOut != null) {
-			originalSystemOut.println("activated redirection of System.out");
-		}
-	    
-	}
-
-	/**
-	 * saves and manages Strings grabbed by {@link #grabSysOut()} in a
-	 * LinkedList. This is necessary because they are not saved in the text
-	 * field all the time. Writing all of them directly in the text field would
-	 * slow down the whole application. Taking the Strings from the List and
-	 * adding them to the text field (if needed) is done by
-	 * {@link #buildNewConsoleContent()} which is called by {@link #showNewOutput()}.
-	 * 
-	 * @param s is the String that should be saved in the List
-	 */
-	protected void saveConsoleStrings(final String s) {
-
-		String[] splitResult = s.split("(?=/n|/r)");
-
-		for (int i = 0; i < splitResult.length; i++) {
-
-			if (consoleStrings.size() > maxLines) {
-				
-				//synchronized is used to avoid IndexOutOfBoundsExceptions 
-				synchronized (consoleStrings) {
-					consoleStrings.removeFirst();
-					consoleStrings.add(splitResult[i]);	
-				}
-
-			}else{
-			consoleStrings.add(splitResult[i]);
-			}
-			
-			
-			
-			if (!locked) {
-				updateNeeded=true;
+			public void run() {
 				rebuildSlider();
+				slider.setSelection(slider.getMaximum());							
 			}
-		}
+		});
+
 	}
+	
 	
 	public void write(String line) {
 		inWriter.println(line);
 		inWriter.flush();
-	}
-	
-	/**
-	 * This method deactivates redirection of System.out.
-	 */
-	private void releaseSysOut() {
-		if(originalSystemOut != null) {
-			System.setOut(originalSystemOut);
-			System.out.println("deactivated redirection of System.out");
-		}
 	}
 	
 	/**
@@ -369,10 +295,10 @@ public class PersoSimGuiMain {
 		try {
 	    	inWriter = new PrintWriter(new PipedOutputStream(inPipe), true);
 	    	System.setIn(inPipe);
-	    	originalSystemOut.println("activated redirection of System.in");
+	    	log(this.getClass(), "activated redirection of System.in");
 	    }
 	    catch(IOException e) {
-	    	System.out.println("Error: " + e);
+	    	logException(this.getClass(), e);
 	    	return;
 	    }
 	}
@@ -383,13 +309,12 @@ public class PersoSimGuiMain {
 	private void releaseSysIn() {
 		if(originalSystemIn != null) {
 			System.setIn(originalSystemIn);
-			originalSystemOut.println("deactivated redirection of System.in");
+			log(this.getClass(), "deactivated redirection of System.in");
 		}
 	}
 	
 	@PreDestroy
 	public void cleanUp() {
-		releaseSysOut();
 		releaseSysIn();
 		System.exit(0);
 	}

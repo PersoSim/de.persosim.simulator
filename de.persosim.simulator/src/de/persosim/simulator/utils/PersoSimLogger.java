@@ -1,18 +1,8 @@
 package de.persosim.simulator.utils;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import org.osgi.service.log.LogService;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-
-import de.persosim.simulator.PersoSim;
+import de.persosim.simulator.Activator;
 
 /**
  * This class is used as primary Logger throughout all PersoSim classes.
@@ -27,39 +17,13 @@ public class PersoSimLogger {
 	public static final byte WARN = 4;
 	public static final byte ERROR = 5;
 	public static final byte FATAL = 6;
+	public static final byte UI = 120;
 	private static final byte LOGLEVEL_DFLT = DEBUG;
-	
-	private static Logger logger;
 
 	/**
 	 * Ensure that this type can not be instantiated
 	 */
 	private PersoSimLogger() {
-	}
-	
-	public static void init() {
-		logger = Logger.getLogger("GTSimulatorLogger");
-		
-		logger.removeAllAppenders();
-
-		//common log layout
-		Layout layout = new PatternLayout("%d %-5p - %m%n");
-
-		// log to stdOut
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		logger.addAppender(consoleAppender);
-
-		// log to file
-		try {
-			String logFileName = "logs" + File.separator + "PersoSim_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".log";
-			FileAppender fileAppender = new FileAppender(layout, logFileName, false);
-			logger.addAppender(fileAppender);
-		} catch (IOException e) {
-			PersoSim.showExceptionToUser(e);
-		}
-
-		// ALL | DEBUG | INFO | WARN | ERROR | FATAL | OFF:
-		logger.setLevel(Level.ALL);
 	}
 
 	/**
@@ -228,30 +192,12 @@ public class PersoSimLogger {
 	}
 
 	private static void logPlain(String message, byte logLevel) {
-		if (logger != null) {
-			switch (logLevel) {
-			case TRACE:
-				logger.trace(message);
-				break;
-			case DEBUG:
-				logger.debug(message);
-				break;
-			case INFO:
-				logger.info(message);
-				break;
-			case WARN:
-				logger.warn(message);
-				break;
-			case ERROR:
-				logger.error(message);
-				break;
-			case FATAL:
-				logger.fatal(message);
-				break;
-			default:
-				logger.debug(message);
-				break;
-			}
+		LogService logService = Activator.getLogservice();
+		if (logService != null){
+			logService.log(logLevel, message);
+		} else {
+			System.out.println(message);
 		}
+		
 	}
 }

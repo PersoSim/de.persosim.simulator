@@ -1,5 +1,7 @@
 package de.persosim.simulator.ui.handlers;
 
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+
 import javax.inject.Inject;
 
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -7,6 +9,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
 import de.persosim.simulator.PersoSim;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
+import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
  * This class implements an abstract super class for any handler handling the
@@ -29,11 +32,11 @@ public abstract class SelectPersoHandler {
 	 *            the Id of a default personalization.
 	 */
 	protected void loadPersonalization(String personalization) {
-		System.out.println("Select Perso Handler called with param: " + personalization);
+		log(this.getClass(), "Select Perso Handler called with param: " + personalization);
 		
 		String persoCmdString = PersoSim.CMD_LOAD_PERSONALIZATION + " " + personalization;
 		
-		System.out.println("executing command: " + persoCmdString);
+		log(this.getClass(), "executing command: " + persoCmdString);
 		
 		// ID of part as defined in fragment.e4xmi application model
 		MPart mainPart = partService.findPart("de.persosim.simulator.ui.parts.mainPart");
@@ -42,7 +45,7 @@ public abstract class SelectPersoHandler {
 			((PersoSimGuiMain) mainPart.getObject()).write(persoCmdString);
 		}
 		
-		System.out.println("finished setting of personalization");
+		log(this.getClass(), "finished setting of personalization", PersoSimLogger.INFO);
 	}
 	
 }
