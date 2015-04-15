@@ -1,6 +1,9 @@
 package de.persosim.simulator.integrationtest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -9,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.Simulator;
-import de.persosim.simulator.perso.DefaultPersonalization;
+import de.persosim.simulator.perso.MinimumPersonalization;
 import de.persosim.simulator.perso.Personalization;
 
 public class IntegrationTester {
@@ -94,6 +97,6 @@ public class IntegrationTester {
 		assertTrue(simService.startSimulator());
 		Personalization perso = simService.getPersonalization(); 
 		assertNotNull(perso);
-		assertTrue(perso instanceof DefaultPersonalization);
+		assertTrue(perso instanceof MinimumPersonalization);
 	}
 }
