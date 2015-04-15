@@ -5,15 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -26,26 +17,16 @@ import de.persosim.simulator.utils.Utils;
  * @author mboonk
  *
  */
-@XmlRootElement
 public class ElementaryFile extends AbstractFile {
 
-	@XmlElement
-	@XmlJavaTypeAdapter(HexBinaryAdapter.class)
 	private byte[] content;
 	
-	@XmlElement
 	private ShortFileIdentifier shortFileIdentifier;
 
-	@XmlElementWrapper
-	@XmlAnyElement(lax=true)
 	private Collection<SecCondition> readingConditions;
 	
-	@XmlElementWrapper
-	@XmlAnyElement(lax=true)
 	private Collection<SecCondition> writingConditions;
 	
-	@XmlElementWrapper
-	@XmlAnyElement(lax=true)
 	private Collection<SecCondition> erasingConditions; //IMPL MBK implement the ISO7816 erase functionality for files
 	
 	/**
@@ -126,40 +107,6 @@ public class ElementaryFile extends AbstractFile {
 		result.add(shortFileIdentifier);
 		return result;
 	}
-	
-	/**
-	 * JAXB callback
-	 * <p/>
-	 * Used to erase wrapper elements for empty collections
-	 * @param m
-	 */
-	@Override
-	protected void beforeMarshal(Marshaller m){
-		super.beforeMarshal(m);
-		if ((readingConditions != null) && (readingConditions.isEmpty())) {
-			readingConditions = null;
-		}
-		if ((writingConditions != null) && (writingConditions.isEmpty())) {
-			writingConditions = null;
-		}
-		if ((erasingConditions != null) && (erasingConditions.isEmpty())) {
-			erasingConditions = null;
-		}
-	}
-	
-	/**
-	 * JAXB callback
-	 * <p/>
-	 * Used to initialize undefined access conditions with empty sets => forbidden
-	 * @param u
-	 * @param parent
-	 */
-	@Override
-	protected void afterUnmarshal(Unmarshaller u, Object parent) {
-		super.afterUnmarshal(u, parent);
-		if (readingConditions == null) readingConditions = Collections.emptySet();
-		if (writingConditions == null) writingConditions = Collections.emptySet();
-		if (erasingConditions == null) erasingConditions = Collections.emptySet();
-	}
+
 
 }

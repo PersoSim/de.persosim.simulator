@@ -7,8 +7,6 @@ Bundle-Vendor: HJP Consulting GmbH
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: de.persosim.simulator;bundle-version="[0.1.0,1.0.0)",
  de.persosim.simulator.adapter.socket
-Export-Package: de.persosim.simulator.protocols,
- de.persosim.simulator.test,
- de.persosim.simulator.test.globaltester,
- de.persosim.simulator.test.globaltester.perso,
+Export-Package: de.persosim.simulator.test.globaltester,
  mockit
+Import-Package: org.eclipse.ui.keys

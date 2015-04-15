@@ -3,8 +3,6 @@ package de.persosim.simulator.cardobjects;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.xml.bind.annotation.XmlElement;
-
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -20,7 +18,6 @@ import de.persosim.simulator.utils.Utils;
 public abstract class AbstractFile extends AbstractCardObject implements
 		CardFile {
 
-	@XmlElement
 	protected FileIdentifier fileIdentifier;
 
 	/**

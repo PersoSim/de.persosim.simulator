@@ -5,8 +5,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.documents.Mrz;
 import de.persosim.simulator.documents.MrzTD1;
@@ -18,7 +16,6 @@ import de.persosim.simulator.documents.MrzTD1;
  * 
  */
 //XXX MrzAuthObject, relies on TD1 format
-@XmlRootElement
 public class MrzAuthObject extends PasswordAuthObject {
 	
 	//XXX add serialization for this object including mrt field and unmarshaller that can reproduce password[] from mrz

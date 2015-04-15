@@ -5,11 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
@@ -18,11 +13,7 @@ import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.utils.Utils;
 
-@XmlRootElement
 public class ByteDataAuxObject extends AuxDataObject {
-
-	@XmlElement
-	@XmlJavaTypeAdapter(HexBinaryAdapter.class)
 	byte [] data;
 	
 	public ByteDataAuxObject(){

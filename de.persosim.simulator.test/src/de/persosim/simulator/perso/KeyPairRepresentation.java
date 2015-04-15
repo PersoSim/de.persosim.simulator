@@ -1,13 +1,8 @@
-package de.persosim.simulator.jaxb;
+package de.persosim.simulator.perso;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * Serializable representation of data required to reconstruct a {@link KeyPair}
@@ -15,14 +10,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * @author amay
  *
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+
 public class KeyPairRepresentation {
 
-	@XmlElement
-	@XmlJavaTypeAdapter(PublicKeyAdapter.class)
 	PublicKey pubKey;
-	@XmlElement
-	@XmlJavaTypeAdapter(PrivateKeyAdapter.class)
 	PrivateKey privKey;
 	
 	public KeyPairRepresentation() {

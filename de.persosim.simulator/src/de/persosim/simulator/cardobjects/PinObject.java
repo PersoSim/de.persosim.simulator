@@ -1,6 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * This class represents a PIN which may be used e.g. by the PACE protocol.
@@ -9,7 +8,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  */
 //XXX SLS why define an additional object here? I think PasswordAuthObject should be sufficient
-@XmlRootElement
 public class PinObject extends PasswordAuthObjectWithRetryCounter {
 	
 	public PinObject() {

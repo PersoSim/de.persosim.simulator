@@ -1,8 +1,5 @@
 package de.persosim.simulator.protocols.ta;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.persosim.simulator.utils.BitField;
 
 /**
@@ -12,11 +9,8 @@ import de.persosim.simulator.utils.BitField;
  * @author mboonk
  * 
  */
-@XmlRootElement
 public class RelativeAuthorization {
-	@XmlElement
 	CertificateRole role;
-	@XmlElement
 	BitField authorization;
 
 	public RelativeAuthorization() {

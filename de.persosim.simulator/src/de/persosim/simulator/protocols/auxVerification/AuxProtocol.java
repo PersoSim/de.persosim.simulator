@@ -6,9 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.AuxDataObject;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -32,9 +29,7 @@ import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.InfoSource;
 
-@XmlRootElement
 public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants {
-	@XmlTransient
 	CardStateAccessor cardState;
 	
 	@Override

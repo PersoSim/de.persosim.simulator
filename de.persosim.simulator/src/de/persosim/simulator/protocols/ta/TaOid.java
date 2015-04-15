@@ -9,10 +9,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
 import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110;
@@ -20,7 +16,6 @@ import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 //XXX MBK complete this class and extract according methods from TR03110
-@XmlRootElement
 public class TaOid extends Oid implements Tr03110 {
 	public final static TaOid id_TA                  = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x02, 0x02, 0x02}), "id-TA");
 	
@@ -81,7 +76,6 @@ public class TaOid extends Oid implements Tr03110 {
 
 	}
 	
-	@XmlTransient
 	private String idString;
 
 	public TaOid() {
@@ -123,17 +117,6 @@ public class TaOid extends Oid implements Tr03110 {
 		return idString;
 	}
 	
-	/**
-	 * JAXB callback
-	 * <p/>
-	 * Used to initialize idString
-	 * @param u
-	 * @param parent
-	 */
-	protected void afterUnmarshal(Unmarshaller u, Object parent) {
-		idString = getStringRepresentation(oidByteArray);
-	}
-
 	public String getHashAlgorithmName() {
 		if (Arrays.equals(oidByteArray, id_TA_ECDSA_SHA_1.oidByteArray) || Arrays.equals(oidByteArray, id_TA_RSA_PSS_SHA_1.oidByteArray) || Arrays.equals(oidByteArray, id_TA_RSA_v1_5_SHA_1.oidByteArray)){
 			return "SHA-1";

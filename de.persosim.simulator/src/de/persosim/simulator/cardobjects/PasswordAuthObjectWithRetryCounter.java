@@ -1,7 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 
 
 /**
@@ -11,11 +9,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author slutters
  *
  */
-@XmlRootElement
 public class PasswordAuthObjectWithRetryCounter extends ChangeablePasswordAuthObject {
-	@XmlAttribute
 	protected int retryCounterDefaultValue;
-	@XmlAttribute
 	protected int retryCounterCurrentValue;
 	
 	public PasswordAuthObjectWithRetryCounter(){

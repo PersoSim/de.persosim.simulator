@@ -1,7 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 /**
  * Abstract super class for all object identifiers, contains the generic
  * matching logic on card objects
@@ -9,7 +7,6 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author mboonk
  * 
  */
-@XmlTransient
 public abstract class AbstractCardObjectIdentifier implements
 		CardObjectIdentifier {
 

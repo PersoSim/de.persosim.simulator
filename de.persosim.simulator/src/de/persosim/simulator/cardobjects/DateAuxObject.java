@@ -5,9 +5,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
@@ -16,9 +13,7 @@ import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.utils.Utils;
 
-@XmlRootElement
 public class DateAuxObject extends AuxDataObject {
-	@XmlElement
 	Date date;
 
 	public DateAuxObject(){

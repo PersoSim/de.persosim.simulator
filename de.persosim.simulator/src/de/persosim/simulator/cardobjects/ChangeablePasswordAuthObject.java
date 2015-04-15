@@ -1,8 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * This class extends a {@link PasswordAuthObject} by functionality which makes
  * it possible to change the PIN after creation.
@@ -11,12 +8,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author slutters
  * 
  */
-@XmlRootElement
 public class ChangeablePasswordAuthObject extends PasswordAuthObject {
 	
-	@XmlAttribute
 	protected int minLengthOfPasswordInBytes;
-	@XmlAttribute
 	protected int maxLengthOfPasswordInBytes;
 	
 	public ChangeablePasswordAuthObject() {

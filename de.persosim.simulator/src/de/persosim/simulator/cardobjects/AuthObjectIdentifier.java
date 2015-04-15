@@ -1,8 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -10,10 +7,8 @@ import de.persosim.simulator.utils.Utils;
  * @author mboonk
  *
  */
-@XmlRootElement
 public class AuthObjectIdentifier extends AbstractCardObjectIdentifier {
 
-	@XmlAttribute(name="id")
 	int identifier;
 	
 	public AuthObjectIdentifier() {

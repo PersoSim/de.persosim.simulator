@@ -1,7 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import de.persosim.simulator.protocols.ta.TerminalType;
 
@@ -12,10 +10,8 @@ import de.persosim.simulator.protocols.ta.TerminalType;
  * @author mboonk
  * 
  */
-@XmlRootElement
 public class TrustPointIdentifier extends AbstractCardObjectIdentifier {
 
-	@XmlElement
 	TerminalType terminalType;
 
 	public TrustPointIdentifier() {

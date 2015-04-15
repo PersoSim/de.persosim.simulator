@@ -4,13 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
-
 import de.persosim.simulator.secstatus.SecStatus;
 
 /**
@@ -20,18 +13,12 @@ import de.persosim.simulator.secstatus.SecStatus;
  * @author amay
  * 
  */
-@XmlTransient
 public abstract class AbstractCardObject implements CardObject, Iso7816LifeCycle {
 
-	@XmlTransient
 	protected CardObject parent;
-	
-	@XmlElementWrapper
-	@XmlAnyElement(lax=true)
 	protected List<CardObject> children = new ArrayList<>();
 	SecStatus securityStatus;
 	
-	@XmlElement
 	protected Iso7816LifeCycleState lifeCycleState = Iso7816LifeCycleState.CREATION;
 
 	@Override
@@ -128,31 +115,6 @@ public abstract class AbstractCardObject implements CardObject, Iso7816LifeCycle
 		
 		// if no fitting child has been found, collection is empty
 		return matchingChildren;
-	}
-	
-	/**
-	 * JAXB callback
-	 * <p/>
-	 * Used to erase wrapper element for children if children is empty.
-	 * @param m
-	 */
-	protected void beforeMarshal(Marshaller m){
-		if ((children != null) && (children.isEmpty())) {
-			children = null;
-		}
-	}
-	
-	/**
-	 * JAXB callback
-	 * <p/>
-	 * Used to fix the parent relation
-	 * @param u
-	 * @param parent
-	 */
-	protected void afterUnmarshal(Unmarshaller u, Object parent) {
-		if (parent instanceof CardObject) { 
-			this.parent = (CardObject)parent;
-		}
 	}
 	
 }

@@ -3,15 +3,12 @@ package de.persosim.simulator.protocols.pace;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.CryptoSupportAes;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.utils.HexString;
 
-@XmlRootElement
 public class PaceOid extends Oid implements Pace {
 	public static final int HASHCODEMULTIPLICATOR = 3;
 	

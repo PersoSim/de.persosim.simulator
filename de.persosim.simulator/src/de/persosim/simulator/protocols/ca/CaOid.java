@@ -3,8 +3,6 @@ package de.persosim.simulator.protocols.ca;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.CryptoSupportAes;
 import de.persosim.simulator.crypto.CryptoUtil;
@@ -12,7 +10,6 @@ import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.utils.HexString;
 
 //XXX SLS continue extracting code shared with {@link PaceOid} to {@link Oid}
-@XmlRootElement
 public class CaOid extends Oid implements Ca {
 	
 	private String idString;

@@ -3,8 +3,6 @@ package de.persosim.simulator.cardobjects;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
@@ -18,15 +16,11 @@ import de.persosim.simulator.exception.CertificateUpdateException;
  * @author mboonk
  * 
  */
-@XmlRootElement
 public class TrustPointCardObject extends AbstractCardObject {
 	
-	@XmlElement
 	CardVerifiableCertificate currentCertificate;
-	@XmlElement
 	CardVerifiableCertificate previousCertificate;
 	
-	@XmlElement
 	TrustPointIdentifier identifier;
 
 	

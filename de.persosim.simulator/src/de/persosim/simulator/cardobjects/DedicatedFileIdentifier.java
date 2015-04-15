@@ -2,22 +2,14 @@ package de.persosim.simulator.cardobjects;
 
 import java.util.Arrays;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 /**
  * Identifier using the name of a dedicated file for matching.
  * 
  * @author mboonk
  * 
  */
-@XmlRootElement
 public class DedicatedFileIdentifier extends AbstractCardObjectIdentifier {
 
-	@XmlValue
-	@XmlJavaTypeAdapter(HexBinaryAdapter.class)
 	byte [] fileName;
 
 	public DedicatedFileIdentifier() {

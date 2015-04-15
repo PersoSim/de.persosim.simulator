@@ -8,7 +8,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
@@ -29,7 +28,6 @@ import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.InfoSource;
 import de.persosim.simulator.utils.Utils;
 
-@XmlRootElement
 public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants {
 	@Override
 	public String getProtocolName() {

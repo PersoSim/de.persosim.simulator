@@ -1,9 +1,6 @@
 package de.persosim.simulator;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -15,12 +12,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import org.osgi.framework.Bundle;
 
-import de.persosim.simulator.jaxb.PersoSimJaxbContextProvider;
 import de.persosim.simulator.perso.Personalization;
 
 /**
@@ -239,31 +232,8 @@ public class CommandParser {
 		} catch (Exception e) {
 			//seems to be a call to load a personalization by path
 		}
-		
-		//actually load perso from the identified file
-		try{
-			return parsePersonalization(identifier);
-		} catch(FileNotFoundException | JAXBException e) {
-			System.out.println("unable to set personalization, reason is: " + e.getMessage());
-			System.out.println("simulation is stopped");
-			return null;
-		}
+		return null;
 	} 
-	
-	/**
-	 * This method parses a {@link Personalization} object from a file identified by its name.
-	 * @param persoFileName the name of the file to contain the personalization
-	 * @return the parsed personalization
-	 * @throws FileNotFoundException 
-	 * @throws JAXBException if parsing of personalization not successful
-	 */
-	public static Personalization parsePersonalization(String persoFileName) throws FileNotFoundException, JAXBException {
-		File persoFile = new File(persoFileName);
-		
-		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-		System.out.println("Parsing personalization from file " + persoFileName);
-		return (Personalization) um.unmarshal(new FileReader(persoFile));
-	}
 	
 	public static void executeUserCommands(Simulator sim, String... args) {
 		if((args == null) || (args.length == 0)) {System.out.println(LOG_NO_OPERATION); return;}

@@ -1,6 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import javax.xml.bind.annotation.XmlValue;
 
 /**
  * Implementation of an ISO7816-4 compliant short identifier.
@@ -10,7 +9,6 @@ import javax.xml.bind.annotation.XmlValue;
  */
 public class ShortFileIdentifier extends AbstractCardObjectIdentifier {
 
-	@XmlValue
 	private int identifier;
 	
 	public ShortFileIdentifier(){

@@ -1,8 +1,5 @@
 package de.persosim.simulator.protocols.ta;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 
 /**
  * This class contains the certificate holder authorization template information
@@ -11,11 +8,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author mboonk
  * 
  */
-@XmlRootElement
 public class CertificateHolderAuthorizationTemplate {
-	@XmlElement
 	TaOid objectIdentifier;
-	@XmlElement
 	RelativeAuthorization relativeAuthorization;
 
 	public CertificateHolderAuthorizationTemplate(){

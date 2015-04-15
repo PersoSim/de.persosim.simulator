@@ -4,12 +4,10 @@ import java.nio.file.AccessDeniedException;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.xml.bind.annotation.XmlElement;
 
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 
 public abstract class AuxDataObject extends AbstractCardObject {
-	@XmlElement
 	OidIdentifier identifier;
 	
 	public AuxDataObject(){

@@ -3,15 +3,7 @@ package de.persosim.simulator.cardobjects;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.persosim.simulator.crypto.DomainParameterSet;
-import de.persosim.simulator.crypto.StandardizedDomainParameters;
 
 /**
  * This object wraps domain parameters for storing them in the object store.
@@ -20,15 +12,10 @@ import de.persosim.simulator.crypto.StandardizedDomainParameters;
  * @author slutters
  *
  */
-@XmlRootElement(name="DomainParameterSet")
 public class DomainParameterSetCardObject extends AbstractCardObject {
 	
-	@XmlAnyElement(lax=true)
 	protected DomainParameterSet domainParameterSet;
-	@XmlElement(name="domainParameterId")
 	protected DomainParameterSetIdentifier primaryIdentifier;
-	@XmlElementWrapper(name="usage")
-	@XmlAnyElement(lax=true)
 	protected Collection<CardObjectIdentifier> furtherIdentifiers;
 	
 	public DomainParameterSetCardObject() {
@@ -64,40 +51,6 @@ public class DomainParameterSetCardObject extends AbstractCardObject {
 
 	public DomainParameterSet getDomainParameterSet() {
 		return domainParameterSet;
-	}
-	
-	/**
-	 * JAXB callback
-	 * <p/>
-	 * Used to serialize standardized domain parameters only using their id.
-	 * @param m
-	 */
-	@Override
-	protected void beforeMarshal(Marshaller m){
-		super.beforeMarshal(m);
-		
-		if ((primaryIdentifier != null)
-				&& (primaryIdentifier.getInteger() < StandardizedDomainParameters.NO_OF_STANDARDIZED_DOMAIN_PARAMETERS)) {
-			domainParameterSet = null;
-		}
-	}
-	
-	/**
-	 * JAXB callback
-	 * <p/>
-	 * Used to initialize standardized domain parameters if only the id is provided
-	 * @param u
-	 * @param parent
-	 */
-	@Override
-	protected void afterUnmarshal(Unmarshaller u, Object parent) {
-		super.afterUnmarshal(u, parent);
-		
-		if ((domainParameterSet == null)
-				&& (primaryIdentifier != null)
-				&& (primaryIdentifier.getInteger() <= StandardizedDomainParameters.NO_OF_STANDARDIZED_DOMAIN_PARAMETERS)) {
-			domainParameterSet = StandardizedDomainParameters.getDomainParameterSetById(primaryIdentifier.getInteger());
-		}
 	}
 	
 	@Override

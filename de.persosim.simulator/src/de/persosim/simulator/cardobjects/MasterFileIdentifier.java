@@ -1,6 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * {@link CardObjectIdentifier} that can be used to search for
@@ -9,7 +8,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author amay
  * 
  */
-@XmlRootElement
 public class MasterFileIdentifier implements CardObjectIdentifier {
 
 	@Override

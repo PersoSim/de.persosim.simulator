@@ -6,8 +6,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.persosim.simulator.tlv.Asn1;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -33,7 +31,6 @@ import de.persosim.simulator.utils.HexString;
  * @author amay
  * 
  */
-@XmlRootElement
 public class DefaultSecInfoCmsBuilder implements TlvConstants, SecInfoCmsBuilder {
 
 	/* (non-Javadoc)

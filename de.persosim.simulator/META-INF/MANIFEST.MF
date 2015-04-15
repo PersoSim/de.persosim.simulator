@@ -26,6 +26,6 @@ Import-Package: org.osgi.framework
 Eclipse-BundleShape: dir
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.equinox.registry
+Service-Component: OSGI-INF/SimulatorComponent.xml
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: de.persosim.simulator.Activator
-Service-Component: OSGI-INF/SimulatorComponent.xml

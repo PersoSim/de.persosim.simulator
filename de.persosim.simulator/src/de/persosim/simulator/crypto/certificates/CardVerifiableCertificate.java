@@ -7,17 +7,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.NotImplementedException;
 import de.persosim.simulator.exception.NotParseableException;
-import de.persosim.simulator.jaxb.PublicKeyAdapter;
 import de.persosim.simulator.protocols.TR03110Utils;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.CertificateRole;
@@ -39,27 +32,15 @@ import de.persosim.simulator.utils.Utils;
  * @author mboonk
  * 
  */
-@XmlRootElement
 public class CardVerifiableCertificate {
-	@XmlElement
 	int certificateProfileIdentifier;
-	@XmlElement
 	PublicKeyReference certificateAuthorityReference;
-	@XmlElement
 	TaOid publicKeyOid;
-	@XmlElement
-	@XmlJavaTypeAdapter(PublicKeyAdapter.class)
 	PublicKey publicKey;
-	@XmlElement
 	PublicKeyReference certificateHolderReference;
-	@XmlElement
 	CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate;
-	@XmlElement
 	Date certificateEffective;
-	@XmlElement
 	Date certificateExpiration;
-	@XmlElementWrapper
-	@XmlAnyElement
 	List<CertificateExtension> certificateExtensions;
 	
 	public CardVerifiableCertificate() {

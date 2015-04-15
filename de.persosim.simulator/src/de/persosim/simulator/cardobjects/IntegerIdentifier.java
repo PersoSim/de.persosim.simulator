@@ -1,7 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import javax.xml.bind.annotation.XmlAttribute;
-
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -18,7 +16,6 @@ import de.persosim.simulator.utils.Utils;
 public abstract class IntegerIdentifier extends AbstractCardObjectIdentifier {
 	protected static final int MATCHES_ALWAYS = Integer.MIN_VALUE;
 	
-	@XmlAttribute
 	int integer;
 	
 	public IntegerIdentifier(int integer) {

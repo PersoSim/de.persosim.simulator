@@ -1,8 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
-
 /**
  * Identifies for a {@link CardFile} using the identifier stored in the file
  * itself.
@@ -10,10 +7,8 @@ import javax.xml.bind.annotation.XmlValue;
  * @author mboonk
  * 
  */
-@XmlRootElement
 public class FileIdentifier extends AbstractCardObjectIdentifier {
 
-	@XmlValue
 	private int identifier;
 	
 	/**

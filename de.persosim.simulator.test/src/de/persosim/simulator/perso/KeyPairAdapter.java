@@ -1,4 +1,4 @@
-package de.persosim.simulator.jaxb;
+package de.persosim.simulator.perso;
 
 import java.security.KeyPair;
 

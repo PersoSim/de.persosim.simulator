@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * This {@link CardObject} stores a date and time.
@@ -13,12 +11,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author mboonk
  *
  */
-@XmlRootElement
 public class DateTimeCardObject extends AbstractCardObject {
 
-	@XmlElement
 	Date currentDate;
-	@XmlElement
 	DateTimeObjectIdentifier identifier;
 
 	public DateTimeCardObject(){}

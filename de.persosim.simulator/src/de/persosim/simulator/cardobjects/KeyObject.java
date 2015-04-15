@@ -4,14 +4,6 @@ import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import de.persosim.simulator.jaxb.KeyPairAdapter;
-
 /**
  * This object wraps key objects for storing them in the object store.
  * They can be retrieved from there using their key reference id or additionally associated OIDs.
@@ -19,21 +11,13 @@ import de.persosim.simulator.jaxb.KeyPairAdapter;
  * @author slutters
  *
  */
-@XmlRootElement
 public class KeyObject extends AbstractCardObject {
-	
-	@XmlElement
-	@XmlJavaTypeAdapter(KeyPairAdapter.class)
 	protected KeyPair keyPair;
 	
-	@XmlElement(name="keyIdentifier")
 	protected KeyIdentifier primaryIdentifier;
 	
-	@XmlElementWrapper(name="usage")
-	@XmlAnyElement(lax=true)
 	protected Collection<CardObjectIdentifier> furtherIdentifiers = new ArrayList<>();
 	
-	@XmlElement
 	protected boolean privilegedOnly = false;
 	
 	

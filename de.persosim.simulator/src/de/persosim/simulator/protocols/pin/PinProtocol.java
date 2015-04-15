@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
@@ -35,7 +34,6 @@ import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.InfoSource;
 import de.persosim.simulator.utils.Utils;
 
-@XmlRootElement(name="PinManagement")
 public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, ApduSpecificationConstants, InfoSource{
 	
 	protected ApduSpecification apduSpecification;

@@ -1,6 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
 
 /**
@@ -8,7 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author mboonk
  *
  */
-@XmlRootElement
 public class MasterFile extends DedicatedFile {
 
 	public MasterFile() {

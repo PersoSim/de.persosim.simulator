@@ -2,8 +2,6 @@ package de.persosim.simulator.cardobjects;
 
 import java.util.Collection;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -16,10 +14,8 @@ import de.persosim.simulator.tlv.TlvTag;
  * @author mboonk
  * 
  */
-@XmlRootElement
 public class DedicatedFile extends AbstractFile {
 
-	@XmlElement
 	protected DedicatedFileIdentifier dedicatedFileName;
 
 	public DedicatedFile() {

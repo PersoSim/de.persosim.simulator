@@ -5,12 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import de.persosim.simulator.utils.HexString;
 
 
@@ -19,17 +13,12 @@ import de.persosim.simulator.utils.HexString;
  * @author mboonk
  *
  */
-@XmlRootElement
 public class PasswordAuthObject extends AbstractCardObject implements AuthObject {
 	
-	@XmlElement
 	AuthObjectIdentifier identifier;
 	
-	@XmlElement
-	@XmlJavaTypeAdapter(HexBinaryAdapter.class)
 	byte [] password;
 	
-	@XmlAttribute
 	protected String passwordName;
 	
 	public PasswordAuthObject(){

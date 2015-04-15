@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import javax.crypto.KeyAgreement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
@@ -52,7 +51,6 @@ import de.persosim.simulator.utils.Utils;
  * @author mboonk
  * 
  */
-@XmlRootElement
 public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants,
 		InfoSource, Ri, TlvConstants {
 

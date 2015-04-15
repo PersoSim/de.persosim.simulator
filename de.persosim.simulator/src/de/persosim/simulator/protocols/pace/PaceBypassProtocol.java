@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
@@ -69,7 +67,6 @@ import de.persosim.simulator.utils.Utils;
  * @author amay
  * 
  */
-@XmlRootElement
 //XXX reduce code duplication with AbstractPaceProtocol
 public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecificationConstants,
 		InfoSource, TlvConstants {

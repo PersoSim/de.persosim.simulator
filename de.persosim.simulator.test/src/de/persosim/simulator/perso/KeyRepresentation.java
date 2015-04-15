@@ -1,13 +1,6 @@
-package de.persosim.simulator.jaxb;
+package de.persosim.simulator.perso;
 
 import java.security.Key;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * Serializable representation of data required to reconstruct a {@link Key}
@@ -15,14 +8,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * @author amay
  *
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+
 public class KeyRepresentation {
 
-	@XmlAttribute
 	String algorithm;
-	
-	@XmlValue
-	@XmlJavaTypeAdapter(HexBinaryAdapter.class)
 	byte[] encodedKey;
 
 	public KeyRepresentation() {

@@ -53,13 +53,7 @@ public class Profile08 extends AbstractProfile {
 				HexString.toByteArray("77635293F8ED87B970C46C4B1109B6066B4517035524DA5069173B2526348F0F")),
 				2, true);
 	}
-	
-	@Override
-	protected void addUnmarshallerCallbacks() {
-		unmarshallerCallbacks.add(new DefectListNpaUnmarshallerCallback());
-
-	}
-	
+		
 	@Override
 	protected void addEidDg13(DedicatedFile eIdAppl) {
 		// do not create DG

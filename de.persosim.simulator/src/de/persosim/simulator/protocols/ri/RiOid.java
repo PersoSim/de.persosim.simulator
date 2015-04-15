@@ -9,7 +9,6 @@ import java.security.PublicKey;
 import java.util.Arrays;
 
 import javax.crypto.KeyAgreement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.crypto.CryptoUtil;
@@ -25,7 +24,6 @@ import de.persosim.simulator.utils.HexString;
  * @author mboonk
  * 
  */
-@XmlRootElement
 public class RiOid extends Oid implements Ri, TlvConstants {
 
 	private String idString;

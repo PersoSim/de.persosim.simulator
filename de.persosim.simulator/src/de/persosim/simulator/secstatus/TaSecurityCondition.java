@@ -3,9 +3,6 @@ package de.persosim.simulator.secstatus;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
@@ -26,12 +23,9 @@ import de.persosim.simulator.utils.BitField;
  * @author mboonk
  * 
  */
-@XmlRootElement
 public class TaSecurityCondition implements SecCondition {
 
-	@XmlElement
 	TerminalType terminalType;
-	@XmlElement
 	RelativeAuthorization authorization;
 
 	public TaSecurityCondition(){

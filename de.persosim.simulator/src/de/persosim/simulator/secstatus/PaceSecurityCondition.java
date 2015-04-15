@@ -3,7 +3,6 @@ package de.persosim.simulator.secstatus;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
 
 /**
@@ -11,7 +10,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author mboonk
  *
  */
-@XmlRootElement
 public class PaceSecurityCondition implements SecCondition {
 	
 	@Override

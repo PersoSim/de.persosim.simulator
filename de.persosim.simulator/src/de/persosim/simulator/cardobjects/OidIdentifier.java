@@ -1,8 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.persosim.simulator.protocols.Oid;
 
 /**
@@ -11,10 +8,8 @@ import de.persosim.simulator.protocols.Oid;
  * @author slutters
  *
  */
-@XmlRootElement
 public class OidIdentifier extends AbstractCardObjectIdentifier {
 
-	@XmlAnyElement(lax=true)
 	Oid oid;
 
 	public OidIdentifier() {}

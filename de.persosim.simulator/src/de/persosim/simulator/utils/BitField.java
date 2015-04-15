@@ -2,9 +2,6 @@ package de.persosim.simulator.utils;
 
 import java.util.Arrays;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.persosim.simulator.exception.BitFieldOutOfBoundsException;
 
 /**
@@ -14,9 +11,7 @@ import de.persosim.simulator.exception.BitFieldOutOfBoundsException;
  * @author mboonk
  * 
  */
-@XmlRootElement
 public class BitField {
-	@XmlElement
 	boolean[] storedBits;
 
 	public BitField() {

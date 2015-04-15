@@ -2,8 +2,6 @@ package de.persosim.simulator.secstatus;
 
 import java.util.Collection;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 
 /**
@@ -13,7 +11,6 @@ import de.persosim.simulator.cardobjects.PasswordAuthObject;
  * @author mboonk
  * 
  */
-@XmlRootElement
 public class PaceWithPasswordSecurityCondition extends PaceSecurityCondition {
 	PasswordAuthObject neededPassword;
 
