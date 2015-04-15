@@ -1,7 +1,5 @@
 package de.persosim.simulator.protocols.ri;
 
-import static de.persosim.simulator.utils.PersoSimLogger.log;
-
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -16,7 +14,6 @@ import java.util.HashSet;
 import javax.crypto.KeyAgreement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
@@ -47,7 +44,6 @@ import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
-import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.InfoSource;
 import de.persosim.simulator.utils.Utils;
 
@@ -65,8 +61,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 	private HashSet<ApduSpecification> apdus = null;
 	private CardStateAccessor cardState;
 	private int privateKeyReference;
-
-//	private KeyPair staticKeyPair;
+	
 	private KeyObject staticKeyObject;
 
 	public RiProtocol() {
@@ -338,10 +333,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 				}
 
 				if (staticKeyObject == null){
-					/*
-					 * {@link staticKeyPair} may be null either if setAt has not yet been executed or failed.
-					 * SetAt may fail due to unsatisfied access conditions e.g. if required preceding TA has not been performed.
-					 */
+					//{@link staticKeyObject} may be null either if setAt has not yet been executed or failed.
 					
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(PlatformUtil.SW_4A80_WRONG_DATA);
@@ -422,9 +414,6 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 	}
 
 	private void processCommandSetAt(ProcessingData processingData) {
-		CommandApdu cApdu = processingData.getCommandApdu();
-		log(this, "RI SetAT command APDU is: " + HexString.encode(cApdu.toByteArray()));
-		
 		TlvDataObject cryptographicMechanismReferenceData = processingData
 				.getCommandApdu().getCommandDataObjectContainer()
 				.getTlvDataObject(TlvConstants.TAG_80);
@@ -454,39 +443,9 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 		}
 
 		if (privateKeyReferenceData != null) {
-//			//get necessary information stored in TA
-//			HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
-//			previousMechanisms.add(TerminalAuthenticationMechanism.class);
-//			Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
-//			TerminalAuthenticationMechanism taMechanism = null;
-//			if (currentMechanisms.size() > 0){
-//				taMechanism = (TerminalAuthenticationMechanism) currentMechanisms.toArray()[0];
-//				
-//				if (!(taMechanism.getTerminalType().equals(TerminalType.AT))) {
-//					// create and propagate response APDU
-//					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-//					processingData.updateResponseAPDU(this, "Restricted Identification only allowed for Authorization Terminals", resp);
-//					return;
-//				}
-//			} else {
-//				// create and propagate response APDU
-//				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-//				processingData.updateResponseAPDU(this, "Restricted Identification requires preceding Terminal Authentication", resp);
-//			}
-			
 			privateKeyReference = Utils
 					.getIntFromUnsignedByteArray(privateKeyReferenceData
 							.getValueField());
-			
-			log(this, "RI private key reference is: " + privateKeyReference);
-//			if(privateKeyReference==2) {
-//				if (!(taMechanism.getEffectiveAuthorization().getAuthorization().getBit(2))) {
-//					// create and propagate response APDU
-//					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-//					processingData.updateResponseAPDU(this, "Restricted Identification only allowed for authorized terminals", resp);
-//					return;
-//				}
-//			}
 			
 			KeyIdentifier keyIdentifier = new KeyIdentifier(privateKeyReference);
 			CardObject cardObject = cardState.getObject(keyIdentifier,
