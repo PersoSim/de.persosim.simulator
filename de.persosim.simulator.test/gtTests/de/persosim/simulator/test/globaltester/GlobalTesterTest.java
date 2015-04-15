@@ -38,7 +38,7 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 //	private static final String BASE_PATH = "\\persosim_servermode_tests";
 //	private static final String PATH_LOGGING = BASE_PATH + "\\logging";
 
-	private static GtServerConnection gtServer;
+	protected static GtServerConnection gtServer;
 
 	@BeforeClass
 	public static void setUpSuite() throws Exception {
@@ -70,7 +70,7 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 		stopSimulator();
 	}
 	
-	private void resetSimulator(){
+	protected void resetSimulator(){
 		stopSimulator();
 		getPersonalization().reset();
 		startSimulator();
@@ -223,6 +223,20 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 			gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_SECUREMESSAGING, "pref_epa_puk", new String(puk));
 		}
 
+	}
+	
+	protected void setRiKey(byte keyId, boolean authorizedOnly) throws IOException {
+		System.out.println("START setRiKey");
+		gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_EAC2, "pref_epa_RI_keyID", "0x" + HexString.encode(keyId));
+		
+		String authorizedOnlyString;
+		if(authorizedOnly) {
+			authorizedOnlyString = "true";
+		} else {
+			authorizedOnlyString = "false";
+		}
+		gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_EAC2, "pref_epa_RI_keyAuthorized", authorizedOnlyString);
+		System.out.println("END setRiKey");
 	}
 	
 	/**
