@@ -28,9 +28,9 @@ public class XmlPersonalization implements Personalization {
 	@XmlAnyElement(lax=true)
 	protected MasterFile mf = null;
 	
-	@XmlElementWrapper(name = "unmarshallerCallbacks")
-	@XmlAnyElement(lax=true)
-	protected List<PersoUnmarshallerCallback> unmarshallerCallbacks = new ArrayList<>();
+	//@XmlElementWrapper(name = "unmarshallerCallbacks")
+	//@XmlAnyElement(lax=true)
+	//protected List<PersoUnmarshallerCallback> unmarshallerCallbacks = new ArrayList<>();
 	
 	public List<Protocol> getProtocols() {
 		if (protocols == null) reset();
@@ -56,7 +56,6 @@ public class XmlPersonalization implements Personalization {
 	public void reset() {
 		buildProtocolList();
 		buildObjectTree();
-		afterUnmarshal(null, null);
 	}
 
 	/**
@@ -87,21 +86,7 @@ public class XmlPersonalization implements Personalization {
 		}
 	}
 
-	/**
-	 * JAXB callback
-	 * <p/>
-	 * Used to fix the parent relation
-	 * @param u
-	 * @param parent
-	 */
-	protected void afterUnmarshal(Unmarshaller u, Object parent) {
-		if (unmarshallerCallbacks != null) {
-			for (PersoUnmarshallerCallback curPostProcessor : unmarshallerCallbacks) {
-				curPostProcessor.afterUnmarshall(this);	
-			}
-		}
-	}
-	
+
 	/**
 	 * This method writes a personalization to a file identified by a provided file name.
 	 * @param fileName the file name to use

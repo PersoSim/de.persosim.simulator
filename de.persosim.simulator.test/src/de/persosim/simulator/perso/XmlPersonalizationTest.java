@@ -34,12 +34,16 @@ import de.persosim.simulator.test.PersoSimTestCase;
 public class XmlPersonalizationTest extends PersoSimTestCase {
 
 	XmlPersonalization testPerso;
+	DefaultNpaUnmarshallerCallback defaultnpa;
 
 	@Before
 	public void setUp() throws Exception {
 		//build/fill test perso
 
 		testPerso = new XmlPersonalization();
+		defaultnpa = new DefaultNpaUnmarshallerCallback(new TestPkiCmsBuilder());
+		
+	//	DefectListNpaUnmarshallerCallback defaultnpa2 = new DefectListNpaUnmarshallerCallback();
 		List<Protocol> protocolList = testPerso.getProtocolList();
 		protocolList.add(new FileProtocol());
 		protocolList.add(new PaceProtocol());
@@ -70,6 +74,7 @@ public class XmlPersonalizationTest extends PersoSimTestCase {
 		m.marshal(testPerso, xmlFile);
 
 		// get variables from our xml file, created before
+		
 		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
 		XmlPersonalization unmarshalledPerso = (XmlPersonalization) um
 				.unmarshal(new FileReader(xmlFile));
@@ -91,6 +96,15 @@ public class XmlPersonalizationTest extends PersoSimTestCase {
 		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 		
 		// Write to String
+		
+		
+	
+		
+		defaultnpa.afterUnmarshall(testPerso);
+		
+		
+		
+
 		StringWriter strWriter = new StringWriter();
 		m.marshal(testPerso, strWriter);
 		String marshalledPerso = strWriter.toString();

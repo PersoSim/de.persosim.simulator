@@ -251,7 +251,6 @@ public class PersoSimJaxbContextProvider {
 		annotatedClasses.add(de.persosim.simulator.crypto.certificates.CardVerifiableCertificate.class);
 		annotatedClasses.add(de.persosim.simulator.crypto.DomainParameterSetEcdh.class);
 		annotatedClasses.add(de.persosim.simulator.crypto.EcParameterSpecAdapter.EcParameterSpecRepresentation.class);
-		annotatedClasses.add(de.persosim.simulator.perso.DefaultNpaUnmarshallerCallback.class);
 		annotatedClasses.add(de.persosim.simulator.perso.DefaultSecInfoCmsBuilder.class);
 		annotatedClasses.add(de.persosim.simulator.perso.SignedDataFileCache.class);
 		annotatedClasses.add(de.persosim.simulator.perso.XmlPersonalization.class);

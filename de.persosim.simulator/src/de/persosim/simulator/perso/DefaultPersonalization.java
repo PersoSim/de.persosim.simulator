@@ -85,17 +85,8 @@ public abstract class DefaultPersonalization extends XmlPersonalization implemen
 	
 
 	public DefaultPersonalization() {
-		addUnmarshallerCallbacks();
+		
 		reset();
-	}
-
-	/**
-	 * Add required {@link PersoUnmarshallerCallback} to be serialized and used
-	 * after deserialization.
-	 */
-	protected void addUnmarshallerCallbacks() {
-		unmarshallerCallbacks.add(new DefaultNpaUnmarshallerCallback());
-
 	}
 
 	@Override

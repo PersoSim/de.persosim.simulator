@@ -15,7 +15,7 @@ public class Profile08 extends AbstractProfile {
 		persoDataContainer = PersonalizationDataContainer.getDefaultContainer();
 		persoDataContainer.setDg4PlainData("KARL");
 		persoDataContainer.setDg5PlainData("HILLEBRANDT");
-		persoDataContainer.setDg6PlainData("GRAF V. L√ùSKY");
+		persoDataContainer.setDg6PlainData("GRAF V. L›SKY");
 		persoDataContainer.setDg7PlainData("DR.HC.");
 		persoDataContainer.setDg8PlainData("19520617");
 		persoDataContainer.setDg9PlainData("TRIER");
@@ -52,12 +52,6 @@ public class Profile08 extends AbstractProfile {
 				HexString.toByteArray("04283BC17F2D95B9BE6E491456ADDA466101EA3D7ACA3BB325BAF96B580746723B041D0A7AFFA6DE683CBB6F9E68CABFF2B28DA8D65B5DF9679889155B4E92BABB"),
 				HexString.toByteArray("77635293F8ED87B970C46C4B1109B6066B4517035524DA5069173B2526348F0F")),
 				2);
-	}
-	
-	@Override
-	protected void addUnmarshallerCallbacks() {
-		unmarshallerCallbacks.add(new DefectListNpaUnmarshallerCallback());
-
 	}
 	
 	@Override
