@@ -226,7 +226,6 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 	}
 	
 	protected void setRiKey(byte keyId, boolean authorizedOnly) throws IOException {
-		System.out.println("START setRiKey");
 		gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_EAC2, "pref_epa_RI_keyID", "0x" + HexString.encode(keyId));
 		
 		String authorizedOnlyString;
@@ -236,7 +235,6 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 			authorizedOnlyString = "false";
 		}
 		gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_EAC2, "pref_epa_RI_keyAuthorized", authorizedOnlyString);
-		System.out.println("END setRiKey");
 	}
 	
 	/**
