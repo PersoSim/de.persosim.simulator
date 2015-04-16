@@ -32,6 +32,21 @@ import de.persosim.simulator.utils.HexString;
 
 public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr03110 {
 
+	public class GtTestSimulatorProvider implements SimulatorProvider {
+			
+		PersoSim sim;
+		
+		public GtTestSimulatorProvider(Personalization personalization) {
+			sim = new PersoSim();
+			sim.loadPersonalization(personalization);
+		}
+
+		@Override
+		public Simulator getSimulator() {
+				return sim;
+		}
+	}
+
 	private static final String GT_SERVER_HOST = "localhost";
 	private static final int GT_SERVER_PORT = 6789;
 	private static final int GT_SERVER_RESULT_PORT = 6788;
@@ -106,12 +121,7 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 
 	private void startSimulator() {
 		if (simulator == null) {
-			simulator = new SocketAdapter(new SimulatorProvider() {
-				@Override
-				public Simulator getSimulator() {
-					return new PersoSim();
-				}
-			}, SIM_PORT);
+			simulator = new SocketAdapter(new GtTestSimulatorProvider(getPersonalization()), SIM_PORT);
 		}
 		
 		if (!simulator.isRunning()) {
@@ -282,7 +292,8 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 	 * @return the identified password auth object if found, otherwise null
 	 */
 	protected PasswordAuthObject getPasswordAuthObject(int passwordIdentifier) {
-		Collection<CardObject> cardObjects = getPersonalization().getObjectTree().findChildren(new AuthObjectIdentifier(passwordIdentifier));
+		Personalization testP = getPersonalization();
+		Collection<CardObject> cardObjects = testP.getObjectTree().findChildren(new AuthObjectIdentifier(passwordIdentifier));
 		
 		if(cardObjects.isEmpty()) {
 			return null;

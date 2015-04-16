@@ -81,7 +81,7 @@ public class DefaultNpaUnmarshallerCallbackTest extends PersoSimTestCase {
 			}
 		};
 				
-		new DefaultNpaUnmarshallerCallback().afterUnmarshall(mockedPerso);
+//		new DefaultNpaUnmarshallerCallback().afterUnmarshall(mockedPerso);
 		
 		//check content of created EF.CardAccess
 		Collection<CardObject> files = masterFile.findChildren(new FileIdentifier(0x011C));
@@ -111,7 +111,7 @@ public class DefaultNpaUnmarshallerCallbackTest extends PersoSimTestCase {
 			}
 		};
 						
-		new DefaultNpaUnmarshallerCallback().afterUnmarshall(mockedPerso);
+//		new DefaultNpaUnmarshallerCallback().afterUnmarshall(mockedPerso);
 		
 		//check content of created EF.CardSecurity
 		Collection<CardObject> files = masterFile.findChildren(new FileIdentifier(0x011D));
@@ -153,7 +153,7 @@ public class DefaultNpaUnmarshallerCallbackTest extends PersoSimTestCase {
 			}
 		};
 								
-		new DefaultNpaUnmarshallerCallback().afterUnmarshall(mockedPerso);
+//		new DefaultNpaUnmarshallerCallback().afterUnmarshall(mockedPerso);
 		
 		//check content of created EF.ChipSecurity
 		Collection<CardObject> files = masterFile.findChildren(new FileIdentifier(0x011B));

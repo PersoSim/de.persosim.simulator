@@ -60,6 +60,7 @@ import de.persosim.simulator.protocols.pace.PaceProtocol;
 import de.persosim.simulator.protocols.ta.TaProtocol;
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.test.PersoSimTestCase;
+import de.persosim.simulator.perso.*;
 
 public class XmlPersonalizationTest extends PersoSimTestCase {
 
@@ -88,24 +89,24 @@ public class XmlPersonalizationTest extends PersoSimTestCase {
 	 * Positive test test marshalling/unmarshalling the testPerso to/from a temporary file in the filesystem.
 	 * @throws Exception
 	 */
-	@Ignore
-	public void test_MarshallUnmarshall_File() throws Exception {
-		// instantiate marshaller
-		Marshaller m = PersoSimJaxbContextProvider.getContext().createMarshaller();
-		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		
-		// Write to File
-		File xmlFile = new File(getXmlFilename());
-		xmlFile.getParentFile().mkdirs();
-		m.marshal(testPerso, xmlFile);
-
-		// get variables from our xml file, created before
-		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-		XmlPersonalization unmarshalledPerso = (XmlPersonalization) um
-				.unmarshal(new FileReader(xmlFile));
-		assertNotNull(unmarshalledPerso);
-	}
-	
+//	@Ignore
+//	public void test_MarshallUnmarshall_File() throws Exception {
+//		// instantiate marshaller
+//		Marshaller m = PersoSimJaxbContextProvider.getContext().createMarshaller();
+//		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+//		
+//		// Write to File
+//		File xmlFile = new File(getXmlFilename());
+//		xmlFile.getParentFile().mkdirs();
+//		m.marshal(testPerso, xmlFile);
+//
+//		// get variables from our xml file, created before
+//		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
+//		XmlPersonalization unmarshalledPerso = (XmlPersonalization) um
+//				.unmarshal(new FileReader(xmlFile));
+//		assertNotNull(unmarshalledPerso);
+//	}
+//	
 	/**
 	 * Positive test test marshalling/unmarshalling the testPerso to/from a temporary file in the filesystem.
 	 * @throws Exception
@@ -144,7 +145,7 @@ public class XmlPersonalizationTest extends PersoSimTestCase {
 //		xstream.setMode(XStream.SINGLE_NODE_XPATH_RELATIVE_REFERENCES);
 		xstream.setMode(XStream.ID_REFERENCES);
 		
-		xstream.registerConverter(new KeyValueAdapter());
+//		xstream.registerConverter(new KeyValueAdapter());
 		
 //		xstream.omitField(A.class, "protocols");
 		
@@ -174,8 +175,8 @@ public class XmlPersonalizationTest extends PersoSimTestCase {
 		char_output.close();
 
 		// get variables from our xml file, created before
-		XmlPersonalization unmarshalledPerso = (XmlPersonalization) xstream.fromXML(xmlFile);
-//		assertNotNull(unmarshalledPerso);
+		Personalization unmarshalledPerso = (Personalization) xstream.fromXML(xmlFile);
+		assertNotNull(unmarshalledPerso);
 	}
 
 	/**
@@ -186,33 +187,33 @@ public class XmlPersonalizationTest extends PersoSimTestCase {
 	 * 
 	 * @throws Exception
 	 */
-	@Ignore
-	public void test_MarshallUnmarshallMarshall_StringBuffer() throws Exception {
-		// instantiate marshaller
-		Marshaller m = PersoSimJaxbContextProvider.getContext().createMarshaller();
-		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		
-		// Write to String
-		StringWriter strWriter = new StringWriter();
-		m.marshal(testPerso, strWriter);
-		String marshalledPerso = strWriter.toString();
-		System.out.println(marshalledPerso);
-		
-		//unmarshall from string
-		StringReader sr = new StringReader(marshalledPerso);
-		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-		XmlPersonalization unmarshalledPerso = (XmlPersonalization) um
-				.unmarshal(sr);
-		
-		//marshall again
-		StringWriter sndStrWriter = new StringWriter();
-		m.marshal(unmarshalledPerso, sndStrWriter);
-		String sndMarshalledPerso = sndStrWriter.toString();
-		
-		//assert that both marschalled persos are the same
-		assertEquals(marshalledPerso, sndMarshalledPerso);
-
-	}
+//	@Ignore
+//	public void test_MarshallUnmarshallMarshall_StringBuffer() throws Exception {
+//		// instantiate marshaller
+//		Marshaller m = PersoSimJaxbContextProvider.getContext().createMarshaller();
+//		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+//		
+//		// Write to String
+//		StringWriter strWriter = new StringWriter();
+//		m.marshal(testPerso, strWriter);
+//		String marshalledPerso = strWriter.toString();
+//		System.out.println(marshalledPerso);
+//		
+//		//unmarshall from string
+//		StringReader sr = new StringReader(marshalledPerso);
+//		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
+//		XmlPersonalization unmarshalledPerso = (XmlPersonalization) um
+//				.unmarshal(sr);
+//		
+//		//marshall again
+//		StringWriter sndStrWriter = new StringWriter();
+//		m.marshal(unmarshalledPerso, sndStrWriter);
+//		String sndMarshalledPerso = sndStrWriter.toString();
+//		
+//		//assert that both marschalled persos are the same
+//		assertEquals(marshalledPerso, sndMarshalledPerso);
+//
+//	}
 
 	/**
 	 * Positive test: Ensure that the unmarschalled Objects are of correct type
@@ -221,24 +222,24 @@ public class XmlPersonalizationTest extends PersoSimTestCase {
 	 * 
 	 * @throws Exception
 	 */
-	@Ignore
-	public void test_MarshallUnmarshall_StringBuffer_checkObjectTypes() throws Exception {
-		// instantiate marshaller
-		Marshaller m = PersoSimJaxbContextProvider.getContext().createMarshaller();
-		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		
-		// Marshall/unmarshall through StringBuffer
-		StringWriter strWriter = new StringWriter();
-		m.marshal(testPerso, strWriter);
-		StringReader sr = new StringReader(strWriter.toString());
-		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-		XmlPersonalization unmarshalledPerso = (XmlPersonalization) um
-				.unmarshal(sr);
-		
-		//check all CardObjects, their children and all Identifiers of the card objet tree
-		assertObjectTypes(unmarshalledPerso.getObjectTree());
-
-	}
+//	@Ignore
+//	public void test_MarshallUnmarshall_StringBuffer_checkObjectTypes() throws Exception {
+//		// instantiate marshaller
+//		Marshaller m = PersoSimJaxbContextProvider.getContext().createMarshaller();
+//		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+//		
+//		// Marshall/unmarshall through StringBuffer
+//		StringWriter strWriter = new StringWriter();
+//		m.marshal(testPerso, strWriter);
+//		StringReader sr = new StringReader(strWriter.toString());
+//		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
+//		XmlPersonalization unmarshalledPerso = (XmlPersonalization) um
+//				.unmarshal(sr);
+//		
+//		//check all CardObjects, their children and all Identifiers of the card objet tree
+//		assertObjectTypes(unmarshalledPerso.getObjectTree());
+//
+//	}
 
 	protected String getXmlFilename() {
 		String retVal = "./tmp/" + testPerso.getClass().getSimpleName() + ".xml"; 

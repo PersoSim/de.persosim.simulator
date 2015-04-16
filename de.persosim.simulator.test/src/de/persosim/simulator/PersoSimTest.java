@@ -313,30 +313,30 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: parse personalization from a valid file.
 	 * @throws Exception
 	 */
-	@Test
-	public void testParsePersonalization_ValidFile() throws Exception {
-		Personalization perso = CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE);
-		
-		assertNotNull(perso);
-	}
+//	@Test
+//	public void testParsePersonalization_ValidFile() throws Exception {
+//		Personalization perso = CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE);
+//		
+//		assertNotNull(perso);
+//	}
 	
 	/**
 	 * Negative test case: parse personalization from a non-existing file.
 	 * @throws Exception
 	 */
-	@Test(expected = FileNotFoundException.class)
-	public void testParsePersonalization_FileNotFound() throws Exception {
-		CommandParser.parsePersonalization("file not found");
-	}
-	
+//	@Test(expected = FileNotFoundException.class)
+//	public void testParsePersonalization_FileNotFound() throws Exception {
+//		CommandParser.parsePersonalization("file not found");
+//	}
+//	
 	/**
 	 * Negative test case: parse personalization from an invalid existing file.
 	 * @throws Exception
 	 */
-	@Test(expected = JAXBException.class)
-	public void testParsePersonalization_InvalidFile() throws Exception {
-		CommandParser.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
-	}
+//	@Test(expected = JAXBException.class)
+//	public void testParsePersonalization_InvalidFile() throws Exception {
+//		CommandParser.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
+//	}
 	
 	/**
 	 * Positive test case: check behavior of PersoSim constructor when called with unknown argument.
@@ -357,7 +357,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		persoSim.startSimulator();
 		
-		persoSim.loadPersonalization(CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE));
+//		persoSim.loadPersonalization(CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE));
 
 		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
 		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), response);
