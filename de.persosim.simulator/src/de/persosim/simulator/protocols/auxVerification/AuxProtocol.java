@@ -129,8 +129,20 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 			}
 			
 			if (auxDataFromTa != null){
+				AuthenticatedAuxiliaryData expectedAuxData = null;
+				
 				for (AuthenticatedAuxiliaryData current : auxDataFromTa){
-					if (auxDataObject.verify(current)){
+					if(oid.equals(current.getObjectIdentifier())) {
+						expectedAuxData = current;
+						break;
+					}
+					
+				}
+				
+				if(expectedAuxData == null) {
+					throw new FileNotFoundException("No auxiliary data was stored during TA matching the provided OID");
+				} else {
+					if (auxDataObject.verify(expectedAuxData)){
 						return;
 					}
 				}
