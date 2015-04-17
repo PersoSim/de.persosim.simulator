@@ -54,8 +54,7 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 	
 	@Override
 	public void process(ProcessingData processingData) {
-		if (processingData.getCommandApdu().getIns() == INS_20_VERIFY){
-
+		if ((processingData.getCommandApdu().getCla() == (byte) 0x80) && (processingData.getCommandApdu().getIns() == INS_20_VERIFY)){
 			//check for ca
 			HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 			previousMechanisms.add(ChipAuthenticationMechanism.class);
