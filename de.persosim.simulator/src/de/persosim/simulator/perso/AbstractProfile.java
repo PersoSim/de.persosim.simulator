@@ -629,20 +629,23 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		}
 	}
 	
-	
-	
 	@Override
 	protected void addRiKeys() {
 		initPersonalizationDataContainer();
 		
 		ArrayList<KeyPair> riKeys = persoDataContainer.getRiKeys();
 		ArrayList<Integer> riKeyIds = persoDataContainer.getRiKeyIds();
+		ArrayList<Boolean> riKeyAuthorizedOnly = persoDataContainer.getRiKeyAuthorizedOnly();
 		
 		// RI static key pair PICC
 		KeyObject riKey;
+		boolean authorizedOnly;
 		for(int i=0; i<riKeys.size(); i++) {
-			riKey = new KeyObject(riKeys.get(i), new KeyIdentifier(riKeyIds.get(i)));
+			authorizedOnly = riKeyAuthorizedOnly.get(i);
+			
+			riKey = new KeyObject(riKeys.get(i), new KeyIdentifier(riKeyIds.get(i)), authorizedOnly);
 			riKey.addOidIdentifier(new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)));
+			
 			mf.addChild(riKey);
 		}
 	}

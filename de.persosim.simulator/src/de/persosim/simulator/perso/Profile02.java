@@ -42,17 +42,17 @@ public class Profile02 extends AbstractProfile {
 				HexString.toByteArray("95875264427F7B72AFA1547F1714F0F5EE808AF83B40B8B02DD237843991F2B6")),
 				45, true);
 		
-		// individual RI key
+		// individual RI key - 1st sector public/private key pair (Sperrmerkmal)
 		persoDataContainer.addRiKeyPair(CryptoUtil.reconstructKeyPair(13,
 				HexString.toByteArray("047D1EA24146C3ADAC11143E7267B4E3EC572534828DB54904877B8D6EFDC5C13123A9E955890447643735C4F0AB9093FAA0C96DEFA1CE9079DA0B3C43BE6A0255"),
 				HexString.toByteArray("1183F16814B3947D01DAED7F8D236769F5ABD8020FFF53C5E5FE86A8ABAB02D2")),
-				1);
+				1, false);
 
-		// individual RI key (Pseudonym)
+		// individual RI key - 2nd sector public/private key pair (Pseudonym)
 		persoDataContainer.addRiKeyPair(CryptoUtil.reconstructKeyPair(13,
 				HexString.toByteArray("0438F989893E84090978AA09AD5611359D149180171E0F880467A327416B76C95650E791860C0DBE1E66A871A3C2E42514C3084322D3CB81D6187CA3FE0345B460"),
 				HexString.toByteArray("86CF6C7F4D7A8A119C426A5195789DA496FFD134699E5E2D674E78A5E92091EB")),
-				2);
+				2, true);
 	}
 
 }

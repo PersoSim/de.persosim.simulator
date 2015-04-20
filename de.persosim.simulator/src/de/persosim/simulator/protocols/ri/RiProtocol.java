@@ -33,6 +33,7 @@ import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
+import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -57,8 +58,8 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 
 	private CardStateAccessor cardState;
 	private int privateKeyReference;
-
-	private KeyPair staticKeyPair;
+	
+	private KeyObject staticKeyObject;
 
 	public RiProtocol() {
 		reset();
@@ -85,10 +86,13 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 			
 			HashSet<TlvDataObject> secInfos = new HashSet<TlvDataObject>();
 			
-			for (CardObject curKey : riKeyCardObjects) {
-				if (! (curKey instanceof KeyObject)) {
+			for (CardObject curCardObject : riKeyCardObjects) {
+				if (! (curCardObject instanceof KeyObject)) {
 					continue;
 				}
+				
+				KeyObject curKey = (KeyObject) curCardObject;
+				
 				Collection<CardObjectIdentifier> identifiers = curKey.getAllIdentifiers();
 				
 				//extract keyId
@@ -99,6 +103,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 						break;
 					}
 				}
+				
 				if (keyId == -1) continue; // skip keys that dont't provide a keyId
 				
 				//cached values
@@ -110,34 +115,73 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 						byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
 						genericRiOidBytes = Arrays.copyOfRange(oidBytes, 0, 9);
 						
-						//define params
+
+						/*
+						 * ProtocolParams ::= SEQUENCE {
+						 * 		version         INTEGER, -- MUST be 1
+						 * 		keyId           INTEGER,
+						 * 		authorizedOnly  BOOLEAN
+						 * }
+						 */
 						ConstructedTlvDataObject params = new ConstructedTlvDataObject(TAG_SEQUENCE);
 						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{1}));
 						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
-						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, new byte[]{0x00})); //IMPL RI handle authorizedOnly
 						
+						// add "authorizedOnly"
+						if(curKey.isPrivilegedOnly()) {
+							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, new byte[]{0x01})); //IMPL RI handle authorizedOnly
+						} else {
+							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, new byte[]{0x00}));
+						}
+						
+						// define RestrictedIdentificationInfo
+						
+						/*
+						 * RestrictedIdentificationInfo ::= SEQUENCE {
+						 * 		protocol  OBJECT IDENTIFIER(
+						 *           id-RI-DH-SHA-1  |
+						 *           id-RI-DH-SHA-224  |
+						 *           id-RI-DH-SHA-256  |
+						 *           id-RI-DH-SHA-384 |
+						 *           id-RI-DH-SHA-512 |
+						 *           id-RI-ECDH-SHA-1  |
+						 *           id-RI-ECDH-SHA-224  |
+						 *           id-RI-ECDH-SHA-256 |
+						 *           id-RI-ECDH-SHA-384 |
+						 *           id-RI-ECDH-SHA-512),
+						 * 		params    ProtocolParams,
+						 * 		maxKeyLen INTEGER OPTIONAL
+						 * }
+						 */
 						ConstructedTlvDataObject riInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 						riInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
 						riInfo.addTlvDataObject(params);
 						//IMPL RI handle maxKeyLen
+//						riInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{xxx}));
 						
 						secInfos.add(riInfo);					
 					}
 				}
 				
 				//extract required data from curKey
-				ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(((KeyObject) curKey).getKeyPair().getPublic().getEncoded());
+				KeyPair curKeyPair = curKey.getKeyPair();
+				ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(curKeyPair.getPublic().getEncoded());
 				ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTlvDataObject(TAG_SEQUENCE);
 				
 				//using standardized domain parameters if possible
 				algIdentifier = StandardizedDomainParameters.simplifyAlgorithmIdentifier(algIdentifier);
 				
-				//add RiDomainParameterInfo
+				/*
+				 * RestrictedIdentificationDomainParameterInfo ::= SEQUENCE {
+				 *   protocol        OBJECT IDENTIFIER(id-RI-DH  |  id-RI-ECDH),
+				 *   domainParameter AlgorithmIdentifier
+				 * }
+				 */
 				ConstructedTlvDataObject riDomainInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 				riDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericRiOidBytes));
 				riDomainInfo.addTlvDataObject(algIdentifier);
-				secInfos.add(riDomainInfo);
 				
+				secInfos.add(riDomainInfo);
 			}
 			
 			return secInfos;
@@ -248,6 +292,13 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 			TerminalAuthenticationMechanism taMechanism = null;
 			if (currentMechanisms.size() > 0){
 				taMechanism = (TerminalAuthenticationMechanism) currentMechanisms.toArray()[0];
+				
+				if (!(taMechanism.getTerminalType().equals(TerminalType.AT))) {
+					// create and propagate response APDU
+					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+					processingData.updateResponseAPDU(this, "Restricted Identification only allowed for Authentication Terminals", resp);
+					return;
+				}
 
 				byte [] firstSectorPublicKeyHash = taMechanism.getFirstSectorPublicKeyHash();
 				byte [] secondSectorPublicKeyHash = taMechanism.getSecondSectorPublicKeyHash();
@@ -262,39 +313,51 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 					return;
 				}
 
-				if (staticKeyPair == null){
+				if (staticKeyObject == null){
+					//{@link staticKeyObject} may be null either if setAt has not yet been executed or failed.
+					
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(PlatformUtil.SW_4A80_WRONG_DATA);
 					processingData.updateResponseAPDU(this,
-							"The static key pair was not set correctly, probably because of missing setAT execution", resp);
+							"The static key pair was not set correctly, probably due to missing or failed execution of setAT command", resp);
 					return;
 				}
 				
-				PrivateKey staticPrivateKey = (PrivateKey) staticKeyPair
-						.getPrivate();
+				KeyPair staticKeyPair = staticKeyObject.getKeyPair();
+				
+				// check for Restricted Identification bit
+				if(staticKeyObject.isPrivilegedOnly()) {
+					if (!(taMechanism.getEffectiveAuthorization().getAuthorization().getBit(2))) {
+						// create and propagate response APDU
+						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+						processingData.updateResponseAPDU(this, "Restricted Identification only allowed for authorized terminals", resp);
+						return;
+					}
+				}
+				
+				PrivateKey staticPrivateKey = staticKeyPair.getPrivate();
 				
 				ConstructedTlvDataObject responseData = new ConstructedTlvDataObject(
 						TlvConstants.TAG_7C);
 				try {
-					if (dynamicAuthenticationData
-							.getTlvDataObject(RI_FIRST_SECTOR_KEY_TAG) != null) {
+					if (dynamicAuthenticationData.getTlvDataObject(RI_FIRST_SECTOR_KEY_TAG) != null) {
 						responseData.addTlvDataObject(handleSectorKey(
-								RI_FIRST_SECTOR_KEY_TAG, staticPrivateKey,
+								RI_FIRST_SECTOR_KEY_TAG,
+								staticPrivateKey,
 								dynamicAuthenticationData,
 								publicKeyCheckingHash,
-								firstSectorPublicKeyHash, TlvConstants.TAG_81));
+								firstSectorPublicKeyHash,
+								TlvConstants.TAG_81));
 
 					}
-					if (dynamicAuthenticationData
-							.getTlvDataObject(RI_SECOND_SECTOR_KEY_TAG) != null) {
-						responseData
-								.addTlvDataObject(handleSectorKey(
-										RI_SECOND_SECTOR_KEY_TAG,
-										staticPrivateKey,
-										dynamicAuthenticationData,
-										publicKeyCheckingHash,
-										secondSectorPublicKeyHash,
-										TlvConstants.TAG_83));
+					if (dynamicAuthenticationData.getTlvDataObject(RI_SECOND_SECTOR_KEY_TAG) != null) {
+						responseData.addTlvDataObject(handleSectorKey(
+								RI_SECOND_SECTOR_KEY_TAG,
+								staticPrivateKey,
+								dynamicAuthenticationData,
+								publicKeyCheckingHash,
+								secondSectorPublicKeyHash,
+								TlvConstants.TAG_83));
 					}
 				} catch (GeneralSecurityException e) {
 					// create and propagate response APDU
@@ -308,6 +371,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 					processingData.updateResponseAPDU(this,
 							"the given public key is invalid", resp);
 				}
+				
 				if (responseData.getNoOfElements() > 0) {
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(new TlvDataObjectContainer(responseData), Iso7816.SW_9000_NO_ERROR);
@@ -321,10 +385,12 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 							"no sector identifiers could be calculated becaus of missing or incorrect input data", resp);
 					return;
 				}
+			} else {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+				processingData.updateResponseAPDU(this, "Restricted Identification requires preceding Terminal Authentication", resp);
 			}
 		}
-		
-		
 
 	}
 
@@ -361,13 +427,13 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 			privateKeyReference = Utils
 					.getIntFromUnsignedByteArray(privateKeyReferenceData
 							.getValueField());
+			
 			KeyIdentifier keyIdentifier = new KeyIdentifier(privateKeyReference);
 			CardObject cardObject = cardState.getObject(keyIdentifier,
 					Scope.FROM_MF);
 
 			if ((cardObject instanceof KeyObject)) {
-				KeyObject KeyObject = (KeyObject) cardObject;
-				staticKeyPair = KeyObject.getKeyPair();
+				staticKeyObject = (KeyObject) cardObject;
 			} else {
 				ResponseApdu resp = new ResponseApdu(
 						Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);

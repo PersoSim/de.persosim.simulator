@@ -18,7 +18,7 @@ public class PersonalizationDataContainer {
 	
 	ArrayList<KeyPair> caKeys, riKeys;
 	ArrayList<Integer> caKeyIds, riKeyIds;
-	ArrayList<Boolean> caKeyPrivileges;
+	ArrayList<Boolean> caKeyPrivileges, riKeyAuthorizedOnly;
 	
 	public PersonalizationDataContainer() {
 		this.mrz                  = null;
@@ -57,6 +57,7 @@ public class PersonalizationDataContainer {
 		
 		this.riKeys               = new ArrayList<>();
 		this.riKeyIds             = new ArrayList<>();
+		this.riKeyAuthorizedOnly  = new ArrayList<>();
 	}
 	
 	public void addCaKeyPair(KeyPair keyPair, int keyId, boolean privileged) {
@@ -65,9 +66,10 @@ public class PersonalizationDataContainer {
 		this.caKeyPrivileges.add(privileged);
 	}
 	
-	public void addRiKeyPair(KeyPair keyPair, int keyId) {
+	public void addRiKeyPair(KeyPair keyPair, int keyId, boolean authorizedOnly) {
 		this.riKeys.add(keyPair);
 		this.riKeyIds.add(keyId);
+		this.riKeyAuthorizedOnly.add(authorizedOnly);
 	}
 	
 	public String getMrz() {
@@ -324,6 +326,10 @@ public class PersonalizationDataContainer {
 
 	public ArrayList<KeyPair> getRiKeys() {
 		return riKeys;
+	}
+	
+	public ArrayList<Boolean> getRiKeyAuthorizedOnly() {
+		return riKeyAuthorizedOnly;
 	}
 
 	public ArrayList<Integer> getCaKeyIds() {
