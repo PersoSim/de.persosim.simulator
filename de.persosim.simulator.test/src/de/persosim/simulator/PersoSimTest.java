@@ -6,16 +6,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.net.ConnectException;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 import javax.xml.bind.JAXBException;
 
@@ -85,53 +79,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	public static String extractResponse(String responseBulk) {
 		return responseBulk.substring(0, responseBulk.length() - 4).trim();
-	}
-	
-	/**
-	 * This method exchanges APDUs with a simulator running on default host and port.
-	 * @param cmdApdu the APDU to be sent
-	 * @return the APDU response
-	 * @throws UnknownHostException
-	 * @throws IOException
-	 */
-	private String exchangeApdu(String cmdApdu) throws UnknownHostException, IOException {
-		return exchangeApdu(cmdApdu, Simulator.DEFAULT_SIM_PORT);
-	}
-	
-	/**
-	 * This method exchanges APDUs with a simulator running on localhost at the provided port.
-	 * @param cmdApdu the APDU to be sent
-	 * @param port the port to contact the simulator
-	 * @return the APDU response
-	 * @throws IOException
-	 */
-	private String exchangeApdu(String cmdApdu, int port) throws IOException {
-		cmdApdu = cmdApdu.replaceAll("\\s", ""); // remove any whitespace
-		
-		Socket socket = null;
-		String respApdu = null;
-		
-		try {
-			socket = new Socket(Simulator.DEFAULT_SIM_HOST, port);
-
-			PrintStream out = new PrintStream(socket.getOutputStream());
-			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-			out.println(cmdApdu);
-			out.flush();
-			
-			respApdu = in.readLine();
-		} finally {
-			if (socket != null) {
-				try {
-					socket.close();
-				} catch (IOException e) {
-					return "socket close failure";
-				}
-			}
-		}
-
-		return respApdu;
 	}
 	
 	/**
@@ -300,18 +247,21 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * Positive test case: test stop of socket simulator.
 	 * @throws Exception 
 	 */
-	@Test(expected = ConnectException.class)
+	@Test
 	public void testStopSimulator() throws Exception {
 		persoSim = new PersoSim(CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE);
 		
 		persoSim.startSimulator();
 		
-		String responseSelect1 = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect1);
+		byte [] responseSelect = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
+
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), responseSelect);
 		
 		persoSim.stopSimulator();
 		
-		exchangeApdu(SELECT_APDU);
+		responseSelect = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
+
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN), responseSelect);
 	}
 	
 	/**
