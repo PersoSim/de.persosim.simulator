@@ -1,66 +1,40 @@
 package de.persosim.simulator.perso;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import java.awt.RenderingHints.Key;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
-import org.bouncycastle.util.encoders.Hex;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.thoughtworks.xstream.MarshallingStrategy;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.ConverterLookup;
-import com.thoughtworks.xstream.converters.DataHolder;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.SingleValueConverter;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
-import com.thoughtworks.xstream.mapper.Mapper;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
-import de.persosim.simulator.cardobjects.KeyObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.protocols.Protocol;
-import de.persosim.simulator.protocols.ProtocolStateMachine;
 import de.persosim.simulator.protocols.ca.CaProtocol;
 import de.persosim.simulator.protocols.file.FileProtocol;
 import de.persosim.simulator.protocols.pace.PaceProtocol;
 import de.persosim.simulator.protocols.ta.TaProtocol;
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.test.PersoSimTestCase;
-import de.persosim.simulator.perso.*;
 
 public class XmlPersonalizationTest extends PersoSimTestCase {
 

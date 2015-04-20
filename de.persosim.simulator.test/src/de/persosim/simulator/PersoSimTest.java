@@ -1,17 +1,10 @@
 package de.persosim.simulator;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-
-import javax.xml.bind.JAXBException;
 
 import mockit.Mocked;
 
@@ -21,7 +14,6 @@ import org.junit.Test;
 
 import de.persosim.simulator.perso.DefaultPersoTestPki;
 import de.persosim.simulator.perso.MinimumPersonalization;
-import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
@@ -265,130 +257,12 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: parse arguments from an empty String.
-	 */
-	@Test
-	public void testParseCommandEmptyString() {
-		String[] result = CommandParser.parseCommand("");
-		
-		assertEquals(result.length, 0);
-	}
-	
-	/**
-	 * Negative test case: parse arguments from null.
-	 */
-	@Test(expected = NullPointerException.class)
-	public void testParseCommandNull() {
-		System.out.println("test007");
-		CommandParser.parseCommand(null);
-	}
-	
-	/**
-	 * Positive test case: parse arguments from a String containing spaces only at start and end.
-	 */
-	@Test
-	public void testParseCommand_UntrimmedCoherentString() {
-		String arg = "string";
-		String[] result = CommandParser.parseCommand(" " + arg + "  ");
-		
-		assertEquals(result.length, 1);
-		assertEquals(result[0], arg);
-	}
-	
-	/**
-	 * Positive test case: parse arguments from a String containing spaces not only at start and end.
-	 */
-	@Test
-	public void testParseCommand_IncoherentString() {
-		String arg1 = "string1";
-		String arg2 = "string 2";
-		String[] result = CommandParser.parseCommand(" " + arg1 + "  " + arg2);
-		
-		assertEquals(result.length, 2);
-		assertEquals(result[0], arg1);
-		assertEquals(result[1], arg2);
-	}
-	
-	/**
-	 * Positive test case: parse personalization from a valid file.
-	 * @throws Exception
-	 */
-//	@Test
-//	public void testParsePersonalization_ValidFile() throws Exception {
-//		Personalization perso = CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE);
-//		
-//		assertNotNull(perso);
-//	}
-	
-	/**
-	 * Negative test case: parse personalization from a non-existing file.
-	 * @throws Exception
-	 */
-//	@Test(expected = FileNotFoundException.class)
-//	public void testParsePersonalization_FileNotFound() throws Exception {
-//		CommandParser.parsePersonalization("file not found");
-//	}
-//	
-	/**
-	 * Negative test case: parse personalization from an invalid existing file.
-	 * @throws Exception
-	 */
-//	@Test(expected = JAXBException.class)
-//	public void testParsePersonalization_InvalidFile() throws Exception {
-//		CommandParser.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
-//	}
-	
-	/**
 	 * Positive test case: check behavior of PersoSim constructor when called with unknown argument.
 	 */
 	@Test
 	public void testPersoSimConstructor_UnknownArgument() {
 		persoSim = new PersoSim(new String[]{"unknownCommand"});
 		assertNotNull(persoSim);
-	}
-	
-	/**
-	 * Positive test case: test setting of new personalization.
-	 * @throws Exception
-	 */
-	@Test
-	public void testLoadPersonalization_ValidPersonalization() throws Exception {
-		persoSim = new PersoSim();
-		
-		persoSim.startSimulator();
-		
-//		persoSim.loadPersonalization(CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE));
-
-		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
-		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), response);
-		
-		response = persoSim.processCommand(HexString.toByteArray(READ_BINARY_APDU));
-		
-		byte [] responseReadBinaryExpected = Utils.concatByteArrays(EF_CS_CONTENT, Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR));
-		
-		assertArrayEquals(responseReadBinaryExpected, response);
-	}
-	
-	/**
-	 * Negative test case: test setting of new personalization via user arguments with argument referencing existing file containing invalid personalization.
-	 * @throws Exception 
-	 */
-	@Test
-	public void testArgLoadPersonalization_InvalidPersonalizationFile() throws Exception {		
-		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"});
-		assertFalse(persoSim.isRunning());
-		assertTrue(persoSim.getPersonalization() instanceof MinimumPersonalization);
-	}
-	
-	/**
-	 * Negative test case: test setting of new personalization via user arguments with argument referencing non existing file.
-	 * @throws Exception
-	 */
-	@Test
-	public void testArgLoadPersonalization_FileNotFound() throws Exception {
-		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, "non-existing.file"});
-		assertFalse(persoSim.isRunning());
-		assertTrue(persoSim.getPersonalization() instanceof MinimumPersonalization);
 	}
 
 }

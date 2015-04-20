@@ -1,0 +1,94 @@
+package de.persosim.simulator;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.FileNotFoundException;
+
+import javax.xml.bind.JAXBException;
+
+import org.junit.Test;
+
+import de.persosim.simulator.perso.MinimumPersonalization;
+import de.persosim.simulator.perso.Personalization;
+
+public class CommandParserTest {
+
+	
+	/**
+	 * Positive test case: parse arguments from an empty String.
+	 */
+	@Test
+	public void testParseCommandEmptyString() {
+		String[] result = CommandParser.parseCommand("");
+		
+		assertEquals(result.length, 0);
+	}
+	
+	/**
+	 * Negative test case: parse arguments from null.
+	 */
+	@Test(expected = NullPointerException.class)
+	public void testParseCommandNull() {
+		System.out.println("test007");
+		CommandParser.parseCommand(null);
+	}
+	
+	/**
+	 * Positive test case: parse arguments from a String containing spaces only at start and end.
+	 */
+	@Test
+	public void testParseCommand_UntrimmedCoherentString() {
+		String arg = "string";
+		String[] result = CommandParser.parseCommand(" " + arg + "  ");
+		
+		assertEquals(result.length, 1);
+		assertEquals(result[0], arg);
+	}
+	
+	/**
+	 * Positive test case: parse arguments from a String containing spaces not only at start and end.
+	 */
+	@Test
+	public void testParseCommand_IncoherentString() {
+		String arg1 = "string1";
+		String arg2 = "string 2";
+		String[] result = CommandParser.parseCommand(" " + arg1 + "  " + arg2);
+		
+		assertEquals(result.length, 2);
+		assertEquals(result[0], arg1);
+		assertEquals(result[1], arg2);
+	}
+	
+	/**
+	 * Positive test case: parse personalization from a valid file.
+	 * @throws Exception
+	 */
+	@Test
+	public void testParsePersonalization_ValidFile() throws Exception {
+		MinimumPersonalization perso1 = new MinimumPersonalization(PersoSimTest.EF_CS_CONTENT);
+		perso1.writeToFile(PersoSimTest.DUMMY_PERSONALIZATION_FILE);
+		
+		Personalization perso = CommandParser.parsePersonalization(PersoSimTest.DUMMY_PERSONALIZATION_FILE);
+		
+		assertNotNull(perso);
+	}
+	
+	/**
+	 * Negative test case: parse personalization from a non-existing file.
+	 * @throws Exception
+	 */
+	@Test(expected = FileNotFoundException.class)
+	public void testParsePersonalization_FileNotFound() throws Exception {
+		CommandParser.parsePersonalization("file not found");
+	}
+	
+	/**
+	 * Negative test case: parse personalization from an invalid existing file.
+	 * @throws Exception
+	 */
+	@Test(expected = JAXBException.class)
+	public void testParsePersonalization_InvalidFile() throws Exception {
+		CommandParser.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
+	}
+}
