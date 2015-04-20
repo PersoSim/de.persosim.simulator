@@ -118,8 +118,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 						byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
 						genericRiOidBytes = Arrays.copyOfRange(oidBytes, 0, 9);
 						
-						// define ProtocolParams
-						
+
 						/*
 						 * ProtocolParams ::= SEQUENCE {
 						 * 		version         INTEGER, -- MUST be 1
@@ -127,12 +126,8 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 						 * 		authorizedOnly  BOOLEAN
 						 * }
 						 */
-						
-						// create SEQUENCE
 						ConstructedTlvDataObject params = new ConstructedTlvDataObject(TAG_SEQUENCE);
-						// add "version"
 						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{1}));
-						// add "keyId"
 						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 						
 						// add "authorizedOnly"
@@ -161,14 +156,9 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 						 * 		maxKeyLen INTEGER OPTIONAL
 						 * }
 						 */
-						
-						// create SEQUENCE
 						ConstructedTlvDataObject riInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-						// add "protocol"
 						riInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
-						// add "params"
 						riInfo.addTlvDataObject(params);
-						// add "maxKeyLen"
 						//IMPL RI handle maxKeyLen
 //						riInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{xxx}));
 						
@@ -184,20 +174,14 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 				//using standardized domain parameters if possible
 				algIdentifier = StandardizedDomainParameters.simplifyAlgorithmIdentifier(algIdentifier);
 				
-				// define RestrictedIdentificationDomainParameterInfo
-				
 				/*
 				 * RestrictedIdentificationDomainParameterInfo ::= SEQUENCE {
 				 *   protocol        OBJECT IDENTIFIER(id-RI-DH  |  id-RI-ECDH),
 				 *   domainParameter AlgorithmIdentifier
 				 * }
 				 */
-				
-				// create SEQUENCE
 				ConstructedTlvDataObject riDomainInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-				// add "protocol"
 				riDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericRiOidBytes));
-				// add "domainParameter"
 				riDomainInfo.addTlvDataObject(algIdentifier);
 				
 				secInfos.add(riDomainInfo);

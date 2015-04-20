@@ -51,7 +51,7 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 				log(this, "RINOTE: test suite name: " + suiteName);
 				
 				if((suiteName.equals("testsuite_ISO7816_R")) || (suiteName.startsWith("EAC2_ISO7816_R"))) {
-					this.setRiKey((byte) 0x01, false);
+					this.setRiKey((byte) 0x01, false);//TODO make this magic values dependent on the actual perso
 					gtServer.runSuiteAndSaveResults((GtSuiteDescriptor)curSuite);
 					this.setRiKey((byte) 0x02, true);
 					gtServer.runSuiteAndSaveResults((GtSuiteDescriptor)curSuite);
