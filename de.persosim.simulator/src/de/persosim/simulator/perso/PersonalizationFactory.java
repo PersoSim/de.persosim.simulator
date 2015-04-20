@@ -5,9 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -27,13 +29,22 @@ import de.persosim.simulator.perso.xstream.ProtocolAdapter;
 
 public class PersonalizationFactory {
 	
-public static void marshal(Personalization pers, String path) {
+
+
+	public static void marshal(Personalization pers, Writer writer) {
+		XStream xstream = getXStream();
+		xstream.toXML(pers, writer);
+	}
+	
+	
+	public static void marshal(Personalization pers, String path) {
+		//FIXME JGE reduce this method to the one above
 		
 		XStream xstream = getXStream();
 		
 		String xml = xstream.toXML(pers);
 		
-		xml = xml.replaceAll("class=\"org.*[Kk]ey\"", "");
+		xml = xml.replaceAll("class=\"org.*[Kk]ey\"", ""); //FIXME JGE what does this line mean here?
 
 		// Write to File
 		File xmlFile = new File(path);
@@ -75,9 +86,18 @@ public static void marshal(Personalization pers, String path) {
 			e.printStackTrace();
 		}
 	}
+
+
+
+	public static Personalization unmarshal(Reader reader) {
+		// TODO Auto-generated method stub
+		XStream xstream = getXStream();
+		return (Personalization) xstream.fromXML(reader);
+	}
 	
 //FIXME JGE this method should be named unmarshal
 	public static Personalization unmarchal(String path) {
+		//FIXME JGE reduce this method to the one above
 		
 		XStream xstream = getXStream();
 		
@@ -91,7 +111,7 @@ public static void marshal(Personalization pers, String path) {
 	}
 	
 	
-	public static XStream getXStream() {
+	private static XStream getXStream() {
 		
 		XStream xstream = new XStream(new DomDriver("UTF8"))
 		{
