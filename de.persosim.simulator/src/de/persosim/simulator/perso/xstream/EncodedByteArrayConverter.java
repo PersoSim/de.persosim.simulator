@@ -10,7 +10,7 @@ import de.persosim.simulator.utils.*;
 
 public class EncodedByteArrayConverter implements Converter {
 
-	public boolean canConvert(Class type) {
+	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
 		return type.isArray() && type.getComponentType().equals(byte.class);
 	}
 

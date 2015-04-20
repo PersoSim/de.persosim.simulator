@@ -7,8 +7,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 import de.persosim.simulator.protocols.NpaProtocol;
-import de.persosim.simulator.protocols.Protocol;
-import de.persosim.simulator.protocols.ProtocolStateMachine;
 import de.persosim.simulator.protocols.auxVerification.AuxProtocol;
 import de.persosim.simulator.protocols.ca.CaProtocol;
 import de.persosim.simulator.protocols.file.FileProtocol;
@@ -18,12 +16,11 @@ import de.persosim.simulator.protocols.pin.PinProtocol;
 import de.persosim.simulator.protocols.ri.RiProtocol;
 import de.persosim.simulator.protocols.ta.TaProtocol;
 
-public class ProtocolAdapter implements Converter {
+public class ProtocolConverter implements Converter {
 
 	@Override
-	public boolean canConvert(Class type) {
-		// TODO Auto-generated method stub
-
+	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+		//FIXME JGE Why this static list?
 		if (type.equals(PaceProtocol.class))
 			return true;
 		else if (type.equals(FileProtocol.class))

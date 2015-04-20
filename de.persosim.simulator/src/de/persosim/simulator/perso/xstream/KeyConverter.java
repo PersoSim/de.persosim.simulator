@@ -6,7 +6,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -20,10 +19,9 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.utils.HexString;
 
-public class KeyAdapter implements Converter {
+public class KeyConverter implements Converter {
 	@Override
-	public boolean canConvert(Class type) {
-		// TODO Auto-generated method stub
+	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
 		String name = type.getName();
 		if (name.toLowerCase().endsWith("publickey") || name.toLowerCase().endsWith("privatekey"))
 			return true;
@@ -39,7 +37,7 @@ public class KeyAdapter implements Converter {
 		writer.startNode("algorithm");
 		writer.setValue(key.getAlgorithm());
 		writer.endNode();
-		writer.startNode("byte-array");
+		writer.startNode("value");
 		writer.setValue(HexString.encode(key.getEncoded()));
 		writer.endNode();
 	}
@@ -47,7 +45,6 @@ public class KeyAdapter implements Converter {
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader,
 			UnmarshallingContext context) {
-		// TODO Auto-generated method stub
 		
 		String keyType = "";
 		String algorithmValue = "";

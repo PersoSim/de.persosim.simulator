@@ -24,8 +24,8 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 import de.persosim.simulator.perso.xstream.EncodedByteArrayConverter;
-import de.persosim.simulator.perso.xstream.KeyAdapter;
-import de.persosim.simulator.perso.xstream.ProtocolAdapter;
+import de.persosim.simulator.perso.xstream.KeyConverter;
+import de.persosim.simulator.perso.xstream.ProtocolConverter;
 
 public class PersonalizationFactory {
 	
@@ -138,8 +138,8 @@ public class PersonalizationFactory {
 
 		
 		xstream.registerConverter(new EncodedByteArrayConverter());
-		xstream.registerConverter(new ProtocolAdapter());
-		xstream.registerConverter(new KeyAdapter());
+		xstream.registerConverter(new ProtocolConverter());
+		xstream.registerConverter(new KeyConverter());
 		
 		return xstream;
 	}

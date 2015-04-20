@@ -1,7 +1,6 @@
 package de.persosim.simulator.adapter.socket;
 
 import de.persosim.simulator.Simulator;
-import de.persosim.simulator.perso.Personalization;
 
 /**
  * Implementations of this interface can provide a {@link Simulator}
