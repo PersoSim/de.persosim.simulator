@@ -31,11 +31,16 @@ import de.persosim.simulator.secstatus.SecCondition;
 public class MinimumPersonalization extends XmlPersonalization {
 	
 	protected byte[] efCardAccessValue;
+	public static final byte [] DEFAULT_EF_CA_VALUE = "DUMMY".getBytes();
 	
 	public MinimumPersonalization(byte[] efCardAccessValue) {
 		this.efCardAccessValue = efCardAccessValue;
 		
 		reset();
+	}
+	
+	public MinimumPersonalization() {
+		this(DEFAULT_EF_CA_VALUE);
 	}
 	
 	@Override

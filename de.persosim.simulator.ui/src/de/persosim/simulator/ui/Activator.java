@@ -7,28 +7,61 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.util.tracker.ServiceTracker;
 
+import de.persosim.simulator.CommandParser;
+import de.persosim.simulator.Simulator;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
 
 /**
+<<<<<<< Upstream, based on persosim/master
  * The activator class controls the plug-in life cycle
+=======
+ * The activator for this bundle. It tracks the {@link Simulator} service and
+ * provides accessor methods.
+ * 
+ * @author mboonk
+ *
+>>>>>>> 08990b4 JavaDoc improvements
  */
 public class Activator implements BundleActivator {
+
+	private static BundleContext context;
+	private static Simulator sim;
 
 	private LinkedList<LogReaderService> readers = new LinkedList<>();
 	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(PersoSimGuiMain.MAXIMUM_CACHED_CONSOLE_LINES);
 	private ServiceTracker<LogReaderService, LogReaderService> logReaderTracker;
+	private static ServiceTracker<Simulator, Simulator> simulatorServiceTracker;
+
+	public static Simulator getSim() {
+		return sim;
+	}
+
+	static BundleContext getContext() {
+		return context;
+	}
 	
 	public static LinkedListLogListener getListLogListener(){
 		return linkedListLogger;
 	}
 	
+	public static void executeUserCommands(String command){
+		Simulator sim = (Simulator) simulatorServiceTracker.getService();
+		if (sim != null){
+			CommandParser.executeUserCommands(sim, command);
+		} else {
+			throw new ServiceException("The Simulator service could not be found");
+		}
+	}
+	
 	// This will be used to keep track of listeners as they are un/registering
-	private ServiceListener serviceListener = new ServiceListener() {
+	private ServiceListener logServiceListener = new ServiceListener() {
 		@Override
 		public void serviceChanged(ServiceEvent event) {
 			BundleContext bundleContext = event.getServiceReference().getBundle().getBundleContext();
@@ -44,6 +77,22 @@ public class Activator implements BundleActivator {
 			}
 		}
 	};
+
+	private ServiceListener simulatorServiceListener = new ServiceListener() {
+		
+		@Override
+		public void serviceChanged(ServiceEvent event) {
+			ServiceReference<?> serviceReference = event.getServiceReference();
+			switch (event.getType()) {
+			case ServiceEvent.REGISTERED:
+				sim = (Simulator) context.getService(serviceReference);
+				break;
+			default:
+				break;
+			}
+			
+		}
+	};
 	
 	/**
 	 * The constructor
@@ -55,7 +104,10 @@ public class Activator implements BundleActivator {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(final BundleContext context) throws Exception {
+		Activator.context = context;
+				
+		
 		logReaderTracker = new ServiceTracker<>(context, LogReaderService.class.getName(), null);
 		logReaderTracker.open();
 		Object[] readers = logReaderTracker.getServices();
@@ -66,10 +118,17 @@ public class Activator implements BundleActivator {
 				readerService.addLogListener(linkedListLogger);
 			}
 		}
+				
+		simulatorServiceTracker = new ServiceTracker<Simulator, Simulator>(context, Simulator.class.getName(), null);
+		simulatorServiceTracker.open();
+		simulatorServiceTracker.getService().loadPersonalization(CommandParser.parsePersonalization("personalization/profiles/Profile01.xml"));
+		simulatorServiceTracker.getService().startSimulator();
+
+		context.addServiceListener(simulatorServiceListener);
 		
         String filter = "(objectclass=" + LogReaderService.class.getName() + ")";
         try {
-            context.addServiceListener(serviceListener, filter);
+            context.addServiceListener(logServiceListener, filter);
         } catch (InvalidSyntaxException e) {
             e.printStackTrace();
         }
@@ -91,6 +150,7 @@ public class Activator implements BundleActivator {
 		
 		logReaderTracker.close();
 
+		Activator.context = null;
+		simulatorServiceTracker.close();
 	}
-
 }

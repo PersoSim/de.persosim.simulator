@@ -3,7 +3,6 @@ package de.persosim.simulator.utils;
 import org.osgi.service.log.LogService;
 
 import de.persosim.simulator.Activator;
-
 /**
  * This class is used as primary Logger throughout all PersoSim classes.
  * 

@@ -7,7 +7,8 @@ import javax.inject.Inject;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
-import de.persosim.simulator.PersoSim;
+import de.persosim.simulator.CommandParser;
+import de.persosim.simulator.ui.Activator;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 import de.persosim.simulator.utils.PersoSimLogger;
 
@@ -34,7 +35,7 @@ public abstract class SelectPersoHandler {
 	protected void loadPersonalization(String personalization) {
 		log(this.getClass(), "Select Perso Handler called with param: " + personalization);
 		
-		String persoCmdString = PersoSim.CMD_LOAD_PERSONALIZATION + " " + personalization;
+		String persoCmdString = CommandParser.CMD_LOAD_PERSONALIZATION + " " + personalization;
 		
 		log(this.getClass(), "executing command: " + persoCmdString);
 		
@@ -42,7 +43,7 @@ public abstract class SelectPersoHandler {
 		MPart mainPart = partService.findPart("de.persosim.simulator.ui.parts.mainPart");
 		
 		if (mainPart.getObject() instanceof PersoSimGuiMain) {
-			((PersoSimGuiMain) mainPart.getObject()).write(persoCmdString);
+			Activator.executeUserCommands(persoCmdString);
 		}
 		
 		log(this.getClass(), "finished setting of personalization", PersoSimLogger.INFO);

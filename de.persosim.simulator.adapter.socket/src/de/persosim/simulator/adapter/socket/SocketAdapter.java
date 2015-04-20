@@ -1,4 +1,5 @@
-package de.persosim.simulator;
+package de.persosim.simulator.adapter.socket;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,11 +9,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
-import de.persosim.simulator.perso.Personalization;
-import de.persosim.simulator.platform.Iso7816;
-import de.persosim.simulator.platform.PersoSimKernel;
+import de.persosim.simulator.CommandParser;
+import de.persosim.simulator.Simulator;
 import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.Utils;
 
 /**
  * This class provides the socket interface to the PersoSim simulator.
@@ -26,19 +25,14 @@ import de.persosim.simulator.utils.Utils;
  * @author amay
  * 
  */
-public class SocketSimulator implements Runnable {
-
-	private static final byte[] ACK = Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR);
-	private static final byte[] NACK = Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN);
+public class SocketAdapter implements Runnable {
 
 	private int port;
 	private Thread simThread = null;
 	private boolean isRunning;
-
-	private PersoSimKernel kernel;
-	private boolean isPowerOn;
 	private ServerSocket server;
 	private Socket clientSocket;
+	private SimulatorProvider simProvider;
 
 	/**
 	 * Create new instance.
@@ -46,11 +40,9 @@ public class SocketSimulator implements Runnable {
 	 * @param simPort
 	 *            port the server socket should listen on
 	 */
-	public SocketSimulator(Personalization perso, int simPort) {
-		port = simPort;
-
-		kernel = new PersoSimKernel(perso);
-		kernel.init();
+	public SocketAdapter(SimulatorProvider simProvider, int simPort) {
+		this.simProvider = simProvider;
+		this.port = simPort;
 	}
 
 	/**
@@ -101,14 +93,13 @@ public class SocketSimulator implements Runnable {
 
 	public boolean stop() {
 		isRunning = false;
-		isPowerOn = false;
 		
 		//stop listening for new connections
 		if (server != null) {
 			try {
 				server.close();
 			} catch (IOException e) {
-				PersoSim.showExceptionToUser(e);
+				CommandParser.showExceptionToUser(e);
 			}
 		}
 		
@@ -117,7 +108,7 @@ public class SocketSimulator implements Runnable {
 			try {
 				clientSocket.close();
 			} catch (IOException e) {
-				PersoSim.showExceptionToUser(e);
+				CommandParser.showExceptionToUser(e);
 			}
 		}
 
@@ -126,7 +117,7 @@ public class SocketSimulator implements Runnable {
 			try {
 				simThread.join();
 			} catch (InterruptedException e) {
-				PersoSim.showExceptionToUser(e);
+				CommandParser.showExceptionToUser(e);
 			}
 		}
 		
@@ -139,7 +130,7 @@ public class SocketSimulator implements Runnable {
 		try {
 			server = new ServerSocket(port);
 		} catch (IOException e) {
-			PersoSim.showExceptionToUser(e);
+			CommandParser.showExceptionToUser(e);
 			return; // without an open ServerSocket this method is done
 		}
 
@@ -154,7 +145,7 @@ public class SocketSimulator implements Runnable {
 			try {
 				server.close();
 			} catch (IOException e) {
-				PersoSim.showExceptionToUser(e);
+				CommandParser.showExceptionToUser(e);
 			}
 		}
 
@@ -189,7 +180,6 @@ public class SocketSimulator implements Runnable {
 
 				if (apduLine == null) {
 					// connection closed by peer
-					isPowerOn = false;
 					break;
 				}
 				
@@ -199,67 +189,41 @@ public class SocketSimulator implements Runnable {
 				try {
 					apdu = HexString.toByteArray(apduLine);
 				} catch (RuntimeException e) {
-					PersoSim.showExceptionToUser(e);
+					CommandParser.showExceptionToUser(e);
 					// nothing else needs to be done, will lead to an empty
 					// apdu==null, thus no processing is done and the default SW
 					// 6F00 is returned
 				}
 
 				// process the APDU, generate response
-				response = processCommand(apdu);
+				Simulator sim = simProvider.getSimulator();
+				// if there is a simulator available, get the response
+				if (sim != null){
+					response = sim.processCommand(apdu);
+				}
 
 				// encode response and return it
 				String respLine = HexString.encode(response);
 				out.println(respLine);
 				out.flush();
 
-			} while (isPowerOn);
+			} while (isRunning);
 
 		} catch (IOException e) {
 			//show the exception only if the server is still running, otherwise it is expected behavior
 			if (isRunning) {
-				PersoSim.showExceptionToUser(e);
+				CommandParser.showExceptionToUser(e);
 			}
 		} finally {
 			if (clientSocket != null) {
 				try {
 					clientSocket.close();
 				} catch (IOException e) {
-					PersoSim.showExceptionToUser(e);
+					CommandParser.showExceptionToUser(e);
 				}
 			}
 		}
 
-	}
-
-	/**
-	 * Handles APDUs received via command socket. Control APDUs are filtered and
-	 * the respective methods of the kernel are called. All other APDUs are
-	 * simply forwarded to the kernels process() method.
-	 * 
-	 * @param apdu
-	 * @return
-	 */
-	private byte[] processCommand(byte[] apdu) {
-		int clains = Utils.maskUnsignedShortToInt(Utils.concatenate(apdu[0], apdu[1]));
-		switch (clains) {
-		case 0xFF00:
-			isPowerOn = false;
-			return kernel.powerOff();
-		case 0xFF01:
-			isPowerOn = true;
-			return kernel.powerOn();
-		case 0xFF6F:
-			return NACK;
-		case 0xFF90:
-			return ACK;
-		case 0xFFFF:
-			return kernel.reset();
-		default:
-			// all other (unknown) APDUs are forwarded to the
-			// PersoSimKernel
-			return kernel.process(apdu);
-		}
 	}
 
 }

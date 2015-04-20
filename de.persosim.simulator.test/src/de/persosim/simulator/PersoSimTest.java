@@ -1,25 +1,19 @@
 package de.persosim.simulator;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.net.ConnectException;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 import javax.xml.bind.JAXBException;
 
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,8 +22,10 @@ import org.junit.Test;
 import de.persosim.simulator.perso.DefaultPersoTestPki;
 import de.persosim.simulator.perso.MinimumPersonalization;
 import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 public class PersoSimTest extends PersoSimTestCase {
 	
@@ -37,14 +33,12 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	@Mocked DefaultPersoTestPki defaultPersoTestPki;
 	
-	public static final byte[] EF_CS_CONTENT_1 = HexString.toByteArray("FF010203");
-	public static final byte[] EF_CS_CONTENT_2 = HexString.toByteArray("FF030201");
+	public static final byte[] EF_CS_CONTENT = HexString.toByteArray("FF01020304");
 	
-	public static final String DUMMY_PERSONALIZATION_FILE_1 = "tmp/dummyPersonalization1.xml";
-	public static final String DUMMY_PERSONALIZATION_FILE_2 = "tmp/dummyPersonalization2.xml";
+	public static final String DUMMY_PERSONALIZATION_FILE = "tmp/dummyPersonalization1.xml";
 	
 	public static final String SELECT_APDU = "00A4020C02011C";
-	public static final String READ_BINARY_APDU = "00B0000004";
+	public static final String READ_BINARY_APDU = "00B0000005";
 	public static final String SW_NO_ERROR = "9000";
 	
 	static PrintStream	origOut;
@@ -56,11 +50,8 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void setUp() {
 		origOut	= System.out;
 		
-		MinimumPersonalization perso1 = new MinimumPersonalization(EF_CS_CONTENT_1);
-		perso1.writeToFile(DUMMY_PERSONALIZATION_FILE_1);
-		
-		MinimumPersonalization perso2 = new MinimumPersonalization(EF_CS_CONTENT_2);
-		perso2.writeToFile(DUMMY_PERSONALIZATION_FILE_2);
+		MinimumPersonalization perso1 = new MinimumPersonalization(EF_CS_CONTENT);
+		perso1.writeToFile(DUMMY_PERSONALIZATION_FILE);
 	}
 	
 	@After
@@ -88,53 +79,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	public static String extractResponse(String responseBulk) {
 		return responseBulk.substring(0, responseBulk.length() - 4).trim();
-	}
-	
-	/**
-	 * This method exchanges APDUs with a simulator running on default host and port.
-	 * @param cmdApdu the APDU to be sent
-	 * @return the APDU response
-	 * @throws UnknownHostException
-	 * @throws IOException
-	 */
-	private String exchangeApdu(String cmdApdu) throws UnknownHostException, IOException {
-		return exchangeApdu(cmdApdu, PersoSim.DEFAULT_SIM_PORT);
-	}
-	
-	/**
-	 * This method exchanges APDUs with a simulator running on localhost at the provided port.
-	 * @param cmdApdu the APDU to be sent
-	 * @param port the port to contact the simulator
-	 * @return the APDU response
-	 * @throws IOException
-	 */
-	private String exchangeApdu(String cmdApdu, int port) throws IOException {
-		cmdApdu = cmdApdu.replaceAll("\\s", ""); // remove any whitespace
-		
-		Socket socket = null;
-		String respApdu = null;
-		
-		try {
-			socket = new Socket(PersoSim.DEFAULT_SIM_HOST, port);
-
-			PrintStream out = new PrintStream(socket.getOutputStream());
-			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-			out.println(cmdApdu);
-			out.flush();
-			
-			respApdu = in.readLine();
-		} finally {
-			if (socket != null) {
-				try {
-					socket.close();
-				} catch (IOException e) {
-					return "socket close failure";
-				}
-			}
-		}
-
-		return respApdu;
 	}
 	
 	/**
@@ -177,7 +121,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		String response = readRedStdOut();
 		
-		assertTrue(response.contains(PersoSim.LOG_NO_OPERATION));
+		assertTrue(response.contains(CommandParser.LOG_NO_OPERATION));
 	}
 	
 	/**
@@ -192,7 +136,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		String response = readRedStdOut();
 		
-		assertTrue(response.contains(PersoSim.LOG_NO_OPERATION));
+		assertTrue(response.contains(CommandParser.LOG_NO_OPERATION));
 	}
 	
 	/**
@@ -205,11 +149,11 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		activateStdOutRedirection();
 		
-		persoSim.executeUserCommands("");
+		CommandParser.executeUserCommands(persoSim, "");
 		
 		String response = readRedStdOut();
 
-		assertTrue(response.contains(PersoSim.LOG_NO_OPERATION));
+		assertTrue(response.contains(CommandParser.LOG_NO_OPERATION));
 	}
 	
 	/**
@@ -222,7 +166,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		activateStdOutRedirection();
 		
-		persoSim.executeUserCommands(PersoSim.CMD_EXIT);
+		CommandParser.executeUserCommands(persoSim, CommandParser.CMD_EXIT);
 		
 		String response = readRedStdOut();
 
@@ -239,11 +183,11 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		activateStdOutRedirection();
 		
-		persoSim.executeUserCommands("unknown");
+		CommandParser.executeUserCommands(persoSim, "unknown");
 		
 		String response = readRedStdOut();
 		
-		assertTrue(response.contains(PersoSim.LOG_UNKNOWN_ARG));
+		assertTrue(response.contains(CommandParser.LOG_UNKNOWN_ARG));
 	}
 	
 	/**
@@ -251,29 +195,17 @@ public class PersoSimTest extends PersoSimTestCase {
 	 * @throws Exception
 	 */
 	@Test
-	public void testImplicitSettingOfDefaultPersonalization() throws Exception {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				defaultPersoTestPki.getObjectTree();
-				result = new MinimumPersonalization(EF_CS_CONTENT_1).getObjectTree();
-			}
-			
-			{
-				defaultPersoTestPki.getProtocolList();
-				result = new MinimumPersonalization(EF_CS_CONTENT_1).getProtocolList();
-			}
-		};
-		
-		persoSim = new PersoSim((String) null);
+	public void testImplicitSettingOfMinimumPersonalization() throws Exception {
+		persoSim = new PersoSim();
 		persoSim.startSimulator();
 		
-		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect);
+		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), response);
 		
-		String responseReadBinaryExpected = (HexString.encode(EF_CS_CONTENT_1)).toUpperCase();
-		String responseReadBinary = (extractResponse(exchangeApdu(READ_BINARY_APDU))).toUpperCase();
-		assertEquals(responseReadBinaryExpected, responseReadBinary);
+		byte[] responseReadBinaryExpected = Utils.concatByteArrays(MinimumPersonalization.DEFAULT_EF_CA_VALUE, Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR));
+		
+		response = persoSim.processCommand(HexString.toByteArray(READ_BINARY_APDU));
+		assertArrayEquals(responseReadBinaryExpected, response);
 	}
 	
 	/**
@@ -282,21 +214,17 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator() throws Exception {
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim();
 		
-		boolean caughtIoException = false;
-		try {
-			exchangeApdu(SELECT_APDU);
-		} catch (IOException e) {
-			caughtIoException = true;
-		}
+		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
 		
-		assertTrue(caughtIoException);
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN), response);
 		
 		persoSim.startSimulator();
 		
-		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect);
+		response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
+		
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), response);
 	}
 	
 	/**
@@ -305,32 +233,35 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator_twice() throws Exception {
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE});
 		
 		persoSim.startSimulator();
 		assertTrue(persoSim.startSimulator());
 		
 		//ensure that the simulator is responding
-		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect);
+		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), response);
 	}
 	
 	/**
 	 * Positive test case: test stop of socket simulator.
 	 * @throws Exception 
 	 */
-	@Test(expected = ConnectException.class)
+	@Test
 	public void testStopSimulator() throws Exception {
-		persoSim = new PersoSim(PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1);
+		persoSim = new PersoSim(CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE);
 		
 		persoSim.startSimulator();
 		
-		String responseSelect1 = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect1);
+		byte [] responseSelect = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
+
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), responseSelect);
 		
 		persoSim.stopSimulator();
 		
-		exchangeApdu(SELECT_APDU);
+		responseSelect = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
+
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN), responseSelect);
 	}
 	
 	/**
@@ -338,7 +269,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testParseCommandEmptyString() {
-		String[] result = PersoSim.parseCommand("");
+		String[] result = CommandParser.parseCommand("");
 		
 		assertEquals(result.length, 0);
 	}
@@ -349,7 +280,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	@Test(expected = NullPointerException.class)
 	public void testParseCommandNull() {
 		System.out.println("test007");
-		PersoSim.parseCommand(null);
+		CommandParser.parseCommand(null);
 	}
 	
 	/**
@@ -358,7 +289,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	@Test
 	public void testParseCommand_UntrimmedCoherentString() {
 		String arg = "string";
-		String[] result = PersoSim.parseCommand(" " + arg + "  ");
+		String[] result = CommandParser.parseCommand(" " + arg + "  ");
 		
 		assertEquals(result.length, 1);
 		assertEquals(result[0], arg);
@@ -371,7 +302,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testParseCommand_IncoherentString() {
 		String arg1 = "string1";
 		String arg2 = "string 2";
-		String[] result = PersoSim.parseCommand(" " + arg1 + "  " + arg2);
+		String[] result = CommandParser.parseCommand(" " + arg1 + "  " + arg2);
 		
 		assertEquals(result.length, 2);
 		assertEquals(result[0], arg1);
@@ -384,7 +315,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testParsePersonalization_ValidFile() throws Exception {
-		Personalization perso = PersoSim.parsePersonalization(DUMMY_PERSONALIZATION_FILE_1);
+		Personalization perso = CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE);
 		
 		assertNotNull(perso);
 	}
@@ -395,7 +326,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test(expected = FileNotFoundException.class)
 	public void testParsePersonalization_FileNotFound() throws Exception {
-		PersoSim.parsePersonalization("file not found");
+		CommandParser.parsePersonalization("file not found");
 	}
 	
 	/**
@@ -404,7 +335,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test(expected = JAXBException.class)
 	public void testParsePersonalization_InvalidFile() throws Exception {
-		PersoSim.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
+		CommandParser.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
 	}
 	
 	/**
@@ -422,20 +353,20 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testLoadPersonalization_ValidPersonalization() throws Exception {
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
+		persoSim = new PersoSim();
 		
 		persoSim.startSimulator();
 		
-		persoSim.loadPersonalization(DUMMY_PERSONALIZATION_FILE_2);
+		persoSim.loadPersonalization(CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE));
+
+		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
+		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), response);
 		
-		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect);
+		response = persoSim.processCommand(HexString.toByteArray(READ_BINARY_APDU));
 		
-		String responseReadBinary = (extractResponse(exchangeApdu(READ_BINARY_APDU))).toUpperCase();
+		byte [] responseReadBinaryExpected = Utils.concatByteArrays(EF_CS_CONTENT, Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR));
 		
-		String responseReadBinaryExpected = (HexString.encode(EF_CS_CONTENT_2)).toUpperCase();
-		
-		assertEquals(responseReadBinaryExpected, responseReadBinary);
+		assertArrayEquals(responseReadBinaryExpected, response);
 	}
 	
 	/**
@@ -444,9 +375,9 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testArgLoadPersonalization_InvalidPersonalizationFile() throws Exception {		
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"});
-		
-		assertFalse(persoSim.startSimulator());
+		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, "src/de/persosim/simulator/PersoSimTest.java"});
+		assertFalse(persoSim.isRunning());
+		assertTrue(persoSim.getPersonalization() instanceof MinimumPersonalization);
 	}
 	
 	/**
@@ -455,31 +386,9 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testArgLoadPersonalization_FileNotFound() throws Exception {
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, "non-existing.file"});
-		
-		assertFalse(persoSim.startSimulator());
-	}
-	
-	/**
-	 * Positive test case: test setting of new port via user arguments.
-	 * @throws Exception
-	 */
-	@Test
-	public void testExecuteUserCommandsCmdSetPortNo() throws Exception {
-		persoSim = new PersoSim(new String[]{PersoSim.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE_1});
-		persoSim.startSimulator();
-		
-		String responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU));
-		assertEquals(SW_NO_ERROR, responseSelect);
-		
-		int portPostExpected = PersoSim.DEFAULT_SIM_PORT + 1;
-		
-		persoSim.setPort((new Integer (portPostExpected)).toString());
-		persoSim.restartSimulator();
-		
-		responseSelect = extractStatusWord(exchangeApdu(SELECT_APDU, portPostExpected));
-		
-		assertEquals(SW_NO_ERROR, responseSelect);
+		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, "non-existing.file"});
+		assertFalse(persoSim.isRunning());
+		assertTrue(persoSim.getPersonalization() instanceof MinimumPersonalization);
 	}
 
 }
