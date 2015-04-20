@@ -36,7 +36,7 @@ public class GtDebugPersoTest extends GtDefaultPersoTest {
 		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_L_19"));  // CommunityID verification
 		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_L_37"));  // Reading EF.ChipSecurity (as privileged terminal)
 		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_R_01"));  // RI
-		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_DATA_B_01"));  // SignedData
+//		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_DATA_B_01"));  // SignedData
 
 
 //		retVal.add(GtConstants.SUITE_EAC2_ISO7816_H);
