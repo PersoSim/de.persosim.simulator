@@ -1,4 +1,4 @@
-package de.persosim.simulator.perso;
+package de.persosim.simulator.perso.xstream;
 
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;

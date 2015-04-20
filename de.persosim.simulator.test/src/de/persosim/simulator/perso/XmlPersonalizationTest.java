@@ -28,6 +28,7 @@ import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
+import de.persosim.simulator.perso.xstream.EncodedByteArrayConverter;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ca.CaProtocol;
 import de.persosim.simulator.protocols.file.FileProtocol;

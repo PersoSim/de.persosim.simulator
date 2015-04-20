@@ -68,7 +68,8 @@ public class PersoSim implements Simulator {
 		try {
 			CommandParser.handleArgs(this, args);
 		} catch (IllegalArgumentException e) {
-			log(this.getClass(), "simulation aborted, reason is: " + e.getMessage());
+			log(this.getClass(),
+					"simulation aborted, reason is: " + e.getMessage());
 		}
 		
 	}

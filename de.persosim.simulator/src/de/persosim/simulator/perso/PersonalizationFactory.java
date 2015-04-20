@@ -21,6 +21,10 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
+import de.persosim.simulator.perso.xstream.EncodedByteArrayConverter;
+import de.persosim.simulator.perso.xstream.KeyAdapter;
+import de.persosim.simulator.perso.xstream.ProtocolAdapter;
+
 public class PersonalizationFactory {
 	
 public static void marshal(Personalization pers, String path) {
@@ -72,6 +76,7 @@ public static void marshal(Personalization pers, String path) {
 		}
 	}
 	
+//FIXME JGE this method should be named unmarshal
 	public static Personalization unmarchal(String path) {
 		
 		XStream xstream = getXStream();

@@ -1,9 +1,9 @@
 package de.persosim.simulator;
 
+import static de.persosim.simulator.utils.PersoSimLogger.*;
+
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -15,15 +15,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import org.osgi.framework.Bundle;
 
 import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.perso.PersonalizationFactory;
 
 /**
- * This class provides methods that parse console commands for the controle of
+ * This class provides methods that parse console commands for the control of
  * the Simulator and calls the corresponding methods of the {@link Simulator}
  * interface.
  * 
@@ -166,25 +164,25 @@ public class CommandParser {
 	 * This method prints the help menu to the command line.
 	 */
 	private static void printHelpArgs() {
-		System.out.println("Available commands:");
-		System.out.println(ARG_LOAD_PERSONALIZATION + " <file name>");
-		System.out.println(ARG_SET_PORT + " <port number>");
-		System.out.println(ARG_HELP);
+		log(CommandParser.class, "Available commands:", INFO);
+		log(CommandParser.class, ARG_LOAD_PERSONALIZATION + " <file name>", INFO);
+		log(CommandParser.class, ARG_SET_PORT + " <port number>", INFO);
+		log(CommandParser.class, ARG_HELP, INFO);
 	}
 	
 	/**
 	 * This method prints the help menu to the user command line.
 	 */
 	private static void printHelpCmd() {
-		System.out.println("Available commands:");
-		System.out.println(CMD_SEND_APDU + " <hexstring>");
-		System.out.println(CMD_LOAD_PERSONALIZATION + " <file name>");
-		System.out.println(CMD_SET_PORT + " <port number>");
-		System.out.println(CMD_START);
-		System.out.println(CMD_RESTART);
-		System.out.println(CMD_STOP);
-		System.out.println(CMD_EXIT);
-		System.out.println(CMD_HELP);
+		log(CommandParser.class, "Available commands:", INFO);
+		log(CommandParser.class, CMD_SEND_APDU + " <hexstring>", INFO);
+		log(CommandParser.class, CMD_LOAD_PERSONALIZATION + " <file name>", INFO);
+		log(CommandParser.class, CMD_SET_PORT + " <port number>", INFO);
+		log(CommandParser.class, CMD_START, INFO);
+		log(CommandParser.class, CMD_RESTART, INFO);
+		log(CommandParser.class, CMD_STOP, INFO);
+		log(CommandParser.class, CMD_EXIT, INFO);
+		log(CommandParser.class, CMD_HELP, INFO);
 	}
 	
 	/**
@@ -223,16 +221,16 @@ public class CommandParser {
 		//try to parse the given identifier as profile number
 		try {
 			int personalizationNumber = Integer.parseInt(identifier);
-			System.out.println("trying to load personalization profile no: " + personalizationNumber);
+			log(CommandParser.class, "trying to load personalization profile no: " + personalizationNumber, INFO);
 			Bundle plugin = Activator.getContext().getBundle();
 			
 			if(plugin == null) {
 				// TODO how to handle this case? Add OSGI requirement?
-				System.out.println("unable to resolve bundle \"de.persosim.simulator\" - personalization unchanged");
+				log(CommandParser.class, "unable to resolve bundle \"de.persosim.simulator\" - personalization unchanged");
 				return null;
 			} else {
 				URL url = plugin.getResource(persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
-				System.out.println("resolved absolute URL for selected profile is: " + url);
+				log(CommandParser.class, "resolved absolute URL for selected profile is: " + url);
 				identifier = url.getPath();
 			}
 		} catch (Exception e) {
@@ -242,9 +240,9 @@ public class CommandParser {
 		//actually load perso from the identified file
 		try{
 			return parsePersonalization(identifier);
-		} catch(FileNotFoundException | JAXBException e) {
-			System.out.println("unable to set personalization, reason is: " + e.getMessage());
-			System.out.println("simulation is stopped");
+		} catch(FileNotFoundException e) {
+			log(CommandParser.class, "unable to set personalization, reason is: " + e.getMessage(), ERROR);
+			log(CommandParser.class, "simulation is stopped", ERROR);
 			return null;
 		}
 	} 
@@ -256,16 +254,13 @@ public class CommandParser {
 	 * @throws FileNotFoundException 
 	 * @throws JAXBException if parsing of personalization not successful
 	 */
-	public static Personalization parsePersonalization(String persoFileName) throws FileNotFoundException, JAXBException {
-		File persoFile = new File(persoFileName);
-		
-		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-		System.out.println("Parsing personalization from file " + persoFileName);
-		return (Personalization) um.unmarshal(new FileReader(persoFile));
+	public static Personalization parsePersonalization(String persoFileName) throws FileNotFoundException {
+		log(CommandParser.class, "Parsing personalization from file " + persoFileName, INFO);
+		return PersonalizationFactory.unmarchal(persoFileName);
 	}
 	
 	public static void executeUserCommands(Simulator sim, String... args) {
-		if((args == null) || (args.length == 0)) {System.out.println(LOG_NO_OPERATION); return;}
+		if((args == null) || (args.length == 0)) {log(CommandParser.class, LOG_NO_OPERATION, INFO); return;}
 		
 		ArrayList<String> currentArgs = new ArrayList<String>(Arrays.asList(args)); // plain return value of Arrays.asList() does not support required remove operation
 		
@@ -275,7 +270,7 @@ public class CommandParser {
 			}
 		}
 		
-		if(currentArgs.size() == 0) {System.out.println(LOG_NO_OPERATION); return;}
+		if(currentArgs.size() == 0) {log(CommandParser.class, LOG_NO_OPERATION, INFO); return;}
 		
 		int noOfArgsWhenCheckedLast;
 		while(currentArgs.size() > 0) {
@@ -292,7 +287,7 @@ public class CommandParser {
 			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
 				//first command in queue has not been processed
 				String currentArgument = currentArgs.get(0);
-				System.out.println(LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped");
+				log(CommandParser.class, LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped", WARN);
 				currentArgs.remove(0);
 				printHelpCmd();
 				break;
@@ -306,7 +301,7 @@ public class CommandParser {
 	 * @param args the parsed commands and arguments
 	 */
 	public  static void handleArgs(Simulator sim, String... args) {
-		if((args == null) || (args.length == 0)) {System.out.println(LOG_NO_OPERATION); return;}
+		if((args == null) || (args.length == 0)) {log(CommandParser.class, LOG_NO_OPERATION, INFO); return;}
 		
 		processingCommandLineArguments = true;
 		
@@ -320,7 +315,7 @@ public class CommandParser {
 			}
 		}
 		
-		if(currentArgs.size() == 0) {System.out.println(LOG_NO_OPERATION); return;}
+		if(currentArgs.size() == 0) {log(CommandParser.class, LOG_NO_OPERATION, INFO); return;}
 		
 		int noOfArgsWhenCheckedLast;
 		while(currentArgs.size() > 0) {
@@ -340,7 +335,7 @@ public class CommandParser {
 			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
 				//first command in queue has not been processed
 				String currentArgument = currentArgs.get(0);
-				System.out.println(LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped");
+				log(CommandParser.class, LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped", ERROR);
 				currentArgs.remove(0);
 				printHelpCmd();
 				break;
@@ -450,8 +445,8 @@ public class CommandParser {
 		} catch (IOException e) {
 			showExceptionToUser(e);
 		} finally {
-			System.out.println("> " + cmdApdu);
-			System.out.println("< " + respApdu);
+			log(CommandParser.class, "> " + cmdApdu, INFO);
+			log(CommandParser.class, "< " + respApdu, INFO);
 			if (socket != null) {
 				try {
 					socket.close();
@@ -509,7 +504,7 @@ public class CommandParser {
 	}
 	
 	public static void showExceptionToUser(Exception e) {
-		System.out.println("Exception: " + e.getMessage());
+		log(CommandParser.class, "Exception: " + e.getMessage(), INFO);
 		e.printStackTrace();
 	}
 	
@@ -527,7 +522,7 @@ public class CommandParser {
 
 		executeUserCommands = true;
 		while (executeUserCommands) {
-			System.out.println("PersoSim commandline: ");
+			log(CommandParser.class, "PersoSim commandline: ", INFO);
 			String cmd = null;
 			try {
 				cmd = br.readLine();
