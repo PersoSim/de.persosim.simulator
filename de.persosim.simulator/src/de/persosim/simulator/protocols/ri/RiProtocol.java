@@ -315,7 +315,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 				if (!(taMechanism.getTerminalType().equals(TerminalType.AT))) {
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-					processingData.updateResponseAPDU(this, "Restricted Identification only allowed for Authorization Terminals", resp);
+					processingData.updateResponseAPDU(this, "Restricted Identification only allowed for Authentication Terminals", resp);
 					return;
 				}
 
