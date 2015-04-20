@@ -31,7 +31,7 @@ public class PersonalizationFactory {
 	
 
 
-	public static void marshal(Personalization pers, Writer writer) {
+	public static void marshal(Object pers, Writer writer) {
 		XStream xstream = getXStream();
 		xstream.toXML(pers, writer);
 	}
@@ -89,10 +89,10 @@ public class PersonalizationFactory {
 
 
 
-	public static Personalization unmarshal(Reader reader) {
+	public static Object unmarshal(Reader reader) {
 		// TODO Auto-generated method stub
 		XStream xstream = getXStream();
-		return (Personalization) xstream.fromXML(reader);
+		return xstream.fromXML(reader);
 	}
 	
 //FIXME JGE this method should be named unmarshal

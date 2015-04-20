@@ -21,12 +21,10 @@ import java.security.spec.ECPublicKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
 import org.junit.Before;
 import org.junit.Test;
 
+import de.persosim.simulator.perso.PersonalizationFactory;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
@@ -393,26 +391,19 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	 * 
 	 * @throws Exception
 	 */
-//	@Test
-//	public void test_JaxbMarshallUnmarshall() throws Exception {
-//		// instantiate marshaller
-////		Marshaller m = PersoSimJaxbContextProvider.getContext().createMarshaller();
-//		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-//		
-//		// Write to String
-//		StringWriter strWriter = new StringWriter();
-//		m.marshal(domParamsEcdh, strWriter);
-//		String marshalledPerso = strWriter.toString();
-//		System.out.println(marshalledPerso);
-//		
-//		//unmarshall from string
-//		StringReader sr = new StringReader(marshalledPerso);
-////		Unmarshaller um = PersoSimJaxbContextProvider.getContext().createUnmarshaller();
-//		Object unmarshalledObject = um.unmarshal(sr);
-//		
-//		//assert that the recreated object matches the input
-//		assertEquals(domParamsEcdh, unmarshalledObject);
-//	}
+	@Test
+	public void test_JaxbMarshallUnmarshall() throws Exception {
+		// Write to StringWriter
+		StringWriter strWriter = new StringWriter();
+		PersonalizationFactory.marshal(domParamsEcdh, strWriter);
+		
+		//unmarshal from StringReader
+		StringReader sr = new StringReader(strWriter.toString());
+		Object unmarshalledObject = PersonalizationFactory.unmarshal(sr);
+		
+		//assert that the recreated object matches the input
+		assertEquals(domParamsEcdh, unmarshalledObject);
+	}
 	
 	/**
 	 * Positive test case: check equals method for identical object.

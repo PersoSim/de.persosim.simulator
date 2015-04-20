@@ -26,7 +26,7 @@ public class GtXmlDefaultPersoTest extends GtDefaultPersoTest {
 
 		// unmarshal the perso from StringReader
 		StringReader strReader = new StringReader(strWriter.toString());
-		Personalization unmarshalledPerso = PersonalizationFactory.unmarshal(strReader);
+		Personalization unmarshalledPerso = (Personalization) PersonalizationFactory.unmarshal(strReader);
 
 		return unmarshalledPerso;
 	}
