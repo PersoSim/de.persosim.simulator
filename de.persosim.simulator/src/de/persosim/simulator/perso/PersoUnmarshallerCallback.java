@@ -1,7 +1,7 @@
 package de.persosim.simulator.perso;
 
 /**
- * Instances of this interface can be added to any {@link XmlPersonalization}.
+ * Instances of this interface can be added to any {@link PersonalizationImpl}.
  * They are serialized and after deserialization they are called, which allows
  * recreation of dynamic structures.
  * 

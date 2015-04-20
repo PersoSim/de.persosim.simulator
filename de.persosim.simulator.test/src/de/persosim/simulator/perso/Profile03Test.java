@@ -2,14 +2,23 @@ package de.persosim.simulator.perso;
 
 import org.junit.Before;
 
-public class Profile03Test extends XmlPersonalizationTest {
+public class Profile03Test extends PersonalizationTest {
 
-	@Override
+	Personalization perso;
+	
 	@Before
 	public void setUp() throws Exception {
-		super.setUp();
+		perso = null;
+	}
 
-		testPerso = new Profile03();
+	@Override
+	public Personalization getPerso() {
+		
+		if (perso == null) {
+			perso = new Profile03();
+		}
+			
+		return perso;
 	}
 
 }

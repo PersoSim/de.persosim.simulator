@@ -11,7 +11,7 @@ import javax.xml.bind.Unmarshaller;
 import de.persosim.simulator.perso.DefaultPersoGt;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
-import de.persosim.simulator.perso.XmlPersonalization;
+import de.persosim.simulator.perso.PersonalizationImpl;
 
 /**
  * Marshal/unmarshal the {@link DefaultPersonalization} and check it afterwards

@@ -6,7 +6,7 @@ import java.util.List;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.protocols.Protocol;
 
-public class XmlPersonalization implements Personalization {
+public class PersonalizationImpl implements Personalization {
 
 	protected List<Protocol> protocols = null;
 	
@@ -64,14 +64,6 @@ public class XmlPersonalization implements Personalization {
 		if (mf == null) {
 			mf = new MasterFile();
 		}
-	}
-	
-	/**
-	 * This method writes a personalization to a file identified by a provided file name.
-	 * @param fileName the file name to use
-	 * @throws JAXBException 
-	 */
-	public void writeToFile(String fileName) {
 	}
 	
 }

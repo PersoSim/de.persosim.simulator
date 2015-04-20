@@ -27,7 +27,7 @@ import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 
 /**
- * This can be used as callback on an {@link XmlPersonalization} in order to
+ * This can be used as callback on an {@link PersonalizationImpl} in order to
  * automatically complete SecInfo files.
  * 
  * @author amay
