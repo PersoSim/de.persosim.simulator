@@ -54,8 +54,7 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 	
 	@Override
 	public void process(ProcessingData processingData) {
-		if (processingData.getCommandApdu().getIns() == INS_20_VERIFY){
-
+		if ((processingData.getCommandApdu().getCla() == (byte) 0x80) && (processingData.getCommandApdu().getIns() == INS_20_VERIFY)){
 			//check for ca
 			HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 			previousMechanisms.add(ChipAuthenticationMechanism.class);
@@ -129,8 +128,20 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 			}
 			
 			if (auxDataFromTa != null){
+				AuthenticatedAuxiliaryData expectedAuxData = null;
+				
 				for (AuthenticatedAuxiliaryData current : auxDataFromTa){
-					if (auxDataObject.verify(current)){
+					if(oid.equals(current.getObjectIdentifier())) {
+						expectedAuxData = current;
+						break;
+					}
+					
+				}
+				
+				if(expectedAuxData == null) {
+					throw new FileNotFoundException("No auxiliary data was stored during TA matching the provided OID");
+				} else {
+					if (auxDataObject.verify(expectedAuxData)){
 						return;
 					}
 				}

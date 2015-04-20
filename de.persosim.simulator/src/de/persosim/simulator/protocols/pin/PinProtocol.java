@@ -65,10 +65,12 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 	public void process(ProcessingData processingData) {
 		this.processingData = processingData;
 		if (processingData != null) {
+		byte cla = processingData.getCommandApdu().getCla();
 		byte ins = processingData.getCommandApdu().getIns();
 		byte p1 = processingData.getCommandApdu().getP1();
 		byte p2 = processingData.getCommandApdu().getP2();
 		
+		if(cla == (byte) 0x00) {
 			switch(ins){
 			case 0x20:
 				processCommandVerifyPassword();
@@ -108,6 +110,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 				log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
 				break;
 			}
+		}
 		}
 		else {
 			log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
