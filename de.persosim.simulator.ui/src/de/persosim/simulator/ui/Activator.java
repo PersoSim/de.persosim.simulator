@@ -121,9 +121,10 @@ public class Activator implements BundleActivator {
 		simulatorServiceTracker.getService().loadPersonalization(new DefaultPersoTestPki());
 		simulatorServiceTracker.getService().startSimulator();
 
-		context.addServiceListener(simulatorServiceListener);
+		String filter = "(objectclass=" + Simulator.class.getName() + ")";
+		context.addServiceListener(simulatorServiceListener, filter);
 		
-        String filter = "(objectclass=" + LogReaderService.class.getName() + ")";
+        filter = "(objectclass=" + LogReaderService.class.getName() + ")";
         try {
             context.addServiceListener(logServiceListener, filter);
         } catch (InvalidSyntaxException e) {
