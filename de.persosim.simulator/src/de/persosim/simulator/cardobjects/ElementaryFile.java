@@ -27,7 +27,8 @@ public class ElementaryFile extends AbstractFile {
 	
 	private Collection<SecCondition> writingConditions;
 	
-	private Collection<SecCondition> erasingConditions; //IMPL MBK implement the ISO7816 erase functionality for files
+	@SuppressWarnings("unused")  //IMPL MBK implement the ISO7816 erase functionality for files
+	private Collection<SecCondition> erasingConditions;
 	
 	/**
 	 * Default constructor fur JAXB usage.
