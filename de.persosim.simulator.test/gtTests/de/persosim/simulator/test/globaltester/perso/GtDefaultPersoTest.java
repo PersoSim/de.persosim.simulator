@@ -2,38 +2,16 @@ package de.persosim.simulator.test.globaltester.perso;
 
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
 import org.junit.Test;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
-import com.thoughtworks.xstream.mapper.MapperWrapper;
-
 import de.persosim.simulator.perso.DefaultNpaUnmarshallerCallback;
 import de.persosim.simulator.perso.DefaultPersoGt;
-import de.persosim.simulator.perso.EncodedByteArrayConverter;
-import de.persosim.simulator.perso.KeyAdapter;
 import de.persosim.simulator.perso.Personalization;
-import de.persosim.simulator.perso.ProtocolAdapter;
+import de.persosim.simulator.perso.PersonalizationFactory;
 import de.persosim.simulator.perso.TestPkiCmsBuilder;
 import de.persosim.simulator.test.globaltester.GlobalTesterTest;
 import de.persosim.simulator.test.globaltester.GtConstants;
@@ -101,11 +79,11 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 
 			try {
 				String path = "C:/Users/jgoeke/Documents/DefaultGT1.xml";
-				marshal(persoCache, path);
-				pers = unmarchal(path);
+				PersonalizationFactory.marshal(persoCache, path);
+				pers = PersonalizationFactory.unmarchal(path);
 				path = "C:/Users/jgoeke/Documents/DefaultGT2.xml";
-				marshal(pers, path);
-				pers2 = unmarchal(path);
+				PersonalizationFactory.marshal(pers, path);
+				pers2 = PersonalizationFactory.unmarchal(path);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -115,101 +93,7 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 		return pers2;
 	}
 	
-	public void marshal(Personalization pers, String path) {
-		
-		XStream xstream = getXStream();
-		
-		String xml = xstream.toXML(pers);
-		
-		xml = xml.replaceAll("class=\"org.*[Kk]ey\"", "");
-
-		// Write to File
-		File xmlFile = new File(path);
-		xmlFile.getParentFile().mkdirs();
-		
-		StringWriter writer = new StringWriter();
-
-		TransformerFactory ft = TransformerFactory.newInstance();
-		ft.setAttribute("indent-number", new Integer(2));
-		
-		Transformer transformer;
-		try {
-			transformer = ft.newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-
-			transformer.transform(new StreamSource(new StringReader(xml)),
-					new StreamResult(writer));
-
-			OutputStreamWriter char_output = new OutputStreamWriter(
-					new FileOutputStream(xmlFile), "UTF-8");
-			char_output.append(writer.getBuffer());
-			char_output.flush();
-			char_output.close();
-		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
-	public Personalization unmarchal(String path) {
-		
-		XStream xstream = getXStream();
-		
-		File xmlFile = new File(path);
-		xmlFile.getParentFile().mkdirs();
-		
-		// get variables from our xml file, created before
-		Personalization unmarshalledPerso = (Personalization) xstream.fromXML(xmlFile);
-		
-		return unmarshalledPerso;
-	}
-	
-	
-	public XStream getXStream() {
-		
-		XStream xstream = new XStream(new DomDriver("UTF8"))
-		{
-			@Override
-			protected MapperWrapper wrapMapper(MapperWrapper next) 
-			{
-				return new MapperWrapper(next) {
-					@SuppressWarnings("rawtypes")
-					public boolean shouldSerializeMember(Class definedIn,
-							String fieldName) {
-
-						if (definedIn.getName().equals("de.persosim.simulator.perso.AbstractProfile")) {
-							return false;
-						}
-						return super
-								.shouldSerializeMember(definedIn, fieldName);
-					}
-				};
-			}
-		};
-
-		xstream.setMode(XStream.XPATH_RELATIVE_REFERENCES);
-		xstream.setMode(XStream.ID_REFERENCES);
-
-		
-		xstream.registerConverter(new EncodedByteArrayConverter());
-		xstream.registerConverter(new ProtocolAdapter());
-		xstream.registerConverter(new KeyAdapter());
-		
-		return xstream;
-	}
 	
 	@Override
 	public Collection<String> getSupportedProfiles() {
