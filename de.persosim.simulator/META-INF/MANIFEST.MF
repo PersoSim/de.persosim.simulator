@@ -22,8 +22,7 @@ Export-Package: de.persosim.simulator,
  org.bouncycastle.jce.provider
 Bundle-ClassPath: .,
  lib/bcprov-jdk15on-150.jar
-Import-Package: javax.xml.bind,
- org.osgi.framework
+Import-Package: org.osgi.framework
 Eclipse-BundleShape: dir
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.equinox.registry

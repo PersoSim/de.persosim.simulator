@@ -19,15 +19,11 @@ import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
 
 /**
-<<<<<<< Upstream, based on persosim/master
- * The activator class controls the plug-in life cycle
-=======
  * The activator for this bundle. It tracks the {@link Simulator} service and
  * provides accessor methods.
  * 
  * @author mboonk
  *
->>>>>>> 08990b4 JavaDoc improvements
  */
 public class Activator implements BundleActivator {
 
