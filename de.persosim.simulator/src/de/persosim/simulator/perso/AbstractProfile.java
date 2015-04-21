@@ -31,15 +31,21 @@ import de.persosim.simulator.documents.Mrz;
 import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.protocols.ri.Ri;
 import de.persosim.simulator.protocols.ri.RiOid;
+import de.persosim.simulator.protocols.ta.CertificateRole;
+import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TaOid;
+import de.persosim.simulator.protocols.ta.TerminalType;
+import de.persosim.simulator.secstatus.NullSecurityCondition;
 import de.persosim.simulator.secstatus.PaceSecurityCondition;
 import de.persosim.simulator.secstatus.SecCondition;
+import de.persosim.simulator.secstatus.TaSecurityCondition;
 import de.persosim.simulator.tlv.Asn1;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectFactory;
 import de.persosim.simulator.tlv.TlvTag;
+import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
@@ -477,24 +483,10 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		CardFile eidDgCardAccess = new ElementaryFile(new FileIdentifier(0x011C),
 				new ShortFileIdentifier(0x1C),
 				dgCardAccessTlv.toByteArray(),
-				getAccessRightReadEidDg(13),
+				Arrays.asList((SecCondition) new NullSecurityCondition()),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		mf.addChild(eidDgCardAccess);
-	}
-	
-	protected void addEfChipSecurity() {
-		initPersonalizationDataContainer();
-		
-		TlvDataObject dgChipSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfChipSecurity());
-		
-		CardFile eidDgChipSecurity = new ElementaryFile(new FileIdentifier(0x011B),
-				new ShortFileIdentifier(0x1B),
-				dgChipSecurityTlv.toByteArray(),
-				getAccessRightReadEidDg(13),
-				Collections.<SecCondition> emptySet(),
-				Collections.<SecCondition> emptySet());
-		mf.addChild(eidDgChipSecurity);
 	}
 	
 	protected void addEfCardSecurity() {
@@ -505,10 +497,31 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		CardFile eidDgCardSecurity = new ElementaryFile(new FileIdentifier(0x011D),
 				new ShortFileIdentifier(0x1D),
 				dgCardSecurityTlv.toByteArray(),
-				getAccessRightReadEidDg(13),
+				Arrays.asList((SecCondition) new TaSecurityCondition()),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		mf.addChild(eidDgCardSecurity);
+	}
+	
+	protected void addEfChipSecurity() {
+		initPersonalizationDataContainer();
+		
+		TlvDataObject dgChipSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfChipSecurity());
+		
+		
+		SecCondition taWithIs = new TaSecurityCondition(TerminalType.IS, null);
+        SecCondition taWithAtPrivileged = new TaSecurityCondition(
+                        TerminalType.AT, new RelativeAuthorization(
+                                        CertificateRole.TERMINAL, new BitField(6).flipBit(3)));
+        
+		CardFile eidDgChipSecurity = new ElementaryFile(new FileIdentifier(0x011B),
+				new ShortFileIdentifier(0x1B),
+				dgChipSecurityTlv.toByteArray(),
+				Arrays.asList(taWithIs, taWithAtPrivileged),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		mf.addChild(eidDgChipSecurity);
+        		
 	}
 	
 	/**
