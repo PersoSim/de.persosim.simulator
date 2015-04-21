@@ -95,13 +95,15 @@ public class PersonalizationFactory {
 		return xstream.fromXML(reader);
 	}
 	
-	public static Personalization unmarshal(String path) {
+	public static Personalization unmarshal(String path) throws FileNotFoundException {
 		//FIXME JGE reduce this method to the one above
 		
 		XStream xstream = getXStream();
 		
 		File xmlFile = new File(path);
-		xmlFile.getParentFile().mkdirs();
+		if (!xmlFile.exists()) {
+			throw new FileNotFoundException(path + " does not exist");
+		}
 		
 		// get variables from our xml file, created before
 		Personalization unmarshalledPerso = (Personalization) xstream.fromXML(xmlFile);

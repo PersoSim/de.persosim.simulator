@@ -5,12 +5,13 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.FileNotFoundException;
 
-import javax.xml.bind.JAXBException;
-
 import org.junit.Test;
+
+import com.thoughtworks.xstream.io.StreamException;
 
 import de.persosim.simulator.perso.MinimumPersonalization;
 import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.perso.PersonalizationFactory;
 
 public class CommandParserTest {
 
@@ -67,7 +68,7 @@ public class CommandParserTest {
 	@Test
 	public void testParsePersonalization_ValidFile() throws Exception {
 		MinimumPersonalization perso1 = new MinimumPersonalization(PersoSimTest.EF_CS_CONTENT);
-		perso1.writeToFile(PersoSimTest.DUMMY_PERSONALIZATION_FILE);
+		PersonalizationFactory.marshal(perso1, PersoSimTest.DUMMY_PERSONALIZATION_FILE);
 		
 		Personalization perso = CommandParser.parsePersonalization(PersoSimTest.DUMMY_PERSONALIZATION_FILE);
 		
@@ -87,7 +88,7 @@ public class CommandParserTest {
 	 * Negative test case: parse personalization from an invalid existing file.
 	 * @throws Exception
 	 */
-	@Test(expected = JAXBException.class)
+	@Test(expected = StreamException.class)
 	public void testParsePersonalization_InvalidFile() throws Exception {
 		CommandParser.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
 	}

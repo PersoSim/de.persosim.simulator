@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import de.persosim.simulator.perso.DefaultPersoTestPki;
 import de.persosim.simulator.perso.MinimumPersonalization;
+import de.persosim.simulator.perso.PersonalizationFactory;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
@@ -43,7 +44,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		origOut	= System.out;
 		
 		MinimumPersonalization perso1 = new MinimumPersonalization(EF_CS_CONTENT);
-		perso1.writeToFile(DUMMY_PERSONALIZATION_FILE);
+		PersonalizationFactory.marshal(perso1, PersoSimTest.DUMMY_PERSONALIZATION_FILE);
 	}
 	
 	@After

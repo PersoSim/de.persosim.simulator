@@ -63,7 +63,4 @@ public class MinimumPersonalization extends PersonalizationImpl {
 		mf.addChild(efCardAccess);
 	}
 	
-	public void writeToFile(String fileName) {
-	}
-	
 }
