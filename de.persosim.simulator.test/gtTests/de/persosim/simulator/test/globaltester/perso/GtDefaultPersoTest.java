@@ -8,11 +8,8 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import de.persosim.simulator.perso.DefaultNpaUnmarshallerCallback;
 import de.persosim.simulator.perso.DefaultPersoGt;
 import de.persosim.simulator.perso.Personalization;
-import de.persosim.simulator.perso.PersonalizationFactory;
-import de.persosim.simulator.perso.TestPkiCmsBuilder;
 import de.persosim.simulator.test.globaltester.GlobalTesterTest;
 import de.persosim.simulator.test.globaltester.GtConstants;
 import de.persosim.simulator.test.globaltester.GtSuiteDescriptor;
@@ -38,8 +35,6 @@ import de.persosim.simulator.test.globaltester.SimulatorReset;
 public class GtDefaultPersoTest extends GlobalTesterTest {
 	
 	protected Personalization persoCache = null;
-	Personalization pers = null;
-	Personalization pers2 = null;
 	
 	@Test
 	public void testAllApplicableTests() throws Exception {
@@ -72,25 +67,10 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 	@Override
 	public Personalization getPersonalization() {
 		
-		if(persoCache == null || pers == null) {
+		if(persoCache == null) {
 			persoCache = new DefaultPersoGt();
-			DefaultNpaUnmarshallerCallback x = new DefaultNpaUnmarshallerCallback(new TestPkiCmsBuilder());
-			x.afterUnmarshall(persoCache);
-
-			try {
-				String path = "C:/Users/jgoeke/Documents/DefaultGT1.xml";
-				PersonalizationFactory.marshal(persoCache, path);
-				pers = PersonalizationFactory.unmarchal(path);
-				path = "C:/Users/jgoeke/Documents/DefaultGT2.xml";
-				PersonalizationFactory.marshal(pers, path);
-				pers2 = PersonalizationFactory.unmarchal(path);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
 		}
-		return pers2;
+		return persoCache;
 	}
 	
 	
