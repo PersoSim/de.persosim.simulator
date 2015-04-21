@@ -31,7 +31,7 @@ public abstract class PersonalizationTest extends PersoSimTestCase {
 		PersonalizationFactory.marshal(getPerso(), xmlFile);
 
 		// get variables from our xml file, created before
-		Personalization unmarshalledPerso = PersonalizationFactory.unmarchal(xmlFile);
+		Personalization unmarshalledPerso = PersonalizationFactory.unmarshal(xmlFile);
 		assertNotNull(unmarshalledPerso);
 		
 		//check all CardObjects, their children and all Identifiers of the card object tree

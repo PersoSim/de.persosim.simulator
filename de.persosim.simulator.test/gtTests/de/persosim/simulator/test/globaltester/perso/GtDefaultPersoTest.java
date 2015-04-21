@@ -36,34 +36,6 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 	
 	protected Personalization persoCache = null;
 	
-	@Test
-	public void testAllApplicableTests() throws Exception {
-		String suiteName;
-		
-		gtServer.clearCollectedResults();
-		
-		Collection<JobDescriptor> suites = getAllApplicableGtTests();
-		for (JobDescriptor curSuite : suites) {
-			if (curSuite instanceof SimulatorReset){
-				resetSimulator();
-			} else if (curSuite instanceof GtSuiteDescriptor){
-				suiteName = ((GtSuiteDescriptor)curSuite).getTestSuiteName();
-				log(this, "RINOTE: test suite name: " + suiteName);
-				
-				if((suiteName.equals("testsuite_ISO7816_R")) || (suiteName.startsWith("EAC2_ISO7816_R"))) {
-					this.setRiKey((byte) 0x01, false);//TODO make this magic values dependent on the actual perso
-					gtServer.runSuiteAndSaveResults((GtSuiteDescriptor)curSuite);
-					this.setRiKey((byte) 0x02, true);
-					gtServer.runSuiteAndSaveResults((GtSuiteDescriptor)curSuite);
-				} else {
-					gtServer.runSuiteAndSaveResults((GtSuiteDescriptor)curSuite);
-				}
-			}
-		}
-		
-		gtServer.checkAndClearResults(0, 0);
-	}
-	
 	@Override
 	public Personalization getPersonalization() {
 		
@@ -72,8 +44,6 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 		}
 		return persoCache;
 	}
-	
-	
 	
 	@Override
 	public Collection<String> getSupportedProfiles() {
@@ -150,5 +120,35 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 		
 		return retVal;
 	}
+	
+	@Test
+	public void testAllApplicableTests() throws Exception {
+		String suiteName;
+		
+		gtServer.clearCollectedResults();
+		
+		Collection<JobDescriptor> suites = getAllApplicableGtTests();
+		for (JobDescriptor curSuite : suites) {
+			if (curSuite instanceof SimulatorReset){
+				resetSimulator();
+			} else if (curSuite instanceof GtSuiteDescriptor){
+				suiteName = ((GtSuiteDescriptor)curSuite).getTestSuiteName();
+				log(this, "RINOTE: test suite name: " + suiteName);
+				
+				if((suiteName.equals("testsuite_ISO7816_R")) || (suiteName.startsWith("EAC2_ISO7816_R"))) {
+					this.setRiKey((byte) 0x01, false);//TODO make this magic values dependent on the actual perso
+					gtServer.runSuiteAndSaveResults((GtSuiteDescriptor)curSuite);
+					this.setRiKey((byte) 0x02, true);
+					gtServer.runSuiteAndSaveResults((GtSuiteDescriptor)curSuite);
+				} else {
+					gtServer.runSuiteAndSaveResults((GtSuiteDescriptor)curSuite);
+				}
+			}
+		}
+		
+		gtServer.checkAndClearResults(0, 0);
+	}
+	
+	
 
 }

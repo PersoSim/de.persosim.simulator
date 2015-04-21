@@ -478,11 +478,11 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	protected void addEfCardAccess() {
 		initPersonalizationDataContainer();
 		
-		TlvDataObject dgCardAccessTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfCardAccess());
+		TlvDataObject efCardAccessTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfCardAccess());
 		
 		CardFile eidDgCardAccess = new ElementaryFile(new FileIdentifier(0x011C),
 				new ShortFileIdentifier(0x1C),
-				dgCardAccessTlv.toByteArray(),
+				efCardAccessTlv.toByteArray(),
 				Arrays.asList((SecCondition) new NullSecurityCondition()),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
@@ -492,11 +492,11 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	protected void addEfCardSecurity() {
 		initPersonalizationDataContainer();
 		
-		TlvDataObject dgCardSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfChipSecurity());
+		TlvDataObject efCardSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfCardSecurity());
 		
 		CardFile eidDgCardSecurity = new ElementaryFile(new FileIdentifier(0x011D),
 				new ShortFileIdentifier(0x1D),
-				dgCardSecurityTlv.toByteArray(),
+				efCardSecurityTlv.toByteArray(),
 				Arrays.asList((SecCondition) new TaSecurityCondition()),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
@@ -506,7 +506,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	protected void addEfChipSecurity() {
 		initPersonalizationDataContainer();
 		
-		TlvDataObject dgChipSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfChipSecurity());
+		TlvDataObject efChipSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfChipSecurity());
 		
 		
 		SecCondition taWithIs = new TaSecurityCondition(TerminalType.IS, null);
@@ -516,7 +516,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
         
 		CardFile eidDgChipSecurity = new ElementaryFile(new FileIdentifier(0x011B),
 				new ShortFileIdentifier(0x1B),
-				dgChipSecurityTlv.toByteArray(),
+				efChipSecurityTlv.toByteArray(),
 				Arrays.asList(taWithIs, taWithAtPrivileged),
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());

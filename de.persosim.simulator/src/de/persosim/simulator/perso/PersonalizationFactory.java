@@ -95,8 +95,7 @@ public class PersonalizationFactory {
 		return xstream.fromXML(reader);
 	}
 	
-//FIXME JGE this method should be named unmarshal
-	public static Personalization unmarchal(String path) {
+	public static Personalization unmarshal(String path) {
 		//FIXME JGE reduce this method to the one above
 		
 		XStream xstream = getXStream();
