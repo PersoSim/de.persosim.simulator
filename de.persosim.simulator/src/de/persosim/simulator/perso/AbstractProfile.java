@@ -37,6 +37,8 @@ import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.tlv.Asn1;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
+import de.persosim.simulator.tlv.TlvDataObject;
+import de.persosim.simulator.tlv.TlvDataObjectFactory;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
@@ -465,6 +467,48 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				Collections.<SecCondition> emptySet(),
 				Collections.<SecCondition> emptySet());
 		eIdAppl.addChild(eidDg13);
+	}
+	
+	protected void addEfCardAccess() {
+		initPersonalizationDataContainer();
+		
+		TlvDataObject dgCardAccessTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getDgEfCardAccess());
+		
+		CardFile eidDgCardAccess = new ElementaryFile(new FileIdentifier(0x011C),
+				new ShortFileIdentifier(0x1C),
+				dgCardAccessTlv.toByteArray(),
+				getAccessRightReadEidDg(13),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		mf.addChild(eidDgCardAccess);
+	}
+	
+	protected void addEfChipSecurity() {
+		initPersonalizationDataContainer();
+		
+		TlvDataObject dgChipSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getDgEfChipSecurity());
+		
+		CardFile eidDgChipSecurity = new ElementaryFile(new FileIdentifier(0x011B),
+				new ShortFileIdentifier(0x1B),
+				dgChipSecurityTlv.toByteArray(),
+				getAccessRightReadEidDg(13),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		mf.addChild(eidDgChipSecurity);
+	}
+	
+	protected void addEfCardSecurity() {
+		initPersonalizationDataContainer();
+		
+		TlvDataObject dgCardSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getDgEfChipSecurity());
+		
+		CardFile eidDgCardSecurity = new ElementaryFile(new FileIdentifier(0x011D),
+				new ShortFileIdentifier(0x1D),
+				dgCardSecurityTlv.toByteArray(),
+				getAccessRightReadEidDg(13),
+				Collections.<SecCondition> emptySet(),
+				Collections.<SecCondition> emptySet());
+		mf.addChild(eidDgCardSecurity);
 	}
 	
 	/**
