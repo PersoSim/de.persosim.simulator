@@ -12,13 +12,13 @@ public class Profile06 extends AbstractProfile {
 	@Override
 	public void setPersoDataContainer() {
 		persoDataContainer = PersonalizationDataContainer.getDefaultContainer();
-		persoDataContainer.setDg4PlainData("Hans-Günther");
-		persoDataContainer.setDg5PlainData("von Drebenbusch-Dalgoßen");
-		persoDataContainer.setDg6PlainData("Freiherr zu Möckern-Windensberg");
+		persoDataContainer.setDg4PlainData("Hans-GÃ¼nther");
+		persoDataContainer.setDg5PlainData("von Drebenbusch-DalgoÃŸen");
+		persoDataContainer.setDg6PlainData("Freiherr zu MÃ¶ckern-Windensberg");
 		persoDataContainer.setDg7PlainData("Dr.eh.Dr.");
 		persoDataContainer.setDg8PlainData("19460125");
 		persoDataContainer.setDg9PlainData("BREMERHAVEN");
-		persoDataContainer.setDg13PlainData("Weiß");
+		persoDataContainer.setDg13PlainData("WeiÃŸ");
 		persoDataContainer.setDg17StreetPlainData("WEG NR. 12 8E");
 		persoDataContainer.setDg17CityPlainData("HAMBURG");
 		persoDataContainer.setDg17CountryPlainData("D");

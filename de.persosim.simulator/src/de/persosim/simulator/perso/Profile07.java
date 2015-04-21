@@ -15,8 +15,8 @@ public class Profile07 extends AbstractProfile {
 		persoDataContainer.setDg4PlainData("ANNEKATHRIN");
 		persoDataContainer.setDg5PlainData("LERCH");
 		persoDataContainer.setDg8PlainData("19760705");
-		persoDataContainer.setDg9PlainData("BAD KÖNIGSHOFEN I. GRABFELD");
-		persoDataContainer.setDg13PlainData("BJØRNSON");
+		persoDataContainer.setDg9PlainData("BAD KÃ–NIGSHOFEN I. GRABFELD");
+		persoDataContainer.setDg13PlainData("BJÃ˜RNSON");
 		persoDataContainer.setDg17CityPlainData("HALLE (SAALE)");
 		persoDataContainer.setDg17CountryPlainData("D");
 		persoDataContainer.setDg17ZipPlainData("06108");

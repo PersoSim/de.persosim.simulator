@@ -16,8 +16,8 @@ public class Profile09 extends AbstractProfile {
 		persoDataContainer.setDg4PlainData("LILLY");
 		persoDataContainer.setDg5PlainData("SCHUSTER");
 		persoDataContainer.setDg8PlainData("19980330");
-		persoDataContainer.setDg9PlainData("MÜHLHAUSEN/THÜRINGEN");
-		persoDataContainer.setDg17StreetPlainData("MARIENSTRAßE 144");
+		persoDataContainer.setDg9PlainData("MÃœHLHAUSEN/THÃœRINGEN");
+		persoDataContainer.setDg17StreetPlainData("MARIENSTRAÃŸE 144");
 		persoDataContainer.setDg17CityPlainData("EISENACH");
 		persoDataContainer.setDg17CountryPlainData("D");
 		persoDataContainer.setDg17ZipPlainData("99817");

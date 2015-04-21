@@ -17,9 +17,9 @@ public class Profile03 extends AbstractProfile {
 		persoDataContainer.setDg6PlainData("ORDENSSCHWESTER JOHANNA");
 		persoDataContainer.setDg7PlainData("DR.");
 		persoDataContainer.setDg8PlainData("19280421");
-		persoDataContainer.setDg9PlainData("MÜNCHEN");
-		persoDataContainer.setDg13PlainData("VON MÜLLER-SCHWARZENBERG");
-		persoDataContainer.setDg17StreetPlainData(" BOUCHÉSTR. 68 A");
+		persoDataContainer.setDg9PlainData("MÃœNCHEN");
+		persoDataContainer.setDg13PlainData("VON MÃœLLER-SCHWARZENBERG");
+		persoDataContainer.setDg17StreetPlainData(" BOUCHÃ‰STR. 68 A");
 		persoDataContainer.setDg17CityPlainData("BERLIN");
 		persoDataContainer.setDg17CountryPlainData("D");
 		persoDataContainer.setDg17ZipPlainData("12059");

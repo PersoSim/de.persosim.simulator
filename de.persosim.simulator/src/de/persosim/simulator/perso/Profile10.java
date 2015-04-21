@@ -13,9 +13,9 @@ public class Profile10 extends AbstractProfile {
 	public void setPersoDataContainer() {
 		persoDataContainer = PersonalizationDataContainer.getDefaultContainer();
 		persoDataContainer.setDg4PlainData("HILDEGARD");
-		persoDataContainer.setDg5PlainData("MÜLLER");
+		persoDataContainer.setDg5PlainData("MÃœLLER");
 		persoDataContainer.setDg8PlainData("19390204");
-		persoDataContainer.setDg9PlainData("SAARBRÜCKEN");
+		persoDataContainer.setDg9PlainData("SAARBRÃœCKEN");
 		persoDataContainer.setDg17StreetPlainData("HARKORTSTR. 58");
 		persoDataContainer.setDg17CityPlainData("DORTMUND");
 		persoDataContainer.setDg17CountryPlainData("D");
