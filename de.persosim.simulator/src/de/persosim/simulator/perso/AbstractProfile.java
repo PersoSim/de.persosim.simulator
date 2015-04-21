@@ -472,7 +472,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	protected void addEfCardAccess() {
 		initPersonalizationDataContainer();
 		
-		TlvDataObject dgCardAccessTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getDgEfCardAccess());
+		TlvDataObject dgCardAccessTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfCardAccess());
 		
 		CardFile eidDgCardAccess = new ElementaryFile(new FileIdentifier(0x011C),
 				new ShortFileIdentifier(0x1C),
@@ -486,7 +486,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	protected void addEfChipSecurity() {
 		initPersonalizationDataContainer();
 		
-		TlvDataObject dgChipSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getDgEfChipSecurity());
+		TlvDataObject dgChipSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfChipSecurity());
 		
 		CardFile eidDgChipSecurity = new ElementaryFile(new FileIdentifier(0x011B),
 				new ShortFileIdentifier(0x1B),
@@ -500,7 +500,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	protected void addEfCardSecurity() {
 		initPersonalizationDataContainer();
 		
-		TlvDataObject dgCardSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getDgEfChipSecurity());
+		TlvDataObject dgCardSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfChipSecurity());
 		
 		CardFile eidDgCardSecurity = new ElementaryFile(new FileIdentifier(0x011D),
 				new ShortFileIdentifier(0x1D),

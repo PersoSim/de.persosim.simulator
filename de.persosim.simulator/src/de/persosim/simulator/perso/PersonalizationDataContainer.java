@@ -14,7 +14,7 @@ public class PersonalizationDataContainer {
 						dg11PlainData, dg12PlainData, dg13PlainData, dg14PlainData, dg15PlainData,
 						dg16PlainData, dg17StreetPlainData, dg17CityPlainData, dg17StatePlainData,
 						dg17CountryPlainData, dg17ZipPlainData, dg18PlainData, dg19PlainData, dg20PlainData,
-						dg21PlainData, dgEfCardAccess, dgEfChipSecurity, dgEfCardSecurity, epassDg1PlainData, mrz;
+						dg21PlainData, efCardAccess, efChipSecurity, efCardSecurity, epassDg1PlainData, mrz;
 	
 	ArrayList<KeyPair> caKeys, riKeys;
 	ArrayList<Integer> caKeyIds, riKeyIds;
@@ -49,7 +49,7 @@ public class PersonalizationDataContainer {
 		this.dg20PlainData        = null;
 		this.dg21PlainData        = null;
 		
-		this.dgEfCardAccess		  = null;
+		this.efCardAccess		  = null;
 		
 		this.epassDg1PlainData    = null;
 		
@@ -174,31 +174,31 @@ public class PersonalizationDataContainer {
 		this.dg9PlainData = dg9PlainData;
 	}
 	
-	public String getDgEfChipSecurity() {
+	public String getEfChipSecurity() {
 		
-		return dgEfChipSecurity;
+		return efChipSecurity;
 	}
 
-	public void setDgEfChipSecurity(String dgEfChipSecurity) {
-		this.dgEfChipSecurity = dgEfChipSecurity;
+	public void setEfChipSecurity(String efChipSecurity) {
+		this.efChipSecurity = efChipSecurity;
 	}
 	
-	public String getDgEfCardSecurity() {
+	public String getEfCardSecurity() {
 		
-		return dgEfCardSecurity;
+		return efCardSecurity;
 	}
 
-	public void setDgEfCardSecurity(String dgEfCardSecurity) {
-		this.dgEfCardSecurity = dgEfCardSecurity;
+	public void setEfCardSecurity(String efCardSecurity) {
+		this.efCardSecurity = efCardSecurity;
 	}
 	
-	public String getDgEfCardAccess() {
+	public String getEfCardAccess() {
 		
-		return dgEfCardAccess;
+		return efCardAccess;
 	}
 
-	public void setDgEfCardAccess(String dgEfCardAccess) {
-		this.dgEfCardAccess = dgEfCardAccess;
+	public void setEfCardAccess(String efCardAccess) {
+		this.efCardAccess = efCardAccess;
 	}
 	
 	
