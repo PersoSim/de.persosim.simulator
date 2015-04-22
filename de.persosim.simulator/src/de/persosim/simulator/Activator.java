@@ -1,7 +1,5 @@
 package de.persosim.simulator;
 
-import java.security.Provider;
-import java.security.Security;
 import java.util.Hashtable;
 
 import org.globaltester.cryptoprovider.Cryptoprovider;
@@ -10,25 +8,21 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
+import de.persosim.simulator.crypto.Crypto;
+
 public class Activator implements BundleActivator {
 
 	public static BundleContext context;
 	
-	private static Provider cryptoProvider;
-	public static Cryptoprovider objectImplementingInterface;
-	
 	private static ServiceTracker<LogService, LogService> logServiceTracker;
 
-	
-	private ServiceTracker<?, ?> serviceTracker;
-	
 	
 	public static LogService getLogservice() {		
 		if (logServiceTracker != null){
 			return logServiceTracker.getService();
 		}
 		return null;
-	}
+	}	
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -37,8 +31,10 @@ public class Activator implements BundleActivator {
 		//get LogService
 		logServiceTracker = new ServiceTracker<LogService, LogService>(context, LogService.class.getName(), null);
         logServiceTracker.open();
-		
-		registerCryptoProvider();
+        
+        //register service listener for CryptoProvider
+        String filter = "(objectclass=" + Cryptoprovider.class.getName() + ")";
+		context.addServiceListener(Crypto.getInstance(), filter);
 
 		//Registers Simulator service
 		context.registerService(Simulator.class.getName(), new PersoSim(), new Hashtable<String, String>());
@@ -53,24 +49,6 @@ public class Activator implements BundleActivator {
 
 	public static BundleContext getContext() {
 		return context;
-	}
-	
-	public void registerCryptoProvider() {
-		serviceTracker = new ServiceTracker<>(context, Cryptoprovider.class, null);
-		serviceTracker.open();
-		
-		Object[] allServiceObjects = serviceTracker.getServices();
-		System.out.println("service tracker tracking " + allServiceObjects.length + " service objects");
-		for(Object currentServiceObject : allServiceObjects) {
-			System.out.println("service object: " + currentServiceObject.getClass().getName());
-		}
-		
-		objectImplementingInterface = (Cryptoprovider) serviceTracker.getService();
-		
-		cryptoProvider = objectImplementingInterface.getCryptoProviderObject();
-		
-		// register BouncyCastle provider
-		Security.addProvider(cryptoProvider);
 	}
 	
 }

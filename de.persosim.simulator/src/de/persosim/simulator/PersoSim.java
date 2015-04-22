@@ -2,7 +2,6 @@ package de.persosim.simulator;
 
 import static de.persosim.simulator.utils.PersoSimLogger.*;
 
-import de.persosim.simulator.perso.DefaultPersoTestPki;
 import de.persosim.simulator.perso.MinimumPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.Iso7816;
@@ -32,7 +31,7 @@ public class PersoSim implements Simulator {
 	 * As there exist several ways of providing a personalization of which none at all may be used the variable may remain null/unset.
 	 * Due to this possibility access to this variable should be performed by calling the getPersonalization() method. 
 	 */
-	private Personalization currentPersonalization = new DefaultPersoTestPki();
+	private Personalization currentPersonalization = new MinimumPersonalization();
 	
 	public static final String LOG_NO_OPERATION = "nothing to process";
 	public static final String LOG_SIM_EXIT     = "simulator exit";
