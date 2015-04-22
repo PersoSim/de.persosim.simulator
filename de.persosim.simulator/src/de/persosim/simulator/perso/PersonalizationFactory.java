@@ -29,23 +29,20 @@ import de.persosim.simulator.perso.xstream.ProtocolConverter;
 
 public class PersonalizationFactory {
 	
-
-
 	public static void marshal(Object pers, Writer writer) {
 		XStream xstream = getXStream();
 		xstream.toXML(pers, writer);
 	}
 	
-	
 	public static void marshal(Personalization pers, String path) {
-		//FIXME JGE reduce this method to the one above
-		
+				
 		XStream xstream = getXStream();
-		
 		String xml = xstream.toXML(pers);
-		
 		xml = xml.replaceAll("class=\"org.*[Kk]ey\"", ""); //FIXME JGE what does this line mean here?
+		writeXmlToFile (xml, path);
+	}
 
+	private static void writeXmlToFile(String xml, String path) {
 		// Write to File
 		File xmlFile = new File(path);
 		xmlFile.getParentFile().mkdirs();
@@ -53,7 +50,7 @@ public class PersonalizationFactory {
 		StringWriter writer = new StringWriter();
 
 		TransformerFactory ft = TransformerFactory.newInstance();
-		ft.setAttribute("indent-number", new Integer(2));
+//		ft.setAttribute("indent-number", new Integer(2));
 		
 		Transformer transformer;
 		try {
@@ -87,28 +84,22 @@ public class PersonalizationFactory {
 		}
 	}
 
-
-
 	public static Object unmarshal(Reader reader) {
-		// TODO Auto-generated method stub
+		
 		XStream xstream = getXStream();
 		return xstream.fromXML(reader);
 	}
 	
 	public static Personalization unmarshal(String path) throws FileNotFoundException {
-		//FIXME JGE reduce this method to the one above
 		
 		XStream xstream = getXStream();
-		
 		File xmlFile = new File(path);
 		if (!xmlFile.exists()) {
 			throw new FileNotFoundException(path + " does not exist");
 		}
 		
 		// get variables from our xml file, created before
-		Personalization unmarshalledPerso = (Personalization) xstream.fromXML(xmlFile);
-		
-		return unmarshalledPerso;
+		return (Personalization) xstream.fromXML(xmlFile);
 	}
 	
 	
