@@ -16,6 +16,13 @@ import de.persosim.simulator.protocols.pin.PinProtocol;
 import de.persosim.simulator.protocols.ri.RiProtocol;
 import de.persosim.simulator.protocols.ta.TaProtocol;
 
+/**
+ * This class is a converter which is responsible for marshal and unmarshal all king of protocol objects.
+ * 
+ * @author jge
+ *
+ */
+
 public class ProtocolConverter implements Converter {
 
 	@Override
@@ -40,9 +47,7 @@ public class ProtocolConverter implements Converter {
 		else if (type.equals(PaceBypassProtocol.class))
 			return true;
 		else
-			return false;
-		
-	
+			return false;		
 	}
 
 	@Override
@@ -56,7 +61,6 @@ public class ProtocolConverter implements Converter {
 			UnmarshallingContext context) {
 
 		String protocolName = reader.getNodeName().substring(reader.getNodeName().lastIndexOf(".")+1);
-		
 		
 		switch(protocolName){
 		case "PaceProtocol":

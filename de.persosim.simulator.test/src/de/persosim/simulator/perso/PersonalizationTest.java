@@ -3,6 +3,8 @@ package de.persosim.simulator.perso;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileWriter;
+
 import org.junit.Test;
 
 import de.persosim.simulator.cardobjects.CardObject;
@@ -28,10 +30,11 @@ public abstract class PersonalizationTest extends PersoSimTestCase {
 		String xmlFile = getXmlFilename();
 		
 		// Write to File
-		PersonalizationFactory.marshal(getPerso(), xmlFile);
+		FileWriter file = new FileWriter(xmlFile);
+		PersonalizationFactory.marshal(getPerso(), file);
 
 		// get variables from our xml file, created before
-		Personalization unmarshalledPerso = PersonalizationFactory.unmarshal(xmlFile);
+		Personalization unmarshalledPerso = (Personalization) PersonalizationFactory.unmarshal(xmlFile);
 		assertNotNull(unmarshalledPerso);
 		
 		//check all CardObjects, their children and all Identifiers of the card object tree

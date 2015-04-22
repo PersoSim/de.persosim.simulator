@@ -2,14 +2,12 @@ package de.persosim.simulator.perso;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -27,113 +25,123 @@ import de.persosim.simulator.perso.xstream.EncodedByteArrayConverter;
 import de.persosim.simulator.perso.xstream.KeyConverter;
 import de.persosim.simulator.perso.xstream.ProtocolConverter;
 
+/**
+ * This class provides methods that serializes Personalization objects
+ * 
+ * @author jge
+ *
+ */
+
 public class PersonalizationFactory {
 	
-	public static void marshal(Object pers, Writer writer) {
-		XStream xstream = getXStream();
-		xstream.toXML(pers, writer);
-	}
-	
-	public static void marshal(Personalization pers, String path) {
-				
-		XStream xstream = getXStream();
-		String xml = xstream.toXML(pers);
-		xml = xml.replaceAll("class=\"org.*[Kk]ey\"", ""); //FIXME JGE what does this line mean here?
-		writeXmlToFile (xml, path);
-	}
-
-	private static void writeXmlToFile(String xml, String path) {
-		// Write to File
-		File xmlFile = new File(path);
-		xmlFile.getParentFile().mkdirs();
+	/**
+	 * This method serializes the personalization object
+	 * @param pers Object which contains the whole personalization
+	 * @return a StringWriter with the serialized personalization object
+	 */
+	public static void marshal(Object pers, StringWriter writer) {
 		
-		StringWriter writer = new StringWriter();
-
+		XStream xstream = getXStream();
+		StringWriter xmlWriter = new StringWriter();
+		xstream.toXML (pers, xmlWriter);
+		
 		TransformerFactory ft = TransformerFactory.newInstance();
-//		ft.setAttribute("indent-number", new Integer(2));
-		
+		//ft.setAttribute("indent-number", new Integer(2)); 
 		Transformer transformer;
 		try {
 			transformer = ft.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 
-			transformer.transform(new StreamSource(new StringReader(xml)),
-					new StreamResult(writer));
-
-			OutputStreamWriter char_output = new OutputStreamWriter(
-					new FileOutputStream(xmlFile), "UTF-8");
-			char_output.append(writer.getBuffer());
-			char_output.flush();
-			char_output.close();
+			transformer.transform (new StreamSource(new StringReader(xmlWriter.toString())),
+					new StreamResult (writer));
 		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}
+	}
+	
+	public static void marshal (Object pers, String path) {
+
+		File xmlFile = new File (path);
+		xmlFile.getParentFile().mkdirs();
+		
+		FileWriter fileWriter;
+		try {
+			fileWriter = new FileWriter (path);
+			marshal (pers, fileWriter);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
+		
+	public static void marshal (Object pers, FileWriter file) {
+		StringWriter writer = new StringWriter();
+		marshal (pers, writer);
+		//TODO find a alternative to suppress the class attribute, created by xStream, if element is a type of Key
+		//xml = xml.replaceAll("class=\"org.*[Kk]ey\"", "");
+		try {
+			file.write (writer.toString());
+			file.flush();
+			file.close();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static Object unmarshal(Reader reader) {
+	
+	/**
+	 * This method deserializes the personalization object
+	 * @param reader object which the personalization
+	 * @return a object with a deserialized personalization
+	 */
+	public static Object unmarshal (Reader reader) {
 		
 		XStream xstream = getXStream();
-		return xstream.fromXML(reader);
+		return xstream.fromXML (reader);
 	}
 	
-	public static Personalization unmarshal(String path) throws FileNotFoundException {
+	public static Object unmarshal (String path) throws FileNotFoundException {
 		
-		XStream xstream = getXStream();
 		File xmlFile = new File(path);
 		if (!xmlFile.exists()) {
-			throw new FileNotFoundException(path + " does not exist");
+			throw new FileNotFoundException (path + " does not exist");
 		}
-		
-		// get variables from our xml file, created before
-		return (Personalization) xstream.fromXML(xmlFile);
+		return unmarshal (new FileReader(path));
 	}
 	
-	
+	/**
+	 * This method creates a xStream object with all necessary configuration
+	 * @return a xStream object
+	 */
 	private static XStream getXStream() {
 		
-		XStream xstream = new XStream(new DomDriver("UTF8"))
+		XStream xstream = new XStream (new DomDriver("UTF-8"))
 		{
 			@Override
-			protected MapperWrapper wrapMapper(MapperWrapper next) 
+			protected MapperWrapper wrapMapper (MapperWrapper next) 
 			{
 				return new MapperWrapper(next) {
 					@SuppressWarnings("rawtypes")
 					public boolean shouldSerializeMember(Class definedIn,
 							String fieldName) {
 
-						if (definedIn.getName().equals("de.persosim.simulator.perso.AbstractProfile")) {
+						if (definedIn.getName().equals ("de.persosim.simulator.perso.AbstractProfile")) {
 							return false;
 						}
 						return super
-								.shouldSerializeMember(definedIn, fieldName);
+								.shouldSerializeMember (definedIn, fieldName);
 					}
 				};
 			}
 		};
 
-		xstream.setMode(XStream.XPATH_RELATIVE_REFERENCES);
-		xstream.setMode(XStream.ID_REFERENCES);
-
-		
-		xstream.registerConverter(new EncodedByteArrayConverter());
-		xstream.registerConverter(new ProtocolConverter());
-		xstream.registerConverter(new KeyConverter());
-		
+		xstream.setMode (XStream.XPATH_RELATIVE_REFERENCES);
+		xstream.setMode (XStream.ID_REFERENCES);
+		xstream.registerConverter (new EncodedByteArrayConverter());
+		xstream.registerConverter (new ProtocolConverter());
+		xstream.registerConverter (new KeyConverter());		
 		return xstream;
 	}
-
 }
