@@ -35,10 +35,9 @@ import de.persosim.simulator.perso.xstream.ProtocolConverter;
 public class PersonalizationFactory {
 	
 	/**
-	 * This method serializes the personalization object
+	 * This method serializes the personalization object and writes it into a given writer
 	 * @param pers object which contains the whole personalization
 	 * @param writer object which will be filled with the serialized personalization
-	 * @return a StringWriter with the serialized personalization object
 	 */
 	public static void marshal(Object pers, StringWriter writer) {
 		
