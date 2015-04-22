@@ -36,7 +36,8 @@ public class PersonalizationFactory {
 	
 	/**
 	 * This method serializes the personalization object
-	 * @param pers Object which contains the whole personalization
+	 * @param pers object which contains the whole personalization
+	 * @param writer object which will be filled with the serialized personalization
 	 * @return a StringWriter with the serialized personalization object
 	 */
 	public static void marshal(Object pers, StringWriter writer) {
