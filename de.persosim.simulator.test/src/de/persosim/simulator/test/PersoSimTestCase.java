@@ -1,10 +1,5 @@
 package de.persosim.simulator.test;
 
-import java.security.Security;
-
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.BeforeClass;
-
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.utils.InfoSource;
 
@@ -23,14 +18,6 @@ public class PersoSimTestCase implements InfoSource, Iso7816 {
 	@Override
 	public String getIDString() {
 		return getClass().getCanonicalName();
-	}
-	
-	@BeforeClass
-	public static void setUpClass() {
-		//register BouncyCastle provider
-		if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-			Security.addProvider(new BouncyCastleProvider());
-		}
 	}
 
 }
