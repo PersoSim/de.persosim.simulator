@@ -26,12 +26,11 @@ import de.persosim.simulator.perso.xstream.KeyConverter;
 import de.persosim.simulator.perso.xstream.ProtocolConverter;
 
 /**
- * This class provides methods that serializes Personalization objects
+ * This class provides methods that serializes personalization objects
  * 
  * @author jge
  *
  */
-
 public class PersonalizationFactory {
 	
 	/**
@@ -39,8 +38,10 @@ public class PersonalizationFactory {
 	 * @param pers object which contains the whole personalization
 	 * @param writer object which will be filled with the serialized personalization
 	 */
-	public static void marshal(Object pers, StringWriter writer) {
-		
+	public static void marshal(Object pers, StringWriter writer) throws NullPointerException {
+		if (pers == null) {
+			throw new NullPointerException ("personalization object is null!");
+		}
 		XStream xstream = getXStream();
 		StringWriter xmlWriter = new StringWriter();
 		xstream.toXML (pers, xmlWriter);
@@ -76,11 +77,14 @@ public class PersonalizationFactory {
 		}
 	}	
 		
-	public static void marshal (Object pers, FileWriter file) {
+	public static void marshal (Object pers, FileWriter file) throws NullPointerException {
 		StringWriter writer = new StringWriter();
 		marshal (pers, writer);
 		//TODO find a alternative to suppress the class attribute, created by xStream, if element is a type of Key
 		//xml = xml.replaceAll("class=\"org.*[Kk]ey\"", "");
+		if (file == null) {
+			throw new NullPointerException ("FileWriter object is null!");
+		} 
 		try {
 			file.write (writer.toString());
 			file.flush();
@@ -89,15 +93,16 @@ public class PersonalizationFactory {
 			e.printStackTrace();
 		}
 	}
-
 	
 	/**
 	 * This method deserializes the personalization object
 	 * @param reader object which the personalization
 	 * @return a object with a deserialized personalization
 	 */
-	public static Object unmarshal (Reader reader) {
-		
+	public static Object unmarshal (Reader reader) throws NullPointerException {
+		if (reader == null) {
+			throw new NullPointerException ("reader object is null!");
+		}
 		XStream xstream = getXStream();
 		return xstream.fromXML (reader);
 	}
