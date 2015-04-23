@@ -15,7 +15,6 @@ import org.osgi.util.tracker.ServiceTracker;
 
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.Simulator;
-import de.persosim.simulator.perso.DefaultPersoTestPki;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
 
@@ -118,7 +117,6 @@ public class Activator implements BundleActivator {
 				
 		simulatorServiceTracker = new ServiceTracker<Simulator, Simulator>(context, Simulator.class.getName(), null);
 		simulatorServiceTracker.open();
-		simulatorServiceTracker.getService().loadPersonalization(new DefaultPersoTestPki());
 		simulatorServiceTracker.getService().startSimulator();
 
 		String filter = "(objectclass=" + Simulator.class.getName() + ")";
