@@ -40,7 +40,7 @@ public class PersonalizationFactory {
 	 */
 	public static void marshal(Object pers, StringWriter writer) throws NullPointerException {
 		if (pers == null) {
-			throw new NullPointerException ("personalization object is null!");
+			throw new NullPointerException ("Personalization object is null!");
 		}
 		XStream xstream = getXStream();
 		StringWriter xmlWriter = new StringWriter();
@@ -64,7 +64,6 @@ public class PersonalizationFactory {
 	}
 	
 	public static void marshal (Object pers, String path) {
-
 		File xmlFile = new File (path);
 		xmlFile.getParentFile().mkdirs();
 		
@@ -76,7 +75,7 @@ public class PersonalizationFactory {
 			e.printStackTrace();
 		}
 	}	
-		
+	
 	public static void marshal (Object pers, FileWriter file) throws NullPointerException {
 		StringWriter writer = new StringWriter();
 		marshal (pers, writer);
@@ -101,7 +100,7 @@ public class PersonalizationFactory {
 	 */
 	public static Object unmarshal (Reader reader) throws NullPointerException {
 		if (reader == null) {
-			throw new NullPointerException ("reader object is null!");
+			throw new NullPointerException ("Reader object is null!");
 		}
 		XStream xstream = getXStream();
 		return xstream.fromXML (reader);
