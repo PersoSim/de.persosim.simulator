@@ -25,8 +25,6 @@ import de.persosim.simulator.utils.HexString;
  * @author jge
  *
  */
-
-
 public class KeyConverter implements Converter {
 	@Override
 	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
@@ -101,8 +99,5 @@ public class KeyConverter implements Converter {
 				return sk;
 			default: return null;
 		}
-			
-	
-
-}
+	}
 }
