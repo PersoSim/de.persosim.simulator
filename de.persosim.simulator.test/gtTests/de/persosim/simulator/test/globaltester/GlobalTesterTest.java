@@ -1,5 +1,7 @@
 package de.persosim.simulator.test.globaltester;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -11,11 +13,10 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.osgi.framework.ServiceReference;
 
-import de.persosim.simulator.PersoSim;
+import de.persosim.simulator.Activator;
 import de.persosim.simulator.Simulator;
-import de.persosim.simulator.adapter.socket.SimulatorProvider;
-import de.persosim.simulator.adapter.socket.SocketAdapter;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -32,26 +33,9 @@ import de.persosim.simulator.utils.HexString;
 
 public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr03110 {
 
-	public class GtTestSimulatorProvider implements SimulatorProvider {
-			
-		PersoSim sim;
-		
-		public GtTestSimulatorProvider(Personalization personalization) {
-			sim = new PersoSim();
-			sim.loadPersonalization(personalization);
-		}
-
-		@Override
-		public Simulator getSimulator() {
-				return sim;
-		}
-	}
-
 	private static final String GT_SERVER_HOST = "localhost";
 	private static final int GT_SERVER_PORT = 6789;
 	private static final int GT_SERVER_RESULT_PORT = 6788;
-	
-	private static final int SIM_PORT = 9876;
 	
 //	private static final String BASE_PATH = "\\persosim_servermode_tests";
 //	private static final String PATH_LOGGING = BASE_PATH + "\\logging";
@@ -75,33 +59,25 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 		}
 	}
 
-	private SocketAdapter simulator;
-	
 	@Before
 	public void setUp() throws Exception {
-		startSimulator();
+		resetSimulator();
+		
 		configureGtServer();
 	}
 	
 	@After
 	public void tearDown(){
-		stopSimulator();
+		getSimulator().stopSimulator();
 	}
 	
 	protected void resetSimulator(){
-		stopSimulator();
+		
 		getPersonalization().reset();
-		startSimulator();
+		
+		//load the personalization (implicitly restarts the simulator)
+		getSimulator().loadPersonalization(getPersonalization());
 	}
-	
-	private void stopSimulator(){
-		//stop PersoSim Thread
-		if (simulator != null) {
-			simulator.stop();
-			simulator = null;
-		}
-	}
-
 	
 	@Test
 	public void testAllApplicableTests() throws Exception {
@@ -119,16 +95,21 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 		gtServer.checkAndClearResults(0, 0);
 	}
 
-	private void startSimulator() {
-		if (simulator == null) {
-			simulator = new SocketAdapter(new GtTestSimulatorProvider(getPersonalization()), SIM_PORT);
-		}
+	private Simulator getSimulator() {
+		Simulator simulator = null;
 		
-		if (!simulator.isRunning()) {
-			simulator.start();
+		ServiceReference<?> reference = Activator.getContext().
+			        getServiceReference(Simulator.class.getName());
+		simulator = (Simulator) Activator.getContext().getService(reference);
+		
+		
+		// ensure that simulator service is available
+		if (simulator == null) {
+			fail("no simulator service available");
 		}
+		return simulator;
 	}
-	
+
 	private void configureGtServer() throws Exception {
 		//disable dialogs
 		gtServer.setPreferences(GtServerConnection.PREF_QUALIFIER_TESTMANAGER, "PROFILES_SHOW_DIALOG", "false");
