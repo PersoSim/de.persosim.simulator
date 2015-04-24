@@ -8,6 +8,7 @@ import java.security.Key;
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.PublicKey;
 import java.util.Collection;
 import java.util.HashSet;
@@ -147,7 +148,7 @@ public class RiProtocolTest extends PersoSimTestCase {
 		
 		new Expectations(MessageDigest.class) {
 			{
-			MessageDigest.getInstance((String) any, (String) any);
+			MessageDigest.getInstance((String) any, (Provider) any);
 			result = messageDigest;
 			}
 		};

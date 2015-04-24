@@ -211,7 +211,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
 		
-		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN), response);
+		assertArrayEquals(Utils.toUnsignedByteArray((short)(Iso7816.SW_6F00_UNKNOWN+0x78)), response);
 		
 		persoSim.startSimulator();
 		
@@ -254,7 +254,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		responseSelect = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
 
-		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN), responseSelect);
+		assertArrayEquals(Utils.toUnsignedByteArray((short)(Iso7816.SW_6F00_UNKNOWN+0x78)), responseSelect);
 	}
 	
 	/**
