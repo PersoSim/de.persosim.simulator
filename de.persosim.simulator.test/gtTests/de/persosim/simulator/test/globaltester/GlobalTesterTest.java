@@ -27,12 +27,13 @@ import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.Tr03110;
-import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.InfoSource;
 
-public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr03110 {
-
+public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
+	
 	private static final String GT_SERVER_HOST = "localhost";
 	private static final int GT_SERVER_PORT = 6789;
 	private static final int GT_SERVER_RESULT_PORT = 6788;
@@ -41,6 +42,11 @@ public abstract class GlobalTesterTest extends PersoSimTestCase implements Tr031
 //	private static final String PATH_LOGGING = BASE_PATH + "\\logging";
 
 	protected static GtServerConnection gtServer;
+
+	@Override
+	public String getIDString() {
+		return getClass().getCanonicalName();
+	}
 
 	@BeforeClass
 	public static void setUpSuite() throws Exception {
