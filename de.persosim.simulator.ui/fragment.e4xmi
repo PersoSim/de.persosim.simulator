@@ -8,15 +8,20 @@
       <children xsi:type="menu:HandledMenuItem" xmi:id="_QKpL0FUEEeSxD7VZ_Y6-PA" elementId="de.persosim.simulator.ui.handledmenuitem.selectPersoFromFile" label="Select Perso from File" command="_7jTUYFUDEeSxD7VZ_Y6-PA"/>
       <children xsi:type="menu:DynamicMenuContribution" xmi:id="_4pZ40FU0EeS9UYXjeRNGFg" elementId="de.persosim.simulator.ui.menu.dynamicallySelectFromTemplate" label="Dyn Sel From Template" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.menuitems.dynamicPersoTemplateMenuItem"/>
     </elements>
+    <elements xsi:type="menu:Menu" xmi:id="_oyH3cOzcEeSGJajKiFA0zQ" elementId="de.persosim.simulator.ui.menu.logging" label="Logging">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_pjqpIOzcEeSGJajKiFA0zQ" elementId="de.persosim.simulator.ui.handledmenuitem.changeLogLevel" label="change log level" command="_YkG7QOzdEeSGJajKiFA0zQ"/>
+    </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uNj68EZgEeSQKqd06nTv0g" featurename="commands" parentElementId="de.persosim.rcp.application">
     <elements xsi:type="commands:Command" xmi:id="_10f3IEZgEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.command.selectPersoFromTemplateCommand" commandName="Select Perso From Template">
       <parameters xmi:id="_5ezJMEZhEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.commandparameter.persoSet" name="PersoSet" typeId="" optional="false"/>
     </elements>
     <elements xsi:type="commands:Command" xmi:id="_7jTUYFUDEeSxD7VZ_Y6-PA" elementId="de.persosim.simulator.ui.command.SelectPersoFromFileCommand" commandName="Select Perso From File"/>
+    <elements xsi:type="commands:Command" xmi:id="_YkG7QOzdEeSGJajKiFA0zQ" elementId="de.persosim.simulator.ui.command.changeLogLevel" commandName="Change Log Level"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7LkpgEZgEeSQKqd06nTv0g" featurename="handlers" parentElementId="de.persosim.rcp.application">
     <elements xsi:type="commands:Handler" xmi:id="__6nykEZgEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.handler.selectPersoFromTemplateHandler" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.handlers.SelectPersoFromTemplateHandler" command="_10f3IEZgEeSQKqd06nTv0g"/>
     <elements xsi:type="commands:Handler" xmi:id="_F3jycFUEEeSxD7VZ_Y6-PA" elementId="de.persosim.simulator.ui.handler.selectPersoFromFileHandler" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.handlers.SelectPersoFromFileHandler" command="_7jTUYFUDEeSxD7VZ_Y6-PA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_3YyJYOzdEeSGJajKiFA0zQ" elementId="de.persosim.simulator.ui.handler.0" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.handlers.ChangeLogLevel" command="_YkG7QOzdEeSGJajKiFA0zQ"/>
   </fragments>
 </fragment:ModelFragments>
