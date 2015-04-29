@@ -2,8 +2,12 @@ package de.persosim.simulator.ui.utils;
 
 import java.util.LinkedList;
 
+import org.globaltester.logging.filterservice.LogFilterService;
+import org.globaltester.logging.formatservice.LogFormatService;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
+
+import de.persosim.simulator.ui.Activator;
 
 /**
  * This {@link LogListener} implementation is used to write log entries by line
@@ -16,28 +20,10 @@ public class LinkedListLogListener implements LogListener {
 
 	private LinkedList<String> list = new LinkedList<String>();
 	private int maxLines;
-	private LinkedList<String> bundleFilters = new LinkedList<String>();
-	private boolean needsUpdate;
+	private boolean needsUpdate;	
 	
 	public LinkedListLogListener(int maxLines) {
 		this.maxLines = maxLines;
-	}
-		
-	/**
-	 * Filter the incoming strings. All added filters allow the corresponding
-	 * messages to be added to the list.
-	 * 
-	 * @param filter
-	 */
-	public void addFilter(String filter){
-		bundleFilters.add(filter);
-	}
-	
-	/**
-	 * Empty the list of filters.
-	 */
-	public void cleanBundleFilters(){
-		bundleFilters = new LinkedList<String>();
 	}
 	
 	/**
@@ -68,41 +54,61 @@ public class LinkedListLogListener implements LogListener {
 		return needsUpdate;
 	}
 	
+	/**
+	 * This method is used to show logEntries even if format/filter services are
+	 * unavailable.
+	 * 
+	 * @param entry
+	 *            the log message to show
+	 */
+	public void standardOutput(LogEntry entry){
+		String[] splitResult = entry.getMessage().split("(\\n|\\r)");
+		for (int i = 0; i < splitResult.length; i++) {
+			System.out.println(splitResult[i]);
+		}
+	}
+	
 	@Override
 	public void logged(final LogEntry entry) {
-		boolean isFilteredBundle = false;
-		for (String current : bundleFilters){
-			if (entry.getBundle().getSymbolicName().equals(current)){
-				isFilteredBundle = true;
-				break;
-			}
-		}
-		//allow only filtered entries or all if no filters are set.
-		if (isFilteredBundle || bundleFilters.size() == 0){
-			String logEntry = "[" + entry.getBundle().getSymbolicName() + "] "
-					+ entry.getMessage();
-			String[] splitResult = logEntry.split("(\\n|\\r)");
+		
+		LogFilterService filter = Activator.getLogFilterService();
+		LogFormatService format = Activator.getLogFormatService();
+		
+		if (filter != null && format != null) {
+			if (entry.getMessage() != null) {
+				// use filter on the entry. Checks Bundle and log level
+				if (filter.logFilter(entry)) {
 
-			for (int i = 0; i < splitResult.length; i++) {
-				needsUpdate = true;
-				if (list != null) {
-					if (list.size() > maxLines) {
+					// format the entry
+					String logEntry = format.format(entry);
 
-						// synchronized is used to avoid IndexOutOfBoundsExceptions
-						synchronized (this) {
-							list.removeFirst();
-							list.add(splitResult[i]);
-						}
+					String[] splitResult = logEntry.split("(\\n|\\r)");
 
-					} else {
-						synchronized (this) {
-							list.add(splitResult[i]);
+					for (int i = 0; i < splitResult.length; i++) {
+						needsUpdate = true;
+						if (list != null) {
+							if (list.size() > maxLines) {
+
+								// synchronized is used to avoid
+								// IndexOutOfBoundsExceptions
+								synchronized (this) {
+									list.removeFirst();
+									list.add(splitResult[i]);
+								}
+
+							} else {
+								synchronized (this) {
+									list.add(splitResult[i]);
+								}
+							}
 						}
 					}
 				}
-			}
-		}
-		
-	}
 
+			}
+		} else {
+			// format or filter service not available...show logs anyway
+			standardOutput(entry);
+		}
+	}
 }
