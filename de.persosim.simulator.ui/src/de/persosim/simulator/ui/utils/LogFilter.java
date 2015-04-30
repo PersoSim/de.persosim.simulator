@@ -26,8 +26,7 @@ public class LogFilter implements LogFilterService {
 	 * Not existing levels have no effect
 	 */
 
-	// To avoid problems on startup the default setting is to just log everything
-	private byte[] logLevels = { 1, 2, 3, 4, 5, 6, 120 };
+	private byte[] logLevels;
 
 	// place for persistent storage of filter data
 	Preferences preferences = InstanceScope.INSTANCE
@@ -38,7 +37,7 @@ public class LogFilter implements LogFilterService {
 	
 	// Constructor
 	public LogFilter() {
-		this.bundleFilters.add("de.persosim.simulator");
+		this.bundleFilters.add("de.persosim");
 		loadFilter();
 	}
 
@@ -64,7 +63,6 @@ public class LogFilter implements LogFilterService {
 		try {
 			preferences.flush();
 		} catch (BackingStoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -95,9 +93,8 @@ public class LogFilter implements LogFilterService {
 
 		// 1. check for bundles
 		for (String currentBundle : bundleFilters) {
-			
-			// TODO JKH begins with filter e.g. de.persosim would be kühl
-			if (entry.getBundle().getSymbolicName().equals(currentBundle)) {
+
+			if (entry.getBundle().getSymbolicName().startsWith(currentBundle)) {
 
 				// 2. check if log level is ok
 				for (int currentLevel : logLevels) {
