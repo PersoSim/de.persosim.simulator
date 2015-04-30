@@ -99,6 +99,10 @@ public class PersonalizationFactory {
 		StringWriter xmlWriter = new StringWriter();
 		xstream.toXML (pers, xmlWriter);
 		
+		String xmlRepresentation = xmlWriter.toString();
+		xmlRepresentation = xmlRepresentation.replaceAll("class=\"org.*[Kk]ey\"", "");
+
+		
 		TransformerFactory ft = TransformerFactory.newInstance();
 		//ft.setAttribute("indent-number", new Integer(2)); 
 		Transformer transformer;
@@ -107,7 +111,7 @@ public class PersonalizationFactory {
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 
-			transformer.transform (new StreamSource(new StringReader(xmlWriter.toString())),
+			transformer.transform (new StreamSource(new StringReader(xmlRepresentation)),
 					new StreamResult (writer));
 		} catch (TransformerConfigurationException e) {
 			e.printStackTrace();
@@ -133,7 +137,7 @@ public class PersonalizationFactory {
 		StringWriter writer = new StringWriter();
 		marshal (pers, writer);
 		//TODO find a alternative to suppress the class attribute, created by xStream, if element is a type of Key
-		//xml = xml.replaceAll("class=\"org.*[Kk]ey\"", "");
+//		xml = xml.replaceAll("class=\"org.*[Kk]ey\"", "");
 		if (file == null) {
 			throw new NullPointerException ("FileWriter object is null!");
 		} 
@@ -180,6 +184,10 @@ public class PersonalizationFactory {
 			protected MapperWrapper wrapMapper (MapperWrapper next) 
 			{
 				return new MapperWrapper(next) {
+					
+					
+					
+					
 					@SuppressWarnings("rawtypes")
 					public boolean shouldSerializeMember(Class definedIn,
 							String fieldName) {
@@ -351,6 +359,9 @@ public class PersonalizationFactory {
 		xstream.registerConverter(new ProtocolConverter());
 		xstream.registerConverter(new KeyConverter());
 		xstream.registerConverter(new ECParameterSpecConverter());
+		
+//		xstream.alias("privatekey", PrivateKey.class);
+//		xstream.aliasSystemAttribute(null, "class");
 
 		return xstream;
 	}
