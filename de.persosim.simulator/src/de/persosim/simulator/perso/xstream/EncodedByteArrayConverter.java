@@ -8,6 +8,13 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 import de.persosim.simulator.utils.*;
 
+/**
+ * This class is a converter which is responsible for converting all byte-arrays in hexstrings and back.
+ * 
+ * @author jge
+ *
+ */
+
 public class EncodedByteArrayConverter implements Converter {
 
 	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {

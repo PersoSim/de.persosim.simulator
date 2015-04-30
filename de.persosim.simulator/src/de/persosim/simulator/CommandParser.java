@@ -256,7 +256,7 @@ public class CommandParser {
 	 */
 	public static Personalization parsePersonalization(String persoFileName) throws FileNotFoundException {
 		log(CommandParser.class, "Parsing personalization from file " + persoFileName, INFO);
-		return PersonalizationFactory.unmarshal(persoFileName);
+		return (Personalization) PersonalizationFactory.unmarshal(persoFileName);
 	}
 	
 	public static void executeUserCommands(Simulator sim, String... args) {

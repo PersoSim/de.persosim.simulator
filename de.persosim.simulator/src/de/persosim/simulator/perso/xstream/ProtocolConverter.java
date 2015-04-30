@@ -1,5 +1,6 @@
 package de.persosim.simulator.perso.xstream;
 
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
@@ -16,47 +17,35 @@ import de.persosim.simulator.protocols.pin.PinProtocol;
 import de.persosim.simulator.protocols.ri.RiProtocol;
 import de.persosim.simulator.protocols.ta.TaProtocol;
 
+/**
+ * This class is a converter which is responsible for marshaling and unmarshaling all kind of protocol objects.
+ * 
+ * @author jge
+ *
+ */
 public class ProtocolConverter implements Converter {
 
 	@Override
 	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
 		//FIXME JGE Why this static list?
-		if (type.equals(PaceProtocol.class))
-			return true;
-		else if (type.equals(FileProtocol.class))
-			return true;
-		else if (type.equals(TaProtocol.class))
-			return true;
-		else if (type.equals(RiProtocol.class))
-			return true;
-		else if (type.equals(CaProtocol.class))
-			return true;
-		else if (type.equals(AuxProtocol.class))
-			return true;
-		else if (type.equals(PinProtocol.class))
-			return true;
-		else if (type.equals(NpaProtocol.class))
-			return true;
-		else if (type.equals(PaceBypassProtocol.class))
+		String name = type.getName();
+		if (name.toLowerCase().endsWith("protocol"))
 			return true;
 		else
 			return false;
-		
-	
 	}
-
+	
 	@Override
 	public void marshal(Object value, HierarchicalStreamWriter writer,
 			MarshallingContext context) {
 		// nothing to do
 	}
-
+	
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader,
-			UnmarshallingContext context) {
-
-		String protocolName = reader.getNodeName().substring(reader.getNodeName().lastIndexOf(".")+1);
+			UnmarshallingContext context) throws XStreamException {
 		
+		String protocolName = reader.getNodeName().substring(reader.getNodeName().lastIndexOf(".")+1);
 		
 		switch(protocolName){
 		case "PaceProtocol":
@@ -78,8 +67,7 @@ public class ProtocolConverter implements Converter {
 		case "TaProtocol":
 			return new TaProtocol();
 		default:
-			return null;
+			throw new XStreamException (protocolName + " is unknown, unmarshaling failed!");
 		}
 	}
-
 }

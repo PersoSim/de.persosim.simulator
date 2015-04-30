@@ -18,6 +18,12 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.utils.HexString;
 
+/**
+ * This class is a converter which is responsible for marshal and unmarshal all king of key objects.
+ * 
+ * @author jge
+ *
+ */
 public class KeyConverter implements Converter {
 	@Override
 	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
@@ -86,8 +92,5 @@ public class KeyConverter implements Converter {
 				return sk;
 			default: return null;
 		}
-			
-	
-
-}
+	}
 }

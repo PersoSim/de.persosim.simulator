@@ -2,14 +2,12 @@ package de.persosim.simulator.perso;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -27,122 +25,127 @@ import de.persosim.simulator.perso.xstream.EncodedByteArrayConverter;
 import de.persosim.simulator.perso.xstream.KeyConverter;
 import de.persosim.simulator.perso.xstream.ProtocolConverter;
 
+/**
+ * This class provides methods that serializes personalization objects
+ * 
+ * @author jge
+ *
+ */
 public class PersonalizationFactory {
 	
-
-
-	public static void marshal(Object pers, Writer writer) {
+	/**
+	 * This method serializes the personalization object and writes it into a given writer
+	 * @param pers object which contains the whole personalization
+	 * @param writer object which will be filled with the serialized personalization
+	 */
+	public static void marshal(Object pers, StringWriter writer) throws NullPointerException {
+		if (pers == null) {
+			throw new NullPointerException ("Personalization object is null!");
+		}
 		XStream xstream = getXStream();
-		xstream.toXML(pers, writer);
-	}
-	
-	
-	public static void marshal(Personalization pers, String path) {
-		//FIXME JGE reduce this method to the one above
+		StringWriter xmlWriter = new StringWriter();
+		xstream.toXML (pers, xmlWriter);
 		
-		XStream xstream = getXStream();
-		
-		String xml = xstream.toXML(pers);
-		
-		xml = xml.replaceAll("class=\"org.*[Kk]ey\"", ""); //FIXME JGE what does this line mean here?
-
-		// Write to File
-		File xmlFile = new File(path);
-		xmlFile.getParentFile().mkdirs();
-		
-		StringWriter writer = new StringWriter();
-
 		TransformerFactory ft = TransformerFactory.newInstance();
-		ft.setAttribute("indent-number", new Integer(2));
-		
+		//ft.setAttribute("indent-number", new Integer(2)); 
 		Transformer transformer;
 		try {
 			transformer = ft.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 
-			transformer.transform(new StreamSource(new StringReader(xml)),
-					new StreamResult(writer));
-
-			OutputStreamWriter char_output = new OutputStreamWriter(
-					new FileOutputStream(xmlFile), "UTF-8");
-			char_output.append(writer.getBuffer());
-			char_output.flush();
-			char_output.close();
+			transformer.transform (new StreamSource(new StringReader(xmlWriter.toString())),
+					new StreamResult (writer));
 		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-
-
-
-	public static Object unmarshal(Reader reader) {
-		// TODO Auto-generated method stub
-		XStream xstream = getXStream();
-		return xstream.fromXML(reader);
+	
+	public static void marshal (Object pers, String path) {
+		File xmlFile = new File (path);
+		xmlFile.getParentFile().mkdirs();
+		
+		FileWriter fileWriter;
+		try {
+			fileWriter = new FileWriter (path);
+			marshal (pers, fileWriter);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}	
+	
+	public static void marshal (Object pers, FileWriter file) throws NullPointerException {
+		StringWriter writer = new StringWriter();
+		marshal (pers, writer);
+		//TODO find a alternative to suppress the class attribute, created by xStream, if element is a type of Key
+		//xml = xml.replaceAll("class=\"org.*[Kk]ey\"", "");
+		if (file == null) {
+			throw new NullPointerException ("FileWriter object is null!");
+		} 
+		try {
+			file.write (writer.toString());
+			file.flush();
+			file.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public static Personalization unmarshal(String path) throws FileNotFoundException {
-		//FIXME JGE reduce this method to the one above
-		
+	/**
+	 * This method deserializes the personalization object
+	 * @param reader object which the personalization
+	 * @return a object with a deserialized personalization
+	 */
+	public static Object unmarshal (Reader reader) throws NullPointerException {
+		if (reader == null) {
+			throw new NullPointerException ("Reader object is null!");
+		}
 		XStream xstream = getXStream();
+		return xstream.fromXML (reader);
+	}
+	
+	public static Object unmarshal (String path) throws FileNotFoundException {
 		
 		File xmlFile = new File(path);
 		if (!xmlFile.exists()) {
-			throw new FileNotFoundException(path + " does not exist");
+			throw new FileNotFoundException (path + " does not exist");
 		}
-		
-		// get variables from our xml file, created before
-		Personalization unmarshalledPerso = (Personalization) xstream.fromXML(xmlFile);
-		
-		return unmarshalledPerso;
+		return unmarshal (new FileReader(path));
 	}
 	
-	
+	/**
+	 * This method creates a xStream object with all necessary configuration
+	 * @return a xStream object
+	 */
 	private static XStream getXStream() {
 		
-		XStream xstream = new XStream(new DomDriver("UTF8"))
+		XStream xstream = new XStream (new DomDriver("UTF-8"))
 		{
 			@Override
-			protected MapperWrapper wrapMapper(MapperWrapper next) 
+			protected MapperWrapper wrapMapper (MapperWrapper next) 
 			{
 				return new MapperWrapper(next) {
 					@SuppressWarnings("rawtypes")
 					public boolean shouldSerializeMember(Class definedIn,
 							String fieldName) {
 
-						if (definedIn.getName().equals("de.persosim.simulator.perso.AbstractProfile")) {
+						if (definedIn.getName().equals ("de.persosim.simulator.perso.AbstractProfile")) {
 							return false;
 						}
 						return super
-								.shouldSerializeMember(definedIn, fieldName);
+								.shouldSerializeMember (definedIn, fieldName);
 					}
 				};
 			}
 		};
 
-		xstream.setMode(XStream.XPATH_RELATIVE_REFERENCES);
-		xstream.setMode(XStream.ID_REFERENCES);
-
-		
-		xstream.registerConverter(new EncodedByteArrayConverter());
-		xstream.registerConverter(new ProtocolConverter());
-		xstream.registerConverter(new KeyConverter());
-		
+		xstream.setMode (XStream.XPATH_RELATIVE_REFERENCES);
+		xstream.setMode (XStream.ID_REFERENCES);
+		xstream.registerConverter (new EncodedByteArrayConverter());
+		xstream.registerConverter (new ProtocolConverter());
+		xstream.registerConverter (new KeyConverter());		
 		return xstream;
 	}
-
 }
