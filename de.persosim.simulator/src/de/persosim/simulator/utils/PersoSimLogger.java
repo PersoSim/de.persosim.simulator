@@ -137,6 +137,12 @@ public class PersoSimLogger {
 	 *            log level on which the message is shown
 	 */
 	private static void log(String source, String message, byte logLevel) {
+		/*
+		 * Shorten the source. the bundle name is already included because the
+		 * formatter adds it. Therefore only the class and package names are
+		 * interesting.
+		 */
+		source=source.replaceFirst("de.persosim.simulator.", "d.p.s.");
 		logPlain(String.format("%s: %s", source, message), logLevel);
 	}
 	
