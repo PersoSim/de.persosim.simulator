@@ -21,6 +21,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
+import de.persosim.simulator.perso.xstream.ECParameterSpecConverter;
 import de.persosim.simulator.perso.xstream.EncodedByteArrayConverter;
 import de.persosim.simulator.perso.xstream.KeyConverter;
 import de.persosim.simulator.perso.xstream.ProtocolConverter;
@@ -141,11 +142,15 @@ public class PersonalizationFactory {
 			}
 		};
 
-		xstream.setMode (XStream.XPATH_RELATIVE_REFERENCES);
-		xstream.setMode (XStream.ID_REFERENCES);
-		xstream.registerConverter (new EncodedByteArrayConverter());
-		xstream.registerConverter (new ProtocolConverter());
-		xstream.registerConverter (new KeyConverter());		
+		xstream.setMode(XStream.XPATH_RELATIVE_REFERENCES);
+		xstream.setMode(XStream.ID_REFERENCES);
+
+		
+		xstream.registerConverter(new EncodedByteArrayConverter());
+		xstream.registerConverter(new ProtocolConverter());
+		xstream.registerConverter(new KeyConverter());
+		xstream.registerConverter(new ECParameterSpecConverter());
+
 		return xstream;
 	}
 }
