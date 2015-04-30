@@ -202,6 +202,7 @@ public class PersonalizationFactory {
 			}
 			
 			@Override
+			@SuppressWarnings(value = { "deprecation" }) 
 			protected void setupConverters() {
 				Mapper mapper = getMapper();
 				ReflectionProvider reflectionProvider = getReflectionProvider();
@@ -322,13 +323,13 @@ public class PersonalizationFactory {
 		    }
 
 		    private void registerConverterDynamically(String className, int priority,
-		        Class[] constructorParamTypes, Object[] constructorParamValues) {
+		        Class<?>[] constructorParamTypes, Object[] constructorParamValues) {
 		    	
 		    	ClassLoaderReference classLoaderReference = getClassLoaderReference();
 		    	
 		        try {
-		            Class type = Class.forName(className, false, classLoaderReference.getReference());
-		            Constructor constructor = type.getConstructor(constructorParamTypes);
+		            Class<?> type = Class.forName(className, false, classLoaderReference.getReference());
+		            Constructor<?> constructor = type.getConstructor(constructorParamTypes);
 		            Object instance = constructor.newInstance(constructorParamValues);
 		            if (instance instanceof Converter) {
 		                registerConverter((Converter)instance, priority);
