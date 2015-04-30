@@ -132,9 +132,17 @@ public class PersonalizationFactory {
 					public boolean shouldSerializeMember(Class definedIn,
 							String fieldName) {
 
-						if (definedIn.getName().equals ("de.persosim.simulator.perso.AbstractProfile")) {
+						//suppress all fields defined in AbstractProfile
+						if (definedIn.getName().equals("de.persosim.simulator.perso.AbstractProfile")) {
 							return false;
 						}
+
+						//suppress CryptoProviderCache
+						if (definedIn.getName().equals("de.persosim.simulator.protocols.ca.CaOid") && fieldName.equals("cryptoSupportCache")) {
+							return false;
+						}
+
+						
 						return super
 								.shouldSerializeMember (definedIn, fieldName);
 					}
