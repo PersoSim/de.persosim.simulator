@@ -1,8 +1,6 @@
 package de.persosim.simulator.perso.xstream;
 
 import java.math.BigInteger;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.spec.ECField;
 import java.security.spec.ECFieldFp;
 import java.security.spec.ECParameterSpec;
@@ -15,15 +13,10 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
-import de.persosim.simulator.crypto.DomainParameterSetEcdh;
-import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.Utils;
-
 public class ECParameterSpecConverter implements Converter {
 
 	@Override
-	public boolean canConvert(Class clazz) {
-		// TODO Auto-generated method stub
+	public boolean canConvert(@SuppressWarnings("rawtypes") Class clazz) {
 		return clazz.equals(ECParameterSpec.class);
 	}
 
