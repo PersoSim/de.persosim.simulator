@@ -137,23 +137,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: check how PersoSim command line handles exit command.
-	 * @throws Exception
-	 */
-	@Test
-	public void testExecuteUserCommands_Exit() throws Exception {
-		persoSim = new PersoSim((String) null);
-		
-		activateStdOutRedirection();
-		
-		CommandParser.executeUserCommands(persoSim, CommandParser.CMD_EXIT);
-		
-		String response = readRedStdOut();
-
-		assertTrue(response.contains(PersoSim.LOG_SIM_EXIT));
-	}
-	
-	/**
 	 * Positive test case: check how PersoSim command line handles an unknown argument.
 	 * @throws Exception
 	 */
