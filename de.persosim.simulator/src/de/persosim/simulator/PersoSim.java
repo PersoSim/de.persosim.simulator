@@ -119,19 +119,6 @@ public class PersoSim implements Simulator {
 		stopSimulator();
 		return startSimulator();
 	}
-	
-	@Override
-	public boolean exitSimulator() {
-		log(this.getClass(), LOG_SIM_EXIT, UI);
-		
-		boolean stopped = stopSimulator();
-		
-		if(stopped) {
-			log(this.getClass(), "The simulator has been terminated and will no longer respond to incoming APDUs or commands", UI);
-		}
-				
-		return stopped;
-	}
 
 	@Override
 	public Personalization getPersonalization() {

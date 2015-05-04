@@ -54,25 +54,6 @@ public class CommandParser {
 	public static final String persoPath = "personalization/profiles/";
 	public static final String persoFilePrefix = "Profile";
 	public static final String persoFilePostfix = ".xml";
-
-
-	/**
-	 * This method processes the command for exiting the simulator.
-	 * @param args arguments that may contain an exit command
-	 * @return whether exiting was successful
-	 */
-	public static boolean cmdExitSimulator(Simulator sim, List<String> args) {
-		if((args != null) && (args.size() >= 1)) {
-			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_EXIT)) {
-				args.remove(0);
-				return sim.exitSimulator();
-			}
-		}
-		
-		return false;
-	}
 	
 	/**
 	 * This method processes the command for starting the simulator.
@@ -181,7 +162,6 @@ public class CommandParser {
 		log(CommandParser.class, CMD_START, INFO);
 		log(CommandParser.class, CMD_RESTART, INFO);
 		log(CommandParser.class, CMD_STOP, INFO);
-		log(CommandParser.class, CMD_EXIT, INFO);
 		log(CommandParser.class, CMD_HELP, INFO);
 	}
 	
@@ -281,7 +261,6 @@ public class CommandParser {
 			cmdStartSimulator(sim, currentArgs);
 			cmdRestartSimulator(sim, currentArgs);
 			cmdStopSimulator(sim, currentArgs);
-			cmdExitSimulator(sim, currentArgs);
 			cmdHelp(currentArgs);
 			
 			if(noOfArgsWhenCheckedLast == currentArgs.size()) {

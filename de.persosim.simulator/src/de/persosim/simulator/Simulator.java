@@ -35,12 +35,6 @@ public interface Simulator {
 	public abstract boolean restartSimulator();
 
 	/**
-	 * This method stops the simulator and no longer accepts user input.
-	 * @return whether the simulator has been stopped
-	 */
-	public abstract boolean exitSimulator();
-
-	/**
 	 * @return whether the simulator is currently active
 	 */
 	public abstract boolean isRunning();
