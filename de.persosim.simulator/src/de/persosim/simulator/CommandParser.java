@@ -30,6 +30,9 @@ import de.persosim.simulator.perso.PersonalizationFactory;
  */
 public class CommandParser {
 
+	public static final int DEFAULT_SIM_PORT = 9876;
+	public static final String DEFAULT_SIM_HOST = "localhost";
+
 
 	public static final String CMD_START = "start";
 	public static final String CMD_RESTART = "restart";
@@ -376,7 +379,7 @@ public class CommandParser {
 	 */
 	private static String exchangeApdu(Simulator sim, String cmdApdu) {
 		//FIXME: remove this method or move the CommandParser
-		return exchangeApdu(cmdApdu, Simulator.DEFAULT_SIM_HOST, Simulator.DEFAULT_SIM_PORT);
+		return exchangeApdu(cmdApdu, DEFAULT_SIM_HOST, DEFAULT_SIM_PORT);
 	}
 
 	/**

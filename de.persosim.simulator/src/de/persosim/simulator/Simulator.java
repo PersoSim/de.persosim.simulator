@@ -10,12 +10,13 @@ import de.persosim.simulator.perso.Personalization;
  *
  */
 public interface Simulator {
-	public static final int DEFAULT_SIM_PORT = 9876;
-	public static final String DEFAULT_SIM_HOST = "localhost";
 
 	/**
 	 * This method handles instantiation and start of the SocketSimulator.
 	 * Calling this method on an already running simulator does nothing.
+	 * 
+	 * After successfully starting the Simulator the simulator is able to
+	 * process administrative FF apdus.
 	 * 
 	 * @return whether instantiation and starting was successful
 	 */
@@ -72,5 +73,27 @@ public interface Simulator {
 	 * @return
 	 */
 	public abstract byte[] processCommand(byte[] apdu);
+
+	/**
+	 * This method powers the simulated card up. It is equivalent to moving a
+	 * card to the readers field.
+	 * 
+	 * @return the ATR of the simulated card
+	 */
+	public abstract byte [] cardPowerUp();
+	
+	/**
+	 * This method powers the simulated card down. It is equivalent to removing
+	 * a a card from the readers field.
+	 * 
+	 * @return the status word
+	 */
+	public abstract byte [] cardPowerDown();
+	
+	/**
+	 * This method resets the simulated card.
+	 * @return the ATR of the simulated card
+	 */
+	public abstract byte [] cardReset();
 
 }
