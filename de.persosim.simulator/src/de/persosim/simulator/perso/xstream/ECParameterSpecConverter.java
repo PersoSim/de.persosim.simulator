@@ -36,49 +36,55 @@ public class ECParameterSpecConverter implements Converter {
 		
 		BigInteger a = curve.getA();
 		BigInteger b = curve.getB();
-
 		BigInteger n = parameterSpec.getOrder();
-		
-		BigInteger p =((ECFieldFp) curve.getField()).getP();
-		
+		BigInteger p = ((ECFieldFp) curve.getField()).getP();
 		BigInteger x = point.getAffineX();
 		BigInteger y = point.getAffineY();
-		
 		int h = parameterSpec.getCofactor();
 		
+		// open curve element
 		writer.startNode("curve");
-		writer.startNode("field");
-		writer.startNode("p");
-		writer.setValue(p.toString());
-		writer.endNode();
+			// field element
+			writer.startNode("field");
+				// p element
+				writer.startNode("p");
+				writer.setValue(p.toString());
+				writer.endNode();
+			writer.endNode();
+			
+			// a element
+			writer.startNode("a");
+			writer.setValue(a.toString());
+			writer.endNode();
+			
+			// b element
+			writer.startNode("b");
+			writer.setValue(b.toString());
+			writer.endNode();
+		// close curve element
 		writer.endNode();
 		
-		writer.startNode("a");
-		writer.setValue(a.toString());
-		writer.endNode();
-		
-		writer.startNode("b");
-		writer.setValue(b.toString());
-		writer.endNode();
-		
-		writer.endNode();
-		
+		// open point element
 		writer.startNode("point");
-		
-		writer.startNode("x");
-		writer.setValue(x.toString());
+			
+			// x element
+			writer.startNode("x");
+			writer.setValue(x.toString());
+			writer.endNode();
+			
+			// y element
+			writer.startNode("y");
+			writer.setValue(y.toString());
+			writer.endNode();
+		// close point element
 		writer.endNode();
 		
-		writer.startNode("y");
-		writer.setValue(y.toString());
-		writer.endNode();
-		
-		writer.endNode();
-		
+		// n element
 		writer.startNode("n");
 		writer.setValue(n.toString());
 		writer.endNode();
 		
+		// h element
 		writer.startNode("h");
 		writer.setValue(String.valueOf(h));
 		writer.endNode();
