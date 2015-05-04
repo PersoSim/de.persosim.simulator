@@ -6,17 +6,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
@@ -99,25 +90,10 @@ public class PersonalizationFactory {
 		StringWriter xmlWriter = new StringWriter();
 		xstream.toXML (pers, xmlWriter);
 		
+		//TODO find a alternative to suppress the class attribute, created by xStream, if element is a type of Key
 		String xmlRepresentation = xmlWriter.toString();
 		xmlRepresentation = xmlRepresentation.replaceAll("class=\"org.*[Kk]ey\"", "");
-
-		
-		TransformerFactory ft = TransformerFactory.newInstance();
-		//ft.setAttribute("indent-number", new Integer(2)); 
-		Transformer transformer;
-		try {
-			transformer = ft.newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-
-			transformer.transform (new StreamSource(new StringReader(xmlRepresentation)),
-					new StreamResult (writer));
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			e.printStackTrace();
-		}
+		writer.append(xmlRepresentation);
 	}
 	
 	public static void marshal (Object pers, String path) {
@@ -136,8 +112,6 @@ public class PersonalizationFactory {
 	public static void marshal (Object pers, FileWriter file) throws NullPointerException {
 		StringWriter writer = new StringWriter();
 		marshal (pers, writer);
-		//TODO find a alternative to suppress the class attribute, created by xStream, if element is a type of Key
-//		xml = xml.replaceAll("class=\"org.*[Kk]ey\"", "");
 		if (file == null) {
 			throw new NullPointerException ("FileWriter object is null!");
 		} 
@@ -185,9 +159,6 @@ public class PersonalizationFactory {
 			{
 				return new MapperWrapper(next) {
 					
-					
-					
-					
 					@SuppressWarnings("rawtypes")
 					public boolean shouldSerializeMember(Class definedIn,
 							String fieldName) {
@@ -202,9 +173,7 @@ public class PersonalizationFactory {
 							return false;
 						}
 
-						
-						return super
-								.shouldSerializeMember (definedIn, fieldName);
+						return super.shouldSerializeMember (definedIn, fieldName);
 					}
 				};
 			}
@@ -350,18 +319,14 @@ public class PersonalizationFactory {
 		        }
 		    }
 		};
-
+		
 		xstream.setMode(XStream.XPATH_RELATIVE_REFERENCES);
 		xstream.setMode(XStream.ID_REFERENCES);
 
-		
 		xstream.registerConverter(new EncodedByteArrayConverter());
 		xstream.registerConverter(new ProtocolConverter());
 		xstream.registerConverter(new KeyConverter());
 		xstream.registerConverter(new ECParameterSpecConverter());
-		
-//		xstream.alias("privatekey", PrivateKey.class);
-//		xstream.aliasSystemAttribute(null, "class");
 
 		return xstream;
 	}
