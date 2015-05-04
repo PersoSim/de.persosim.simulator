@@ -11,7 +11,9 @@ import java.net.SocketException;
 
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.Simulator;
+import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 /**
  * This class provides the socket interface to the PersoSim simulator.
@@ -26,6 +28,9 @@ import de.persosim.simulator.utils.HexString;
  * 
  */
 public class SocketAdapter implements Runnable {
+
+	private static final byte[] ACK = Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR);
+	private static final byte[] NACK = Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN);
 
 	private int port;
 	private Thread simThread = null;
@@ -196,10 +201,28 @@ public class SocketAdapter implements Runnable {
 				}
 
 				// process the APDU, generate response
+				
 				Simulator sim = simProvider.getSimulator();
 				// if there is a simulator available, get the response
 				if (sim != null){
-					response = sim.processCommand(apdu);
+					int clains = Utils.maskUnsignedShortToInt(Utils.concatenate(apdu[0], apdu[1]));
+					switch (clains) {
+					case 0xFF00:
+						response = sim.cardPowerDown();
+					case 0xFF01:
+						response = sim.cardPowerUp();
+					case 0xFF6F:
+						response = NACK;
+					case 0xFF90:
+						response = ACK;
+					case 0xFFFF:
+						response = sim.cardReset();
+					default:
+						// all other (unknown) APDUs are forwarded to the
+						// simulator processingl
+						response = sim.processCommand(apdu);
+					}
+					
 				}
 
 				// encode response and return it

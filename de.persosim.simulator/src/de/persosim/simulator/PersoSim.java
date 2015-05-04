@@ -2,13 +2,12 @@ package de.persosim.simulator;
 
 import static de.persosim.simulator.utils.PersoSimLogger.INFO;
 import static de.persosim.simulator.utils.PersoSimLogger.UI;
+import static de.persosim.simulator.utils.PersoSimLogger.WARN;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.Profile01;
-import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PersoSimKernel;
 import de.persosim.simulator.utils.PersoSimLogger;
-import de.persosim.simulator.utils.Utils;
 
 /**
  * This class provides access to and control of the actual simulator. It can be
@@ -22,9 +21,6 @@ import de.persosim.simulator.utils.Utils;
  * 
  */
 public class PersoSim implements Simulator {
-
-	private static final byte[] ACK = Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR);
-	private static final byte[] NACK = Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN);
 	
 	/*
 	 * This variable holds the currently used personalization.
@@ -64,9 +60,6 @@ public class PersoSim implements Simulator {
 	
 	public void startPersoSim(){
 		System.out.println("Welcome to PersoSim");
-
-
-
 		startSimulator();
 		final Simulator sim = this;
 		
@@ -134,27 +127,38 @@ public class PersoSim implements Simulator {
 			return new byte[]{0x6f, 0x78};
 		}
 		
-		int clains = Utils.maskUnsignedShortToInt(Utils.concatenate(apdu[0], apdu[1]));
-		switch (clains) {
-		case 0xFF00:
-			return kernel.powerOff();
-		case 0xFF01:
-			return kernel.powerOn();
-		case 0xFF6F:
-			return NACK;
-		case 0xFF90:
-			return ACK;
-		case 0xFFFF:
-			return kernel.reset();
-		default:
-			// all other (unknown) APDUs are forwarded to the
-			// PersoSimKernel
-			return kernel.process(apdu);
-		}
+		return kernel.process(apdu);
 	}
 
 	@Override
 	public boolean isRunning() {
 		return kernel != null;
+	}
+
+	@Override
+	public byte[] cardPowerUp() {
+		if (kernel == null){
+			log(this.getClass(), "The simulator is stopped, attempt to power up ignored", WARN);
+			return new byte[]{0x6f, 0x79};
+		}
+		return kernel.powerOn();
+	}
+
+	@Override
+	public byte[] cardPowerDown() {
+		if (kernel == null){
+			log(this.getClass(), "The simulator is stopped, attempt to power down ignored", WARN);
+			return new byte[]{0x6f, (byte)0x80};
+		}
+		return kernel.powerOn();
+	}
+
+	@Override
+	public byte[] cardReset() {
+		if (kernel == null){
+			log(this.getClass(), "The simulator is stopped, attempt to reset ignored", WARN);
+			return new byte[]{0x6f, (byte)0x81};
+		}
+		return kernel.reset();
 	}
 }
