@@ -1,5 +1,8 @@
 package de.persosim.simulator.perso.xstream;
 
+import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -81,7 +84,7 @@ public class KeyConverter implements Converter {
 				else if (keyType.equals("privatekey"))
 					sk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePrivate(ks_priv);
 			} catch (InvalidKeySpecException| NoSuchAlgorithmException e) {
-				// FIXME JGE Auto-generated catch block
+				log(KeyConverter.class, "Invalid KeySep or Algorithm during unmarshal", ERROR);
 				e.printStackTrace();
 			}
 			
