@@ -14,7 +14,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 /**
- * This class is a converter which is responsible for converting all byte-arrays in hexstrings and back.
+ * This class is a converter which is responsible for serializing/desreializing ECParameterSpec objects.
  * 
  * @author jge
  *
