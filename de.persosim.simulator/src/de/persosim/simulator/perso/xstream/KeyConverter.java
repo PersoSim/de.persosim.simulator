@@ -84,7 +84,7 @@ public class KeyConverter implements Converter {
 				else if (keyType.equals("privatekey"))
 					sk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePrivate(ks_priv);
 			} catch (InvalidKeySpecException| NoSuchAlgorithmException e) {
-				log(KeyConverter.class, "Invalid KeySep or Algorithm during unmarshal", ERROR);
+				log(KeyConverter.class, "Invalid KeySpec or Algorithm during unmarshal", ERROR);
 				e.printStackTrace();
 			}
 			
