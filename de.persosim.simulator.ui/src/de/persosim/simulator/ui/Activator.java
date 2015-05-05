@@ -3,8 +3,6 @@ package de.persosim.simulator.ui;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.globaltester.logging.filterservice.LogFilterService;
-import org.globaltester.logging.formatservice.LogFormatService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -15,8 +13,6 @@ import org.osgi.util.tracker.ServiceTracker;
 
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
-import de.persosim.simulator.ui.utils.LogFilter;
-import de.persosim.simulator.ui.utils.LogFormatter;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -25,27 +21,10 @@ public class Activator implements BundleActivator {
 
 	private LinkedList<LogReaderService> readers = new LinkedList<>();
 	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(PersoSimGuiMain.MAXIMUM_CACHED_CONSOLE_LINES);
-	private static ServiceTracker<LogReaderService, LogReaderService> logReaderTracker;
-	private static ServiceTracker<LogFilterService, LogFilterService> logFilterTracker;
-	private static ServiceTracker<LogFormatService, LogFormatService> logFormatTracker;
-	
+	private static ServiceTracker<LogReaderService, LogReaderService> logReaderTracker;	
 	
 	public static LinkedListLogListener getListLogListener(){
 		return linkedListLogger;
-	}
-	
-	public static LogFilterService getLogFilterService(){
-		if (logFilterTracker != null){
-			return logFilterTracker.getService();
-		}
-		return null;
-	}
-	
-	public static LogFormatService getLogFormatService(){
-		if (logFormatTracker != null){
-			return logFormatTracker.getService();
-		}
-		return null;
 	}
 	
 	// This will be used to keep track of listeners as they are un/registering
@@ -95,18 +74,6 @@ public class Activator implements BundleActivator {
         } catch (InvalidSyntaxException e) {
             e.printStackTrace();
         }
-        
-        //register formatService
-        context.registerService(LogFormatService.class, new LogFormatter(), null);
-
-        //register filterService
-        context.registerService(LogFilterService.class, new LogFilter(), null);
-        
-        logFilterTracker = new ServiceTracker<>(context, LogFilterService.class.getName(), null);
-        logFilterTracker.open();
-        
-        logFormatTracker = new ServiceTracker<>(context, LogFormatService.class.getName(), null);
-        logFormatTracker.open();
 
 	}
 
@@ -124,8 +91,6 @@ public class Activator implements BundleActivator {
         }
 		
 		logReaderTracker.close();
-		logFilterTracker.close();
-		logFormatTracker.close();
 	}
 
 }
