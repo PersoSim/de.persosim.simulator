@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 import org.globaltester.logging.filterservice.LogReader;
 import org.globaltester.logging.filterservice.LogReaderConfig;
-import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 
 /**
@@ -52,35 +51,31 @@ public class LinkedListLogListener extends LogReader {
 	public boolean isRefreshNeeded(){
 		return needsUpdate;
 	}
-	
+
+
 	@Override
-	public void logged(final LogEntry entry) {
+	public void displayLogMessage(String msg) {
+		// cut at line breaks and print
+		String[] splitResult = msg.split("(\\n|\\r)");
+		for (int i = 0; i < splitResult.length; i++) {
+			needsUpdate = true;
+			if (list != null) {
+				if (list.size() > maxLines) {
 
-		if (lrc.checkFilter(entry)) {
-			// format the entry
-			String logEntry = lrc.formatter.format(entry);
+					// synchronized is used to avoid
+					// IndexOutOfBoundsExceptions
+					synchronized (this) {
+						list.removeFirst();
+						list.add(splitResult[i]);
+					}
 
-			// cut at line breaks and print
-			String[] splitResult = logEntry.split("(\\n|\\r)");
-			for (int i = 0; i < splitResult.length; i++) {
-				needsUpdate = true;
-				if (list != null) {
-					if (list.size() > maxLines) {
-
-						// synchronized is used to avoid
-						// IndexOutOfBoundsExceptions
-						synchronized (this) {
-							list.removeFirst();
-							list.add(splitResult[i]);
-						}
-
-					} else {
-						synchronized (this) {
-							list.add(splitResult[i]);
-						}
+				} else {
+					synchronized (this) {
+						list.add(splitResult[i]);
 					}
 				}
 			}
 		}
+		
 	}
 }
