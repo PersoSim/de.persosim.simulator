@@ -3,9 +3,6 @@ package de.persosim.simulator.test;
 import java.security.Provider;
 import java.security.Security;
 
-import mockit.Mock;
-import mockit.MockUp;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.BeforeClass;
 
@@ -36,13 +33,8 @@ public class PersoSimTestCase implements InfoSource, Iso7816 {
 	public static void setupClass(){
 		bcProvider = new BouncyCastleProvider();
 		Security.addProvider(bcProvider);
-		new MockUp<Crypto>(){
+		Crypto.setCryptoProvider(bcProvider);
 
-			@Mock
-			public Provider getCryptoProvider() {
-				return bcProvider;
-			}
-		};
 	}
 
 }

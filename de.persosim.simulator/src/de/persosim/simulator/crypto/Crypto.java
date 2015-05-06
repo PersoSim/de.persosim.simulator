@@ -21,15 +21,20 @@ import de.persosim.simulator.Activator;
 public class Crypto implements ServiceListener {
 
 	private static Crypto instance;
+	private static Provider providerObject = null;
 	
 	/**
 	 * Singleton constructor, ensures that the class can not be instantiated from outside.
 	 */
 	private Crypto(){
-		@SuppressWarnings("unchecked") // legacy code
-		ServiceReference<Cryptoprovider> sRef = (ServiceReference<Cryptoprovider>) Activator.getContext().getServiceReference(Cryptoprovider.class.getName());
-		if (sRef != null) {
-			cryptoProviderService = (Cryptoprovider) Activator.getContext().getService(sRef);
+		try {
+			@SuppressWarnings("unchecked") // legacy code
+			ServiceReference<Cryptoprovider> sRef = (ServiceReference<Cryptoprovider>) Activator.getContext().getServiceReference(Cryptoprovider.class.getName());
+			if (sRef != null) {
+				cryptoProviderService = (Cryptoprovider) Activator.getContext().getService(sRef);
+			}
+		} catch (Exception e) {
+			//nothing to do
 		}
 	};
 	
@@ -46,8 +51,15 @@ public class Crypto implements ServiceListener {
 	
 	private Cryptoprovider cryptoProviderService = null;
 	
+	public static void setCryptoProvider(Provider newProvider) {
+		providerObject = newProvider;
+	}
 
 	public static Provider getCryptoProvider() {
+		if (providerObject != null) {
+			return providerObject;
+		}
+		
 		return getInstance().getCryptoProviderFromService();
 	}
 		
