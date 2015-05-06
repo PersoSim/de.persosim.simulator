@@ -2,8 +2,13 @@ package de.persosim.simulator.ui.utils;
 
 import java.util.LinkedList;
 
-import org.globaltester.logging.filterservice.LogReader;
-import org.globaltester.logging.filterservice.LogReaderConfig;
+import org.globaltester.logging.AbstractLogListener;
+import org.globaltester.logging.LogListenerConfig;
+import org.globaltester.logging.filter.AndFilter;
+import org.globaltester.logging.filter.BundleFilter;
+import org.globaltester.logging.filter.LevelFilter;
+import org.globaltester.logging.filter.LogFilter;
+import org.globaltester.logging.format.LogFormat;
 import org.osgi.service.log.LogListener;
 
 /**
@@ -13,14 +18,34 @@ import org.osgi.service.log.LogListener;
  * @author mboonk
  *
  */
-public class LinkedListLogListener extends LogReader {
+public class LinkedListLogListener extends AbstractLogListener {
 
-	LogReaderConfig lrc = new LogReaderConfig();
 	private LinkedList<String> list = new LinkedList<String>();
 	private int maxLines;
 	private boolean needsUpdate;	
-	
+
 	public LinkedListLogListener(int maxLines) {
+		lrc = new LogListenerConfig() {
+			
+			byte logLevels [] ={1,2,3,4,5,6,120};
+			String bundleList [] = {"de.persosim"};
+			
+			public LogFormat format = new LogFormat();
+			public BundleFilter bundleFilter = new BundleFilter(bundleList);
+			public LevelFilter levelFilter = new LevelFilter(logLevels);
+			public LogFilter [] filters = {bundleFilter, levelFilter};	
+			public AndFilter filter = new AndFilter(filters);
+			
+			@Override
+			public LogFilter getFilter() {
+				return filter;
+			}
+
+			@Override
+			public LogFormat getFormat() {
+				return format;
+			}
+		};
 		this.maxLines = maxLines;
 	}
 	
