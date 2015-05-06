@@ -209,14 +209,19 @@ public class SocketAdapter implements Runnable {
 					switch (clains) {
 					case 0xFF00:
 						response = sim.cardPowerDown();
+						break;
 					case 0xFF01:
 						response = sim.cardPowerUp();
+						break;
 					case 0xFF6F:
 						response = NACK;
+						break;
 					case 0xFF90:
 						response = ACK;
+						break;
 					case 0xFFFF:
 						response = sim.cardReset();
+						break;
 					default:
 						// all other (unknown) APDUs are forwarded to the
 						// simulator processingl
