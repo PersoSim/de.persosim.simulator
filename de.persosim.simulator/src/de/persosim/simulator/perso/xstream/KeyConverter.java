@@ -23,9 +23,9 @@ import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.utils.HexString;
 
 /**
- * This class is a converter which is responsible for marshal and unmarshal all king of key objects.
+ * This class is a converter which is responsible for for serializing/deserializing all kind of key objects.
  * 
- * @author jge
+ * @author jgoeke
  *
  */
 public class KeyConverter implements Converter {

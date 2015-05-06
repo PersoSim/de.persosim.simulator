@@ -18,9 +18,9 @@ import de.persosim.simulator.protocols.ri.RiProtocol;
 import de.persosim.simulator.protocols.ta.TaProtocol;
 
 /**
- * This class is a converter which is responsible for marshaling and unmarshaling all kind of protocol objects.
+ * This class is a converter which is responsible for serializing/deserializing all kind of protocol objects.
  * 
- * @author jge
+ * @author jgoeke
  *
  */
 public class ProtocolConverter implements Converter {

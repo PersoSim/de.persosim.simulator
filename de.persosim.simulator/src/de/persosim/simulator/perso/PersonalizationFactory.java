@@ -71,9 +71,9 @@ import de.persosim.simulator.perso.xstream.KeyPairConverter;
 import de.persosim.simulator.perso.xstream.ProtocolConverter;
 
 /**
- * This class provides methods that serializes personalization objects
+ * This class provides methods that serializes/deserializes personalization objects
  * 
- * @author jge
+ * @author jgoeke
  *
  */
 public class PersonalizationFactory {

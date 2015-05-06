@@ -13,6 +13,12 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
+/**
+ * This class is a converter which is responsible for for serializing/deserializing all kind of keypair objects.
+ * 
+ * @author jgoeke
+ *
+ */
 public class KeyPairConverter implements Converter {
 	PrivateKey sk = null;
 	PublicKey pk = null;

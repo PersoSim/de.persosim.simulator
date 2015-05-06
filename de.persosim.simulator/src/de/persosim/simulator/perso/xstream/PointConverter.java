@@ -15,10 +15,10 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 
 /**
- * This class is a converter which is responsible for serializing/desreializing
+ * This class is a converter which is responsible for serializing/deserializing
  * point objects.
  * 
- * @author jge
+ * @author jgoeke
  *
  */
 public class PointConverter implements Converter {

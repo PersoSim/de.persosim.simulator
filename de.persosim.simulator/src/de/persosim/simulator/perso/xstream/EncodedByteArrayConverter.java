@@ -11,7 +11,7 @@ import de.persosim.simulator.utils.*;
 /**
  * This class is a converter which is responsible for converting all byte-arrays in hexstrings and back.
  * 
- * @author jge
+ * @author jgoeke
  *
  */
 

@@ -15,10 +15,10 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 /**
- * This class is a converter which is responsible for serializing/desreializing
+ * This class is a converter which is responsible for serializing/deserializing
  * curve objects.
  * 
- * @author jge
+ * @author jgoeke
  *
  */
 public class CurveConverter implements Converter {
