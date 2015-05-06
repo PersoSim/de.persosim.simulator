@@ -67,6 +67,7 @@ import com.thoughtworks.xstream.mapper.MapperWrapper;
 import de.persosim.simulator.perso.xstream.ECParameterSpecConverter;
 import de.persosim.simulator.perso.xstream.EncodedByteArrayConverter;
 import de.persosim.simulator.perso.xstream.KeyConverter;
+import de.persosim.simulator.perso.xstream.KeyPairConverter;
 import de.persosim.simulator.perso.xstream.ProtocolConverter;
 
 /**
@@ -325,9 +326,10 @@ public class PersonalizationFactory {
 
 		xstream.registerConverter(new EncodedByteArrayConverter());
 		xstream.registerConverter(new ProtocolConverter());
-		xstream.registerConverter(new KeyConverter());
+		xstream.registerConverter(new KeyPairConverter());
 		xstream.registerConverter(new ECParameterSpecConverter());
-
+		xstream.registerConverter(new KeyConverter());
+		
 		return xstream;
 	}
 }

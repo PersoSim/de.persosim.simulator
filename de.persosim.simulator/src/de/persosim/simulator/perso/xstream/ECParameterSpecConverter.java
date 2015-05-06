@@ -1,8 +1,9 @@
 package de.persosim.simulator.perso.xstream;
 
+import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+
 import java.math.BigInteger;
-import java.security.spec.ECField;
-import java.security.spec.ECFieldFp;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
@@ -14,139 +15,89 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 /**
- * This class is a converter which is responsible for serializing/desreializing ECParameterSpec objects.
+ * This class is a converter which is responsible for serializing/desreializing
+ * ECParameterSpec objects.
  * 
  * @author jge
  *
  */
 public class ECParameterSpecConverter implements Converter {
-
+	
+	int h = 0;
+	BigInteger n = null;
+	EllipticCurve curve = null;
+	ECPoint point = null;
+	
 	@Override
 	public boolean canConvert(@SuppressWarnings("rawtypes") Class clazz) {
+		
 		return clazz.equals(ECParameterSpec.class);
 	}
 
 	@Override
 	public void marshal(Object object, HierarchicalStreamWriter writer,
 			MarshallingContext context) {
+
 		ECParameterSpec parameterSpec = (ECParameterSpec) object;
-		
+
 		EllipticCurve curve = parameterSpec.getCurve();
 		ECPoint point = parameterSpec.getGenerator();
-		
-		BigInteger a = curve.getA();
-		BigInteger b = curve.getB();
+
+		context.convertAnother(curve, new CurveConverter());
+		context.convertAnother(point, new PointConverter());
+
 		BigInteger n = parameterSpec.getOrder();
-		BigInteger p = ((ECFieldFp) curve.getField()).getP();
-		BigInteger x = point.getAffineX();
-		BigInteger y = point.getAffineY();
 		int h = parameterSpec.getCofactor();
-		
-		// open curve element
-		writer.startNode("curve");
-			// field element
-			writer.startNode("field");
-				// p element
-				writer.startNode("p");
-				writer.setValue(p.toString());
-				writer.endNode();
-			writer.endNode();
-			
-			// a element
-			writer.startNode("a");
-			writer.setValue(a.toString());
-			writer.endNode();
-			
-			// b element
-			writer.startNode("b");
-			writer.setValue(b.toString());
-			writer.endNode();
-		// close curve element
-		writer.endNode();
-		
-		// open point element
-		writer.startNode("point");
-			
-			// x element
-			writer.startNode("x");
-			writer.setValue(x.toString());
-			writer.endNode();
-			
-			// y element
-			writer.startNode("y");
-			writer.setValue(y.toString());
-			writer.endNode();
-		// close point element
-		writer.endNode();
-		
+
 		// n element
 		writer.startNode("n");
 		writer.setValue(n.toString());
 		writer.endNode();
-		
+
 		// h element
 		writer.startNode("h");
 		writer.setValue(String.valueOf(h));
 		writer.endNode();
 	}
 
-	@Override
-	public Object unmarshal(HierarchicalStreamReader reader,
-			UnmarshallingContext context) {
-		BigInteger p = null;
-		BigInteger a = null;
-		BigInteger b = null;
-		BigInteger x = null;
-		BigInteger y = null;
-		BigInteger n = null;
-		int h = 0;
-		
-		while(reader.hasMoreChildren()) {
+	public void getValuesFromXML(HierarchicalStreamReader reader, UnmarshallingContext context) {
+		while (reader.hasMoreChildren()) {
+			reader.moveDown();
+			String nodeName = reader.getNodeName();
+			switch(nodeName) {
+			case "curve":
+				curve = (EllipticCurve) context.convertAnother(reader, EllipticCurve.class, new CurveConverter());
+				break;
+			case "point":
+				point = (ECPoint) context.convertAnother(reader, ECPoint.class, new PointConverter());
+				break;
+			case "n":
+				n = new BigInteger(reader.getValue());
+				break;
+			case "h":
+				h = Integer.parseInt(reader.getValue());
+				break;
+			}
 			
-			reader.moveDown();
-			reader.moveDown();
-			reader.moveDown();
-			p = new BigInteger(reader.getValue());
-			
-			reader.moveUp();
-			reader.moveUp();
-			reader.moveDown();
-			a = new BigInteger(reader.getValue());
-			
-			reader.moveUp();
-			reader.moveDown();
-			b = new BigInteger(reader.getValue());
-			
-			reader.moveUp();
-			reader.moveUp();
-			reader.moveDown();
-			reader.moveDown();
-			x = new BigInteger(reader.getValue());
-			
-			reader.moveUp();
-			reader.moveDown();
-			y = new BigInteger(reader.getValue());
-				
-			reader.moveUp();
-			reader.moveUp();
-			reader.moveDown();
-			n = new BigInteger(reader.getValue());
-			
-			reader.moveUp();
-			reader.moveDown();
-			h = Integer.parseInt(reader.getValue());
-			
+			if(reader.hasMoreChildren()) {
+				getValuesFromXML(reader, context);
+			}
 			reader.moveUp();
 		}
-		
-		ECField field = new ECFieldFp(p);
-		EllipticCurve curve = new EllipticCurve(field, a, b);
-		
-		ECPoint point = new ECPoint(x, y);
-		
-		ECParameterSpec parameterSpec = new ECParameterSpec(curve, point, n, h);
-		
-		return parameterSpec;
 	}
+	
+	@Override
+	public Object unmarshal(HierarchicalStreamReader reader,
+			UnmarshallingContext context) throws NullPointerException {
+		
+		if (reader.getNodeName().equals("ecParameterSpec")) {
+			getValuesFromXML(reader, context);
+		}
 
+		if(point == null || curve == null || n == null) {
+			log(ECParameterSpecConverter.class, "can not create ParameterSep object, unmarshal failed", ERROR);
+			throw new NullPointerException ("can not create ParameterSep object, unmarshal failed!");
+		}
+		return new ECParameterSpec(curve, point, n, h);
+	}
 }
