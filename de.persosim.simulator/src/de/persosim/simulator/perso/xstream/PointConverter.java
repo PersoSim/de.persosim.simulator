@@ -13,6 +13,14 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
+
+/**
+ * This class is a converter which is responsible for serializing/desreializing
+ * point objects.
+ * 
+ * @author jge
+ *
+ */
 public class PointConverter implements Converter {
 	BigInteger x = null;
 	BigInteger y = null;

@@ -6,7 +6,6 @@ import static de.persosim.simulator.utils.PersoSimLogger.log;
 import java.math.BigInteger;
 import java.security.spec.ECField;
 import java.security.spec.ECFieldFp;
-import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
 
 import com.thoughtworks.xstream.converters.Converter;
@@ -15,6 +14,13 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
+/**
+ * This class is a converter which is responsible for serializing/desreializing
+ * curve objects.
+ * 
+ * @author jge
+ *
+ */
 public class CurveConverter implements Converter {
 	BigInteger p = null;
 	BigInteger a = null;
