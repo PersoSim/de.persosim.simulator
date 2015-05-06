@@ -56,7 +56,7 @@ public class LinkedListLogListener extends LogReader {
 	@Override
 	public void logged(final LogEntry entry) {
 
-		if (lrc.andFilter.perform(entry)) {
+		if (lrc.checkFilter(entry)) {
 			// format the entry
 			String logEntry = lrc.formatter.format(entry);
 
