@@ -27,7 +27,7 @@ public class Crypto implements ServiceListener {
 	 * Singleton constructor, ensures that the class can not be instantiated from outside.
 	 */
 	private Crypto(){
-		try {
+		try { 
 			@SuppressWarnings("unchecked") // legacy code
 			ServiceReference<Cryptoprovider> sRef = (ServiceReference<Cryptoprovider>) Activator.getContext().getServiceReference(Cryptoprovider.class.getName());
 			if (sRef != null) {
