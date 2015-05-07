@@ -22,10 +22,10 @@ public class LinkedListLogListener extends AbstractLogListener {
 
 	private LinkedList<String> list = new LinkedList<String>();
 	private int maxLines;
-	private boolean needsUpdate;	
-
+	private boolean needsUpdate;
+	
 	public LinkedListLogListener(int maxLines) {
-		lrc = new LogListenerConfig() {
+		LogListenerConfig lrc = new LogListenerConfig() {
 			
 			byte logLevels [] ={1,2,3,4,5,6,120};
 			String bundleList [] = {"de.persosim"};
@@ -47,6 +47,7 @@ public class LinkedListLogListener extends AbstractLogListener {
 			}
 		};
 		this.maxLines = maxLines;
+		setLrc(lrc);
 	}
 	
 	/**
