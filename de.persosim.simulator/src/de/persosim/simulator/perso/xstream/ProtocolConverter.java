@@ -27,7 +27,7 @@ public class ProtocolConverter implements Converter {
 
 	@Override
 	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-		//FIXME JGE Why this static list?
+		
 		String name = type.getName();
 		if (name.toLowerCase().endsWith("protocol"))
 			return true;
@@ -47,6 +47,7 @@ public class ProtocolConverter implements Converter {
 		
 		String protocolName = reader.getNodeName().substring(reader.getNodeName().lastIndexOf(".")+1);
 		
+		//XXX replace this static list by some dynamic construction method
 		switch(protocolName){
 		case "PaceProtocol":
 			return new PaceProtocol();
