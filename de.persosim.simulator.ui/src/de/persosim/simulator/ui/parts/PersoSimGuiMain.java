@@ -1,11 +1,19 @@
 package de.persosim.simulator.ui.parts;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -21,8 +29,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.service.prefs.BackingStoreException;
 
 import de.persosim.simulator.ui.Activator;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
@@ -74,6 +85,49 @@ public class PersoSimGuiMain {
 		txtOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
 		txtOutput.setSelection(txtOutput.getText().length());
 		txtOutput.setTopIndex(txtOutput.getLineCount() - 1);
+		
+		Menu consoleMenu = new Menu(txtOutput);
+		MenuItem saveLogItem = new MenuItem(consoleMenu, SWT.CASCADE);
+		saveLogItem.setText("save log to file");
+		
+		SelectionListener listenerSaveLog = new SelectionListener() {
+			
+			String logFileName;
+			File file;
+			PrintWriter writer;
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) { 
+				
+				try{
+					logFileName = "PersoSim_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".log";
+					file = new File(logFileName);
+					writer = new PrintWriter(file);
+					for (int i = 0; i < Activator.getListLogListener()
+							.getNumberOfCachedLines(); i++) {
+						writer.write(Activator.getListLogListener().getLine(i)+"\n");
+					}
+					writer.flush();
+					writer.close();
+					
+				}catch(IOException ioe){
+		            ioe.printStackTrace(); 
+		        } finally { 
+		            if (writer != null){ 
+		                writer.flush(); 
+		                writer.close(); 
+		            } 
+		        } 				
+
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		};
+		
+		saveLogItem.addSelectionListener(listenerSaveLog);
+		txtOutput.setMenu(consoleMenu);
 		
 		//configure the slider
 		slider = new Slider(parent, SWT.V_SCROLL);
