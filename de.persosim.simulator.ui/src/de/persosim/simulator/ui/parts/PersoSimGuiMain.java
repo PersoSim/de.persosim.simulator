@@ -63,9 +63,7 @@ public class PersoSimGuiMain {
 		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);
 		
 		final LinkedListLogListener listener = Activator.getListLogListener();
-		if (listener != null){
-			listener.addFilter("de.persosim.simulator");	
-		} else {
+		if (listener == null){
 			txtOutput.setText("The OSGi logging service can not be used.\nPlease check the availability and OSGi configuration" + System.lineSeparator());
 		}
 		

@@ -104,7 +104,7 @@ public class Activator implements BundleActivator {
 	public void start(final BundleContext context) throws Exception {
 		Activator.context = context;
 				
-		
+
 		logReaderTracker = new ServiceTracker<>(context, LogReaderService.class.getName(), null);
 		logReaderTracker.open();
 		Object[] readers = logReaderTracker.getServices();
