@@ -8,16 +8,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.globaltester.logging.filterservice.LogFilterService;
+import org.globaltester.logging.filter.LevelFilter;
 
 public class LogLevelDialog extends Dialog {
 
-	LogFilterService filter;
+	LevelFilter filter;
 	Button[] btnLogLevels = new Button[7];
 
 	public LogLevelDialog(Shell parentShell) {
 		super(parentShell);
-		filter = de.persosim.simulator.ui.Activator.getLogFilterService();
+		filter = de.persosim.simulator.ui.Activator.getLogLevelFilter();
 	}
 
 	@Override
@@ -56,8 +56,6 @@ public class LogLevelDialog extends Dialog {
 	}
 	
 	public void setPreSelections(){
-		//loads saved logLevels from prefs
-		filter.loadFilter();
 		
 		//get them. Necessary for preselect check boxes
 		byte [] checker = filter.getLogLevels();
@@ -110,7 +108,6 @@ public class LogLevelDialog extends Dialog {
 		}
 
 		filter.setLogLevels(logLevels);
-		filter.saveFilter();
 
 		super.okPressed();
 	}
