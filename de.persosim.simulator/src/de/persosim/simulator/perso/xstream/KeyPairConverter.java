@@ -70,7 +70,7 @@ public class KeyPairConverter implements Converter {
 	public Object unmarshal(HierarchicalStreamReader reader,
 			UnmarshallingContext context) throws NullPointerException {
 
-		if (reader.getNodeName().equals("keyPair")) {
+		if (reader.getNodeName().toLowerCase().endsWith("keypair")) {
 			getValuesFromXML (reader, context);
 		}
 		

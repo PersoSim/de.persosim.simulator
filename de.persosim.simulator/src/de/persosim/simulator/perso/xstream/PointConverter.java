@@ -84,7 +84,7 @@ public class PointConverter implements Converter {
 			getValuesFromXML (reader, context);
 		}
 		
-		if (x == null || y == null) {
+		if (x == null || y == null || x.equals("") || y.equals("")) {
 			log(ECParameterSpecConverter.class, "can not create point object, unmarshal failed", ERROR);
 			throw new NullPointerException ("can not create point object, unmarshal failed!");
 		}

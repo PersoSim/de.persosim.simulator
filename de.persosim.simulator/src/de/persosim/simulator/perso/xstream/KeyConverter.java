@@ -88,8 +88,8 @@ public class KeyConverter implements Converter {
 			getValuesFromXML (reader, context);
 		}
 		
-		if (byteValue == null || algorithmValue == null) {
-			log(ECParameterSpecConverter.class, "can not create "+ keyType +" object, unmarshal failed", ERROR);
+		if (byteValue == null || algorithmValue == null || algorithmValue.equals("") || byteValue.equals("")) {
+			log(KeyConverter.class, "can not create "+ keyType +" object, unmarshal failed", ERROR);
 			throw new NullPointerException ("can not create "+ keyType +" object, unmarshal failed!");
 		}
 		
