@@ -6,16 +6,11 @@ import java.util.List;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.protocols.Protocol;
 
-public class PersonalizationImpl implements Personalization {
+public abstract class AbstractPersonalization implements Personalization {
 
 	protected List<Protocol> protocols = null;
 	
 	protected MasterFile mf = null;
-		
-	public List<Protocol> getProtocols() {
-		if (protocols == null) reset();
-		return protocols;
-	}
 
 	public MasterFile getMf() {
 		if (mf == null) reset();
@@ -29,7 +24,8 @@ public class PersonalizationImpl implements Personalization {
 
 	@Override
 	public List<Protocol> getProtocolList() {
-		return getProtocols();
+		if (protocols == null) reset();
+		return protocols;
 	}
 
 	@Override
