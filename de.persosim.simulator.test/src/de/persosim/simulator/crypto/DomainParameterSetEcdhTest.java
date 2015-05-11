@@ -392,7 +392,7 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	 * @throws Exception
 	 */
 	@Test
-	public void test_JaxbMarshallUnmarshall() throws Exception {
+	public void test_XstreamMarshallUnmarshall() throws Exception {
 		// Write to StringWriter
 		StringWriter strWriter = new StringWriter();
 		PersonalizationFactory.marshal(domParamsEcdh, strWriter);
