@@ -107,7 +107,7 @@ public class KeyPairConverterTest extends PersoSimTestCase {
 	 * @throws ConversionException 
 	 */
 	@Test(expected = ConversionException.class)
-	public void testKeyPairConverter_UnmarshalKeyPair_AlgorithmIsNull() throws ConversionException, NoSuchAlgorithmException {
+	public void testKeyPairConverter_UnmarshalKeyPair_AlgorithmIsNull() throws ConversionException {
 		
 		StringWriter writer = new StringWriter();
 		PersonalizationFactory.marshal(keyPair, writer);

@@ -78,7 +78,7 @@ public class PointConverter implements Converter {
 
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader,
-			UnmarshallingContext context) throws NullPointerException {
+			UnmarshallingContext context) {
 		
 		if (reader.getNodeName().equals("point")) {
 			getValuesFromXML (reader, context);

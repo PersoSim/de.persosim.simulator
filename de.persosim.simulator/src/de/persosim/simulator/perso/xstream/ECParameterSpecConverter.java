@@ -88,7 +88,7 @@ public class ECParameterSpecConverter implements Converter {
 	
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader,
-			UnmarshallingContext context) throws NullPointerException {
+			UnmarshallingContext context) {
 		
 		if (reader.getNodeName().toLowerCase().endsWith("ecparameterspec")) {
 			getValuesFromXML(reader, context);

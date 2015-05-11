@@ -68,7 +68,7 @@ public class KeyPairConverter implements Converter {
 
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader,
-			UnmarshallingContext context) throws NullPointerException {
+			UnmarshallingContext context) {
 
 		if (reader.getNodeName().toLowerCase().endsWith("keypair")) {
 			getValuesFromXML (reader, context);

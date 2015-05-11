@@ -91,7 +91,7 @@ public class CurveConverter implements Converter {
 
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader,
-			UnmarshallingContext context) throws NullPointerException {
+			UnmarshallingContext context) {
 		
 		if (reader.getNodeName().equals("curve")) {
 			getValuesFromXML (reader, context);
