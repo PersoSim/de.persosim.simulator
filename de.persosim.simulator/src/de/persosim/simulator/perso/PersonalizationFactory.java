@@ -9,6 +9,8 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 
+import org.osgi.util.tracker.ServiceTracker;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.ConverterLookup;
@@ -59,11 +61,13 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.converters.reflection.SerializableConverter;
 import com.thoughtworks.xstream.core.ClassLoaderReference;
 import com.thoughtworks.xstream.core.JVM;
+import com.thoughtworks.xstream.core.util.CompositeClassLoader;
 import com.thoughtworks.xstream.core.util.SelfStreamingInstanceChecker;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.mapper.Mapper;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
+import de.persosim.simulator.Activator;
 import de.persosim.simulator.perso.xstream.ECParameterSpecConverter;
 import de.persosim.simulator.perso.xstream.EncodedByteArrayConverter;
 import de.persosim.simulator.perso.xstream.KeyConverter;
@@ -329,7 +333,19 @@ public class PersonalizationFactory {
 		xstream.registerConverter(new KeyPairConverter());
 		xstream.registerConverter(new ECParameterSpecConverter());
 		xstream.registerConverter(new KeyConverter());
-		
+        
+        //get LogService
+		ServiceTracker<Converter, Converter> serviceTracker = new ServiceTracker<Converter, Converter>(Activator.getContext(), Converter.class.getName(), null);
+        serviceTracker.open();
+        Object[] allServices = serviceTracker.getServices();
+        for (Object service : allServices){
+        	System.out.println(service.getClass().getName() + " - " + service.getClass().getClassLoader());
+            ((CompositeClassLoader)xstream.getClassLoader()).add(service.getClass().getClassLoader());
+        	xstream.registerConverter((Converter) service, 10);
+        }
+        System.out.println(Thread.currentThread().getContextClassLoader());
+        serviceTracker.close();
+        
 		return xstream;
 	}
 }

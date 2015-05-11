@@ -4,13 +4,18 @@ Bundle-Name: PersoSim
 Bundle-SymbolicName: de.persosim.simulator;singleton:=true
 Bundle-Version: 0.6.0.qualifier
 Bundle-Vendor: HJP Consulting GmbH
-Export-Package: de.persosim.simulator,
+Export-Package: com.thoughtworks.xstream,
+ com.thoughtworks.xstream.converters,
+ com.thoughtworks.xstream.io,
+ de.persosim.simulator,
+ de.persosim.simulator.apdu,
  de.persosim.simulator.cardobjects,
  de.persosim.simulator.crypto,
  de.persosim.simulator.crypto.certificates,
  de.persosim.simulator.exception,
  de.persosim.simulator.perso,
  de.persosim.simulator.platform,
+ de.persosim.simulator.processing,
  de.persosim.simulator.protocols,
  de.persosim.simulator.protocols.ca,
  de.persosim.simulator.protocols.pace,
