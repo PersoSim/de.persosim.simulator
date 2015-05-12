@@ -14,6 +14,7 @@ public class Activator implements BundleActivator {
 
 	public static BundleContext context;
 	
+	//TODO move this service tracking to the class PersoSimLogger (similar to Crypto)
 	private static ServiceTracker<LogService, LogService> logServiceTracker;
 
 	
