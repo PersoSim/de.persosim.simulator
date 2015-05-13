@@ -9,13 +9,15 @@ import org.junit.Test;
 
 import com.thoughtworks.xstream.io.StreamException;
 
-import de.persosim.simulator.perso.MinimumPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
+import de.persosim.simulator.perso.PersonalizationImpl;
 
 public class CommandParserTest {
 
 	
+	private String DUMMY_PERSONALIZATION_FILE = "tmp/dummyPerso.xml";
+
 	/**
 	 * Positive test case: parse arguments from an empty String.
 	 */
@@ -67,10 +69,10 @@ public class CommandParserTest {
 	 */
 	@Test
 	public void testParsePersonalization_ValidFile() throws Exception {
-		MinimumPersonalization perso1 = new MinimumPersonalization(PersoSimTest.EF_CS_CONTENT);
-		PersonalizationFactory.marshal(perso1, PersoSimTest.DUMMY_PERSONALIZATION_FILE);
+		Personalization perso1 = new PersonalizationImpl();
+		PersonalizationFactory.marshal(perso1, DUMMY_PERSONALIZATION_FILE);
 		
-		Personalization perso = CommandParser.parsePersonalization(PersoSimTest.DUMMY_PERSONALIZATION_FILE);
+		Personalization perso = CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE);
 		
 		assertNotNull(perso);
 	}

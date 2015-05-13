@@ -336,7 +336,8 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	 * of the list.
 	 */
 	public boolean protocolAtProtocolPointerIsLastElementOfProtocolList() {
-		return protocols.size() == (protocolPointer + 1);
+		int pSize = protocols.size();
+		return ((pSize == 0) || pSize == (protocolPointer + 1));
 	}
 
 	/**

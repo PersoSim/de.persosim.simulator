@@ -1,20 +1,17 @@
 package de.persosim.simulator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
-import mockit.Mocked;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.persosim.simulator.perso.DefaultPersoTestPki;
-import de.persosim.simulator.perso.MinimumPersonalization;
-import de.persosim.simulator.perso.PersonalizationFactory;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
@@ -24,15 +21,8 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	PersoSim persoSim;
 	
-	@Mocked DefaultPersoTestPki defaultPersoTestPki;
-	
-	public static final byte[] EF_CS_CONTENT = HexString.toByteArray("FF01020304");
-	
-	public static final String DUMMY_PERSONALIZATION_FILE = "tmp/dummyPersonalization1.xml";
-	
 	public static final String SELECT_APDU = "00A4020C02011C";
-	public static final String READ_BINARY_APDU = "00B0000005";
-	public static final String SW_NO_ERROR = "9000";
+	public static final String SW_NO_ERROR = "9000"; //FIXME why this constant?
 	
 	static PrintStream	origOut;
 	static ByteArrayOutputStream redStdOut;
@@ -42,9 +32,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	@Before
 	public void setUp() {
 		origOut	= System.out;
-		
-		MinimumPersonalization perso1 = new MinimumPersonalization(EF_CS_CONTENT);
-		PersonalizationFactory.marshal(perso1, PersoSimTest.DUMMY_PERSONALIZATION_FILE);
 	}
 	
 	@After
@@ -184,24 +171,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: test implicit setting of a default personalization if no other personalization is explicitly set.
-	 * @throws Exception
-	 */
-	@Test
-	public void testImplicitSettingOfMinimumPersonalization() throws Exception {
-		persoSim = new PersoSim();
-		persoSim.startSimulator();
-		
-		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
-		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), response);
-		
-		byte[] responseReadBinaryExpected = Utils.concatByteArrays(MinimumPersonalization.DEFAULT_EF_CA_VALUE, Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR));
-		
-		response = persoSim.processCommand(HexString.toByteArray(READ_BINARY_APDU));
-		assertArrayEquals(responseReadBinaryExpected, response);
-	}
-	
-	/**
 	 * Positive test case: test start of socket simulator.
 	 * @throws Exception
 	 */
@@ -226,12 +195,12 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStartSimulator_twice() throws Exception {
-		persoSim = new PersoSim(new String[]{CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE});
+		persoSim = new PersoSim();
 		
 		persoSim.startSimulator();
 		assertTrue(persoSim.startSimulator());
 		
-		//ensure that the simulator is responding
+		//ensure that the simulator is still responding
 		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
 		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), response);
 	}
@@ -242,18 +211,16 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testStopSimulator() throws Exception {
-		persoSim = new PersoSim(CommandParser.ARG_LOAD_PERSONALIZATION, DUMMY_PERSONALIZATION_FILE);
+		persoSim = new PersoSim();
 		
 		persoSim.startSimulator();
 		
 		byte [] responseSelect = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
-
 		assertArrayEquals(Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR), responseSelect);
 		
 		persoSim.stopSimulator();
 		
 		responseSelect = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
-
 		assertArrayEquals(Utils.toUnsignedByteArray((short)(Iso7816.SW_6F00_UNKNOWN+0x78)), responseSelect);
 	}
 	
