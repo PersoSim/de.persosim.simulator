@@ -75,7 +75,7 @@ public class KeyPairConverter implements Converter {
 		}
 		
 		if (pk == null || sk == null) {
-			log(ECParameterSpecConverter.class, "can not create keypair object, unmarshal failed", ERROR);
+			log(getClass(), "can not create keypair object, unmarshal failed", ERROR);
 			throw new NullPointerException ("can not create keypair object, unmarshal failed!");
 		}
 		return new KeyPair(pk, sk);

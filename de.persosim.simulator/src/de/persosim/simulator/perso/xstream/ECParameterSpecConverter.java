@@ -95,7 +95,7 @@ public class ECParameterSpecConverter implements Converter {
 		}
 
 		if(point == null || curve == null || n == null) {
-			log(ECParameterSpecConverter.class, "can not create ParameterSpec object, unmarshal failed", ERROR);
+			log(getClass(), "can not create ParameterSpec object, unmarshal failed", ERROR);
 			throw new NullPointerException ("can not create ParameterSpec object, unmarshal failed!");
 		}
 		return new ECParameterSpec(curve, point, n, h);

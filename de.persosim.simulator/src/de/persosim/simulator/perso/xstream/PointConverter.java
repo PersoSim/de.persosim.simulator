@@ -85,7 +85,7 @@ public class PointConverter implements Converter {
 		}
 		
 		if (x == null || y == null || x.equals("") || y.equals("")) {
-			log(ECParameterSpecConverter.class, "can not create point object, unmarshal failed", ERROR);
+			log(getClass(), "can not create point object, unmarshal failed", ERROR);
 			throw new NullPointerException ("can not create point object, unmarshal failed!");
 		}
 		ECPoint point = new ECPoint(x, y);

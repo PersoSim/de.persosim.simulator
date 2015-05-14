@@ -89,7 +89,7 @@ public class KeyConverter implements Converter {
 		}
 		
 		if (byteValue == null || algorithmValue == null || algorithmValue.equals("") || byteValue.equals("")) {
-			log(KeyConverter.class, "can not create "+ keyType +" object, unmarshal failed", ERROR);
+			log(getClass(), "can not create "+ keyType +" object, unmarshal failed", ERROR);
 			throw new NullPointerException ("can not create "+ keyType +" object, unmarshal failed!");
 		}
 		
@@ -102,7 +102,7 @@ public class KeyConverter implements Converter {
 			else if (keyType.equals("privatekey"))
 				sk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePrivate(ks_priv);
 		} catch (InvalidKeySpecException| NoSuchAlgorithmException e) {
-			log(KeyConverter.class, "Invalid KeySpec or Algorithm during unmarshal", ERROR);
+			log(getClass(), "Invalid KeySpec or Algorithm during unmarshal", ERROR);
 			e.printStackTrace();
 		}
 		
