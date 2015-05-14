@@ -88,14 +88,14 @@ public class ECParameterSpecConverter implements Converter {
 	
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader,
-			UnmarshallingContext context) throws NullPointerException {
+			UnmarshallingContext context) {
 		
 		if (reader.getNodeName().toLowerCase().endsWith("ecparameterspec")) {
 			getValuesFromXML(reader, context);
 		}
 
 		if(point == null || curve == null || n == null) {
-			log(ECParameterSpecConverter.class, "can not create ParameterSpec object, unmarshal failed", ERROR);
+			log(getClass(), "can not create ParameterSpec object, unmarshal failed", ERROR);
 			throw new NullPointerException ("can not create ParameterSpec object, unmarshal failed!");
 		}
 		return new ECParameterSpec(curve, point, n, h);

@@ -91,14 +91,14 @@ public class CurveConverter implements Converter {
 
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader,
-			UnmarshallingContext context) throws NullPointerException {
+			UnmarshallingContext context) {
 		
 		if (reader.getNodeName().equals("curve")) {
 			getValuesFromXML (reader, context);
 		}
 		
-		if (p == null || a == null || b == null) {
-			log(CurveConverter.class, "can not create curve object, unmarshal failed", ERROR);
+		if (p == null || a == null || b == null  || p.equals("") || a.equals("") || b.equals("")) {
+			log(getClass(), "can not create curve object, unmarshal failed", ERROR);
 			throw new NullPointerException ("can not create curve object, unmarshal failed!");
 		}
 		ECField field = new ECFieldFp(p);

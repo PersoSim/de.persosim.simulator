@@ -78,14 +78,14 @@ public class PointConverter implements Converter {
 
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader,
-			UnmarshallingContext context) throws NullPointerException {
+			UnmarshallingContext context) {
 		
 		if (reader.getNodeName().equals("point")) {
 			getValuesFromXML (reader, context);
 		}
 		
-		if (x == null || y == null) {
-			log(ECParameterSpecConverter.class, "can not create point object, unmarshal failed", ERROR);
+		if (x == null || y == null || x.equals("") || y.equals("")) {
+			log(getClass(), "can not create point object, unmarshal failed", ERROR);
 			throw new NullPointerException ("can not create point object, unmarshal failed!");
 		}
 		ECPoint point = new ECPoint(x, y);

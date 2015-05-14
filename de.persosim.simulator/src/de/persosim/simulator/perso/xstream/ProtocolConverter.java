@@ -43,7 +43,7 @@ public class ProtocolConverter implements Converter {
 	
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader,
-			UnmarshallingContext context) throws XStreamException {
+			UnmarshallingContext context) {
 		
 		String protocolName = reader.getNodeName().substring(reader.getNodeName().lastIndexOf(".")+1);
 		

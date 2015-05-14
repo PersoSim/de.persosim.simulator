@@ -68,14 +68,14 @@ public class KeyPairConverter implements Converter {
 
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader,
-			UnmarshallingContext context) throws NullPointerException {
+			UnmarshallingContext context) {
 
-		if (reader.getNodeName().equals("keyPair")) {
+		if (reader.getNodeName().toLowerCase().endsWith("keypair")) {
 			getValuesFromXML (reader, context);
 		}
 		
 		if (pk == null || sk == null) {
-			log(ECParameterSpecConverter.class, "can not create keypair object, unmarshal failed", ERROR);
+			log(getClass(), "can not create keypair object, unmarshal failed", ERROR);
 			throw new NullPointerException ("can not create keypair object, unmarshal failed!");
 		}
 		return new KeyPair(pk, sk);

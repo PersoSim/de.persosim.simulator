@@ -79,7 +79,7 @@ public class KeyConverter implements Converter {
 
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader,
-			UnmarshallingContext context) throws NullPointerException {
+			UnmarshallingContext context) {
 
 		PrivateKey sk = null;
 		PublicKey pk = null;
@@ -88,8 +88,8 @@ public class KeyConverter implements Converter {
 			getValuesFromXML (reader, context);
 		}
 		
-		if (byteValue == null || algorithmValue == null) {
-			log(ECParameterSpecConverter.class, "can not create "+ keyType +" object, unmarshal failed", ERROR);
+		if (byteValue == null || algorithmValue == null || algorithmValue.equals("") || byteValue.equals("")) {
+			log(getClass(), "can not create "+ keyType +" object, unmarshal failed", ERROR);
 			throw new NullPointerException ("can not create "+ keyType +" object, unmarshal failed!");
 		}
 		
@@ -102,7 +102,7 @@ public class KeyConverter implements Converter {
 			else if (keyType.equals("privatekey"))
 				sk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePrivate(ks_priv);
 		} catch (InvalidKeySpecException| NoSuchAlgorithmException e) {
-			log(KeyConverter.class, "Invalid KeySpec or Algorithm during unmarshal", ERROR);
+			log(getClass(), "Invalid KeySpec or Algorithm during unmarshal", ERROR);
 			e.printStackTrace();
 		}
 		
