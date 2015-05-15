@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -119,6 +120,7 @@ public class PersoSimGuiMain {
 						writer.write(Activator.getListLogListener().getLine(i)+"\n");
 					}
 					
+					MessageDialog.openInformation(txtOutput.getShell(), "Info", "Logfile written to " + file.getAbsolutePath());
 				}catch(IOException ioe){
 		            ioe.printStackTrace(); 
 		        } finally { 
