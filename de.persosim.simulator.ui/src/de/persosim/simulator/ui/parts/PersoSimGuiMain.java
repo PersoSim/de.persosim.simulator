@@ -82,10 +82,26 @@ public class PersoSimGuiMain {
 		txtOutput.setTopIndex(txtOutput.getLineCount() - 1);
 		
 		Menu consoleMenu = new Menu(txtOutput);
-		MenuItem saveLogItem = new MenuItem(consoleMenu, SWT.CASCADE);
-		saveLogItem.setText("save log to file");
+		MenuItem changeLogLevelItem = new MenuItem(consoleMenu, SWT.CASCADE);
+		changeLogLevelItem.setText("Configure logLevel");
 		
-		SelectionListener listenerSaveLog = new SelectionListener() {
+		changeLogLevelItem.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) { 
+				
+				LogLevelDialog ld = new LogLevelDialog(null);
+				ld.open();
+
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		
+		MenuItem saveLogItem = new MenuItem(consoleMenu, SWT.CASCADE);
+		saveLogItem.setText("Save log to file");
+		saveLogItem.addSelectionListener(new SelectionListener() {
 			
 			String logFileName;
 			File file;
@@ -117,9 +133,10 @@ public class PersoSimGuiMain {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
-		};
+		});
 		
-		saveLogItem.addSelectionListener(listenerSaveLog);
+		
+		
 		txtOutput.setMenu(consoleMenu);
 		
 		//configure the slider
