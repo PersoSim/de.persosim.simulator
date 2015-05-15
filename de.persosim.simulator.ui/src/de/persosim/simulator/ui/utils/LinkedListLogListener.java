@@ -2,8 +2,16 @@ package de.persosim.simulator.ui.utils;
 
 import java.util.LinkedList;
 
-import org.osgi.service.log.LogEntry;
+import org.globaltester.logging.AbstractLogListener;
+import org.globaltester.logging.LogListenerConfig;
+import org.globaltester.logging.filter.AndFilter;
+import org.globaltester.logging.filter.BundleFilter;
+import org.globaltester.logging.filter.LevelFilter;
+import org.globaltester.logging.filter.LogFilter;
+import org.globaltester.logging.format.LogFormat;
 import org.osgi.service.log.LogListener;
+
+import de.persosim.simulator.ui.Activator;
 
 /**
  * This {@link LogListener} implementation is used to write log entries by line
@@ -12,32 +20,40 @@ import org.osgi.service.log.LogListener;
  * @author mboonk
  *
  */
-public class LinkedListLogListener implements LogListener {
+public class LinkedListLogListener extends AbstractLogListener {
 
 	private LinkedList<String> list = new LinkedList<String>();
 	private int maxLines;
-	private LinkedList<String> bundleFilters = new LinkedList<String>();
 	private boolean needsUpdate;
 	
 	public LinkedListLogListener(int maxLines) {
+		LogListenerConfig lrc = new LogListenerConfig() {
+			
+			byte logLevels [] ={1,2,3,4,5,6,120};
+			String bundleList [] = {"de.persosim"};
+			
+			public LogFormat format = new LogFormat();
+			public BundleFilter bundleFilter = new BundleFilter(bundleList);
+			public LevelFilter levelFilter = new LevelFilter(logLevels);
+			public LogFilter [] filters = {bundleFilter, levelFilter};	
+			public AndFilter filter = new AndFilter(filters);
+			
+			{
+				Activator.setLogLevelFilter(levelFilter);
+			}
+			
+			@Override
+			public LogFilter getFilter() {
+				return filter;
+			}
+
+			@Override
+			public LogFormat getFormat() {
+				return format;
+			}
+		};
 		this.maxLines = maxLines;
-	}
-		
-	/**
-	 * Filter the incoming strings. All added filters allow the corresponding
-	 * messages to be added to the list.
-	 * 
-	 * @param filter
-	 */
-	public void addFilter(String filter){
-		bundleFilters.add(filter);
-	}
-	
-	/**
-	 * Empty the list of filters.
-	 */
-	public void cleanBundleFilters(){
-		bundleFilters = new LinkedList<String>();
+		setLrc(lrc);
 	}
 	
 	/**
@@ -67,42 +83,31 @@ public class LinkedListLogListener implements LogListener {
 	public boolean isRefreshNeeded(){
 		return needsUpdate;
 	}
-	
+
+
 	@Override
-	public void logged(final LogEntry entry) {
-		boolean isFilteredBundle = false;
-		for (String current : bundleFilters){
-			if (entry.getBundle().getSymbolicName().equals(current)){
-				isFilteredBundle = true;
-				break;
-			}
-		}
-		//allow only filtered entries or all if no filters are set.
-		if (isFilteredBundle || bundleFilters.size() == 0){
-			String logEntry = "[" + entry.getBundle().getSymbolicName() + "] "
-					+ entry.getMessage();
-			String[] splitResult = logEntry.split("(\\n|\\r)");
+	public void displayLogMessage(String msg) {
+		// cut at line breaks and print
+		String[] splitResult = msg.split("(\\n|\\r)");
+		for (int i = 0; i < splitResult.length; i++) {
+			needsUpdate = true;
+			if (list != null) {
+				if (list.size() > maxLines) {
 
-			for (int i = 0; i < splitResult.length; i++) {
-				needsUpdate = true;
-				if (list != null) {
-					if (list.size() > maxLines) {
+					// synchronized is used to avoid
+					// IndexOutOfBoundsExceptions
+					synchronized (this) {
+						list.removeFirst();
+						list.add(splitResult[i]);
+					}
 
-						// synchronized is used to avoid IndexOutOfBoundsExceptions
-						synchronized (this) {
-							list.removeFirst();
-							list.add(splitResult[i]);
-						}
-
-					} else {
-						synchronized (this) {
-							list.add(splitResult[i]);
-						}
+				} else {
+					synchronized (this) {
+						list.add(splitResult[i]);
 					}
 				}
 			}
 		}
 		
 	}
-
 }

@@ -3,6 +3,7 @@ package de.persosim.simulator.ui;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.globaltester.logging.filter.LevelFilter;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -103,7 +104,7 @@ public class Activator implements BundleActivator {
 	public void start(final BundleContext context) throws Exception {
 		Activator.context = context;
 				
-		
+
 		logReaderTracker = new ServiceTracker<>(context, LogReaderService.class.getName(), null);
 		logReaderTracker.open();
 		Object[] readers = logReaderTracker.getServices();
@@ -147,5 +148,15 @@ public class Activator implements BundleActivator {
 
 		Activator.context = null;
 		simulatorServiceTracker.close();
+	}
+
+	private static LevelFilter logLevelFilter;
+	
+	public static LevelFilter getLogLevelFilter() {
+		return logLevelFilter;
+	}
+
+	public static void setLogLevelFilter(LevelFilter levelFilter) {
+		Activator.logLevelFilter = levelFilter;
 	}
 }
