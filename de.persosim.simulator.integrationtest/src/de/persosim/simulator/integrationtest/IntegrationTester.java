@@ -12,8 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.Simulator;
-import de.persosim.simulator.perso.MinimumPersonalization;
 import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.perso.Profile01;
 
 public class IntegrationTester {
 	
@@ -97,6 +97,6 @@ public class IntegrationTester {
 		assertTrue(simService.startSimulator());
 		Personalization perso = simService.getPersonalization(); 
 		assertNotNull(perso);
-		assertTrue(perso instanceof MinimumPersonalization);
+		assertTrue(perso instanceof Profile01);
 	}
 }
