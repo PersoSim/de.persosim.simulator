@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 
+import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 import com.thoughtworks.xstream.XStream;
@@ -73,6 +74,7 @@ import de.persosim.simulator.perso.xstream.EncodedByteArrayConverter;
 import de.persosim.simulator.perso.xstream.KeyConverter;
 import de.persosim.simulator.perso.xstream.KeyPairConverter;
 import de.persosim.simulator.perso.xstream.ProtocolConverter;
+import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
  * This class provides methods that serializes/deserializes personalization objects
@@ -337,14 +339,22 @@ public class PersonalizationFactory {
         //get LogService
 		ServiceTracker<Converter, Converter> serviceTracker = new ServiceTracker<Converter, Converter>(Activator.getContext(), Converter.class.getName(), null);
         serviceTracker.open();
-        Object[] allServices = serviceTracker.getServices();
-        for (Object service : allServices){
-        	System.out.println(service.getClass().getName() + " - " + service.getClass().getClassLoader());
-            ((CompositeClassLoader)xstream.getClassLoader()).add(service.getClass().getClassLoader());
-        	xstream.registerConverter((Converter) service, 10);
+        ServiceReference<Converter> [] allServiceReferences = serviceTracker.getServiceReferences();
+        StringBuilder availableConverters = new StringBuilder();
+        availableConverters.append("Available xstream converter services:");
+        if (allServiceReferences != null){
+            for (ServiceReference<Converter> serviceReference : allServiceReferences){
+            	Converter service = serviceTracker.getService(serviceReference);
+            	availableConverters.append("\n " + service.getClass() + " from bundle: " + serviceReference.getBundle().getSymbolicName());
+                ((CompositeClassLoader)xstream.getClassLoader()).add(service.getClass().getClassLoader());
+            	xstream.registerConverter(service, 10);
+            }	
+        } else {
+        	availableConverters.append(" none");
         }
-        System.out.println(Thread.currentThread().getContextClassLoader());
         serviceTracker.close();
+
+        PersoSimLogger.log(PersonalizationFactory.class, availableConverters.toString());
         
 		return xstream;
 	}
