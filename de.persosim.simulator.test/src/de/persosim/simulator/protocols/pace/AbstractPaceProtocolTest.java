@@ -78,7 +78,7 @@ public class AbstractPaceProtocolTest extends PersoSimTestCase {
 		paceProtocol.setCardStateAccessor(mockedCardStateAccessor);
 		paceProtocol.init();
 		
-		oidIdentifier = new OidIdentifier(Pace.OID_id_PACE_ECDH_IM_AES_CBC_CMAC_192);
+		oidIdentifier = new OidIdentifier(Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_192);
 		
 		domainParameterSet13 = StandardizedDomainParameters.getDomainParameterSetById(13);
 		domainParameters13 = new DomainParameterSetCardObject(domainParameterSet13, new DomainParameterSetIdentifier(13));
@@ -113,7 +113,7 @@ public class AbstractPaceProtocolTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 04 03 83 01 02");
+		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 02 03 83 01 02");
 		processingData.updateCommandApdu(this, "setAT APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
@@ -155,7 +155,7 @@ public class AbstractPaceProtocolTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 23 80 0A 04 00 7F 00 07 02 02 04 04 03 83 01 02 7F 4C 0E 06 09 04 00 7F 00 07 03 01 02 01 53 01 23 84 01 0D");
+		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 23 80 0A 04 00 7F 00 07 02 02 04 02 03 83 01 02 7F 4C 0E 06 09 04 00 7F 00 07 03 01 02 01 53 01 23 84 01 0D");
 		processingData.updateCommandApdu(this, "setAT APDU with chat",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
@@ -199,7 +199,7 @@ public class AbstractPaceProtocolTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 23 80 0A 04 00 7F 00 07 02 02 04 04 03 83 01 02 7F 4C 0E 06 09 04 00 7F 00 07 03 01 02 01 53 01 23 84 01 0D");
+		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 23 80 0A 04 00 7F 00 07 02 02 04 02 03 83 01 02 7F 4C 0E 06 09 04 00 7F 00 07 03 01 02 01 53 01 23 84 01 0D");
 		processingData.updateCommandApdu(this, "setAT APDU with chat",
 				CommandApduFactory.createCommandApdu(apduBytes));
 

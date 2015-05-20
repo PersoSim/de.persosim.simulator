@@ -116,6 +116,8 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	protected KeyPair ephemeralKeyPairPicc;
 	protected PublicKey ephemeralPublicKeyPcd;
 	
+	protected MappingResult mappingResult;
+	
 	TrustPointCardObject trustPoint;
 	CertificateHolderAuthorizationTemplate usedChat;
 	
@@ -442,10 +444,10 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		
 		try {
 			log(this, "about to perform " + mapping.getMappingName(), DEBUG);
-			MappingResult mappingResult = mapping.performMapping(paceDomainParametersUnmapped, piccsPlainNonceS, mappingDataFromPcd);
+			mappingResult = mapping.performMapping(paceDomainParametersUnmapped, piccsPlainNonceS, mappingDataFromPcd);
 			
-			ephemeralKeyPairPicc = mappingResult.getKeyPair();
-			paceDomainParametersMapped = mappingResult.getDomainParameterSet();
+			ephemeralKeyPairPicc = mappingResult.getKeyPairPiccMapped();
+			paceDomainParametersMapped = mappingResult.getMappedDomainParameters();
 			mappingResponse = mappingResult.getMappingResponse();
 		} catch (InvalidAlgorithmParameterException | InvalidKeySpecException e) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
@@ -523,8 +525,6 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 */
 	public void processCommandMutualAuthenticate() {
 		TlvDataObject tlvObject;
-		PrimitiveTlvDataObject primitive86;
-		ConstructedTlvDataObject constructed7C;
 		byte[] pcdTokenReceivedFromPCD, piccToken, pcdToken;
 		TlvPath path;
 		
@@ -616,60 +616,15 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		ResponseApdu responseApdu;
 		
 		if(paceSuccessful) {
-			primitive86 = new PrimitiveTlvDataObject(TAG_86, piccToken);
-			constructed7C = new ConstructedTlvDataObject(TAG_7C);
-			constructed7C.addTlvDataObject(primitive86);
-			
-			//add CARs to response data if available
-			if (trustPoint != null) {
-				if (trustPoint.getCurrentCertificate() != null
-						&& trustPoint.getCurrentCertificate()
-								.getCertificateHolderReference() instanceof PublicKeyReference) {
-					constructed7C
-							.addTlvDataObject(new PrimitiveTlvDataObject(
-									TAG_87, trustPoint.getCurrentCertificate()
-											.getCertificateHolderReference()
-											.getBytes()));
-					if (trustPoint.getPreviousCertificate() != null
-							&& trustPoint.getPreviousCertificate()
-									.getCertificateHolderReference() instanceof PublicKeyReference) {
-						constructed7C
-								.addTlvDataObject(new PrimitiveTlvDataObject(
-										TAG_88,
-										trustPoint
-												.getPreviousCertificate()
-												.getCertificateHolderReference()
-												.getBytes()));
-					}
-				}
-			}
-			
-			TlvValue responseData = new TlvDataObjectContainer(constructed7C);
-			
-			
-			
-			try {
-				//create and propagate new secure messaging data provider
-				SmDataProviderTr03110 smDataProvider = new SmDataProviderTr03110(this.secretKeySpecENC, this.secretKeySpecMAC);
-				processingData.addUpdatePropagation(this, "init SM after successful PACE", smDataProvider);
-				
-				//propagate data about successfully performed SecMechanism in SecStatus 
-				PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), usedChat);
-				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
-				
-				responseApdu = new ResponseApdu(responseData, sw);
-			} catch (GeneralSecurityException e) {
-				logException(this, e);
-				ResponseApdu failureResponse = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
-				processingData.updateResponseAPDU(this, "Unable to initialize new secure messaging", failureResponse);
+			ConstructedTlvDataObject responseContent = buildMutualAuthenticateResponse(piccToken);
+			if (setSmDataProvider()){
+				responseApdu = new ResponseApdu(new TlvDataObjectContainer(responseContent), sw);
+			} else {
 				return;
 			}
-				
-			
-		} else{
+		} else {
 			responseApdu = new ResponseApdu(sw);
 		}
-		
 		this.processingData.updateResponseAPDU(this, note, responseApdu);
 		
 		/* 
@@ -678,6 +633,63 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		 * In either case protocol is completed.
 		 */
 		processingData.addUpdatePropagation(this, "Command MutualAuthenticate successfully processed - Protocol PACE completed", new ProtocolUpdate(true));
+	}
+	
+	protected void addCars(ConstructedTlvDataObject constructed7c){
+		//add CARs to response data if available
+		if (trustPoint != null) {
+			if (trustPoint.getCurrentCertificate() != null
+					&& trustPoint.getCurrentCertificate()
+							.getCertificateHolderReference() instanceof PublicKeyReference) {
+				constructed7c
+						.addTlvDataObject(new PrimitiveTlvDataObject(
+								TAG_87, trustPoint.getCurrentCertificate()
+										.getCertificateHolderReference()
+										.getBytes()));
+				if (trustPoint.getPreviousCertificate() != null
+						&& trustPoint.getPreviousCertificate()
+								.getCertificateHolderReference() instanceof PublicKeyReference) {
+					constructed7c
+							.addTlvDataObject(new PrimitiveTlvDataObject(
+									TAG_88,
+									trustPoint
+											.getPreviousCertificate()
+											.getCertificateHolderReference()
+											.getBytes()));
+				}
+			}
+		}
+	}
+	
+	protected boolean setSmDataProvider(){
+
+		try {
+			//create and propagate new secure messaging data provider
+			SmDataProviderTr03110 smDataProvider = new SmDataProviderTr03110(this.secretKeySpecENC, this.secretKeySpecMAC);
+			processingData.addUpdatePropagation(this, "init SM after successful PACE", smDataProvider);
+			
+			//propagate data about successfully performed SecMechanism in SecStatus 
+			PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), usedChat);
+			processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
+			return true;
+		} catch (GeneralSecurityException e) {
+			logException(this, e);
+			ResponseApdu failureResponse = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
+			processingData.updateResponseAPDU(this, "Unable to initialize new secure messaging", failureResponse);
+			return false;
+		}
+	}
+	
+	protected ConstructedTlvDataObject buildMutualAuthenticateResponse(byte[] piccToken){
+		PrimitiveTlvDataObject primitive86;
+		ConstructedTlvDataObject constructed7C;
+		primitive86 = new PrimitiveTlvDataObject(TAG_86, piccToken);
+		constructed7C = new ConstructedTlvDataObject(TAG_7C);
+		constructed7C.addTlvDataObject(primitive86);
+		
+		addCars(constructed7C);
+		
+		return constructed7C;
 	}
 	
 	/**

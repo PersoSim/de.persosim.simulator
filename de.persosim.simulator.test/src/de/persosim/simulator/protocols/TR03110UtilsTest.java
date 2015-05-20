@@ -57,7 +57,7 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 	OidIdentifier oidIdentifier1, oidIdentifier2;
 	DomainParameterSetCardObject domainParameters12, domainParameters13;
 	DomainParameterSetIdentifier domainparameterSetIdentifier12, domainparameterSetIdentifier13;
-
+	
 	@Before
 	public void setUp() throws Exception{
 
@@ -107,7 +107,7 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 		// define domain parameters
 		oid1 = Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_256;
 		oidIdentifier1 = new OidIdentifier(oid1);
-		oid2 = Pace.OID_id_PACE_DH_IM_3DES_CBC_CBC;
+		oid2 = Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128;
 		oidIdentifier2 = new OidIdentifier(oid2);
 		
 		domainparameterSetIdentifier12 = new DomainParameterSetIdentifier(12);
@@ -116,7 +116,7 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 		
 		domainparameterSetIdentifier13 = new DomainParameterSetIdentifier(13);
 		domainParameters13 = new DomainParameterSetCardObject(StandardizedDomainParameters.getDomainParameterSetById(13), domainparameterSetIdentifier13);
-		domainParameters13.addOidIdentifier(oidIdentifier1);
+		domainParameters13.addOidIdentifier(oidIdentifier2);
 	}
 	
 	/**

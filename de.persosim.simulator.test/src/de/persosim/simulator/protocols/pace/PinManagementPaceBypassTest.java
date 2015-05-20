@@ -1,6 +1,7 @@
 package de.persosim.simulator.protocols.pace;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,7 +27,6 @@ import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.crypto.DomainParameterSet;
-import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
@@ -102,8 +102,6 @@ public class PinManagementPaceBypassTest extends PersoSimTestCase {
 		paceProtocol = new PaceBypassProtocol();
 		paceProtocol.setCardStateAccessor(mockedCardStateAccessor);
 		
-		oidIdentifier0 = new OidIdentifier(Pace.OID_id_PACE_DH_GM_AES_CBC_CMAC_256);
-		domainParameterSet0 = StandardizedDomainParameters.getDomainParameterSetById(0);
 		domainParameters0 = new DomainParameterSetCardObject(domainParameterSet0, new DomainParameterSetIdentifier(0));
 		domainParameters0.addOidIdentifier(oidIdentifier0);
 		domainParameterSet0Collection = new ArrayList<CardObject>();

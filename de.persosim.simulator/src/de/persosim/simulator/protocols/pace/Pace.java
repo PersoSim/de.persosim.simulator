@@ -23,135 +23,49 @@ public interface Pace extends Tr03110 {
 	public final static String id_PACE_STRING                      = "id-PACE";
 	
 	/*--------------------------------------------------------------------------------*/
-	/*--------------------------------------------------------------------------------*/
 	
 	/* Key agreement & mapping */
-	public final static byte DH_GM                                 = (byte) 0x01;
 	public final static byte ECDH_GM                               = (byte) 0x02;
-	public final static byte DH_IM                                 = (byte) 0x03;
-	public final static byte ECDH_IM                               = (byte) 0x04;
 	
-	public final static byte[] KEY_AGREEMENT_AND_MAPPING           = new byte[]{DH_GM, ECDH_GM, DH_IM, ECDH_IM};
+	public final static byte[] KEY_AGREEMENT_AND_MAPPING           = new byte[]{ECDH_GM};
 	
 	/*--------------------------------------------------------------------------------*/
 	
 	/* Key agreement & mapping */
-	public final static String DH_GM_STRING                        = "DH-GM";
 	public final static String ECDH_GM_STRING                      = "ECDH-GM";
-	public final static String DH_IM_STRING                        = "DH-IM";
-	public final static String ECDH_IM_STRING                      = "ECDH-IM";
-	
-	public final static String[] KEY_AGREEMENT_AND_MAPPING_STRING  = new String[]{DH_GM_STRING, ECDH_GM_STRING, DH_IM_STRING, ECDH_IM_STRING};
 	
 	/*--------------------------------------------------------------------------------*/
 	/*--------------------------------------------------------------------------------*/
-	
-	/* DH-GM */
-	public final static byte[] id_PACE_DH_GM_3DES_CBC_CBC          = Utils.appendBytes(id_PACE, DH_GM, DES3_CBC_CBC);
-	public final static byte[] id_PACE_DH_GM_AES_CBC_CMAC_128      = Utils.appendBytes(id_PACE, DH_GM, AES_CBC_CMAC_128);
-	public final static byte[] id_PACE_DH_GM_AES_CBC_CMAC_192      = Utils.appendBytes(id_PACE, DH_GM, AES_CBC_CMAC_192);
-	public final static byte[] id_PACE_DH_GM_AES_CBC_CMAC_256      = Utils.appendBytes(id_PACE, DH_GM, AES_CBC_CMAC_256);
-	
+		
 	/* ECDH-GM */
-	public final static byte[] id_PACE_ECDH_GM_3DES_CBC_CBC        = Utils.appendBytes(id_PACE, ECDH_GM, DES3_CBC_CBC);
 	public final static byte[] id_PACE_ECDH_GM_AES_CBC_CMAC_128    = Utils.appendBytes(id_PACE, ECDH_GM, AES_CBC_CMAC_128);
 	public final static byte[] id_PACE_ECDH_GM_AES_CBC_CMAC_192    = Utils.appendBytes(id_PACE, ECDH_GM, AES_CBC_CMAC_192);
 	public final static byte[] id_PACE_ECDH_GM_AES_CBC_CMAC_256    = Utils.appendBytes(id_PACE, ECDH_GM, AES_CBC_CMAC_256);
-	
-	/* DH-IM */
-	public final static byte[] id_PACE_DH_IM_3DES_CBC_CBC          = Utils.appendBytes(id_PACE, DH_IM, DES3_CBC_CBC);
-	public final static byte[] id_PACE_DH_IM_AES_CBC_CMAC_128      = Utils.appendBytes(id_PACE, DH_IM, AES_CBC_CMAC_128);
-	public final static byte[] id_PACE_DH_IM_AES_CBC_CMAC_192      = Utils.appendBytes(id_PACE, DH_IM, AES_CBC_CMAC_192); 
-	public final static byte[] id_PACE_DH_IM_AES_CBC_CMAC_256      = Utils.appendBytes(id_PACE, DH_IM, AES_CBC_CMAC_256); 
-	
-	/* ECDH-IM */
-	public final static byte[] id_PACE_ECDH_IM_3DES_CBC_CBC        = Utils.appendBytes(id_PACE, ECDH_IM, DES3_CBC_CBC);
-	public final static byte[] id_PACE_ECDH_IM_AES_CBC_CMAC_128    = Utils.appendBytes(id_PACE, ECDH_IM, AES_CBC_CMAC_128);
-	public final static byte[] id_PACE_ECDH_IM_AES_CBC_CMAC_192    = Utils.appendBytes(id_PACE, ECDH_IM, AES_CBC_CMAC_192);
-	public final static byte[] id_PACE_ECDH_IM_AES_CBC_CMAC_256    = Utils.appendBytes(id_PACE, ECDH_IM, AES_CBC_CMAC_256);
 	
 	/*--------------------------------------------------------------------------------*/
 	
 	public final static Oid OID_id_PACE          = new Oid(id_PACE);
 	
-	/* DH-GM */
-	public final static PaceOid OID_id_PACE_DH_GM_3DES_CBC_CBC          = new PaceOid(id_PACE_DH_GM_3DES_CBC_CBC);
-	public final static PaceOid OID_id_PACE_DH_GM_AES_CBC_CMAC_128      = new PaceOid(id_PACE_DH_GM_AES_CBC_CMAC_128);
-	public final static PaceOid OID_id_PACE_DH_GM_AES_CBC_CMAC_192      = new PaceOid(id_PACE_DH_GM_AES_CBC_CMAC_192);
-	public final static PaceOid OID_id_PACE_DH_GM_AES_CBC_CMAC_256      = new PaceOid(id_PACE_DH_GM_AES_CBC_CMAC_256);
-	
 	/* ECDH-GM */
-	public final static PaceOid OID_id_PACE_ECDH_GM_3DES_CBC_CBC        = new PaceOid(id_PACE_ECDH_GM_3DES_CBC_CBC);
 	public final static PaceOid OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128    = new PaceOid(id_PACE_ECDH_GM_AES_CBC_CMAC_128);
 	public final static PaceOid OID_id_PACE_ECDH_GM_AES_CBC_CMAC_192    = new PaceOid(id_PACE_ECDH_GM_AES_CBC_CMAC_192);
 	public final static PaceOid OID_id_PACE_ECDH_GM_AES_CBC_CMAC_256    = new PaceOid(id_PACE_ECDH_GM_AES_CBC_CMAC_256);
-	
-	/* DH-IM */
-	public final static PaceOid OID_id_PACE_DH_IM_3DES_CBC_CBC          = new PaceOid(id_PACE_DH_IM_3DES_CBC_CBC);
-	public final static PaceOid OID_id_PACE_DH_IM_AES_CBC_CMAC_128      = new PaceOid(id_PACE_DH_IM_AES_CBC_CMAC_128);
-	public final static PaceOid OID_id_PACE_DH_IM_AES_CBC_CMAC_192      = new PaceOid(id_PACE_DH_IM_AES_CBC_CMAC_192); 
-	public final static PaceOid OID_id_PACE_DH_IM_AES_CBC_CMAC_256      = new PaceOid(id_PACE_DH_IM_AES_CBC_CMAC_256); 
-	
-	/* ECDH-IM */
-	public final static PaceOid OID_id_PACE_ECDH_IM_3DES_CBC_CBC        = new PaceOid(id_PACE_ECDH_IM_3DES_CBC_CBC);
-	public final static PaceOid OID_id_PACE_ECDH_IM_AES_CBC_CMAC_128    = new PaceOid(id_PACE_ECDH_IM_AES_CBC_CMAC_128);
-	public final static PaceOid OID_id_PACE_ECDH_IM_AES_CBC_CMAC_192    = new PaceOid(id_PACE_ECDH_IM_AES_CBC_CMAC_192);
-	public final static PaceOid OID_id_PACE_ECDH_IM_AES_CBC_CMAC_256    = new PaceOid(id_PACE_ECDH_IM_AES_CBC_CMAC_256);
 	
 	/*--------------------------------------------------------------------------------*/
 	
 	// {@link OidIdentifier}
 	
-	/* DH-GM */
-	public final static OidIdentifier OID_IDENTIFIER_id_PACE_DH_GM_3DES_CBC_CBC          = new OidIdentifier(OID_id_PACE_DH_GM_3DES_CBC_CBC);
-	public final static OidIdentifier OID_IDENTIFIER_id_PACE_DH_GM_AES_CBC_CMAC_128      = new OidIdentifier(OID_id_PACE_DH_GM_AES_CBC_CMAC_128);
-	public final static OidIdentifier OID_IDENTIFIER_id_PACE_DH_GM_AES_CBC_CMAC_192      = new OidIdentifier(OID_id_PACE_DH_GM_AES_CBC_CMAC_192);
-	public final static OidIdentifier OID_IDENTIFIER_id_PACE_DH_GM_AES_CBC_CMAC_256      = new OidIdentifier(OID_id_PACE_DH_GM_AES_CBC_CMAC_256);
-	
 	/* ECDH-GM */
-	public final static OidIdentifier OID_IDENTIFIER_id_PACE_ECDH_GM_3DES_CBC_CBC        = new OidIdentifier(OID_id_PACE_ECDH_GM_3DES_CBC_CBC);
 	public final static OidIdentifier OID_IDENTIFIER_id_PACE_ECDH_GM_AES_CBC_CMAC_128    = new OidIdentifier(OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128);
 	public final static OidIdentifier OID_IDENTIFIER_id_PACE_ECDH_GM_AES_CBC_CMAC_192    = new OidIdentifier(OID_id_PACE_ECDH_GM_AES_CBC_CMAC_192);
 	public final static OidIdentifier OID_IDENTIFIER_id_PACE_ECDH_GM_AES_CBC_CMAC_256    = new OidIdentifier(OID_id_PACE_ECDH_GM_AES_CBC_CMAC_256);
 	
-	/* DH-IM */
-	public final static OidIdentifier OID_IDENTIFIER_id_PACE_DH_IM_3DES_CBC_CBC          = new OidIdentifier(OID_id_PACE_DH_IM_3DES_CBC_CBC);
-	public final static OidIdentifier OID_IDENTIFIER_id_PACE_DH_IM_AES_CBC_CMAC_128      = new OidIdentifier(OID_id_PACE_DH_IM_AES_CBC_CMAC_128);
-	public final static OidIdentifier OID_IDENTIFIER_id_PACE_DH_IM_AES_CBC_CMAC_192      = new OidIdentifier(OID_id_PACE_DH_IM_AES_CBC_CMAC_192); 
-	public final static OidIdentifier OID_IDENTIFIER_id_PACE_DH_IM_AES_CBC_CMAC_256      = new OidIdentifier(OID_id_PACE_DH_IM_AES_CBC_CMAC_256); 
-	
-	/* ECDH-IM */
-	public final static OidIdentifier OID_IDENTIFIER_id_PACE_ECDH_IM_3DES_CBC_CBC        = new OidIdentifier(OID_id_PACE_ECDH_IM_3DES_CBC_CBC);
-	public final static OidIdentifier OID_IDENTIFIER_id_PACE_ECDH_IM_AES_CBC_CMAC_128    = new OidIdentifier(OID_id_PACE_ECDH_IM_AES_CBC_CMAC_128);
-	public final static OidIdentifier OID_IDENTIFIER_id_PACE_ECDH_IM_AES_CBC_CMAC_192    = new OidIdentifier(OID_id_PACE_ECDH_IM_AES_CBC_CMAC_192);
-	public final static OidIdentifier OID_IDENTIFIER_id_PACE_ECDH_IM_AES_CBC_CMAC_256    = new OidIdentifier(OID_id_PACE_ECDH_IM_AES_CBC_CMAC_256);
-	
 	/*--------------------------------------------------------------------------------*/
 	
-	/* DH-GM */
-	public final static String id_PACE_DH_GM_3DES_CBC_CBC_STRING          = "id-PACE-DH-GM-3DES-CBC-CBC";
-//	public final static String id_PACE_DH_GM_3DES_CBC_CBC_STRING          = id_PACE_STRING + "-" + DH_GM_STRING + "-" + DES3_CBC_CBC_STRING;
-	public final static String id_PACE_DH_GM_AES_CBC_CMAC_128_STRING      = "id-PACE-DH-GM-AES-CBC-CMAC-128";
-	public final static String id_PACE_DH_GM_AES_CBC_CMAC_192_STRING      = "id-PACE-DH-GM-AES-CBC-CMAC-192";
-	public final static String id_PACE_DH_GM_AES_CBC_CMAC_256_STRING      = "id-PACE-DH-GM-AES-CBC-CMAC-256";
-	
 	/* ECDH-GM */
-	public final static String id_PACE_ECDH_GM_3DES_CBC_CBC_STRING        = "id-PACE-ECDH-GM-3DES-CBC-CBC";
 	public final static String id_PACE_ECDH_GM_AES_CBC_CMAC_128_STRING    = "id-PACE-ECDH-GM-AES-CBC-CMAC-128";
 	public final static String id_PACE_ECDH_GM_AES_CBC_CMAC_192_STRING    = "id-PACE-ECDH-GM-AES-CBC-CMAC-192";
 	public final static String id_PACE_ECDH_GM_AES_CBC_CMAC_256_STRING    = "id-PACE-ECDH-GM-AES-CBC-CMAC-256";
-	
-	/* DH-IM */
-	public final static String id_PACE_DH_IM_3DES_CBC_CBC_STRING          = "id-PACE-DH-IM-3DES-CBC-CBC";
-	public final static String id_PACE_DH_IM_AES_CBC_CMAC_128_STRING      = "id-PACE-DH-IM-AES-CBC-CMAC-128";
-	public final static String id_PACE_DH_IM_AES_CBC_CMAC_192_STRING      = "id-PACE-DH-IM-AES-CBC-CMAC-192"; 
-	public final static String id_PACE_DH_IM_AES_CBC_CMAC_256_STRING      = "id-PACE-DH-IM-AES-CBC-CMAC-256"; 
-	
-	/* ECDH-IM */
-	public final static String id_PACE_ECDH_IM_3DES_CBC_CBC_STRING        = "id-PACE-ECDH-IM-3DES-CBC-CBC";
-	public final static String id_PACE_ECDH_IM_AES_CBC_CMAC_128_STRING    = "id-PACE-ECDH-IM-AES-CBC-CMAC-128";
-	public final static String id_PACE_ECDH_IM_AES_CBC_CMAC_192_STRING    = "id-PACE-ECDH-IM-AES-CBC-CMAC-192";
-	public final static String id_PACE_ECDH_IM_AES_CBC_CMAC_256_STRING    = "id-PACE-ECDH-IM-AES-CBC-CMAC-256";
 	
 	/*--------------------------------------------------------------------------------*/
 	
