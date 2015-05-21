@@ -130,6 +130,14 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	}
 	
 	/**
+	 * @param bytes the OID given in the SET AT command
+	 * @return the PaceOid helper class to be used by this protocol
+	 */
+	protected PaceOid getOid(byte [] bytes){
+		return new PaceOid(bytes);
+	}
+	
+	/**
 	 * This method processes the command APDU SET_AT.
 	 */
 	public void processCommandSetAT() {
@@ -146,7 +154,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_80);
 		
 		try {
-			paceOid = new PaceOid(tlvObject.getValueField());
+			paceOid = getOid(tlvObject.getValueField());
 		} catch (RuntimeException e) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
 			this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
@@ -351,23 +359,23 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			PasswordAuthObject password) {
 		switch (chat.getTerminalType()) {
 		case AT:
-			if (password.getPasswordIdentifier() == PWD_PIN
-					|| (password.getPasswordIdentifier() == PWD_CAN && chat
+			if (password.getPasswordIdentifier() == ID_PIN
+					|| (password.getPasswordIdentifier() == ID_CAN && chat
 							.getRelativeAuthorization().getAuthorization()
 							.getBit(TR03110Utils.ACCESS_RIGHTS_AT_CAN_ALLOWED_BIT))) {
 				return true;
 			}
 			break;
 		case IS:
-			if (password.getPasswordIdentifier() == PWD_CAN
-					|| password.getPasswordIdentifier() == PWD_MRZ) {
+			if (password.getPasswordIdentifier() == ID_CAN
+					|| password.getPasswordIdentifier() == ID_MRZ) {
 				return true;
 			}
 			break;
 		case ST:
-			if (password.getPasswordIdentifier() == PWD_CAN
-					|| password.getPasswordIdentifier() == PWD_PUK
-					|| password.getPasswordIdentifier() == PWD_PIN) {
+			if (password.getPasswordIdentifier() == ID_CAN
+					|| password.getPasswordIdentifier() == ID_PUK
+					|| password.getPasswordIdentifier() == ID_PIN) {
 				return true;
 			}
 			break;
@@ -603,7 +611,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			log(this, "Token received from PCD does NOT match expected one", DEBUG);
 			paceSuccessful = false;
 			
-			if(pacePassword.getPasswordIdentifier() == Pace.PWD_PIN) {
+			if(pacePassword.getPasswordIdentifier() == Pace.ID_PIN) {
 				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) pacePassword);
 				sw = pinResponse.getStatusWord();
 				note = pinResponse.getResponse();
@@ -777,13 +785,13 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 */
 	public static String getPasswordName(int pwdIdentifier) {
 		switch (pwdIdentifier) {
-		case Pace.PWD_CAN:
+		case Pace.ID_CAN:
 			return "CAN";
-		case Pace.PWD_MRZ:
+		case Pace.ID_MRZ:
 			return "MRZ";
-		case Pace.PWD_PIN:
+		case Pace.ID_PIN:
 			return "PIN";
-		case Pace.PWD_PUK:
+		case Pace.ID_PUK:
 			return "PUK";
 		default:
 			return "unknown password identifier " + pwdIdentifier;
@@ -809,7 +817,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			PasswordAuthObject previouslyUsedPwd = paceMechanism.getUsedPassword();
 			int previouslyUsedPasswordIdentifier = previouslyUsedPwd.getPasswordIdentifier();
 			log(AbstractPaceProtocol.class, "last successfull PACE run used " + getPasswordName(previouslyUsedPasswordIdentifier) + " as password with value " + HexString.encode(previouslyUsedPwd.getPassword()), DEBUG);
-			return previouslyUsedPasswordIdentifier == Pace.PWD_CAN;
+			return previouslyUsedPasswordIdentifier == Pace.ID_CAN;
 		} else{
 			return false;
 		}
