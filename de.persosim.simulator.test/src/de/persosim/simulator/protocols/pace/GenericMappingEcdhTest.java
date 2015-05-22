@@ -104,8 +104,8 @@ public class GenericMappingEcdhTest extends PersoSimTestCase {
 		byte[] mappingResponseExpected = ecdhDomainParameterSetUnMappedExpected.encodePublicKey(ecdhPublicKeyUnmappedExpected);
 		
 		MappingResult mappingResultReceived = mapping.performMapping(ecdhDomainParameterSetUnMappedExpected, nonceSPlainExpected, mappingDataExpected);
-		DomainParameterSetEcdh domainParameterSetReceived = (DomainParameterSetEcdh) mappingResultReceived.getDomainParameterSet();
-		KeyPair keyPairReceived = mappingResultReceived.getKeyPair();
+		DomainParameterSetEcdh domainParameterSetReceived = (DomainParameterSetEcdh) mappingResultReceived.getMappedDomainParameters();
+		KeyPair keyPairReceived = mappingResultReceived.getKeyPairPiccMapped();
 		ECPublicKey publicKeyReceived = (ECPublicKey) keyPairReceived.getPublic();
 		ECPrivateKey privateKeyReceived = (ECPrivateKey) keyPairReceived.getPrivate();
 		byte[] mappingResponseReceived = mappingResultReceived.getMappingResponse();
@@ -124,7 +124,7 @@ public class GenericMappingEcdhTest extends PersoSimTestCase {
 		DomainParameterSetEcdh domainParameterSetUnMapped = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
 		GenericMappingEcdh mapping = new GenericMappingEcdh();
 		
-		BigInteger nonceS = new BigInteger(1, HexString.toByteArray("FA587945E9FE2AEB417DF0ADF951B7CBD9D5E476F8F6EF1B701C59C56B180204"));
+		byte[] nonceS = HexString.toByteArray("FA587945E9FE2AEB417DF0ADF951B7CBD9D5E476F8F6EF1B701C59C56B180204");
 		byte[] secretOfKeyAgreement = HexString.toByteArray("04326C2CE38AC366142735AFA4317A24BDE8F12AFAEE1575CE9756E3A8849F9AEF30103CF5396CBA2F4678572988513CFC0F0CBE116644A5B9E8C6B229E0C9E2FB");
 		
 		BigInteger gxExpected = new BigInteger(1, HexString.toByteArray("7D05B6FEB64B5A197BE4D6482F8C81C918095FB4CA771F838473866137916CAC"));
@@ -132,7 +132,7 @@ public class GenericMappingEcdhTest extends PersoSimTestCase {
 		
 		ECPoint pointExpected = new ECPoint(gxExpected, gyExpected);
 		
-		DomainParameterSetEcdh domainParametersReceived = (DomainParameterSetEcdh) mapping.performGenericMappingOfDomainParameters(domainParameterSetUnMapped, nonceS, secretOfKeyAgreement);
+		DomainParameterSetEcdh domainParametersReceived = (DomainParameterSetEcdh) mapping.performMappingOfDomainParameters(domainParameterSetUnMapped, nonceS, secretOfKeyAgreement);
 		
 		assertEquals("curve", domainParameterSetUnMapped.getCurve(), domainParametersReceived.getCurve());
 		assertEquals("G", pointExpected, domainParametersReceived.getGenerator());
@@ -148,7 +148,7 @@ public class GenericMappingEcdhTest extends PersoSimTestCase {
 		DomainParameterSetEcdh domainParameterSetUnMapped = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
 		GenericMappingEcdh mapping = new GenericMappingEcdh();
 		
-		BigInteger nonceS = new BigInteger(1, HexString.toByteArray("FA587945E9FE2AEB417DF0ADF951B7CBD9D5E476F8F6EF1B701C59C56B180205")); // wrong nonce
+		byte[] nonceS = HexString.toByteArray("FA587945E9FE2AEB417DF0ADF951B7CBD9D5E476F8F6EF1B701C59C56B180205"); // wrong nonce
 		byte[] secretOfKeyAgreement = HexString.toByteArray("04326C2CE38AC366142735AFA4317A24BDE8F12AFAEE1575CE9756E3A8849F9AEF30103CF5396CBA2F4678572988513CFC0F0CBE116644A5B9E8C6B229E0C9E2FB");
 		
 		BigInteger gxExpected = new BigInteger(1, HexString.toByteArray("7D05B6FEB64B5A197BE4D6482F8C81C918095FB4CA771F838473866137916CAC"));
@@ -156,7 +156,7 @@ public class GenericMappingEcdhTest extends PersoSimTestCase {
 		
 		ECPoint pointExpected = new ECPoint(gxExpected, gyExpected);
 		
-		DomainParameterSetEcdh domainParametersReceived = (DomainParameterSetEcdh) mapping.performGenericMappingOfDomainParameters(domainParameterSetUnMapped, nonceS, secretOfKeyAgreement);
+		DomainParameterSetEcdh domainParametersReceived = (DomainParameterSetEcdh) mapping.performMappingOfDomainParameters(domainParameterSetUnMapped, nonceS, secretOfKeyAgreement);
 		
 		assertEquals("curve", domainParameterSetUnMapped.getCurve(), domainParametersReceived.getCurve());
 		assertNotEquals("G", pointExpected, domainParametersReceived.getGenerator());
@@ -172,7 +172,7 @@ public class GenericMappingEcdhTest extends PersoSimTestCase {
 		DomainParameterSetEcdh domainParameterSetUnMapped = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
 		GenericMappingEcdh mapping = new GenericMappingEcdh();
 		
-		BigInteger nonceS = new BigInteger(1, HexString.toByteArray("FA587945E9FE2AEB417DF0ADF951B7CBD9D5E476F8F6EF1B701C59C56B180204"));
+		byte[] nonceS = HexString.toByteArray("FA587945E9FE2AEB417DF0ADF951B7CBD9D5E476F8F6EF1B701C59C56B180204");
 		byte[] secretOfKeyAgreement = HexString.toByteArray("04326C2CE38AC366142735AFA4317A24BDE8F12AFAEE1575CE9756E3A8849F9AEF30103CF5396CBA2F4678572988513CFC0F0CBE116644A5B9E8C6B229E0C9E2FC"); // wrong secret of key agreement
 		
 		BigInteger gxExpected = new BigInteger(1, HexString.toByteArray("7D05B6FEB64B5A197BE4D6482F8C81C918095FB4CA771F838473866137916CAC"));
@@ -180,7 +180,7 @@ public class GenericMappingEcdhTest extends PersoSimTestCase {
 		
 		ECPoint pointExpected = new ECPoint(gxExpected, gyExpected);
 		
-		DomainParameterSetEcdh domainParametersReceived = (DomainParameterSetEcdh) mapping.performGenericMappingOfDomainParameters(domainParameterSetUnMapped, nonceS, secretOfKeyAgreement);
+		DomainParameterSetEcdh domainParametersReceived = (DomainParameterSetEcdh) mapping.performMappingOfDomainParameters(domainParameterSetUnMapped, nonceS, secretOfKeyAgreement);
 		
 		assertEquals("curve", domainParameterSetUnMapped.getCurve(), domainParametersReceived.getCurve());
 		assertNotEquals("G", pointExpected, domainParametersReceived.getGenerator());

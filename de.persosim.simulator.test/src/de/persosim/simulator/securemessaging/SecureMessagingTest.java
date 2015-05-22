@@ -21,6 +21,7 @@ import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.crypto.Crypto;
+import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
@@ -281,7 +282,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 		int blockSize = 8;
 		byte[] exp = HexString.toByteArray("0011223344800000");
 
-		assertArrayEquals(exp, SecureMessaging.padData(input, blockSize));
+		assertArrayEquals(exp, CryptoUtil.padData(input, blockSize));
 	}
 
 	/**
@@ -293,7 +294,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 		int blockSize = 8;
 		byte[] exp = HexString.toByteArray("00112233445566770011223380000000");
 
-		assertArrayEquals(exp, SecureMessaging.padData(input, blockSize));
+		assertArrayEquals(exp, CryptoUtil.padData(input, blockSize));
 	}
 
 	/**
@@ -305,7 +306,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 		int blockSize = 8;
 		byte[] exp = HexString.toByteArray("0011223344556680");
 
-		assertArrayEquals(exp, SecureMessaging.padData(input, blockSize));
+		assertArrayEquals(exp, CryptoUtil.padData(input, blockSize));
 	}
 
 	/**
@@ -317,7 +318,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 		int blockSize = 8;
 		byte[] exp = HexString.toByteArray("00112233445566778000000000000000");
 
-		assertArrayEquals(exp, SecureMessaging.padData(input, blockSize));
+		assertArrayEquals(exp, CryptoUtil.padData(input, blockSize));
 	}
 	
 	/**

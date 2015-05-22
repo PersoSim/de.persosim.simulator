@@ -11,51 +11,40 @@ import de.persosim.simulator.crypto.DomainParameterSet;
  * @author slutters
  *
  */
-public class MappingResult {
+public abstract class MappingResult {
 	
+	// the unmapped domain parameters
+	protected DomainParameterSet domainParametersUnmapped;
 	// the mapped domain parameters
-	protected DomainParameterSet domainParameterSet;
+	protected DomainParameterSet domainParametersMapped;
 	// the public key pair updated according to the mapped domain parameters
-	protected KeyPair keyPair;
-	// the response data to be sent (may be empty)
-	protected byte[] mappingResponse;
+	protected KeyPair keyPairPiccMapped;
 	
 	/**
 	 * This constructor constructs an object container for mapping results.
-	 * @param domainParams the mapped domain parameters
-	 * @param keys the public key pair updated according to the mapped domain parameters
-	 * @param mappingResponseData the response data to be sent (may be empty)
+	 * @param domainParametersUnmapped the unmapped domain parameters
+	 * @param domainParametersMapped the mapped domain parameters
+	 * @param keyPairPiccMapped the public key pair updated according to the mapped domain parameters
 	 */
-	public MappingResult(DomainParameterSet domainParams, KeyPair keys, byte[] mappingResponseData) {
-		domainParameterSet = domainParams;
-		keyPair = keys;
+	public MappingResult(DomainParameterSet domainParametersUnmapped, DomainParameterSet domainParametersMapped, KeyPair keyPairPiccMapped) {
+		this.domainParametersUnmapped = domainParametersUnmapped;
+		this.domainParametersMapped = domainParametersMapped;
 		
-		if(mappingResponseData == null) {
-			mappingResponse = new byte[0];
-		} else{
-			mappingResponse = mappingResponseData;
-		}
+		this.keyPairPiccMapped = keyPairPiccMapped;
+	}
+
+	public DomainParameterSet getMappedDomainParameters() {
+		return domainParametersMapped;
 	}
 	
-	/**
-	 * This constructor constructs an object container for mapping results.
-	 * @param domainParams the mapped domain parameters
-	 * @param keys the public key pair updated according to the mapped domain parameters
-	 */
-	public MappingResult(DomainParameterSet domainParams, KeyPair keys) {
-		this(domainParams, keys, null);
+	public DomainParameterSet getUnmappedDomainParameters() {
+		return domainParametersUnmapped;
 	}
 
-	public DomainParameterSet getDomainParameterSet() {
-		return domainParameterSet;
+	public KeyPair getKeyPairPiccMapped() {
+		return keyPairPiccMapped;
 	}
 
-	public KeyPair getKeyPair() {
-		return keyPair;
-	}
-
-	public byte[] getMappingResponse() {
-		return mappingResponse;
-	}
+	public abstract byte[] getMappingResponse();
 	
 }
