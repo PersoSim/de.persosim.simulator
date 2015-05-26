@@ -336,26 +336,30 @@ public class PersonalizationFactory {
 		xstream.registerConverter(new ECParameterSpecConverter());
 		xstream.registerConverter(new KeyConverter());
         
-        //get LogService
-		ServiceTracker<Converter, Converter> serviceTracker = new ServiceTracker<Converter, Converter>(Activator.getContext(), Converter.class.getName(), null);
-        serviceTracker.open();
-        ServiceReference<Converter> [] allServiceReferences = serviceTracker.getServiceReferences();
-        StringBuilder availableConverters = new StringBuilder();
-        availableConverters.append("Available xstream converter services:");
-        if (allServiceReferences != null){
-            for (ServiceReference<Converter> serviceReference : allServiceReferences){
-            	Converter service = serviceTracker.getService(serviceReference);
-            	availableConverters.append("\n " + service.getClass() + " from bundle: " + serviceReference.getBundle().getSymbolicName());
-                ((CompositeClassLoader)xstream.getClassLoader()).add(service.getClass().getClassLoader());
-            	xstream.registerConverter(service, 10);
-            }	
-        } else {
-        	availableConverters.append(" none");
-        }
-        serviceTracker.close();
+        //get converters as services
+		if (Activator.getContext() != null){
+			ServiceTracker<Converter, Converter> serviceTracker = new ServiceTracker<Converter, Converter>(Activator.getContext(), Converter.class.getName(), null);
+	        serviceTracker.open();
+	        ServiceReference<Converter> [] allServiceReferences = serviceTracker.getServiceReferences();
+	        StringBuilder availableConverters = new StringBuilder();
+	        availableConverters.append("Available xstream converter services:");
+	        if (allServiceReferences != null){
+	            for (ServiceReference<Converter> serviceReference : allServiceReferences){
+	            	Converter service = serviceTracker.getService(serviceReference);
+	            	availableConverters.append("\n " + service.getClass() + " from bundle: " + serviceReference.getBundle().getSymbolicName());
+	                ((CompositeClassLoader)xstream.getClassLoader()).add(service.getClass().getClassLoader());
+	            	xstream.registerConverter(service, 10);
+	            }	
+	        } else {
+	        	availableConverters.append(" none");
+	        }
+	        serviceTracker.close();
 
-        PersoSimLogger.log(PersonalizationFactory.class, availableConverters.toString());
-        
+	        PersoSimLogger.log(PersonalizationFactory.class, availableConverters.toString());
+		} else {
+			PersoSimLogger.log(PersonalizationFactory.class, "Could not get the bundle context, no Converter services added to XStream");
+		}
+		
 		return xstream;
 	}
 }
