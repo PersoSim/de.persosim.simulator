@@ -38,7 +38,7 @@ import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
-import de.persosim.simulator.protocols.TR03110Utils;
+import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -302,7 +302,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		
 		caProtocol.caOid = Ca.OID_id_CA_ECDH_AES_CBC_CMAC_128;
 		Deencapsulation.setField(caProtocol, ecdhKeyPairPicc);
-		caProtocol.caDomainParameters = TR03110Utils.getDomainParameterSetFromKey(caProtocol.staticKeyPairPicc.getPublic());
+		caProtocol.caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(caProtocol.staticKeyPairPicc.getPublic());
 		caProtocol.cryptoSupport = caProtocol.caOid.getCryptoSupport();
 		
 		ProcessingData processingData = new ProcessingData();

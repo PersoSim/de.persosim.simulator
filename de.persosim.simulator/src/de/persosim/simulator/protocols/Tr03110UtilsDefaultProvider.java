@@ -15,23 +15,23 @@ import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 
-public class Tr03110UtilsDefaultProvider implements TR03110UtilsProvider {
+public class Tr03110UtilsDefaultProvider implements Tr03110UtilsProvider {
 
 	@Override
 	public PublicKey parsePublicKey(ConstructedTlvDataObject publicKeyData,
 			PublicKey trustPointPublicKey) throws GeneralSecurityException {
-		TaOid oid = new TaOid(publicKeyData.getTlvDataObject(TR03110Utils.TAG_06)
+		TaOid oid = new TaOid(publicKeyData.getTlvDataObject(Tr03110Utils.TAG_06)
 				.getValueField());
 
 		if (oid.getIdString().contains("ECDSA")) {
 			ECParameterSpec paramSpec = null;
 			ECPublicKey trustPointEcPublicKey = (ECPublicKey) trustPointPublicKey;
-			if (publicKeyData.containsTlvDataObject(TR03110Utils.TAG_81)
-					&& publicKeyData.containsTlvDataObject(TR03110Utils.TAG_82)
-					&& publicKeyData.containsTlvDataObject(TR03110Utils.TAG_83)
-					&& publicKeyData.containsTlvDataObject(TR03110Utils.TAG_84)
-					&& publicKeyData.containsTlvDataObject(TR03110Utils.TAG_85)
-					&& publicKeyData.containsTlvDataObject(TR03110Utils.TAG_87)) {
+			if (publicKeyData.containsTlvDataObject(Tr03110Utils.TAG_81)
+					&& publicKeyData.containsTlvDataObject(Tr03110Utils.TAG_82)
+					&& publicKeyData.containsTlvDataObject(Tr03110Utils.TAG_83)
+					&& publicKeyData.containsTlvDataObject(Tr03110Utils.TAG_84)
+					&& publicKeyData.containsTlvDataObject(Tr03110Utils.TAG_85)
+					&& publicKeyData.containsTlvDataObject(Tr03110Utils.TAG_87)) {
 				paramSpec = CryptoUtil.parseParameterSpecEc(publicKeyData);
 			} else {
 				if (trustPointEcPublicKey.getParams().getCurve().getField()

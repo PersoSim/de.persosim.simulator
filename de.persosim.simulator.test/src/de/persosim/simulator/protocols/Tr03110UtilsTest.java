@@ -44,7 +44,7 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
-public class TR03110UtilsTest extends PersoSimTestCase {
+public class Tr03110UtilsTest extends PersoSimTestCase {
 
 	ConstructedTlvDataObject publicKeyDataEcNoDomainParameters;
 	ConstructedTlvDataObject publicKeyDataEc;
@@ -80,15 +80,15 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 		
 		// with domain parameters
 
-		TlvDataObject modulusData = new PrimitiveTlvDataObject(TR03110Utils.TAG_81, modulusRaw);
-		TlvDataObject firstCoefficientData = new PrimitiveTlvDataObject(TR03110Utils.TAG_82, firstCoefficientRaw);
-		TlvDataObject secondCoefficientData = new PrimitiveTlvDataObject(TR03110Utils.TAG_83, secondCoefficientRaw);
-		TlvDataObject basePointData = new PrimitiveTlvDataObject(TR03110Utils.TAG_84, basePointRaw);
-		TlvDataObject orderOfBasePointData = new PrimitiveTlvDataObject(TR03110Utils.TAG_85, orderOfBasePointRaw);
-		TlvDataObject publicPointData = new PrimitiveTlvDataObject(TR03110Utils.TAG_86, publicPointRaw);
-		TlvDataObject cofactorData = new PrimitiveTlvDataObject(TR03110Utils.TAG_87, cofactorRaw);
+		TlvDataObject modulusData = new PrimitiveTlvDataObject(Tr03110Utils.TAG_81, modulusRaw);
+		TlvDataObject firstCoefficientData = new PrimitiveTlvDataObject(Tr03110Utils.TAG_82, firstCoefficientRaw);
+		TlvDataObject secondCoefficientData = new PrimitiveTlvDataObject(Tr03110Utils.TAG_83, secondCoefficientRaw);
+		TlvDataObject basePointData = new PrimitiveTlvDataObject(Tr03110Utils.TAG_84, basePointRaw);
+		TlvDataObject orderOfBasePointData = new PrimitiveTlvDataObject(Tr03110Utils.TAG_85, orderOfBasePointRaw);
+		TlvDataObject publicPointData = new PrimitiveTlvDataObject(Tr03110Utils.TAG_86, publicPointRaw);
+		TlvDataObject cofactorData = new PrimitiveTlvDataObject(Tr03110Utils.TAG_87, cofactorRaw);
 
-		publicKeyDataEc = new ConstructedTlvDataObject(TR03110Utils.TAG_7F49);
+		publicKeyDataEc = new ConstructedTlvDataObject(Tr03110Utils.TAG_7F49);
 		publicKeyDataEc.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_06, TaOid.id_TA_ECDSA_SHA_1.toByteArray()));
 		publicKeyDataEc.addTlvDataObject(modulusData);
 		publicKeyDataEc.addTlvDataObject(firstCoefficientData);
@@ -100,7 +100,7 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 
 		// without domain parameters
 		
-		publicKeyDataEcNoDomainParameters = new ConstructedTlvDataObject(TR03110Utils.TAG_7F49);
+		publicKeyDataEcNoDomainParameters = new ConstructedTlvDataObject(Tr03110Utils.TAG_7F49);
 		publicKeyDataEcNoDomainParameters.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_06, TaOid.id_TA_ECDSA_SHA_1.toByteArray()));
 		publicKeyDataEcNoDomainParameters.addTlvDataObject(publicPointData);
 		
@@ -128,7 +128,7 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 	@Test
 	public void testParsePublicKeyEcUsingTrustPointKey() throws Exception {
 		//call mut
-		assertArrayEquals(publicKeyEc.getEncoded(), TR03110Utils.parseCertificatePublicKey(publicKeyDataEcNoDomainParameters, publicKeyEc).getEncoded());
+		assertArrayEquals(publicKeyEc.getEncoded(), Tr03110Utils.parseCertificatePublicKey(publicKeyDataEcNoDomainParameters, publicKeyEc).getEncoded());
 	}
 	
 	/**
@@ -140,7 +140,7 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 	@Test
 	public void testParsePublicKeyEcNoTrustPointKey() throws Exception {
 		//call mut
-		assertArrayEquals(publicKeyEc.getEncoded(), TR03110Utils.parseCertificatePublicKey(publicKeyDataEc, null).getEncoded());
+		assertArrayEquals(publicKeyEc.getEncoded(), Tr03110Utils.parseCertificatePublicKey(publicKeyDataEc, null).getEncoded());
 	}
 	
 	/**
@@ -154,7 +154,7 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 		ECPublicKey ecdhPublicKeyPicc = domainParametersEcdh.reconstructPublicKey(ecdhPublicKeyDataPicc);
 		
 		byte[] tokenExpected = HexString.toByteArray("7F494F060A04007F00070202040204864104A44EBE5451DF7AADB01E459B8C928A87746A57927C8C28A6775C97A7E1FE8D9A46FF4A1CC7E4D1389AEA19758E4F75C28C598FD734AEBEB135337CF95BE12E94");
-		TlvDataObjectContainer tokenReceived = TR03110Utils.buildAuthenticationTokenInput(ecdhPublicKeyPicc, domainParametersEcdh, oid);
+		TlvDataObjectContainer tokenReceived = Tr03110Utils.buildAuthenticationTokenInput(ecdhPublicKeyPicc, domainParametersEcdh, oid);
 		byte[] tokenReceivedPlain = tokenReceived.toByteArray();
 		
 		assertArrayEquals("token mismatch", tokenExpected, tokenReceivedPlain);
@@ -176,7 +176,7 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 			}
 		};
 				
-		assertEquals(domainParameters12, TR03110Utils.getSpecificChild(mf, oidIdentifier2, domainparameterSetIdentifier12));
+		assertEquals(domainParameters12, Tr03110Utils.getSpecificChild(mf, oidIdentifier2, domainparameterSetIdentifier12));
 	}
 	
 	/**
@@ -195,7 +195,7 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 			}
 		};
 				
-		TR03110Utils.getSpecificChild(mf, oidIdentifier2, domainparameterSetIdentifier12);
+		Tr03110Utils.getSpecificChild(mf, oidIdentifier2, domainparameterSetIdentifier12);
 	}
 	
 	/**
@@ -214,7 +214,7 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 					}
 				};
 				
-		TR03110Utils.getSpecificChild(mf, oidIdentifier2, domainparameterSetIdentifier12);
+		Tr03110Utils.getSpecificChild(mf, oidIdentifier2, domainparameterSetIdentifier12);
 	}
 	
 	/**
@@ -231,7 +231,7 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 		
 		Date expectedDate = calendar.getTime();
 		
-		Date receivedDate = TR03110Utils.parseDate(date);
+		Date receivedDate = Tr03110Utils.parseDate(date);
 		
 		assertEquals(expectedDate, receivedDate);
 	}
@@ -244,7 +244,7 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 	public void testParseDate_illegalLength() throws NotParseableException {
 		byte[] date = HexString.toByteArray("0100010102");
 		
-		TR03110Utils.parseDate(date);
+		Tr03110Utils.parseDate(date);
 	}
 	
 	/**
@@ -255,7 +255,7 @@ public class TR03110UtilsTest extends PersoSimTestCase {
 	public void testParseDate_nonNumericCharacters() throws NotParseableException {
 		byte[] date = HexString.toByteArray("01000101020A");
 		
-		TR03110Utils.parseDate(date);
+		Tr03110Utils.parseDate(date);
 	}
 	
 }

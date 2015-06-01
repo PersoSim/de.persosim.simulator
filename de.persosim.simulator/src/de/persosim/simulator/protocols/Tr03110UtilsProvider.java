@@ -7,7 +7,7 @@ import java.security.PublicKey;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 
-public interface TR03110UtilsProvider {
+public interface Tr03110UtilsProvider {
 
 	PublicKey parsePublicKey(ConstructedTlvDataObject publicKeyData,
 			PublicKey trustPointPublicKey) throws GeneralSecurityException;

@@ -38,53 +38,53 @@ import de.persosim.simulator.utils.PersoSimLogger;
  * @author mboonk
  *
  */
-public class TR03110Utils implements TlvConstants {
+public class Tr03110Utils implements TlvConstants {
 	public static final int ACCESS_RIGHTS_AT_CAN_ALLOWED_BIT = 4;
 	
-static private List<TR03110UtilsProvider> providers = new ArrayList<>();
+static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 	
-	static private ServiceTracker<TR03110UtilsProvider, TR03110UtilsProvider> serviceTracker;
+	static private ServiceTracker<Tr03110UtilsProvider, Tr03110UtilsProvider> serviceTracker;
 	
 	static {
 		if (Activator.getContext() != null){
-			ServiceTrackerCustomizer<TR03110UtilsProvider, TR03110UtilsProvider> customizer = new ServiceTrackerCustomizer<TR03110UtilsProvider, TR03110UtilsProvider>() {
+			ServiceTrackerCustomizer<Tr03110UtilsProvider, Tr03110UtilsProvider> customizer = new ServiceTrackerCustomizer<Tr03110UtilsProvider, Tr03110UtilsProvider>() {
 				
 				@Override
 				public void removedService(
-						ServiceReference<TR03110UtilsProvider> reference,
-						TR03110UtilsProvider service) {
+						ServiceReference<Tr03110UtilsProvider> reference,
+						Tr03110UtilsProvider service) {
 					providers.remove(service);
 				}
 				
 				@Override
 				public void modifiedService(
-						ServiceReference<TR03110UtilsProvider> reference,
-						TR03110UtilsProvider service) {
+						ServiceReference<Tr03110UtilsProvider> reference,
+						Tr03110UtilsProvider service) {
 					//Nothing to be done
 				}
 				
 				@Override
-				public TR03110UtilsProvider addingService(
-						ServiceReference<TR03110UtilsProvider> reference) {
-					TR03110UtilsProvider provider = Activator.getContext().getService(reference); 
+				public Tr03110UtilsProvider addingService(
+						ServiceReference<Tr03110UtilsProvider> reference) {
+					Tr03110UtilsProvider provider = Activator.getContext().getService(reference); 
 					providers.add(provider);
 					return provider;
 				}
 			};
 			
-			serviceTracker = new ServiceTracker<TR03110UtilsProvider, TR03110UtilsProvider>(Activator.getContext(), TR03110UtilsProvider.class.getName(), customizer);
+			serviceTracker = new ServiceTracker<Tr03110UtilsProvider, Tr03110UtilsProvider>(Activator.getContext(), Tr03110UtilsProvider.class.getName(), customizer);
 			serviceTracker.open();
 			
-			ServiceReference<TR03110UtilsProvider> references [] = serviceTracker.getServiceReferences();
+			ServiceReference<Tr03110UtilsProvider> references [] = serviceTracker.getServiceReferences();
 			
 			if (references != null){
-				for(ServiceReference<TR03110UtilsProvider> providerReference : references){
+				for(ServiceReference<Tr03110UtilsProvider> providerReference : references){
 					providers.add(Activator.getContext().getService(providerReference));	
 				}	
 			}
 					
 		} else {
-			PersoSimLogger.log(TR03110Utils.class, "No OSGi context is available, no TR03110 functionalities are supported", PersoSimLogger.INFO);
+			PersoSimLogger.log(Tr03110Utils.class, "No OSGi context is available, no TR03110 functionalities are supported", PersoSimLogger.INFO);
 		}
 		providers.add(new Tr03110UtilsDefaultProvider());
 
@@ -108,7 +108,7 @@ static private List<TR03110UtilsProvider> providers = new ArrayList<>();
 			PublicKey trustPointPublicKey) throws GeneralSecurityException {
 		
 		
-		for (TR03110UtilsProvider provider : providers) {
+		for (Tr03110UtilsProvider provider : providers) {
 			PublicKey key = provider.parsePublicKey(publicKeyData, trustPointPublicKey);
 			if (key != null){
 				return key;
@@ -165,7 +165,7 @@ static private List<TR03110UtilsProvider> providers = new ArrayList<>();
 			
 		case 1:
 			CardObject matchingCardObject = cardObjects.iterator().next();;
-			log(TR03110Utils.class, "selected " + matchingCardObject, DEBUG);
+			log(Tr03110Utils.class, "selected " + matchingCardObject, DEBUG);
 			return matchingCardObject;
 
 		default:
@@ -179,7 +179,7 @@ static private List<TR03110UtilsProvider> providers = new ArrayList<>();
 	 * @return the extracted domain parameter information
 	 */
 	public static DomainParameterSet getDomainParameterSetFromKey(Key key) {
-		for(TR03110UtilsProvider provider : providers){
+		for(Tr03110UtilsProvider provider : providers){
 			DomainParameterSet domainParameters = provider.getDomainParameterSetFromKey(key);
 			if (domainParameters != null){
 				return domainParameters;

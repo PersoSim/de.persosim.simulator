@@ -11,7 +11,7 @@ import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.NotImplementedException;
 import de.persosim.simulator.exception.NotParseableException;
-import de.persosim.simulator.protocols.TR03110Utils;
+import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
@@ -69,18 +69,18 @@ public class CardVerifiableCertificate {
 			ConstructedTlvDataObject certificateBodyData,
 			PublicKey currentPublicKey) throws CertificateNotParseableException {
 		//certificate profile identifier
-		certificateProfileIdentifier = Utils.getIntFromUnsignedByteArray(certificateBodyData.getTlvDataObject(TR03110Utils.TAG_5F29).getValueField());
+		certificateProfileIdentifier = Utils.getIntFromUnsignedByteArray(certificateBodyData.getTlvDataObject(Tr03110Utils.TAG_5F29).getValueField());
 		//certification authority reference
 		try {
-			certificateAuthorityReference = new PublicKeyReference(certificateBodyData.getTlvDataObject(TR03110Utils.TAG_42));
+			certificateAuthorityReference = new PublicKeyReference(certificateBodyData.getTlvDataObject(Tr03110Utils.TAG_42));
 		} catch (CarParameterInvalidException e) {
 			throw new CertificateNotParseableException("The certificate authority reference could not be parsed");
 		}
 		//public key
 		try {
-			ConstructedTlvDataObject publicKeyData = (ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TR03110Utils.TAG_7F49);
-			publicKeyOid = new TaOid(publicKeyData.getTlvDataObject(TR03110Utils.TAG_06).getValueField());
-			publicKey = TR03110Utils.parseCertificatePublicKey(publicKeyData, currentPublicKey);
+			ConstructedTlvDataObject publicKeyData = (ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(Tr03110Utils.TAG_7F49);
+			publicKeyOid = new TaOid(publicKeyData.getTlvDataObject(Tr03110Utils.TAG_06).getValueField());
+			publicKey = Tr03110Utils.parseCertificatePublicKey(publicKeyData, currentPublicKey);
 			if (publicKey == null){
 				throw new CertificateNotParseableException("The public key data could not be parsed");
 			}
@@ -89,14 +89,14 @@ public class CardVerifiableCertificate {
 		}
 		//certificate holder reference
 		try {
-			certificateHolderReference = new PublicKeyReference(certificateBodyData.getTlvDataObject(TR03110Utils.TAG_5F20));
+			certificateHolderReference = new PublicKeyReference(certificateBodyData.getTlvDataObject(Tr03110Utils.TAG_5F20));
 		} catch (CarParameterInvalidException e) {
 			throw new CertificateNotParseableException("The certificate holder reference could not be parsed");
 		}
 		//dates
 		try {
-			certificateExpiration = TR03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TR03110Utils.TAG_5F24)).getValueField());
-			certificateEffective = TR03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TR03110Utils.TAG_5F25)).getValueField());
+			certificateExpiration = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(Tr03110Utils.TAG_5F24)).getValueField());
+			certificateEffective = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(Tr03110Utils.TAG_5F25)).getValueField());
 		} catch (NotParseableException e) {
 			throw new CertificateNotParseableException("The date could not be parsed");
 		}
@@ -106,9 +106,9 @@ public class CardVerifiableCertificate {
 		}
 		
 		//chat
-		certificateHolderAuthorizationTemplate = parseChat((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TR03110Utils.TAG_7F4C));
+		certificateHolderAuthorizationTemplate = parseChat((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(Tr03110Utils.TAG_7F4C));
 		//certificate extensions
-		certificateExtensions = parseExtensions((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TR03110Utils.TAG_65));
+		certificateExtensions = parseExtensions((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(Tr03110Utils.TAG_65));
 	}
 
 	/**
@@ -138,8 +138,8 @@ public class CardVerifiableCertificate {
 	private CertificateHolderAuthorizationTemplate parseChat(
 			ConstructedTlvDataObject chatData) throws CertificateNotParseableException {
 
-		TaOid objectIdentifier = new TaOid(chatData.getTlvDataObject(TR03110Utils.TAG_06).getValueField());
-		PrimitiveTlvDataObject relativeAuthorizationData = (PrimitiveTlvDataObject) chatData.getTlvDataObject(TR03110Utils.TAG_53);
+		TaOid objectIdentifier = new TaOid(chatData.getTlvDataObject(Tr03110Utils.TAG_06).getValueField());
+		PrimitiveTlvDataObject relativeAuthorizationData = (PrimitiveTlvDataObject) chatData.getTlvDataObject(Tr03110Utils.TAG_53);
 		CertificateRole role = CertificateRole.getFromMostSignificantBits(relativeAuthorizationData.getValueField()[0]);
 		BitField authorization = BitField.buildFromBigEndian(relativeAuthorizationData.getLengthValue() * 8 - 2, relativeAuthorizationData.getValueField());
 		RelativeAuthorization relativeAuthorization = new RelativeAuthorization(role, authorization);
