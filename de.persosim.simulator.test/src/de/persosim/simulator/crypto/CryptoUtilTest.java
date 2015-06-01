@@ -161,7 +161,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 
 		ECPoint ecPoint = new ECPoint(x, y);
 		
-		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength));
+		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_UNCOMPRESSED));
 	}
 	
 	/**
@@ -180,7 +180,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 
 		ECPoint ecPoint = new ECPoint(x, y);
 		
-		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength));
+		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_UNCOMPRESSED));
 	}
 	
 	/**
@@ -199,7 +199,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 
 		ECPoint ecPoint = new ECPoint(x, y);
 		
-		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength));
+		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_UNCOMPRESSED));
 	}
 	
 	/**
@@ -218,7 +218,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 
 		ECPoint ecPoint = new ECPoint(x, y);
 		
-		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength));
+		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_UNCOMPRESSED));
 	}
 	
 	/**
@@ -236,7 +236,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 
 		ECPoint ecPoint = new ECPoint(x, y);
 		
-		CryptoUtil.encode(ecPoint, refLength);
+		CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_UNCOMPRESSED);
 	}
 	
 	/**
@@ -254,7 +254,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 
 		ECPoint ecPoint = new ECPoint(x, y);
 		
-		CryptoUtil.encode(ecPoint, refLength);
+		CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_UNCOMPRESSED);
 	} 
 	
 	/**
