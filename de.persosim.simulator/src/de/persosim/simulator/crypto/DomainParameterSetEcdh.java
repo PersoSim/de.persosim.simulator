@@ -474,4 +474,36 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		return ecParameterSpec;
 	}
 	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		
+		EllipticCurve curve = getCurve();
+		BigInteger a = curve.getA();
+		BigInteger b = curve.getB();
+		BigInteger p = getPrime();
+		BigInteger order = getOrder();
+		int coFactor = getCofactor();
+		ECPoint generator = getGenerator();
+		int referenceLength = DomainParameterSetEcdh.getPublicPointReferenceLengthL(p);
+		
+		sb.append("************ elliptic curve domain parameters ************");
+		sb.append("\nCurve parameter A : " + HexString.encode(a));
+		sb.append("\nCurve parameter B : " + HexString.encode(b));
+		sb.append("\nPrime field p     : " + HexString.encode(p));
+		sb.append("\nOrder of generator: " + HexString.encode(order));
+		sb.append("\nCo-factor h       : " + coFactor);
+		sb.append("\nGenerator G       : " + HexString.encode(CryptoUtil.encode(generator, referenceLength, CryptoUtil.ENCODING_HYBRID)));
+		sb.append("\nGenerator G.x     : " + "  " + HexString.encode(generator.getAffineX()));
+		
+		char[] array = new char[(2*referenceLength) + 2];
+	    Arrays.fill(array, ' ');
+	    String padding = new String(array);
+		
+	    sb.append("\nGenerator G.y     : " + padding + HexString.encode(generator.getAffineY()));
+		sb.append("\n**********************************************************");
+		
+		return sb.toString();
+	}
+	
 }
