@@ -253,7 +253,7 @@ public class CryptoUtil {
 	 * @param encoding
 	 * 			  either {@link #ENCODING_UNCOMPRESSED}, {@link #ENCODING_COMPRESSED} or
 	 * 			  {@link #ENCODING_HYBRID}
-	 * @return byte[] containing the uncompressed point encoding
+	 * @return byte[] containing the point encoding
 	 */
 	public static byte[] encode(ECPoint ecPoint, int referenceLength, byte encoding) {
 		byte encodingIndicator;
