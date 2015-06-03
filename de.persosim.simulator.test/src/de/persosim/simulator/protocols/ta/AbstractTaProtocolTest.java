@@ -196,6 +196,10 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 				result = isDvDomesticChat;
 				certificate.getExpirationDate();
 				result = future;
+				issuingCertificate.getCertificateHolderAuthorizationTemplate();
+				result = isCvcaChat;
+				issuingCertificate.getExpirationDate();
+				result = future;
 			}
 		};
 		// call MUT
@@ -221,6 +225,8 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 				result = future;
 				certificate.getEffectiveDate();
 				result = past;
+				issuingCertificate.getCertificateHolderAuthorizationTemplate();
+				result = isDvDomesticChat;
 			}
 		};
 
@@ -259,7 +265,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	 * Positive test for the date validity checks using a CVCA link certificate
 	 */
 	@Test
-	public void testCheckValidityCvcaLink() {
+	public void testCheckValidityCvcaLinkIssuingCvcaExpired() {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
@@ -271,6 +277,38 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 				result = isCvcaChat;
 				certificate.getExpirationDate();
 				result = future;
+				issuingCertificate.getExpirationDate();
+				result = past;
+				issuingCertificate.getCertificateHolderAuthorizationTemplate();
+				result = isCvcaChat;
+			}
+		};
+
+		// call MUT
+		assertTrue((boolean) Deencapsulation.invoke(taProtocol, "checkValidity",
+				certificate, issuingCertificate));
+	}
+
+	/**
+	 * Positive test for the date validity checks using a CVCA link certificate
+	 */
+	@Test
+	public void testCheckValidityCvcaLinkIssuingCvcaValid() {
+		// prepare the mock
+		new NonStrictExpectations() {
+			{
+				mockedCardStateAccessor.getObject(
+						withInstanceOf(DateTimeObjectIdentifier.class),
+						withInstanceOf(Scope.class));
+				result = currentDate;
+				certificate.getCertificateHolderAuthorizationTemplate();
+				result = isCvcaChat;
+				certificate.getExpirationDate();
+				result = future;
+				issuingCertificate.getExpirationDate();
+				result = future;
+				issuingCertificate.getCertificateHolderAuthorizationTemplate();
+				result = isCvcaChat;
 			}
 		};
 
