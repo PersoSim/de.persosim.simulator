@@ -24,6 +24,7 @@ import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.crypto.certificates.CertificateExtension;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CarParameterInvalidException;
+import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -203,8 +204,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 			}
 		};
 		// call MUT
-		assertTrue((boolean) Deencapsulation.invoke(taProtocol, "checkValidity",
-				certificate, issuingCertificate));
+		assertTrue(AbstractTaProtocol.checkValidity(certificate, issuingCertificate, current));
 	}
 
 	/**
@@ -231,8 +231,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		};
 
 		// call MUT
-		assertTrue((boolean) Deencapsulation.invoke(taProtocol, "checkValidity",
-				certificate, issuingCertificate));
+		assertTrue(AbstractTaProtocol.checkValidity(certificate, issuingCertificate, current));
 	}
 
 	/**
@@ -257,8 +256,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		};
 
 		// call MUT
-		assertTrue((boolean) Deencapsulation.invoke(taProtocol, "checkValidity",
-				certificate, issuingCertificate));
+		assertTrue(AbstractTaProtocol.checkValidity(certificate, issuingCertificate, current));
 	}
 
 	/**
@@ -285,8 +283,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		};
 
 		// call MUT
-		assertTrue((boolean) Deencapsulation.invoke(taProtocol, "checkValidity",
-				certificate, issuingCertificate));
+		assertTrue(AbstractTaProtocol.checkValidity(certificate, issuingCertificate, current));
 	}
 
 	/**
@@ -313,8 +310,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		};
 
 		// call MUT
-		assertTrue((boolean) Deencapsulation.invoke(taProtocol, "checkValidity",
-				certificate, issuingCertificate));
+		assertTrue(AbstractTaProtocol.checkValidity(certificate, issuingCertificate, current));
 	}
 
 
@@ -328,10 +324,6 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DateTimeObjectIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = currentDate;
 				certificate.getCertificateHolderAuthorizationTemplate();
 				result = isCvcaChat;
 				certificate.getEffectiveDate();
@@ -340,8 +332,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		};
 
 		// call MUT
-		Deencapsulation.invoke(taProtocol, "updateDate", certificate,
-				issuingCertificate);
+		AbstractTaProtocol.updateDate(certificate, issuingCertificate, currentDate);
 		assertEquals(future, currentDate.getDate());
 	}
 
@@ -355,10 +346,6 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DateTimeObjectIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = currentDate;
 				issuingCertificate.getCertificateHolderAuthorizationTemplate();
 				result = isDvForeignChat;
 				certificate.getCertificateHolderAuthorizationTemplate();
@@ -369,13 +356,12 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		};
 
 		// call MUT
-		Deencapsulation.invoke(taProtocol, "updateDate", certificate,
-				issuingCertificate);
+		AbstractTaProtocol.updateDate(certificate, issuingCertificate, currentDate);
 		assertEquals(current, currentDate.getDate());
 	}
 
 	@Test
-	public void testIsCertificateIssuerValidPositiveDv() {
+	public void testIsCertificateIssuerValidPositiveDv() throws CertificateNotParseableException {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
@@ -386,11 +372,11 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 			}
 		};
 		// call MUT
-		assertTrue((boolean)Deencapsulation.invoke(taProtocol, "isCertificateIssuerValid", certificate, issuingCertificate));
+		assertTrue(AbstractTaProtocol.isCertificateIssuerValid(issuingCertificate, issuingCertificate));
 	}
 
 	@Test
-	public void testIsCertificateIssuerValidPositiveTerminal() {
+	public void testIsCertificateIssuerValidPositiveTerminal() throws CertificateNotParseableException {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
@@ -401,11 +387,11 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 			}
 		};
 		// call MUT
-		assertTrue((boolean)Deencapsulation.invoke(taProtocol, "isCertificateIssuerValid", certificate, issuingCertificate));
+		assertTrue(AbstractTaProtocol.isCertificateIssuerValid(certificate, issuingCertificate));
 	}
 
 	@Test
-	public void testIsCertificateIssuerValidPositiveCvcaLink() {
+	public void testIsCertificateIssuerValidPositiveCvcaLink() throws CertificateNotParseableException {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
@@ -416,11 +402,11 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 			}
 		};
 		// call MUT
-		assertTrue((boolean)Deencapsulation.invoke(taProtocol, "isCertificateIssuerValid", certificate, issuingCertificate));
+		assertTrue(AbstractTaProtocol.isCertificateIssuerValid(issuingCertificate, issuingCertificate));
 	}
 
 	@Test
-	public void testIsCertificateIssuerValidNegativeCvcaTerminal() {
+	public void testIsCertificateIssuerValidNegativeCvcaTerminal() throws CertificateNotParseableException {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
@@ -431,7 +417,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 			}
 		};
 		// call MUT
-		assertTrue(!(boolean)Deencapsulation.invoke(taProtocol, "isCertificateIssuerValid", certificate, issuingCertificate));
+		assertTrue(!AbstractTaProtocol.isCertificateIssuerValid(certificate, issuingCertificate));
 	}
 	
 	@Test

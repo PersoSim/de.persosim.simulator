@@ -430,7 +430,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				}
 				if (checkSignature(currentCertificate.getPublicKeyOid(), currentCertificate.getPublicKey(), certificateBodyData.toByteArray(), certificateSignatureData.getValueField())){
 					//differentiate between CVCA link certificates and other types for date validation
-					if (checkValidity(certificate, currentCertificate)){
+					if (checkValidity(certificate, currentCertificate, getCurrentDate().getDate())){
 						try {
 							importCertificate(certificate, currentCertificate);
 							currentEffectiveAuthorization = currentEffectiveAuthorization
@@ -488,22 +488,20 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @param certificate
 	 * @return true, iff the certificate is valid as defined in TR-03110 v2.10
 	 */
-	private boolean checkValidity(CardVerifiableCertificate certificate, CardVerifiableCertificate issuingCertificate) {
-		Date date = getCurrentDate().getDate();
-		
+	protected static boolean checkValidity(CardVerifiableCertificate certificate, CardVerifiableCertificate issuingCertificate, Date currentDate) {
 		if (isCvcaCertificate(issuingCertificate)){
 			if (isCvcaCertificate(certificate)){
 				// the issuing certificate is allowed to be expired to allow import of a link certificate
 				return true;
 			} else {
 				// for terminal and dv certificates the issuing cvca must be valid (not yet expired)
-				if (issuingCertificate.getExpirationDate().after(date)){
+				if (issuingCertificate.getExpirationDate().after(currentDate)){
 					return true;
 				}
 			}
 		} else {
 			//check only the date of the given certificate, at this point the cvca has already been verified
-			if (date.before(certificate.getExpirationDate()) || date.equals(certificate.getExpirationDate())){
+			if (currentDate.before(certificate.getExpirationDate()) || currentDate.equals(certificate.getExpirationDate())){
 				return true;
 			}
 		}
@@ -521,7 +519,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @return true, iff the conditions are fulfilled
 	 * @throws CertificateNotParseableException
 	 */
-	private boolean isCertificateIssuerValid(CardVerifiableCertificate certificate,
+	protected static boolean isCertificateIssuerValid(CardVerifiableCertificate certificate,
 			CardVerifiableCertificate certificateToCheckAgainst) throws CertificateNotParseableException {
 		if ((isCvcaCertificate(certificate) || isDvCertificate(certificate)) && !isCvcaCertificate(certificateToCheckAgainst)){
 			return false;
@@ -542,8 +540,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @param issuingCertificate
 	 *            issuer of the certificate given in the first parameter, this is not checked
 	 */
-	private void updateDate(CardVerifiableCertificate certificate, CardVerifiableCertificate issuingCertificate) {
-		DateTimeCardObject currentDate = getCurrentDate();
+	protected static void updateDate(CardVerifiableCertificate certificate, CardVerifiableCertificate issuingCertificate, DateTimeCardObject currentDate) {
 		if (currentDate.getDate().before((certificate.getEffectiveDate()))){
 			if (isCvcaCertificate(certificate) || isDomesticDvCertificate(certificate)
 					|| isDomesticDvCertificate(issuingCertificate)){
@@ -564,7 +561,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @param certificate to check
 	 * @return true, iff the certificate is a domestic DV certificate
 	 */
-	private boolean isDomesticDvCertificate(CardVerifiableCertificate certificate) {
+	private static boolean isDomesticDvCertificate(CardVerifiableCertificate certificate) {
 		return certificate.getCertificateHolderAuthorizationTemplate().getRelativeAuthorization().getRole().equals(CertificateRole.DV_TYPE_1);
 	}
 
@@ -572,7 +569,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @param certificate
 	 * @return true, iff the given certificate uses one of the DV {@link CertificateRole}s
 	 */
-	private boolean isDvCertificate(CardVerifiableCertificate certificate) {
+	private static boolean isDvCertificate(CardVerifiableCertificate certificate) {
 		return certificate.getCertificateHolderAuthorizationTemplate()
 				.getRelativeAuthorization().getRole()
 				.equals(CertificateRole.DV_TYPE_1)
@@ -586,7 +583,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @param certificate
 	 * @return true, iff the given certificate uses the {@link CertificateRole#CVCA}
 	 */
-	private boolean isCvcaCertificate(CardVerifiableCertificate certificate) {
+	private static boolean isCvcaCertificate(CardVerifiableCertificate certificate) {
 		return certificate.getCertificateHolderAuthorizationTemplate()
 				.getRelativeAuthorization().getRole()
 				.equals(CertificateRole.CVCA);
@@ -599,7 +596,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @throws CertificateUpdateException 
 	 */
 	private void importCertificate(CardVerifiableCertificate certificate, CardVerifiableCertificate issuingCertificate) throws CertificateUpdateException {
-		updateDate(certificate, issuingCertificate);
+		updateDate(certificate, issuingCertificate, getCurrentDate());
 		if (isCvcaCertificate(certificate)) {
 			permanentImport(certificate);
 		} else if (isDvCertificate(certificate)
@@ -623,7 +620,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @param certificate
 	 * @return true, iff the given certificate uses the {@link CertificateRole#TERMINAL}
 	 */
-	private boolean isTerminalCertificate(CardVerifiableCertificate certificate) {
+	private static boolean isTerminalCertificate(CardVerifiableCertificate certificate) {
 		return certificate.getCertificateHolderAuthorizationTemplate()
 				.getRelativeAuthorization().getRole()
 				.equals(CertificateRole.TERMINAL);
