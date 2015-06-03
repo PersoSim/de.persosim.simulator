@@ -486,6 +486,11 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * expired according to the chips date.
 	 * 
 	 * @param certificate
+	 *            the certificate to check
+	 * @param issuingCertificate
+	 *            the parent certificate in the chain to use for the check
+	 * @param currentDate
+	 *            the date to check agains
 	 * @return true, iff the certificate is valid as defined in TR-03110 v2.10
 	 */
 	protected static boolean checkValidity(CardVerifiableCertificate certificate, CardVerifiableCertificate issuingCertificate, Date currentDate) {
@@ -532,13 +537,17 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 
 	/**
-	 * Update the internal date object using the given certificates as described
-	 * in TR-03110 v2.10 2.6.2
+	 * Update a date object using the given certificates as described in
+	 * TR-03110 v2.10 2.6.2
 	 * 
 	 * @param certificate
 	 *            to extract the new date from
 	 * @param issuingCertificate
-	 *            issuer of the certificate given in the first parameter, this is not checked
+	 *            issuer of the certificate given in the first parameter, this
+	 *            is not checked
+	 * @param currentDate
+	 *            the {@link DateTimeCardObject} to store the certificates date
+	 *            in
 	 */
 	protected static void updateDate(CardVerifiableCertificate certificate, CardVerifiableCertificate issuingCertificate, DateTimeCardObject currentDate) {
 		if (currentDate.getDate().before((certificate.getEffectiveDate()))){
