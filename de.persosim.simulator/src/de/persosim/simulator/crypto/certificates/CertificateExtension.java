@@ -1,8 +1,8 @@
 package de.persosim.simulator.crypto.certificates;
 
-import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvDataObjectFactory;
@@ -19,7 +19,7 @@ public class CertificateExtension {
 	TlvDataObjectContainer dataObjects;
 
 	public CertificateExtension(ConstructedTlvDataObject extensionData) {
-		objectIdentifier = new TaOid(extensionData.getTlvDataObject(Tr03110Utils.TAG_06).getValueField());
+		objectIdentifier = new TaOid(extensionData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
 		dataObjects = new TlvDataObjectContainer();
 		boolean firstIgnored = false;
 		for (TlvDataObject object : extensionData.getTlvDataObjectContainer()){

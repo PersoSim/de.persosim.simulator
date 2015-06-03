@@ -35,7 +35,6 @@ import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.CertificateUpdateException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
-import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -158,7 +157,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		}
 		
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-		TlvDataObject publicKeyReference = commandData.getTlvDataObject(Tr03110Utils.TAG_83);
+		TlvDataObject publicKeyReference = commandData.getTlvDataObject(TlvConstants.TAG_83);
 		
 		//get necessary information stored in an earlier protocol (e.g. PACE)
 		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
@@ -264,10 +263,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		}
 		
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-		TlvDataObject cryptographicMechanismReferenceData = commandData.getTlvDataObject(Tr03110Utils.TAG_80);
-		TlvDataObject publicKeyReferenceData = commandData.getTlvDataObject(Tr03110Utils.TAG_83);
-		TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(Tr03110Utils.TAG_67);
-		TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(Tr03110Utils.TAG_91);
+		TlvDataObject cryptographicMechanismReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_80);
+		TlvDataObject publicKeyReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_83);
+		TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TlvConstants.TAG_67);
+		TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(TlvConstants.TAG_91);
 		
 		if (publicKeyReferenceData != null){
 			try {
@@ -297,7 +296,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		
 		if (cryptographicMechanismReferenceData != null){
 			//add missing Tag and Length
-			TlvDataObject cryptographicMechanismReferenceDataReconstructed = new PrimitiveTlvDataObject(Tr03110Utils.TAG_06, cryptographicMechanismReferenceData.getValueField());
+			TlvDataObject cryptographicMechanismReferenceDataReconstructed = new PrimitiveTlvDataObject(TlvConstants.TAG_06, cryptographicMechanismReferenceData.getValueField());
 			try {
 				crypographicMechanismReference = new TaOid(cryptographicMechanismReferenceDataReconstructed.getValueField());
 			} catch (IllegalArgumentException e) {
@@ -320,7 +319,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				auxiliaryData = new ArrayList<AuthenticatedAuxiliaryData>();
 				ConstructedTlvDataObject constructedAuxiliaryAuthenticatedData = (ConstructedTlvDataObject) auxiliaryAuthenticatedData;
 				for (TlvDataObject currentObject : constructedAuxiliaryAuthenticatedData.getTlvDataObjectContainer()){
-					if(!(currentObject instanceof ConstructedTlvDataObject) || !currentObject.getTlvTag().equals(Tr03110Utils.TAG_73)){
+					if(!(currentObject instanceof ConstructedTlvDataObject) || !currentObject.getTlvTag().equals(TlvConstants.TAG_73)){
 						// create and propagate response APDU
 						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
 						this.processingData.updateResponseAPDU(this,
@@ -328,8 +327,8 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 						return;	
 					}
 					ConstructedTlvDataObject ddo = (ConstructedTlvDataObject) currentObject;
-					TlvDataObject objectIdentifier = ddo.getTlvDataObject(Tr03110Utils.TAG_06);
-					TlvDataObject discretionaryData = ddo.getTlvDataObject(Tr03110Utils.TAG_53);
+					TlvDataObject objectIdentifier = ddo.getTlvDataObject(TlvConstants.TAG_06);
+					TlvDataObject discretionaryData = ddo.getTlvDataObject(TlvConstants.TAG_53);
 					try {
 						auxiliaryData.add(new AuthenticatedAuxiliaryData(new TaOid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
 					} catch (IllegalArgumentException e) {
@@ -415,8 +414,8 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		}
 		
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) commandData.getTlvDataObject(Tr03110Utils.TAG_7F4E);
-		PrimitiveTlvDataObject certificateSignatureData = (PrimitiveTlvDataObject) commandData.getTlvDataObject(Tr03110Utils.TAG_5F37);
+		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) commandData.getTlvDataObject(TlvConstants.TAG_7F4E);
+		PrimitiveTlvDataObject certificateSignatureData = (PrimitiveTlvDataObject) commandData.getTlvDataObject(TlvConstants.TAG_5F37);
 		
 		try {
 			CardVerifiableCertificate certificate = new CardVerifiableCertificate(certificateBodyData, currentCertificate.getPublicKey());
@@ -662,7 +661,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			byte [] dataToVerify = Utils.concatByteArrays(idPicc, challenge, compressedTerminalEphemeralPublicKey);
 			
 			if (auxiliaryData != null && auxiliaryData.size() > 0){
-				ConstructedTlvDataObject auxiliaryDataTlv = new ConstructedTlvDataObject(Tr03110Utils.TAG_67);
+				ConstructedTlvDataObject auxiliaryDataTlv = new ConstructedTlvDataObject(TlvConstants.TAG_67);
 				for(AuthenticatedAuxiliaryData current : auxiliaryData){
 					auxiliaryDataTlv.addTlvDataObject(current.getEncoded());
 				}
