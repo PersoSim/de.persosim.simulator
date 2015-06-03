@@ -429,6 +429,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					return;
 				}
 				if (checkSignature(currentCertificate.getPublicKeyOid(), currentCertificate.getPublicKey(), certificateBodyData.toByteArray(), certificateSignatureData.getValueField())){
+					//differentiate between CVCA link certificates and other types for date validation
 					if (checkValidity(certificate, currentCertificate)){
 						try {
 							importCertificate(certificate, currentCertificate);
@@ -480,22 +481,31 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 
 	/**
 	 * Checks the validity of a certificate against the current date. Expired
-	 * CVCA link certificates are accepted, not yet effective CVCA link, DV and
-	 * accurate terminal certificates are also accepted. All other types must be
-	 * already effective as not yet expired.
+	 * CVCA link certificates are accepted, not yet effective certificates are
+	 * also accepted. Terminal and DV certificates are checked to be not yet
+	 * expired according to the chips date.
 	 * 
 	 * @param certificate
-	 * @return
+	 * @return true, iff the certificate is valid as defined in TR-03110 v2.10
 	 */
 	private boolean checkValidity(CardVerifiableCertificate certificate, CardVerifiableCertificate issuingCertificate) {
 		Date date = getCurrentDate().getDate();
 		
-		if (!isCvcaCertificate(certificate)){
+		if (isCvcaCertificate(issuingCertificate)){
+			if (isCvcaCertificate(certificate)){
+				// the issuing certificate is allowed to be expired to allow import of a link certificate
+				return true;
+			} else {
+				// for terminal and dv certificates the issuing cvca must be valid (not yet expired)
+				if (issuingCertificate.getExpirationDate().after(date)){
+					return true;
+				}
+			}
+		} else {
+			//check only the date of the given certificate, at this point the cvca has already been verified
 			if (date.before(certificate.getExpirationDate()) || date.equals(certificate.getExpirationDate())){
 				return true;
 			}
-		} else {
-			return true;
 		}
 		return false;
 	}
