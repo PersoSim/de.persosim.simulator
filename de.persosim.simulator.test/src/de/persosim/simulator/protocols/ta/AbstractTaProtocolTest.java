@@ -313,7 +313,34 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		assertTrue(AbstractTaProtocol.checkValidity(certificate, issuingCertificate, current));
 	}
 
+	/**
+	 * Test for checking the date validity using an expired CVCA certificate 
+	 */
+	@Test
+	public void testCheckValidityDomesticDvIssuingCvcaInvalid(){
+		// prepare the mock
+		new NonStrictExpectations() {
+			{
+				mockedCardStateAccessor.getObject(
+						withInstanceOf(DateTimeObjectIdentifier.class),
+						withInstanceOf(Scope.class));
+				result = currentDate;
+				certificate.getCertificateHolderAuthorizationTemplate();
+				result = isDvDomesticChat;
+				certificate.getExpirationDate();
+				result = future;
+				issuingCertificate.getExpirationDate();
+				result = past;
+				issuingCertificate.getCertificateHolderAuthorizationTemplate();
+				result = isCvcaChat;
+			}
+		};
 
+		// call MUT
+		assertTrue(!AbstractTaProtocol.checkValidity(certificate, issuingCertificate, current));
+		
+	}
+	
 	/**
 	 * Positive test for the update date mechanism that uses an accurate
 	 * terminal certificate (signed by domestic DV)
