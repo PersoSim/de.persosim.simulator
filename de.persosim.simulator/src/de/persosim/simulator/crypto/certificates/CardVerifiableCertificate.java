@@ -228,4 +228,12 @@ public class CardVerifiableCertificate {
 	public TaOid getPublicKeyOid() {
 		return publicKeyOid;
 	}
+
+	@Override
+	public String toString() {
+		return "CardVerifiableCertificate [certificateAuthorityReference="
+				+ certificateAuthorityReference
+				+ ", certificateHolderReference=" + certificateHolderReference
+				+ "]";
+	}
 }
