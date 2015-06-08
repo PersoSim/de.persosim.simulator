@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.persosim.simulator.utils.PersoSimLogger;
+
 /**
  * Encapsulate ServerMode communication with an existing GlobalTester instance
  * in order to include GlobalTester tests within the existing
@@ -184,25 +186,29 @@ public class GtServerConnection {
 	 * Initiate the ServerMode connection to the GlobalTester instance.
 	 * <p/>
 	 * NOTE: the current implementation is not thread safe
-		 
-	 * @throws IOException
 	 */
-	public void connect() throws IOException {
+	public boolean connect() {
 		if (socket != null) {
 			throw new RuntimeException(
 					"GTServerConnection is already connected");
 		}
 
-		socket = new Socket(serverHost, cmdPort);
+		try {
+			socket = new Socket(serverHost, cmdPort);
 
-		if ((socket == null) || (!socket.isConnected())) {
-			throw new RuntimeException(
-					"GTServerConnection: unable to connect to a GT Server ");
+
+			if (!socket.isConnected()) {
+				throw new RuntimeException(
+						"GTServerConnection: unable to connect to a GT Server ");
+			}
+			
+			out = new PrintStream(socket.getOutputStream());
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			return true;
+		} catch (IOException e) {
+			PersoSimLogger.logException(this.getClass(), e);
+			return false;
 		}
-
-		out = new PrintStream(socket.getOutputStream());
-		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		
 	}
 
 	private String transmitCommand(String command) throws IOException {

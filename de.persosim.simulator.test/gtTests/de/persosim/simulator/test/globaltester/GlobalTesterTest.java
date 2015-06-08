@@ -42,6 +42,9 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 //	private static final String PATH_LOGGING = BASE_PATH + "\\logging";
 
 	protected static GtServerConnection gtServer;
+	
+	protected static final int WAITING_TIME_BETWEEN_SERVER_MODE_RETRIES = 1000;
+	protected static final int SERVER_MODE_RETRIES = 60;
 
 	@Override
 	public String getIDString() {
@@ -53,8 +56,15 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 		// initialize GT server connection
 		gtServer = new GtServerConnection(GT_SERVER_HOST, GT_SERVER_PORT,
 				GT_SERVER_RESULT_PORT);
-		gtServer.connect();
-
+		
+		int retries = 0;
+		while (!gtServer.connect()){
+			retries++;
+			Thread.sleep(WAITING_TIME_BETWEEN_SERVER_MODE_RETRIES);
+			if (retries > SERVER_MODE_RETRIES){
+				break;
+			}
+		}
 	}
 
 	@AfterClass
