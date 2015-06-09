@@ -43,7 +43,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 
 	protected static GtServerConnection gtServer;
 	
-	protected static final int WAITING_TIME_BETWEEN_SERVER_MODE_RETRIES = 1000;
+	protected static final int WAITING_TIME_BETWEEN_SERVER_MODE_RETRIES = 10;
 	protected static final int SERVER_MODE_RETRIES = 60;
 
 	@Override
