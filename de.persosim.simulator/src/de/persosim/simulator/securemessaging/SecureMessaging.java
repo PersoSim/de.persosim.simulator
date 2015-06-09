@@ -351,7 +351,15 @@ public class SecureMessaging extends Layer {
 			log(this, "TLV object 97 is: " + tlvObject97, TRACE);
 			le = tlvObject97.getValueField();
 			
+			//ensure correct length of le field
+			if (processingData.getCommandApdu().isExtendedLength()) {
+				if (le.length == 1) {
+					le = new byte[]{0, le[0]};
+				}
+			}
+			
 			try {
+				
 				apduStream.write(le);
 			} catch (IOException e) {
 				logException(this, e);
