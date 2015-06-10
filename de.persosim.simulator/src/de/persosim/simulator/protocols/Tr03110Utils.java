@@ -107,7 +107,7 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 			ConstructedTlvDataObject publicKeyData,
 			PublicKey trustPointPublicKey) throws GeneralSecurityException {
 		
-		
+		// XXX MBK catch and handle exceptions thrown by providers
 		for (Tr03110UtilsProvider provider : providers) {
 			PublicKey key = provider.parsePublicKey(publicKeyData, trustPointPublicKey);
 			if (key != null){
