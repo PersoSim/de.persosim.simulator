@@ -35,7 +35,6 @@ public interface Pace extends Tr03110 {
 	public final static String ECDH_GM_STRING                      = "ECDH-GM";
 	
 	/*--------------------------------------------------------------------------------*/
-	/*--------------------------------------------------------------------------------*/
 		
 	/* ECDH-GM */
 	public final static byte[] id_PACE_ECDH_GM_AES_CBC_CMAC_128    = Utils.appendBytes(id_PACE, ECDH_GM, AES_CBC_CMAC_128);
