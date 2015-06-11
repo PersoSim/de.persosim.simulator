@@ -9,6 +9,9 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 
+import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.ConverterLookup;
@@ -59,16 +62,19 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.converters.reflection.SerializableConverter;
 import com.thoughtworks.xstream.core.ClassLoaderReference;
 import com.thoughtworks.xstream.core.JVM;
+import com.thoughtworks.xstream.core.util.CompositeClassLoader;
 import com.thoughtworks.xstream.core.util.SelfStreamingInstanceChecker;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.mapper.Mapper;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
+import de.persosim.simulator.Activator;
 import de.persosim.simulator.perso.xstream.ECParameterSpecConverter;
 import de.persosim.simulator.perso.xstream.EncodedByteArrayConverter;
 import de.persosim.simulator.perso.xstream.KeyConverter;
 import de.persosim.simulator.perso.xstream.KeyPairConverter;
 import de.persosim.simulator.perso.xstream.ProtocolConverter;
+import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
  * This class provides methods that serializes/deserializes personalization objects
@@ -329,6 +335,30 @@ public class PersonalizationFactory {
 		xstream.registerConverter(new KeyPairConverter());
 		xstream.registerConverter(new ECParameterSpecConverter());
 		xstream.registerConverter(new KeyConverter());
+        
+        //get converters as services
+		if (Activator.getContext() != null){
+			ServiceTracker<Converter, Converter> serviceTracker = new ServiceTracker<Converter, Converter>(Activator.getContext(), Converter.class.getName(), null);
+	        serviceTracker.open();
+	        ServiceReference<Converter> [] allServiceReferences = serviceTracker.getServiceReferences();
+	        StringBuilder availableConverters = new StringBuilder();
+	        availableConverters.append("Available xstream converter services:");
+	        if (allServiceReferences != null){
+	            for (ServiceReference<Converter> serviceReference : allServiceReferences){
+	            	Converter service = serviceTracker.getService(serviceReference);
+	            	availableConverters.append("\n " + service.getClass() + " from bundle: " + serviceReference.getBundle().getSymbolicName());
+	                ((CompositeClassLoader)xstream.getClassLoader()).add(service.getClass().getClassLoader());
+	            	xstream.registerConverter(service, 10);
+	            }	
+	        } else {
+	        	availableConverters.append(" none");
+	        }
+	        serviceTracker.close();
+
+	        PersoSimLogger.log(PersonalizationFactory.class, availableConverters.toString());
+		} else {
+			PersoSimLogger.log(PersonalizationFactory.class, "Could not get the bundle context, no Converter services added to XStream");
+		}
 		
 		return xstream;
 	}

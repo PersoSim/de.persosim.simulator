@@ -1,6 +1,6 @@
 package de.persosim.simulator.protocols.ca;
 
-import static de.persosim.simulator.protocols.TR03110Utils.buildAuthenticationTokenInput;
+import static de.persosim.simulator.protocols.Tr03110Utils.buildAuthenticationTokenInput;
 import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
 import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
@@ -39,7 +39,7 @@ import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.ProtocolUpdate;
-import de.persosim.simulator.protocols.TR03110Utils;
+import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
@@ -134,7 +134,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 		CardObject cardObject;
 		try {
-			cardObject = TR03110Utils.getSpecificChild(cardState.getObject(new MasterFileIdentifier(), Scope.FROM_MF), keyIdentifier, new OidIdentifier(caOid));
+			cardObject = Tr03110Utils.getSpecificChild(cardState.getObject(new MasterFileIdentifier(), Scope.FROM_MF), keyIdentifier, new OidIdentifier(caOid));
 		} catch (IllegalArgumentException e) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
 			this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
@@ -155,7 +155,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		}
 		
 		/* CA domain parameters */
-		caDomainParameters = TR03110Utils.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());
+		caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());
 		
 		this.cryptoSupport = caOid.getCryptoSupport();
 		

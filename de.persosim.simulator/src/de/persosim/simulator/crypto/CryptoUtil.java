@@ -413,4 +413,29 @@ public class CryptoUtil {
 		return new KeyPair(publicKey, privateKey);
 	}
 	
+	/**
+	 * This method padds the given data to the given block size
+	 * @param unpaddedData the data to be padded
+	 * @param blockSize the block size
+	 * @return the padded data
+	 */
+	public static byte[] padData(byte[] unpaddedData, int blockSize) {
+		
+		/* +1 for mandatory padding byte 0x80 */
+		int overlap = (unpaddedData.length + 1) % blockSize;
+		
+		int nrOfZeros = blockSize - overlap;
+		
+		if (overlap == 0) {
+			//input plus padding byte already matches BlockSize
+			nrOfZeros = 0;
+		}
+		
+		byte[] paddingZeros = new byte[nrOfZeros];
+		Arrays.fill(paddingZeros, (byte) 0x00);
+		
+		return Utils.concatByteArrays(unpaddedData, new byte[]{(byte) 0x80}, paddingZeros);
+		
+	}
+	
 }

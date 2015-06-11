@@ -2,9 +2,9 @@ package de.persosim.simulator.protocols.ta;
 
 import java.util.Arrays;
 
-import de.persosim.simulator.protocols.TR03110Utils;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
+import de.persosim.simulator.tlv.TlvConstants;
 
 /**
  * This object stores the information used in the verify command and transmitted
@@ -33,9 +33,9 @@ public class AuthenticatedAuxiliaryData {
 	}
 
 	public ConstructedTlvDataObject getEncoded() {
-		ConstructedTlvDataObject result = new ConstructedTlvDataObject(TR03110Utils.TAG_73);
-		PrimitiveTlvDataObject oid = new PrimitiveTlvDataObject(TR03110Utils.TAG_06, objectIdentifier.toByteArray());
-		PrimitiveTlvDataObject dd = new PrimitiveTlvDataObject(TR03110Utils.TAG_53, discretionaryData);
+		ConstructedTlvDataObject result = new ConstructedTlvDataObject(TlvConstants.TAG_73);
+		PrimitiveTlvDataObject oid = new PrimitiveTlvDataObject(TlvConstants.TAG_06, objectIdentifier.toByteArray());
+		PrimitiveTlvDataObject dd = new PrimitiveTlvDataObject(TlvConstants.TAG_53, discretionaryData);
 		result.addTlvDataObject(oid);
 		result.addTlvDataObject(dd);
 		return result;

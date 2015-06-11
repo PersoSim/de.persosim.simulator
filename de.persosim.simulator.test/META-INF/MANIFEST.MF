@@ -4,10 +4,14 @@ Bundle-Name: PersoSim Simulator Test
 Bundle-SymbolicName: de.persosim.simulator.test
 Bundle-Version: 0.6.0.qualifier
 Bundle-Vendor: HJP Consulting GmbH
-Fragment-Host: de.persosim.simulator;bundle-version="0.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.junit;bundle-version="4.11.0",
- org.globaltester.cryptoprovider.bc
-Export-Package: de.persosim.simulator.test.globaltester,
+ org.globaltester.cryptoprovider.bc,
+ de.persosim.simulator;bundle-version="0.6.0"
+Export-Package: de.persosim.simulator.perso,
+ de.persosim.simulator.test,
+ de.persosim.simulator.test.globaltester,
+ de.persosim.simulator.test.globaltester.perso,
  mockit
-Import-Package: org.eclipse.ui.keys
+Import-Package: org.eclipse.ui.keys,
+ org.osgi.framework;version="1.8.0"

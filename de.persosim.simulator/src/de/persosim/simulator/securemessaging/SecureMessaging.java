@@ -15,6 +15,7 @@ import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.crypto.CryptoSupport;
+import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.processing.UpdatePropagation;
@@ -187,7 +188,7 @@ public class SecureMessaging extends Layer {
 			
 			log(this, "data to be padded is: " + HexString.encode(data), TRACE);
 			
-			paddedData = padData(data, dataProvider.getCipher().getBlockSize());
+			paddedData = CryptoUtil.padData(data, dataProvider.getCipher().getBlockSize());
 			
 			log(this, "padded data is: " + HexString.encode(paddedData), DEBUG);
 			log(this, "block size is: " + dataProvider.getCipher().getBlockSize(), DEBUG);
@@ -517,7 +518,7 @@ public class SecureMessaging extends Layer {
 	 * @return the padded data
 	 */
 	public byte[] padDataForMac(byte[] unpaddedData) {
-		return padData(unpaddedData, dataProvider.getCipher().getBlockSize());
+		return CryptoUtil.padData(unpaddedData, dataProvider.getCipher().getBlockSize());
 	}
 	
 	/**
@@ -536,31 +537,6 @@ public class SecureMessaging extends Layer {
 				dataProvider.getCipher(), dataToBeMaced, dataProvider.getKeyMac(), dataProvider.getMacLength());
 		
 		return macedData;
-	}
-	
-	/**
-	 * This method padds the given data to the given block size
-	 * @param unpaddedData the data to be padded
-	 * @param blockSize the block size
-	 * @return the padded data
-	 */
-	public static byte[] padData(byte[] unpaddedData, int blockSize) {
-		
-		/* +1 for mandatory padding byte 0x80 */
-		int overlap = (unpaddedData.length + 1) % blockSize;
-		
-		int nrOfZeros = blockSize - overlap;
-		
-		if (overlap == 0) {
-			//input plus padding byte already matches BlockSize
-			nrOfZeros = 0;
-		}
-		
-		byte[] paddingZeros = new byte[nrOfZeros];
-		Arrays.fill(paddingZeros, (byte) 0x00);
-		
-		return Utils.concatByteArrays(unpaddedData, new byte[]{(byte) 0x80}, paddingZeros);
-		
 	}
 	
 	/**

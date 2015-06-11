@@ -1,6 +1,6 @@
 package de.persosim.simulator.protocols.pace;
 
-import static de.persosim.simulator.protocols.TR03110Utils.buildAuthenticationTokenInput;
+import static de.persosim.simulator.protocols.Tr03110Utils.buildAuthenticationTokenInput;
 import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
 import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
@@ -49,7 +49,7 @@ import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.ResponseData;
-import de.persosim.simulator.protocols.TR03110Utils;
+import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
@@ -116,6 +116,8 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	protected KeyPair ephemeralKeyPairPicc;
 	protected PublicKey ephemeralPublicKeyPcd;
 	
+	protected MappingResult mappingResult;
+	
 	TrustPointCardObject trustPoint;
 	CertificateHolderAuthorizationTemplate usedChat;
 	
@@ -125,6 +127,14 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		super("PACE");
 		
 		secureRandom = new SecureRandom();
+	}
+	
+	/**
+	 * @param bytes the OID given in the SET AT command
+	 * @return the PaceOid helper class to be used by this protocol
+	 */
+	protected PaceOid getOid(byte [] bytes){
+		return new PaceOid(bytes);
 	}
 	
 	/**
@@ -144,7 +154,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_80);
 		
 		try {
-			paceOid = new PaceOid(tlvObject.getValueField());
+			paceOid = getOid(tlvObject.getValueField());
 		} catch (RuntimeException e) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
 			this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
@@ -186,7 +196,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		
 		CardObject cardObject;
 		try {
-			cardObject = TR03110Utils.getSpecificChild(cardState.getObject(new MasterFileIdentifier(), Scope.FROM_MF), domainParameterSetIdentifier, new OidIdentifier(paceOid));
+			cardObject = Tr03110Utils.getSpecificChild(cardState.getObject(new MasterFileIdentifier(), Scope.FROM_MF), domainParameterSetIdentifier, new OidIdentifier(paceOid));
 		} catch (IllegalArgumentException e) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
 			this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
@@ -349,23 +359,23 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			PasswordAuthObject password) {
 		switch (chat.getTerminalType()) {
 		case AT:
-			if (password.getPasswordIdentifier() == PWD_PIN
-					|| (password.getPasswordIdentifier() == PWD_CAN && chat
+			if (password.getPasswordIdentifier() == ID_PIN
+					|| (password.getPasswordIdentifier() == ID_CAN && chat
 							.getRelativeAuthorization().getAuthorization()
-							.getBit(TR03110Utils.ACCESS_RIGHTS_AT_CAN_ALLOWED_BIT))) {
+							.getBit(Tr03110Utils.ACCESS_RIGHTS_AT_CAN_ALLOWED_BIT))) {
 				return true;
 			}
 			break;
 		case IS:
-			if (password.getPasswordIdentifier() == PWD_CAN
-					|| password.getPasswordIdentifier() == PWD_MRZ) {
+			if (password.getPasswordIdentifier() == ID_CAN
+					|| password.getPasswordIdentifier() == ID_MRZ) {
 				return true;
 			}
 			break;
 		case ST:
-			if (password.getPasswordIdentifier() == PWD_CAN
-					|| password.getPasswordIdentifier() == PWD_PUK
-					|| password.getPasswordIdentifier() == PWD_PIN) {
+			if (password.getPasswordIdentifier() == ID_CAN
+					|| password.getPasswordIdentifier() == ID_PUK
+					|| password.getPasswordIdentifier() == ID_PIN) {
 				return true;
 			}
 			break;
@@ -442,10 +452,10 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		
 		try {
 			log(this, "about to perform " + mapping.getMappingName(), DEBUG);
-			MappingResult mappingResult = mapping.performMapping(paceDomainParametersUnmapped, piccsPlainNonceS, mappingDataFromPcd);
+			mappingResult = mapping.performMapping(paceDomainParametersUnmapped, piccsPlainNonceS, mappingDataFromPcd);
 			
-			ephemeralKeyPairPicc = mappingResult.getKeyPair();
-			paceDomainParametersMapped = mappingResult.getDomainParameterSet();
+			ephemeralKeyPairPicc = mappingResult.getKeyPairPiccMapped();
+			paceDomainParametersMapped = mappingResult.getMappedDomainParameters();
 			mappingResponse = mappingResult.getMappingResponse();
 		} catch (InvalidAlgorithmParameterException | InvalidKeySpecException e) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
@@ -523,8 +533,6 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 */
 	public void processCommandMutualAuthenticate() {
 		TlvDataObject tlvObject;
-		PrimitiveTlvDataObject primitive86;
-		ConstructedTlvDataObject constructed7C;
 		byte[] pcdTokenReceivedFromPCD, piccToken, pcdToken;
 		TlvPath path;
 		
@@ -603,7 +611,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			log(this, "Token received from PCD does NOT match expected one", DEBUG);
 			paceSuccessful = false;
 			
-			if(pacePassword.getPasswordIdentifier() == Pace.PWD_PIN) {
+			if(pacePassword.getPasswordIdentifier() == Pace.ID_PIN) {
 				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) pacePassword);
 				sw = pinResponse.getStatusWord();
 				note = pinResponse.getResponse();
@@ -616,60 +624,15 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		ResponseApdu responseApdu;
 		
 		if(paceSuccessful) {
-			primitive86 = new PrimitiveTlvDataObject(TAG_86, piccToken);
-			constructed7C = new ConstructedTlvDataObject(TAG_7C);
-			constructed7C.addTlvDataObject(primitive86);
-			
-			//add CARs to response data if available
-			if (trustPoint != null) {
-				if (trustPoint.getCurrentCertificate() != null
-						&& trustPoint.getCurrentCertificate()
-								.getCertificateHolderReference() instanceof PublicKeyReference) {
-					constructed7C
-							.addTlvDataObject(new PrimitiveTlvDataObject(
-									TAG_87, trustPoint.getCurrentCertificate()
-											.getCertificateHolderReference()
-											.getBytes()));
-					if (trustPoint.getPreviousCertificate() != null
-							&& trustPoint.getPreviousCertificate()
-									.getCertificateHolderReference() instanceof PublicKeyReference) {
-						constructed7C
-								.addTlvDataObject(new PrimitiveTlvDataObject(
-										TAG_88,
-										trustPoint
-												.getPreviousCertificate()
-												.getCertificateHolderReference()
-												.getBytes()));
-					}
-				}
-			}
-			
-			TlvValue responseData = new TlvDataObjectContainer(constructed7C);
-			
-			
-			
-			try {
-				//create and propagate new secure messaging data provider
-				SmDataProviderTr03110 smDataProvider = new SmDataProviderTr03110(this.secretKeySpecENC, this.secretKeySpecMAC);
-				processingData.addUpdatePropagation(this, "init SM after successful PACE", smDataProvider);
-				
-				//propagate data about successfully performed SecMechanism in SecStatus 
-				PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), usedChat);
-				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
-				
-				responseApdu = new ResponseApdu(responseData, sw);
-			} catch (GeneralSecurityException e) {
-				logException(this, e);
-				ResponseApdu failureResponse = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
-				processingData.updateResponseAPDU(this, "Unable to initialize new secure messaging", failureResponse);
+			ConstructedTlvDataObject responseContent = buildMutualAuthenticateResponse(piccToken);
+			if (setSmDataProvider()){
+				responseApdu = new ResponseApdu(new TlvDataObjectContainer(responseContent), sw);
+			} else {
 				return;
 			}
-				
-			
-		} else{
+		} else {
 			responseApdu = new ResponseApdu(sw);
 		}
-		
 		this.processingData.updateResponseAPDU(this, note, responseApdu);
 		
 		/* 
@@ -678,6 +641,63 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		 * In either case protocol is completed.
 		 */
 		processingData.addUpdatePropagation(this, "Command MutualAuthenticate successfully processed - Protocol PACE completed", new ProtocolUpdate(true));
+	}
+	
+	protected void addCars(ConstructedTlvDataObject constructed7c){
+		//add CARs to response data if available
+		if (trustPoint != null) {
+			if (trustPoint.getCurrentCertificate() != null
+					&& trustPoint.getCurrentCertificate()
+							.getCertificateHolderReference() instanceof PublicKeyReference) {
+				constructed7c
+						.addTlvDataObject(new PrimitiveTlvDataObject(
+								TAG_87, trustPoint.getCurrentCertificate()
+										.getCertificateHolderReference()
+										.getBytes()));
+				if (trustPoint.getPreviousCertificate() != null
+						&& trustPoint.getPreviousCertificate()
+								.getCertificateHolderReference() instanceof PublicKeyReference) {
+					constructed7c
+							.addTlvDataObject(new PrimitiveTlvDataObject(
+									TAG_88,
+									trustPoint
+											.getPreviousCertificate()
+											.getCertificateHolderReference()
+											.getBytes()));
+				}
+			}
+		}
+	}
+	
+	protected boolean setSmDataProvider(){
+
+		try {
+			//create and propagate new secure messaging data provider
+			SmDataProviderTr03110 smDataProvider = new SmDataProviderTr03110(this.secretKeySpecENC, this.secretKeySpecMAC);
+			processingData.addUpdatePropagation(this, "init SM after successful PACE", smDataProvider);
+			
+			//propagate data about successfully performed SecMechanism in SecStatus 
+			PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), usedChat);
+			processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
+			return true;
+		} catch (GeneralSecurityException e) {
+			logException(this, e);
+			ResponseApdu failureResponse = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
+			processingData.updateResponseAPDU(this, "Unable to initialize new secure messaging", failureResponse);
+			return false;
+		}
+	}
+	
+	protected ConstructedTlvDataObject buildMutualAuthenticateResponse(byte[] piccToken){
+		PrimitiveTlvDataObject primitive86;
+		ConstructedTlvDataObject constructed7C;
+		primitive86 = new PrimitiveTlvDataObject(TAG_86, piccToken);
+		constructed7C = new ConstructedTlvDataObject(TAG_7C);
+		constructed7C.addTlvDataObject(primitive86);
+		
+		addCars(constructed7C);
+		
+		return constructed7C;
 	}
 	
 	/**
@@ -765,13 +785,13 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 */
 	public static String getPasswordName(int pwdIdentifier) {
 		switch (pwdIdentifier) {
-		case Pace.PWD_CAN:
+		case Pace.ID_CAN:
 			return "CAN";
-		case Pace.PWD_MRZ:
+		case Pace.ID_MRZ:
 			return "MRZ";
-		case Pace.PWD_PIN:
+		case Pace.ID_PIN:
 			return "PIN";
-		case Pace.PWD_PUK:
+		case Pace.ID_PUK:
 			return "PUK";
 		default:
 			return "unknown password identifier " + pwdIdentifier;
@@ -797,7 +817,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			PasswordAuthObject previouslyUsedPwd = paceMechanism.getUsedPassword();
 			int previouslyUsedPasswordIdentifier = previouslyUsedPwd.getPasswordIdentifier();
 			log(AbstractPaceProtocol.class, "last successfull PACE run used " + getPasswordName(previouslyUsedPasswordIdentifier) + " as password with value " + HexString.encode(previouslyUsedPwd.getPassword()), DEBUG);
-			return previouslyUsedPasswordIdentifier == Pace.PWD_CAN;
+			return previouslyUsedPasswordIdentifier == Pace.ID_CAN;
 		} else{
 			return false;
 		}

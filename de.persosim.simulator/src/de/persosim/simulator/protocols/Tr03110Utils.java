@@ -6,30 +6,30 @@ import static de.persosim.simulator.utils.PersoSimLogger.log;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.PublicKey;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
-import java.security.spec.ECParameterSpec;
-import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.ietf.jgss.GSSException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
+import de.persosim.simulator.Activator;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
-import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSet;
-import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.NotParseableException;
-import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
+import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
  * XXX MBK replace TaOid with OID according to our own OID class hierarchy 
@@ -38,8 +38,58 @@ import de.persosim.simulator.tlv.TlvTag;
  * @author mboonk
  *
  */
-public class TR03110Utils implements TlvConstants {
+public class Tr03110Utils implements TlvConstants {
 	public static final int ACCESS_RIGHTS_AT_CAN_ALLOWED_BIT = 4;
+	
+static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
+	
+	static private ServiceTracker<Tr03110UtilsProvider, Tr03110UtilsProvider> serviceTracker;
+	
+	static {
+		if (Activator.getContext() != null){
+			ServiceTrackerCustomizer<Tr03110UtilsProvider, Tr03110UtilsProvider> customizer = new ServiceTrackerCustomizer<Tr03110UtilsProvider, Tr03110UtilsProvider>() {
+				
+				@Override
+				public void removedService(
+						ServiceReference<Tr03110UtilsProvider> reference,
+						Tr03110UtilsProvider service) {
+					providers.remove(service);
+				}
+				
+				@Override
+				public void modifiedService(
+						ServiceReference<Tr03110UtilsProvider> reference,
+						Tr03110UtilsProvider service) {
+					//Nothing to be done
+				}
+				
+				@Override
+				public Tr03110UtilsProvider addingService(
+						ServiceReference<Tr03110UtilsProvider> reference) {
+					Tr03110UtilsProvider provider = Activator.getContext().getService(reference); 
+					providers.add(provider);
+					return provider;
+				}
+			};
+			
+			serviceTracker = new ServiceTracker<Tr03110UtilsProvider, Tr03110UtilsProvider>(Activator.getContext(), Tr03110UtilsProvider.class.getName(), customizer);
+			serviceTracker.open();
+			
+			ServiceReference<Tr03110UtilsProvider> references [] = serviceTracker.getServiceReferences();
+			
+			if (references != null){
+				for(ServiceReference<Tr03110UtilsProvider> providerReference : references){
+					providers.add(Activator.getContext().getService(providerReference));	
+				}	
+			}
+					
+		} else {
+			PersoSimLogger.log(Tr03110Utils.class, "No OSGi context is available, no TR03110 functionalities are supported", PersoSimLogger.INFO);
+		}
+		providers.add(new Tr03110UtilsDefaultProvider());
+
+    }
+	
 	
 	/**
 	 * The given public key data will be parsed and if needed filled in with the
@@ -55,33 +105,18 @@ public class TR03110Utils implements TlvConstants {
 	 */
 	public static PublicKey parseCertificatePublicKey(
 			ConstructedTlvDataObject publicKeyData,
-			PublicKey trustPointPublicKey) throws GeneralSecurityException {
-		TaOid oid = new TaOid(publicKeyData.getTlvDataObject(TAG_06)
-				.getValueField());
-
-		if (oid.getIdString().contains("ECDSA")) {
-			ECParameterSpec paramSpec = null;
-			ECPublicKey trustPointEcPublicKey = (ECPublicKey) trustPointPublicKey;
-			if (publicKeyData.containsTlvDataObject(TAG_81)&&
-					publicKeyData.containsTlvDataObject(TAG_82)&&
-					publicKeyData.containsTlvDataObject(TAG_83)&&
-					publicKeyData.containsTlvDataObject(TAG_84)&&
-					publicKeyData.containsTlvDataObject(TAG_85)&&
-					publicKeyData.containsTlvDataObject(TAG_87)) {
-				paramSpec = CryptoUtil.parseParameterSpecEc(publicKeyData);
-			} else {
-				if (trustPointEcPublicKey.getParams().getCurve().getField()
-						.getFieldSize() / 8 != ((publicKeyData.getTlvDataObject(
-						TlvConstants.TAG_86).getLengthValue() - 1) / 2)) {
-					throw new InvalidKeySpecException(
-							"The trust points field bit length does not match");
+			PublicKey trustPointPublicKey) {
+		
+		for (Tr03110UtilsProvider provider : providers) {
+			try{
+				PublicKey key = provider.parsePublicKey(publicKeyData, trustPointPublicKey);
+				if (key != null){
+					return key;
 				}
-				paramSpec = trustPointEcPublicKey.getParams();
+			} catch (GeneralSecurityException e){
+				PersoSimLogger.logException(Tr03110Utils.class, e, PersoSimLogger.WARN);
 			}
-
-			return CryptoUtil.parsePublicKeyEc(publicKeyData, paramSpec);
 		}
-
 		return null;
 	}
 	
@@ -133,7 +168,7 @@ public class TR03110Utils implements TlvConstants {
 			
 		case 1:
 			CardObject matchingCardObject = cardObjects.iterator().next();;
-			log(TR03110Utils.class, "selected " + matchingCardObject, DEBUG);
+			log(Tr03110Utils.class, "selected " + matchingCardObject, DEBUG);
 			return matchingCardObject;
 
 		default:
@@ -147,18 +182,12 @@ public class TR03110Utils implements TlvConstants {
 	 * @return the extracted domain parameter information
 	 */
 	public static DomainParameterSet getDomainParameterSetFromKey(Key key) {
-		if((key instanceof ECPublicKey) || (key instanceof ECPrivateKey)) {
-			ECParameterSpec ecParameterSpec;
-			
-			if(key instanceof ECPublicKey) {
-				ecParameterSpec = ((ECPublicKey) key).getParams();
-			} else{
-				ecParameterSpec = ((ECPrivateKey) key).getParams();
+		for(Tr03110UtilsProvider provider : providers){
+			DomainParameterSet domainParameters = provider.getDomainParameterSetFromKey(key);
+			if (domainParameters != null){
+				return domainParameters;
 			}
-			
-			return new DomainParameterSetEcdh(ecParameterSpec.getCurve(), ecParameterSpec.getGenerator(), ecParameterSpec.getOrder(), ecParameterSpec.getCofactor());
 		}
-		
 		throw new IllegalArgumentException("unexpected key format");
 	}
 

@@ -28,7 +28,6 @@ import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.crypto.DomainParameterSet;
-import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
@@ -52,6 +51,7 @@ public class PinManagementTest extends PersoSimTestCase {
 	DomainParameterSet domainParameterSet0;
 	Collection<CardObject> domainParameterSet0Collection;
 	DomainParameterSetCardObject domainParameters0;
+	PaceOid oid0;
 	OidIdentifier oidIdentifier0;
 	
 	/**
@@ -101,9 +101,10 @@ public class PinManagementTest extends PersoSimTestCase {
 		paceProtocol = new DefaultPaceProtocol();
 		paceProtocol.setCardStateAccessor(mockedCardStateAccessor);
 		paceProtocol.init();
+
+		oid0 = Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128;
+		oidIdentifier0 = new OidIdentifier(oid0);
 		
-		oidIdentifier0 = new OidIdentifier(Pace.OID_id_PACE_DH_GM_AES_CBC_CMAC_256);
-		domainParameterSet0 = StandardizedDomainParameters.getDomainParameterSetById(0);
 		domainParameters0 = new DomainParameterSetCardObject(domainParameterSet0, new DomainParameterSetIdentifier(0));
 		domainParameters0.addOidIdentifier(oidIdentifier0);
 		domainParameterSet0Collection = new ArrayList<CardObject>();
@@ -201,7 +202,7 @@ public class PinManagementTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 01 04 83 01 03");
+		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 02 02 83 01 03");
 		processingData.updateCommandApdu(this, "setAT APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
@@ -252,7 +253,7 @@ public class PinManagementTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 01 04 83 01 03");
+		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 02 02 83 01 03");
 		processingData.updateCommandApdu(this, "setAT APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
@@ -305,7 +306,7 @@ public class PinManagementTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 01 04 83 01 03");
+		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 02 02 83 01 03");
 		processingData.updateCommandApdu(this, "setAT APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
@@ -358,7 +359,7 @@ public class PinManagementTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 01 04 83 01 03");
+		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 02 02 83 01 03");
 		processingData.updateCommandApdu(this, "setAT APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
@@ -412,7 +413,7 @@ public class PinManagementTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 01 04 83 01 03");
+		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 02 02 83 01 03");
 		processingData.updateCommandApdu(this, "setAT APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
@@ -618,7 +619,7 @@ public class PinManagementTest extends PersoSimTestCase {
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 01 04 83 01 03");
+		byte[] apduBytes = HexString.toByteArray("00 22 C1 A4 0F 80 0A 04 00 7F 00 07 02 02 04 02 02 83 01 03");
 		processingData.updateCommandApdu(this, "pseudo pace APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
