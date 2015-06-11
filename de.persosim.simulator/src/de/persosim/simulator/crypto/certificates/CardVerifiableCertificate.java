@@ -1,6 +1,5 @@
 package de.persosim.simulator.crypto.certificates;
 
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,14 +77,10 @@ public class CardVerifiableCertificate {
 			throw new CertificateNotParseableException("The certificate authority reference could not be parsed");
 		}
 		//public key
-		try {
-			ConstructedTlvDataObject publicKeyData = (ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F49);
-			publicKeyOid = new TaOid(publicKeyData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
-			publicKey = Tr03110Utils.parseCertificatePublicKey(publicKeyData, currentPublicKey);
-			if (publicKey == null){
-				throw new CertificateNotParseableException("The public key data could not be parsed");
-			}
-		} catch (GeneralSecurityException e) {
+		ConstructedTlvDataObject publicKeyData = (ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F49);
+		publicKeyOid = new TaOid(publicKeyData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
+		publicKey = Tr03110Utils.parseCertificatePublicKey(publicKeyData, currentPublicKey);
+		if (publicKey == null){
 			throw new CertificateNotParseableException("The public key data could not be parsed");
 		}
 		//certificate holder reference

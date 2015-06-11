@@ -105,13 +105,16 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 	 */
 	public static PublicKey parseCertificatePublicKey(
 			ConstructedTlvDataObject publicKeyData,
-			PublicKey trustPointPublicKey) throws GeneralSecurityException {
+			PublicKey trustPointPublicKey) {
 		
-		// XXX MBK catch and handle exceptions thrown by providers
 		for (Tr03110UtilsProvider provider : providers) {
-			PublicKey key = provider.parsePublicKey(publicKeyData, trustPointPublicKey);
-			if (key != null){
-				return key;
+			try{
+				PublicKey key = provider.parsePublicKey(publicKeyData, trustPointPublicKey);
+				if (key != null){
+					return key;
+				}
+			} catch (GeneralSecurityException e){
+				PersoSimLogger.logException(Tr03110Utils.class, e, PersoSimLogger.WARN);
 			}
 		}
 		return null;

@@ -2,13 +2,19 @@ package de.persosim.simulator.protocols;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
+import java.security.GeneralSecurityException;
+import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
+import mockit.Capturing;
+import mockit.Expectations;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
@@ -166,6 +172,67 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 		byte[] date = HexString.toByteArray("01000101020A");
 		
 		Tr03110Utils.parseDate(date);
+	}
+	
+	/**
+	 * This tests if the @link
+	 * {@link Tr03110Utils#parseCertificatePublicKey(de.persosim.simulator.tlv.ConstructedTlvDataObject, PublicKey)}
+	 * method correctly handles exceptions thrown by providers.
+	 * 
+	 * @param provider
+	 * @throws GeneralSecurityException
+	 */
+	@Test
+	public void testParseCertificatePublicKeyExceptionInProvider(
+			@Capturing final Tr03110UtilsProvider provider) throws GeneralSecurityException{
+		// prepare the mock
+		new NonStrictExpectations() {
+			{
+				provider.parsePublicKey(null, null);
+				result = new GeneralSecurityException();
+			}
+		};
+		
+		assertNull(Tr03110Utils.parseCertificatePublicKey(null, null));
+	}
+	
+	/**
+	 * This test checks if a key object returned by a provider is delivered by
+	 * {@link Tr03110Utils#parseCertificatePublicKey(de.persosim.simulator.tlv.ConstructedTlvDataObject, PublicKey)}
+	 * 
+	 * @param provider
+	 * @throws GeneralSecurityException
+	 */
+	@Test
+	public void testParseCertificatePublicKeyResultFound(
+			@Capturing final Tr03110UtilsProvider provider) throws GeneralSecurityException{
+		// prepare the mock
+		final PublicKey key = new PublicKey() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getFormat() {
+				return null;
+			}
+			
+			@Override
+			public byte[] getEncoded() {
+				return null;
+			}
+			
+			@Override
+			public String getAlgorithm() {
+				return null;
+			}
+		};
+		new Expectations() {
+			{
+				provider.parsePublicKey(null, null);
+				result = key;
+			}
+		};
+		
+		assertSame(key, Tr03110Utils.parseCertificatePublicKey(null, null));
 	}
 	
 }
