@@ -103,10 +103,7 @@ public class PersonalizationFactory {
 		writer.append(xmlRepresentation);
 	}
 	
-	public static void marshal (Object pers, String path) {
-		File xmlFile = new File (path);
-		xmlFile.getParentFile().mkdirs();
-		
+	public static void marshal (Object pers, String path) {		
 		FileWriter fileWriter;
 		try {
 			fileWriter = new FileWriter (path);
