@@ -8,7 +8,7 @@ import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 
 /**
- * This interface are used to modularize the {@link Tr03110Utils} class.
+ * Implementations of this interface are used to modularize the {@link Tr03110Utils} class.
  * 
  * @author mboonk
  *
@@ -16,7 +16,7 @@ import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 public interface Tr03110UtilsProvider {
 
 	/**
-	 * This methods parses a given TLV-encoded public key using the domain
+	 * This method parses a given TLV-encoded public key using the domain
 	 * parameters form a given public key. This is usually the key of a trust
 	 * point.
 	 * 
@@ -32,7 +32,7 @@ public interface Tr03110UtilsProvider {
 			PublicKey trustPointPublicKey) throws GeneralSecurityException;
 
 	/**
-	 * This creates domain parameters from a given key object.
+	 * This method creates domain parameters from a given key object.
 	 * @param key the key to extract domain parameters from
 	 * @return the domain parameters or null if the key does not contain supported domain parameters
 	 */

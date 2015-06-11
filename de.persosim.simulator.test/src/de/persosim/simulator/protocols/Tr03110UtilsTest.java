@@ -175,7 +175,7 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * This tests if the @link
+	 * This tests if the
 	 * {@link Tr03110Utils#parseCertificatePublicKey(de.persosim.simulator.tlv.ConstructedTlvDataObject, PublicKey)}
 	 * method correctly handles exceptions thrown by providers.
 	 * 
