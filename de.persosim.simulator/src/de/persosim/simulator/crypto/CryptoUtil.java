@@ -52,6 +52,10 @@ public class CryptoUtil {
 	public static final byte[] BITMASK            = new byte[]{(byte) 0x01, (byte) 0x02, (byte) 0x04, (byte) 0x08, (byte) 0x10, (byte) 0x20, (byte) 0x40, (byte) 0x80};
 	public static final byte[] BITMASK_COMPLEMENT = new byte[]{(byte) 0xFE, (byte) 0xFD, (byte) 0xFB, (byte) 0xF7, (byte) 0xEF, (byte) 0xDF, (byte) 0xBF, (byte) 0x7F};
 	
+	public static final byte ENCODING_UNCOMPRESSED = -1;
+	public static final byte ENCODING_COMPRESSED   = 0;
+	public static final byte ENCODING_HYBRID       = 1;
+	
 	/**
 	 * This method extracts the basic cipher name from the full cipher
 	 * String, e.g. it will turn "AES/CBC/NoPadding" into simply "AES".
@@ -231,48 +235,84 @@ public class CryptoUtil {
 	}
 	
 	/**
-	 * This method encodes an {@link ECPoint} (using uncompressed encoding
-	 * according to X9.62)
+	 * This method encodes an {@link ECPoint} (using uncompressed, compressed or
+	 * hybrid encoding according to X9.62).
 	 * <p/> 
 	 * According to ANSI X9.62 EC public point encoding in uncompressed mode is
-	 * supposed to look as follows: 04|x-coordinate|y-coordinate If an encoded
-	 * coordinate does not match the reference length l, it needs to be padded
-	 * with leading 00 bytes. The complete point encoding hence needs to be of
-	 * total length (2 * l) + 1.
+	 * supposed to look as follows:
+	 * uncompressed: 04||x-coordinate||y-coordinate
+	 * compressed  : 02|03||x-coordinate
+	 * hybrid      : 06|07||x-coordinate||y-coordinate
+	 * If an encoded coordinate does not match the reference length l, it needs
+	 * to be padded with leading 00 bytes.
 	 * 
 	 * @param ecPoint
 	 *            point to be encoded
 	 * @param referenceLength
-	 *            expected length l of each coordinate in bytes 
-	 * @return byte[] containing the uncompressed point encoding
+	 *            expected length l of each coordinate in bytes
+	 * @param encoding
+	 * 			  either {@link #ENCODING_UNCOMPRESSED}, {@link #ENCODING_COMPRESSED} or
+	 * 			  {@link #ENCODING_HYBRID}
+	 * @return byte[] containing the point encoding
 	 */
-	public static byte[] encode(ECPoint ecPoint, int referenceLength) {
-
+	public static byte[] encode(ECPoint ecPoint, int referenceLength, byte encoding) {
+		byte encodingIndicator;
+		byte[] pointEncoding;
+		
+		BigInteger x = ecPoint.getAffineX();
+		BigInteger y = ecPoint.getAffineY();
+		
 		// extract coordinates
-		byte[] xBytes = Utils.toUnsignedByteArray(ecPoint.getAffineX());
-		byte[] yBytes = Utils.toUnsignedByteArray(ecPoint.getAffineY());
+		byte[] xBytes = Utils.toUnsignedByteArray(x);
+		byte[] yBytes = Utils.toUnsignedByteArray(y);
 		
 		//check coordinate lengths
 		if ((xBytes.length > referenceLength) || (yBytes.length > referenceLength)) {
 			throw new IllegalArgumentException("Coordinates of point are larger than reference length");
 		}
 
-		// add padding to x coordinate it needed
+		// add padding to x coordinate if needed
 		if (xBytes.length < referenceLength) {
 			byte[] padding = new byte[referenceLength - xBytes.length];
 			Arrays.fill(padding, (byte) 0x00);
 			xBytes = Utils.concatByteArrays(padding, xBytes);
 		}
-
-		// add padding to x coordinate it needed
-		if (yBytes.length < referenceLength) {
-			byte[] padding = new byte[referenceLength - yBytes.length];
-			Arrays.fill(padding, (byte) 0x00);
-			yBytes = Utils.concatByteArrays(padding, yBytes);
+		
+		boolean yBitSet = y.testBit(0);
+		
+		if(encoding == ENCODING_COMPRESSED) {
+			if(yBitSet) {
+				encodingIndicator = (byte) 0x03;
+			} else {
+				encodingIndicator = (byte) 0x02;
+			}
+			pointEncoding = xBytes;
+		} else {
+			if(encoding == ENCODING_UNCOMPRESSED) {
+				encodingIndicator = (byte) 0x04;
+			} else {
+				if(encoding == ENCODING_HYBRID) {
+					if(yBitSet) {
+						encodingIndicator = (byte) 0x07;
+					} else {
+						encodingIndicator = (byte) 0x06;
+					}
+				} else {
+					throw new IllegalArgumentException("unsupported encoding");
+				}
+			}
+			
+			// add padding to y coordinate if needed
+			if (yBytes.length < referenceLength) {
+				byte[] padding = new byte[referenceLength - yBytes.length];
+				Arrays.fill(padding, (byte) 0x00);
+				yBytes = Utils.concatByteArrays(padding, yBytes);
+			}
+			
+			pointEncoding = Utils.concatByteArrays(xBytes, yBytes);
 		}
-
-		return Utils.concatByteArrays(new byte[] { (byte) 0x04 }, xBytes,
-				yBytes);
+		
+		return Utils.concatByteArrays(new byte[] {encodingIndicator}, pointEncoding);
 	}
 	
 	public static KeyPair generateKeyPair(DomainParameterSet domParamSet, SecureRandom secRandom) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {

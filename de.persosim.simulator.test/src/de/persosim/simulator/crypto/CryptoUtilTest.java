@@ -161,7 +161,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 
 		ECPoint ecPoint = new ECPoint(x, y);
 		
-		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength));
+		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_UNCOMPRESSED));
 	}
 	
 	/**
@@ -180,7 +180,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 
 		ECPoint ecPoint = new ECPoint(x, y);
 		
-		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength));
+		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_UNCOMPRESSED));
 	}
 	
 	/**
@@ -199,7 +199,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 
 		ECPoint ecPoint = new ECPoint(x, y);
 		
-		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength));
+		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_UNCOMPRESSED));
 	}
 	
 	/**
@@ -218,7 +218,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 
 		ECPoint ecPoint = new ECPoint(x, y);
 		
-		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength));
+		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_UNCOMPRESSED));
 	}
 	
 	/**
@@ -236,7 +236,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 
 		ECPoint ecPoint = new ECPoint(x, y);
 		
-		CryptoUtil.encode(ecPoint, refLength);
+		CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_UNCOMPRESSED);
 	}
 	
 	/**
@@ -254,8 +254,102 @@ public class CryptoUtilTest extends PersoSimTestCase {
 
 		ECPoint ecPoint = new ECPoint(x, y);
 		
-		CryptoUtil.encode(ecPoint, refLength);
-	} 
+		CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_UNCOMPRESSED);
+	}
+	
+	/**
+	 * Positive test case: perform compressed point encoding for y-coordinate's LSB=1.
+	 */
+	@Test
+	public void testEncode_Compressed1() {
+		
+		String xStr = "CA2E6B0BE8D4C39A";
+		String yStr = "DC6BD8DF35C331D7";
+		int refLength = 8;
+		byte[] exp = HexString.toByteArray("03" + xStr);
+		
+		BigInteger x = new BigInteger(1, HexString.toByteArray(xStr));
+		BigInteger y = new BigInteger(1, HexString.toByteArray(yStr));
+
+		ECPoint ecPoint = new ECPoint(x, y);
+		
+		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_COMPRESSED));
+	}
+	
+	/**
+	 * Positive test case: perform compressed point encoding for y-coordinate's LSB=0.
+	 */
+	@Test
+	public void testEncode_Compressed0() {
+		
+		String xStr = "CA2E6B0BE8D4C39A";
+		String yStr = "DC6BD8DF35C331D6";
+		int refLength = 8;
+		byte[] exp = HexString.toByteArray("02" + xStr);
+		
+		BigInteger x = new BigInteger(1, HexString.toByteArray(xStr));
+		BigInteger y = new BigInteger(1, HexString.toByteArray(yStr));
+
+		ECPoint ecPoint = new ECPoint(x, y);
+		
+		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_COMPRESSED));
+	}
+	
+	/**
+	 * Positive test case: perform hybrid point encoding for y-coordinate's LSB=1.
+	 */
+	@Test
+	public void testEncode_Hybrid1() {
+		
+		String xStr = "CA2E6B0BE8D4C39A";
+		String yStr = "DC6BD8DF35C331D7";
+		int refLength = 8;
+		byte[] exp = HexString.toByteArray("07" + xStr + yStr);
+		
+		BigInteger x = new BigInteger(1, HexString.toByteArray(xStr));
+		BigInteger y = new BigInteger(1, HexString.toByteArray(yStr));
+
+		ECPoint ecPoint = new ECPoint(x, y);
+		
+		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_HYBRID));
+	}
+	
+	/**
+	 * Positive test case: perform hybrid point encoding for y-coordinate's LSB=0.
+	 */
+	@Test
+	public void testEncode_Hybrid0() {
+		
+		String xStr = "CA2E6B0BE8D4C39A";
+		String yStr = "DC6BD8DF35C331D6";
+		int refLength = 8;
+		byte[] exp = HexString.toByteArray("06" + xStr + yStr);
+		
+		BigInteger x = new BigInteger(1, HexString.toByteArray(xStr));
+		BigInteger y = new BigInteger(1, HexString.toByteArray(yStr));
+
+		ECPoint ecPoint = new ECPoint(x, y);
+		
+		assertArrayEquals(exp, CryptoUtil.encode(ecPoint, refLength, CryptoUtil.ENCODING_HYBRID));
+	}
+	
+	/**
+	 * Negative test case: unknown/illegal encoding type.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testEncode_IllegalEncoding() {
+		
+		String xStr = "CA2E6B0BE8D4C39A";
+		String yStr = "ADDC6BD8DF35C331D7";
+		int refLength = 8;
+
+		BigInteger x = new BigInteger(1, HexString.toByteArray(xStr));
+		BigInteger y = new BigInteger(1, HexString.toByteArray(yStr));
+
+		ECPoint ecPoint = new ECPoint(x, y);
+		
+		CryptoUtil.encode(ecPoint, refLength, Byte.MAX_VALUE);
+	}
 	
 	/**
 	 * Positive test case: encode a raw representation of a valid signature into

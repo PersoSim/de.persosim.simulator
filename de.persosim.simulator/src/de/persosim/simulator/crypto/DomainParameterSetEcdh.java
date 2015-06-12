@@ -24,7 +24,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
-
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -332,7 +331,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 			throw new IllegalArgumentException("invalid public ECDH key");
 		}
 		
-		return CryptoUtil.encode(ecPublicKey.getW(), getPublicPointReferenceLengthL(((ECFieldFp) ecPublicKey.getParams().getCurve().getField()).getP()));
+		return CryptoUtil.encode(ecPublicKey.getW(), getPublicPointReferenceLengthL(((ECFieldFp) ecPublicKey.getParams().getCurve().getField()).getP()), CryptoUtil.ENCODING_UNCOMPRESSED);
 	}
 	
 	@Override
@@ -430,7 +429,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		curve.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OCTET_STRING, getCurve().getA().toByteArray()));
 		curve.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OCTET_STRING, getCurve().getB().toByteArray()));
 		
-		PrimitiveTlvDataObject base = new PrimitiveTlvDataObject(TlvConstants.TAG_OCTET_STRING, CryptoUtil.encode(getGenerator(), getPublicPointReferenceLengthL(getPrime())));
+		PrimitiveTlvDataObject base = new PrimitiveTlvDataObject(TlvConstants.TAG_OCTET_STRING, CryptoUtil.encode(getGenerator(), getPublicPointReferenceLengthL(getPrime()), CryptoUtil.ENCODING_UNCOMPRESSED));
 		PrimitiveTlvDataObject order = new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, getOrder().toByteArray());
 		PrimitiveTlvDataObject cofactor = new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, BigInteger.valueOf(getCofactor()).toByteArray());
 		
@@ -473,6 +472,38 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	@Override
 	public ECParameterSpec getAlgorithmParameterSpec() {
 		return ecParameterSpec;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		
+		EllipticCurve curve = getCurve();
+		BigInteger a = curve.getA();
+		BigInteger b = curve.getB();
+		BigInteger p = getPrime();
+		BigInteger order = getOrder();
+		int coFactor = getCofactor();
+		ECPoint generator = getGenerator();
+		int referenceLength = DomainParameterSetEcdh.getPublicPointReferenceLengthL(p);
+		
+		sb.append("************ elliptic curve domain parameters ************");
+		sb.append("\nCurve parameter A : " + HexString.encode(a));
+		sb.append("\nCurve parameter B : " + HexString.encode(b));
+		sb.append("\nPrime field p     : " + HexString.encode(p));
+		sb.append("\nOrder of generator: " + HexString.encode(order));
+		sb.append("\nCo-factor h       : " + coFactor);
+		sb.append("\nGenerator G       : " + HexString.encode(CryptoUtil.encode(generator, referenceLength, CryptoUtil.ENCODING_HYBRID)));
+		sb.append("\nGenerator G.x     : " + "  " + HexString.encode(generator.getAffineX()));
+		
+		char[] array = new char[(2*referenceLength) + 2];
+	    Arrays.fill(array, ' ');
+	    String padding = new String(array);
+		
+	    sb.append("\nGenerator G.y     : " + padding + HexString.encode(generator.getAffineY()));
+		sb.append("\n**********************************************************");
+		
+		return sb.toString();
 	}
 	
 }

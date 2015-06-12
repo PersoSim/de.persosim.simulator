@@ -85,7 +85,7 @@ public class GenericMappingEcdh extends GenericMapping {
 		log(GenericMappingEcdh.class, "H.x: " + HexString.encode(secretPoint.getAffineX()), TRACE);
 		log(GenericMappingEcdh.class, "H.y: " + HexString.encode(secretPoint.getAffineY()), TRACE);
 		
-		byte[] encodedPoint = CryptoUtil.encode(secretPoint, domainParameterSetEcdh.getPublicPointReferenceLengthL());
+		byte[] encodedPoint = CryptoUtil.encode(secretPoint, domainParameterSetEcdh.getPublicPointReferenceLengthL(), CryptoUtil.ENCODING_UNCOMPRESSED);
 		log(GenericMappingEcdh.class, "H uncompressed encoding: " + HexString.encode(encodedPoint), TRACE);
 		
 		return encodedPoint;
