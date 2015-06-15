@@ -23,6 +23,7 @@ import de.persosim.simulator.utils.InfoSource;
 public class PersoSimTestCase implements InfoSource, Iso7816 {
 
 	protected static Provider bcProvider;
+	public static String personalizationPath = "./tmp";
 
 	@Override
 	public String getIDString() {

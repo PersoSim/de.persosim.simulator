@@ -44,9 +44,10 @@ public abstract class PersonalizationTest extends PersoSimTestCase {
 	}
 
 	protected String getXmlFilename() {
-		if (!new File("./tmp").exists())
-			new File("./tmp").mkdirs();
-		String retVal = "./tmp/" + getPerso().getClass().getSimpleName() + ".xml"; 
+		File personalizationFolder = new File(personalizationPath);
+		if (!personalizationFolder.isDirectory())
+			personalizationFolder.mkdirs();
+		String retVal = personalizationPath + "/" + getPerso().getClass().getSimpleName() + ".xml"; 
 		return retVal;
 	}
 
