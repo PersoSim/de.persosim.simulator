@@ -3,7 +3,6 @@ package de.persosim.simulator.perso;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.FileWriter;
 
 import org.junit.Test;
@@ -44,10 +43,7 @@ public abstract class PersonalizationTest extends PersoSimTestCase {
 	}
 
 	protected String getXmlFilename() {
-		File personalizationFolder = new File(personalizationPath);
-		if (!personalizationFolder.isDirectory())
-			personalizationFolder.mkdirs();
-		String retVal = personalizationPath + "/" + getPerso().getClass().getSimpleName() + ".xml"; 
+		String retVal = getTmpFolder() + "/" + getPerso().getClass().getSimpleName() + ".xml"; 
 		return retVal;
 	}
 
