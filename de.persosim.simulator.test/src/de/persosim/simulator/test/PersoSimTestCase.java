@@ -24,7 +24,7 @@ import de.persosim.simulator.utils.InfoSource;
 public class PersoSimTestCase implements InfoSource, Iso7816 {
 
 	protected static Provider bcProvider;
-	private static final String TMP_FOLDER = "./tmp";
+	private static final String TMP_FOLDER = ".\\tmp";
 
 	@Override
 	public String getIDString() {
