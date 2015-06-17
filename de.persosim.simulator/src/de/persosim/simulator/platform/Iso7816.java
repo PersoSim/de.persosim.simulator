@@ -207,6 +207,7 @@ public interface Iso7816 {
 	public static final short SW_6200_WARNING_STATE_UNCHANGED            = (short) 0x6200;
 	public static final short SW_6282_END_OF_FILE_REACHED_BEFORE_READING_NE_BYTES = (short) 0x6282;
 	public static final short SW_6283_SELECTED_FILE_DEACTIVATED          = (short) 0x6283;
+	public static final short SW_6285_SELECTED_FILE_TERMINATED           = (short) 0x6285;
 	/*--------------------------------------------------------------------------------*/
 	public static final short SW_6300_AUTHENTICATION_FAILED              = (short) 0x6300;
 	public static final short SW_63C0_COUNTER_IS_0                       = (short) 0x63C0;
