@@ -71,7 +71,7 @@ public class GenericMappingEcdh extends GenericMapping {
 		ECPrivateKey ecPrivateKeyPicc = (ECPrivateKey) privKeyPicc;
 		ECPublicKey ecPublicKeyPcd = (ECPublicKey) pubKeyPcd;
 		
-		ECPoint secretPoint = CryptoUtil.performEcdhKeyAgreement(domainParameterSetEcdh, ecPublicKeyPcd, ecPrivateKeyPicc);
+		ECPoint secretPoint = domainParameterSetEcdh.performEcdhKeyAgreement(ecPublicKeyPcd, ecPrivateKeyPicc);
 		
 		log(GenericMappingEcdh.class, "result H of ECDH key agreement is", TRACE);
 		log(GenericMappingEcdh.class, "H.x: " + HexString.encode(secretPoint.getAffineX()), TRACE);

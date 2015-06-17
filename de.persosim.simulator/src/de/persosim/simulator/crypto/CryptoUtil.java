@@ -1,8 +1,5 @@
 package de.persosim.simulator.crypto;
 
-import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
-
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
@@ -15,7 +12,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
-import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECField;
 import java.security.spec.ECFieldFp;
@@ -34,7 +30,6 @@ import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
-import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -481,31 +476,6 @@ public class CryptoUtil {
 		
 		return Utils.concatByteArrays(unpaddedData, new byte[]{(byte) 0x80}, paddingZeros);
 		
-	}
-	
-	/**
-	 * This method performs a manual ECDH key agreement that returns a complete
-	 * EC point as its result. The key agreement provided by Bouncy Castle via
-	 * the Java crypto API only returns the x-coordinate of the expected EC
-	 * point and reconstructing the y-coordinate is complicated by the ambiguity
-	 * of the coordinate.
-	 * 
-	 * @param domainParameterSetEcdh
-	 *            the domain parameters to be used
-	 * @param ecPublicKey
-	 *            the public key to use
-	 * @param ecPrivateKey
-	 *            the private key to use
-	 * @return
-	 */
-	public static ECPoint performEcdhKeyAgreement(DomainParameterSetEcdh domainParameterSetEcdh, ECPublicKey ecPublicKey, ECPrivateKey ecPrivateKey) {
-		ECPoint secretPoint = CryptoUtil.scalarPointMultiplication(domainParameterSetEcdh.getCurve(), domainParameterSetEcdh.getOrder(), ecPublicKey.getW(), ecPrivateKey.getS());
-		
-		log(CryptoUtil.class, "result H of ECDH key agreement is", TRACE);
-		log(CryptoUtil.class, "H.x: " + HexString.encode(secretPoint.getAffineX()), TRACE);
-		log(CryptoUtil.class, "H.y: " + HexString.encode(secretPoint.getAffineY()), TRACE);
-		
-		return secretPoint;
 	}
 	
 }
