@@ -447,10 +447,10 @@ public abstract class Iso7816Lib implements Iso7816 {
 	 * Returns the kind of secure messaging the provided APDU's CLA byte indicates
 	 * according to ISO 7816-4:
 	 * <ul>
-	 * <li>0  0  — No SM or no indication</li> 
-	 * <li>0  1  — Proprietary SM format </li>
-	 * <li>1  0  — SM according to 6, command header not processed according to 6.2.3.1</li>
-	 * <li>1  1  — SM according to 6, command header authenticated according to 6.2.3.1</li>
+	 * <li>0  0  - No SM or no indication</li> 
+	 * <li>0  1  - Proprietary SM format </li>
+	 * <li>1  0  - SM according to 6, command header not processed according to 6.2.3.1</li>
+	 * <li>1  1  - SM according to 6, command header authenticated according to 6.2.3.1</li>
 	 * </ul>
 	 * <p/>
 	 * @param apdu the APDU
@@ -487,10 +487,10 @@ public abstract class Iso7816Lib implements Iso7816 {
 	/**
 	 * Returns whether the provided APDU matches the provided secure messaging indication
 	 * according to ISO 7816-4:
-	 * 0  0  — No SM or no indication 
-	 * 0  1  — Proprietary SM format 
-	 * 1  0  — SM according to 6, command header not processed according to 6.2.3.1
-	 * 1  1  — SM according to 6, command header authenticated according to 6.2.3.1
+	 * 0  0  - No SM or no indication 
+	 * 0  1  - Proprietary SM format 
+	 * 1  0  - SM according to 6, command header not processed according to 6.2.3.1
+	 * 1  1  - SM according to 6, command header authenticated according to 6.2.3.1
 	 * @param apdu the APDU
 	 * @param specification some secure messaging status
 	 * @return whether the provided APDU matches the provided secure messaging status
