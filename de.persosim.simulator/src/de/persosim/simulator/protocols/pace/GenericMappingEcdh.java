@@ -67,19 +67,11 @@ public class GenericMappingEcdh extends GenericMapping {
 	
 	@Override
 	public byte[] performKeyAgreement(DomainParameterSet domainParameters, PrivateKey privKeyPicc, PublicKey pubKeyPcd) {
-		/*
-		 * This method performs a manual ECDH key agreement that returns a
-		 * complete EC point as its result. The key agreement provided via the
-		 * Java crypto API only returns the x-coordinate of the expected EC
-		 * point and reconstructing the y-coordinate is complicated by the
-		 * ambiguity of the coordinate.
-		 */
-		
 		DomainParameterSetEcdh domainParameterSetEcdh = (DomainParameterSetEcdh) domainParameters;
 		ECPrivateKey ecPrivateKeyPicc = (ECPrivateKey) privKeyPicc;
 		ECPublicKey ecPublicKeyPcd = (ECPublicKey) pubKeyPcd;
 		
-		ECPoint secretPoint = CryptoUtil.scalarPointMultiplication(domainParameterSetEcdh.getCurve(), domainParameterSetEcdh.getOrder(), ecPublicKeyPcd.getW(), ecPrivateKeyPicc.getS());
+		ECPoint secretPoint = CryptoUtil.performEcdhKeyAgreement(domainParameterSetEcdh, ecPublicKeyPcd, ecPrivateKeyPicc);
 		
 		log(GenericMappingEcdh.class, "result H of ECDH key agreement is", TRACE);
 		log(GenericMappingEcdh.class, "H.x: " + HexString.encode(secretPoint.getAffineX()), TRACE);
