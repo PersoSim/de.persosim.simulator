@@ -22,7 +22,7 @@ import de.persosim.simulator.secstatus.SecCondition;
  * @author slutters
  *
  */
-public class MinimumPersonalization extends AbstractPersonalization {
+public class MinimumPersonalization extends PersonalizationImpl {
 	
 	protected byte[] efCardAccessValue;
 	public static final byte [] DEFAULT_EF_CA_VALUE = "DUMMY".getBytes();

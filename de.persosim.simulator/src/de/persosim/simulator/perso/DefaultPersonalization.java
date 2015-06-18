@@ -79,7 +79,7 @@ import de.persosim.simulator.utils.HexString;
  * @author amay
  * 
  */
-public abstract class DefaultPersonalization extends AbstractPersonalization implements Tr03110 {
+public abstract class DefaultPersonalization extends PersonalizationImpl implements Tr03110 {
 
 	public static final String AID_EID = "E8 07 04 00 7F 00 07 03 02";
 	
