@@ -3,14 +3,22 @@ package de.persosim.simulator.platform;
 import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 
+import java.util.Collection;
 import java.util.LinkedList;
 
+import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
+import de.persosim.simulator.cardobjects.ObjectStore;
+import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.processing.UpdatePropagation;
+import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.securemessaging.SecureMessaging;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.InfoSource;
+import de.persosim.simulator.utils.PersoSimLogger;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -25,16 +33,40 @@ public class PersoSimKernel implements InfoSource {
 
 	private LinkedList<Layer> layers;
 	private Personalization perso;
+	private SecStatus securityStatus;
+	private ObjectStore objectStore;
 	
 	/**
 	 * Constructor that provides the inital {@link Personalization}
 	 * @param perso
+	 * @throws AccessDeniedException 
 	 */
-	public PersoSimKernel(Personalization perso) {
+	public PersoSimKernel(Personalization perso) throws AccessDeniedException {
 		super();
 		this.perso = perso;
+		this.objectStore = new ObjectStore(perso.getObjectTree());
+		objectStore.selectMasterFile();
+		this.securityStatus = new SecStatus();
+		perso.getObjectTree().setSecStatus(securityStatus);
+		setLifeCycleStates(perso.getObjectTree());
 	}
-	
+
+	private void setLifeCycleStates(CardObject objectTree) {
+		Collection<CardObject> children = objectTree.getChildren();
+		if (children.size() > 0){
+			for (CardObject cardObject : children) {
+				setLifeCycleStates(cardObject);
+				if (cardObject.getLifeCycleState().isPersonalizationPhase()){
+					try {
+						cardObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+					} catch (LifeCycleChangeException e) {
+						PersoSimLogger.logException(this, e, PersoSimLogger.WARN);
+					}	
+				}
+			}
+		}
+	}
+
 	/**
 	 * Performs initialization of object.
 	 */
@@ -45,7 +77,7 @@ public class PersoSimKernel implements InfoSource {
 		layers = new LinkedList<>();
 		layers.add(new IoManager(layerId++));
 		layers.add(new SecureMessaging(layerId++));
-		CommandProcessor commandProcessor = new CommandProcessor(layerId++, perso);
+		CommandProcessor commandProcessor = new CommandProcessor(layerId++, perso, objectStore, securityStatus);
 		commandProcessor.init();
 		layers.add(commandProcessor);
 		

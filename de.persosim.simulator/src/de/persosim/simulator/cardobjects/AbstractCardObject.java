@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.secstatus.SecStatus;
 
 /**
@@ -13,7 +15,7 @@ import de.persosim.simulator.secstatus.SecStatus;
  * @author amay
  * 
  */
-public abstract class AbstractCardObject implements CardObject, Iso7816LifeCycle {
+public abstract class AbstractCardObject implements CardObject {
 
 	protected CardObject parent;
 	protected List<CardObject> children = new ArrayList<>();
@@ -22,7 +24,10 @@ public abstract class AbstractCardObject implements CardObject, Iso7816LifeCycle
 	protected Iso7816LifeCycleState lifeCycleState = Iso7816LifeCycleState.CREATION;
 
 	@Override
-	public void setSecStatus(SecStatus securityStatus){
+	public void setSecStatus(SecStatus securityStatus) throws AccessDeniedException{
+		if (!lifeCycleState.isPersonalizationPhase()){
+			throw new AccessDeniedException("The security status can not be set after leaving the personalization phase");
+		}
 		this.securityStatus = securityStatus;
 		
 		//forward the SecStatus to all children
@@ -49,13 +54,18 @@ public abstract class AbstractCardObject implements CardObject, Iso7816LifeCycle
 	 * 
 	 * @param newChild
 	 *            child to add to the collection
+	 * @throws AccessDeniedException 
 	 */
 	public void addChild(CardObject newChild) {
 		children.add(newChild);
 		if (newChild instanceof AbstractCardObject) {
 			((AbstractCardObject) newChild).parent = this;
 		}
-		newChild.setSecStatus(securityStatus);
+		try {
+			newChild.setSecStatus(securityStatus);
+		} catch (AccessDeniedException e) {
+			throw new ObjectNotModifiedException("A new child should have security access restriction that allows setting the security status");
+		}
 	}
 
 	/**
@@ -84,11 +94,38 @@ public abstract class AbstractCardObject implements CardObject, Iso7816LifeCycle
 	}
 
 	@Override
-	public void updateLifeCycleState(Iso7816LifeCycleState state) {
-		//XXX MBK check for life cycle change access rights
-		//XXX who is allowed to set life cycle state during object initialization?
-		//XXX what is the default life cycle state directly after object initialization (if no state was explicitly provided)?
-		lifeCycleState = state;
+	public void updateLifeCycleState(Iso7816LifeCycleState state) throws LifeCycleChangeException {		
+		if (lifeCycleState.isPersonalizationPhase() && 
+				state.equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)){
+			lifeCycleState = state;
+			return;
+		}
+		
+		switch (getLifeCycleState()){
+		case INITIALISATION:
+			if(state.equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)){
+				lifeCycleState = state;
+			}
+			break;
+		case CREATION:
+			if(state.equals(Iso7816LifeCycleState.INITIALISATION) || state.equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)){
+				lifeCycleState = state;
+			}
+			break;
+		case OPERATIONAL_ACTIVATED:
+			if(state.equals(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED) || state.equals(Iso7816LifeCycleState.TERMINATION)){
+				lifeCycleState = state;
+			}
+			break;
+		case OPERATIONAL_DEACTIVATED:
+			if(state.equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED) || state.equals(Iso7816LifeCycleState.TERMINATION)){
+				lifeCycleState = state;
+			}
+			break;
+		default:
+			throw new LifeCycleChangeException("Change is not allowed.", lifeCycleState, state);
+		}
+		
 	}
 	
 	@Override

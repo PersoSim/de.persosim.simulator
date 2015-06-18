@@ -18,7 +18,6 @@ import de.persosim.simulator.cardobjects.DateAuxObject;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
-import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyObject;
 import de.persosim.simulator.cardobjects.MrzAuthObject;
@@ -50,7 +49,7 @@ import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn1 {
-	
+
 	protected PersonalizationDataContainer persoDataContainer;
 	
 	public abstract void setPersoDataContainer();
@@ -180,13 +179,11 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(
 				new AuthObjectIdentifier(2), getCan().getBytes("UTF-8"), "CAN",
 				6, 6);
-		can.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		mf.addChild(can);
 
 		PasswordAuthObjectWithRetryCounter pin = new PinObject(
 				new AuthObjectIdentifier(3), getPin().getBytes("UTF-8"), 6, 6,
 				3);
-		pin.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		mf.addChild(pin);
 
 		PasswordAuthObject puk = new PasswordAuthObject(

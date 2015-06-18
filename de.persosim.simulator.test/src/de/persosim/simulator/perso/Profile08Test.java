@@ -2,6 +2,8 @@ package de.persosim.simulator.perso;
 
 import org.junit.Before;
 
+import de.persosim.simulator.exception.AccessDeniedException;
+
 public class Profile08Test extends PersonalizationTest {
 
 	Personalization perso;
@@ -12,7 +14,7 @@ public class Profile08Test extends PersonalizationTest {
 	}
 
 	@Override
-	public Personalization getPerso() {
+	public Personalization getPerso() throws AccessDeniedException {
 		
 		if (perso == null) {
 			perso = new Profile08();

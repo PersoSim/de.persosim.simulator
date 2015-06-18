@@ -3,7 +3,6 @@ package de.persosim.simulator.cardobjects;
 import java.io.FileNotFoundException;
 
 import de.persosim.simulator.platform.CommandProcessor;
-import de.persosim.simulator.secstatus.SecStatus;
 
 /**
  * This class is a container for a tree of CardObjects (e.g. DFs, EF,
@@ -38,8 +37,8 @@ public class ObjectStore {
 	 */
 	private CardFile cachedFile;
 
-	public ObjectStore(SecStatus securityStatus){
-		reset(securityStatus);
+	public ObjectStore(MasterFile masterFile){
+		this.masterFile = masterFile;
 	}
 	
 	/**
@@ -237,15 +236,9 @@ public class ObjectStore {
 		}
 		return (DedicatedFile)currentObject;
 	}
-
-	public void reset(SecStatus securityStatus) {
-		reset (new MasterFile(), securityStatus);
-	}
 	
-	public void reset(MasterFile newMasterFile, SecStatus securityStatus) {
-		masterFile = newMasterFile;
+	public void reset() {
 		selectFileForPersonalization(masterFile);
-		masterFile.setSecStatus(securityStatus);
 		cachedFile = null;
 	}
 }

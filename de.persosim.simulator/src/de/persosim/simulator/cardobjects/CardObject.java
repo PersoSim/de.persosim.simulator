@@ -2,6 +2,7 @@ package de.persosim.simulator.cardobjects;
 
 import java.util.Collection;
 
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.secstatus.SecStatus;
 
 /**
@@ -14,7 +15,7 @@ import de.persosim.simulator.secstatus.SecStatus;
  * @author amay
  * 
  */
-public interface CardObject {
+public interface CardObject extends Iso7816LifeCycle {
 
 	/**
 	 * @return parent object of this object or null if unknown or root object
@@ -40,8 +41,9 @@ public interface CardObject {
 	 * implementing Object.
 	 * 
 	 * @param securityStatus
+	 * @throws AccessDeniedException 
 	 */
-	public void setSecStatus(SecStatus securityStatus);
+	public void setSecStatus(SecStatus securityStatus) throws AccessDeniedException;
 	
 	/**
 	 * Build a Collection containing all children of this object that match the given {@link CardObjectIdentifier}.

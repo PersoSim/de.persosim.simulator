@@ -18,11 +18,13 @@ import org.junit.Test;
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.MasterFile;
+import de.persosim.simulator.cardobjects.ObjectStore;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ProtocolUpdate;
+import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.TlvValuePlain;
 import de.persosim.simulator.utils.InfoSource;
@@ -56,7 +58,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 	    }.getMockInstance();
 	    
 	    
-		commandProcessor = new CommandProcessor(LAYER_ID, mockedPerso);
+		commandProcessor = new CommandProcessor(LAYER_ID, mockedPerso, new ObjectStore(new MasterFile()), new SecStatus());
 		commandProcessor.init();
 		
 	}

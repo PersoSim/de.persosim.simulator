@@ -9,6 +9,7 @@ import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.protocols.file.FileProtocol;
 import de.persosim.simulator.secstatus.NullSecurityCondition;
 import de.persosim.simulator.secstatus.SecCondition;
@@ -28,12 +29,11 @@ public class MinimumPersonalization extends PersonalizationImpl {
 	public static final byte [] DEFAULT_EF_CA_VALUE = "DUMMY".getBytes();
 	
 	public MinimumPersonalization(byte[] efCardAccessValue) {
+		super();
 		this.efCardAccessValue = efCardAccessValue;
-		
-		reset();
 	}
 	
-	public MinimumPersonalization() {
+	public MinimumPersonalization() throws AccessDeniedException {
 		this(DEFAULT_EF_CA_VALUE);
 	}
 	

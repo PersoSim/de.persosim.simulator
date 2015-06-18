@@ -35,12 +35,4 @@ public interface Personalization {
 	 */
 	List<Protocol> getProtocolList();
 
-	/**
-	 * Reset internal state of the personalization. Especially resets all cached
-	 * values. Used for example from within test cases that need to reset the
-	 * simulation in order to check different parts of the personalization
-	 * independently.
-	 */
-	void reset();
-
 }
