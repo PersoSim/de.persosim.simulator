@@ -4,7 +4,6 @@ import static de.persosim.simulator.protocols.Tr03110Utils.buildAuthenticationTo
 import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
-import static de.persosim.simulator.utils.PersoSimLogger.logException;
 
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
@@ -95,35 +94,28 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 	}
 	
-	/**
-	 * This method performs the processing of the CA Set AT command.
-	 */
-	public void processCommandSetAT() {
-		//get commandDataContainer
-		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-				
-		/* 
-		 * Extract security parameters
-		 */
-		
+	protected CaOid extractCaOidFromCommandData(TlvDataObjectContainer commandData) {
 		/* CA OID */
 		/* Check for the CA OID for itself */
 		/* tlvObject will never be null if APDU passed check against APDU specification */
 		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_80);
 		
+		CaOid caOid;
+		
 		try {
 			caOid = new CaOid(tlvObject.getValueField());
 		} catch (RuntimeException e) {
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-			this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
-			logException(this, e);
-			/* there is nothing more to be done here */
-			return;
+			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, e.getMessage());
 		}
 		
+		log(this, "new OID is " + caOid, DEBUG);
+		return caOid;
+	}
+	
+	protected KeyIdentifier extractKeyIdentifierFromCommandData(TlvDataObjectContainer commandData) {
 		/* key reference */
 		/* tlvObject may be null if key material is to be implicitly selected */
-		tlvObject = commandData.getTlvDataObject(TAG_84);
+		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_84);
 		
 		KeyIdentifier keyIdentifier;
 		if(tlvObject == null) {
@@ -132,38 +124,56 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			keyIdentifier = new KeyIdentifier(tlvObject.getValueField());
 		}
 		
-		
+		return keyIdentifier;
+	}
+	
+	protected KeyObject getkeyObjectForKeyIdentifier(KeyIdentifier keyIdentifier) {
 		CardObject cardObject;
 		try {
 			cardObject = Tr03110Utils.getSpecificChild(cardState.getObject(new MasterFileIdentifier(), Scope.FROM_MF), keyIdentifier, new OidIdentifier(caOid));
 		} catch (IllegalArgumentException e) {
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-			this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
-			/* there is nothing more to be done here */
-			return;
+			throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, e.getMessage());
 		}
 		
 		KeyObject keyObject;
 		if((cardObject instanceof KeyObject)) {
 			keyObject = (KeyObject) cardObject;
-			staticKeyPairPicc = keyObject.getKeyPair();
-			keyReference = keyObject.getPrimaryIdentifier().getInteger();
 		} else{
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-			this.processingData.updateResponseAPDU(this, "invalid key reference", resp);
-			/* there is nothing more to be done here */
-			return;
+			throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, "invalid key reference");
 		}
 		
-		/* CA domain parameters */
-		caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());
-		
-		this.cryptoSupport = caOid.getCryptoSupport();
-		
-		log(this, "new OID is " + caOid, DEBUG);
-		
-		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-		processingData.updateResponseAPDU(this, "Command Set AT successfully processed", resp);
+		return keyObject;
+	}
+	
+	/**
+	 * This method performs the processing of the CA Set AT command.
+	 */
+	public void processCommandSetAT() {
+		try {
+			//get commandDataContainer
+			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
+			
+			
+			caOid = extractCaOidFromCommandData(commandData);
+			
+			KeyIdentifier keyIdentifier = extractKeyIdentifierFromCommandData(commandData);
+			
+			KeyObject keyObject = getkeyObjectForKeyIdentifier(keyIdentifier);
+			staticKeyPairPicc = keyObject.getKeyPair();
+			keyReference = keyObject.getPrimaryIdentifier().getInteger();
+			
+			
+			/* CA domain parameters */
+			caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());
+			
+			this.cryptoSupport = caOid.getCryptoSupport();
+			
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
+			processingData.updateResponseAPDU(this, "Command Set AT successfully processed", resp);
+		} catch (ProcessingException e) {
+			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
+			processingData.updateResponseAPDU(this, e.getMessage(), resp);
+		}
 	}
 	
 	/**
