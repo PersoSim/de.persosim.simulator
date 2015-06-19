@@ -384,7 +384,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @throws NoSuchProviderException
 	 */
 	private boolean checkSignature(TaOid taOid, PublicKey publicKey, byte [] dataToVerify, byte [] signatureData) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoSuchProviderException{
-		log(this, "Verifing signature:");
+		log(this, "Verifying signature:");
 		Signature signature = taOid.getSignature();
 		if (signature != null){
 			signature.initVerify(publicKey);
