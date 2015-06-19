@@ -53,7 +53,6 @@ public class CardObjectUtils {
 		// IMPL the implementation of checks regarding the initialization state
 		// is missing, as it is not yet needed since personalization happens before starting the simulator
 		
-		// IMPL the handling of the 
 		for (SecCondition condition : secConditions){
 			if (condition.check(securityStatus.getCurrentMechanisms(context, condition.getNeededMechanisms()))){
 				return true;
