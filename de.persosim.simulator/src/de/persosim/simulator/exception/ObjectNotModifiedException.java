@@ -1,4 +1,4 @@
-package de.persosim.simulator.cardobjects;
+package de.persosim.simulator.exception;
 
 public class ObjectNotModifiedException extends RuntimeException {
 

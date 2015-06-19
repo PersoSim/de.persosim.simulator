@@ -6,6 +6,7 @@ import java.util.List;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.LifeCycleChangeException;
+import de.persosim.simulator.exception.ObjectNotModifiedException;
 import de.persosim.simulator.secstatus.SecStatus;
 
 /**
