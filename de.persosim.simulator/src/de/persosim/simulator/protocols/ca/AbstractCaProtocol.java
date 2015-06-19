@@ -2,7 +2,6 @@ package de.persosim.simulator.protocols.ca;
 
 import static de.persosim.simulator.protocols.Tr03110Utils.buildAuthenticationTokenInput;
 import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
-import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
 import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.logException;
@@ -36,6 +35,7 @@ import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.KeyDerivationFunction;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
+import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.ProtocolUpdate;
@@ -72,6 +72,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	protected CaOid caOid;
 	
 	protected DomainParameterSet caDomainParameters;
+	protected String keyAgreementAlgorithmName;
 	
 	protected CryptoSupport cryptoSupport;
 	
@@ -166,63 +167,42 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	/**
-	 * This method performs the processing of the CA General AUthenticate
-	 * command.
+	 * This method reconstructs the PCD's public key sent with General Authenticate
+	 * @param publicKeyMaterialPcd encoded kley material of the PCD's public key
+	 * @return the PCD's public key
 	 */
-	public void processCommandGeneralAuthenticate() {
-		//retrieve command data
-		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-		
-		//retrieve PCD's public key
-		TlvDataObject tlvObject = commandData.getTlvDataObject(new TlvPath(new TlvTag((byte) 0x7C), new TlvTag((byte) 0x80)));
-		byte[] pcdPublicKeyMaterial = tlvObject.getValueField();
-		
-		String keyAgreementAlgorithmName = caDomainParameters.getKeyAgreementAlgorithm();
-		log(this, "PCD's ephemeral public " + keyAgreementAlgorithmName + " key material of " + pcdPublicKeyMaterial.length + " bytes length is: " + HexString.encode(pcdPublicKeyMaterial), TRACE);
-		
+	protected PublicKey reconstructEphemeralPublicKeyPcd(byte[] publicKeyMaterialPcd) {
 		PublicKey ephemeralPublicKeyPcd;
+		
 		try {
-			ephemeralPublicKeyPcd = caDomainParameters.reconstructPublicKey(pcdPublicKeyMaterial);
+			ephemeralPublicKeyPcd = caDomainParameters.reconstructPublicKey(publicKeyMaterialPcd);
 			log(this, "PCD's  ephemeral public " + keyAgreementAlgorithmName + " key is " + new TlvDataObjectContainer(ephemeralPublicKeyPcd.getEncoded()), TRACE);
 		} catch (IllegalArgumentException e) {
-			logException(this, e, ERROR);
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-			processingData.updateResponseAPDU(this, e.getMessage(), resp);
-			return;
+			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, e.getMessage());
 		} catch (Exception e) {
-			logException(this, e, ERROR);
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
-			processingData.updateResponseAPDU(this, e.getMessage(), resp);
-			return;
+			throw new ProcessingException(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR, e.getMessage());
 		}
 		
+		return ephemeralPublicKeyPcd;
+	}
+	
+	/**
+	 * This method checks that the PCD's public key matches the compressed key received during previous TA
+	 * @param ephemeralPublicKeyPcd the PCD's public key
+	 */
+	protected void assertEphemeralPublicKeyPcdMatchesCompressedKeyReceivedDuringTa(PublicKey ephemeralPublicKeyPcd) {
 		//compare expected PCD's (compressed) public key with the key previously received during TA
 		byte[] ephemeralPublicKeyPcdCompressedExpected;
 		try {
 			ephemeralPublicKeyPcdCompressedExpected = caDomainParameters.comp(ephemeralPublicKeyPcd);
 		} catch (NoSuchAlgorithmException e) {
-			logException(this, e, ERROR);
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
-			processingData.updateResponseAPDU(this, e.getMessage(), resp);
-			return;
+			throw new ProcessingException(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR, e.getMessage());
 		}
 		
-		byte[] ephemeralPublicKeyPcdCompressedReceived = null;
-		
-		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
-		wantedMechanisms.add(TerminalAuthenticationMechanism.class);
-		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, wantedMechanisms);
-		
-		for(SecMechanism secMechanism : currentMechanisms) {
-			if(secMechanism instanceof TerminalAuthenticationMechanism) {
-				ephemeralPublicKeyPcdCompressedReceived = ((TerminalAuthenticationMechanism) secMechanism).getCompressedTerminalEphemeralPublicKey();
-			}
-		}
+		byte[] ephemeralPublicKeyPcdCompressedReceived = getEphemeralPublicKeyPcdFromTa();
 		
 		if(ephemeralPublicKeyPcdCompressedReceived == null) {
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			processingData.updateResponseAPDU(this, "PICC's compressed ephemeral public key from TA is missing. Maybe TA was not performed.", resp);
-			return;
+			throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED, "PICC's compressed ephemeral public key from TA is missing. Maybe TA was not performed.");
 		}
 		
 		log(this, "expected compressed PCD's ephemeral public " + keyAgreementAlgorithmName + " key of " + ephemeralPublicKeyPcdCompressedExpected.length + " bytes length is: " + HexString.encode(ephemeralPublicKeyPcdCompressedExpected), DEBUG);
@@ -231,15 +211,18 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		if(Arrays.equals(ephemeralPublicKeyPcdCompressedExpected, ephemeralPublicKeyPcdCompressedReceived)) {
 			log(this, "compressed representation of PCD's ephemeral public " + caDomainParameters.getKeyAgreementAlgorithm() + " key matches the one received during previous TA", DEBUG);
 		} else{
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
-			this.processingData.updateResponseAPDU(this, "compressed representation of PCD's public " + keyAgreementAlgorithmName + " key does NOT match the one received during previous TA", resp);
-			/* there is nothing more to be done here */
-			return;
+			throw new ProcessingException(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE, "compressed representation of PCD's public " + keyAgreementAlgorithmName + " key does NOT match the one received during previous TA");
 		}
-		
+	}
+	
+	/**
+	 * This method performs the ca key agreement
+	 * @param staticPrivateKeyPicc the private key to use
+	 * @param ephemeralPublicKeyPcd the public key to use
+	 * @return the shared secret
+	 */
+	protected byte[] performKeyAgreement(PrivateKey staticPrivateKeyPicc, PublicKey ephemeralPublicKeyPcd) {
 		//perform key agreement
-		PrivateKey staticPrivateKeyPicc = (PrivateKey) staticKeyPairPicc.getPrivate();
-		
 		KeyAgreement keyAgreement;
 		byte[] sharedSecret = null;
 		
@@ -249,28 +232,22 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			keyAgreement.doPhase(ephemeralPublicKeyPcd, true);
 			sharedSecret = keyAgreement.generateSecret();
 		} catch (InvalidKeyException e) {
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-			processingData.updateResponseAPDU(this, "invalid key", resp);
-			logException(this, e);
-			/* there is nothing more to be done here */
-			return;
+			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "invalid key");
 		} catch(NoSuchAlgorithmException | IllegalStateException e) {
-			e.printStackTrace();
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
-			processingData.updateResponseAPDU(this, e.getMessage(), resp);
-			logException(this, e);
-			/* there is nothing more to be done here */
-			return;
+			throw new ProcessingException(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR, e.getMessage());
 		}
 		
 		log(this, "shared secret K of " + sharedSecret.length + " bytes length is: " + HexString.encode(sharedSecret), DEBUG);
 		
-		//get nonce r_PICC
-		int nonceSizeInBytes = 8;
-		byte[] rPiccNonce = new byte[nonceSizeInBytes];
-		this.secureRandom.nextBytes(rPiccNonce);
-		log(this, "nonce r_PICC of " + nonceSizeInBytes + " bytes length is: " + HexString.encode(rPiccNonce), DEBUG);
-		
+		return sharedSecret;
+	}
+	
+	/**
+	 * This method computes the CA session keys
+	 * @param sharedSecret the shared secret used to compute the session keys
+	 * @param rPiccNonce the PICC's nonce r used to generate the session keys
+	 */
+	protected void computeSessionKeys(byte[] sharedSecret, byte[] rPiccNonce) {
 		//compute session keys
 		KeyDerivationFunction kdf = new KeyDerivationFunction(caOid.getSymmetricCipherKeyLengthInBytes());
 		
@@ -282,28 +259,43 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 		secretKeySpecMAC = cryptoSupport.generateSecretKeySpecMac(keyMaterialMac);
 		secretKeySpecENC = cryptoSupport.generateSecretKeySpecCipher(keyMaterialEnc);
-		
+	}
+	
+	/**
+	 * This method generates the PICC's nonce r
+	 * @return the PICC's nonce r
+	 */
+	protected byte[] generateRPiccNonce() {
+		//get nonce r_PICC
+		int nonceSizeInBytes = 8;
+		byte[] rPiccNonce = new byte[nonceSizeInBytes];
+		this.secureRandom.nextBytes(rPiccNonce);
+		log(this, "nonce r_PICC of " + nonceSizeInBytes + " bytes length is: " + HexString.encode(rPiccNonce), DEBUG);
+		return rPiccNonce;
+	}
+	
+	/**
+	 * This method computes the PICC's authentication token
+	 * @param ephemeralPublicKeyPcd the PCD's ephemeral public key
+	 * @return the PICC's authentication token
+	 */
+	protected byte[] computeAuthenticationTokenTpicc(PublicKey ephemeralPublicKeyPcd) {
 		//compute authentication token T_PICC
 		TlvDataObjectContainer authenticationTokenInput = buildAuthenticationTokenInput(ephemeralPublicKeyPcd, caDomainParameters, caOid);
 		log(this, "authentication token raw data " + authenticationTokenInput, DEBUG);
 		byte[] authenticationTokenTpicc = Arrays.copyOf(this.cryptoSupport.macAuthenticationToken(authenticationTokenInput.toByteArray(), this.secretKeySpecMAC), 8);
 		log(this, "PICC's authentication token T_PICC of " + authenticationTokenTpicc.length + " bytes length is: " + HexString.encode(authenticationTokenTpicc), DEBUG);
 		
-		//create and propagate new secure messaging data provider
-		SmDataProviderTr03110 smDataProvider;
-		try {
-			smDataProvider = new SmDataProviderTr03110(this.secretKeySpecENC, this.secretKeySpecMAC);
-			processingData.addUpdatePropagation(this, "init SM after successful CA", smDataProvider);
-		} catch (GeneralSecurityException e) {
-			logException(this, e);
-			ResponseApdu failureResponse = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
-			processingData.updateResponseAPDU(this, "Unable to initialize new secure messaging", failureResponse);
-			return;
-		}
-		
-		ChipAuthenticationMechanism mechanism = new ChipAuthenticationMechanism(caOid, keyReference, ephemeralPublicKeyPcd);
-		processingData.addUpdatePropagation(this, "Updated security status with chip authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
-		
+		return authenticationTokenTpicc;
+	}
+	
+	/**
+	 * This method prepares the response data to be sent within the response APDU
+	 * @param rPiccNonce the PICC's nonce r
+	 * @param authenticationTokenTpicc the PICC's authentication token
+	 * @return the response data to be sent within the response APDU
+	 */
+	protected TlvValue prepareResponseData(byte[] rPiccNonce, byte[] authenticationTokenTpicc) {
 		//create and prepare response APDU
 		PrimitiveTlvDataObject primitive81 = new PrimitiveTlvDataObject(TAG_81, rPiccNonce);
 		log(this, "primitive tag 81 is: " + primitive81, TRACE);
@@ -317,15 +309,96 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 		//create and propagate response APDU
 		TlvValue responseData = new TlvDataObjectContainer(constructed7C);
-		ResponseApdu resp = new ResponseApdu(responseData, Iso7816.SW_9000_NO_ERROR);
-		processingData.updateResponseAPDU(this, "Command General Authenticate successfully processed", resp);
 		
-		/* 
-		 * Request removal of this instance from the stack.
-		 * Protocol either successfully completed or failed.
-		 * In either case protocol is completed.
-		 */
-		processingData.addUpdatePropagation(this, "Command General Authenticate successfully processed - Protocol CA completed", new ProtocolUpdate(true));
+		return responseData;
+	}
+	
+	/**
+	 * This method propagates the session keys to be used for secure messaging 
+	 */
+	protected void propagateSessionKeys() {
+		//create and propagate new secure messaging data provider
+		SmDataProviderTr03110 smDataProvider;
+		try {
+			smDataProvider = new SmDataProviderTr03110(this.secretKeySpecENC, this.secretKeySpecMAC);
+			processingData.addUpdatePropagation(this, "init SM after successful CA", smDataProvider);
+		} catch (GeneralSecurityException e) {
+			throw new ProcessingException(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR, "Unable to initialize new secure messaging");
+		}
+	}
+	
+	/**
+	 * This method retrieves the PCD's public key material from the received General Authenticate APDU
+	 * @return the PCD's public key material
+	 */
+	protected byte[] getPcdPublicKeyMaterialFromApdu() {
+		//retrieve command data
+		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
+		
+		//retrieve PCD's public key
+		TlvDataObject tlvObject = commandData.getTlvDataObject(new TlvPath(new TlvTag((byte) 0x7C), new TlvTag((byte) 0x80)));
+		byte[] pcdPublicKeyMaterial = tlvObject.getValueField();
+		
+		keyAgreementAlgorithmName = caDomainParameters.getKeyAgreementAlgorithm();
+		log(this, "PCD's ephemeral public " + keyAgreementAlgorithmName + " key material of " + pcdPublicKeyMaterial.length + " bytes length is: " + HexString.encode(pcdPublicKeyMaterial), TRACE);
+		
+		return pcdPublicKeyMaterial;
+	}
+	
+	/**
+	 * This method performs the processing of the CA General Authenticate
+	 * command.
+	 */
+	public void processCommandGeneralAuthenticate() {
+		try {
+			byte[] pcdPublicKeyMaterial = getPcdPublicKeyMaterialFromApdu();
+			PublicKey ephemeralPublicKeyPcd = reconstructEphemeralPublicKeyPcd(pcdPublicKeyMaterial);
+			assertEphemeralPublicKeyPcdMatchesCompressedKeyReceivedDuringTa(ephemeralPublicKeyPcd);
+			byte[] sharedSecret = performKeyAgreement(staticKeyPairPicc.getPrivate(), ephemeralPublicKeyPcd);
+			byte[] rPiccNonce = generateRPiccNonce();
+			computeSessionKeys(sharedSecret, rPiccNonce);
+			byte[] authenticationTokenTpicc = computeAuthenticationTokenTpicc(ephemeralPublicKeyPcd);
+			propagateSessionKeys();
+			
+			ChipAuthenticationMechanism mechanism = new ChipAuthenticationMechanism(caOid, keyReference, ephemeralPublicKeyPcd);
+			processingData.addUpdatePropagation(this, "Updated security status with chip authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
+			
+			TlvValue responseData = prepareResponseData(rPiccNonce, authenticationTokenTpicc);
+			
+			ResponseApdu resp = new ResponseApdu(responseData, Iso7816.SW_9000_NO_ERROR);
+			processingData.updateResponseAPDU(this, "Command General Authenticate successfully processed", resp);
+			
+			/* 
+			 * Request removal of this instance from the stack.
+			 * Protocol either successfully completed or failed.
+			 * In either case protocol is completed.
+			 */
+			processingData.addUpdatePropagation(this, "Command General Authenticate successfully processed - Protocol CA completed", new ProtocolUpdate(true));
+		} catch (ProcessingException e) {
+			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
+			processingData.updateResponseAPDU(this, e.getMessage(), resp);
+		}
+	}
+	
+	/**
+	 * This method retrieves the PCD's ephemeral public key material received during TA
+	 * @return the PCD's ephemeral public key material
+	 */
+	private byte[] getEphemeralPublicKeyPcdFromTa() {
+		byte[] ephemeralPublicKeyPcdCompressedReceived = null;
+		
+		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
+		wantedMechanisms.add(TerminalAuthenticationMechanism.class);
+		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, wantedMechanisms);
+		
+		for(SecMechanism secMechanism : currentMechanisms) {
+			if(secMechanism instanceof TerminalAuthenticationMechanism) {
+				ephemeralPublicKeyPcdCompressedReceived = ((TerminalAuthenticationMechanism) secMechanism).getCompressedTerminalEphemeralPublicKey();
+				break; // there is at most one TerminalAuthenticationMechanism
+			}
+		}
+		
+		return ephemeralPublicKeyPcdCompressedReceived;
 	}
 
 	@Override
