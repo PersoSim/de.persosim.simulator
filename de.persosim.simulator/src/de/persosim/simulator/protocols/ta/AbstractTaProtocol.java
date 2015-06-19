@@ -498,8 +498,8 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				// the issuing certificate is allowed to be expired to allow import of a link certificate
 				return true;
 			} else {
-				// for terminal and dv certificates the issuing cvca must be valid (not yet expired)
-				if (issuingCertificate.getExpirationDate().after(currentDate)){
+				// for terminal and dv certificates the issuing cvca and the certificate itself must be valid (not yet expired)
+				if (!currentDate.after(issuingCertificate.getExpirationDate()) && !currentDate.after(certificate.getExpirationDate())){
 					return true;
 				}
 			}
