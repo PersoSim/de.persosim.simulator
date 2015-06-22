@@ -45,6 +45,7 @@ import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
+import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
@@ -53,6 +54,11 @@ import de.persosim.simulator.utils.Utils;
  *
  */
 public class AbstractCaProtocolTest extends PersoSimTestCase {
+	protected static byte[] COMMAND_DATA_IMPL_KEY_SELECTION = HexString.toByteArray("80 0A 04 00 7F 00 07 02 02 03 02 02");
+	protected static byte[] COMMAND_DATA_EXPL_KEY_SELECTION = HexString.toByteArray("80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02");
+	protected static TlvDataObjectContainer TLV_COMMAND_DATA_IMPL_KEY_SELECTION = new TlvDataObjectContainer(COMMAND_DATA_IMPL_KEY_SELECTION);
+	protected static TlvDataObjectContainer TLV_COMMAND_DATA_EXPL_KEY_SELECTION = new TlvDataObjectContainer(COMMAND_DATA_EXPL_KEY_SELECTION);
+	
 	private DefaultCaProtocol caProtocol;
 	@Mocked
 	CardStateAccessor mockedCardStateAccessor;
@@ -121,6 +127,30 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		
 		taMechanismCollection = new ArrayList<TerminalAuthenticationMechanism>();
 		taMechanismCollection.add(taMechanism);
+	}
+	
+	/**
+	 * Positive test case: extract key identifier from command data, implicit domain parameter set reference (Tag 84 is missing).
+	 */
+	@Test
+	public void testExtractKeyIdentifierFromCommandData_ImplicitDomainParameterReference(){
+		CaProtocol caProtocol = new CaProtocol();
+		KeyIdentifier keyIdentifierReceived = caProtocol.extractKeyIdentifierFromCommandData(TLV_COMMAND_DATA_IMPL_KEY_SELECTION);
+		KeyIdentifier keyIdentifierExpected = new KeyIdentifier();
+		
+		assertEquals(keyIdentifierExpected.getInteger(), keyIdentifierReceived.getInteger());
+	}
+	
+	/**
+	 * Positive test case: extract key identifier from command data, explicit domain parameter set reference (Tag 84 is present).
+	 */
+	@Test
+	public void testExtractKeyIdentifierFromCommandData_ExplicitDomainParameterReference(){
+		CaProtocol caProtocol = new CaProtocol();
+		KeyIdentifier keyIdentifierReceived = caProtocol.extractKeyIdentifierFromCommandData(TLV_COMMAND_DATA_EXPL_KEY_SELECTION);
+		KeyIdentifier keyIdentifierExpected = new KeyIdentifier(2);
+		
+		assertEquals(keyIdentifierExpected.getInteger(), keyIdentifierReceived.getInteger());
 	}
 	
 	/**
