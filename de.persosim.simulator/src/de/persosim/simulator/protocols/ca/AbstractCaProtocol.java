@@ -127,10 +127,10 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		return keyIdentifier;
 	}
 	
-	protected KeyObject getkeyObjectForKeyIdentifier(KeyIdentifier keyIdentifier) {
+	protected KeyObject getkeyObjectForKeyIdentifier(KeyIdentifier keyIdentifier, CardObjectIdentifier... cardObjectIdentifier) {
 		CardObject cardObject;
 		try {
-			cardObject = Tr03110Utils.getSpecificChild(cardState.getObject(new MasterFileIdentifier(), Scope.FROM_MF), keyIdentifier, new OidIdentifier(caOid));
+			cardObject = Tr03110Utils.getSpecificChild(cardState.getObject(new MasterFileIdentifier(), Scope.FROM_MF), keyIdentifier);
 		} catch (IllegalArgumentException e) {
 			throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, e.getMessage());
 		}
@@ -139,7 +139,15 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		if((cardObject instanceof KeyObject)) {
 			keyObject = (KeyObject) cardObject;
 		} else{
-			throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, "invalid key reference");
+			throw new ProcessingException(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE, "invalid key reference");
+		}
+		
+		if(cardObjectIdentifier != null) {
+			for(CardObjectIdentifier coi: cardObjectIdentifier) {
+				if(!keyObject.matchesIdentifier(coi)) {
+					throw new ProcessingException(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "invalid key reference");
+				}
+			}
 		}
 		
 		return keyObject;
@@ -153,15 +161,14 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			//get commandDataContainer
 			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 			
-			
 			caOid = extractCaOidFromCommandData(commandData);
 			
 			KeyIdentifier keyIdentifier = extractKeyIdentifierFromCommandData(commandData);
+			OidIdentifier caOidIdentifier = new OidIdentifier(caOid);
+			KeyObject keyObject = getkeyObjectForKeyIdentifier(keyIdentifier, caOidIdentifier);
 			
-			KeyObject keyObject = getkeyObjectForKeyIdentifier(keyIdentifier);
 			staticKeyPairPicc = keyObject.getKeyPair();
 			keyReference = keyObject.getPrimaryIdentifier().getInteger();
-			
 			
 			/* CA domain parameters */
 			caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());

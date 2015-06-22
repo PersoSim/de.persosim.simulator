@@ -63,5 +63,23 @@ public class KeyObject extends AbstractCardObject {
 	public boolean isPrivilegedOnly() {
 		return privilegedOnly;
 	}
+	
+	/**
+	 * This methods checks whether this object can also be identified by the provided identifier
+	 * @param cardObjectIdentifier the identifier to check
+	 * @return true if this object can also be identified by the provided identifier, false otherwise
+	 */
+	public boolean matchesIdentifier(CardObjectIdentifier cardObjectIdentifier) {
+		if(primaryIdentifier.matches(cardObjectIdentifier)) {
+			return true;
+		}
+		
+		for(CardObjectIdentifier coi : furtherIdentifiers) {
+			if(coi.matches(cardObjectIdentifier)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }

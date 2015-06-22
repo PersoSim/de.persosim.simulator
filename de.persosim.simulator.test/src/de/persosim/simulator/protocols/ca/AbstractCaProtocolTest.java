@@ -167,8 +167,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 				result = mockedMf;
 				
 				mockedMf.findChildren(
-						withInstanceOf(KeyIdentifier.class),
-						withInstanceOf(OidIdentifier.class));
+						withInstanceOf(KeyIdentifier.class));
 				result = ecdhKeys;
 				
 				mockedCardStateAccessor.getObject(
@@ -237,8 +236,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 				result = mockedMf;
 
 				mockedMf.findChildren(
-						withInstanceOf(KeyIdentifier.class),
-						withInstanceOf(OidIdentifier.class));
+						withInstanceOf(KeyIdentifier.class));
 				result = ecdhKeys;
 
 				mockedCardStateAccessor.getObject(
@@ -275,8 +273,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		new Expectations() {
 			{
 				mockedMf.findChildren(
-						withInstanceOf(KeyIdentifier.class),
-						withInstanceOf(OidIdentifier.class));
+						withInstanceOf(KeyIdentifier.class));
 				result = emptyKeySet;
 			}
 		};
