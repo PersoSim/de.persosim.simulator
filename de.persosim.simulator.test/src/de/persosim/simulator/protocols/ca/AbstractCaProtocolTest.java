@@ -35,6 +35,7 @@ import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
+import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
@@ -151,6 +152,33 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		KeyIdentifier keyIdentifierExpected = new KeyIdentifier(2);
 		
 		assertEquals(keyIdentifierExpected.getInteger(), keyIdentifierReceived.getInteger());
+	}
+	
+	/**
+	 * Positive test case: extract CA OID from command data.
+	 */
+	@Test
+	public void testExtractCaOidFromCommandData(){
+		CaProtocol caProtocol = new CaProtocol();
+		
+		CaOid caOidReceived = caProtocol.extractCaOidFromCommandData(TLV_COMMAND_DATA_IMPL_KEY_SELECTION);
+		byte[] caOidData = HexString.toByteArray("04 00 7F 00 07 02 02 03 02 02");
+		CaOid caOidExpected = new CaOid(caOidData);
+		
+		assertEquals(caOidExpected, caOidReceived);
+	}
+	
+	/**
+	 * Negative test case: extract CA OID from command data containing an invalid CA OID.
+	 */
+	@Test(expected = ProcessingException.class)
+	public void testExtractCaOidFromCommandData_illegalCaOid(){
+		CaProtocol caProtocol = new CaProtocol();
+		
+		byte[] commandDataBytes = HexString.toByteArray("80 0A 04 00 7F 00 07 02 02 03 FF FF");
+		TlvDataObjectContainer commandData = new TlvDataObjectContainer(commandDataBytes); 
+		
+		caProtocol.extractCaOidFromCommandData(commandData);
 	}
 	
 	/**
