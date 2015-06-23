@@ -417,6 +417,14 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 		return ephemeralPublicKeyPcdCompressedReceived;
 	}
+	
+	/**
+	 * This method returns the version of this protocol
+	 * @return the version of this protocol
+	 */
+	protected byte getVersion() {
+		return 2;
+	}
 
 	@Override
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
@@ -476,7 +484,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 					
 					ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
-					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{2}));
+					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{getVersion()}));
 					//always set keyId even if truly optional/not mandatory
 					//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
 					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
