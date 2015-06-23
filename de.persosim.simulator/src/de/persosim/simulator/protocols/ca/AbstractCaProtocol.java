@@ -401,7 +401,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	 * This method retrieves the PCD's ephemeral public key material received during TA
 	 * @return the PCD's ephemeral public key material
 	 */
-	private byte[] getEphemeralPublicKeyPcdFromTa() {
+	protected byte[] getEphemeralPublicKeyPcdFromTa() {
 		byte[] ephemeralPublicKeyPcdCompressedReceived = null;
 		
 		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
