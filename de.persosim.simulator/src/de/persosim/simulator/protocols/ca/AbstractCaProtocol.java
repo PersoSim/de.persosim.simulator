@@ -452,7 +452,23 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			//cached values
 			byte[] genericCaOidBytes = null;
 			
-			//construct and add CaInfos
+			/*
+			 * construct and add ChipAuthenticationInfo object(s)
+			 * 
+			 * ChipAuthenticationInfo ::= SEQUENCE {
+             *   protocol OBJECT IDENTIFIER(
+             *            id-CA-DH-3DES-CBC-CBC | 
+             *            id-CA-DH-AES-CBC-CMAC-128 | 
+             *            id-CA-DH-AES-CBC-CMAC-192 | 
+             *            id-CA-DH-AES-CBC-CMAC-256 | 
+             *            id-CA-ECDH-3DES-CBC-CBC |           
+             *            id-CA-ECDH-AES-CBC-CMAC-128 | 
+             *            id-CA-ECDH-AES-CBC-CMAC-192 | 
+             *            id-CA-ECDH-AES-CBC-CMAC-256),
+             *   version  INTEGER, -- MUST be 1 for CAv1 or 2 for CAv2 or 3 for CAv3
+             *   keyId    INTEGER OPTIONAL
+             * }
+			 */
 			for (CardObjectIdentifier curIdentifier : identifiers) {
 				if (caOidIdentifier.matches(curIdentifier)) {
 					byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
@@ -461,6 +477,8 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 					ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
 					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{2}));
+					//always set keyId even if truly optional/not mandatory
+					//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
 					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 					
 					if (curKey.isPrivilegedOnly()) {
@@ -479,10 +497,20 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			//using standardized domain parameters if possible
 			algIdentifier = StandardizedDomainParameters.simplifyAlgorithmIdentifier(algIdentifier);
 			
-			//add CaDomainParameterInfo
+			/*
+			 * add ChipAuthenticationDomainParameterInfo object(s)
+			 * 
+			 * ChipAuthenticationDomainParameterInfo ::= SEQUENCE {
+             *   protocol        OBJECT IDENTIFIER(id-CA-DH | id-CA-ECDH),
+             *   domainParameter AlgorithmIdentifier,
+             *   keyId           INTEGER OPTIONAL
+             * }
+			 */
 			ConstructedTlvDataObject caDomainInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 			caDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericCaOidBytes));
 			caDomainInfo.addTlvDataObject(algIdentifier);
+			//always set keyId even if truly optional/not mandatory
+			//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
 			caDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 			if (curKey.isPrivilegedOnly()) {
 				privilegedSecInfos.add(caDomainInfo);
@@ -496,12 +524,28 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			subjPubKeyInfo.addTlvDataObject(subjPubKey);
 			
 			if ((publicity == SecInfoPublicity.AUTHENTICATED) || (publicity == SecInfoPublicity.PRIVILEGED)) {
-				//add CaPublicKeyInfo
+				/*
+				 * add ChipAuthenticationPublicKeyInfo object(s)
+				 * 
+				 * id-PK OBJECT IDENTIFIER ::= {
+                 *   bsi-de protocols(2) smartcard(2) 1
+                 * }
+                 * 
+                 * id-PK-DH                 OBJECT IDENTIFIER ::= {id-PK 1}
+                 * id-PK-ECDH               OBJECT IDENTIFIER ::= {id-PK 2}
+                 * 
+                 * ChipAuthenticationPublicKeyInfo ::= SEQUENCE {
+                 *   protocol                    OBJECT IDENTIFIER(id-PK-DH | id-PK-ECDH),
+                 *   chipAuthenticationPublicKey SubjectPublicKeyInfo,
+                 *   keyId                       INTEGER OPTIONAL
+                 * }
+				 */
 				ConstructedTlvDataObject caPublicKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Utils.concatByteArrays(Tr03110.id_PK, new byte[] {genericCaOidBytes[8]})));
 				caPublicKeyInfo.addTlvDataObject(subjPubKeyInfo);
+				//always set keyId even if truly optional/not mandatory
+				//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
 				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
-				
 				
 				if (curKey.isPrivilegedOnly()) {
 					privilegedPublicKeyInfos.add(caPublicKeyInfo);
