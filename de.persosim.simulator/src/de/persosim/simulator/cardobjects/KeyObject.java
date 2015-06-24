@@ -75,7 +75,7 @@ public class KeyObject extends AbstractCardObject {
 		}
 		
 		for(CardObjectIdentifier coi : furtherIdentifiers) {
-			if(coi.matches(cardObjectIdentifier)) {
+			if(cardObjectIdentifier.matches(coi)) {
 				return true;
 			}
 		}
