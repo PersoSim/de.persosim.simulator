@@ -20,7 +20,7 @@ import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
-import de.persosim.simulator.cardobjects.KeyObject;
+import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MrzAuthObject;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
@@ -678,9 +678,9 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		ArrayList<Boolean> caKeyPriv = persoDataContainer.getCaKeyPrivileges();
 		
 		// CA static key pair PICC
-		KeyObject caKey;
+		KeyPairObject caKey;
 		for(int i=0; i<caKeys.size(); i++) {
-			caKey = new KeyObject(caKeys.get(i), new KeyIdentifier(caKeyIds.get(i)), caKeyPriv.get(i));
+			caKey = new KeyPairObject(caKeys.get(i), new KeyIdentifier(caKeyIds.get(i)), caKeyPriv.get(i));
 			caKey.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128);
 			mf.addChild(caKey);
 		}
@@ -695,12 +695,12 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		ArrayList<Boolean> riKeyAuthorizedOnly = persoDataContainer.getRiKeyAuthorizedOnly();
 		
 		// RI static key pair PICC
-		KeyObject riKey;
+		KeyPairObject riKey;
 		boolean authorizedOnly;
 		for(int i=0; i<riKeys.size(); i++) {
 			authorizedOnly = riKeyAuthorizedOnly.get(i);
 			
-			riKey = new KeyObject(riKeys.get(i), new KeyIdentifier(riKeyIds.get(i)), authorizedOnly);
+			riKey = new KeyPairObject(riKeys.get(i), new KeyIdentifier(riKeyIds.get(i)), authorizedOnly);
 			riKey.addOidIdentifier(new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)));
 			
 			mf.addChild(riKey);

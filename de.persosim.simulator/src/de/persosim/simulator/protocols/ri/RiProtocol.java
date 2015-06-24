@@ -18,7 +18,7 @@ import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
-import de.persosim.simulator.cardobjects.KeyObject;
+import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.Scope;
@@ -57,7 +57,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 	private CardStateAccessor cardState;
 	private int privateKeyReference;
 	
-	private KeyObject staticKeyObject;
+	private KeyPairObject staticKeyObject;
 
 	public RiProtocol() {
 		reset();
@@ -85,11 +85,11 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 			HashSet<TlvDataObject> secInfos = new HashSet<TlvDataObject>();
 			
 			for (CardObject curCardObject : riKeyCardObjects) {
-				if (! (curCardObject instanceof KeyObject)) {
+				if (! (curCardObject instanceof KeyPairObject)) {
 					continue;
 				}
 				
-				KeyObject curKey = (KeyObject) curCardObject;
+				KeyPairObject curKey = (KeyPairObject) curCardObject;
 				
 				Collection<CardObjectIdentifier> identifiers = curKey.getAllIdentifiers();
 				
@@ -430,8 +430,8 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 			CardObject cardObject = cardState.getObject(keyIdentifier,
 					Scope.FROM_MF);
 
-			if ((cardObject instanceof KeyObject)) {
-				staticKeyObject = (KeyObject) cardObject;
+			if ((cardObject instanceof KeyPairObject)) {
+				staticKeyObject = (KeyPairObject) cardObject;
 			} else {
 				ResponseApdu resp = new ResponseApdu(
 						Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);

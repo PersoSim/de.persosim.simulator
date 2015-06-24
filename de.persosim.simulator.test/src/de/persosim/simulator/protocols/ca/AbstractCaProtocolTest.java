@@ -25,7 +25,7 @@ import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
-import de.persosim.simulator.cardobjects.KeyObject;
+import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.MasterFileIdentifier;
 import de.persosim.simulator.cardobjects.NullCardObject;
@@ -79,7 +79,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	ECPrivateKey ecdhPrivateKeyPicc;
 	KeyPair ecdhKeyPairPicc;
 	Collection<CardObject> ecdhKeys, emptyKeySet;
-	KeyObject ecdhKeyObject;
+	KeyPairObject ecdhKeyObject;
 	@Mocked
 	TerminalAuthenticationMechanism taMechanism;
 	Collection<TerminalAuthenticationMechanism> taMechanismCollection;
@@ -120,7 +120,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		ecdhKeys = new ArrayList<CardObject>();
 		KeyIdentifier KeyIdentifier = new KeyIdentifier(2);
 		OidIdentifier oidIdentifier = new OidIdentifier(Ca.OID_id_CA_ECDH_AES_CBC_CMAC_128);
-		ecdhKeyObject = new KeyObject(ecdhKeyPairPicc, KeyIdentifier);
+		ecdhKeyObject = new KeyPairObject(ecdhKeyPairPicc, KeyIdentifier);
 		ecdhKeyObject.addOidIdentifier(oidIdentifier);
 		ecdhKeys.add(ecdhKeyObject);
 		

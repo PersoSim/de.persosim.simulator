@@ -30,7 +30,7 @@ import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
-import de.persosim.simulator.cardobjects.KeyObject;
+import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.MrzAuthObject;
 import de.persosim.simulator.cardobjects.OidIdentifier;
@@ -269,7 +269,7 @@ public abstract class DefaultPersonalization extends AbstractPersonalization imp
 				.reconstructPrivateKey(privateKeyMaterial);
 		keyPair = new KeyPair(publicKey, privateKey);
 
-		KeyObject riKey = new KeyObject(keyPair, new KeyIdentifier(1));
+		KeyPairObject riKey = new KeyPairObject(keyPair, new KeyIdentifier(1));
 		riKey.addOidIdentifier(new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)));
 		mf.addChild(riKey);
 	}
@@ -294,7 +294,7 @@ public abstract class DefaultPersonalization extends AbstractPersonalization imp
 				.reconstructPrivateKey(privateKeyMaterial);
 		KeyPair keyPair = new KeyPair(publicKey, privateKey);
 
-		KeyObject caKey = new KeyObject(keyPair, new KeyIdentifier(2));
+		KeyPairObject caKey = new KeyPairObject(keyPair, new KeyIdentifier(2));
 		caKey.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128);
 		mf.addChild(caKey);
 	}

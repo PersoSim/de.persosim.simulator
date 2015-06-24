@@ -24,7 +24,7 @@ import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
-import de.persosim.simulator.cardobjects.KeyObject;
+import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.MasterFileIdentifier;
 import de.persosim.simulator.cardobjects.OidIdentifier;
@@ -135,9 +135,9 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, e.getMessage());
 		}
 		
-		KeyObject keyObject;
-		if((cardObject instanceof KeyObject)) {
-			keyObject = (KeyObject) cardObject;
+		KeyPairObject keyObject;
+		if((cardObject instanceof KeyPairObject)) {
+			keyObject = (KeyPairObject) cardObject;
 		} else{
 			throw new ProcessingException(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE, "invalid key reference");
 		}
@@ -490,10 +490,10 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 		
 		for (CardObject curObject : caKeyCardObjects) {
-			if (! (curObject instanceof KeyObject)) {
+			if (! (curObject instanceof KeyPairObject)) {
 				continue;
 			}
-			KeyObject curKey = (KeyObject) curObject;
+			KeyPairObject curKey = (KeyPairObject) curObject;
 			Collection<CardObjectIdentifier> identifiers = curKey.getAllIdentifiers();
 			
 			//extract keyId
