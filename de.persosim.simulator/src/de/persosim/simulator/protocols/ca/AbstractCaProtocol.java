@@ -425,6 +425,42 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	protected byte getVersion() {
 		return 2;
 	}
+	
+	protected ConstructedTlvDataObject constructChipAuthenticationInfoObject(byte[] oidBytes, byte keyId) {
+		return constructChipAuthenticationInfoObject(oidBytes, getVersion(), keyId);
+	}
+	
+	/**
+	 * construct and add ChipAuthenticationInfo object(s)
+	 * 
+	 * ChipAuthenticationInfo ::= SEQUENCE {
+     *   protocol OBJECT IDENTIFIER(
+     *            id-CA-DH-3DES-CBC-CBC | 
+     *            id-CA-DH-AES-CBC-CMAC-128 | 
+     *            id-CA-DH-AES-CBC-CMAC-192 | 
+     *            id-CA-DH-AES-CBC-CMAC-256 | 
+     *            id-CA-ECDH-3DES-CBC-CBC |           
+     *            id-CA-ECDH-AES-CBC-CMAC-128 | 
+     *            id-CA-ECDH-AES-CBC-CMAC-192 | 
+     *            id-CA-ECDH-AES-CBC-CMAC-256),
+     *   version  INTEGER, -- MUST be 1 for CAv1 or 2 for CAv2 or 3 for CAv3
+     *   keyId    INTEGER OPTIONAL
+     * }
+     *
+	 * @param oidBytes
+	 * @param version
+	 * @param keyId
+	 * @return
+	 */
+	public static ConstructedTlvDataObject constructChipAuthenticationInfoObject(byte[] oidBytes, byte version, byte keyId) {
+		ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
+		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{version}));
+		//always set keyId even if truly optional/not mandatory
+		//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
+		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
+		return caInfo;
+	}
 
 	@Override
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
@@ -460,34 +496,13 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			//cached values
 			byte[] genericCaOidBytes = null;
 			
-			/*
-			 * construct and add ChipAuthenticationInfo object(s)
-			 * 
-			 * ChipAuthenticationInfo ::= SEQUENCE {
-             *   protocol OBJECT IDENTIFIER(
-             *            id-CA-DH-3DES-CBC-CBC | 
-             *            id-CA-DH-AES-CBC-CMAC-128 | 
-             *            id-CA-DH-AES-CBC-CMAC-192 | 
-             *            id-CA-DH-AES-CBC-CMAC-256 | 
-             *            id-CA-ECDH-3DES-CBC-CBC |           
-             *            id-CA-ECDH-AES-CBC-CMAC-128 | 
-             *            id-CA-ECDH-AES-CBC-CMAC-192 | 
-             *            id-CA-ECDH-AES-CBC-CMAC-256),
-             *   version  INTEGER, -- MUST be 1 for CAv1 or 2 for CAv2 or 3 for CAv3
-             *   keyId    INTEGER OPTIONAL
-             * }
-			 */
+			//construct and add ChipAuthenticationInfo object(s)
 			for (CardObjectIdentifier curIdentifier : identifiers) {
 				if (caOidIdentifier.matches(curIdentifier)) {
 					byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
 					genericCaOidBytes = Arrays.copyOfRange(oidBytes, 0, 9);
 					
-					ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
-					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{getVersion()}));
-					//always set keyId even if truly optional/not mandatory
-					//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
-					caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
+					ConstructedTlvDataObject caInfo = constructChipAuthenticationInfoObject(oidBytes, (byte) keyId);
 					
 					if (curKey.isPrivilegedOnly()) {
 						privilegedSecInfos.add(caInfo);
