@@ -38,8 +38,8 @@ import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.ProtocolUpdate;
-import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.Tr03110;
+import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -293,17 +293,30 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	
 	/**
 	 * This method computes the PICC's authentication token
+	 * @param caDomainParameters the domain parameters to be used
+	 * @param caOid the CA OID to be used
+	 * @param ephemeralPublicKeyPcd the PCD's ephemeral public key
+	 * @param cryptoSupport the crypto support to be used
+	 * @param secretKeySpecMAC the MAC secret key spec to be used
+	 * @return the PICC's authentication token
+	 */
+	protected static byte[] computeAuthenticationTokenTpicc(DomainParameterSet caDomainParameters, CaOid caOid, PublicKey ephemeralPublicKeyPcd, CryptoSupport cryptoSupport, SecretKeySpec secretKeySpecMAC) {
+		//compute authentication token T_PICC
+		TlvDataObjectContainer authenticationTokenInput = buildAuthenticationTokenInput(ephemeralPublicKeyPcd, caDomainParameters, caOid);
+		log(AbstractCaProtocol.class, "authentication token raw data " + authenticationTokenInput, DEBUG);
+		byte[] authenticationTokenTpicc = Arrays.copyOf(cryptoSupport.macAuthenticationToken(authenticationTokenInput.toByteArray(), secretKeySpecMAC), 8);
+		log(AbstractCaProtocol.class, "PICC's authentication token T_PICC of " + authenticationTokenTpicc.length + " bytes length is: " + HexString.encode(authenticationTokenTpicc), DEBUG);
+		
+		return authenticationTokenTpicc;
+	}
+	
+	/**
+	 * This method computes the PICC's authentication token
 	 * @param ephemeralPublicKeyPcd the PCD's ephemeral public key
 	 * @return the PICC's authentication token
 	 */
 	protected byte[] computeAuthenticationTokenTpicc(PublicKey ephemeralPublicKeyPcd) {
-		//compute authentication token T_PICC
-		TlvDataObjectContainer authenticationTokenInput = buildAuthenticationTokenInput(ephemeralPublicKeyPcd, caDomainParameters, caOid);
-		log(this, "authentication token raw data " + authenticationTokenInput, DEBUG);
-		byte[] authenticationTokenTpicc = Arrays.copyOf(this.cryptoSupport.macAuthenticationToken(authenticationTokenInput.toByteArray(), this.secretKeySpecMAC), 8);
-		log(this, "PICC's authentication token T_PICC of " + authenticationTokenTpicc.length + " bytes length is: " + HexString.encode(authenticationTokenTpicc), DEBUG);
-		
-		return authenticationTokenTpicc;
+		return computeAuthenticationTokenTpicc(caDomainParameters, caOid, ephemeralPublicKeyPcd, cryptoSupport, secretKeySpecMAC);
 	}
 	
 	/**
