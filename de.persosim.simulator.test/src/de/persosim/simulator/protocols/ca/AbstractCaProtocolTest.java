@@ -356,7 +356,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		};
 		
 		caProtocol.caOid = Ca.OID_id_CA_ECDH_AES_CBC_CMAC_128;
-		Deencapsulation.setField(caProtocol, ecdhKeyPairPicc);
+		Deencapsulation.setField(caProtocol, "staticKeyPairPicc", ecdhKeyPairPicc);
 		caProtocol.caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(caProtocol.staticKeyPairPicc.getPublic());
 		caProtocol.cryptoSupport = caProtocol.caOid.getCryptoSupport();
 		
@@ -384,4 +384,21 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		assertArrayEquals("key spec ENC mismatch", ecdhKeySpecEnc, secretKeySpecEncKeyMaterial);
 		assertArrayEquals("key spec MAC mismatch", ecdhKeySpecMac, secretKeySpecMacKeyMaterial);
 	}
+	
+	/**
+	 * Positive test case: construct a ChipAuthenticationInfo object
+	 */
+	@Test
+	public void testConstructChipAuthenticationInfoObject(){
+		byte[] oidBytes = HexString.toByteArray("010203040506070809");
+		byte version = (byte) 0x01;
+		byte keyId = (byte) 0x42;
+		
+		ConstructedTlvDataObject caioReceivedTlv = AbstractCaProtocol.constructChipAuthenticationInfoObject(oidBytes, version, keyId);
+		byte[] caioReceived = caioReceivedTlv.toByteArray();
+		byte[] caioExpected = HexString.toByteArray("30110609010203040506070809020101020142");
+		
+		assertArrayEquals(caioExpected, caioReceived);
+	}
+	
 }
