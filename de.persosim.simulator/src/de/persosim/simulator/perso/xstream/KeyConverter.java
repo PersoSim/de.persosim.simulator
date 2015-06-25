@@ -95,21 +95,21 @@ public class KeyConverter implements Converter {
 		X509EncodedKeySpec  ks_pub = new X509EncodedKeySpec (HexString.toByteArray(byteValue));
 		
 		try {
-			if (keyType.equals("publickey"))
+			//XXX JGE split into private and public key converters
+			if (keyType.contains("publickey"))
 				pk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePublic(ks_pub);
-			else if (keyType.equals("privatekey"))
+			else if (keyType.contains("privatekey"))
 				sk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePrivate(ks_priv);
 		} catch (InvalidKeySpecException| NoSuchAlgorithmException e) {
 			log(getClass(), "Invalid KeySpec or Algorithm during unmarshal", ERROR);
 			e.printStackTrace();
 		}
 		
-		switch(keyType) {
-		case "publickey":
+
+		if (keyType.contains("publickey"))
 			return pk;
-		case "privatekey":
+		else if (keyType.contains("privatekey"))
 			return sk;
-		default: return null;
-		}
+		return null;
 	}
 }
