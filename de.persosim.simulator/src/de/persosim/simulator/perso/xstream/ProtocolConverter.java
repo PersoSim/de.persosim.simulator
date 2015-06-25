@@ -7,15 +7,7 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
-import de.persosim.simulator.protocols.NpaProtocol;
-import de.persosim.simulator.protocols.auxVerification.AuxProtocol;
-import de.persosim.simulator.protocols.ca.CaProtocol;
-import de.persosim.simulator.protocols.file.FileProtocol;
-import de.persosim.simulator.protocols.pace.PaceBypassProtocol;
-import de.persosim.simulator.protocols.pace.PaceProtocol;
-import de.persosim.simulator.protocols.pin.PinProtocol;
-import de.persosim.simulator.protocols.ri.RiProtocol;
-import de.persosim.simulator.protocols.ta.TaProtocol;
+import de.persosim.simulator.protocols.Protocol;
 
 /**
  * This class is a converter which is responsible for serializing/deserializing all kind of protocol objects.
@@ -45,29 +37,13 @@ public class ProtocolConverter implements Converter {
 	public Object unmarshal(HierarchicalStreamReader reader,
 			UnmarshallingContext context) {
 		
-		String protocolName = reader.getNodeName().substring(reader.getNodeName().lastIndexOf(".")+1);
+		String protocolName = reader.getNodeName();
 		
-		//XXX replace this static list by some dynamic construction method
-		switch(protocolName){
-		case "PaceProtocol":
-			return new PaceProtocol();
-		case "FileProtocol":
-			return new FileProtocol();
-		case "RiProtocol":
-			return new RiProtocol();
-		case "CaProtocol":
-			return new CaProtocol();
-		case "AuxProtocol":
-			return new AuxProtocol();
-		case "PinProtocol":
-			return new PinProtocol();
-		case "NpaProtocol":
-			return new NpaProtocol();
-		case "PaceBypassProtocol":
-			return new PaceBypassProtocol();
-		case "TaProtocol":
-			return new TaProtocol();
-		default:
+		try {
+			@SuppressWarnings("unchecked")
+			Class<Protocol> protocol = (Class<Protocol>) Class.forName(protocolName);
+			return protocol.newInstance();
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			throw new XStreamException (protocolName + " is unknown, unmarshaling failed!");
 		}
 	}
