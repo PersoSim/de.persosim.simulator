@@ -24,6 +24,7 @@ import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
+import de.persosim.simulator.cardobjects.KeyObject;
 import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.MasterFileIdentifier;
@@ -135,22 +136,21 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, e.getMessage());
 		}
 		
-		KeyPairObject keyObject;
-		if((cardObject instanceof KeyPairObject)) {
-			keyObject = (KeyPairObject) cardObject;
-		} else{
-			throw new ProcessingException(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE, "invalid key reference");
-		}
-		
-		if(cardObjectIdentifier != null) {
-			for(CardObjectIdentifier coi: cardObjectIdentifier) {
-				if(!keyObject.matchesIdentifier(coi)) {
-					throw new ProcessingException(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "invalid key reference");
+		KeyObject keyObject;
+		if((cardObject instanceof KeyObject)) {
+			keyObject = (KeyObject) cardObject;
+			
+			if(cardObjectIdentifier != null) {
+				for(CardObjectIdentifier coi: cardObjectIdentifier) {
+					if(!keyObject.matchesIdentifier(coi)) {
+						throw new ProcessingException(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "invalid key reference");
+					}
 				}
 			}
+
+			return keyObject;
 		}
-		
-		return keyObject;
+		throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND,"no fitting key object found");
 	}
 	
 	/**
@@ -166,8 +166,17 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			KeyIdentifier keyIdentifier = extractKeyIdentifierFromCommandData(commandData);
 			OidIdentifier caOidIdentifier = new OidIdentifier(caOid);
 			KeyObject keyObject = getkeyObjectForKeyIdentifier(keyIdentifier, caOidIdentifier);
+			if (keyObject instanceof KeyPairObject){
+				KeyPairObject keyPairObject = (KeyPairObject) keyObject;
+				/* CA domain parameters */
+				staticKeyPairPicc = keyPairObject.getKeyPair();
+				caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());
+			} else {
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+				processingData.updateResponseAPDU(this, "The domain parameters could not be extracted from the referenced key", resp);
+				return;
+			}
 			
-			staticKeyPairPicc = keyObject.getKeyPair();
 			keyReference = keyObject.getPrimaryIdentifier().getInteger();
 			
 			/* CA domain parameters */
