@@ -35,12 +35,12 @@ public class KeyConverter implements Converter {
 	
 	
 	@Override
-	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-		String name = type.getName();
-		if (name.toLowerCase().endsWith("publickey") || name.toLowerCase().endsWith("privatekey"))
+	@SuppressWarnings("rawtypes") 
+	public boolean canConvert(Class type) {
+		if (Key.class.isAssignableFrom(type)){
 			return true;
-		else
-			return false;
+		}
+		return false;
 	}
 
 	@Override
@@ -84,9 +84,7 @@ public class KeyConverter implements Converter {
 		PrivateKey sk = null;
 		PublicKey pk = null;
 		
-		if (reader.getNodeName().toLowerCase().endsWith("key")) {
-			getValuesFromXML (reader, context);
-		}
+		getValuesFromXML (reader, context);
 		
 		if (byteValue == null || algorithmValue == null || algorithmValue.equals("") || byteValue.equals("")) {
 			log(getClass(), "can not create "+ keyType +" object, unmarshal failed", ERROR);
