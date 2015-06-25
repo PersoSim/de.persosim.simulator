@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.apdu.CommandApduFactory;
-import de.persosim.simulator.cardobjects.KeyObject;
+import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
@@ -55,7 +55,7 @@ public class RiProtocolTest extends PersoSimTestCase {
 	@Mocked
 	KeyPair keypair;
 	@Mocked
-	KeyObject keyObject;
+	KeyPairObject keyObject;
 	@Mocked
 	TerminalAuthenticationMechanism taMechanism;
 	@Mocked
@@ -68,7 +68,7 @@ public class RiProtocolTest extends PersoSimTestCase {
 		protocol = new RiProtocol();
 		protocol.setCardStateAccessor(cardStateAccessor);
 		
-		keyObject = new KeyObject();
+		keyObject = new KeyPairObject();
 	}
 	
 	/**
