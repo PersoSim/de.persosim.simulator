@@ -25,7 +25,7 @@ import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
-import de.persosim.simulator.cardobjects.KeyObject;
+import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.MasterFileIdentifier;
 import de.persosim.simulator.cardobjects.NullCardObject;
@@ -35,6 +35,7 @@ import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
+import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
@@ -45,6 +46,7 @@ import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
+import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
@@ -53,6 +55,11 @@ import de.persosim.simulator.utils.Utils;
  *
  */
 public class AbstractCaProtocolTest extends PersoSimTestCase {
+	protected static byte[] COMMAND_DATA_IMPL_KEY_SELECTION = HexString.toByteArray("80 0A 04 00 7F 00 07 02 02 03 02 02");
+	protected static byte[] COMMAND_DATA_EXPL_KEY_SELECTION = HexString.toByteArray("80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02");
+	protected static TlvDataObjectContainer TLV_COMMAND_DATA_IMPL_KEY_SELECTION = new TlvDataObjectContainer(COMMAND_DATA_IMPL_KEY_SELECTION);
+	protected static TlvDataObjectContainer TLV_COMMAND_DATA_EXPL_KEY_SELECTION = new TlvDataObjectContainer(COMMAND_DATA_EXPL_KEY_SELECTION);
+	
 	private DefaultCaProtocol caProtocol;
 	@Mocked
 	CardStateAccessor mockedCardStateAccessor;
@@ -72,7 +79,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	ECPrivateKey ecdhPrivateKeyPicc;
 	KeyPair ecdhKeyPairPicc;
 	Collection<CardObject> ecdhKeys, emptyKeySet;
-	KeyObject ecdhKeyObject;
+	KeyPairObject ecdhKeyObject;
 	@Mocked
 	TerminalAuthenticationMechanism taMechanism;
 	Collection<TerminalAuthenticationMechanism> taMechanismCollection;
@@ -113,7 +120,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		ecdhKeys = new ArrayList<CardObject>();
 		KeyIdentifier KeyIdentifier = new KeyIdentifier(2);
 		OidIdentifier oidIdentifier = new OidIdentifier(Ca.OID_id_CA_ECDH_AES_CBC_CMAC_128);
-		ecdhKeyObject = new KeyObject(ecdhKeyPairPicc, KeyIdentifier);
+		ecdhKeyObject = new KeyPairObject(ecdhKeyPairPicc, KeyIdentifier);
 		ecdhKeyObject.addOidIdentifier(oidIdentifier);
 		ecdhKeys.add(ecdhKeyObject);
 		
@@ -121,6 +128,57 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		
 		taMechanismCollection = new ArrayList<TerminalAuthenticationMechanism>();
 		taMechanismCollection.add(taMechanism);
+	}
+	
+	/**
+	 * Positive test case: extract key identifier from command data, implicit domain parameter set reference (Tag 84 is missing).
+	 */
+	@Test
+	public void testExtractKeyIdentifierFromCommandData_ImplicitDomainParameterReference(){
+		CaProtocol caProtocol = new CaProtocol();
+		KeyIdentifier keyIdentifierReceived = caProtocol.extractKeyIdentifierFromCommandData(TLV_COMMAND_DATA_IMPL_KEY_SELECTION);
+		KeyIdentifier keyIdentifierExpected = new KeyIdentifier();
+		
+		assertEquals(keyIdentifierExpected.getInteger(), keyIdentifierReceived.getInteger());
+	}
+	
+	/**
+	 * Positive test case: extract key identifier from command data, explicit domain parameter set reference (Tag 84 is present).
+	 */
+	@Test
+	public void testExtractKeyIdentifierFromCommandData_ExplicitDomainParameterReference(){
+		CaProtocol caProtocol = new CaProtocol();
+		KeyIdentifier keyIdentifierReceived = caProtocol.extractKeyIdentifierFromCommandData(TLV_COMMAND_DATA_EXPL_KEY_SELECTION);
+		KeyIdentifier keyIdentifierExpected = new KeyIdentifier(2);
+		
+		assertEquals(keyIdentifierExpected.getInteger(), keyIdentifierReceived.getInteger());
+	}
+	
+	/**
+	 * Positive test case: extract CA OID from command data.
+	 */
+	@Test
+	public void testExtractCaOidFromCommandData(){
+		CaProtocol caProtocol = new CaProtocol();
+		
+		CaOid caOidReceived = caProtocol.extractCaOidFromCommandData(TLV_COMMAND_DATA_IMPL_KEY_SELECTION);
+		byte[] caOidData = HexString.toByteArray("04 00 7F 00 07 02 02 03 02 02");
+		CaOid caOidExpected = new CaOid(caOidData);
+		
+		assertEquals(caOidExpected, caOidReceived);
+	}
+	
+	/**
+	 * Negative test case: extract CA OID from command data containing an invalid CA OID.
+	 */
+	@Test(expected = ProcessingException.class)
+	public void testExtractCaOidFromCommandData_illegalCaOid(){
+		CaProtocol caProtocol = new CaProtocol();
+		
+		byte[] commandDataBytes = HexString.toByteArray("80 0A 04 00 7F 00 07 02 02 03 FF FF");
+		TlvDataObjectContainer commandData = new TlvDataObjectContainer(commandDataBytes); 
+		
+		caProtocol.extractCaOidFromCommandData(commandData);
 	}
 	
 	/**
@@ -137,8 +195,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 				result = mockedMf;
 				
 				mockedMf.findChildren(
-						withInstanceOf(KeyIdentifier.class),
-						withInstanceOf(OidIdentifier.class));
+						withInstanceOf(KeyIdentifier.class));
 				result = ecdhKeys;
 				
 				mockedCardStateAccessor.getObject(
@@ -207,8 +264,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 				result = mockedMf;
 
 				mockedMf.findChildren(
-						withInstanceOf(KeyIdentifier.class),
-						withInstanceOf(OidIdentifier.class));
+						withInstanceOf(KeyIdentifier.class));
 				result = ecdhKeys;
 
 				mockedCardStateAccessor.getObject(
@@ -245,8 +301,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		new Expectations() {
 			{
 				mockedMf.findChildren(
-						withInstanceOf(KeyIdentifier.class),
-						withInstanceOf(OidIdentifier.class));
+						withInstanceOf(KeyIdentifier.class));
 				result = emptyKeySet;
 			}
 		};
@@ -301,7 +356,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		};
 		
 		caProtocol.caOid = Ca.OID_id_CA_ECDH_AES_CBC_CMAC_128;
-		Deencapsulation.setField(caProtocol, ecdhKeyPairPicc);
+		Deencapsulation.setField(caProtocol, "staticKeyPairPicc", ecdhKeyPairPicc);
 		caProtocol.caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(caProtocol.staticKeyPairPicc.getPublic());
 		caProtocol.cryptoSupport = caProtocol.caOid.getCryptoSupport();
 		
@@ -329,4 +384,21 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		assertArrayEquals("key spec ENC mismatch", ecdhKeySpecEnc, secretKeySpecEncKeyMaterial);
 		assertArrayEquals("key spec MAC mismatch", ecdhKeySpecMac, secretKeySpecMacKeyMaterial);
 	}
+	
+	/**
+	 * Positive test case: construct a ChipAuthenticationInfo object
+	 */
+	@Test
+	public void testConstructChipAuthenticationInfoObject(){
+		byte[] oidBytes = HexString.toByteArray("010203040506070809");
+		byte version = (byte) 0x01;
+		byte keyId = (byte) 0x42;
+		
+		ConstructedTlvDataObject caioReceivedTlv = AbstractCaProtocol.constructChipAuthenticationInfoObject(oidBytes, version, keyId);
+		byte[] caioReceived = caioReceivedTlv.toByteArray();
+		byte[] caioExpected = HexString.toByteArray("30110609010203040506070809020101020142");
+		
+		assertArrayEquals(caioExpected, caioReceived);
+	}
+	
 }

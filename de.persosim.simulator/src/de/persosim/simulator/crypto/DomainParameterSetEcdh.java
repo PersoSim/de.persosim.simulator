@@ -506,4 +506,29 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		return sb.toString();
 	}
 	
+	/**
+	 * This method performs a manual ECDH key agreement that returns a complete
+	 * EC point as its result. The key agreement provided by Bouncy Castle via
+	 * the Java crypto API only returns the x-coordinate of the expected EC
+	 * point and reconstructing the y-coordinate is complicated by the ambiguity
+	 * of the coordinate.
+	 * 
+	 * @param domainParameterSetEcdh
+	 *            the domain parameters to be used
+	 * @param ecPublicKey
+	 *            the public key to use
+	 * @param ecPrivateKey
+	 *            the private key to use
+	 * @return
+	 */
+	public ECPoint performEcdhKeyAgreement(ECPublicKey ecPublicKey, ECPrivateKey ecPrivateKey) {
+		ECPoint secretPoint = CryptoUtil.scalarPointMultiplication(getCurve(), getOrder(), ecPublicKey.getW(), ecPrivateKey.getS());
+		
+		log(CryptoUtil.class, "result H of ECDH key agreement is", TRACE);
+		log(CryptoUtil.class, "H.x: " + HexString.encode(secretPoint.getAffineX()), TRACE);
+		log(CryptoUtil.class, "H.y: " + HexString.encode(secretPoint.getAffineY()), TRACE);
+		
+		return secretPoint;
+	}
+	
 }

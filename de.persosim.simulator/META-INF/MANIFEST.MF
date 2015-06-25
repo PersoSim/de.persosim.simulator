@@ -20,6 +20,8 @@ Export-Package: com.thoughtworks.xstream,
  de.persosim.simulator.protocols.ca,
  de.persosim.simulator.protocols.pace,
  de.persosim.simulator.protocols.ta,
+ de.persosim.simulator.secstatus,
+ de.persosim.simulator.statemachine,
  de.persosim.simulator.tlv,
  de.persosim.simulator.utils
 Bundle-ClassPath: .,

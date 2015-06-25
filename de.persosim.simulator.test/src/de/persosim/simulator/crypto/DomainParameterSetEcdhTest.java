@@ -8,10 +8,12 @@ import static org.junit.Assert.assertTrue;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigInteger;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
@@ -20,11 +22,13 @@ import java.security.spec.ECPrivateKeySpec;
 import java.security.spec.ECPublicKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.perso.PersonalizationFactory;
+import de.persosim.simulator.protocols.pace.GenericMappingEcdh;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
@@ -445,6 +449,54 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	@Test
 	public void testEquals_nonRelated() {
 		assertFalse(domParamsEcdh.equals(new String("Test")));
+	}
+	
+	/**
+	 * Positive test case: perform key agreement as part of mapping function based on values from valid PACE test run.
+	 * @throws InvalidKeySpecException 
+	 * @throws NoSuchAlgorithmException 
+	 */
+	@Test
+	public void testPerformEcdhKeyAgreement() throws InvalidKeySpecException, NoSuchAlgorithmException {
+//		DomainParameterSetEcdh domainParameterSetUnMapped = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		GenericMappingEcdh mapping = new GenericMappingEcdh();
+		
+		byte[] privateKeyDataPicc = HexString.toByteArray("7FC3DE0EDE951E6181392527612FF2A50D4E6C6FE00F7A92E66CB3D7B7D23044");
+		byte[] publicKeyDataPcd = HexString.toByteArray("0424EF5B5C5D5F085783357C34C01660C6A062005BA1E347EB5E890DC34A305085161950814AE4D7BF20137D5C425E039CCC250835D69E8FEE92E302F468F39394");
+		
+		ECPrivateKey ecPrivKeyPicc = domParamsEcdh.reconstructPrivateKey(privateKeyDataPicc);
+		ECPublicKey ecPubKeyPcd = domParamsEcdh.reconstructPublicKey(publicKeyDataPcd);
+		
+		byte[] commonSecretExpected = HexString.toByteArray("04326C2CE38AC366142735AFA4317A24BDE8F12AFAEE1575CE9756E3A8849F9AEF30103CF5396CBA2F4678572988513CFC0F0CBE116644A5B9E8C6B229E0C9E2FB");
+		
+		byte[] commonSecretReceived = mapping.performKeyAgreement(domParamsEcdh, ecPrivKeyPicc, ecPubKeyPcd);
+		
+		assertArrayEquals("common mapping secret", commonSecretExpected, commonSecretReceived);
+	}
+	
+	/**
+	 * Negative test case: perform key agreement as part of mapping function based on values from valid PACE test run but with wrong PCD public key (on curve but not matching).
+	 * @throws InvalidKeySpecException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws InvalidAlgorithmParameterException 
+	 * @throws NoSuchProviderException 
+	 */
+	@Test
+	public void testPerformEcdhKeyAgreement_wrongPublicKey() throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
+//		DomainParameterSetEcdh domainParameterSetUnMapped = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		GenericMappingEcdh mapping = new GenericMappingEcdh();
+		
+		byte[] privateKeyDataPicc = HexString.toByteArray("7FC3DE0EDE951E6181392527612FF2A50D4E6C6FE00F7A92E66CB3D7B7D23044");
+		byte[] publicKeyDataPcd = HexString.toByteArray("047307AED59C716B4328E974EC2460104E013E93B9826A47CB9DB8A104F493F685094776A48D5B6746058D2B0FB206B69E4AA16E8E893BB4908285482BC4B82232");
+		
+		ECPrivateKey ecPrivKeyPicc = domParamsEcdh.reconstructPrivateKey(privateKeyDataPicc);
+		ECPublicKey ecPubKeyPcd = domParamsEcdh.reconstructPublicKey(publicKeyDataPcd);
+		
+		byte[] commonSecretExpected = HexString.toByteArray("04326C2CE38AC366142735AFA4317A24BDE8F12AFAEE1575CE9756E3A8849F9AEF30103CF5396CBA2F4678572988513CFC0F0CBE116644A5B9E8C6B229E0C9E2FB");
+		
+		byte[] commonSecretReceived = mapping.performKeyAgreement(domParamsEcdh, ecPrivKeyPicc, ecPubKeyPcd);
+		
+		assertFalse("common mapping secret", Arrays.equals(commonSecretExpected, commonSecretReceived));
 	}
 	
 }
