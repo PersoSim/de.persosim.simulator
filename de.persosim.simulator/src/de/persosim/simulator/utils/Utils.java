@@ -370,7 +370,7 @@ public abstract class Utils {
 	 * @return zero padded byte array
 	 */
 	public static byte [] padWithLeadingZeroes(byte [] input, int wantedLength){
-		if (!(wantedLength >= input.length)){
+		if (wantedLength < input.length){
 			throw new IllegalArgumentException("Wanted length is smaller than the input length");
 		}
 		byte [] zeroes = new byte [wantedLength - input.length];
