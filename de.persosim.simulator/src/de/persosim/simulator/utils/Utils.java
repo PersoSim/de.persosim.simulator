@@ -361,6 +361,23 @@ public abstract class Utils {
 	}
 	
 	/**
+	 * Returns the given input with additional leading zeroes.
+	 * 
+	 * @param input
+	 *            the byte array to be padded
+	 * @param wantedLength
+	 *            the result array length
+	 * @return zero padded byte array
+	 */
+	public static byte [] padWithLeadingZeroes(byte [] input, int wantedLength){
+		if (!(wantedLength >= input.length)){
+			throw new IllegalArgumentException("Wanted length is smaller than the input length");
+		}
+		byte [] zeroes = new byte [wantedLength - input.length];
+		return Utils.concatByteArrays(zeroes, input);
+	}
+	
+	/**
 	 * Returns an unsigned int representation of the provided byte array. The
 	 * byte value is interpreted as being unsigned. This method works for
 	 * integers up to 0xFFFFFFFF.
