@@ -92,7 +92,7 @@
           </de.persosim.simulator.cardobjects.OidIdentifier>
         </furtherIdentifiers>
       </de.persosim.simulator.cardobjects.DomainParameterSetCardObject>
-      <de.persosim.simulator.cardobjects.KeyObject id="41">
+      <de.persosim.simulator.cardobjects.KeyPairObject id="41">
         <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="12"/>
         <children id="42"/>
         <lifeCycleState>CREATION</lifeCycleState>
@@ -118,8 +118,8 @@
           </de.persosim.simulator.cardobjects.OidIdentifier>
         </furtherIdentifiers>
         <privilegedOnly>false</privilegedOnly>
-      </de.persosim.simulator.cardobjects.KeyObject>
-      <de.persosim.simulator.cardobjects.KeyObject id="51">
+      </de.persosim.simulator.cardobjects.KeyPairObject>
+      <de.persosim.simulator.cardobjects.KeyPairObject id="51">
         <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="12"/>
         <children id="52"/>
         <lifeCycleState>CREATION</lifeCycleState>
@@ -140,8 +140,8 @@
           <de.persosim.simulator.cardobjects.OidIdentifier reference="48"/>
         </furtherIdentifiers>
         <privilegedOnly>true</privilegedOnly>
-      </de.persosim.simulator.cardobjects.KeyObject>
-      <de.persosim.simulator.cardobjects.KeyObject id="58">
+      </de.persosim.simulator.cardobjects.KeyPairObject>
+      <de.persosim.simulator.cardobjects.KeyPairObject id="58">
         <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="12"/>
         <children id="59"/>
         <lifeCycleState>CREATION</lifeCycleState>
@@ -167,8 +167,8 @@
           </de.persosim.simulator.cardobjects.OidIdentifier>
         </furtherIdentifiers>
         <privilegedOnly>false</privilegedOnly>
-      </de.persosim.simulator.cardobjects.KeyObject>
-      <de.persosim.simulator.cardobjects.KeyObject id="68">
+      </de.persosim.simulator.cardobjects.KeyPairObject>
+      <de.persosim.simulator.cardobjects.KeyPairObject id="68">
         <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="12"/>
         <children id="69"/>
         <lifeCycleState>CREATION</lifeCycleState>
@@ -194,7 +194,7 @@
           </de.persosim.simulator.cardobjects.OidIdentifier>
         </furtherIdentifiers>
         <privilegedOnly>true</privilegedOnly>
-      </de.persosim.simulator.cardobjects.KeyObject>
+      </de.persosim.simulator.cardobjects.KeyPairObject>
       <de.persosim.simulator.cardobjects.TrustPointCardObject id="77">
         <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="12"/>
         <children id="78"/>
