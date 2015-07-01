@@ -35,8 +35,7 @@ public class KeyConverter implements Converter {
 	
 	
 	@Override
-	@SuppressWarnings("rawtypes") 
-	public boolean canConvert(Class type) {
+	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
 		if (Key.class.isAssignableFrom(type)){
 			return true;
 		}
@@ -95,7 +94,7 @@ public class KeyConverter implements Converter {
 		X509EncodedKeySpec  ks_pub = new X509EncodedKeySpec (HexString.toByteArray(byteValue));
 		
 		try {
-			//XXX JGE split into private and public key converters
+			//XXX split into private and public key converters
 			if (keyType.contains("publickey"))
 				pk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePublic(ks_pub);
 			else if (keyType.contains("privatekey"))
