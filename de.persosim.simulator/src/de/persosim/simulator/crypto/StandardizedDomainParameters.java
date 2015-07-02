@@ -131,4 +131,22 @@ public class StandardizedDomainParameters{
 		return algIdentifier;
 	}
 	
+	/**
+	 * This method retrieves the standardized domain parameter ID from an TLV
+	 * algorithm identifier.
+	 * 
+	 * @param algIdentifier
+	 *            The identifier to be checked
+	 * @return The {@link Integer} id or null if the domain parameters are not
+	 *         supported
+	 */
+	public static Integer getDomainParameterSetId(ConstructedTlvDataObject algIdentifier){
+		for (StandardizedDomainParameterProvider provider : providers){
+			String algIdHexString = HexString.encode(algIdentifier.toByteArray());
+			Integer current = provider.getSimplifiedAlgorithm(algIdHexString);
+			return current;
+		}
+		return null;
+	}
+	
 }

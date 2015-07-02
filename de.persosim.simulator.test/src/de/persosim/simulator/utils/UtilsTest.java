@@ -567,6 +567,28 @@ public class UtilsTest {
 		
 	}
 	
+	@Test
+	public void testPadWithLeadingZeroes(){
+		byte [] input = new byte [] {1,2,3};
+		byte [] result = Utils.padWithLeadingZeroes(input, 10);
+		byte [] expected = new byte [] {0,0,0,0,0,0,0,1,2,3};
+		assertArrayEquals(expected, result);
+	}
+	
+	@Test
+	public void testPadWithLeadingZeroes_inputLengthEqualToWantedLength(){
+		byte [] input = new byte [] {1,2,3};
+		byte [] result = Utils.padWithLeadingZeroes(input, 3);
+		byte [] expected = new byte [] {1,2,3};
+		assertArrayEquals(expected, result);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testPadWithLeadingZeroes_wantedToSmall(){
+		byte [] input = new byte [] {1,2,3};
+		Utils.padWithLeadingZeroes(input, 2);
+	}
+	
 	/**
 	 * Positive Test case: method maskUnsignedByteToShort gets byte with the highest value as input.
 	 * The result should be a short value.

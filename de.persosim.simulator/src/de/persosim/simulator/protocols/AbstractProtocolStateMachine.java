@@ -16,6 +16,7 @@ import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
+import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.statemachine.AbstractStateMachine;
 import de.persosim.simulator.tlv.TlvDataObject;
@@ -145,7 +146,7 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 			
 			if (responseApdu != null) {
 				short sw = responseApdu.getStatusWord();
-				return (Iso7816Lib.isReportingError(sw) || Iso7816Lib.isReportingWarning(sw));
+				return (Iso7816Lib.isReportingError(sw) || Iso7816Lib.isReportingWarning(sw) || PlatformUtil.is4xxxStatusWord(sw));
 			}
 			return false;
 		}

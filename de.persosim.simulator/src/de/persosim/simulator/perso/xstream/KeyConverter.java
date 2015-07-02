@@ -36,11 +36,10 @@ public class KeyConverter implements Converter {
 	
 	@Override
 	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-		String name = type.getName();
-		if (name.toLowerCase().endsWith("publickey") || name.toLowerCase().endsWith("privatekey"))
+		if (Key.class.isAssignableFrom(type)){
 			return true;
-		else
-			return false;
+		}
+		return false;
 	}
 
 	@Override
@@ -84,9 +83,7 @@ public class KeyConverter implements Converter {
 		PrivateKey sk = null;
 		PublicKey pk = null;
 		
-		if (reader.getNodeName().toLowerCase().endsWith("key")) {
-			getValuesFromXML (reader, context);
-		}
+		getValuesFromXML (reader, context);
 		
 		if (byteValue == null || algorithmValue == null || algorithmValue.equals("") || byteValue.equals("")) {
 			log(getClass(), "can not create "+ keyType +" object, unmarshal failed", ERROR);
@@ -97,21 +94,21 @@ public class KeyConverter implements Converter {
 		X509EncodedKeySpec  ks_pub = new X509EncodedKeySpec (HexString.toByteArray(byteValue));
 		
 		try {
-			if (keyType.equals("publickey"))
+			//XXX split into private and public key converters
+			if (keyType.contains("publickey"))
 				pk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePublic(ks_pub);
-			else if (keyType.equals("privatekey"))
+			else if (keyType.contains("privatekey"))
 				sk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePrivate(ks_priv);
 		} catch (InvalidKeySpecException| NoSuchAlgorithmException e) {
 			log(getClass(), "Invalid KeySpec or Algorithm during unmarshal", ERROR);
 			e.printStackTrace();
 		}
 		
-		switch(keyType) {
-		case "publickey":
+
+		if (keyType.contains("publickey"))
 			return pk;
-		case "privatekey":
+		else if (keyType.contains("privatekey"))
 			return sk;
-		default: return null;
-		}
+		return null;
 	}
 }
