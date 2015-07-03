@@ -69,8 +69,7 @@ public class CommandParserTest {
 	 */
 	@Test
 	public void testParsePersonalization_ValidFile() throws Exception {
-		Personalization perso1 = new PersonalizationImpl() {
-		};
+		Personalization perso1 = new PersonalizationImpl();
 		PersonalizationFactory.marshal(perso1, DUMMY_PERSONALIZATION_FILE);
 		
 		Personalization perso = CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE);

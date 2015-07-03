@@ -6,7 +6,7 @@ import java.util.List;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.protocols.Protocol;
 
-public abstract class PersonalizationImpl implements Personalization {
+public class PersonalizationImpl implements Personalization {
 
 	protected List<Protocol> protocols = null;
 	
