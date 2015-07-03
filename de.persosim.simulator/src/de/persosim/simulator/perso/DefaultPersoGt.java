@@ -3,7 +3,6 @@ package de.persosim.simulator.perso;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
-import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -24,10 +23,6 @@ import de.persosim.simulator.utils.HexString;
  * 
  */
 public class DefaultPersoGt extends Profile01 {
-
-	public DefaultPersoGt() throws AccessDeniedException {
-		super();
-	}
 
 	@Override
 	protected void addTaTrustPoints() throws CertificateNotParseableException {
