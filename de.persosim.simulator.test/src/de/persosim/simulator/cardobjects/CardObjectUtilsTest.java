@@ -17,7 +17,7 @@ import de.persosim.simulator.test.PersoSimTestCase;
 public class CardObjectUtilsTest extends PersoSimTestCase {
 	/**
 	 * Positive test case checking the life cycle allowing access even if the
-	 * security conditions do not.
+	 * security conditions do not match.
 	 */
 	@Test
 	public void testCheckAccessConditionsLifecycleAllows() {
