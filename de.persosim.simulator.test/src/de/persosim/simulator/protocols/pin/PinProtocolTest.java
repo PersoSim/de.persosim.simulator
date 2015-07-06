@@ -18,6 +18,7 @@ import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.Scope;
+import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Tr03110;
@@ -43,12 +44,13 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	HashSet<SecMechanism> currentMechanisms;
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws LifeCycleChangeException {
 		protocol = new PinProtocol();
 		protocol.setCardStateAccessor(mockedCardStateAccessor);
 		
 		authObject = new PasswordAuthObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN");
 		pinObject = new PinObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), 6, 6, 3);
+		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		authObjectRetry = new PasswordAuthObjectWithRetryCounter (new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN", 6, 6, 3);
 		authObjectRetry.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
@@ -277,9 +279,10 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	/**
 	 * Positive test case. Send apdu to activate the PIN and receives
 	 * a 9000.
+	 * @throws LifeCycleChangeException 
 	 */
 	@Test
-	public void testProcessCommandActivatePassword() {
+	public void testProcessCommandActivatePassword() throws LifeCycleChangeException {
 		// prepare the mock
 		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
 		new Expectations() {

@@ -28,7 +28,6 @@ import de.persosim.simulator.cardobjects.DomainParameterSetCardObject;
 import de.persosim.simulator.cardobjects.DomainParameterSetIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
-import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
@@ -79,14 +78,9 @@ import de.persosim.simulator.utils.HexString;
  * @author amay
  * 
  */
-public abstract class DefaultPersonalization extends AbstractPersonalization implements Tr03110 {
+public abstract class DefaultPersonalization extends PersonalizationImpl implements Tr03110 {
 
 	public static final String AID_EID = "E8 07 04 00 7F 00 07 03 02";
-	
-
-	public DefaultPersonalization() {
-		reset();
-	}
 
 	@Override
 	public void buildObjectTree() {
@@ -585,13 +579,11 @@ public abstract class DefaultPersonalization extends AbstractPersonalization imp
 		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(
 				new AuthObjectIdentifier(ID_CAN), "500540".getBytes("UTF-8"), "CAN",
 				6, 6);
-		can.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		mf.addChild(can);
 
 		PasswordAuthObjectWithRetryCounter pin = new PinObject(
 				new AuthObjectIdentifier(ID_PIN), "123456".getBytes("UTF-8"), 6, 6,
 				3);
-		pin.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		mf.addChild(pin);
 
 		PasswordAuthObject puk = new PasswordAuthObject(

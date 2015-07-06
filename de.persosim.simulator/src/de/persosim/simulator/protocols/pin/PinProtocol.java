@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
-
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
@@ -18,6 +17,7 @@ import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.Scope;
+import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
@@ -142,7 +142,14 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			return;
 		}
 		
-		((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+		try {
+			((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+		} catch (LifeCycleChangeException e) {
+			ResponseApdu resp = new ResponseApdu(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+			this.processingData.updateResponseAPDU(this, "PIN object transition from state " + e.getOldState() + " to " + e.getNewState() + " not possible", resp);
+			/* there is nothing more to be done here */
+			return;
+		}
 		String passwordName = ((PinObject) object).getPasswordName();
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, passwordName + " successfully activated", resp);
@@ -233,7 +240,14 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 				return;
 			}
 		}
-		((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
+		try {
+			((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
+		} catch (LifeCycleChangeException e) {
+			ResponseApdu resp = new ResponseApdu(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+			this.processingData.updateResponseAPDU(this, "PIN object transition from state " + e.getOldState() + " to " + e.getNewState() + " not possible", resp);
+			/* there is nothing more to be done here */
+			return;
+		}
 		
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, passwordName + " successfully deactivated", resp);

@@ -6,14 +6,18 @@ import java.util.List;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.protocols.Protocol;
 
-public abstract class AbstractPersonalization implements Personalization {
+public class PersonalizationImpl implements Personalization {
 
 	protected List<Protocol> protocols = null;
 	
 	protected MasterFile mf = null;
+	
+	public PersonalizationImpl() {
+		buildProtocolList();
+		buildObjectTree();
+	}
 
 	public MasterFile getMf() {
-		if (mf == null) reset();
 		return mf;
 	}
 
@@ -24,14 +28,7 @@ public abstract class AbstractPersonalization implements Personalization {
 
 	@Override
 	public List<Protocol> getProtocolList() {
-		if (protocols == null) reset();
 		return protocols;
-	}
-
-	@Override
-	public void reset() {
-		buildProtocolList();
-		buildObjectTree();
 	}
 
 	/**
@@ -42,10 +39,7 @@ public abstract class AbstractPersonalization implements Personalization {
 	 * personalization.
 	 */
 	protected void buildProtocolList() {
-		// initialize empty protocol list but do not overwrite a deserialized perso
-		if (protocols == null) {
-			protocols = new ArrayList<>();	
-		}
+		protocols = new ArrayList<>();
 	}
 	
 	/**
@@ -56,10 +50,7 @@ public abstract class AbstractPersonalization implements Personalization {
 	 * personalization.
 	 */
 	protected void buildObjectTree() {
-		// initialize empty protocol list but do not overwrite a deserialized perso
-		if (mf == null) {
-			mf = new MasterFile();
-		}
+		mf = new MasterFile();
 	}
 	
 }

@@ -4,6 +4,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import de.persosim.simulator.perso.DefaultPersoGt;
+import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
 
@@ -18,7 +19,7 @@ import de.persosim.simulator.perso.PersonalizationFactory;
 public class GtXmlDefaultPersoTest extends GtDefaultPersoTest {
 
 	@Override
-	public Personalization getPersonalization() {
+	public void resetPersonalization() {
 
 		// marshal the perso to StringWriter
 		StringWriter strWriter = new StringWriter();
@@ -26,8 +27,8 @@ public class GtXmlDefaultPersoTest extends GtDefaultPersoTest {
 
 		// unmarshal the perso from StringReader
 		StringReader strReader = new StringReader(strWriter.toString());
-		Personalization unmarshalledPerso = (Personalization) PersonalizationFactory.unmarshal(strReader);
-
-		return unmarshalledPerso;
+		persoCache = (Personalization) PersonalizationFactory.unmarshal(strReader);
 	}
+	
+	
 }

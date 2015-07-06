@@ -25,6 +25,7 @@ import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.MrzAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.Iso7816;
@@ -46,6 +47,8 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 	protected static final int WAITING_TIME_BETWEEN_SERVER_MODE_RETRIES = 10;
 	protected static final int SERVER_MODE_RETRIES = 60;
 
+	protected Personalization persoCache = null;
+	
 	@Override
 	public String getIDString() {
 		return getClass().getCanonicalName();
@@ -87,11 +90,9 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 		getSimulator().stopSimulator();
 	}
 	
-	protected void resetSimulator(){
-		
-		getPersonalization().reset();
-		
+	protected void resetSimulator() throws AccessDeniedException{		
 		//load the personalization (implicitly restarts the simulator)
+		resetPersonalization();
 		getSimulator().loadPersonalization(getPersonalization());
 	}
 	
@@ -255,6 +256,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 	/**
 	 * This method returns the MRZ used for personalization. If no MRZ is set null is returned.
 	 * @return the MRZ used for personalization
+	 * @throws AccessDeniedException 
 	 */
 	protected String getMrz() {
 		PasswordAuthObject pwdAuthObject = getPasswordAuthObject(Tr03110.ID_MRZ);
@@ -272,6 +274,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 	 * Valid password identifiers as set in {@link Tr03110} e.g. are ID_MRZ, ID_CA, ID_PIN, ID_PUK.
 	 * @param passwordIdentifier the password identifier
 	 * @return the requested password as set during personalization
+	 * @throws AccessDeniedException 
 	 */
 	protected byte[] getPassword(int passwordIdentifier) {
 		PasswordAuthObject pwdAuthObject = getPasswordAuthObject(passwordIdentifier);
@@ -306,11 +309,19 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 	}
 
 	/**
-	 * Returns the {@link Personalization} instance to be used with the
+	 * Sets a new {@link Personalization} instance to be used within the
 	 * GlobalTester test cases
+	 * @throws AccessDeniedException 
 	 */
-	public abstract Personalization getPersonalization();
+	public abstract void resetPersonalization();
 
+	/**
+	 * @return the currently cached {@link Personalization}
+	 */
+	public Personalization getPersonalization() {
+		return persoCache;
+	}
+	
 	/**
 	 * Returns all GlobalTester profiles that the current personalization
 	 * supports.

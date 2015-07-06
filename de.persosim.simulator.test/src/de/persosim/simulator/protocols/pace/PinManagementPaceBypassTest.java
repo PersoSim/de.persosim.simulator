@@ -27,6 +27,7 @@ import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.crypto.DomainParameterSet;
+import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
@@ -57,10 +58,11 @@ public class PinManagementPaceBypassTest extends PersoSimTestCase {
 	
 	/**
 	 * Create the test environment.
+	 * @throws LifeCycleChangeException 
 	 * @throws ReflectiveOperationException 
 	 */
 	@Before
-	public void setUp() {
+	public void setUp() throws LifeCycleChangeException {
 		AuthObjectIdentifier aoiCan = new AuthObjectIdentifier(new byte[]{(byte) 0x02});
 		AuthObjectIdentifier aoiPin = new AuthObjectIdentifier(new byte[]{(byte) 0x03});
 		

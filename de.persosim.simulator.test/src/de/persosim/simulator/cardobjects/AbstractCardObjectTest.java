@@ -12,6 +12,7 @@ import mockit.Mocked;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.secstatus.NullSecurityCondition;
 import de.persosim.simulator.secstatus.SecCondition;
@@ -25,7 +26,7 @@ public class AbstractCardObjectTest extends PersoSimTestCase {
 	
 	@Mocked
 	SecStatus mockedSecurityStatus;
-	ObjectStore objectStore = new ObjectStore(mockedSecurityStatus);
+	ObjectStore objectStore;
 	
 	class IdentifiableObjectImpl extends AbstractCardObject {
 		protected int id;
@@ -56,7 +57,7 @@ public class AbstractCardObjectTest extends PersoSimTestCase {
 	}
 	
 	@Before
-	public void setUp() throws ReflectiveOperationException{
+	public void setUp() throws ReflectiveOperationException, AccessDeniedException{
 		// set up OIDs
 		byte[] oidByteArray1 = HexString.toByteArray("00112233445566778899");
 		byte[] oidByteArray2 = HexString.toByteArray("00112233AABBCCDDEEFF");
@@ -105,8 +106,10 @@ public class AbstractCardObjectTest extends PersoSimTestCase {
 		unprotected.add(new NullSecurityCondition());
 		
 		// setup fresh file tree in ObjectStore
-		objectStore.reset(mockedSecurityStatus);
-		masterFile = (AbstractFile) objectStore.selectMasterFile();
+		masterFile = new MasterFile();
+		masterFile.setSecStatus(mockedSecurityStatus);
+		objectStore = new ObjectStore((MasterFile)masterFile);
+		objectStore.selectMasterFile();
 		
 		masterFile.addChild(identifiableObjectImpl1);
 		masterFile.addChild(identifiableObjectImpl2);

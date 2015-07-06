@@ -110,8 +110,8 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	// methods/fields handling/representing the card state
 	// ---------------------------------------------------
 
-	protected SecStatus securityStatus = new SecStatus();
-	protected ObjectStore objectStore = new ObjectStore(securityStatus);
+	protected SecStatus securityStatus;
+	protected ObjectStore objectStore;
 
 	@Override
 	public CardObject getObject(CardObjectIdentifier id, Scope scope) {

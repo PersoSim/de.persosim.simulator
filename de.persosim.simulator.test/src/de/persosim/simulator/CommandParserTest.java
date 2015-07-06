@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.thoughtworks.xstream.io.StreamException;
 
-import de.persosim.simulator.perso.AbstractPersonalization;
+import de.persosim.simulator.perso.PersonalizationImpl;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
 
@@ -69,8 +69,7 @@ public class CommandParserTest {
 	 */
 	@Test
 	public void testParsePersonalization_ValidFile() throws Exception {
-		Personalization perso1 = new AbstractPersonalization() {
-		};
+		Personalization perso1 = new PersonalizationImpl();
 		PersonalizationFactory.marshal(perso1, DUMMY_PERSONALIZATION_FILE);
 		
 		Personalization perso = CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE);

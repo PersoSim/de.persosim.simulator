@@ -12,6 +12,7 @@ import mockit.NonStrictExpectations;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.secstatus.NullSecurityCondition;
 import de.persosim.simulator.secstatus.SecCondition;
 import de.persosim.simulator.secstatus.SecMechanism;
@@ -27,7 +28,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 	ElementaryFile file;
 	
 	@Before
-	public void setUp() throws ReflectiveOperationException{
+	public void setUp() throws ReflectiveOperationException, AccessDeniedException{
 		// prepare the mock
 		new NonStrictExpectations(SecStatus.class) {
 			{

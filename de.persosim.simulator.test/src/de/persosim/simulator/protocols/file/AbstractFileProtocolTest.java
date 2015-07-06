@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
-import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -28,6 +27,7 @@ import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ObjectStore;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
@@ -62,9 +62,10 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	 * Create the test environment containing an elementary file and the mocked
 	 * object store.
 	 * @throws ReflectiveOperationException 
+	 * @throws AccessDeniedException 
 	 */
 	@Before
-	public void setUp() throws ReflectiveOperationException {
+	public void setUp() throws ReflectiveOperationException, AccessDeniedException {
 		elementaryFileContent = new byte[] { 1, 2, 3, 4, 5, 6 };
 
 		// create file to test

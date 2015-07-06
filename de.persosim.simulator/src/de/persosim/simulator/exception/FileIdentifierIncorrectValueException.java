@@ -1,4 +1,4 @@
-package de.persosim.simulator.cardobjects;
+package de.persosim.simulator.exception;
 
 /**
  * This unchecked exception can be thrown for P1P2 contents that depict invalid file identifiers.

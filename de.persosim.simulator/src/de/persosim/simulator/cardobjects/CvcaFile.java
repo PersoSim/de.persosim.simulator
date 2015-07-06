@@ -1,11 +1,10 @@
 package de.persosim.simulator.cardobjects;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Collection;
 
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.secstatus.SecCondition;
-import de.persosim.simulator.secstatus.SecStatus.SecContext;
 
 /**
  * This interface describes the EF.CVCA as described in TR-03110 v2.10 Part 3
@@ -42,12 +41,9 @@ public class CvcaFile extends AbstractFile {
 	 *             when writing access is denied because of security conditions
 	 */
 	public void update(PublicKeyReference certificateAuthorityReference) throws AccessDeniedException {
-		for (SecCondition condition : updatingConditions){
-			if (condition.check(securityStatus.getCurrentMechanisms(SecContext.APPLICATION, condition.getNeededMechanisms()))){
-				previousCertificateAuthorityReference = currentCertificateAuthorityReference;
-				currentCertificateAuthorityReference = certificateAuthorityReference;				
-				return;
-			}
+		if (CardObjectUtils.checkAccessConditions(getLifeCycleState(), securityStatus, updatingConditions)){
+			previousCertificateAuthorityReference = currentCertificateAuthorityReference;
+			currentCertificateAuthorityReference = certificateAuthorityReference;
 		}
 		throw new AccessDeniedException("Updating forbidden");
 	}
@@ -57,10 +53,8 @@ public class CvcaFile extends AbstractFile {
 	 * @throws AccessDeniedException
 	 */
 	public PublicKeyReference getCurrentCertificateAuthorityReference() throws AccessDeniedException {
-		for (SecCondition condition : readingConditions){
-			if (condition.check(securityStatus.getCurrentMechanisms(SecContext.APPLICATION, condition.getNeededMechanisms()))){
-				return currentCertificateAuthorityReference;
-			}
+		if (CardObjectUtils.checkAccessConditions(getLifeCycleState(), securityStatus, readingConditions)){
+			return currentCertificateAuthorityReference;
 		}
 		throw new AccessDeniedException("Reading forbidden");
 	}
@@ -71,10 +65,8 @@ public class CvcaFile extends AbstractFile {
 	 * @throws AccessDeniedException
 	 */
 	public PublicKeyReference getPreviousCertificateAuthorityReference() throws AccessDeniedException {
-		for (SecCondition condition : readingConditions){
-			if (condition.check(securityStatus.getCurrentMechanisms(SecContext.APPLICATION, condition.getNeededMechanisms()))){
-				return previousCertificateAuthorityReference;
-			}
+		if (CardObjectUtils.checkAccessConditions(getLifeCycleState(), securityStatus, readingConditions)){
+			return previousCertificateAuthorityReference;
 		}
 		throw new AccessDeniedException("Reading forbidden");
 	}

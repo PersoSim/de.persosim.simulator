@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.test.PersoSimTestCase;
 
 public abstract class PersonalizationTest extends PersoSimTestCase {
@@ -16,8 +17,9 @@ public abstract class PersonalizationTest extends PersoSimTestCase {
 	/**
 	 * Return the personalization to test.
 	 * @return
+	 * @throws AccessDeniedException 
 	 */
-	public abstract Personalization getPerso();
+	public abstract Personalization getPerso() throws AccessDeniedException;
 	
 	
 	/**
@@ -43,11 +45,10 @@ public abstract class PersonalizationTest extends PersoSimTestCase {
 
 	}
 
-	protected String getXmlFilename() {
-		String retVal = getTmpFolder().getAbsolutePath() + File.separator + getPerso().getClass().getSimpleName() + ".xml"; 
-		return retVal;
-	}
 
+	protected String getXmlFilename() throws AccessDeniedException {
+		return getTmpFolder().getAbsolutePath() + File.separator + getPerso().getClass().getSimpleName() + ".xml";
+	}
 	/**
 	 * Checks whether a given CardObject contains only children of type
 	 * {@link CardObject} and identifiers of type {@link CardObjectIdentifier}

@@ -5,6 +5,7 @@ import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.ObjectStore;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.protocols.Protocol;
+import de.persosim.simulator.secstatus.SecStatus;
 
 /**
  * This class realizes a generic means to provide a {@link Personalization} that
@@ -17,23 +18,20 @@ public class CommandProcessor extends CommandProcessorStateMachine {
 
 	private Personalization perso;
 
-	public CommandProcessor(int id, Personalization newPerso) {
+	public CommandProcessor(int id, Personalization newPerso, ObjectStore objectStore, SecStatus securityStatus) {
 		layerId = id;
 		perso = newPerso;
-	}
 
-	@Override
-	public void init() {
-		super.init();
 		
 		//create object tree
-		objectStore.reset(perso.getObjectTree(), securityStatus);
+		this.objectStore = objectStore;
+		this.securityStatus = securityStatus;
+		
 		
 		//register protocols
 		for (Protocol curProtocol : perso.getProtocolList()) {
 			addProtocol(curProtocol);
 		}
-		
 	}
 
 	/**

@@ -1,7 +1,6 @@
 package de.persosim.simulator.protocols.file;
 
 import java.io.FileNotFoundException;
-import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
 
 import de.persosim.simulator.apdu.CommandApdu;
@@ -11,9 +10,10 @@ import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
-import de.persosim.simulator.cardobjects.FileIdentifierIncorrectValueException;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
+import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.exception.FileIdentifierIncorrectValueException;
 import de.persosim.simulator.exception.FileToShortException;
 import de.persosim.simulator.exception.TagNotFoundException;
 import de.persosim.simulator.platform.CardStateAccessor;

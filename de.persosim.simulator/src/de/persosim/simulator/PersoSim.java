@@ -2,7 +2,9 @@ package de.persosim.simulator;
 
 import static de.persosim.simulator.utils.PersoSimLogger.INFO;
 import static de.persosim.simulator.utils.PersoSimLogger.UI;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static de.persosim.simulator.utils.PersoSimLogger.*;
+
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.Profile01;
 import de.persosim.simulator.platform.Iso7816;
@@ -65,8 +67,6 @@ public class PersoSim implements Simulator {
 	public void startPersoSim(){
 		System.out.println("Welcome to PersoSim");
 
-
-
 		startSimulator();
 		final Simulator sim = this;
 		
@@ -91,7 +91,12 @@ public class PersoSim implements Simulator {
 			return false;
 		}
 		
-		kernel = new PersoSimKernel(getPersonalization());
+		try {
+			kernel = new PersoSimKernel(getPersonalization());
+		} catch (AccessDeniedException e) {
+			logException(this.getClass(), e, PersoSimLogger.ERROR);
+			return false;
+		}
 		kernel.init();
 		return true;
 	}

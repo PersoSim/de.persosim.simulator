@@ -4,6 +4,7 @@ import mockit.Mocked;
 
 import org.junit.Test;
 
+import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.utils.HexString;
 
 public class ChangeablePasswordAuthObjectTest {
@@ -39,9 +40,10 @@ public class ChangeablePasswordAuthObjectTest {
 	
 	/**
 	 * Negative test case: set new password, password deactivated.
+	 * @throws LifeCycleChangeException 
 	 */
 	@Test(expected = IllegalStateException.class)
-	public void testGetFileControlParameterObject2(){
+	public void testGetFileControlParameterObject2() throws LifeCycleChangeException{
 		ChangeablePasswordAuthObject pwd = new ChangeablePasswordAuthObject(
 				mockedAuthObjectIdentifier, HexString.toByteArray("001122"), "XXX", 3, 3);
 		pwd.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
