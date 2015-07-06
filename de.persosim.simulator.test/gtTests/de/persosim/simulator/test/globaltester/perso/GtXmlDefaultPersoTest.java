@@ -3,8 +3,8 @@ package de.persosim.simulator.test.globaltester.perso;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.DefaultPersoGt;
+import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
 
@@ -19,7 +19,7 @@ import de.persosim.simulator.perso.PersonalizationFactory;
 public class GtXmlDefaultPersoTest extends GtDefaultPersoTest {
 
 	@Override
-	public void resetPersonalization() throws NullPointerException, AccessDeniedException {
+	public void resetPersonalization() {
 
 		// marshal the perso to StringWriter
 		StringWriter strWriter = new StringWriter();

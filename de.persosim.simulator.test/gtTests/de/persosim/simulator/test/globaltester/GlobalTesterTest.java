@@ -47,6 +47,8 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 	protected static final int WAITING_TIME_BETWEEN_SERVER_MODE_RETRIES = 10;
 	protected static final int SERVER_MODE_RETRIES = 60;
 
+	protected Personalization persoCache = null;
+	
 	@Override
 	public String getIDString() {
 		return getClass().getCanonicalName();
@@ -307,16 +309,18 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 	}
 
 	/**
-	 * Returns the {@link Personalization} instance to be used with the
+	 * Sets a new {@link Personalization} instance to be used within the
 	 * GlobalTester test cases
 	 * @throws AccessDeniedException 
 	 */
-	public abstract void resetPersonalization() throws AccessDeniedException;
+	public abstract void resetPersonalization();
 
 	/**
 	 * @return the currently cached {@link Personalization}
 	 */
-	public abstract Personalization getPersonalization();
+	public Personalization getPersonalization() {
+		return persoCache;
+	}
 	
 	/**
 	 * Returns all GlobalTester profiles that the current personalization

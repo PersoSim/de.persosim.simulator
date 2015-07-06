@@ -8,9 +8,7 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.DefaultPersoGt;
-import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.test.globaltester.GlobalTesterTest;
 import de.persosim.simulator.test.globaltester.GtConstants;
 import de.persosim.simulator.test.globaltester.GtSuiteDescriptor;
@@ -35,16 +33,9 @@ import de.persosim.simulator.test.globaltester.SimulatorReset;
  */
 public class GtDefaultPersoTest extends GlobalTesterTest {
 	
-	protected Personalization persoCache = null;
-	
 	@Override
-	public void resetPersonalization() throws AccessDeniedException {
+	public void resetPersonalization() {
 		persoCache = new DefaultPersoGt();
-	}
-
-	@Override
-	public Personalization getPersonalization() {
-		return persoCache;
 	}
 	
 	@Override
