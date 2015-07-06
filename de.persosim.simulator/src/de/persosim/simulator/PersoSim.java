@@ -79,12 +79,12 @@ public class PersoSim implements Simulator {
 			return true;
 		}
 		
-		if (getPersonalization() == null) {
+		if (currentPersonalization == null) {
 			log(this.getClass(), "No personalization available, please load a valid personalization before starting the simulator", PersoSimLogger.UI);
 			return false;
 		}
 		
-		kernel = new PersoSimKernel(getPersonalization());
+		kernel = new PersoSimKernel(currentPersonalization);
 		kernel.init();
 		return true;
 	}
@@ -106,11 +106,6 @@ public class PersoSim implements Simulator {
 	public boolean restartSimulator() {
 		stopSimulator();
 		return startSimulator();
-	}
-
-	@Override
-	public Personalization getPersonalization() {
-		return currentPersonalization;
 	}
 
 	@Override

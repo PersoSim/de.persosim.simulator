@@ -41,19 +41,6 @@ public interface Simulator {
 	public abstract boolean isRunning();
 	
 	/**
-	 * This method returns the content of {@link #currentPersonalization}, the
-	 * currently used personalization. If no personalization is set, i.e. the
-	 * variable is null, it will be set to the default personalization which
-	 * will be returned thereafter. This mode of accessing personalization
-	 * opportunistic assumes that a personalization will always be set and
-	 * generating a default personalization is an overhead only to be spent as a
-	 * measure of last resort.
-	 * 
-	 * @return the currently used personalization
-	 */
-	public abstract Personalization getPersonalization();
-
-	/**
 	 * The given identifier is parsed and the corresponding personalization is
 	 * loaded. If the identifier is a number, the profile with this number is
 	 * loaded. Other inputs are interpreted as file names of personalization
