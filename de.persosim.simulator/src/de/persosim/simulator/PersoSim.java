@@ -3,8 +3,8 @@ package de.persosim.simulator;
 import static de.persosim.simulator.utils.PersoSimLogger.INFO;
 import static de.persosim.simulator.utils.PersoSimLogger.UI;
 import static de.persosim.simulator.utils.PersoSimLogger.WARN;
-import static de.persosim.simulator.utils.PersoSimLogger.*;
-
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static de.persosim.simulator.utils.PersoSimLogger.logException;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.Profile01;
@@ -82,13 +82,13 @@ public class PersoSim implements Simulator {
 			return true;
 		}
 		
-		if (getPersonalization() == null) {
+		if (currentPersonalization == null) {
 			log(this.getClass(), "No personalization available, please load a valid personalization before starting the simulator", PersoSimLogger.UI);
 			return false;
 		}
 		
 		try {
-			kernel = new PersoSimKernel(getPersonalization());
+			kernel = new PersoSimKernel(currentPersonalization);
 		} catch (AccessDeniedException e) {
 			logException(this.getClass(), e, PersoSimLogger.ERROR);
 			return false;
@@ -114,11 +114,6 @@ public class PersoSim implements Simulator {
 	public boolean restartSimulator() {
 		stopSimulator();
 		return startSimulator();
-	}
-
-	@Override
-	public Personalization getPersonalization() {
-		return currentPersonalization;
 	}
 
 	@Override
