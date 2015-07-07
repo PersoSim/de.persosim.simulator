@@ -26,7 +26,7 @@
       <de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject id="18">
         <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="12"/>
         <children id="19"/>
-        <lifeCycleState>OPERATIONAL_ACTIVATED</lifeCycleState>
+        <lifeCycleState>CREATION</lifeCycleState>
         <identifier id="20">
           <identifier>2</identifier>
         </identifier>
@@ -38,7 +38,7 @@
       <de.persosim.simulator.cardobjects.PinObject id="22">
         <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="12"/>
         <children id="23"/>
-        <lifeCycleState>OPERATIONAL_ACTIVATED</lifeCycleState>
+        <lifeCycleState>CREATION</lifeCycleState>
         <identifier id="24">
           <identifier>3</identifier>
         </identifier>
