@@ -201,13 +201,13 @@ public class CommandParser {
 				args.remove(0);
     			args.remove(0);
 				Personalization perso = getPerso(arg);
+				
 				if (perso != null) {
-					boolean persoLoaded = sim.loadPersonalization(perso);
-					if (persoLoaded) {
-						sim.restartSimulator();
+					if (sim.loadPersonalization(perso)){
+						return true;
 					}
-					return persoLoaded;
     			}
+
 				// the personalization could not be loaded
 				sim.stopSimulator();
 			}
