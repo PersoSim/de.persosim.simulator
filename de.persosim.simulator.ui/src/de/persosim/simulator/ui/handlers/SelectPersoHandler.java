@@ -4,12 +4,10 @@ import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.ui.Activator;
-import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
@@ -38,13 +36,8 @@ public abstract class SelectPersoHandler {
 		String persoCmdString = CommandParser.CMD_LOAD_PERSONALIZATION + " " + personalization;
 		
 		log(this.getClass(), "executing command: " + persoCmdString);
-		
-		// ID of part as defined in fragment.e4xmi application model
-		MPart mainPart = partService.findPart("de.persosim.simulator.ui.parts.mainPart");
-		
-		if (mainPart.getObject() instanceof PersoSimGuiMain) {
-			Activator.executeUserCommands(persoCmdString);
-		}
+
+		Activator.executeUserCommands(persoCmdString);
 		
 		log(this.getClass(), "finished setting of personalization", PersoSimLogger.INFO);
 	}
