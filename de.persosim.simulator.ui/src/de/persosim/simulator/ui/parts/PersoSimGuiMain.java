@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.e4.ui.di.Focus;
@@ -34,6 +33,7 @@ import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 
 import de.persosim.simulator.ui.Activator;
+import de.persosim.simulator.ui.handlers.SelectPersoFromFileHandler;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
 
 /**
@@ -100,6 +100,23 @@ public class PersoSimGuiMain {
 			}
 		});
 		
+		MenuItem selectPersonalization = new MenuItem(consoleMenu, SWT.CASCADE);
+		selectPersonalization.setText("Load Personalization");
+		
+		selectPersonalization.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) { 
+				
+				SelectPersoFromFileHandler fileHandler = new SelectPersoFromFileHandler();
+				fileHandler.execute(parent.getShell());
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		
 		MenuItem saveLogItem = new MenuItem(consoleMenu, SWT.CASCADE);
 		saveLogItem.setText("Save log to file");
 		saveLogItem.addSelectionListener(new SelectionListener() {
@@ -136,8 +153,7 @@ public class PersoSimGuiMain {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		
-		
+			
 		
 		txtOutput.setMenu(consoleMenu);
 		
@@ -321,11 +337,6 @@ public class PersoSimGuiMain {
 			}
 		});
 
-	}
-		
-	@PreDestroy
-	public void cleanUp() {
-		System.exit(0);
 	}
 
 	@Focus
