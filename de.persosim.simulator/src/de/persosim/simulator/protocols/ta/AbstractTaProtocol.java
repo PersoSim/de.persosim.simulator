@@ -620,7 +620,8 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 */
 	private void permanentImport(CardVerifiableCertificate certificate) throws CertificateUpdateException {
 		if (trustPoint != null){
-			trustPoint.updateTrustpoint(certificate.getCertificateHolderReference(), certificate);
+			//trustPoint.updateTrustpoint(certificate.getCertificateHolderReference(), certificate);
+			trustPoint.updateTrustpoint(certificate);
 		}
 	}
 

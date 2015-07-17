@@ -3,9 +3,7 @@ package de.persosim.simulator.cardobjects;
 import java.util.Collection;
 import java.util.HashSet;
 
-
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
-import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CertificateUpdateException;
 
 /**
@@ -65,8 +63,7 @@ public class TrustPointCardObject extends AbstractCardObject {
 	 * @param newCertificate
 	 * @throws CertificateUpdateException
 	 */
-	public void updateTrustpoint(PublicKeyReference newReference,
-			CardVerifiableCertificate newCertificate) throws CertificateUpdateException {
+	public void updateTrustpoint(CardVerifiableCertificate newCertificate) throws CertificateUpdateException {
 		//XXX MBK check access rights
 
 		// XXX MBK TR-03105 here should be a test for the CHR (TR-03110 v2.10 Part 2 A.6.2.1)
