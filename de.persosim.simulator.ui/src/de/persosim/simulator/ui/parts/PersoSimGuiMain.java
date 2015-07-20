@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.e4.ui.di.Focus;
@@ -338,7 +339,11 @@ public class PersoSimGuiMain {
 		});
 
 	}
-
+	
+	public void cleanUp() {
+		System.exit(1);
+	}
+	
 	@Focus
 	public void setFocus() {
 		txtOutput.setFocus();
