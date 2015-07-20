@@ -341,7 +341,7 @@ public class PersoSimGuiMain {
 	}
 	
 	public void cleanUp() {
-		System.exit(1);
+		System.exit(0);
 	}
 	
 	@Focus
