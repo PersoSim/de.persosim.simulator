@@ -8,7 +8,7 @@ package de.persosim.simulator.platform;
 
 /* Command line options: -verbose -p EA -o CommandProcessorStateMachine -l java -t commandProcessor:commandProcessorClass C:\develop\wd\commandProcessor.xml   */
 /* This file is generated from commandProcessor.xml - do not edit manually  */
-/* Generated on: Mon Oct 27 16:12:43 CET 2014 / version 3.52beta2 */
+/* Generated on: Tue Jul 21 15:25:05 CEST 2015 / version 3.52beta2 */
 
 
 
@@ -25,8 +25,9 @@ public class CommandProcessorStateMachine extends AbstractCommandProcessor
 	public static final int PROTOCOL_FROM_LIST_ACTIVE = 7;
 	public static final int WAITING_FOR_COMMAND = 8;
 	public static final int START_OF_STACK = 9;
-	public static final int WAITING_FOR_PROTOCOL_TO_PROCESS_APDU = 10;
-	public static final int __UNKNOWN_STATE__ = 11;
+	public static final int START_PROTOCOL_ITERATION = 10;
+	public static final int WAITING_FOR_PROTOCOL_TO_PROCESS_APDU = 11;
+	public static final int __UNKNOWN_STATE__ = 12;
 
 
 	public static final int COMMANDPROCESSORSTATEMACHINE_NO_MSG = 0;
@@ -51,6 +52,8 @@ public class CommandProcessorStateMachine extends AbstractCommandProcessor
 	public int getInnermostActiveState() {
 		if(isInWAITING_FOR_PROTOCOL_TO_PROCESS_APDU()){
 			return WAITING_FOR_PROTOCOL_TO_PROCESS_APDU;
+		}else if(isInSTART_PROTOCOL_ITERATION()){
+			return START_PROTOCOL_ITERATION;
 		}else if(isInSTART_OF_STACK()){
 			return START_OF_STACK;
 		}else if(isInWAITING_FOR_COMMAND()){
@@ -85,6 +88,7 @@ public class CommandProcessorStateMachine extends AbstractCommandProcessor
 	public boolean isInPROTOCOL_FROM_LIST_ACTIVE(){return (((stateVarCOMMAND_PROCESSOR==  PROTOCOL_FROM_LIST_ACTIVE)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
 	public boolean isInWAITING_FOR_COMMAND(){return (((stateVarCOMMAND_PROCESSOR==  WAITING_FOR_COMMAND)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
 	public boolean isInSTART_OF_STACK(){return (((stateVarCOMMAND_PROCESSOR==  START_OF_STACK)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
+	public boolean isInSTART_PROTOCOL_ITERATION(){return (((stateVarCOMMAND_PROCESSOR==  START_PROTOCOL_ITERATION)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
 	public boolean isInWAITING_FOR_PROTOCOL_TO_PROCESS_APDU(){return (((stateVarCOMMAND_PROCESSOR==  WAITING_FOR_PROTOCOL_TO_PROCESS_APDU)&&(stateVar==  COMMAND_PROCESSOR)) ? (true) : (false));}
 
 
@@ -157,7 +161,7 @@ public class CommandProcessorStateMachine extends AbstractCommandProcessor
 								/* adjust state variables  */
 								stateVarCOMMAND_PROCESSOR =  WAITING_FOR_COMMAND;
 							}else{
-								/* Transition from END_OF_STACK_OR_EMPTY to WAITING_FOR_PROTOCOL_TO_PROCESS_APDU */
+								/* Transition from END_OF_STACK_OR_EMPTY to START_PROTOCOL_ITERATION */
 								evConsumed=16;
 
 								/* Action code for transition  */
@@ -165,7 +169,7 @@ public class CommandProcessorStateMachine extends AbstractCommandProcessor
 
 
 								/* adjust state variables  */
-								stateVarCOMMAND_PROCESSOR =  WAITING_FOR_PROTOCOL_TO_PROCESS_APDU;
+								stateVarCOMMAND_PROCESSOR =  START_PROTOCOL_ITERATION;
 							} /*end of event selection */
 						}else{
 							/* Intentionally left blank */
@@ -187,6 +191,9 @@ public class CommandProcessorStateMachine extends AbstractCommandProcessor
 							}else{
 								/* Transition from PROTOCOL_FROM_LIST_ACTIVE to PROTOCOL_UNABLE_TO_PROCESS_APDU */
 								evConsumed=16;
+
+								/* Action code for transition  */
+								setProtocolPointerToNextElementOfProtocolList();
 
 
 								/* adjust state variables  */
@@ -256,7 +263,7 @@ public class CommandProcessorStateMachine extends AbstractCommandProcessor
 
 					case PROTOCOL_UNABLE_TO_PROCESS_APDU:
 						if(true){
-							if(protocolAtProtocolPointerIsLastElementOfProtocolList()){
+							if(allProtocolsOfProtocolListProcessed()){
 								/* Transition from PROTOCOL_UNABLE_TO_PROCESS_APDU to WAITING_FOR_COMMAND */
 								evConsumed=16;
 
@@ -270,9 +277,6 @@ public class CommandProcessorStateMachine extends AbstractCommandProcessor
 							}else{
 								/* Transition from PROTOCOL_UNABLE_TO_PROCESS_APDU to WAITING_FOR_PROTOCOL_TO_PROCESS_APDU */
 								evConsumed=16;
-
-								/* Action code for transition  */
-								setProtocolPointerToNextElementOfProtocolList();
 
 
 								/* adjust state variables  */
@@ -307,6 +311,32 @@ public class CommandProcessorStateMachine extends AbstractCommandProcessor
 							/* Intentionally left blank */
 						} /*end of event selection */
 					break; /* end of case START_OF_STACK  */
+
+					case START_PROTOCOL_ITERATION:
+						if(true){
+							if(allProtocolsOfProtocolListProcessed()){
+								/* Transition from START_PROTOCOL_ITERATION to WAITING_FOR_COMMAND */
+								evConsumed=16;
+
+								/* Action code for transition  */
+								setStatusWordForUnsupportedCommand();
+								returnResult();
+
+
+								/* adjust state variables  */
+								stateVarCOMMAND_PROCESSOR =  WAITING_FOR_COMMAND;
+							}else{
+								/* Transition from START_PROTOCOL_ITERATION to WAITING_FOR_PROTOCOL_TO_PROCESS_APDU */
+								evConsumed=16;
+
+
+								/* adjust state variables  */
+								stateVarCOMMAND_PROCESSOR =  WAITING_FOR_PROTOCOL_TO_PROCESS_APDU;
+							} /*end of event selection */
+						}else{
+							/* Intentionally left blank */
+						} /*end of event selection */
+					break; /* end of case START_PROTOCOL_ITERATION  */
 
 					case WAITING_FOR_COMMAND:
 						if(true){

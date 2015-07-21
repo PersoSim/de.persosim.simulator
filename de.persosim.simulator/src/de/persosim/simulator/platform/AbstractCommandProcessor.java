@@ -331,13 +331,12 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	/**
 	 * Method used from within state machine code.
 	 * <p/>
-	 * Returns whether the protocol specified by the {@link #protocolPointer}
-	 * within the {@link #protocols protocol list} is the last element
-	 * of the list.
+	 * Returns whether all protocols contained in the {@link #protocols protocol
+	 * list} have been processed, i.e. there is nor further protocol available
+	 * for processing.
 	 */
-	public boolean protocolAtProtocolPointerIsLastElementOfProtocolList() {
-		int pSize = protocols.size();
-		return ((pSize == 0) || pSize == (protocolPointer + 1));
+	public boolean allProtocolsOfProtocolListProcessed() {
+		return protocolPointer >= protocols.size();
 	}
 
 	/**
