@@ -153,7 +153,7 @@ public class PersoSim implements Simulator {
 			log(this.getClass(), "The simulator is stopped, attempt to power down ignored", WARN);
 			return new byte[]{0x6f, (byte)0x80};
 		}
-		return kernel.powerOn();
+		return kernel.powerOff();
 	}
 
 	@Override
