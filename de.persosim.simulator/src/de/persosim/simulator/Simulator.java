@@ -71,7 +71,7 @@ public interface Simulator {
 	
 	/**
 	 * This method powers the simulated card down. It is equivalent to removing
-	 * a a card from the readers field.
+	 * a card from the readers field.
 	 * 
 	 * @return the status word
 	 */
