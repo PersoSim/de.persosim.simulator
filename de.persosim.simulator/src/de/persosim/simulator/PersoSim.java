@@ -64,15 +64,6 @@ public class PersoSim implements Simulator {
 		System.out.println("Welcome to PersoSim");
 
 		startSimulator();
-		final Simulator sim = this;
-		
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				CommandParser.handleUserCommands(sim);
-			}
-		}).start();
 	}
 	
 	@Override

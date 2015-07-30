@@ -1,6 +1,9 @@
 package de.persosim.simulator;
 
-import static de.persosim.simulator.utils.PersoSimLogger.*;
+import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
+import static de.persosim.simulator.utils.PersoSimLogger.INFO;
+import static de.persosim.simulator.utils.PersoSimLogger.WARN;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -14,6 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBException;
 
 import org.osgi.framework.Bundle;
 
@@ -488,38 +493,5 @@ public class CommandParser {
 	public static void showExceptionToUser(Exception e) {
 		log(CommandParser.class, "Exception: " + e.getMessage(), INFO);
 		e.printStackTrace();
-	}
-	
-	/**
-	 * This method implements the behavior of the user command prompt. E.g.
-	 * prints the prompt, reads the user commands and forwards this to the the
-	 * execution method for processing. Only one command per invocation of the
-	 * execution method is allowed. The first argument provided must be the
-	 * command, followed by an arbitrary number of parameters. If the number of
-	 * provided parameters is higher than the number expected by the command,
-	 * the surplus parameters will be ignored.
-	 */
-	static void handleUserCommands(Simulator sim) {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-		executeUserCommands = true;
-		while (executeUserCommands) {
-			log(CommandParser.class, "PersoSim commandline: ", INFO);
-			String cmd = null;
-			try {
-				cmd = br.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			try {
-				if (cmd != null) {
-					cmd = cmd.trim();
-					String[] args = parseCommand(cmd);
-					executeUserCommands(sim, args);
-				}
-			} catch (RuntimeException e) {
-				showExceptionToUser(e);
-			}
-		}
 	}
 }
