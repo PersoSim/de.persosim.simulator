@@ -16,7 +16,7 @@
             category="org.globaltester"
             class="de.persosim.simulator.ui.parts.PersoSimGuiMain"
             icon="persosim_small.png"
-            id="de.persosim.simulator.ui.e4View"
+            id="de.persosim.simulator.ui.parts.PersoSimGuiMain"
             name="PersoSim"
             restorable="true">
       </e4view>
