@@ -154,7 +154,6 @@ public class PersoSim implements Simulator {
 			return new byte[]{0x6f, (byte)0x80};
 		}
 		return kernel.powerOff();
-
 	}
 
 	@Override
