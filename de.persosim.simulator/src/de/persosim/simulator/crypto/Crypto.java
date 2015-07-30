@@ -22,7 +22,7 @@ import de.persosim.simulator.Activator;
 public class Crypto implements ServiceListener {
 	
 	private static BundleContext bundleContext;
-	private static ServiceTracker<Provider, Provider> serviceTrackerCrypto = null;
+	private static ServiceTracker<Cryptoprovider, Cryptoprovider> serviceTrackerCrypto = null;
 	private static Crypto instance;
 	private Cryptoprovider cryptoProviderService = null;
 	
@@ -34,7 +34,7 @@ public class Crypto implements ServiceListener {
 	 * Singleton constructor, ensures that the class can not be instantiated from outside.
 	 */
 	private Crypto(){
-			serviceTrackerCrypto = new ServiceTracker<Provider, Provider>(bundleContext, Provider.class.getName(), null);
+			serviceTrackerCrypto = new ServiceTracker<Cryptoprovider, Cryptoprovider>(bundleContext, Cryptoprovider.class.getName(), null);
 			serviceTrackerCrypto.open();
 	};
 	

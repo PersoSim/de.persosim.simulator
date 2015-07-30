@@ -118,7 +118,6 @@ public class Activator implements BundleActivator {
 				
 		simulatorServiceTracker = new ServiceTracker<Simulator, Simulator>(context, Simulator.class.getName(), null);
 		simulatorServiceTracker.open();
-		simulatorServiceTracker.getService().startSimulator();
 
 		String filter = "(objectclass=" + Simulator.class.getName() + ")";
 		context.addServiceListener(simulatorServiceListener, filter);

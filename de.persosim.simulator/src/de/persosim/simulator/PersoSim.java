@@ -7,7 +7,6 @@ import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.logException;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
-import de.persosim.simulator.perso.Profile01;
 import de.persosim.simulator.platform.PersoSimKernel;
 import de.persosim.simulator.utils.PersoSimLogger;
 
@@ -46,7 +45,6 @@ public class PersoSim implements Simulator {
 	 * This constructor is used by the OSGi-service instantiation
 	 */
 	public PersoSim(){
-		currentPersonalization = new Profile01();
 	}
 	
 	public PersoSim(String... args) {

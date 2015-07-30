@@ -40,7 +40,6 @@ public class Activator implements BundleActivator {
 		//Registers Simulator service
 		PersoSim simulator = new PersoSim();
 		context.registerService(Simulator.class.getName(), simulator, new Hashtable<String, String>());
-		simulator.startPersoSim();
 	}
 
 	@Override
