@@ -56,7 +56,6 @@ public class CommandParser {
 	public static final String LOG_NO_OPERATION = "nothing to process";
 	
 	private static boolean processingCommandLineArguments = false;
-	private static boolean executeUserCommands = false;
 	
 	public static final String persoPlugin = "platform:/plugin/de.persosim.rcp/";
 	public static final String persoPath = "personalization/profiles/";
