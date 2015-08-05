@@ -10,7 +10,6 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceListener;
-import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -37,7 +36,7 @@ public class Activator implements BundleActivator {
 	private static ServiceTracker<Simulator, Simulator> simulatorServiceTracker;
 
 	public static Simulator getSim() {
-		return sim;
+		return simulatorServiceTracker.getService();
 	}
 
 	static BundleContext getContext() {
@@ -49,8 +48,7 @@ public class Activator implements BundleActivator {
 	}
 	
 	public static void executeUserCommands(String command){
-		Simulator sim = (Simulator) simulatorServiceTracker.getService();
-		if (sim != null){
+		if (getSim() != null){
 			CommandParser.executeUserCommands(sim, command);
 		} else {
 			throw new ServiceException("The Simulator service could not be found");
@@ -72,22 +70,6 @@ public class Activator implements BundleActivator {
 					readers.remove(readerService);
 				}
 			}
-		}
-	};
-
-	private ServiceListener simulatorServiceListener = new ServiceListener() {
-		
-		@Override
-		public void serviceChanged(ServiceEvent event) {
-			ServiceReference<?> serviceReference = event.getServiceReference();
-			switch (event.getType()) {
-			case ServiceEvent.REGISTERED:
-				sim = (Simulator) context.getService(serviceReference);
-				break;
-			default:
-				break;
-			}
-			
 		}
 	};
 	
@@ -118,11 +100,8 @@ public class Activator implements BundleActivator {
 				
 		simulatorServiceTracker = new ServiceTracker<Simulator, Simulator>(context, Simulator.class.getName(), null);
 		simulatorServiceTracker.open();
-
-		String filter = "(objectclass=" + Simulator.class.getName() + ")";
-		context.addServiceListener(simulatorServiceListener, filter);
 		
-        filter = "(objectclass=" + LogReaderService.class.getName() + ")";
+        String filter = "(objectclass=" + LogReaderService.class.getName() + ")";
         try {
             context.addServiceListener(logServiceListener, filter);
         } catch (InvalidSyntaxException e) {
