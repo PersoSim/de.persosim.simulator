@@ -3,12 +3,15 @@ package de.persosim.simulator.ui.parts;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -31,7 +34,11 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.framework.Bundle;
 
+import de.persosim.simulator.Simulator;
+import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.perso.PersonalizationFactory;
 import de.persosim.simulator.ui.Activator;
 import de.persosim.simulator.ui.handlers.SelectPersoFromFileHandler;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
@@ -41,6 +48,10 @@ import de.persosim.simulator.ui.utils.LinkedListLogListener;
  *
  */
 public class PersoSimGuiMain {
+	
+	public static final String DE_PERSOSIM_SIMULATOR_BUNDLE = "de.persosim.simulator";
+	public static final String PERSO_PATH = "personalization/profiles/";
+	public static final String PERSO_FILE = "Profile01.xml";
 	
 	public static final int LOG_LIMIT = 1000;
 	
@@ -254,6 +265,51 @@ public class PersoSimGuiMain {
 		updateThread.setDaemon(true);
 	    updateThread.start();
 		
+	    
+	    
+	    Composite root = parentComposite;
+		Simulator sim = Activator.getSim();
+		
+		if(sim == null) {
+			MessageDialog.openError(root.getShell(), "Error", "Simulator service not yet found");
+			return;
+		} else{
+			//ensure at least a default personalization is loaded before connecting
+			if(!sim.isRunning()) {
+				try {
+					Personalization defaultPersonalization = getDefaultPersonalization(); 
+					sim.loadPersonalization(defaultPersonalization);
+				} catch (IOException e) {
+					e.printStackTrace();
+					
+					MessageDialog.openError(root.getShell(), "Error",
+							"Failed to automatically load default personalization");
+					return;
+				}
+			}
+		} 
+	}
+	
+	/**
+	 * This method returns a personalization which can be used as default.
+	 * @return a default personalization
+	 * @throws IOException
+	 */
+	private Personalization getDefaultPersonalization() throws IOException {
+		Bundle plugin = Platform.getBundle(DE_PERSOSIM_SIMULATOR_BUNDLE);
+		URL url = plugin.getEntry (PERSO_PATH);
+		URL resolvedUrl;
+		
+		resolvedUrl = FileLocator.resolve(url);
+		
+		File folder = new File(resolvedUrl.getFile());
+		String pathString = folder.getAbsolutePath() + File.separator + PERSO_FILE;
+		
+		System.out.println("Loading default personalization from: " + pathString);
+		
+		Personalization personalization = (Personalization) PersonalizationFactory.unmarshal(pathString);
+		
+		return personalization;
 	}
 	
 	/**
