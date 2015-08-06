@@ -141,11 +141,12 @@ public class PersonalizationFactory {
 		return xstream.fromXML (reader);
 	}
 	
-	public static Object unmarshal (String path) throws FileNotFoundException {
-		
+	public static Object unmarshal (String path) throws FileNotFoundException {	
 		File xmlFile = new File(path);
-		if (!xmlFile.exists()) {
-			throw new FileNotFoundException (path + " does not exist");
+		if (xmlFile.exists()) {
+			PersoSimLogger.log(PersonalizationFactory.class, "File at " + path + " found");
+		} else{
+			throw new FileNotFoundException ("File at " + path + " NOT found");
 		}
 		return unmarshal (new FileReader(path));
 	}
