@@ -23,3 +23,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: de.persosim.simulator.ui.Activator
 Export-Package: de.persosim.simulator.ui.utils
+Import-Package: de.persosim.driver.connector.service
