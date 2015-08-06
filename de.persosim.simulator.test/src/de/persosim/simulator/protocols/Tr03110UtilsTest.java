@@ -175,6 +175,34 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Positive test: Convert the Date 01.01.2070 to its BCD representation
+	 */
+	@Test
+	public void testEncodeDate_singleCharacters() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.set(2070, Calendar.JANUARY, 1, 0, 0, 0);
+
+		Date date = calendar.getTime();
+		byte [] expected = HexString.toByteArray("070000010001");
+		assertArrayEquals(expected, Tr03110Utils.encodeDate(date));
+	}
+	
+	/**
+	 * Positive test: Convert the Date 23.12.2078 to its BCD representation
+	 */
+	@Test
+	public void testEncodeDate_doubleCharacters() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.set(2078, Calendar.DECEMBER, 23, 0, 0, 0);
+
+		Date date = calendar.getTime();
+		byte [] expected = HexString.toByteArray("070801020203");
+		assertArrayEquals(expected, Tr03110Utils.encodeDate(date));
+	}
+
+	/**
 	 * This tests if the
 	 * {@link Tr03110Utils#parseCertificatePublicKey(de.persosim.simulator.tlv.ConstructedTlvDataObject, PublicKey)}
 	 * method correctly handles exceptions thrown by providers.
