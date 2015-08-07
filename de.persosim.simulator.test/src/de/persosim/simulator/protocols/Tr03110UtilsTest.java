@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.TimeZone;
 
 import mockit.Capturing;
 import mockit.Expectations;
@@ -144,6 +145,7 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.MILLISECOND, 0);
 		calendar.set(2010, Calendar.NOVEMBER, 22, 0, 0, 0);
+		calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
 		
 		Date expectedDate = calendar.getTime();
 		

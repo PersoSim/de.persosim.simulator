@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.ietf.jgss.GSSException;
 import org.osgi.framework.ServiceReference;
@@ -202,6 +203,7 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 	public static Date parseDate(byte [] dateData) throws NotParseableException {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
 		
 		if (dateData.length == 6){
 			for(byte currentByte : dateData){
