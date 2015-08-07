@@ -1,7 +1,5 @@
 package de.persosim.simulator;
 
-import java.util.Hashtable;
-
 import org.globaltester.cryptoprovider.Cryptoprovider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -37,9 +35,6 @@ public class Activator implements BundleActivator {
         String filter = "(objectclass=" + Cryptoprovider.class.getName() + ")";
 		context.addServiceListener(Crypto.getInstance(), filter);
 
-		//Registers Simulator service
-		context.registerService(Simulator.class.getName(), new PersoSim(), new Hashtable<String, String>());
-		
 	}
 
 	@Override
