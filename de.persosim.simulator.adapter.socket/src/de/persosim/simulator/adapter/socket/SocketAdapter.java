@@ -197,7 +197,7 @@ public class SocketAdapter implements Runnable {
 					CommandParser.showExceptionToUser(e);
 					// nothing else needs to be done, will lead to an empty
 					// apdu==null, thus no processing is done and the default SW
-					// 6F00 is returned
+					// 6F23 is returned
 				}
 
 				// process the APDU, generate response
@@ -224,7 +224,7 @@ public class SocketAdapter implements Runnable {
 						break;
 					default:
 						// all other (unknown) APDUs are forwarded to the
-						// simulator processingl
+						// simulator processing
 						response = sim.processCommand(apdu);
 					}
 					
