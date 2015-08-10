@@ -167,6 +167,12 @@ public class PersoSimGuiMain {
 		connectToSimulator();
 	}
 	
+	/**
+	 * This method handles the connection to the simulator. Its primary task is
+	 * to ensure the simulator is up and running when a connection is
+	 * initialized. If the simulator is not found to be running a default
+	 * personalization is loaded.
+	 */
 	private void connectToSimulator() {
 		// XXX SLS move bundle activation to product specific code
 	    try {
@@ -200,6 +206,11 @@ public class PersoSimGuiMain {
 		connectReader(connector);
 	}
 	
+	/**
+	 * This method creates the slider to be used in connection with the console output.
+	 * @param parentComposite a composite control which will be the parent of the new instance (cannot be null)
+	 * @return the slider to be used in connection with the console output
+	 */
 	private Slider createSlider(Composite parentComposite) {
 		Slider slider = new Slider(parentComposite, SWT.V_SCROLL);
 		slider.setIncrement(1);
@@ -228,6 +239,11 @@ public class PersoSimGuiMain {
 		console.setMenu(consoleMenu);
 	}
 	
+	/**
+	 * This method creates the console input.
+	 * @param parent a composite control which will be the parent of the new instance (cannot be null)
+	 * @return the console input
+	 */
 	private Text createConsoleIn(Composite parent) {
 		final Text txtIn = new Text(parent, SWT.BORDER);
 		txtIn.setMessage("Enter command here");
@@ -250,6 +266,11 @@ public class PersoSimGuiMain {
 		return txtIn;
 	}
 	
+	/**
+	 * This method creates the console output.
+	 * @param compositeParent a composite control which will be the parent of the new instance (cannot be null)
+	 * @return the console output
+	 */
 	private Text createConsoleOut(Composite compositeParent) {
 		Text txtOut = new Text(compositeParent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);		
 		txtOut.setEditable(false);
@@ -261,6 +282,11 @@ public class PersoSimGuiMain {
 		return txtOut;
 	}
 	
+	/**
+	 * This method creates the console output menu.
+	 * @param controlParent a composite control which will be the parent of the new instance (cannot be null)
+	 * @return the console output menu
+	 */
 	private Menu createConsoleMenu(Control controlParent) {
 		final Control controlParentFinal = controlParent;
 		
