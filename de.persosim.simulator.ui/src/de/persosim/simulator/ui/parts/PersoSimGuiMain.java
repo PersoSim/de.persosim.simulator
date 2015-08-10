@@ -84,23 +84,12 @@ public class PersoSimGuiMain {
 		
 		//add console out
 		txtOutput = createConsoleOut(parent);
-		
-		final LinkedListLogListener listener = Activator.getListLogListener();
-		if (listener == null){
-			txtOutput.setText("The OSGi logging service can not be used.\nPlease check the availability and OSGi configuration" + System.lineSeparator());
-		}
-		
 		addConsoleOutMenu(txtOutput);
-		
-		
 		
 		//configure the slider
 		slider = createSlider(parent);
 		
-		
-		
 		txtOutput.addMouseWheelListener(new MouseWheelListener() {
-			
 			@Override
 			public void mouseScrolled(MouseEvent e) {
 				int count = e.count;
@@ -112,19 +101,13 @@ public class PersoSimGuiMain {
 		
 		parent.setLayout(new GridLayout(2, false));		
 		
-		
-		
 		createConsoleIn(parent);
-		
-		
 		
 		lockScroller = new Button(parent, SWT.TOGGLE);
 		lockScroller.setText(" lock ");
-		lockScroller.addListener(SWT.Selection, new Listener() {
-			
+		lockScroller.addListener(SWT.Selection, new Listener() {	
 			@Override
 			public void handleEvent (Event e) {
-				
 				if(locked){
 					lockScroller.setText(" lock ");
 					locked=false;
@@ -134,6 +117,19 @@ public class PersoSimGuiMain {
 				}
 			}
 		});
+
+		Thread updateThread = createUpdateThread();
+		updateThread.setDaemon(true);
+	    updateThread.start();
+	    
+		connectToSimulator();
+	}
+	
+	private Thread createUpdateThread() {
+		final LinkedListLogListener listener = Activator.getListLogListener();
+		if (listener == null){
+			txtOutput.setText("The OSGi logging service can not be used.\nPlease check the availability and OSGi configuration" + System.lineSeparator());
+		}
 		
 		final Thread uiThread = Display.getCurrent().getThread();
 		
@@ -161,10 +157,8 @@ public class PersoSimGuiMain {
 				}
 			}
 		};
-		updateThread.setDaemon(true);
-	    updateThread.start();
-	    
-		connectToSimulator();
+		
+		return updateThread;
 	}
 	
 	/**
