@@ -29,7 +29,6 @@ import de.persosim.simulator.ui.utils.LinkedListLogListener;
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	private static Simulator sim;
 
 	private LinkedList<LogReaderService> readers = new LinkedList<>();
 	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(PersoSimGuiMain.MAXIMUM_CACHED_CONSOLE_LINES);
@@ -64,7 +63,9 @@ public class Activator implements BundleActivator {
 	}
 	
 	public static void executeUserCommands(String command){
-		if (getSim() != null){
+		Simulator sim = getSim();
+		
+		if (sim != null){
 			CommandParser.executeUserCommands(sim, command);
 		} else {
 			throw new ServiceException("The Simulator service could not be found");
