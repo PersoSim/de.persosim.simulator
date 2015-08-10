@@ -62,7 +62,7 @@ public class PersoSimGuiMain {
 	// get UISynchronize injected as field
 	@Inject UISynchronize sync;
 	
-	private Text txtInput, txtOutput;
+	private Text txtOutput;
 	
 	
 	//maximum amount of strings saved in the buffer
@@ -80,42 +80,24 @@ public class PersoSimGuiMain {
 	@PostConstruct
 	public void createComposite(Composite parentComposite) {
 		parent = parentComposite;
-		
 		parent.setLayout(new GridLayout(2, false));
 		
-		
-		
-		//configure console		
-		txtOutput = createConsole(parent);
+		//add console out
+		txtOutput = createConsoleOut(parent);
 		
 		final LinkedListLogListener listener = Activator.getListLogListener();
 		if (listener == null){
 			txtOutput.setText("The OSGi logging service can not be used.\nPlease check the availability and OSGi configuration" + System.lineSeparator());
 		}
 		
-		addConsoleMenu(txtOutput);
+		addConsoleOutMenu(txtOutput);
 		
 		
 		
 		//configure the slider
-		slider = new Slider(parent, SWT.V_SCROLL);
-		slider.setIncrement(1);
-		slider.setPageIncrement(10);
-		if (Activator.getListLogListener() != null){
-			slider.setMaximum(Activator.getListLogListener().getNumberOfCachedLines()+slider.getThumb());	
-		}
-		slider.setMinimum(0);
-		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));		
+		slider = createSlider(parent);
 		
-		SelectionListener sliderListener = new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				
-				buildNewConsoleContent();
-
-			}
-		};
-
-		slider.addSelectionListener(sliderListener);
+		
 		
 		txtOutput.addMouseWheelListener(new MouseWheelListener() {
 			
@@ -130,23 +112,11 @@ public class PersoSimGuiMain {
 		
 		parent.setLayout(new GridLayout(2, false));		
 		
-		txtInput = new Text(parent, SWT.BORDER);
-		txtInput.setMessage("Enter command here");
 		
-		txtInput.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if((e.character == SWT.CR) || (e.character == SWT.LF)) {
-					String line = txtInput.getText();
-					
-					Activator.executeUserCommands(line);
-					
-					txtInput.setText("");
-				}
-			}
-		});
-
-		txtInput.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
+		createConsoleIn(parent);
+		
+		
 		
 		lockScroller = new Button(parent, SWT.TOGGLE);
 		lockScroller.setText(" lock ");
@@ -194,23 +164,22 @@ public class PersoSimGuiMain {
 		updateThread.setDaemon(true);
 	    updateThread.start();
 	    
-	    
-	    
-	    // XXX SLS move bundle activation to product specific code
+		connectToSimulator();
+	}
+	
+	private void connectToSimulator() {
+		// XXX SLS move bundle activation to product specific code
 	    try {
 			Platform.getBundle("org.globaltester.cryptoprovider.bc").start();
 		} catch (BundleException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	    
-	    
-	    
-	    Composite root = parentComposite;
+		
 		Simulator sim = Activator.getSim();
 		
 		if(sim == null) {
-			MessageDialog.openError(root.getShell(), "Error", "Simulator service not yet found");
+			MessageDialog.openError(parent.getShell(), "Error", "Simulator service not found yet");
 			return;
 		} else{
 			//ensure at least a default personalization is loaded before connecting
@@ -221,8 +190,7 @@ public class PersoSimGuiMain {
 				} catch (IOException e) {
 					e.printStackTrace();
 					
-					MessageDialog.openError(root.getShell(), "Error",
-							"Failed to automatically load default personalization");
+					MessageDialog.openError(parent.getShell(), "Error", "Failed to automatically load default personalization");
 					return;
 				}
 			}
@@ -232,20 +200,65 @@ public class PersoSimGuiMain {
 		connectReader(connector);
 	}
 	
-	private void addConsoleMenu(Text console) {
+	private Slider createSlider(Composite parentComposite) {
+		Slider slider = new Slider(parentComposite, SWT.V_SCROLL);
+		slider.setIncrement(1);
+		slider.setPageIncrement(10);
+		if (Activator.getListLogListener() != null){
+			slider.setMaximum(Activator.getListLogListener().getNumberOfCachedLines()+slider.getThumb());	
+		}
+		slider.setMinimum(0);
+		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));		
+		
+		SelectionListener sliderListener = new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				
+				buildNewConsoleContent();
+
+			}
+		};
+
+		slider.addSelectionListener(sliderListener);
+		
+		return slider;
+	}
+	
+	private void addConsoleOutMenu(Text console) {
 		Menu consoleMenu = createConsoleMenu(console);
 		console.setMenu(consoleMenu);
 	}
 	
-	private Text createConsole(Composite compositeParent) {
-		Text txt = new Text(compositeParent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);		
-		txt.setEditable(false);
-		txt.setCursor(null);
-		txt.setLayoutData(new GridData(GridData.FILL_BOTH));
-		txt.setSelection(txt.getText().length());
-		txt.setTopIndex(txt.getLineCount() - 1);
+	private Text createConsoleIn(Composite parent) {
+		final Text txtIn = new Text(parent, SWT.BORDER);
+		txtIn.setMessage("Enter command here");
 		
-		return txt;
+		txtIn.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if((e.character == SWT.CR) || (e.character == SWT.LF)) {
+					String line = txtIn.getText();
+					
+					Activator.executeUserCommands(line);
+					
+					txtIn.setText("");
+				}
+			}
+		});
+
+		txtIn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
+		return txtIn;
+	}
+	
+	private Text createConsoleOut(Composite compositeParent) {
+		Text txtOut = new Text(compositeParent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);		
+		txtOut.setEditable(false);
+		txtOut.setCursor(null);
+		txtOut.setLayoutData(new GridData(GridData.FILL_BOTH));
+		txtOut.setSelection(txtOut.getText().length());
+		txtOut.setTopIndex(txtOut.getLineCount() - 1);
+		
+		return txtOut;
 	}
 	
 	private Menu createConsoleMenu(Control controlParent) {
