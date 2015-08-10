@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
 //import org.osgi.framework.BundleException;
+import org.osgi.framework.BundleException;
 
 import de.persosim.driver.connector.service.NativeDriverConnectorInterface;
 import de.persosim.simulator.Simulator;
@@ -193,12 +194,17 @@ public class PersoSimGuiMain {
 		updateThread.setDaemon(true);
 	    updateThread.start();
 	    
-//	    try {
-//			Platform.getBundle("org.globaltester.cryptoprovider.bc").start();
-//		} catch (BundleException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+	    
+	    
+	    // XXX SLS move bundle activation to product specific code
+	    try {
+			Platform.getBundle("org.globaltester.cryptoprovider.bc").start();
+		} catch (BundleException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    
 	    
 	    Composite root = parentComposite;
 		Simulator sim = Activator.getSim();
