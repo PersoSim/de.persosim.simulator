@@ -27,6 +27,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -35,6 +36,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
+//import org.osgi.framework.BundleException;
 
 import de.persosim.driver.connector.service.NativeDriverConnectorInterface;
 import de.persosim.simulator.Simulator;
@@ -80,94 +82,19 @@ public class PersoSimGuiMain {
 		
 		parent.setLayout(new GridLayout(2, false));
 		
-		//configure console field		
-		txtOutput = new Text(parent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);
+		
+		
+		//configure console		
+		txtOutput = createConsole(parent);
 		
 		final LinkedListLogListener listener = Activator.getListLogListener();
 		if (listener == null){
 			txtOutput.setText("The OSGi logging service can not be used.\nPlease check the availability and OSGi configuration" + System.lineSeparator());
 		}
 		
-		txtOutput.setEditable(false);
-		txtOutput.setCursor(null);
-		txtOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
-		txtOutput.setSelection(txtOutput.getText().length());
-		txtOutput.setTopIndex(txtOutput.getLineCount() - 1);
+		addConsoleMenu(txtOutput);
 		
-		Menu consoleMenu = new Menu(txtOutput);
-		MenuItem changeLogLevelItem = new MenuItem(consoleMenu, SWT.CASCADE);
-		changeLogLevelItem.setText("Configure logLevel");
 		
-		changeLogLevelItem.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) { 
-				
-				LogLevelDialog ld = new LogLevelDialog(null);
-				ld.open();
-
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-		
-		MenuItem selectPersonalization = new MenuItem(consoleMenu, SWT.CASCADE);
-		selectPersonalization.setText("Load Personalization");
-		
-		selectPersonalization.addSelectionListener(new SelectionListener() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) { 
-				
-				SelectPersoFromFileHandler fileHandler = new SelectPersoFromFileHandler();
-				fileHandler.execute(parent.getShell());
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-		
-		MenuItem saveLogItem = new MenuItem(consoleMenu, SWT.CASCADE);
-		saveLogItem.setText("Save log to file");
-		saveLogItem.addSelectionListener(new SelectionListener() {
-			
-			String logFileName;
-			File file;
-			PrintWriter writer;
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) { 
-				
-				try{
-					logFileName = "PersoSim_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".log";
-					file = new File(logFileName);
-					writer = new PrintWriter(file);
-					for (int i = 0; i < Activator.getListLogListener()
-							.getNumberOfCachedLines(); i++) {
-						writer.write(Activator.getListLogListener().getLine(i)+"\n");
-					}
-					
-					MessageDialog.openInformation(txtOutput.getShell(), "Info", "Logfile written to " + file.getAbsolutePath());
-				}catch(IOException ioe){
-		            ioe.printStackTrace(); 
-		        } finally { 
-		            if (writer != null){ 
-		                writer.flush(); 
-		                writer.close(); 
-		            } 
-		        } 				
-
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-			
-		
-		txtOutput.setMenu(consoleMenu);
 		
 		//configure the slider
 		slider = new Slider(parent, SWT.V_SCROLL);
@@ -265,8 +192,13 @@ public class PersoSimGuiMain {
 		};
 		updateThread.setDaemon(true);
 	    updateThread.start();
-		
 	    
+//	    try {
+//			Platform.getBundle("org.globaltester.cryptoprovider.bc").start();
+//		} catch (BundleException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	    
 	    Composite root = parentComposite;
 		Simulator sim = Activator.getSim();
@@ -292,6 +224,108 @@ public class PersoSimGuiMain {
 		
 		NativeDriverConnectorInterface connector = Activator.getConnector();
 		connectReader(connector);
+	}
+	
+	private void addConsoleMenu(Text console) {
+		Menu consoleMenu = createConsoleMenu(console);
+		console.setMenu(consoleMenu);
+	}
+	
+	private Text createConsole(Composite compositeParent) {
+		Text txt = new Text(compositeParent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);		
+		txt.setEditable(false);
+		txt.setCursor(null);
+		txt.setLayoutData(new GridData(GridData.FILL_BOTH));
+		txt.setSelection(txt.getText().length());
+		txt.setTopIndex(txt.getLineCount() - 1);
+		
+		return txt;
+	}
+	
+	private Menu createConsoleMenu(Control controlParent) {
+		final Control controlParentFinal = controlParent;
+		
+		Menu consoleMenu = new Menu(controlParentFinal);
+		
+		//configure log level menu
+		MenuItem changeLogLevelItem = new MenuItem(consoleMenu, SWT.CASCADE);
+		changeLogLevelItem.setText("Configure logLevel");
+		
+		changeLogLevelItem.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) { 
+				
+				LogLevelDialog ld = new LogLevelDialog(null);
+				ld.open();
+
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		
+		
+		
+		//configure load personalization menu
+		MenuItem selectPersonalization = new MenuItem(consoleMenu, SWT.CASCADE);
+		selectPersonalization.setText("Load Personalization");
+		
+		selectPersonalization.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) { 
+				
+				SelectPersoFromFileHandler fileHandler = new SelectPersoFromFileHandler();
+				fileHandler.execute(controlParentFinal.getShell());
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		
+		
+		
+		// configure save log menu
+		MenuItem saveLogItem = new MenuItem(consoleMenu, SWT.CASCADE);
+		saveLogItem.setText("Save log to file");
+		saveLogItem.addSelectionListener(new SelectionListener() {
+			
+			String logFileName;
+			File file;
+			PrintWriter writer;
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) { 
+				
+				try{
+					logFileName = "PersoSim_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".log";
+					file = new File(logFileName);
+					writer = new PrintWriter(file);
+					for (int i = 0; i < Activator.getListLogListener()
+							.getNumberOfCachedLines(); i++) {
+						writer.write(Activator.getListLogListener().getLine(i)+"\n");
+					}
+					
+					MessageDialog.openInformation(txtOutput.getShell(), "Info", "Logfile written to " + file.getAbsolutePath());
+				}catch(IOException ioe){
+		            ioe.printStackTrace(); 
+		        } finally { 
+		            if (writer != null){ 
+		                writer.flush(); 
+		                writer.close(); 
+		            } 
+		        } 				
+
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		
+		return consoleMenu;
 	}
 	
 	/**
