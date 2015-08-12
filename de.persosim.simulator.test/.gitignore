@@ -1,5 +1,6 @@
 /bin
 /logs
+/target
 /coverage-report
 /tmp
 /DScardSigner.properties

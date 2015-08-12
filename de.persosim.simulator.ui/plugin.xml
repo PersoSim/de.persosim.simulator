@@ -8,5 +8,20 @@
             uri="fragment.e4xmi">
       </fragment>
    </extension>
+   <extension
+         id="de.persosim.simulator.ui.persosinView"
+         point="org.eclipse.ui.views">
+      <e4view
+            allowMultiple="false"
+            category="org.globaltester"
+            class="de.persosim.simulator.ui.parts.PersoSimGuiMain"
+            icon="persosim_small.png"
+            id="de.persosim.simulator.ui.parts.PersoSimGuiMain"
+            name="PersoSim"
+            restorable="true">
+      </e4view>
+   </extension>
+   
+
 
 </plugin>

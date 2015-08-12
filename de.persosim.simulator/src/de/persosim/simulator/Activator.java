@@ -38,8 +38,8 @@ public class Activator implements BundleActivator {
 		context.addServiceListener(Crypto.getInstance(), filter);
 
 		//Registers Simulator service
-		context.registerService(Simulator.class.getName(), new PersoSim(), new Hashtable<String, String>());
-		
+		PersoSim simulator = new PersoSim();
+		context.registerService(Simulator.class.getName(), simulator, new Hashtable<String, String>());
 	}
 
 	@Override

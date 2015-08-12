@@ -89,7 +89,7 @@ public class PersoSimKernel implements InfoSource {
 		for (int curLayerId = layers.size()-1; curLayerId >= 0; curLayerId--) {
 			layers.get(curLayerId).powerOff();	
 		}
-				
+		
 		return Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR);
 	}
 

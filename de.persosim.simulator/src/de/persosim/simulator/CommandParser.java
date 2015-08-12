@@ -1,6 +1,9 @@
 package de.persosim.simulator;
 
-import static de.persosim.simulator.utils.PersoSimLogger.*;
+import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
+import static de.persosim.simulator.utils.PersoSimLogger.INFO;
+import static de.persosim.simulator.utils.PersoSimLogger.WARN;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -14,6 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBException;
 
 import org.osgi.framework.Bundle;
 
@@ -29,6 +34,9 @@ import de.persosim.simulator.perso.PersonalizationFactory;
  *
  */
 public class CommandParser {
+
+	public static final int DEFAULT_SIM_PORT = 9876;
+	public static final String DEFAULT_SIM_HOST = "localhost";
 
 
 	public static final String CMD_START = "start";
@@ -48,31 +56,11 @@ public class CommandParser {
 	public static final String LOG_NO_OPERATION = "nothing to process";
 	
 	private static boolean processingCommandLineArguments = false;
-	private static boolean executeUserCommands = false;
 	
 	public static final String persoPlugin = "platform:/plugin/de.persosim.rcp/";
 	public static final String persoPath = "personalization/profiles/";
 	public static final String persoFilePrefix = "Profile";
 	public static final String persoFilePostfix = ".xml";
-
-
-	/**
-	 * This method processes the command for exiting the simulator.
-	 * @param args arguments that may contain an exit command
-	 * @return whether exiting was successful
-	 */
-	public static boolean cmdExitSimulator(Simulator sim, List<String> args) {
-		if((args != null) && (args.size() >= 1)) {
-			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_EXIT)) {
-				args.remove(0);
-				return sim.exitSimulator();
-			}
-		}
-		
-		return false;
-	}
 	
 	/**
 	 * This method processes the command for starting the simulator.
@@ -181,7 +169,6 @@ public class CommandParser {
 		log(CommandParser.class, CMD_START, INFO);
 		log(CommandParser.class, CMD_RESTART, INFO);
 		log(CommandParser.class, CMD_STOP, INFO);
-		log(CommandParser.class, CMD_EXIT, INFO);
 		log(CommandParser.class, CMD_HELP, INFO);
 	}
 	
@@ -281,7 +268,6 @@ public class CommandParser {
 			cmdStartSimulator(sim, currentArgs);
 			cmdRestartSimulator(sim, currentArgs);
 			cmdStopSimulator(sim, currentArgs);
-			cmdExitSimulator(sim, currentArgs);
 			cmdHelp(currentArgs);
 			
 			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
@@ -397,7 +383,7 @@ public class CommandParser {
 	 */
 	private static String exchangeApdu(Simulator sim, String cmdApdu) {
 		//FIXME: remove this method or move the CommandParser
-		return exchangeApdu(cmdApdu, Simulator.DEFAULT_SIM_HOST, Simulator.DEFAULT_SIM_PORT);
+		return exchangeApdu(cmdApdu, DEFAULT_SIM_HOST, DEFAULT_SIM_PORT);
 	}
 
 	/**
@@ -506,38 +492,5 @@ public class CommandParser {
 	public static void showExceptionToUser(Exception e) {
 		log(CommandParser.class, "Exception: " + e.getMessage(), INFO);
 		e.printStackTrace();
-	}
-	
-	/**
-	 * This method implements the behavior of the user command prompt. E.g.
-	 * prints the prompt, reads the user commands and forwards this to the the
-	 * execution method for processing. Only one command per invocation of the
-	 * execution method is allowed. The first argument provided must be the
-	 * command, followed by an arbitrary number of parameters. If the number of
-	 * provided parameters is higher than the number expected by the command,
-	 * the surplus parameters will be ignored.
-	 */
-	static void handleUserCommands(Simulator sim) {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-		executeUserCommands = true;
-		while (executeUserCommands) {
-			log(CommandParser.class, "PersoSim commandline: ", INFO);
-			String cmd = null;
-			try {
-				cmd = br.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			try {
-				if (cmd != null) {
-					cmd = cmd.trim();
-					String[] args = parseCommand(cmd);
-					executeUserCommands(sim, args);
-				}
-			} catch (RuntimeException e) {
-				showExceptionToUser(e);
-			}
-		}
 	}
 }

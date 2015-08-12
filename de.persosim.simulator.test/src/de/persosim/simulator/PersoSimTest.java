@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
@@ -12,6 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
@@ -24,13 +27,17 @@ public class PersoSimTest extends PersoSimTestCase {
 	public static final String SELECT_APDU = "00A4020C02011C";
 	public static final String SW_NO_ERROR = "9000"; //FIXME why this constant?
 	
+	public static String DEFAULT_PERSONALIZATION_FILE_PROJECT = "de.persosim.simulator";
+	public static String DEFAULT_PERSONALIZATION_FILE_PATH = DEFAULT_PERSONALIZATION_FILE_PROJECT + File.separator + "personalization" + File.separator + "profiles";
+	public static String DEFAULT_PERSONALIZATION_FILE = DEFAULT_PERSONALIZATION_FILE_PATH + File.separator + "Profile01.xml";
+	
 	static PrintStream	origOut;
 	static ByteArrayOutputStream redStdOut;
 	
 	
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws FileNotFoundException {
 		origOut	= System.out;
 	}
 	
@@ -41,6 +48,21 @@ public class PersoSimTest extends PersoSimTestCase {
 		}
 		
 		System.setOut(origOut);
+	}
+	
+	/**
+	 * This method returns the default personalization of profile 1 loaded from
+	 * Profile01.xml from de.persosim.simulator repository.
+	 * 
+	 * @return the default personalization
+	 * @throws FileNotFoundException
+	 */
+	public Personalization getDefaultPerso() throws FileNotFoundException {
+		File currentPath = new File("");
+		String currentPathString = currentPath.getAbsolutePath();
+		String repoPathString = currentPathString.substring(0, currentPathString.lastIndexOf(File.separator) + File.separator.length() - 1);
+		String defaultPersoFileString = repoPathString + File.separator + DEFAULT_PERSONALIZATION_FILE;
+		return CommandParser.parsePersonalization(defaultPersoFileString);
 	}
 	
 	/**
@@ -137,23 +159,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: check how PersoSim command line handles exit command.
-	 * @throws Exception
-	 */
-	@Test
-	public void testExecuteUserCommands_Exit() throws Exception {
-		persoSim = new PersoSim((String) null);
-		
-		activateStdOutRedirection();
-		
-		CommandParser.executeUserCommands(persoSim, CommandParser.CMD_EXIT);
-		
-		String response = readRedStdOut();
-
-		assertTrue(response.contains(PersoSim.LOG_SIM_EXIT));
-	}
-	
-	/**
 	 * Positive test case: check how PersoSim command line handles an unknown argument.
 	 * @throws Exception
 	 */
@@ -182,6 +187,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		assertArrayEquals(Utils.toUnsignedByteArray((short)(Iso7816.SW_6F00_UNKNOWN+0x78)), response);
 		
+		persoSim.loadPersonalization(getDefaultPerso());
 		persoSim.startSimulator();
 		
 		response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
@@ -197,6 +203,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testStartSimulator_twice() throws Exception {
 		persoSim = new PersoSim();
 		
+		persoSim.loadPersonalization(getDefaultPerso());
 		persoSim.startSimulator();
 		assertTrue(persoSim.startSimulator());
 		
@@ -213,6 +220,7 @@ public class PersoSimTest extends PersoSimTestCase {
 	public void testStopSimulator() throws Exception {
 		persoSim = new PersoSim();
 		
+		persoSim.loadPersonalization(getDefaultPerso());
 		persoSim.startSimulator();
 		
 		byte [] responseSelect = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));

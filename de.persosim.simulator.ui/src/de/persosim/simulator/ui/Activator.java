@@ -10,10 +10,10 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceListener;
-import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.util.tracker.ServiceTracker;
 
+import de.persosim.driver.connector.service.NativeDriverConnectorInterface;
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.Simulator;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
@@ -29,15 +29,29 @@ import de.persosim.simulator.ui.utils.LinkedListLogListener;
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	private static Simulator sim;
 
 	private LinkedList<LogReaderService> readers = new LinkedList<>();
 	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(PersoSimGuiMain.MAXIMUM_CACHED_CONSOLE_LINES);
 	private ServiceTracker<LogReaderService, LogReaderService> logReaderTracker;
-	private static ServiceTracker<Simulator, Simulator> simulatorServiceTracker;
+	private static ServiceTracker<Simulator, Simulator> serviceTrackerSimulator;
+	private static ServiceTracker<NativeDriverConnectorInterface, NativeDriverConnectorInterface> serviceTrackerNativeDriverConnector;
 
+	/**
+	 * @return the OSGi-provided simulator service or null if it is not available
+	 */
 	public static Simulator getSim() {
-		return sim;
+		if (serviceTrackerSimulator != null){
+
+			return serviceTrackerSimulator.getService();
+		}
+		return null;
+	}
+	
+	public static NativeDriverConnectorInterface getConnector() {
+		if (serviceTrackerNativeDriverConnector != null){
+			return serviceTrackerNativeDriverConnector.getService();
+		}
+		return null;
 	}
 
 	static BundleContext getContext() {
@@ -49,7 +63,8 @@ public class Activator implements BundleActivator {
 	}
 	
 	public static void executeUserCommands(String command){
-		Simulator sim = (Simulator) simulatorServiceTracker.getService();
+		Simulator sim = getSim();
+		
 		if (sim != null){
 			CommandParser.executeUserCommands(sim, command);
 		} else {
@@ -72,22 +87,6 @@ public class Activator implements BundleActivator {
 					readers.remove(readerService);
 				}
 			}
-		}
-	};
-
-	private ServiceListener simulatorServiceListener = new ServiceListener() {
-		
-		@Override
-		public void serviceChanged(ServiceEvent event) {
-			ServiceReference<?> serviceReference = event.getServiceReference();
-			switch (event.getType()) {
-			case ServiceEvent.REGISTERED:
-				sim = (Simulator) context.getService(serviceReference);
-				break;
-			default:
-				break;
-			}
-			
 		}
 	};
 	
@@ -116,14 +115,13 @@ public class Activator implements BundleActivator {
 			}
 		}
 				
-		simulatorServiceTracker = new ServiceTracker<Simulator, Simulator>(context, Simulator.class.getName(), null);
-		simulatorServiceTracker.open();
-		simulatorServiceTracker.getService().startSimulator();
-
-		String filter = "(objectclass=" + Simulator.class.getName() + ")";
-		context.addServiceListener(simulatorServiceListener, filter);
+		serviceTrackerSimulator = new ServiceTracker<Simulator, Simulator>(context, Simulator.class.getName(), null);
+		serviceTrackerSimulator.open();
 		
-        filter = "(objectclass=" + LogReaderService.class.getName() + ")";
+		serviceTrackerNativeDriverConnector = new ServiceTracker<NativeDriverConnectorInterface, NativeDriverConnectorInterface>(context, NativeDriverConnectorInterface.class.getName(), null);
+		serviceTrackerNativeDriverConnector.open();
+		
+        String filter = "(objectclass=" + LogReaderService.class.getName() + ")";
         try {
             context.addServiceListener(logServiceListener, filter);
         } catch (InvalidSyntaxException e) {
@@ -147,7 +145,8 @@ public class Activator implements BundleActivator {
 		logReaderTracker.close();
 
 		Activator.context = null;
-		simulatorServiceTracker.close();
+		serviceTrackerSimulator.close();
+		serviceTrackerNativeDriverConnector.close();
 	}
 
 	private static LevelFilter logLevelFilter;
