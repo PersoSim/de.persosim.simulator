@@ -36,8 +36,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
-//import org.osgi.framework.BundleException;
-import org.osgi.framework.BundleException;
 
 import de.persosim.driver.connector.service.NativeDriverConnectorInterface;
 import de.persosim.simulator.Simulator;
@@ -168,14 +166,6 @@ public class PersoSimGuiMain {
 	 * personalization is loaded.
 	 */
 	private void connectToSimulator() {
-		// XXX SLS move bundle activation to product specific code
-	    try {
-			Platform.getBundle("org.globaltester.cryptoprovider.bc").start();
-		} catch (BundleException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		Simulator sim = Activator.getSim();
 		
 		if(sim == null) {
