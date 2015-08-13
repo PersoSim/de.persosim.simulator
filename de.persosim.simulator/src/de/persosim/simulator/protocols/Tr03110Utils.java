@@ -6,11 +6,13 @@ import static de.persosim.simulator.utils.PersoSimLogger.log;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.PublicKey;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.ietf.jgss.GSSException;
 import org.osgi.framework.ServiceReference;
@@ -29,6 +31,7 @@ import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
+import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
@@ -84,7 +87,7 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 			}
 					
 		} else {
-			PersoSimLogger.log(Tr03110Utils.class, "No OSGi context is available, no TR03110 functionalities are supported", PersoSimLogger.INFO);
+			PersoSimLogger.log(Tr03110Utils.class, "No OSGi context is available, no additional TR03110 functionalities are supported", PersoSimLogger.INFO);
 		}
 		providers.add(new Tr03110UtilsDefaultProvider());
 
@@ -200,6 +203,7 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 	public static Date parseDate(byte [] dateData) throws NotParseableException {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
 		
 		if (dateData.length == 6){
 			for(byte currentByte : dateData){
@@ -212,5 +216,27 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 			throw new NotParseableException("The date could not be parsed, its length was incorrect");
 		}
 		return calendar.getTime();
+	}
+	
+	/**
+	 * Encodes a date as described in TR-03110 v2.10 D.2.1.3.
+	 * 
+	 * @param date
+	 *            the date to encode, only the year, month and day components
+	 *            are used
+	 * @return the 6 byte long BCD encoding
+	 */
+	public static byte[] encodeDate(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		DecimalFormat formatter = new DecimalFormat("00");
+		String tempDate = ""
+				+ formatter.format((calendar.get(Calendar.YEAR) - 2000) / 10)
+				+ formatter.format((calendar.get(Calendar.YEAR) - 2000) % 10)
+				+ formatter.format((calendar.get(Calendar.MONTH) + 1) / 10)
+				+ formatter.format((calendar.get(Calendar.MONTH) + 1) % 10)
+				+ formatter.format(calendar.get(Calendar.DAY_OF_MONTH) / 10)
+				+ formatter.format(calendar.get(Calendar.DAY_OF_MONTH) % 10);
+		return HexString.toByteArray(tempDate);
 	}
 }

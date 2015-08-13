@@ -34,6 +34,12 @@ public class Tr03110UtilsDefaultProvider implements Tr03110UtilsProvider {
 					&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_87)) {
 				paramSpec = CryptoUtil.parseParameterSpecEc(publicKeyData);
 			} else {
+				if (trustPointEcPublicKey == null){
+					throw new InvalidKeySpecException("The public key data does not contain domain parameters and not additional public key was given");
+				}
+				if (trustPointEcPublicKey.getParams() == null){
+					throw new InvalidKeySpecException("The given additional public key does not contain domain parameters");
+				}
 				if (trustPointEcPublicKey.getParams().getCurve().getField()
 						.getFieldSize() / 8 != ((publicKeyData
 						.getTlvDataObject(TlvConstants.TAG_86).getLengthValue() - 1) / 2)) {

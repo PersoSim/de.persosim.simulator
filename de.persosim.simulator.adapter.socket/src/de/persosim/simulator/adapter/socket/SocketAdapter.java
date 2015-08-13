@@ -197,7 +197,7 @@ public class SocketAdapter implements Runnable {
 					CommandParser.showExceptionToUser(e);
 					// nothing else needs to be done, will lead to an empty
 					// apdu==null, thus no processing is done and the default SW
-					// 6F00 is returned
+					// 6F23 is returned
 				}
 
 				// process the APDU, generate response

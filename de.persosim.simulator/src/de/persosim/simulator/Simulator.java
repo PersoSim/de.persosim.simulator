@@ -71,7 +71,11 @@ public interface Simulator {
 	
 	/**
 	 * This method powers the simulated card down. It is equivalent to removing
+<<<<<<< HEAD
 	 * a card from the readers field.
+=======
+	 * a a card from the readers field.
+>>>>>>> refs/remotes/GitHub/halemmerich/simulatorControlGT
 	 * 
 	 * @return the status word
 	 */

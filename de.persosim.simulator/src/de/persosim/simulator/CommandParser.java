@@ -38,7 +38,6 @@ public class CommandParser {
 	public static final int DEFAULT_SIM_PORT = 9876;
 	public static final String DEFAULT_SIM_HOST = "localhost";
 
-
 	public static final String CMD_START = "start";
 	public static final String CMD_RESTART = "restart";
 	public static final String CMD_STOP = "stop";
