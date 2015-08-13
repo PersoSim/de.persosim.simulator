@@ -87,7 +87,7 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 			}
 					
 		} else {
-			PersoSimLogger.log(Tr03110Utils.class, "No OSGi context is available, no TR03110 functionalities are supported", PersoSimLogger.INFO);
+			PersoSimLogger.log(Tr03110Utils.class, "No OSGi context is available, no additional TR03110 functionalities are supported", PersoSimLogger.INFO);
 		}
 		providers.add(new Tr03110UtilsDefaultProvider());
 
