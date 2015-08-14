@@ -168,10 +168,7 @@ public class PersoSimGuiMain {
 	private void connectToSimulator() {
 		Simulator sim = Activator.getSim();
 		
-		if(sim == null) {
-			MessageDialog.openError(parent.getShell(), "Error", "Simulator service not found yet");
-			return;
-		} else{
+		if(sim != null) {
 			//ensure at least a default personalization is loaded before connecting
 			if(!sim.isRunning()) {
 				try {
