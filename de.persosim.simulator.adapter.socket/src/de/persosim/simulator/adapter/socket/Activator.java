@@ -2,7 +2,9 @@ package de.persosim.simulator.adapter.socket;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import de.persosim.simulator.Simulator;
 
@@ -16,7 +18,7 @@ import de.persosim.simulator.Simulator;
 public class Activator implements BundleActivator, SimulatorProvider {
 
 	private static BundleContext context;
-	private static SocketAdapter simulator;
+	private static SocketAdapter simulatorSocket;
 	private static ServiceTracker<Simulator, Simulator> serviceTracker;
 	private static final int SIM_PORT = 9876;
 
@@ -28,12 +30,29 @@ public class Activator implements BundleActivator, SimulatorProvider {
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext bundleContext) throws Exception {
+	public void start(final BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		serviceTracker = new ServiceTracker<Simulator, Simulator>(bundleContext, Simulator.class.getName(), null);
+		simulatorSocket = new SocketAdapter(this, SIM_PORT);
+		serviceTracker = new ServiceTracker<Simulator, Simulator>(bundleContext, Simulator.class.getName(), new ServiceTrackerCustomizer<Simulator, Simulator>() {
+
+			@Override
+			public Simulator addingService(ServiceReference<Simulator> reference) {
+				simulatorSocket.start();
+				return bundleContext.getService(reference);
+			}
+
+			@Override
+			public void modifiedService(ServiceReference<Simulator> reference, Simulator service) {
+				// nothing to do
+			}
+
+			@Override
+			public void removedService(ServiceReference<Simulator> reference, Simulator service) {
+				simulatorSocket.stop();
+				
+			}
+		});
 		serviceTracker.open();
-		simulator = new SocketAdapter(this, SIM_PORT);
-		simulator.start();
 	}
 
 	/*
@@ -42,7 +61,6 @@ public class Activator implements BundleActivator, SimulatorProvider {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
-		simulator.stop();
 		serviceTracker.close();
 	}
 
