@@ -352,11 +352,16 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	 * @return an encoding of a provided {@link ECPoint} according to the domain parameters specified by this object
 	 */
 	public byte[] encodePoint(ECPoint ecPoint, byte encoding) {
+		/*
+		 * This check is necessary to ensure that shorter point encodings from
+		 * another ec domain parameter set will also be rejected and not
+		 * processed unnoticed.
+		 */
 		if(!isOnCurve(ecPoint)) {
 			return null;
 		}
 		
-		int publicPointReferenceLength = getPublicPointReferenceLengthL(((ECFieldFp) ecParameterSpec.getCurve().getField()).getP());
+		int publicPointReferenceLength = getPublicPointReferenceLengthL(getPrime());
 		
 		return CryptoUtil.encode(ecPoint, publicPointReferenceLength, encoding);
 	}
