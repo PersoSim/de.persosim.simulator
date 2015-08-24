@@ -15,6 +15,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 import de.persosim.driver.connector.service.NativeDriverConnectorInterface;
 import de.persosim.simulator.CommandParser;
+import de.persosim.simulator.PersoSim;
 import de.persosim.simulator.Simulator;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
@@ -35,7 +36,6 @@ public class Activator implements BundleActivator {
 	private ServiceTracker<LogReaderService, LogReaderService> logReaderTracker;
 	private static ServiceTracker<Simulator, Simulator> serviceTrackerSimulator;
 	private static ServiceTracker<NativeDriverConnectorInterface, NativeDriverConnectorInterface> serviceTrackerNativeDriverConnector;
-
 	/**
 	 * @return the OSGi-provided simulator service or null if it is not available
 	 */
@@ -63,10 +63,18 @@ public class Activator implements BundleActivator {
 	}
 	
 	public static void executeUserCommands(String command){
-		Simulator sim = getSim();
+		Simulator sim = (PersoSim) de.persosim.simulator.Activator.getDefault().getSim();
+		if (sim == null) {
+			
+			de.persosim.simulator.Activator persoSimPlugin = de.persosim.simulator.Activator.getDefault();
+			persoSimPlugin.enableService();
+	
+			sim = (PersoSim) persoSimPlugin.getSim();
+		}
 		
-		if (sim != null){
+		if (sim != null) {
 			CommandParser.executeUserCommands(sim, command);
+			
 		} else {
 			throw new ServiceException("The Simulator service could not be found");
 		}
