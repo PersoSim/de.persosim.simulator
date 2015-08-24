@@ -33,4 +33,5 @@ Import-Package: org.osgi.framework,
 Eclipse-BundleShape: dir
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: de.persosim.simulator.Activator
-Require-Bundle: org.globaltester.cryptoprovider
+Require-Bundle: org.globaltester.cryptoprovider,
+ org.eclipse.equinox.registry
