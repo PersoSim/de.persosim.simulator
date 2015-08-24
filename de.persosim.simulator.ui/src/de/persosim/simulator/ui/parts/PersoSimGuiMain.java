@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -457,6 +458,11 @@ public class PersoSimGuiMain {
 			}
 		});
 
+	}
+	
+	@PreDestroy
+	public void disconnectNativeDriver() {
+		de.persosim.simulator.Activator.getDefault().disableService();		
 	}
 	
 	public void cleanUp() {
