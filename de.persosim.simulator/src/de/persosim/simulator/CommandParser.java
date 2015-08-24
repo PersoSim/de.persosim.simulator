@@ -6,6 +6,7 @@ import static de.persosim.simulator.utils.PersoSimLogger.WARN;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,6 +21,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBException;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.osgi.framework.Bundle;
 
 import de.persosim.simulator.perso.Personalization;
@@ -90,7 +92,9 @@ public class CommandParser {
 			
 			if(cmd.equals(CMD_STOP)) {
 				args.remove(0);
-				return sim.stopSimulator();
+				sim.stopSimulator();
+				Activator.getDefault().disableService();
+				return true;
 			}
 		}
 		
@@ -205,27 +209,46 @@ public class CommandParser {
 	private static Personalization getPerso(String identifier){
 
 		//try to parse the given identifier as profile number
-		try {
-			int personalizationNumber = Integer.parseInt(identifier);
-			log(CommandParser.class, "trying to load personalization profile no: " + personalizationNumber, INFO);
-			Bundle plugin = Activator.getContext().getBundle();
+		String filePath = "";
+		File xmlFile = new File(identifier);
+		if (xmlFile.exists() && xmlFile.isFile()) {
+			filePath = identifier;
+		} else {
+			try {
 			
-			if(plugin == null) {
-				// TODO how to handle this case? Add OSGI requirement?
-				log(CommandParser.class, "unable to resolve bundle \"de.persosim.simulator\" - personalization unchanged");
+				int personalizationNumber = Integer.parseInt(identifier);
+				if(personalizationNumber > 10) {
+					log(CommandParser.class, "personalization profile no: " + personalizationNumber + " does not exist", INFO);
+					return null;
+				}
+				log(CommandParser.class, "trying to load personalization profile no: " + personalizationNumber, INFO);
+				Bundle plugin = Activator.getContext().getBundle();
+				
+				URL url = plugin.getEntry (persoPath);
+				URL resolvedUrl;
+				File folder = null;
+				
+				try {
+					resolvedUrl = FileLocator.resolve(url);
+					folder = new File(resolvedUrl.getFile());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (personalizationNumber < 10) {
+					identifier = "0" + personalizationNumber;
+				}
+				filePath = folder.getAbsolutePath() + File.separator + "Profile" + identifier + ".xml";
+	
+			} catch (Exception e) {
+				log(CommandParser.class, "identifier is no valid path and no valid profile number!", ERROR);
 				return null;
-			} else {
-				URL url = plugin.getResource(persoPath + persoFilePrefix + String.format("%02d", personalizationNumber) + persoFilePostfix);
-				log(CommandParser.class, "resolved absolute URL for selected profile is: " + url);
-				identifier = url.getPath();
 			}
-		} catch (Exception e) {
-			//seems to be a call to load a personalization by path
 		}
 		
 		//actually load perso from the identified file
 		try{
-			return parsePersonalization(identifier);
+			return parsePersonalization(filePath);
 		} catch(FileNotFoundException e) {
 			log(CommandParser.class, "unable to set personalization, reason is: " + e.getMessage(), ERROR);
 			log(CommandParser.class, "simulation is stopped", ERROR);
