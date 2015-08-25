@@ -5,13 +5,9 @@ import static de.persosim.simulator.utils.PersoSimLogger.INFO;
 import static de.persosim.simulator.utils.PersoSimLogger.WARN;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +22,7 @@ import org.osgi.framework.Bundle;
 
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
+import de.persosim.simulator.utils.HexString;
 
 /**
  * This class provides methods that parse console commands for the control of
@@ -44,7 +41,6 @@ public class CommandParser {
 	public static final String CMD_RESTART = "restart";
 	public static final String CMD_STOP = "stop";
 	public static final String CMD_EXIT = "exit";
-	public static final String CMD_SET_PORT = "setport";
 	public static final String ARG_SET_PORT = "-port";
 	public static final String CMD_LOAD_PERSONALIZATION = "loadperso";
 	public static final String ARG_LOAD_PERSONALIZATION = "-perso";
@@ -57,7 +53,7 @@ public class CommandParser {
 	public static final String LOG_NO_OPERATION = "nothing to process";
 	
 	private static boolean processingCommandLineArguments = false;
-	
+	private static PersoSim sim = null;
 	public static final String persoPlugin = "platform:/plugin/de.persosim.rcp/";
 	public static final String persoPath = "personalization/profiles/";
 	public static final String persoFilePrefix = "Profile";
@@ -68,13 +64,14 @@ public class CommandParser {
 	 * @param args arguments that may contain a start command
 	 * @return whether instantiation and starting was successful
 	 */
-	public static boolean cmdStartSimulator(Simulator sim, List<String> args) {
+	public static boolean cmdStartSimulator(List<String> args) {
 		if((args != null) && (args.size() >= 1)) {
 			String cmd = args.get(0);
 			
 			if(cmd.equals(CMD_START)) {
 				args.remove(0);
-				return sim.startSimulator();
+				
+				return getPersoSim().startSimulator();
 			}
 		}
 		
@@ -86,14 +83,13 @@ public class CommandParser {
 	 * @param args arguments that may contain a stop command
 	 * @return whether stopping was successful
 	 */
-	public static boolean cmdStopSimulator(Simulator sim, List<String> args) {
+	public static boolean cmdStopSimulator(List<String> args) {
 		if((args != null) && (args.size() >= 1)) {
 			String cmd = args.get(0);
 			
 			if(cmd.equals(CMD_STOP)) {
 				args.remove(0);
-				sim.stopSimulator();
-				Activator.getDefault().disableService();
+				disablePersoSimService();
 				return true;
 			}
 		}
@@ -107,13 +103,13 @@ public class CommandParser {
 	 * @param args arguments that may contain a restart command
 	 * @return whether restarting was successful
 	 */
-	public static boolean cmdRestartSimulator(Simulator sim, List<String> args) {
+	public static boolean cmdRestartSimulator(List<String> args) {
 		if((args != null) && (args.size() >= 1)) {
 			String cmd = args.get(0);
 			
 			if(cmd.equals(CMD_RESTART)) {
 				args.remove(0);
-				return sim.restartSimulator();
+				return getPersoSim().restartSimulator();
 			}
 		}
 		
@@ -126,7 +122,7 @@ public class CommandParser {
 	 * @param args the arguments provided for processing
 	 * @return whether processing has been successful
 	 */
-	public static String cmdSendApdu(Simulator sim, List<String> args) {
+	public static String cmdSendApdu(List<String> args) {
 		if((args != null) && (args.size() >= 2)) {
 			String cmd = args.get(0);
 			
@@ -134,6 +130,7 @@ public class CommandParser {
 				String result;
 				
 				try{
+					PersoSim sim = getPersoSim();
 	    			result = sendCmdApdu(sim, "sendApdu " + args.get(1));
 	    			args.remove(0);
 	    			args.remove(0);
@@ -168,7 +165,6 @@ public class CommandParser {
 		log(CommandParser.class, "Available commands:", INFO);
 		log(CommandParser.class, CMD_SEND_APDU + " <hexstring>", INFO);
 		log(CommandParser.class, CMD_LOAD_PERSONALIZATION + " <file name>", INFO);
-		log(CommandParser.class, CMD_SET_PORT + " <port number>", INFO);
 		log(CommandParser.class, CMD_START, INFO);
 		log(CommandParser.class, CMD_RESTART, INFO);
 		log(CommandParser.class, CMD_STOP, INFO);
@@ -180,12 +176,13 @@ public class CommandParser {
 	 * @param args the arguments provided for processing the load personalization command
 	 * @return whether processing of the load personalization command has been successful
 	 */
-	public static boolean cmdLoadPersonalization(Simulator sim, List<String> args) {
+	public static boolean cmdLoadPersonalization(List<String> args) {
 		
 		if((args != null) && (args.size() >= 2)) {
 			String cmd = args.get(0);
 			
 			if(cmd.equals(CMD_LOAD_PERSONALIZATION) || cmd.equals(ARG_LOAD_PERSONALIZATION)) {
+				
 				String arg = args.get(1);
 				
 				args.remove(0);
@@ -193,6 +190,7 @@ public class CommandParser {
 				Personalization perso = getPerso(arg);
 				
 				if (perso != null) {
+					PersoSim sim = getPersoSim();
 					if (sim.loadPersonalization(perso)){
 						return true;
 					}
@@ -200,7 +198,6 @@ public class CommandParser {
 
 				// the personalization could not be loaded
 				Activator.getDefault().disableService();
-				sim.stopSimulator();
 			}
 		}
 		
@@ -272,7 +269,7 @@ public class CommandParser {
 		return (Personalization) PersonalizationFactory.unmarshal(persoFileName);
 	}
 	
-	public static void executeUserCommands(Simulator sim, String... args) {
+	public static void executeUserCommands(String... args) {
 		if((args == null) || (args.length == 0)) {log(CommandParser.class, LOG_NO_OPERATION, INFO); return;}
 		
 		ArrayList<String> currentArgs = new ArrayList<String>(Arrays.asList(args)); // plain return value of Arrays.asList() does not support required remove operation
@@ -289,11 +286,11 @@ public class CommandParser {
 		while(currentArgs.size() > 0) {
 			noOfArgsWhenCheckedLast = currentArgs.size();
 			
-			cmdLoadPersonalization(sim, currentArgs);
-			cmdSendApdu(sim, currentArgs);
-			cmdStartSimulator(sim, currentArgs);
-			cmdRestartSimulator(sim, currentArgs);
-			cmdStopSimulator(sim, currentArgs);
+			cmdLoadPersonalization(currentArgs);
+			cmdSendApdu(currentArgs);
+			cmdStartSimulator(currentArgs);
+			cmdRestartSimulator(currentArgs);
+			cmdStopSimulator(currentArgs);
 			cmdHelp(currentArgs);
 			
 			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
@@ -333,7 +330,7 @@ public class CommandParser {
 		while(currentArgs.size() > 0) {
 			noOfArgsWhenCheckedLast = currentArgs.size();
 			
-			cmdLoadPersonalization(sim, currentArgs);
+			cmdLoadPersonalization(currentArgs);
 			cmdHelp(currentArgs);
 			
 			if(currentArgs.size() > 0) {
@@ -399,79 +396,22 @@ public class CommandParser {
 	}
 	
 	/**
-	 * Transmit the given APDU to the simulator, which processes it and returns
-	 * the response. The response APDU is received from the simulator via its
-	 * socket interface and returned to the caller as HexString.
+	 * Transmit the given APDU to the simulator where it will be processed
+	 * and answered by a response. The response APDU is received from the 
+	 * simulator and returned to the caller as HexString.
 	 * 
-	 * @param cmdApdu
-	 *            HexString containing the CommandAPDU
-	 * @return
-	 */
-	private static String exchangeApdu(Simulator sim, String cmdApdu) {
-		//FIXME: remove this method or move the CommandParser
-		return exchangeApdu(cmdApdu, DEFAULT_SIM_HOST, DEFAULT_SIM_PORT);
-	}
-
-	/**
-	 * Transmit the given APDU to the simulator identified by host name and port
-	 * number, where it will be processed and answered by a response. The
-	 * response APDU is received from the simulator via its socket interface and
-	 * returned to the caller as HexString.
-	 * 
-	 * @param cmdApdu
-	 *            HexString containing the CommandAPDU
-	 * @param host
-	 *            the host to contact
-	 * @param port
-	 *            the port to query
+	 * @param cmdApdu HexString containing the CommandAPDU
 	 * @return the response
 	 */
-	private static String exchangeApdu(String cmdApdu, String host, int port) {
+	private static String exchangeApdu(Simulator sim, String cmdApdu) {
 		cmdApdu = cmdApdu.replaceAll("\\s", ""); // remove any whitespace
-
-		Socket socket;
-		try {
-			socket = new Socket(host, port);
-		} catch (IOException e) {
-			socket = null;
-			showExceptionToUser(e);
-			return null;
-		}
-
-		PrintStream out = null;
-		BufferedReader in = null;
-		try {
-			out = new PrintStream(socket.getOutputStream());
-			in = new BufferedReader(new InputStreamReader(
-					socket.getInputStream()));
-		} catch (IOException e) {
-			showExceptionToUser(e);
-		}
-
-		out.println(cmdApdu);
-		out.flush();
-
-		String respApdu = null;
-		try {
-			respApdu = in.readLine();
-		} catch (IOException e) {
-			showExceptionToUser(e);
-		} finally {
-			log(CommandParser.class, "> " + cmdApdu, INFO);
-			log(CommandParser.class, "< " + respApdu, INFO);
-			if (socket != null) {
-				try {
-					socket.close();
-				} catch (IOException e) {
-					showExceptionToUser(e);
-				}
-			}
-		}
-
+		String respApdu =  HexString.dump(sim.processCommand(HexString.toByteArray(cmdApdu)));
+		log(CommandParser.class, "> " + cmdApdu, INFO);
+		log(CommandParser.class, "< " + respApdu, INFO);
 		return respApdu;
-		
 	}
-	
+
+
 	/**
 	 * This method parses the provided String object for commands and possible
 	 * arguments. First the provided String is trimmed. If the String is empty,
@@ -508,15 +448,35 @@ public class CommandParser {
 		}
 	}
 	
-	public static void executeUserCommands(Simulator sim, String cmd) {
+	public static void executeUserCommands(String cmd) {
 		String trimmedCmd = cmd.trim();
 		String[] args = parseCommand(trimmedCmd);
 		
-		executeUserCommands(sim, args);
+		executeUserCommands(args);
 	}
 	
 	public static void showExceptionToUser(Exception e) {
 		log(CommandParser.class, "Exception: " + e.getMessage(), INFO);
 		e.printStackTrace();
+	}
+	
+	private static PersoSim getPersoSim() {
+		int numberOfSimulators = de.persosim.simulator.Activator.getDefault().getNumberOfSimulators();
+		if (numberOfSimulators == 0) {
+			
+			de.persosim.simulator.Activator persoSimPlugin = de.persosim.simulator.Activator.getDefault();
+			persoSimPlugin.enableService();
+	
+			sim = (PersoSim) persoSimPlugin.getSim();
+		} else if (numberOfSimulators > 0 && sim == null){
+
+			throw new RuntimeException("There is already a simulator running, please stop it before starting another one!");
+		}
+		return sim;
+	}
+	
+	private static void disablePersoSimService() {
+		de.persosim.simulator.Activator.getDefault().disableService();
+		sim = null;
 	}
 }
