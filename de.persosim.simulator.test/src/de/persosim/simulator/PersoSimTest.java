@@ -147,11 +147,10 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommands_EmptyArgument() throws Exception {
-		persoSim = new PersoSim((String) null);
 		
 		activateStdOutRedirection();
 		
-		CommandParser.executeUserCommands(persoSim, "");
+		CommandParser.executeUserCommands("");
 		
 		String response = readRedStdOut();
 
@@ -164,11 +163,10 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommands_UnknownArgument() throws Exception {
-		persoSim = new PersoSim((String) null);
 		
 		activateStdOutRedirection();
 		
-		CommandParser.executeUserCommands(persoSim, "unknown");
+		CommandParser.executeUserCommands("unknown");
 		
 		String response = readRedStdOut();
 		
