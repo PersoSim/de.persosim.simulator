@@ -199,6 +199,7 @@ public class CommandParser {
     			}
 
 				// the personalization could not be loaded
+				Activator.getDefault().disableService();
 				sim.stopSimulator();
 			}
 		}
