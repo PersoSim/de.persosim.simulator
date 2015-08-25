@@ -247,11 +247,6 @@ public class CommandParser {
 				identifier = "0" + personalizationNumber;
 			}
 			filePath = folder.getAbsolutePath() + File.separator + "Profile" + identifier + ".xml";
-			xmlFile = new File(filePath);
-			if (!xmlFile.exists() || !xmlFile.isFile()){
-				log(CommandParser.class, "identifier is no valid path or profile number!", ERROR);
-				return null;
-			}
 		}
 		
 		//actually load perso from the identified file
