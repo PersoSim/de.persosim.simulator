@@ -8,14 +8,12 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceListener;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.util.tracker.ServiceTracker;
 
 import de.persosim.driver.connector.service.NativeDriverConnectorInterface;
 import de.persosim.simulator.CommandParser;
-import de.persosim.simulator.PersoSim;
 import de.persosim.simulator.Simulator;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
@@ -63,21 +61,7 @@ public class Activator implements BundleActivator {
 	}
 	
 	public static void executeUserCommands(String command){
-		Simulator sim = (PersoSim) de.persosim.simulator.Activator.getDefault().getSim();
-		if (sim == null) {
-			
-			de.persosim.simulator.Activator persoSimPlugin = de.persosim.simulator.Activator.getDefault();
-			persoSimPlugin.enableService();
-	
-			sim = (PersoSim) persoSimPlugin.getSim();
-		}
-		
-		if (sim != null) {
-			CommandParser.executeUserCommands(sim, command);
-			
-		} else {
-			throw new ServiceException("The Simulator service could not be found");
-		}
+		CommandParser.executeUserCommands(command);
 	}
 	
 	// This will be used to keep track of listeners as they are un/registering
