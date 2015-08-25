@@ -206,42 +206,50 @@ public class CommandParser {
 		return false;
 	}
 	
+	/**
+	 * This method parses the given identifier and loads the personalization
+	 * @param identifier
+	 * @return a personalization object
+	 */
 	private static Personalization getPerso(String identifier){
 
-		//try to parse the given identifier as profile number
 		String filePath = "";
+		int personalizationNumber = 0;
 		File xmlFile = new File(identifier);
 		if (xmlFile.exists() && xmlFile.isFile()) {
 			filePath = identifier;
 		} else {
+			//try to parse the given identifier as profile number
 			try {
+			personalizationNumber = Integer.parseInt(identifier);
+			} catch (NumberFormatException e) {
+				log(CommandParser.class, "identifier is no valid path or profile number!", ERROR);
+				return null;
+			}
+			if(personalizationNumber > 10) {
+				log(CommandParser.class, "personalization profile no: " + personalizationNumber + " does not exist", INFO);
+				return null;
+			}
+			log(CommandParser.class, "trying to load personalization profile no: " + personalizationNumber, INFO);
+			Bundle plugin = Activator.getContext().getBundle();
 			
-				int personalizationNumber = Integer.parseInt(identifier);
-				if(personalizationNumber > 10) {
-					log(CommandParser.class, "personalization profile no: " + personalizationNumber + " does not exist", INFO);
-					return null;
-				}
-				log(CommandParser.class, "trying to load personalization profile no: " + personalizationNumber, INFO);
-				Bundle plugin = Activator.getContext().getBundle();
-				
-				URL url = plugin.getEntry (persoPath);
-				URL resolvedUrl;
-				File folder = null;
-				
-				try {
-					resolvedUrl = FileLocator.resolve(url);
-					folder = new File(resolvedUrl.getFile());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (personalizationNumber < 10) {
-					identifier = "0" + personalizationNumber;
-				}
-				filePath = folder.getAbsolutePath() + File.separator + "Profile" + identifier + ".xml";
-	
-			} catch (Exception e) {
-				log(CommandParser.class, "identifier is no valid path and no valid profile number!", ERROR);
+			URL url = plugin.getEntry (persoPath);
+			URL resolvedUrl;
+			File folder = null;
+			
+			try {
+				resolvedUrl = FileLocator.resolve(url);
+				folder = new File(resolvedUrl.getFile());
+			} catch (IOException e) {
+				log(CommandParser.class, e.getMessage(), ERROR);
+			}
+			if (personalizationNumber < 10) {
+				identifier = "0" + personalizationNumber;
+			}
+			filePath = folder.getAbsolutePath() + File.separator + "Profile" + identifier + ".xml";
+			xmlFile = new File(filePath);
+			if (!xmlFile.exists() || !xmlFile.isFile()){
+				log(CommandParser.class, "identifier is no valid path or profile number!", ERROR);
 				return null;
 			}
 		}
