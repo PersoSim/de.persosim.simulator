@@ -18,9 +18,11 @@ Require-Bundle: org.eclipse.swt;bundle-version="3.103.0",
  org.eclipse.e4.core.commands;bundle-version="0.10.2",
  org.eclipse.e4.core.services;bundle-version="1.2.0",
  org.eclipse.osgi,
- org.globaltester.logging
+ org.globaltester.logging,
+ de.persosim.driver.connector
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: de.persosim.simulator.ui.Activator
-Export-Package: de.persosim.simulator.ui.utils
+Export-Package: de.persosim.simulator.ui.parts,
+ de.persosim.simulator.ui.utils
 Import-Package: de.persosim.driver.connector.service
