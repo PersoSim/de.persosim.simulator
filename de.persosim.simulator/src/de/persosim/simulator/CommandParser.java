@@ -23,7 +23,6 @@ import org.osgi.framework.Bundle;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
 import de.persosim.simulator.utils.HexString;
-
 /**
  * This class provides methods that parse console commands for the control of
  * the Simulator and calls the corresponding methods of the {@link Simulator}
@@ -54,6 +53,8 @@ public class CommandParser {
 	
 	private static boolean processingCommandLineArguments = false;
 	private static PersoSim sim = null;
+	private static de.persosim.simulator.Activator persoSimPlugin = null;
+	
 	public static final String persoPlugin = "platform:/plugin/de.persosim.rcp/";
 	public static final String persoPath = "personalization/profiles/";
 	public static final String persoFilePrefix = "Profile";
@@ -70,7 +71,6 @@ public class CommandParser {
 			
 			if(cmd.equals(CMD_START)) {
 				args.remove(0);
-				
 				return getPersoSim().startSimulator();
 			}
 		}
@@ -93,7 +93,7 @@ public class CommandParser {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -460,17 +460,16 @@ public class CommandParser {
 		e.printStackTrace();
 	}
 	
-	private static PersoSim getPersoSim() {
-		int numberOfSimulators = de.persosim.simulator.Activator.getDefault().getNumberOfSimulators();
-		if (numberOfSimulators == 0) {
-			
-			de.persosim.simulator.Activator persoSimPlugin = de.persosim.simulator.Activator.getDefault();
-			persoSimPlugin.enableService();
+	private static void enablePersoSimService() {
+		persoSimPlugin = de.persosim.simulator.Activator.getDefault();
+		persoSimPlugin.enableService();
+	}
 	
+	
+	private static PersoSim getPersoSim() {
+		enablePersoSimService();
+		if (persoSimPlugin != null) {
 			sim = (PersoSim) persoSimPlugin.getSim();
-		} else if (numberOfSimulators > 0 && sim == null){
-
-			throw new RuntimeException("There is already a simulator running, please stop it before starting another one!");
 		}
 		return sim;
 	}
@@ -479,4 +478,6 @@ public class CommandParser {
 		de.persosim.simulator.Activator.getDefault().disableService();
 		sim = null;
 	}
+	
+
 }
