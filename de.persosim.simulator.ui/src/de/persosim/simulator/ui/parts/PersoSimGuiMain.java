@@ -416,7 +416,7 @@ public class PersoSimGuiMain {
 	}
 	
 	@PreDestroy
-	public void disconnectNativeDriver() {
+	public void closePerosimView() {
 	if(uiThread.isAlive()) {
 		uiThread.interrupt();
 	}
