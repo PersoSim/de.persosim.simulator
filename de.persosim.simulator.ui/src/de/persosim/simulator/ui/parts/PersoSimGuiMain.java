@@ -3,7 +3,6 @@ package de.persosim.simulator.ui.parts;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -11,14 +10,13 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -36,12 +34,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
-import org.osgi.framework.Bundle;
 
 import de.persosim.driver.connector.service.NativeDriverConnectorInterface;
-import de.persosim.simulator.Simulator;
-import de.persosim.simulator.perso.Personalization;
-import de.persosim.simulator.perso.PersonalizationFactory;
 import de.persosim.simulator.ui.Activator;
 import de.persosim.simulator.ui.handlers.SelectPersoFromFileHandler;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
@@ -62,8 +56,8 @@ public class PersoSimGuiMain {
 	@Inject UISynchronize sync;
 	
 	private Text txtOutput;
-	
-	
+	private Thread uiThread = null;
+	private Thread updateThread = null;
 	//maximum amount of strings saved in the buffer
 	public static final int MAXIMUM_CACHED_CONSOLE_LINES = 2000;
 	
@@ -98,6 +92,20 @@ public class PersoSimGuiMain {
 			}
 		});
 		
+		
+		txtOutput.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyReleased(KeyEvent e) {}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				slider.setSelection(slider.getSelection()-1);
+				
+				buildNewConsoleContent();		
+			}
+		});
+		
 		parent.setLayout(new GridLayout(2, false));		
 		
 		createConsoleIn(parent);
@@ -116,12 +124,10 @@ public class PersoSimGuiMain {
 				}
 			}
 		});
-
-		Thread updateThread = createUpdateThread();
+		Activator.addLogListener();
+		updateThread = createUpdateThread();
 		updateThread.setDaemon(true);
-	    updateThread.start();
-	    
-		connectToSimulator();
+		updateThread.start();
 	}
 	
 	private Thread createUpdateThread() {
@@ -130,24 +136,20 @@ public class PersoSimGuiMain {
 			txtOutput.setText("The OSGi logging service can not be used.\nPlease check the availability and OSGi configuration" + System.lineSeparator());
 		}
 		
-		final Thread uiThread = Display.getCurrent().getThread();
-		
-		Thread updateThread = new Thread() {
+		uiThread = Display.getCurrent().getThread();
+		final Thread updateThread = new Thread() {
 			public void run() {				
-				
-				while (uiThread.isAlive()) {					
-					sync.syncExec(new Runnable() {
-
-						@Override
-						public void run() {
-							
+				while (uiThread.isAlive()) {
+						sync.syncExec(new Runnable() {
+							@Override
+							public void run() {
 							 if(listener.isRefreshNeeded()) {
 								 listener.resetRefreshState();
 								 buildNewConsoleContent();
 								 showNewOutput();
 							 }
-						}
-					});
+							}
+						});
 					try {
 						Thread.sleep(50);
 					} catch (InterruptedException e) {
@@ -156,36 +158,7 @@ public class PersoSimGuiMain {
 				}
 			}
 		};
-		
 		return updateThread;
-	}
-	
-	/**
-	 * This method handles the connection to the simulator. Its primary task is
-	 * to ensure the simulator is up and running when a connection is
-	 * initialized. If the simulator is not found to be running a default
-	 * personalization is loaded.
-	 */
-	private void connectToSimulator() {
-		Simulator sim = Activator.getSim();
-		
-		if(sim != null) {
-			//ensure at least a default personalization is loaded before connecting
-			if(!sim.isRunning()) {
-				try {
-					Personalization defaultPersonalization = getDefaultPersonalization(); 
-					sim.loadPersonalization(defaultPersonalization);
-				} catch (IOException e) {
-					e.printStackTrace();
-					
-					MessageDialog.openError(parent.getShell(), "Error", "Failed to automatically load default personalization");
-					return;
-				}
-			}
-		}
-		
-		NativeDriverConnectorInterface connector = Activator.getConnector();
-		connectReader(connector);
 	}
 	
 	/**
@@ -210,9 +183,7 @@ public class PersoSimGuiMain {
 
 			}
 		};
-
 		slider.addSelectionListener(sliderListener);
-		
 		return slider;
 	}
 	
@@ -235,9 +206,7 @@ public class PersoSimGuiMain {
 			public void keyReleased(KeyEvent e) {
 				if((e.character == SWT.CR) || (e.character == SWT.LF)) {
 					String line = txtIn.getText();
-					
 					Activator.executeUserCommands(line);
-					
 					txtIn.setText("");
 				}
 			}
@@ -356,28 +325,6 @@ public class PersoSimGuiMain {
 	}
 	
 	/**
-	 * This method returns a personalization which can be used as default.
-	 * @return a default personalization
-	 * @throws IOException
-	 */
-	private Personalization getDefaultPersonalization() throws IOException {
-		Bundle plugin = Platform.getBundle(DE_PERSOSIM_SIMULATOR_BUNDLE);
-		URL url = plugin.getEntry (PERSO_PATH);
-		URL resolvedUrl;
-		
-		resolvedUrl = FileLocator.resolve(url);
-		
-		File folder = new File(resolvedUrl.getFile());
-		String pathString = folder.getAbsolutePath() + File.separator + PERSO_FILE;
-		
-		System.out.println("Loading default personalization from: " + pathString);
-		
-		Personalization personalization = (Personalization) PersonalizationFactory.unmarshal(pathString);
-		
-		return personalization;
-	}
-	
-	/**
 	 * changes the maximum of the slider and selects the 
 	 * new Maximum to display the latest log messages
 	 */
@@ -412,33 +359,40 @@ public class PersoSimGuiMain {
 		final StringBuilder strConsoleStrings = new StringBuilder();
 
 		// calculates how many lines can be shown without cutting
-		maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
 		
-		//synchronized is used to avoid IndexOutOfBoundsExceptions
-		synchronized (Activator.getListLogListener()) {
-			int listSize = Activator.getListLogListener().getNumberOfCachedLines();
-
-			// value is needed to stop writing in the console when the end in
-			// the list is reached
-			int linesToShow = maxLineCount;
-			linesToShow = listSize - slider.getMaximum() + slider.getThumb();
-
-			// Fill text field with selected data
-			for (int i = 0; i < linesToShow; i++) {
-
-				strConsoleStrings.append(Activator.getListLogListener().getLine(slider
-						.getSelection() + i));
-				strConsoleStrings.append("\n");
-
+				try {
+				maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
+				} catch (Exception e) {
+					maxLineCount = 15;
+				}
+			//synchronized is used to avoid IndexOutOfBoundsExceptions
+			synchronized (Activator.getListLogListener()) {
+				int listSize = Activator.getListLogListener().getNumberOfCachedLines();
+	
+				// value is needed to stop writing in the console when the end in
+				// the list is reached
+				try {
+					int linesToShow = listSize - slider.getMaximum() + slider.getThumb();
+					int sliderSelection = slider.getSelection();
+					// Fill text field with selected data
+					for (int i = 0; i < linesToShow; i++) {
+						
+						strConsoleStrings.append(Activator.getListLogListener().getLine(sliderSelection + i));
+						strConsoleStrings.append("\n");
+					}
+				} catch ( Exception e) {}
 			}
-		}
+		
 		// send the StringBuilder data to the console field
 		sync.syncExec(new Runnable() {
 
 			@Override
 			public void run() {
-
+				try {
 				txtOutput.setText(strConsoleStrings.toString());
+				} catch(Exception e) {
+					
+				}
 
 			}
 		});
@@ -449,24 +403,27 @@ public class PersoSimGuiMain {
 	 * controls slider selection (auto scrolling)
 	 */
 	public void showNewOutput() {
-		
+		if (uiThread.isAlive() && !uiThread.isInterrupted()) {
 		sync.syncExec(new Runnable() {
 			@Override
 			public void run() {
 				rebuildSlider();
-				slider.setSelection(slider.getMaximum());							
+				slider.setSelection(slider.getMaximum());
 			}
 		});
+		}
 
 	}
 	
 	@PreDestroy
 	public void disconnectNativeDriver() {
-		de.persosim.simulator.Activator.getDefault().disableService();		
+	if(uiThread.isAlive()) {
+		uiThread.interrupt();
 	}
-	
-	public void cleanUp() {
-		System.exit(0);
+	if(updateThread.isAlive()) {
+		updateThread.interrupt();
+	}
+	Activator.removeLogListener();
 	}
 	
 	@Focus
