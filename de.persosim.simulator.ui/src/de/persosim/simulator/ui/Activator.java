@@ -1,5 +1,9 @@
 package de.persosim.simulator.ui;
 
+import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -12,6 +16,7 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.util.tracker.ServiceTracker;
 
+import de.persosim.driver.connector.NativeDriverConnector;
 import de.persosim.driver.connector.service.NativeDriverConnectorInterface;
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.Simulator;
@@ -28,23 +33,16 @@ import de.persosim.simulator.ui.utils.LinkedListLogListener;
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-
 	private LinkedList<LogReaderService> readers = new LinkedList<>();
 	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(PersoSimGuiMain.MAXIMUM_CACHED_CONSOLE_LINES);
 	private ServiceTracker<LogReaderService, LogReaderService> logReaderTracker;
-	private static ServiceTracker<Simulator, Simulator> serviceTrackerSimulator;
 	private static ServiceTracker<NativeDriverConnectorInterface, NativeDriverConnectorInterface> serviceTrackerNativeDriverConnector;
-	/**
-	 * @return the OSGi-provided simulator service or null if it is not available
-	 */
-	public static Simulator getSim() {
-		if (serviceTrackerSimulator != null){
-
-			return serviceTrackerSimulator.getService();
-		}
-		return null;
-	}
+	public static final int DEFAULT_PORT = 5678;
+	public static final String DEFAULT_HOST = "localhost";
+	public static NativeDriverConnector connector = null;
+	private static LogReaderService readerService = null;
 	
+
 	public static NativeDriverConnectorInterface getConnector() {
 		if (serviceTrackerNativeDriverConnector != null){
 			return serviceTrackerNativeDriverConnector.getService();
@@ -61,7 +59,13 @@ public class Activator implements BundleActivator {
 	}
 	
 	public static void executeUserCommands(String command){
+		if (command.startsWith("start") || command.startsWith("load") || command.startsWith("restart")) {
+			connectToNativeDriver();
+		}
 		CommandParser.executeUserCommands(command);
+		if (command.startsWith("stop")) {
+			disconnectFromNativeDriver();
+		}
 	}
 	
 	// This will be used to keep track of listeners as they are un/registering
@@ -101,15 +105,11 @@ public class Activator implements BundleActivator {
 		Object[] readers = logReaderTracker.getServices();
 		if (readers != null){
 			for (int i=0; i<readers.length; i++){
-				LogReaderService readerService = (LogReaderService) readers [i];
+				readerService = (LogReaderService) readers [i];
 				this.readers.add(readerService);
-				readerService.addLogListener(linkedListLogger);
 			}
 		}
 				
-		serviceTrackerSimulator = new ServiceTracker<Simulator, Simulator>(context, Simulator.class.getName(), null);
-		serviceTrackerSimulator.open();
-		
 		serviceTrackerNativeDriverConnector = new ServiceTracker<NativeDriverConnectorInterface, NativeDriverConnectorInterface>(context, NativeDriverConnectorInterface.class.getName(), null);
 		serviceTrackerNativeDriverConnector.open();
 		
@@ -120,6 +120,15 @@ public class Activator implements BundleActivator {
             e.printStackTrace();
         }
 	}
+	
+	public static void removeLogListener() {
+		readerService.removeLogListener(linkedListLogger);
+	}
+	
+	public static void addLogListener() {
+		readerService.addLogListener(linkedListLogger);
+	}
+	
 
 	/*
 	 * (non-Javadoc)
@@ -137,7 +146,6 @@ public class Activator implements BundleActivator {
 		logReaderTracker.close();
 
 		Activator.context = null;
-		serviceTrackerSimulator.close();
 		serviceTrackerNativeDriverConnector.close();
 	}
 
@@ -150,4 +158,30 @@ public class Activator implements BundleActivator {
 	public static void setLogLevelFilter(LevelFilter levelFilter) {
 		Activator.logLevelFilter = levelFilter;
 	}
+	
+	public static void connectToNativeDriver() {
+		connector = (NativeDriverConnector) getConnector();
+		try {
+			if (!connector.isRunning()) {
+			connector.connect(DEFAULT_HOST, DEFAULT_PORT);
+			}
+		} catch (IOException e) {
+			log(CommandParser.class, "Exception: " + e.getMessage(), ERROR);
+			e.printStackTrace();
+		}
+	}
+	
+	public static void disconnectFromNativeDriver() {
+			try {
+				if (connector == null) {
+					connector = (NativeDriverConnector) getConnector();
+				}
+				if (connector != null) {
+					connector.disconnect();
+				}
+			} catch (IOException | InterruptedException e) {
+				log(CommandParser.class, "Exception: " + e.getMessage(), ERROR);
+				e.printStackTrace();
+			}
+		}
 }
