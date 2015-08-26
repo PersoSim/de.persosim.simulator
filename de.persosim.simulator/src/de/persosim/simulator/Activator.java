@@ -59,9 +59,10 @@ public class Activator implements BundleActivator {
 	 */
 	public void enableService() {
 		
-		checkNumberOfSimulators();
-		sim = new PersoSim();
-		simRegistration = context.registerService(Simulator.class, sim, null);
+		if (sim == null) {
+			sim = new PersoSim();
+			simRegistration = context.registerService(Simulator.class, sim, null);
+		}
 	}
 	
 	/**
@@ -74,6 +75,7 @@ public class Activator implements BundleActivator {
 			throw new RuntimeException("There is already a simulator running, please stop it before starting another one!");
 		}
 	}
+	
 	
 	/**
 	 * Returns the number of current running simulators
