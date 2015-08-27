@@ -20,7 +20,7 @@ public class Activator implements BundleActivator {
 	//TODO move this service tracking to the class PersoSimLogger (similar to Crypto)
 	private static ServiceTracker<LogService, LogService> logServiceTracker;
 	private static Activator plugin;
-	private static PersoSim sim;
+	private static PersoSim sim = null;
 	private ServiceRegistration<Simulator> simRegistration;
 	
 	public static LogService getLogservice() {		
@@ -55,10 +55,14 @@ public class Activator implements BundleActivator {
 	}
 	
 	/**
-	 * This enables the {@link Simulator} for the PersoSim simulator.   
+	 * This enables the {@link Simulator} for the PersoSim simulator. 
+	 * @throws InvalidSyntaxException
 	 */
 	public void enableService() {
-		
+		if (getRunningSimulators()) {
+			log(this.getClass(), "There is already a simulator running, please stop it before starting another one!", ERROR);
+			throw new RuntimeException("There is already a simulator running, please stop it before starting another one!");
+		}
 		if (sim == null) {
 			sim = new PersoSim();
 			simRegistration = context.registerService(Simulator.class, sim, null);
@@ -66,29 +70,17 @@ public class Activator implements BundleActivator {
 	}
 	
 	/**
-	 * Checks if any other simulator is running and if so throws an RuntimeException
-	 * @throws InvalidSyntaxException
+	 * This function checks if other simulators are already running
+	 * @return true if other simulator are running.
 	 */
-	public void checkNumberOfSimulators() {	
-		if (getNumberOfSimulators() > 0) {
-			log(this.getClass(), "There is already a simulator running, please stop it before starting another one!", ERROR);
-			throw new RuntimeException("There is already a simulator running, please stop it before starting another one!");
-		}
-	}
-	
-	
-	/**
-	 * Returns the number of current running simulators
-	 * @return number of running simulators
-	 */
-	public int getNumberOfSimulators() {
+	public boolean getRunningSimulators() {
 		int simulatorCnt = 0;
 		try {
-			return context.getServiceReferences(Simulator.class, null).size();
+			simulatorCnt = context.getServiceReferences(Simulator.class, null).size();
 		} catch (InvalidSyntaxException e) {
 			e.printStackTrace();
 		};
-		return simulatorCnt;
+		return simulatorCnt > 0 ? true: false;
 	}
 	
 	/**
@@ -115,7 +107,7 @@ public class Activator implements BundleActivator {
 	 * This function returns the current simulator
 	 * @return Simulator
 	 */
-	public Simulator getSim() {
+	public PersoSim getSim() {
 		return sim;
 	}
 	
