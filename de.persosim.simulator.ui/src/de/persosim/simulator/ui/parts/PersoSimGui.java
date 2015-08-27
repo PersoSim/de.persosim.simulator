@@ -37,6 +37,7 @@ public class PersoSimGui extends PersoSimGuiMain{
 		    de.persosim.simulator.Activator persoSimActivator = de.persosim.simulator.Activator.getDefault();
 		    PersoSim sim = persoSimActivator.getSim();
 		    try {
+		    	sim.startSimulator();
 				sim.loadPersonalization(getDefaultPersonalization());
 			} catch (IOException e) {
 				e.printStackTrace();

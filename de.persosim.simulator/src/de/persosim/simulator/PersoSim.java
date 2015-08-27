@@ -2,9 +2,9 @@ package de.persosim.simulator;
 
 import static de.persosim.simulator.utils.PersoSimLogger.INFO;
 import static de.persosim.simulator.utils.PersoSimLogger.UI;
-import static de.persosim.simulator.utils.PersoSimLogger.WARN;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.logException;
+
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.PersoSimKernel;
@@ -72,10 +72,6 @@ public class PersoSim implements Simulator {
 			return true;
 		}
 		
-		if (currentPersonalization == null) {
-			log(this.getClass(), "No personalization available, please load a valid personalization before starting the simulator", PersoSimLogger.UI);
-			return false;
-		}
 		log(this.getClass(), "The simulator has been started", PersoSimLogger.UI);
 		running = true;
 		return true;
@@ -101,7 +97,6 @@ public class PersoSim implements Simulator {
 	@Override
 	public boolean loadPersonalization(Personalization personalization) {
 		currentPersonalization = personalization;
-		startSimulator();
 		
 		try {
 			kernel = new PersoSimKernel();
@@ -116,9 +111,13 @@ public class PersoSim implements Simulator {
 
 	@Override
 	public byte[] processCommand(byte[] apdu) {
-	
-		if (kernel == null){
+
+		if (!running){
 			log(this.getClass(), "The simulator is stopped and the APDU was ignored", INFO);
+			return new byte[]{0x6f, (byte)0x85};
+		}
+		if (kernel == null){
+			log(this.getClass(), "The simulator is not initialized and the APDU was ignored", INFO);
 			return new byte[]{0x6f, 0x78};
 		}
 		
@@ -133,11 +132,11 @@ public class PersoSim implements Simulator {
 	@Override
 	public byte[] cardPowerUp() {
 		if (!running){
-			log(this.getClass(), "The simulator is stopped, attempt to power up ignored", WARN);
+			log(this.getClass(), "The simulator is stopped, attempt to power up ignored", INFO);
 			return new byte[]{0x6f, 0x79};
 		}
 		if (kernel == null){
-			log(this.getClass(), "The simulator is not initialized, attempt to power up ignored", WARN);
+			log(this.getClass(), "The simulator is not initialized, attempt to power up ignored", INFO);
 			return new byte[]{0x6f, (byte)0x82};
 		}
 		return kernel.powerOn();
@@ -146,11 +145,11 @@ public class PersoSim implements Simulator {
 	@Override
 	public byte[] cardPowerDown() {
 		if (!running){
-			log(this.getClass(), "The simulator is stopped, attempt to power down ignored", WARN);
+			log(this.getClass(), "The simulator is stopped, attempt to power down ignored", INFO);
 			return new byte[]{0x6f, (byte)0x80};
 		}
 		if (kernel == null){
-			log(this.getClass(), "The simulator is not initialized, attempt to power up ignored", WARN);
+			log(this.getClass(), "The simulator is not initialized, attempt to power up ignored", INFO);
 			return new byte[]{0x6f, (byte)0x83};
 		}
 		return kernel.powerOff();
@@ -159,11 +158,11 @@ public class PersoSim implements Simulator {
 	@Override
 	public byte[] cardReset() {
 		if (!running){
-			log(this.getClass(), "The simulator is stopped, attempt to reset ignored", WARN);
+			log(this.getClass(), "The simulator is stopped, attempt to reset ignored", INFO);
 			return new byte[]{0x6f, (byte)0x81};
 		}
 		if (kernel == null){
-			log(this.getClass(), "The simulator is not initialized, attempt to power up ignored", WARN);
+			log(this.getClass(), "The simulator is not initialized, attempt to power up ignored", INFO);
 			return new byte[]{0x6f, (byte)0x84};
 		}
 		return kernel.reset();
