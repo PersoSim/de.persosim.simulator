@@ -40,6 +40,7 @@ public class PersoSim implements Simulator {
 	public static final String persoFilePostfix = ".xml";
 	
 	private PersoSimKernel kernel;
+	private boolean running = false;
 	
 	/**
 	 * This constructor is used by the OSGi-service instantiation
@@ -66,7 +67,7 @@ public class PersoSim implements Simulator {
 	
 	@Override
 	public boolean startSimulator() {
-		if (kernel != null) {
+		if (running) {
 			log(this.getClass(), "Simulator already running", UI);
 			return true;
 		}
@@ -75,28 +76,20 @@ public class PersoSim implements Simulator {
 			log(this.getClass(), "No personalization available, please load a valid personalization before starting the simulator", PersoSimLogger.UI);
 			return false;
 		}
-		
-		try {
-			kernel = new PersoSimKernel(currentPersonalization);
-		} catch (AccessDeniedException e) {
-			logException(this.getClass(), e, PersoSimLogger.ERROR);
-			return false;
-		}
-		kernel.init();
+		log(this.getClass(), "The simulator has been started", PersoSimLogger.UI);
+		running = true;
 		return true;
 	}
 	
 	@Override
-	public boolean stopSimulator() {
-		boolean simStopped = false;
-		
-		if (kernel != null) {
-			kernel = null;
+	public boolean stopSimulator() {		
+		if (running) {
 				log(this.getClass(), "The simulator has been stopped and will no longer respond to incoming APDUs until it is (re-) started", UI);
+			running = false;
 			return true;
 		}
-		
-		return simStopped;
+		log(this.getClass(), "The simulator is already stopped", UI);
+		return false;
 	}
 	
 	@Override
@@ -108,7 +101,17 @@ public class PersoSim implements Simulator {
 	@Override
 	public boolean loadPersonalization(Personalization personalization) {
 		currentPersonalization = personalization;
-		return restartSimulator();
+		startSimulator();
+		
+		try {
+			kernel = new PersoSimKernel();
+		} catch (AccessDeniedException e) {
+			logException(this.getClass(), e, PersoSimLogger.ERROR);
+			return false;
+		}
+		kernel.init(currentPersonalization);
+		
+		return true;
 	}
 
 	@Override
@@ -124,32 +127,44 @@ public class PersoSim implements Simulator {
 
 	@Override
 	public boolean isRunning() {
-		return kernel != null;
+		return running;
 	}
 
 	@Override
 	public byte[] cardPowerUp() {
-		if (kernel == null){
+		if (!running){
 			log(this.getClass(), "The simulator is stopped, attempt to power up ignored", WARN);
 			return new byte[]{0x6f, 0x79};
+		}
+		if (kernel == null){
+			log(this.getClass(), "The simulator is not initialized, attempt to power up ignored", WARN);
+			return new byte[]{0x6f, (byte)0x82};
 		}
 		return kernel.powerOn();
 	}
 
 	@Override
 	public byte[] cardPowerDown() {
-		if (kernel == null){
+		if (!running){
 			log(this.getClass(), "The simulator is stopped, attempt to power down ignored", WARN);
 			return new byte[]{0x6f, (byte)0x80};
+		}
+		if (kernel == null){
+			log(this.getClass(), "The simulator is not initialized, attempt to power up ignored", WARN);
+			return new byte[]{0x6f, (byte)0x83};
 		}
 		return kernel.powerOff();
 	}
 
 	@Override
 	public byte[] cardReset() {
-		if (kernel == null){
+		if (!running){
 			log(this.getClass(), "The simulator is stopped, attempt to reset ignored", WARN);
 			return new byte[]{0x6f, (byte)0x81};
+		}
+		if (kernel == null){
+			log(this.getClass(), "The simulator is not initialized, attempt to power up ignored", WARN);
+			return new byte[]{0x6f, (byte)0x84};
 		}
 		return kernel.reset();
 	}

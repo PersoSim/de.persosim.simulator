@@ -32,23 +32,15 @@ import de.persosim.simulator.utils.Utils;
 public class PersoSimKernel implements InfoSource {
 
 	private LinkedList<Layer> layers;
-	private Personalization perso;
 	private SecStatus securityStatus;
 	private ObjectStore objectStore;
 	
 	/**
 	 * Constructor that provides the inital {@link Personalization}
-	 * @param perso
 	 * @throws AccessDeniedException 
 	 */
-	public PersoSimKernel(Personalization perso) throws AccessDeniedException {
+	public PersoSimKernel() throws AccessDeniedException {
 		super();
-		this.perso = perso;
-		this.objectStore = new ObjectStore(perso.getObjectTree());
-		objectStore.selectMasterFile();
-		this.securityStatus = new SecStatus();
-		perso.getObjectTree().setSecStatus(securityStatus);
-		setLifeCycleStates(perso.getObjectTree());
 	}
 
 	private void setLifeCycleStates(CardObject objectTree) {
@@ -69,9 +61,20 @@ public class PersoSimKernel implements InfoSource {
 
 	/**
 	 * Performs initialization of object.
+	 * @param perso 
 	 */
-	public void init() {
+	public void init(Personalization perso) {
 		log(this, "init called", TRACE);
+		
+		this.objectStore = new ObjectStore(perso.getObjectTree());
+		objectStore.selectMasterFile();
+		this.securityStatus = new SecStatus();
+		try {
+			perso.getObjectTree().setSecStatus(securityStatus);
+		} catch (AccessDeniedException e) {
+			e.printStackTrace();
+		}
+		setLifeCycleStates(perso.getObjectTree());
 		
 		int layerId = 0;
 		layers = new LinkedList<>();
