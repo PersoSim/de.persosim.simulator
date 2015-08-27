@@ -35,8 +35,7 @@ public class PersoSimGui extends PersoSimGuiMain{
 	 */
 	private void getSimAndConnectToNativeDriver() {
 		    de.persosim.simulator.Activator persoSimActivator = de.persosim.simulator.Activator.getDefault();
-		    persoSimActivator.enableService();
-		    PersoSim sim = (PersoSim) persoSimActivator.getSim();
+		    PersoSim sim = persoSimActivator.getSim();
 		    try {
 				sim.loadPersonalization(getDefaultPersonalization());
 			} catch (IOException e) {
