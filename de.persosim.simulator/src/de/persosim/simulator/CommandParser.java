@@ -52,8 +52,6 @@ public class CommandParser {
 	public static final String LOG_NO_OPERATION = "nothing to process";
 	
 	private static boolean processingCommandLineArguments = false;
-	private static PersoSim sim = null;
-	private static de.persosim.simulator.Activator persoSimPlugin = null;
 	
 	public static final String persoPlugin = "platform:/plugin/de.persosim.rcp/";
 	public static final String persoPath = "personalization/profiles/";
@@ -71,7 +69,14 @@ public class CommandParser {
 			
 			if(cmd.equals(CMD_START)) {
 				args.remove(0);
-				return getPersoSim().startSimulator();
+				de.persosim.simulator.Activator.getDefault().enableService();
+				if (getPersoSim() != null) {
+					
+					return getPersoSim().startSimulator();
+				}
+				else
+					log(CommandParser.class, "Please enable the PersoSimService before starting a Simulator", WARN);
+					
 			}
 		}
 		
@@ -89,8 +94,12 @@ public class CommandParser {
 			
 			if(cmd.equals(CMD_STOP)) {
 				args.remove(0);
-				disablePersoSimService();
-				return true;
+				if(getPersoSim() != null) {
+					de.persosim.simulator.Activator.getDefault().disableService();
+					return true;
+				}
+				else
+					log(CommandParser.class, "Please enable the PersoSimService before stopping a Simulator", WARN);
 			}
 		}
 
@@ -109,7 +118,10 @@ public class CommandParser {
 			
 			if(cmd.equals(CMD_RESTART)) {
 				args.remove(0);
-				return getPersoSim().restartSimulator();
+				if(getPersoSim() != null)
+					return getPersoSim().restartSimulator();
+				else
+					log(CommandParser.class, "Please enable the PersoSimService before restarting a Simulator", WARN);
 			}
 		}
 		
@@ -128,18 +140,22 @@ public class CommandParser {
 			
 			if(cmd.equals(CMD_SEND_APDU)) {
 				String result;
-				
-				try{
-					PersoSim sim = getPersoSim();
-	    			result = sendCmdApdu(sim, "sendApdu " + args.get(1));
-	    			args.remove(0);
-	    			args.remove(0);
-	    			return result;
-	    		} catch(RuntimeException e) {
-	    			result = "unable to send APDU, reason is: " + e.getMessage();
-	    			args.remove(0);
-	    			return result;
-	    		}
+				if(getPersoSim() != null) {
+					try{
+						PersoSim sim = getPersoSim();
+		    			result = sendCmdApdu(sim, "sendApdu " + args.get(1));
+		    			args.remove(0);
+		    			args.remove(0);
+		    			return result;
+		    		} catch(RuntimeException e) {
+		    			result = "unable to send APDU, reason is: " + e.getMessage();
+		    			args.remove(0);
+		    			return result;
+		    		}
+				} else {
+					log(CommandParser.class, "Please enable the PersoSimService before sending apdus", WARN);
+					return "";
+				}
 			} else{
 				return "no send APDU command";
 			}
@@ -191,13 +207,14 @@ public class CommandParser {
 				
 				if (perso != null) {
 					PersoSim sim = getPersoSim();
-					if (sim.loadPersonalization(perso)){
-						return true;
+					if (sim != null) {
+						if (sim.loadPersonalization(perso)){
+							return true;
+						}
+					} else {
+						log(CommandParser.class, "Please enable the PersoSimService befor loading a personalization", WARN);
 					}
     			}
-
-				// the personalization could not be loaded
-				Activator.getDefault().disableService();
 			}
 		}
 		
@@ -292,6 +309,7 @@ public class CommandParser {
 			cmdRestartSimulator(currentArgs);
 			cmdStopSimulator(currentArgs);
 			cmdHelp(currentArgs);
+			
 			
 			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
 				//first command in queue has not been processed
@@ -460,24 +478,7 @@ public class CommandParser {
 		e.printStackTrace();
 	}
 	
-	private static void enablePersoSimService() {
-		persoSimPlugin = de.persosim.simulator.Activator.getDefault();
-		persoSimPlugin.enableService();
-	}
-	
-	
 	private static PersoSim getPersoSim() {
-		enablePersoSimService();
-		if (persoSimPlugin != null) {
-			sim = (PersoSim) persoSimPlugin.getSim();
-		}
-		return sim;
+		return de.persosim.simulator.Activator.getDefault().getSim();
 	}
-	
-	private static void disablePersoSimService() {
-		de.persosim.simulator.Activator.getDefault().disableService();
-		sim = null;
-	}
-	
-
 }
