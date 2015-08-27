@@ -100,6 +100,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 	protected void resetSimulator() throws AccessDeniedException{		
 		//load the personalization (implicitly restarts the simulator)
 		resetPersonalization();
+		getSimulator().startSimulator();
 		getSimulator().loadPersonalization(getPersonalization());
 	}
 	
