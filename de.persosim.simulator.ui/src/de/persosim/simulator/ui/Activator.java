@@ -59,7 +59,7 @@ public class Activator implements BundleActivator {
 	}
 	
 	public static void executeUserCommands(String command){
-		if (command.startsWith("start") || command.startsWith("load") || command.startsWith("restart")) {
+		if (command.startsWith("start")) {
 			connectToNativeDriver();
 		}
 		CommandParser.executeUserCommands(command);
