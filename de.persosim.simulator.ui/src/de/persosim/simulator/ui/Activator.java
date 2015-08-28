@@ -4,6 +4,7 @@ import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -59,11 +60,14 @@ public class Activator implements BundleActivator {
 	}
 	
 	public static void executeUserCommands(String command){
-		if (command.startsWith("start")) {
+		
+		String[] commands = CommandParser.parseCommand(command);
+		CommandParser.executeUserCommands(commands);
+		command = Arrays.asList(commands).get(0);
+		if (command.equals(CommandParser.CMD_LOAD_PERSONALIZATION)) {
 			connectToNativeDriver();
 		}
-		CommandParser.executeUserCommands(command);
-		if (command.startsWith("stop")) {
+		if (command.equals(CommandParser.CMD_STOP)) {
 			disconnectFromNativeDriver();
 		}
 	}
