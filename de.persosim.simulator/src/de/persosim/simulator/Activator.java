@@ -59,7 +59,7 @@ public class Activator implements BundleActivator {
 	 * @throws InvalidSyntaxException
 	 */
 	public void enableService() {
-		if (getRunningSimulators()) {
+		if (isSimulatorRunning()) {
 			log(this.getClass(), "There is already a simulator running, please stop it before starting another one!", ERROR);
 			throw new RuntimeException("There is already a simulator running, please stop it before starting another one!");
 		}
@@ -73,14 +73,14 @@ public class Activator implements BundleActivator {
 	 * This function checks if other simulators are already running
 	 * @return true if other simulator are running.
 	 */
-	public boolean getRunningSimulators() {
+	public boolean isSimulatorRunning() {
 		int simulatorCnt = 0;
 		try {
 			simulatorCnt = context.getServiceReferences(Simulator.class, null).size();
 		} catch (InvalidSyntaxException e) {
 			e.printStackTrace();
 		};
-		return simulatorCnt > 0 ? true: false;
+		return simulatorCnt > 0;
 	}
 	
 	/**

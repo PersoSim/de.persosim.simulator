@@ -72,16 +72,17 @@ public class PersoSim implements Simulator {
 			return true;
 		}
 		
-		log(this.getClass(), "The simulator has been started", PersoSimLogger.UI);
 		running = true;
+		log(this.getClass(), "The simulator has been started", PersoSimLogger.UI);
+		
 		return true;
 	}
 	
 	@Override
 	public boolean stopSimulator() {		
 		if (running) {
-				log(this.getClass(), "The simulator has been stopped and will no longer respond to incoming APDUs until it is (re-) started", UI);
 			running = false;
+			log(this.getClass(), "The simulator has been stopped and will no longer respond to incoming APDUs until it is (re-) started", UI);
 			return true;
 		}
 		log(this.getClass(), "The simulator is already stopped", UI);

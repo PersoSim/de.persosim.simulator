@@ -18,6 +18,15 @@ import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
 import de.persosim.simulator.ui.Activator;
 
+/**
+ * PersoSim view implementation used within Persosim RCP, handles some
+ * configuration issues that are currently not handled at the appropriate
+ * places.
+ * 
+ * @see PersoSimGuiMain
+ * @author jgoeke
+ *
+ */
 public class PersoSimGui extends PersoSimGuiMain{
 	
 	@Override
@@ -30,9 +39,10 @@ public class PersoSimGui extends PersoSimGuiMain{
 	/**
 	 * This method handles the connection to the simulator. Its primary task is
 	 * to ensure the simulator is up and running when a connection is
-	 * initialized. If the simulator is not found to be running a default
+	 * initialized. If the simulator is not found to be running a default FIXME JGE the implementation is NOT conditional!
 	 * personalization is loaded.
 	 */
+	//IMPL loading the default personalisation shall be moved to the product defining plug-in
 	private void getSimAndConnectToNativeDriver() {
 		    de.persosim.simulator.Activator persoSimActivator = de.persosim.simulator.Activator.getDefault();
 		    PersoSim sim = persoSimActivator.getSim();
@@ -69,6 +79,7 @@ public class PersoSimGui extends PersoSimGuiMain{
 		return personalization;
 	}
 	
+	//IMPL this code just hides an InterrupotedException when closing the RCP and thus should be removed (when the Exception is handled appropriately)
 	@PreDestroy
 	public void cleanUp() {
 		System.exit(0);

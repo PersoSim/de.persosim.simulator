@@ -70,13 +70,11 @@ public class CommandParser {
 			if(cmd.equals(CMD_START)) {
 				args.remove(0);
 				de.persosim.simulator.Activator.getDefault().enableService();
-				if (getPersoSim() != null) {
-					
-					return getPersoSim().startSimulator();
+				if (getPersoSim() == null) {
+					log(CommandParser.class, "Enabling the PersoSimService failed", ERROR);
 				}
-				else
-					log(CommandParser.class, "Please enable the PersoSimService before starting a Simulator", WARN);
 					
+				return getPersoSim().startSimulator();
 			}
 		}
 		
@@ -98,8 +96,9 @@ public class CommandParser {
 					de.persosim.simulator.Activator.getDefault().disableService();
 					return true;
 				}
-				else
-					log(CommandParser.class, "Please enable the PersoSimService before stopping a Simulator", WARN);
+				else {
+					log(CommandParser.class, "No running PersoSimService found", WARN);
+				}
 			}
 		}
 
@@ -121,7 +120,7 @@ public class CommandParser {
 				if(getPersoSim() != null)
 					return getPersoSim().restartSimulator();
 				else
-					log(CommandParser.class, "Please enable the PersoSimService before restarting a Simulator", WARN);
+					log(CommandParser.class, "No running PersoSimService found", WARN);
 			}
 		}
 		

@@ -359,29 +359,29 @@ public class PersoSimGuiMain {
 		final StringBuilder strConsoleStrings = new StringBuilder();
 
 		// calculates how many lines can be shown without cutting
-		
-				try {
-				maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
-				} catch (Exception e) {
-					maxLineCount = 15;
+		//IMPL remove this dirtyhack and handle the situations of opening/closing a view within the IDE multiple times gracefully (compare commit fcd6c2 for previous implementations, that does not hide the exceptions)
+		try {
+			maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
+		} catch (Exception e) { //IMPL PokémonException
+			maxLineCount = 15;
+		}
+			
+		//synchronized is used to avoid IndexOutOfBoundsExceptions
+		synchronized (Activator.getListLogListener()) {
+			int listSize = Activator.getListLogListener().getNumberOfCachedLines();
+			// value is needed to stop writing in the console when the end in
+			// the list is reached
+			try {
+				int linesToShow = listSize - slider.getMaximum() + slider.getThumb();
+				int sliderSelection = slider.getSelection();
+				// Fill text field with selected data
+				for (int i = 0; i < linesToShow; i++) {
+					
+					strConsoleStrings.append(Activator.getListLogListener().getLine(sliderSelection + i));
+					strConsoleStrings.append("\n");
 				}
-			//synchronized is used to avoid IndexOutOfBoundsExceptions
-			synchronized (Activator.getListLogListener()) {
-				int listSize = Activator.getListLogListener().getNumberOfCachedLines();
-	
-				// value is needed to stop writing in the console when the end in
-				// the list is reached
-				try {
-					int linesToShow = listSize - slider.getMaximum() + slider.getThumb();
-					int sliderSelection = slider.getSelection();
-					// Fill text field with selected data
-					for (int i = 0; i < linesToShow; i++) {
-						
-						strConsoleStrings.append(Activator.getListLogListener().getLine(sliderSelection + i));
-						strConsoleStrings.append("\n");
-					}
-				} catch ( Exception e) {}
-			}
+			} catch ( Exception e) {}//IMPL PokémonException
+		}
 		
 		// send the StringBuilder data to the console field
 		sync.syncExec(new Runnable() {
@@ -391,7 +391,7 @@ public class PersoSimGuiMain {
 				try {
 				txtOutput.setText(strConsoleStrings.toString());
 				} catch(Exception e) {
-					
+					//IMPL PokémonException
 				}
 
 			}
@@ -415,7 +415,7 @@ public class PersoSimGuiMain {
 
 	}
 	
-	@PreDestroy
+	@PreDestroy //FIXME JGE this annotation is used on a different method in the subclass, what are the implications of this?
 	public void closePerosimView() {
 	if(uiThread.isAlive()) {
 		uiThread.interrupt();
