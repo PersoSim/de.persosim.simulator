@@ -10,7 +10,9 @@ import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECField;
@@ -257,9 +259,17 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		return new ECPoint(publicPointX, publicPointY);
 	}
 	
-	
 	@Override
 	public ECPublicKey reconstructPublicKey(byte[] rawKeyPlain) {
+		return reconstructPublicKey(rawKeyPlain, Crypto.getCryptoProvider());
+	}
+	
+	public ECPublicKey reconstructPublicKey(byte[] rawKeyPlain, String providerString) {
+		Provider cryptoProvider = Security.getProvider(providerString);
+		return reconstructPublicKey(rawKeyPlain, cryptoProvider);
+	}
+	
+	public ECPublicKey reconstructPublicKey(byte[] rawKeyPlain, Provider cryptoProvider) {
 		int l = getPublicPointReferenceLengthL();
 		log(getClass(), "reference length l is: " + l + " bytes", TRACE);
 		
@@ -283,7 +293,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		
 		PublicKey mappedPublicKey;
 		try {
-			KeyFactory keyFactory = KeyFactory.getInstance(getKeyAgreementAlgorithm(), Crypto.getCryptoProvider());
+			KeyFactory keyFactory = KeyFactory.getInstance(getKeyAgreementAlgorithm(), cryptoProvider);
 			mappedPublicKey = keyFactory.generatePublic(reconstructedPublicKeySpec);
 		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalArgumentException("invalid key agreement algorithm");
@@ -331,7 +341,29 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 			throw new IllegalArgumentException("invalid public ECDH key");
 		}
 		
-		return CryptoUtil.encode(ecPublicKey.getW(), getPublicPointReferenceLengthL(((ECFieldFp) ecPublicKey.getParams().getCurve().getField()).getP()), CryptoUtil.ENCODING_UNCOMPRESSED);
+		return encodePoint(ecPublicKey.getW(), CryptoUtil.ENCODING_UNCOMPRESSED);
+	}
+	
+	/**
+	 * This method returns an encoding of a provided {@link ECPoint} according to the domain parameters specified by this object.
+	 * See {@link CryptoUtil#encode(ECPoint, int, byte)} for the supported encodings.
+	 * @param ecPoint the point to be encoded
+	 * @param encoding the encoding to be used
+	 * @return an encoding of a provided {@link ECPoint} according to the domain parameters specified by this object
+	 */
+	public byte[] encodePoint(ECPoint ecPoint, byte encoding) {
+		/*
+		 * This check is necessary to ensure that shorter point encodings from
+		 * another ec domain parameter set will also be rejected and not
+		 * processed unnoticed.
+		 */
+		if(!isOnCurve(ecPoint)) {
+			return null;
+		}
+		
+		int publicPointReferenceLength = getPublicPointReferenceLengthL(getPrime());
+		
+		return CryptoUtil.encode(ecPoint, publicPointReferenceLength, encoding);
 	}
 	
 	@Override
