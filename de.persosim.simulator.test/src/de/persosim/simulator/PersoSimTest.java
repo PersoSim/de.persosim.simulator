@@ -147,11 +147,10 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommands_EmptyArgument() throws Exception {
-		persoSim = new PersoSim((String) null);
 		
 		activateStdOutRedirection();
 		
-		CommandParser.executeUserCommands(persoSim, "");
+		CommandParser.executeUserCommands("");
 		
 		String response = readRedStdOut();
 
@@ -164,11 +163,10 @@ public class PersoSimTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testExecuteUserCommands_UnknownArgument() throws Exception {
-		persoSim = new PersoSim((String) null);
 		
 		activateStdOutRedirection();
 		
-		CommandParser.executeUserCommands(persoSim, "unknown");
+		CommandParser.executeUserCommands("unknown");
 		
 		String response = readRedStdOut();
 		
@@ -185,7 +183,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		
 		byte [] response = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
 		
-		assertArrayEquals(Utils.toUnsignedByteArray((short)(Iso7816.SW_6F00_UNKNOWN+0x78)), response);
+		assertArrayEquals(Utils.toUnsignedByteArray((short)(Iso7816.SW_6F00_UNKNOWN+0x85)), response);
 		
 		persoSim.loadPersonalization(getDefaultPerso());
 		persoSim.startSimulator();
@@ -229,7 +227,7 @@ public class PersoSimTest extends PersoSimTestCase {
 		persoSim.stopSimulator();
 		
 		responseSelect = persoSim.processCommand(HexString.toByteArray(SELECT_APDU));
-		assertArrayEquals(Utils.toUnsignedByteArray((short)(Iso7816.SW_6F00_UNKNOWN+0x78)), responseSelect);
+		assertArrayEquals(Utils.toUnsignedByteArray((short)(Iso7816.SW_6F00_UNKNOWN+0x85)), responseSelect);
 	}
 	
 	/**

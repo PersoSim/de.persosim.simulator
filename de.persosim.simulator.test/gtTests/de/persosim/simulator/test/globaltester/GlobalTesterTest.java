@@ -14,8 +14,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 import de.persosim.simulator.Activator;
+import de.persosim.simulator.PersoSim;
 import de.persosim.simulator.Simulator;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardFile;
@@ -49,6 +51,8 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 
 	protected Personalization persoCache = null;
 	
+	private static ServiceRegistration<Simulator> registration = null;
+	
 	@Override
 	public String getIDString() {
 		return getClass().getCanonicalName();
@@ -59,6 +63,8 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 		// initialize GT server connection
 		gtServer = new GtServerConnection(GT_SERVER_HOST, GT_SERVER_PORT,
 				GT_SERVER_RESULT_PORT);
+		
+		registration = Activator.getContext().registerService(Simulator.class, new PersoSim(), null);
 		
 		int retries = 0;
 		while (!gtServer.connect()){
@@ -72,6 +78,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 
 	@AfterClass
 	public static void tearDownSuite() {
+		registration.unregister();
 		// disconnect GT server connection
 		if (gtServer != null) {
 			gtServer.closeConnection();
@@ -93,6 +100,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 	protected void resetSimulator() throws AccessDeniedException{		
 		//load the personalization (implicitly restarts the simulator)
 		resetPersonalization();
+		getSimulator().startSimulator();
 		getSimulator().loadPersonalization(getPersonalization());
 	}
 	

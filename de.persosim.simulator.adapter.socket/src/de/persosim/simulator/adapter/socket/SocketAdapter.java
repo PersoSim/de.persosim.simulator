@@ -121,6 +121,7 @@ public class SocketAdapter implements Runnable {
 		if (simThread != null) {
 			try {
 				simThread.join();
+				simThread = null;
 			} catch (InterruptedException e) {
 				CommandParser.showExceptionToUser(e);
 			}
