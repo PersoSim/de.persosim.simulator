@@ -62,11 +62,13 @@ public class Activator implements BundleActivator {
 		
 		String[] commands = CommandParser.parseCommand(command);
 		CommandParser.executeUserCommands(commands);
-		if (commands[0].equals(CommandParser.CMD_LOAD_PERSONALIZATION)) {
-			connectToNativeDriver();
-		}
-		if (commands[0].equals(CommandParser.CMD_STOP)) {
-			disconnectFromNativeDriver();
+		if(commands.length > 0) {
+			if (commands[0].equals(CommandParser.CMD_LOAD_PERSONALIZATION)) {
+				connectToNativeDriver();
+			}
+			if (commands[0].equals(CommandParser.CMD_STOP)) {
+				disconnectFromNativeDriver();
+			}
 		}
 	}
 	
@@ -178,7 +180,7 @@ public class Activator implements BundleActivator {
 				if (connector == null) {
 					connector = (NativeDriverConnector) getConnector();
 				}
-				if (connector != null) {
+				if (connector != null && connector.isRunning()) {
 					connector.disconnect();
 				}
 			} catch (IOException | InterruptedException e) {
