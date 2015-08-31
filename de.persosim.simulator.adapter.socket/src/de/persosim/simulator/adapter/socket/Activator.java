@@ -22,7 +22,7 @@ public class Activator implements BundleActivator, SimulatorProvider {
 	private static ServiceTracker<Simulator, Simulator> serviceTracker;
 	private static final int SIM_PORT = 9876;
 
-	static BundleContext getContext() {
+	public static BundleContext getContext() {
 		return context;
 	}
 

@@ -62,13 +62,13 @@ public class Activator implements BundleActivator {
 		
 		String[] commands = CommandParser.parseCommand(command);
 		CommandParser.executeUserCommands(commands);
-		if(commands.length > 0) return; //just do nothing.
-			if (commands[0].equals(CommandParser.CMD_LOAD_PERSONALIZATION)) {
-				connectToNativeDriver();
-			}
-			if (commands[0].equals(CommandParser.CMD_STOP)) {
-				disconnectFromNativeDriver();
-			}
+		if(commands.length == 0) return; //just do nothing.
+		if (commands[0].equals(CommandParser.CMD_LOAD_PERSONALIZATION)) {
+			connectToNativeDriver();
+		}
+		if (commands[0].equals(CommandParser.CMD_STOP)) {
+			disconnectFromNativeDriver();
+		}
 	}
 	
 	// This will be used to keep track of listeners as they are un/registering
@@ -173,18 +173,18 @@ public class Activator implements BundleActivator {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void disconnectFromNativeDriver() {
-			try {
-				if (connector == null) {
-					connector = (NativeDriverConnector) getConnector();
-				}
-				if (connector != null && connector.isRunning()) {
-					connector.disconnect();
-				}
-			} catch (IOException | InterruptedException e) {
-				log(CommandParser.class, "Exception: " + e.getMessage(), ERROR);
-				e.printStackTrace();
+		try {
+			if (connector == null) {
+				connector = (NativeDriverConnector) getConnector();
 			}
+			if (connector != null && connector.isRunning()) {
+				connector.disconnect();
+			}
+		} catch (IOException | InterruptedException e) {
+			log(CommandParser.class, "Exception: " + e.getMessage(), ERROR);
+			e.printStackTrace();
 		}
+	}
 }
