@@ -37,6 +37,8 @@ public class TaOid extends Oid implements Tr03110 {
 	// Auxiliary data verification
 	public final static TaOid id_AuxiliaryData       = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x04}), "id-AuxiliaryData");
 	
+	public static final TaOid id_PSM_MESSAGE         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x04), "id-PSM-Message");
+	
 	public static final TaOid id_DateOfBirth         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x01), "id-DateOfBirth");
 	public static final TaOid id_DateOfExpiry        = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x02), "id-DateOfExpiry");
 	public static final TaOid id_CommunityID         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x03), "id-CommunityID");
