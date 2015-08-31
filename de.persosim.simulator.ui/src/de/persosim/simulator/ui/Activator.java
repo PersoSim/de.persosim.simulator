@@ -62,7 +62,7 @@ public class Activator implements BundleActivator {
 		
 		String[] commands = CommandParser.parseCommand(command);
 		CommandParser.executeUserCommands(commands);
-		if(commands.length > 0) return; //just do nothing.
+		if(commands.length == 0) return; //just do nothing.
 			if (commands[0].equals(CommandParser.CMD_LOAD_PERSONALIZATION)) {
 				connectToNativeDriver();
 			}
