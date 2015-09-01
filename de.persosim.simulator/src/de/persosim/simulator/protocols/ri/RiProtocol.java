@@ -127,9 +127,9 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 						
 						// add "authorizedOnly"
 						if(curKey.isPrivilegedOnly()) {
-							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, new byte[]{0x01})); //IMPL RI handle authorizedOnly
+							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, DER_BOOLEAN_TRUE)); //IMPL RI handle authorizedOnly
 						} else {
-							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, new byte[]{0x00}));
+							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, DER_BOOLEAN_FALSE));
 						}
 						
 						// define RestrictedIdentificationInfo
