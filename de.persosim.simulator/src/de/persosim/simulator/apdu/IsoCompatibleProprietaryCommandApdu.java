@@ -12,10 +12,10 @@ import de.persosim.simulator.utils.Utils;
  * @author mboonk
  * 
  */
-public class TR03110VerifySecureMessagingCommandApdu extends CommandApduImpl implements
+public class IsoCompatibleProprietaryCommandApdu extends CommandApduImpl implements
 		IsoSecureMessagingCommandApdu {
 	
-	TR03110VerifySecureMessagingCommandApdu(byte[] apdu, CommandApdu previousCommandApdu) {
+	IsoCompatibleProprietaryCommandApdu(byte[] apdu, CommandApdu previousCommandApdu) {
 		super(apdu, previousCommandApdu);
 	}
 
@@ -41,7 +41,7 @@ public class TR03110VerifySecureMessagingCommandApdu extends CommandApduImpl imp
 	public CommandApdu rewrapApdu(byte newSmStatus, byte[] commandData) {
 		byte [] newApdu = Utils.concatByteArrays(header, commandData);
 		newApdu[Iso7816.OFFSET_CLA] = (byte) ((byte) (getCla() & 0b11110011) | newSmStatus << 2);
-		return new TR03110VerifySecureMessagingCommandApdu(newApdu, this);
+		return new IsoCompatibleProprietaryCommandApdu(newApdu, this);
 	}
 
 }

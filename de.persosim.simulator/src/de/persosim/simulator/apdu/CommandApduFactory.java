@@ -32,21 +32,22 @@ public class CommandApduFactory {
 		if (Iso7816Lib.isISOInterindustry(apdu)) {
 			return new InterindustryCommandApdu(apdu, previousCommandApdu);
 		} else {
-			if (matchesTR03110Verify(apdu)){
-				return new TR03110VerifySecureMessagingCommandApdu(apdu, previousCommandApdu);
+			if (matchesIsoCompatibleProprietaryCommandApdu(apdu)){
+				return new IsoCompatibleProprietaryCommandApdu(apdu, previousCommandApdu);
 			}
 			return new CommandApduImpl(apdu, previousCommandApdu);
 		}
 	}
 	
-	private static boolean matchesTR03110Verify(byte [] apdu){
+	private static boolean matchesIsoCompatibleProprietaryCommandApdu(byte [] apdu){
 		CommandApdu command = new CommandApduImpl(apdu);
-		if ((command.getCla() == (byte) (0x8c & 0xFF) || (command.getCla() == (byte) (0x80 & 0xFF)))
-				&& command.getIns() == 0x20
-				&& command.getP1P2() == (short) (0x8000 & 0xFFFF)
-				){
-			return true;
+		
+		if ((command.getCla() == (byte) (0x8C & 0xFF) || (command.getCla() == (byte) (0x80 & 0xFF)))) {
+			if((command.getIns() == 0x20) && (command.getP1P2() == (short) (0x8000 & 0xFFFF))) {
+				return true;
+			}
 		}
+		
 		return false;
 	}
 }
