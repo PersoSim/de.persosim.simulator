@@ -42,15 +42,14 @@ public class CommandApduFactory {
 	public static boolean matchesIsoCompatibleProprietaryCommandApdu(byte [] apdu){
 		CommandApdu command = new CommandApduImpl(apdu);
 		
-//		if ((command.getCla() == (byte) (0x8C & 0xFF) || (command.getCla() == (byte) (0x80 & 0xFF)))) {
-//			if((command.getIns() == 0x20) && (command.getP1P2() == (short) (0x8000 & 0xFFFF))) {
-//				return true;
-//			}
-//		}
-		
-		if(( ((command.getCla() & (byte) 0xE0) == (byte) 0x80) && ((command.getCla() & (byte) 0x0C) != (byte) 0x04) )
-				|| ((command.getCla() & (byte) 0x40) == (byte) 0x40)) {
-			return true;
+		if ((command.getCla() == (byte) 0x8C || (command.getCla() == (byte) 0x80))) {
+			if((command.getIns() == (byte) 0x20) && (command.getP1P2() == (short) 0x8000)) {
+				return true;
+			}
+			
+			if((command.getIns() == (byte) 0x2A) && (command.getP1P2() == (short) 0xAEAC)) {
+				return true;
+			}
 		}
 		
 		return false;
