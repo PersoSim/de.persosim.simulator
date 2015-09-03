@@ -30,7 +30,7 @@ public class CommandApduFactory {
 			CommandApdu previousCommandApdu) {
 		
 		if (Iso7816Lib.isISOInterindustry(apdu)) {
-			return new InterindustryCommandApdu(apdu, previousCommandApdu);
+			return new InterindustryCommandApduImpl(apdu, previousCommandApdu);
 		} else {
 			if (matchesIsoCompatibleProprietaryCommandApdu(apdu)){
 				return new IsoCompatibleProprietaryCommandApdu(apdu, previousCommandApdu);

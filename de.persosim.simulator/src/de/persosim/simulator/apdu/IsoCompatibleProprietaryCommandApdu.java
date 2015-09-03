@@ -12,8 +12,7 @@ import de.persosim.simulator.utils.Utils;
  * @author mboonk
  * 
  */
-public class IsoCompatibleProprietaryCommandApdu extends CommandApduImpl implements
-		IsoSecureMessagingCommandApdu {
+public class IsoCompatibleProprietaryCommandApdu extends InterindustryCommandApduImpl {
 	
 	IsoCompatibleProprietaryCommandApdu(byte[] apdu, CommandApdu previousCommandApdu) {
 		super(apdu, previousCommandApdu);
@@ -22,19 +21,6 @@ public class IsoCompatibleProprietaryCommandApdu extends CommandApduImpl impleme
 	@Override
 	public byte getSecureMessaging() {
 		return (byte) ((byte) (super.getCla() & (byte) 0b00001100) >> 2);
-	}
-
-	@Override
-	public boolean wasSecureMessaging() {
-		if(getSecureMessaging() != Iso7816.SM_OFF_OR_NO_INDICATION) {
-			return true;
-		} else {
-			if (getPredecessor() instanceof IsoSecureMessagingCommandApdu) {
-				return ((IsoSecureMessagingCommandApdu)getPredecessor()).wasSecureMessaging();
-			} else {
-				return false;
-			}
-		}
 	}
 
 	@Override
