@@ -13,17 +13,21 @@ import de.persosim.simulator.utils.Utils;
  * @author amay
  * 
  */
-public class InterindustryCommandApdu extends CommandApduImpl implements IsoSecureMessagingCommandApdu {
+public class InterindustryCommandApduImpl extends CommandApduImpl implements InterIndustryCommandApdu {
 	
 	/**
 	 * Parses the apdu from the given byte array and sets the provided instance as predecessor.
 	 * @param apdu
 	 * @param previousCommandApdu the predecessor of this instance
 	 */
-	public InterindustryCommandApdu(byte[] apdu, CommandApdu previousCommandApdu) {
+	public InterindustryCommandApduImpl(byte[] apdu, CommandApdu previousCommandApdu) {
 		super(apdu, previousCommandApdu);
 	}
 	
+	/* (non-Javadoc)
+	 * @see de.persosim.simulator.apdu.InterIndustryCommandApduIf#isChaining()
+	 */
+	@Override
 	public boolean isChaining() {
 		return Iso7816Lib.isCommandChainingCLA(header);
 	}
@@ -36,6 +40,10 @@ public class InterindustryCommandApdu extends CommandApduImpl implements IsoSecu
 		return Iso7816Lib.getSecureMessagingStatus(header);
 	}
 
+	/* (non-Javadoc)
+	 * @see de.persosim.simulator.apdu.InterIndustryCommandApduIf#getChannel()
+	 */
+	@Override
 	public byte getChannel() {
 		return Iso7816Lib.getChannel(getHeader());
 	}
@@ -57,6 +65,7 @@ public class InterindustryCommandApdu extends CommandApduImpl implements IsoSecu
 	public CommandApdu rewrapApdu(byte newSmStatus, byte[] commandData) {
 		byte [] newApdu = Utils.concatByteArrays(header, commandData);
 		newApdu[Iso7816.OFFSET_CLA] = Iso7816Lib.setSecureMessagingStatus(newApdu[Iso7816.OFFSET_CLA], newSmStatus);
-		return new InterindustryCommandApdu(newApdu, this);
+		return new InterindustryCommandApduImpl(newApdu, this);
 	}
+	
 }

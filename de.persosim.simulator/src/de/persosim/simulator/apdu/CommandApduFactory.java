@@ -30,23 +30,28 @@ public class CommandApduFactory {
 			CommandApdu previousCommandApdu) {
 		
 		if (Iso7816Lib.isISOInterindustry(apdu)) {
-			return new InterindustryCommandApdu(apdu, previousCommandApdu);
+			return new InterindustryCommandApduImpl(apdu, previousCommandApdu);
 		} else {
-			if (matchesTR03110Verify(apdu)){
-				return new TR03110VerifySecureMessagingCommandApdu(apdu, previousCommandApdu);
+			if (matchesIsoCompatibleProprietaryCommandApdu(apdu)){
+				return new IsoCompatibleProprietaryCommandApdu(apdu, previousCommandApdu);
 			}
 			return new CommandApduImpl(apdu, previousCommandApdu);
 		}
 	}
 	
-	private static boolean matchesTR03110Verify(byte [] apdu){
+	public static boolean matchesIsoCompatibleProprietaryCommandApdu(byte [] apdu){
 		CommandApdu command = new CommandApduImpl(apdu);
-		if ((command.getCla() == (byte) (0x8c & 0xFF) || (command.getCla() == (byte) (0x80 & 0xFF)))
-				&& command.getIns() == 0x20
-				&& command.getP1P2() == (short) (0x8000 & 0xFFFF)
-				){
-			return true;
+		
+		if ((command.getCla() == (byte) 0x8C || (command.getCla() == (byte) 0x80))) {
+			if((command.getIns() == (byte) 0x20) && (command.getP1P2() == (short) 0x8000)) {
+				return true;
+			}
+			
+			if((command.getIns() == (byte) 0x2A) && (command.getP1P2() == (short) 0xAEAC)) {
+				return true;
+			}
 		}
+		
 		return false;
 	}
 }

@@ -25,13 +25,13 @@ public class InterindustryCommandApduTest extends PersoSimTestCase {
 	
 	@Test
 	public void testGetSecureMessaging(){
-		IsoSecureMessagingCommandApdu apdu = new InterindustryCommandApdu(Utils.concatByteArrays(apduHeader, lc, commandData), null);
+		IsoSecureMessagingCommandApdu apdu = new InterindustryCommandApduImpl(Utils.concatByteArrays(apduHeader, lc, commandData), null);
 		assertEquals(0b00000011, apdu.getSecureMessaging());
 	}
 
 	@Test
 	public void testRewrapApdu(){
-		IsoSecureMessagingCommandApdu apdu = new InterindustryCommandApdu(Utils.concatByteArrays(apduHeader, lc, commandData), null);
+		IsoSecureMessagingCommandApdu apdu = new InterindustryCommandApduImpl(Utils.concatByteArrays(apduHeader, lc, commandData), null);
 		IsoSecureMessagingCommandApdu result = (IsoSecureMessagingCommandApdu) apdu.rewrapApdu((byte) 0, Utils.concatByteArrays(lc, commandData));
 		
 		byte [] expectedHeader = Arrays.copyOf(apduHeader, apduHeader.length);

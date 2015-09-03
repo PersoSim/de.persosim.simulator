@@ -2,8 +2,8 @@ package de.persosim.simulator.apdumatching;
 
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import de.persosim.simulator.apdu.CommandApduImpl;
+import de.persosim.simulator.apdu.InterIndustryCommandApdu;
 import de.persosim.simulator.apdu.CommandApdu;
-import de.persosim.simulator.apdu.InterindustryCommandApdu;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.exception.CommandParameterUndefinedException;
 import de.persosim.simulator.platform.Iso7816;
@@ -195,11 +195,11 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 		if(!elementMatch) {return false;}
 		
 		if (reqChaining != REQ_OPTIONAL) {
-			if (!(apdu instanceof InterindustryCommandApdu)) {
+			if (!(apdu instanceof InterIndustryCommandApdu)) {
 				log(ApduSpecification.class, "apdu class does not support channels");
 				return false;
 			}
-			if(this.chaining == ((InterindustryCommandApdu) apdu).isChaining()) {
+			if(this.chaining == ((InterIndustryCommandApdu) apdu).isChaining()) {
 				if(this.reqChaining == REQ_MISMATCH) {
 					if(this.chaining) {
 						log(ApduSpecification.class, "chaining is not supported");
@@ -241,12 +241,12 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 		}
 		
 		if (reqChannel != REQ_OPTIONAL) {
-			if (!(apdu instanceof InterindustryCommandApdu)) { //XXX use a marker interface to check for channel abilities to provide more generic way
+			if (!(apdu instanceof InterIndustryCommandApdu)) { //XXX use a marker interface to check for channel abilities to provide more generic way
 				log(ApduSpecification.class, "apdu class does not support channels");
 				return false;
 			}
 			
-			elementMatch = matchByteParameter("channel", channel, ((InterindustryCommandApdu) apdu).getChannel(), reqChannel);
+			elementMatch = matchByteParameter("channel", channel, ((InterIndustryCommandApdu) apdu).getChannel(), reqChannel);
 			if(!elementMatch) {return false;}
 			
 		}
