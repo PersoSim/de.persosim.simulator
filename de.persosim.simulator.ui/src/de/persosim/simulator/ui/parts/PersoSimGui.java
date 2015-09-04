@@ -32,7 +32,7 @@ public class PersoSimGui extends PersoSimGuiMain{
 	@Override
 	@PostConstruct
 	public void createComposite(Composite parentComposite) {
-		super.createComposite(parentComposite);;
+		super.createComposite(parentComposite);
 		getSimAndConnectToNativeDriver();
 	}
 	
@@ -78,12 +78,5 @@ public class PersoSimGui extends PersoSimGuiMain{
 		
 		return personalization;
 	}
-	
-	//IMPL this code just hides an InterrupotedException when closing the RCP and thus should be removed (when the Exception is handled appropriately)
-	@PreDestroy
-	public void cleanUp() {
-		System.exit(0);
-	}
-
 
 }
