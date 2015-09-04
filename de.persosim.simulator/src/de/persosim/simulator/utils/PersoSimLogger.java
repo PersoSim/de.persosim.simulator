@@ -10,15 +10,25 @@ import de.persosim.simulator.Activator;
  * 
  */
 public class PersoSimLogger {
-	public static final byte TRACE = 1;
-	public static final byte DEBUG = 2;
-	public static final byte INFO = 3;
-	public static final byte WARN = 4;
-	public static final byte ERROR = 5;
-	public static final byte FATAL = 6;
-	public static final byte UI = 120;
+	/*
+	 * Note: This collection of log levels is beyond OSGI platform
+	 * specifications. In case this should ever result in any problems the
+	 * implementation of a proper alternative should be possible without any
+	 * problems.
+	 */
+	public static final byte TRACE =   1;
+	public static final byte DEBUG =   2;
+	public static final byte INFO  =   3;
+	public static final byte WARN  =   4;
+	public static final byte ERROR =   5;
+	public static final byte FATAL =   6;
+	public static final byte UI    = 120;
+	public static final byte APDU  =  99;
+	
 	private static final byte LOGLEVEL_DFLT = DEBUG;
-
+	
+	
+	
 	/**
 	 * Ensure that this type can not be instantiated
 	 */
