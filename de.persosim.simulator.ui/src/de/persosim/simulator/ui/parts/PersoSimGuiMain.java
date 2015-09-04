@@ -64,12 +64,11 @@ public class PersoSimGuiMain {
 	//maximum of lines the text field can show
 	int maxLineCount=0;
 	
-	
 	Composite parent;
 	private Button lockScroller;
 	Boolean locked = false;
 	Slider slider;
-	
+			
 	@PostConstruct
 	public void createComposite(Composite parentComposite) {
 		parent = parentComposite;
@@ -81,7 +80,7 @@ public class PersoSimGuiMain {
 		
 		//configure the slider
 		slider = createSlider(parent);
-		
+				
 		txtOutput.addMouseWheelListener(new MouseWheelListener() {
 			@Override
 			public void mouseScrolled(MouseEvent e) {
@@ -92,7 +91,6 @@ public class PersoSimGuiMain {
 			}
 		});
 		
-		
 		txtOutput.addKeyListener(new KeyListener() {
 			
 			@Override
@@ -100,8 +98,12 @@ public class PersoSimGuiMain {
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
-				slider.setSelection(slider.getSelection()-1);
-				
+				if(e.keyCode == SWT.ARROW_DOWN){
+					slider.setSelection(slider.getSelection()+1);
+				}
+				else if(e.keyCode == SWT.ARROW_UP){
+					slider.setSelection(slider.getSelection()-1);
+				}				
 				buildNewConsoleContent();		
 			}
 		});
@@ -138,22 +140,22 @@ public class PersoSimGuiMain {
 		
 		uiThread = Display.getCurrent().getThread();
 		final Thread updateThread = new Thread() {
-			public void run() {				
-				while (uiThread.isAlive()) {
+			public void run() {		
+				while (!isInterrupted() && uiThread.isAlive()){
 						sync.syncExec(new Runnable() {
 							@Override
 							public void run() {
-							 if(listener.isRefreshNeeded()) {
-								 listener.resetRefreshState();
-								 buildNewConsoleContent();
-								 showNewOutput();
-							 }
+								 if(listener.isRefreshNeeded()) {
+									 listener.resetRefreshState();
+									 buildNewConsoleContent();
+									 showNewOutput();
+								 }
 							}
 						});
 					try {
 						Thread.sleep(50);
 					} catch (InterruptedException e) {
-						// sleep interrupted, doesn't matter
+						break;
 					}
 				}
 			}
@@ -404,26 +406,23 @@ public class PersoSimGuiMain {
 	 */
 	public void showNewOutput() {
 		if (uiThread.isAlive() && !uiThread.isInterrupted()) {
-		sync.syncExec(new Runnable() {
-			@Override
-			public void run() {
-				rebuildSlider();
-				slider.setSelection(slider.getMaximum());
-			}
-		});
+			sync.syncExec(new Runnable() {
+				@Override
+				public void run() {
+					rebuildSlider();
+					slider.setSelection(slider.getMaximum());
+				}
+			});
 		}
 
 	}
 	
 	@PreDestroy //FIXME JGE this annotation is used on a different method in the subclass, what are the implications of this?
 	public void closePerosimView() {
-	if(uiThread.isAlive()) {
-		uiThread.interrupt();
-	}
-	if(updateThread.isAlive()) {
-		updateThread.interrupt();
-	}
-	Activator.removeLogListener();
+		if(updateThread.isAlive()) {
+			updateThread.interrupt();
+		}
+		Activator.removeLogListener();
 	}
 	
 	@Focus
