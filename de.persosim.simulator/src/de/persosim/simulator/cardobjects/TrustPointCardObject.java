@@ -46,7 +46,7 @@ public class TrustPointCardObject extends AbstractCardObject {
 	}
 
 	/**
-	 * @return the previous certificate that defines this trustpoint
+	 * @return the previous certificate that defines this trustpoint or null if none set
 	 */
 	public CardVerifiableCertificate getPreviousCertificate() {
 		return previousCertificate;
