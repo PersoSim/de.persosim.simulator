@@ -132,7 +132,7 @@ public class PersoSimKernel implements InfoSource {
 	public byte[] process(byte[] commandApduData) {
 		
 		log(this, "processing incoming APDU", TRACE);
-		log(this, "in:" + HexString.dump(commandApduData), APDU);
+		log(this, "in: " + HexString.dump(commandApduData), APDU);
 		log(this, "incoming APDU:\n" + HexString.encode(commandApduData), TRACE);
 		
 		ProcessingData processingData = new ProcessingData();
@@ -161,7 +161,7 @@ public class PersoSimKernel implements InfoSource {
 		}
 		
 		log(this, "finished processing APDU");
-		log(this, "out:" + HexString.dump(responseApduData), APDU);
+		log(this, "out: " + HexString.dump(responseApduData), APDU);
 		log(this, "outgoing APDU:\n" + HexString.dump(responseApduData), TRACE);
 		return responseApduData;
 		
