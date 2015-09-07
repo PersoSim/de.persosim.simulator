@@ -42,6 +42,7 @@ public class CommandApduFactory {
 	public static boolean matchesIsoCompatibleProprietaryCommandApdu(byte [] apdu){
 		CommandApdu command = new CommandApduImpl(apdu);
 		
+		//FIXME SLS which APDUs are matched here?
 		if ((command.getCla() == (byte) 0x8C || (command.getCla() == (byte) 0x80))) {
 			if((command.getIns() == (byte) 0x20) && (command.getP1P2() == (short) 0x8000)) {
 				return true;

@@ -13,7 +13,7 @@ import de.persosim.simulator.utils.Utils;
  * @author amay
  * 
  */
-public class InterindustryCommandApduImpl extends CommandApduImpl implements InterIndustryCommandApdu {
+public class InterindustryCommandApduImpl extends CommandApduImpl implements InterindustryCommandApdu {
 	
 	/**
 	 * Parses the apdu from the given byte array and sets the provided instance as predecessor.
