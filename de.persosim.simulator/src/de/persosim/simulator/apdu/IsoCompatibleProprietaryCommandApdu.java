@@ -12,10 +12,9 @@ import de.persosim.simulator.utils.Utils;
  * @author mboonk
  * 
  */
-public class TR03110VerifySecureMessagingCommandApdu extends CommandApduImpl implements
-		IsoSecureMessagingCommandApdu {
+public class IsoCompatibleProprietaryCommandApdu extends InterindustryCommandApduImpl {
 	
-	TR03110VerifySecureMessagingCommandApdu(byte[] apdu, CommandApdu previousCommandApdu) {
+	IsoCompatibleProprietaryCommandApdu(byte[] apdu, CommandApdu previousCommandApdu) {
 		super(apdu, previousCommandApdu);
 	}
 
@@ -25,23 +24,10 @@ public class TR03110VerifySecureMessagingCommandApdu extends CommandApduImpl imp
 	}
 
 	@Override
-	public boolean wasSecureMessaging() {
-		if(getSecureMessaging() != Iso7816.SM_OFF_OR_NO_INDICATION) {
-			return true;
-		} else {
-			if (getPredecessor() instanceof IsoSecureMessagingCommandApdu) {
-				return ((IsoSecureMessagingCommandApdu)getPredecessor()).wasSecureMessaging();
-			} else {
-				return false;
-			}
-		}
-	}
-
-	@Override
 	public CommandApdu rewrapApdu(byte newSmStatus, byte[] commandData) {
 		byte [] newApdu = Utils.concatByteArrays(header, commandData);
 		newApdu[Iso7816.OFFSET_CLA] = (byte) ((byte) (getCla() & 0b11110011) | newSmStatus << 2);
-		return new TR03110VerifySecureMessagingCommandApdu(newApdu, this);
+		return new IsoCompatibleProprietaryCommandApdu(newApdu, this);
 	}
 
 }

@@ -11,7 +11,7 @@ import org.junit.Test;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.Utils;
 
-public class TR03110VerifySecureMessagingCommandApduTest extends PersoSimTestCase {
+public class IsoCompatibleProprietaryCommandApduTest extends PersoSimTestCase {
 	byte [] apduHeader;
 	byte [] lc;
 	byte [] commandData;
@@ -25,13 +25,13 @@ public class TR03110VerifySecureMessagingCommandApduTest extends PersoSimTestCas
 	
 	@Test
 	public void testGetSecureMessaging(){
-		IsoSecureMessagingCommandApdu apdu = new TR03110VerifySecureMessagingCommandApdu(Utils.concatByteArrays(apduHeader, lc, commandData), null);
+		IsoSecureMessagingCommandApdu apdu = new IsoCompatibleProprietaryCommandApdu(Utils.concatByteArrays(apduHeader, lc, commandData), null);
 		assertEquals(0b00000011, apdu.getSecureMessaging());
 	}
 
 	@Test
 	public void testRewrapApdu(){
-		IsoSecureMessagingCommandApdu apdu = new TR03110VerifySecureMessagingCommandApdu(Utils.concatByteArrays(apduHeader, lc, commandData), null);
+		IsoSecureMessagingCommandApdu apdu = new IsoCompatibleProprietaryCommandApdu(Utils.concatByteArrays(apduHeader, lc, commandData), null);
 		IsoSecureMessagingCommandApdu result = (IsoSecureMessagingCommandApdu) apdu.rewrapApdu((byte) 0, Utils.concatByteArrays(lc, commandData));
 		
 		byte [] expectedHeader = Arrays.copyOf(apduHeader, apduHeader.length);

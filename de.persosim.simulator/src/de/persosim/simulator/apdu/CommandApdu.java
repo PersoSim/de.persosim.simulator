@@ -5,7 +5,7 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvValue;
 
 /**
- * This interface defines an container object carrying the information of the
+ * This interface defines a container object carrying the information of the
  * command APDU. Implementations provide simplified access to all the relevant
  * information that can be extracted from the command APDU.
  * 

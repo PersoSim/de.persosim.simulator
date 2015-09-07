@@ -2,8 +2,8 @@ package de.persosim.simulator.apdumatching;
 
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import de.persosim.simulator.apdu.CommandApduImpl;
-import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.InterindustryCommandApdu;
+import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.exception.CommandParameterUndefinedException;
 import de.persosim.simulator.platform.Iso7816;
