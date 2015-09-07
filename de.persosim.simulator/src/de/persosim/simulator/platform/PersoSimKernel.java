@@ -3,6 +3,7 @@ package de.persosim.simulator.platform;
 import static de.persosim.simulator.utils.PersoSimLogger.APDU;
 import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static de.persosim.simulator.utils.PersoSimLogger.logPlain;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -132,8 +133,8 @@ public class PersoSimKernel implements InfoSource {
 	public byte[] process(byte[] commandApduData) {
 		
 		log(this, "processing incoming APDU", TRACE);
-		log(this, "in: " + HexString.dump(commandApduData), APDU);
-		log(this, "incoming APDU:\n" + HexString.encode(commandApduData), TRACE);
+		logPlain("<in>" + HexString.encode(commandApduData), APDU);
+		log(this, "incoming APDU:\n" + HexString.dump(commandApduData), TRACE);
 		
 		ProcessingData processingData = new ProcessingData();
 		processingData.addUpdatePropagation(this, "initial hardware info", new HardwareCommandApduPropagation(commandApduData));
@@ -161,7 +162,7 @@ public class PersoSimKernel implements InfoSource {
 		}
 		
 		log(this, "finished processing APDU");
-		log(this, "out: " + HexString.dump(responseApduData), APDU);
+		logPlain("<out>" + HexString.encode(responseApduData), APDU);
 		log(this, "outgoing APDU:\n" + HexString.dump(responseApduData), TRACE);
 		return responseApduData;
 		
