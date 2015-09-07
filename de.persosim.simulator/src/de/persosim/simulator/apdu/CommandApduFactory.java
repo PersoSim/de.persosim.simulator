@@ -42,13 +42,16 @@ public class CommandApduFactory {
 	public static boolean matchesIsoCompatibleProprietaryCommandApdu(byte [] apdu){
 		CommandApdu command = new CommandApduImpl(apdu);
 		
-		//FIXME SLS which APDUs are matched here?
+		
 		if ((command.getCla() == (byte) 0x8C || (command.getCla() == (byte) 0x80))) {
 			if((command.getIns() == (byte) 0x20) && (command.getP1P2() == (short) 0x8000)) {
+				// Verify command as defined by BSI TR 03110 (with parameters not
+				// allowed by ISO back than) used in AuxDataVerification
 				return true;
 			}
 			
 			if((command.getIns() == (byte) 0x2A) && (command.getP1P2() == (short) 0xAEAC)) {
+				// PSO CDS as defined by BSI TR 03110 used in PSM and PSC
 				return true;
 			}
 		}
