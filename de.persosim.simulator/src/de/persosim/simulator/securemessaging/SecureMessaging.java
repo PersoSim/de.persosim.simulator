@@ -1,10 +1,12 @@
 package de.persosim.simulator.securemessaging;
 
+import static de.persosim.simulator.utils.PersoSimLogger.APDU;
 import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
 import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.logException;
+import static de.persosim.simulator.utils.PersoSimLogger.logPlain;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -73,13 +75,15 @@ public class SecureMessaging extends Layer {
 	
 	@Override
 	public void processAscending() {
-		if(this.processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu) {
+		if(processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu) {
 			if (((IsoSecureMessagingCommandApdu) processingData.getCommandApdu()).getSecureMessaging() != SM_OFF_OR_NO_INDICATION) {
 				if (dataProvider != null) {
 					processIncomingSmApdu();
+					logPlain("<indec>" + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
 					log(this, "successfully processed ascending secured APDU", TRACE);
 					return;
 				} else {
+					logPlain("<indec>" + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
 					log(this, "No SmDataProvider available", ERROR);
 					
 					//create and propagate response APDU
@@ -93,6 +97,8 @@ public class SecureMessaging extends Layer {
 		} else{
 			log(this, "don't process non interindustry APDU", TRACE);
 		}
+		
+		logPlain("<indec>" + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
 		
 		// if this line is reached the key material needs to be discarded
 		if (dataProvider != null) {
@@ -126,6 +132,7 @@ public class SecureMessaging extends Layer {
 			processOutgoingSmApdu();
 		}
 		
+		logPlain("<outdec>" + HexString.encode(getProcessingData().getResponseApdu().toByteArray()), APDU);
 		log(this, "successfully processed descending APDU", TRACE);
 		
 		handleUpdatePropagations();
