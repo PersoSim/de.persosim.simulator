@@ -41,7 +41,9 @@ public class CardVerifiableCertificate {
 	Date certificateEffective;
 	Date certificateExpiration;
 	List<CertificateExtension> certificateExtensions;
-	
+
+	// TODO remove this field as soon as the certificate encoding can be
+	// recreated from the parsed data
 	private ConstructedTlvDataObject initialData;
 	
 	/**
