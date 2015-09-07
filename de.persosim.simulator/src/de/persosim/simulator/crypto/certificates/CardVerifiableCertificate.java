@@ -8,7 +8,6 @@ import java.util.List;
 
 import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
-import de.persosim.simulator.exception.NotImplementedException;
 import de.persosim.simulator.exception.NotParseableException;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
@@ -43,17 +42,16 @@ public class CardVerifiableCertificate {
 	Date certificateExpiration;
 	List<CertificateExtension> certificateExtensions;
 	
-	public CardVerifiableCertificate() {
-	}
+	private ConstructedTlvDataObject initialData;
 	
 	/**
 	 * Create a certificate object from the TLV-encoding using the domain
 	 * parameters from the certificate.
-	 * @param certificateBodyData as described in TR-03110 V2.10 part 3, C
+	 * @param certificateData as described in TR-03110 V2.10 part 3, C
 	 * @throws CertificateNotParseableException
 	 */
-	public CardVerifiableCertificate(ConstructedTlvDataObject certificateBodyData) throws CertificateNotParseableException {
-		this(certificateBodyData, null);
+	public CardVerifiableCertificate(ConstructedTlvDataObject certificateData) throws CertificateNotParseableException {
+		this(certificateData, null);
 	}
 
 	/**
@@ -66,8 +64,12 @@ public class CardVerifiableCertificate {
 	 * @throws CertificateNotParseableException
 	 */
 	public CardVerifiableCertificate(
-			ConstructedTlvDataObject certificateBodyData,
+			ConstructedTlvDataObject certificateData,
 			PublicKey currentPublicKey) throws CertificateNotParseableException {
+		initialData = certificateData;
+		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_7F4E);
+		
+		
 		//certificate profile identifier
 		certificateProfileIdentifier = Utils.getIntFromUnsignedByteArray(certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F29).getValueField());
 		//certification authority reference
@@ -214,8 +216,7 @@ public class CardVerifiableCertificate {
 	 * 
 	 */
 	public byte[] getEncoded() {
-		//IMPL MBK return tlv encoded certificate here
-		throw new NotImplementedException();
+		return initialData.toByteArray();
 	}
 
 	/**
