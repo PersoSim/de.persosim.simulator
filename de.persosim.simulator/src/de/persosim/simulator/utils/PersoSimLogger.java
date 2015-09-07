@@ -205,8 +205,19 @@ public class PersoSimLogger {
 	public static void logException(Class<?> className, Exception e) {
 		logException(className, e, LOGLEVEL_DFLT);
 	}
-
-	private static void logPlain(String message, byte logLevel) {
+	
+	/**
+	 * This message provides direct unprocessed write access to the log.
+	 * Use this method only if this is exactly what you want and you know what
+	 * you are doing. Otherwise try any other log method provided by this class,
+	 * e.g. {@link #log(InfoSource, String, byte)}
+	 * 
+	 * @param message
+	 *            the message to be logged
+	 * @param logLevel
+	 *            log level on which the message is shown
+	 */
+	public static void logPlain(String message, byte logLevel) {
 		LogService logService = Activator.getLogservice();
 		if (logService != null){
 			logService.log(logLevel, message);
