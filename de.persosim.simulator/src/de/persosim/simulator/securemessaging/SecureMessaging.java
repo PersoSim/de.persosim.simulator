@@ -128,11 +128,12 @@ public class SecureMessaging extends Layer {
 	 */
 	@Override
 	public void processDescending() {
+		logPlain("<outdec>" + HexString.encode(getProcessingData().getResponseApdu().toByteArray()), APDU);
+		
 		if (isSmWrappingApplicable()){
 			processOutgoingSmApdu();
 		}
 		
-		logPlain("<outdec>" + HexString.encode(getProcessingData().getResponseApdu().toByteArray()), APDU);
 		log(this, "successfully processed descending APDU", TRACE);
 		
 		handleUpdatePropagations();
