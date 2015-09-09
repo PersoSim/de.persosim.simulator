@@ -74,6 +74,7 @@ import de.persosim.simulator.perso.xstream.EncodedByteArrayConverter;
 import de.persosim.simulator.perso.xstream.KeyConverter;
 import de.persosim.simulator.perso.xstream.KeyPairConverter;
 import de.persosim.simulator.perso.xstream.ProtocolConverter;
+import de.persosim.simulator.perso.xstream.TlvConverter;
 import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
@@ -333,7 +334,8 @@ public class PersonalizationFactory {
 		xstream.registerConverter(new KeyPairConverter());
 		xstream.registerConverter(new ECParameterSpecConverter());
 		xstream.registerConverter(new KeyConverter());
-        
+        xstream.registerConverter(new TlvConverter());
+		
         //get converters as services
 		if (Activator.getContext() != null){
 			ServiceTracker<Converter, Converter> serviceTracker = new ServiceTracker<Converter, Converter>(Activator.getContext(), Converter.class.getName(), null);

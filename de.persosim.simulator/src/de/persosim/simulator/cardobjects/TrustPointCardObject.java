@@ -21,10 +21,6 @@ public class TrustPointCardObject extends AbstractCardObject {
 	
 	TrustPointIdentifier identifier;
 
-	
-	public TrustPointCardObject() {
-	}
-
 	public TrustPointCardObject(TrustPointIdentifier identifier,
 			CardVerifiableCertificate currentCertificate) {
 		this.identifier = identifier;
@@ -46,7 +42,7 @@ public class TrustPointCardObject extends AbstractCardObject {
 	}
 
 	/**
-	 * @return the previous certificate that defines this trustpoint
+	 * @return the previous certificate that defines this trustpoint or null if none set
 	 */
 	public CardVerifiableCertificate getPreviousCertificate() {
 		return previousCertificate;
@@ -73,6 +69,18 @@ public class TrustPointCardObject extends AbstractCardObject {
 		
 		previousCertificate = currentCertificate;
 		currentCertificate = newCertificate;
+	}
+	
+	/**
+	 * Clears the content of this object, e.g. removes all certificates. This is
+	 * only possible if the {@link Iso7816LifeCycleState} allows this
+	 * modification.
+	 */
+	public void clear(){
+		if (CardObjectUtils.checkAccessConditions(getLifeCycleState())){
+			previousCertificate = null;
+			currentCertificate = null;
+		}
 	}
 
 }

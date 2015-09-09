@@ -47,17 +47,31 @@ public class CardObjectUtils {
 	 *         the {@link Iso7816LifeCycleState} grants access
 	 */
 	public static boolean checkAccessConditions(Iso7816LifeCycleState state, SecStatus securityStatus, Collection<SecCondition> secConditions, SecContext context){
-		if (state.equals(Iso7816LifeCycleState.CREATION)){
+		if (checkAccessConditions(state)){
 			return true;
 		}
-		// IMPL the implementation of checks regarding the initialization state
-		// is missing, as it is not yet needed since personalization happens before starting the simulator
-		
+				
 		for (SecCondition condition : secConditions){
 			if (condition.check(securityStatus.getCurrentMechanisms(context, condition.getNeededMechanisms()))){
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * This only checks the lifecycle state for necessary access conditions.
+	 * 
+	 * @param state
+	 *            the lifecycle state of the {@link CardObject}
+	 * @return true, if the {@link Iso7816LifeCycleState} grants access
+	 */
+	public static boolean checkAccessConditions(Iso7816LifeCycleState state){
+		if (state.equals(Iso7816LifeCycleState.CREATION)){
+			return true;
+		}
+		return false;
+		// IMPL the implementation of checks regarding the initialization state
+		// is missing, as it is not yet needed since personalization happens before starting the simulator
 	}
 }
