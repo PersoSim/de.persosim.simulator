@@ -44,7 +44,7 @@ import de.persosim.simulator.ui.utils.LinkedListLogListener;
  * @author slutters
  *
  */
-public class PersoSimGuiMain {
+public class PersoSimPart {
 	
 	public static final String DE_PERSOSIM_SIMULATOR_BUNDLE = "de.persosim.simulator";
 	public static final String PERSO_PATH = "personalization/profiles/";

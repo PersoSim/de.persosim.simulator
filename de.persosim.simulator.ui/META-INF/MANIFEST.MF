@@ -23,6 +23,7 @@ Require-Bundle: org.eclipse.swt;bundle-version="3.103.0",
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: de.persosim.simulator.ui.Activator
-Export-Package: de.persosim.simulator.ui.parts,
+Export-Package: de.persosim.simulator.ui,
+ de.persosim.simulator.ui.parts,
  de.persosim.simulator.ui.utils
 Import-Package: de.persosim.driver.connector.service

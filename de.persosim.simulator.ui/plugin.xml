@@ -14,9 +14,9 @@
       <e4view
             allowMultiple="false"
             category="org.globaltester"
-            class="de.persosim.simulator.ui.parts.PersoSimGuiMain"
+            class="de.persosim.simulator.ui.parts.PersoSimPart"
             icon="persosim_small.png"
-            id="de.persosim.simulator.ui.parts.PersoSimGuiMain"
+            id="de.persosim.simulator.ui.parts.PersoSimPart"
             name="PersoSim"
             restorable="true">
       </e4view>
