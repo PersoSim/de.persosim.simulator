@@ -44,6 +44,7 @@ import de.persosim.simulator.ui.utils.LinkedListLogListener;
  * @author slutters
  *
  */
+//FIXME CSH this class should be renamed to something that reflects its current use as view/part
 public class PersoSimGuiMain {
 	
 	public static final String DE_PERSOSIM_SIMULATOR_BUNDLE = "de.persosim.simulator";
