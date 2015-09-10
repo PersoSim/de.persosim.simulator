@@ -23,7 +23,12 @@ public class PersoSimLogger {
 	public static final byte ERROR =   5;
 	public static final byte FATAL =   6;
 	public static final byte UI    = 120;
+	
 	public static final byte APDU  =  99;
+	public static final String PREFIX_IN      = "<in>";
+	public static final String PREFIX_IN_DEC  = "<indec>";
+	public static final String PREFIX_OUT_DEC = "<outdec>";
+	public static final String PREFIX_OUT     = "<out>";
 	
 	private static final byte LOGLEVEL_DFLT = DEBUG;
 	
