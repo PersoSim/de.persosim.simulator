@@ -18,11 +18,13 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.globaltester.simulator.Simulator;
 import org.osgi.framework.Bundle;
 
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
 import de.persosim.simulator.utils.HexString;
+
 /**
  * This class provides methods that parse console commands for the control of
  * the Simulator and calls the corresponding methods of the {@link Simulator}

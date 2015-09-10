@@ -6,7 +6,8 @@ Bundle-Version: 0.6.0.qualifier
 Bundle-Activator: de.persosim.simulator.adapter.socket.Activator
 Bundle-Vendor: HJP Consulting
 Require-Bundle: org.eclipse.core.runtime,
- de.persosim.simulator;bundle-version="0.5.0"
+ de.persosim.simulator;bundle-version="0.5.0",
+ org.globaltester.simulator
 Bundle-ActivationPolicy: lazy
 Export-Package: de.persosim.simulator.adapter.socket
 Import-Package: org.osgi.util.tracker;version="1.5.1"

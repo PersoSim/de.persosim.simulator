@@ -34,4 +34,5 @@ Eclipse-BundleShape: dir
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: de.persosim.simulator.Activator
 Require-Bundle: org.globaltester.cryptoprovider,
- org.eclipse.equinox.registry
+ org.eclipse.equinox.registry,
+ org.globaltester.simulator

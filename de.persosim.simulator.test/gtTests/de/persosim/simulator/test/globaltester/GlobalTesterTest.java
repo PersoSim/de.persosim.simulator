@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.globaltester.simulator.Simulator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -18,7 +19,6 @@ import org.osgi.framework.ServiceRegistration;
 
 import de.persosim.simulator.Activator;
 import de.persosim.simulator.PersoSim;
-import de.persosim.simulator.Simulator;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -101,7 +101,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 		//load the personalization (implicitly restarts the simulator)
 		resetPersonalization();
 		getSimulator().startSimulator();
-		getSimulator().loadPersonalization(getPersonalization());
+		((PersoSim) getSimulator()).loadPersonalization(getPersonalization());
 	}
 	
 	@Test

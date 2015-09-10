@@ -19,7 +19,6 @@ import org.osgi.util.tracker.ServiceTracker;
 import de.persosim.driver.connector.NativeDriverConnector;
 import de.persosim.driver.connector.service.NativeDriverConnectorInterface;
 import de.persosim.simulator.CommandParser;
-import de.persosim.simulator.Simulator;
 import de.persosim.simulator.ui.parts.PersoSimGuiMain;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
 

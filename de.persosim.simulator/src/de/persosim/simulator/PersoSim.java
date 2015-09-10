@@ -5,6 +5,8 @@ import static de.persosim.simulator.utils.PersoSimLogger.UI;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.logException;
 
+import org.globaltester.simulator.Simulator;
+
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.PersoSimKernel;
@@ -94,8 +96,16 @@ public class PersoSim implements Simulator {
 		stopSimulator();
 		return startSimulator();
 	}
-
-	@Override
+	
+	/**
+	 * The given identifier is parsed and the corresponding personalization is
+	 * loaded. If the identifier is a number, the profile with this number is
+	 * loaded. Other inputs are interpreted as file names of personalization
+	 * files.
+	 * 
+	 * @param identifier, the number or file name of the profile to load
+	 * @return true, if the profile loading was successful
+	 */
 	public boolean loadPersonalization(Personalization personalization) {
 		currentPersonalization = personalization;
 		
