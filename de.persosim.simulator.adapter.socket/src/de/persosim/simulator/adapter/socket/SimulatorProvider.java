@@ -1,6 +1,6 @@
 package de.persosim.simulator.adapter.socket;
 
-import de.persosim.simulator.Simulator;
+import org.globaltester.simulator.Simulator;
 
 /**
  * Implementations of this interface can provide a {@link Simulator}

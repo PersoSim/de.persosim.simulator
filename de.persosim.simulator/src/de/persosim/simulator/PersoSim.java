@@ -5,6 +5,8 @@ import static de.persosim.simulator.utils.PersoSimLogger.UI;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.logException;
 
+import org.globaltester.simulator.Simulator;
+
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.PersoSimKernel;
@@ -94,8 +96,13 @@ public class PersoSim implements Simulator {
 		stopSimulator();
 		return startSimulator();
 	}
-
-	@Override
+	
+	/**
+	 * This methods loads the provided personalization.
+	 * 
+	 * @param personalization the personalization to load
+	 * @return true, if the profile loading was successful, otherwise false
+	 */
 	public boolean loadPersonalization(Personalization personalization) {
 		currentPersonalization = personalization;
 		

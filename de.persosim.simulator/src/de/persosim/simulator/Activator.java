@@ -4,6 +4,7 @@ import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 import org.globaltester.cryptoprovider.Cryptoprovider;
+import org.globaltester.simulator.Simulator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;

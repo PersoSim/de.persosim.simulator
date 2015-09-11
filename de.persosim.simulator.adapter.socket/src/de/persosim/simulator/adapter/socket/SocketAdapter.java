@@ -9,8 +9,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
+import org.globaltester.simulator.Simulator;
+
 import de.persosim.simulator.CommandParser;
-import de.persosim.simulator.Simulator;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;

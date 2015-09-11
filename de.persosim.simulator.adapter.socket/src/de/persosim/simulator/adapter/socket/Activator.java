@@ -1,12 +1,11 @@
 package de.persosim.simulator.adapter.socket;
 
+import org.globaltester.simulator.Simulator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
-
-import de.persosim.simulator.Simulator;
 
 /**
  * This bundle activator tracks the {@link Simulator} service provided via OSGi
