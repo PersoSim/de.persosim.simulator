@@ -1,7 +1,9 @@
 package de.persosim.simulator.platform;
 
+import static de.persosim.simulator.utils.PersoSimLogger.APDU;
 import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static de.persosim.simulator.utils.PersoSimLogger.logPlain;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -125,16 +127,17 @@ public class PersoSimKernel implements InfoSource {
 	 * accompanying ProcessingData-Objects are propagated through all available
 	 * layers from bottom to the top and back down again.
 	 * 
-	 * @param apdu
+	 * @param commandApduData
 	 *            the APDU that was recently received
 	 */
-	public byte[] process(byte[] apdu) {
+	public byte[] process(byte[] commandApduData) {
 		
 		log(this, "processing incoming APDU", TRACE);
-		log(this, "incoming APDU:\n" + HexString.dump(apdu), TRACE);
+		logPlain(PersoSimLogger.PREFIX_IN + HexString.encode(commandApduData), APDU);
+		log(this, "incoming APDU:\n" + HexString.dump(commandApduData), TRACE);
 		
 		ProcessingData processingData = new ProcessingData();
-		processingData.addUpdatePropagation(this, "initial hardware info", new HardwareCommandApduPropagation(apdu));
+		processingData.addUpdatePropagation(this, "initial hardware info", new HardwareCommandApduPropagation(commandApduData));
 		
 		//propagate the event all layers up
 		int curLayerId = 0;
@@ -148,19 +151,20 @@ public class PersoSimKernel implements InfoSource {
 		}
 		
 		//extract prepared response
-		byte[] retVal;
+		byte[] responseApduData;
 		LinkedList<UpdatePropagation> hardwareResponses = processingData.getUpdatePropagations(HardwareResponseApduPropagation.class);
 		UpdatePropagation lastHardwareResponseUpdate = hardwareResponses.getLast();
 		
 		if (lastHardwareResponseUpdate != null && lastHardwareResponseUpdate instanceof HardwareResponseApduPropagation) {
-			retVal =  ((HardwareResponseApduPropagation)lastHardwareResponseUpdate).getResponseApdu();
+			responseApduData =  ((HardwareResponseApduPropagation)lastHardwareResponseUpdate).getResponseApdu();
 		} else {
-			retVal = Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN+0x45);
+			responseApduData = Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN+0x45);
 		}
 		
 		log(this, "finished processing APDU");
-		log(this, "outgoing APDU:\n" + HexString.dump(retVal), TRACE);
-		return retVal;
+		logPlain(PersoSimLogger.PREFIX_OUT + HexString.encode(responseApduData), APDU);
+		log(this, "outgoing APDU:\n" + HexString.dump(responseApduData), TRACE);
+		return responseApduData;
 		
 	}
 }
