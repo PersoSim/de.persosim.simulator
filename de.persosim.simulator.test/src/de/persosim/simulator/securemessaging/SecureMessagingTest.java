@@ -181,6 +181,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 		// mut, propagate SmDataProvider
 		SecureMessaging secureMessaging = new SecureMessaging(0);
 		ProcessingData pData = new ProcessingData();
+		pData.updateResponseAPDU(this, "test response APDU", new ResponseApdu(SW_9000_NO_ERROR));
 		pData.addUpdatePropagation(this, "testing handling of SmDataProvider", dataProvider);
 		secureMessaging.processDescending(pData);
 		
