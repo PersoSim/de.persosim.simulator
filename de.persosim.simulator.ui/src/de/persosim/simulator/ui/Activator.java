@@ -19,7 +19,7 @@ import org.osgi.util.tracker.ServiceTracker;
 import de.persosim.driver.connector.NativeDriverConnector;
 import de.persosim.driver.connector.service.NativeDriverConnectorInterface;
 import de.persosim.simulator.CommandParser;
-import de.persosim.simulator.ui.parts.PersoSimGuiMain;
+import de.persosim.simulator.ui.parts.PersoSimPart;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
 
 /**
@@ -33,7 +33,7 @@ public class Activator implements BundleActivator {
 
 	private static BundleContext context;
 	private LinkedList<LogReaderService> readers = new LinkedList<>();
-	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(PersoSimGuiMain.MAXIMUM_CACHED_CONSOLE_LINES);
+	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(PersoSimPart.MAXIMUM_CACHED_CONSOLE_LINES);
 	private ServiceTracker<LogReaderService, LogReaderService> logReaderTracker;
 	private static ServiceTracker<NativeDriverConnectorInterface, NativeDriverConnectorInterface> serviceTrackerNativeDriverConnector;
 	public static final int DEFAULT_PORT = 5678;
