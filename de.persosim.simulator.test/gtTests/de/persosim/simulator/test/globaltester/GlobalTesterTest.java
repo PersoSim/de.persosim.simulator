@@ -101,7 +101,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 		//load the personalization (implicitly restarts the simulator)
 		resetPersonalization();
 		getSimulator().startSimulator();
-		((PersoSim) getSimulator()).loadPersonalization(getPersonalization());
+		getSimulator().loadPersonalization(getPersonalization());
 	}
 	
 	@Test
@@ -120,7 +120,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 		gtServer.checkAndClearResults(0, 0);
 	}
 
-	private Simulator getSimulator() {
+	private PersoSim getSimulator() {
 		Simulator simulator = null;
 		
 		ServiceReference<?> reference = Activator.getContext().
@@ -132,7 +132,13 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 		if (simulator == null) {
 			fail("no simulator service available");
 		}
-		return simulator;
+		
+		// ensure that simulator service is available
+		if (!(simulator instanceof PersoSim)) {
+			fail("simulator service not of type PersoSim");
+		}
+				
+		return (PersoSim) simulator;
 	}
 
 	private void configureGtServer() throws Exception {
