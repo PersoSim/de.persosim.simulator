@@ -98,13 +98,10 @@ public class PersoSim implements Simulator {
 	}
 	
 	/**
-	 * The given identifier is parsed and the corresponding personalization is
-	 * loaded. If the identifier is a number, the profile with this number is
-	 * loaded. Other inputs are interpreted as file names of personalization
-	 * files.
+	 * This methods loads the provided personalization.
 	 * 
-	 * @param identifier, the number or file name of the profile to load
-	 * @return true, if the profile loading was successful
+	 * @param personalization the personalization to load
+	 * @return true, if the profile loading was successful, otherwise false
 	 */
 	public boolean loadPersonalization(Personalization personalization) {
 		currentPersonalization = personalization;
