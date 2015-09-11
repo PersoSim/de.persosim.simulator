@@ -29,6 +29,7 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.PersoSimLogger;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -79,11 +80,11 @@ public class SecureMessaging extends Layer {
 			if (((IsoSecureMessagingCommandApdu) processingData.getCommandApdu()).getSecureMessaging() != SM_OFF_OR_NO_INDICATION) {
 				if (dataProvider != null) {
 					processIncomingSmApdu();
-					logPlain("<indec>" + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
+					logPlain(PersoSimLogger.PREFIX_IN_DEC + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
 					log(this, "successfully processed ascending secured APDU", TRACE);
 					return;
 				} else {
-					logPlain("<indec>" + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
+					logPlain(PersoSimLogger.PREFIX_IN_DEC + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
 					log(this, "No SmDataProvider available", ERROR);
 					
 					//create and propagate response APDU
@@ -98,7 +99,7 @@ public class SecureMessaging extends Layer {
 			log(this, "don't process non interindustry APDU", TRACE);
 		}
 		
-		logPlain("<indec>" + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
+		logPlain(PersoSimLogger.PREFIX_IN_DEC + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
 		
 		// if this line is reached the key material needs to be discarded
 		if (dataProvider != null) {
@@ -128,7 +129,7 @@ public class SecureMessaging extends Layer {
 	 */
 	@Override
 	public void processDescending() {
-		logPlain("<outdec>" + HexString.encode(getProcessingData().getResponseApdu().toByteArray()), APDU);
+		logPlain(PersoSimLogger.PREFIX_OUT_DEC + HexString.encode(getProcessingData().getResponseApdu().toByteArray()), APDU);
 		
 		if (isSmWrappingApplicable()){
 			processOutgoingSmApdu();
