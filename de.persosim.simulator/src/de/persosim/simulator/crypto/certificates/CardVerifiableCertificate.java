@@ -79,28 +79,41 @@ public class CardVerifiableCertificate {
 		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_7F4E);
 		
 		
-		//certificate profile identifier
+		//Certificate Profile Identifier (CPI)
 		certificateProfileIdentifier = Utils.getIntFromUnsignedByteArray(certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F29).getValueField());
-		//certification authority reference
+		
+		
+		//Certification Authority Reference (CAR)
 		try {
 			certificationAuthorityReference = new PublicKeyReference(certificateBodyData.getTlvDataObject(TlvConstants.TAG_42));
 		} catch (CarParameterInvalidException e) {
 			throw new CertificateNotParseableException("The certificate authority reference could not be parsed");
 		}
-		//public key
+		
+		
+		//Public Key (PK)
 		ConstructedTlvDataObject publicKeyData = (ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F49);
 		publicKeyOid = new TaOid(publicKeyData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
 		publicKey = Tr03110Utils.parseCertificatePublicKey(publicKeyData, currentPublicKey);
 		if (publicKey == null){
 			throw new CertificateNotParseableException("The public key data could not be parsed");
 		}
-		//certificate holder reference
+		
+		
+		//Certificate Holder Reference (CHR)
 		try {
 			certificateHolderReference = new PublicKeyReference(certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F20));
 		} catch (CarParameterInvalidException e) {
 			throw new CertificateNotParseableException("The certificate holder reference could not be parsed");
 		}
-		//dates
+		
+		
+		//Certificate Holder Authorization Template (CHAT)
+		certificateHolderAuthorizationTemplate = parseChat((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F4C));
+		
+		
+		//Certificate Expiration Date
+		//Certificate Effective Date
 		try {
 			certificateExpirationDate = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F24)).getValueField());
 			certificateEffectiveDate = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F25)).getValueField());
@@ -112,9 +125,7 @@ public class CardVerifiableCertificate {
 			throw new CertificateNotParseableException("The certificates expiration date is before the effective date");
 		}
 		
-		//chat
-		certificateHolderAuthorizationTemplate = parseChat((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F4C));
-		//certificate extensions
+		//Certificate Extensions (CE)
 		certificateExtensions = parseExtensions((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_65));
 	}
 
