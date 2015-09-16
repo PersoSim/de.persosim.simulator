@@ -55,4 +55,10 @@ public interface CardObject extends Iso7816LifeCycle {
 	 */
 	public Collection<CardObject> findChildren(CardObjectIdentifier... cardObjectIdentifiers);
 	
+	
+	/**
+	 * @param child
+	 * @return the removed child or null if none removed
+	 */
+	public CardObject removeChild(CardObject child);
 }

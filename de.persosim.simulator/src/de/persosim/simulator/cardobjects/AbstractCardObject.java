@@ -80,13 +80,15 @@ public abstract class AbstractCardObject implements CardObject {
 	 * @param child
 	 *            element to remove from the collection
 	 */
-	public void removeChild(CardObject child) {
+	public CardObject removeChild(CardObject child) {
 		if (children.contains(child)) {
 			children.remove(child);
 			if (child instanceof AbstractCardObject) {
 				((AbstractCardObject) child).parent = null;
 			}
+			return child;
 		}
+		return null;
 	}
 
 	@Override
