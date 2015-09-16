@@ -76,6 +76,18 @@ public class ElementaryFile extends AbstractFile {
 		throw new AccessDeniedException("Updating forbidden");
 	}
 
+	/**
+	 * Completely replaces the files internal data.
+	 * @param data to be used as a replacement
+	 */
+	public void replace(byte[] data) throws AccessDeniedException {
+		if (CardObjectUtils.checkAccessConditions(getLifeCycleState())){
+			content = Arrays.copyOf(data, data.length);
+			return;
+		}
+		throw new AccessDeniedException("Updating forbidden");
+	}
+
 	@Override
 	public void addChild(CardObject newChild) {
 	}
