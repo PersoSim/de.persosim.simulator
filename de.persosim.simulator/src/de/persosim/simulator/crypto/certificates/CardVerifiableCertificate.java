@@ -33,14 +33,21 @@ import de.persosim.simulator.utils.Utils;
  */
 public class CardVerifiableCertificate {
 	int certificateProfileIdentifier;
-	PublicKeyReference certificateAuthorityReference;
+	PublicKeyReference certificationAuthorityReference;
+	
 	TaOid publicKeyOid;
 	PublicKey publicKey;
+	
 	PublicKeyReference certificateHolderReference;
 	CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate;
-	Date certificateEffective;
-	Date certificateExpiration;
+	Date certificateEffectiveDate;
+	Date certificateExpirationDate;
 	List<CertificateExtension> certificateExtensions;
+	
+	PublicKeyReference certificateHolderReferenceSigner;
+	byte[] signature;
+	
+	
 
 	// TODO remove this field as soon as the certificate encoding can be
 	// recreated from the parsed data
@@ -76,7 +83,7 @@ public class CardVerifiableCertificate {
 		certificateProfileIdentifier = Utils.getIntFromUnsignedByteArray(certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F29).getValueField());
 		//certification authority reference
 		try {
-			certificateAuthorityReference = new PublicKeyReference(certificateBodyData.getTlvDataObject(TlvConstants.TAG_42));
+			certificationAuthorityReference = new PublicKeyReference(certificateBodyData.getTlvDataObject(TlvConstants.TAG_42));
 		} catch (CarParameterInvalidException e) {
 			throw new CertificateNotParseableException("The certificate authority reference could not be parsed");
 		}
@@ -95,13 +102,13 @@ public class CardVerifiableCertificate {
 		}
 		//dates
 		try {
-			certificateExpiration = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F24)).getValueField());
-			certificateEffective = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F25)).getValueField());
+			certificateExpirationDate = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F24)).getValueField());
+			certificateEffectiveDate = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F25)).getValueField());
 		} catch (NotParseableException e) {
 			throw new CertificateNotParseableException("The date could not be parsed");
 		}
 		
-		if (certificateExpiration.before(certificateEffective)){
+		if (certificateExpirationDate.before(certificateEffectiveDate)){
 			throw new CertificateNotParseableException("The certificates expiration date is before the effective date");
 		}
 		
@@ -165,7 +172,7 @@ public class CardVerifiableCertificate {
 	 * @return the reference to the public key of the certificate authority
 	 */
 	public PublicKeyReference getCertificateAuthorityReference() {
-		return certificateAuthorityReference;
+		return certificationAuthorityReference;
 	}
 	
 	/**
@@ -194,14 +201,14 @@ public class CardVerifiableCertificate {
 	 * @return the date from which the certificate is valid
 	 */
 	public Date getEffectiveDate() {
-		return certificateEffective;
+		return certificateEffectiveDate;
 	}
 	
 	/**
 	 * @return the date form which the certificate is no longer valid
 	 */
 	public Date getExpirationDate() {
-		return certificateExpiration;
+		return certificateExpirationDate;
 	}
 	
 	/**
@@ -231,7 +238,7 @@ public class CardVerifiableCertificate {
 	@Override
 	public String toString() {
 		return "CardVerifiableCertificate [certificateAuthorityReference="
-				+ certificateAuthorityReference
+				+ certificationAuthorityReference
 				+ ", certificateHolderReference=" + certificateHolderReference
 				+ "]";
 	}
