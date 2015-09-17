@@ -143,7 +143,19 @@ public class CardVerifiableCertificate {
 		PrimitiveTlvDataObject signatureData = (PrimitiveTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_5F37);
 		signature = signatureData.getValueField();
 	}
-	
+
+	public Date getCertificateEffectiveDate() {
+		return certificateEffectiveDate;
+	}
+
+	public Date getCertificateExpirationDate() {
+		return certificateExpirationDate;
+	}
+
+	public byte[] getSignature() {
+		return signature;
+	}
+
 	public boolean addPublicKeyDomainParameters(PublicKey currentPublicKey) {
 		return setPublicKey(publicKeyData, currentPublicKey);
 	}
@@ -216,7 +228,7 @@ public class CardVerifiableCertificate {
 	/**
 	 * @return the reference to the public key of the certificate authority
 	 */
-	public PublicKeyReference getCertificateAuthorityReference() {
+	public PublicKeyReference getCertificationAuthorityReference() {
 		return certificationAuthorityReference;
 	}
 	
