@@ -37,6 +37,7 @@ public class CardVerifiableCertificate {
 	
 	TaOid publicKeyOid;
 	PublicKey publicKey;
+	ConstructedTlvDataObject publicKeyData;
 	
 	PublicKeyReference certificateHolderReference;
 	CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate;
@@ -72,15 +73,16 @@ public class CardVerifiableCertificate {
 	 * @param currentPublicKey the public key to be used
 	 * @throws CertificateNotParseableException
 	 */
-	public CardVerifiableCertificate(
-			ConstructedTlvDataObject certificateData,
-			PublicKey currentPublicKey) throws CertificateNotParseableException {
+	public CardVerifiableCertificate(ConstructedTlvDataObject certificateData, PublicKey currentPublicKey) throws CertificateNotParseableException {
+		
 		initialData = certificateData;
 		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_7F4E);
 		
 		
+		
 		//Certificate Profile Identifier (CPI)
 		certificateProfileIdentifier = Utils.getIntFromUnsignedByteArray(certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F29).getValueField());
+		
 		
 		
 		//Certification Authority Reference (CAR)
@@ -91,13 +93,17 @@ public class CardVerifiableCertificate {
 		}
 		
 		
+		
 		//Public Key (PK)
 		ConstructedTlvDataObject publicKeyData = (ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F49);
 		publicKeyOid = new TaOid(publicKeyData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
-		publicKey = Tr03110Utils.parseCertificatePublicKey(publicKeyData, currentPublicKey);
-		if (publicKey == null){
-			throw new CertificateNotParseableException("The public key data could not be parsed");
+		
+		if(!Tr03110Utils.isPartialKeyRepresentation(publicKeyData)) {
+			throw new CertificateNotParseableException("The public key could not be parsed");
 		}
+		
+		setPublicKey(publicKeyData, currentPublicKey);
+		
 		
 		
 		//Certificate Holder Reference (CHR)
@@ -108,8 +114,10 @@ public class CardVerifiableCertificate {
 		}
 		
 		
+		
 		//Certificate Holder Authorization Template (CHAT)
 		certificateHolderAuthorizationTemplate = parseChat((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F4C));
+		
 		
 		
 		//Certificate Expiration Date
@@ -125,8 +133,29 @@ public class CardVerifiableCertificate {
 			throw new CertificateNotParseableException("The certificates expiration date is before the effective date");
 		}
 		
+		
+		
 		//Certificate Extensions (CE)
 		certificateExtensions = parseExtensions((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_65));
+	}
+	
+	public boolean addPublicKeyDomainParameters(PublicKey currentPublicKey) {
+		return setPublicKey(publicKeyData, currentPublicKey);
+	}
+	
+	private boolean setPublicKey(ConstructedTlvDataObject publicKeyData, PublicKey currentPublicKey) {
+		if(publicKey != null) {
+			return false;
+		}
+		
+		publicKey = Tr03110Utils.parseCertificatePublicKey(publicKeyData, currentPublicKey);
+		if (publicKey == null){
+			this.publicKeyData = publicKeyData;
+			return false;
+		} else{
+			this.publicKeyData = null;
+			return true;
+		}
 	}
 
 	/**
