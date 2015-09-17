@@ -45,7 +45,6 @@ public class CardVerifiableCertificate {
 	Date certificateExpirationDate;
 	List<CertificateExtension> certificateExtensions;
 	
-	PublicKeyReference certificateHolderReferenceSigner;
 	byte[] signature;
 	
 	
@@ -137,6 +136,12 @@ public class CardVerifiableCertificate {
 		
 		//Certificate Extensions (CE)
 		certificateExtensions = parseExtensions((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_65));
+		
+		
+		
+		//Signature
+		PrimitiveTlvDataObject signatureData = (PrimitiveTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_5F37);
+		signature = signatureData.getValueField();
 	}
 	
 	public boolean addPublicKeyDomainParameters(PublicKey currentPublicKey) {
