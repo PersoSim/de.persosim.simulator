@@ -477,14 +477,27 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		log(this, "PICC's ephemeral private mapped " + keyAgreementName + " key is " + new TlvDataObjectContainer(ephemeralKeyPairPicc.getPrivate().getEncoded()), TRACE);
 		
 		// Build response data
+		TlvValue responseData = buildResponseDataForMapNonce(mappingResponse);
+		
+		ResponseApdu resp = new ResponseApdu(responseData, Iso7816.SW_9000_NO_ERROR);
+		this.processingData.updateResponseAPDU(this, "Command MapNonce successfully processed", resp);
+	}
+	
+	/**
+	 * Build the response data structure to GAP:MapNonce
+	 * 
+	 * @param mappingResponse
+	 * @return the response data
+	 */
+	public TlvValue buildResponseDataForMapNonce(byte [] mappingResponse){
+		// Build response data
 		PrimitiveTlvDataObject primitive82 = new PrimitiveTlvDataObject(TAG_82, mappingResponse);
 		ConstructedTlvDataObject constructed7C = new ConstructedTlvDataObject(TAG_7C);
 		constructed7C.addTlvDataObject(primitive82);
 		
 		// Create and propagate response APDU
 		TlvValue responseData = new TlvDataObjectContainer(constructed7C);
-		ResponseApdu resp = new ResponseApdu(responseData, Iso7816.SW_9000_NO_ERROR);
-		this.processingData.updateResponseAPDU(this, "Command MapNonce successfully processed", resp);
+		return responseData;
 	}
 	
 	/**
@@ -519,14 +532,26 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		
 		log(this, "bare response data of byte length " + ephemeralPublicKeyComponentPicc.length + " is " + HexString.encode(ephemeralPublicKeyComponentPicc), DEBUG);
 		
+		/* create and propagate response APDU */
+		TlvValue responseData = buildResponseDataForKeyAgreement(paceDomainParametersMapped, ephemeralPublicKeyComponentPicc);
+		
+		ResponseApdu resp = new ResponseApdu(responseData, Iso7816.SW_9000_NO_ERROR);
+		this.processingData.updateResponseAPDU(this, "Command PerformKeyAgreement successfully processed", resp);
+	}
+	
+	/**
+	 * Build the response data structure to GAP:PerformKeyAgreement
+	 * 
+	 * @param paceDomainParametersMapped
+	 * @param ephemeralPublicKeyComponentPicc
+	 * @return the response data
+	 */
+	public TlvValue buildResponseDataForKeyAgreement(DomainParameterSet paceDomainParametersMapped, byte [] ephemeralPublicKeyComponentPicc){
 		PrimitiveTlvDataObject primitive84 = new PrimitiveTlvDataObject(TAG_84, ephemeralPublicKeyComponentPicc);
 		ConstructedTlvDataObject constructed7C = new ConstructedTlvDataObject(TAG_7C);
 		constructed7C.addTlvDataObject(primitive84);
-		
-		/* create and propagate response APDU */
 		TlvValue responseData = new TlvDataObjectContainer(constructed7C);
-		ResponseApdu resp = new ResponseApdu(responseData, Iso7816.SW_9000_NO_ERROR);
-		this.processingData.updateResponseAPDU(this, "Command PerformKeyAgreement successfully processed", resp);
+		return responseData;
 	}
 	
 	/**
