@@ -128,6 +128,22 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 		return null;
 	}
 	
+	public static boolean isPartialKeyRepresentation(ConstructedTlvDataObject publicKeyData) {
+		
+		for (Tr03110UtilsProvider provider : providers) {
+			return provider.isPartialKeyRepresentation(publicKeyData);
+		}
+		return false;
+	}
+	
+	public static boolean isCompleteKeyRepresentation(ConstructedTlvDataObject publicKeyData) {
+		
+		for (Tr03110UtilsProvider provider : providers) {
+			return provider.isCompleteKeyRepresentation(publicKeyData);
+		}
+		return false;
+	}
+	
 	/**
 	 * This method constructs the input data used to compute the authentication token needed e.g. by Pace's Mutual Authenticate or CA's General Authenticate.
 	 * @param publicKey the ephemeral public key to be inserted

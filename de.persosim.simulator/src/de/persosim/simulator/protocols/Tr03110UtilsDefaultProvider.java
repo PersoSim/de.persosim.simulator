@@ -56,6 +56,32 @@ public class Tr03110UtilsDefaultProvider implements Tr03110UtilsProvider {
 	}
 	
 	@Override
+	public boolean isCompleteKeyRepresentation(ConstructedTlvDataObject publicKeyData) {
+		if (publicKeyData.containsTlvDataObject(TlvConstants.TAG_06)
+				&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_81)
+				&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_82)
+				&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_83)
+				&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_84)
+				&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_85)
+				&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_86)
+				&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_87)) {
+			return true;
+		} else{
+			return false;
+		}
+	}
+	
+	@Override
+	public boolean isPartialKeyRepresentation(ConstructedTlvDataObject publicKeyData) {
+		if (publicKeyData.containsTlvDataObject(TlvConstants.TAG_06)
+				&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_86)) {
+			return true;
+		} else{
+			return false;
+		}
+	}
+	
+	@Override
 	public DomainParameterSet getDomainParameterSetFromKey(Key key) {
 		if((key instanceof ECPublicKey) || (key instanceof ECPrivateKey)) {
 			ECParameterSpec ecParameterSpec;
@@ -70,4 +96,5 @@ public class Tr03110UtilsDefaultProvider implements Tr03110UtilsProvider {
 		}
 		return null;
 	}
+	
 }

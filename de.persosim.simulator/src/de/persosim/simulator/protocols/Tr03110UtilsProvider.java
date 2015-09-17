@@ -37,5 +37,9 @@ public interface Tr03110UtilsProvider {
 	 * @return the domain parameters or null if the key does not contain supported domain parameters
 	 */
 	DomainParameterSet getDomainParameterSetFromKey(Key key);
+	
+	boolean isCompleteKeyRepresentation(ConstructedTlvDataObject publicKeyData);
+	
+	boolean isPartialKeyRepresentation(ConstructedTlvDataObject publicKeyData);
 
 }
