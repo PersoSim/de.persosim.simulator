@@ -69,24 +69,16 @@ public abstract class AbstractCardObject implements CardObject {
 		}
 	}
 
-	/**
-	 * Remove child from the collection.
-	 * 
-	 * If the given child is of type AbstractCardObject its parent field will be
-	 * reset to null after successful removal.
-	 * 
-	 * If the given element is not a child nothing will be done at all.
-	 * 
-	 * @param child
-	 *            element to remove from the collection
-	 */
-	public void removeChild(CardObject child) {
+	@Override
+	public CardObject removeChild(CardObject child) {
 		if (children.contains(child)) {
 			children.remove(child);
 			if (child instanceof AbstractCardObject) {
 				((AbstractCardObject) child).parent = null;
 			}
+			return child;
 		}
+		return null;
 	}
 
 	@Override

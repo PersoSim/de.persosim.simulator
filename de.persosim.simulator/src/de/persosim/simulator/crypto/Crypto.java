@@ -34,8 +34,10 @@ public class Crypto implements ServiceListener {
 	 * Singleton constructor, ensures that the class can not be instantiated from outside.
 	 */
 	private Crypto(){
+		if (bundleContext != null){
 			serviceTrackerCrypto = new ServiceTracker<Cryptoprovider, Cryptoprovider>(bundleContext, Cryptoprovider.class.getName(), null);
-			serviceTrackerCrypto.open();
+			serviceTrackerCrypto.open();	
+		}
 	};
 	
 	/**
@@ -78,10 +80,12 @@ public class Crypto implements ServiceListener {
 	
 	
 	private Provider getCryptoProviderFromService() {
-		cryptoProviderService = (Cryptoprovider) serviceTrackerCrypto.getService();
-		
-	    if (cryptoProviderService != null) {
-	    	return cryptoProviderService.getCryptoProviderObject();
+		if (serviceTrackerCrypto != null){
+			cryptoProviderService = (Cryptoprovider) serviceTrackerCrypto.getService();
+			
+		    if (cryptoProviderService != null) {
+		    	return cryptoProviderService.getCryptoProviderObject();
+			}	
 		}
 	    
 	    // use default system provider as fallback
