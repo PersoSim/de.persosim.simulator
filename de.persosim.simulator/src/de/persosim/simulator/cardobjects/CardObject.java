@@ -57,7 +57,12 @@ public interface CardObject extends Iso7816LifeCycle {
 	
 	
 	/**
+	 * Remove child from the collection.
+	 * 
+	 * If the given element is not a child nothing will be done at all.
+	 * 
 	 * @param child
+	 *        element to remove from the collection
 	 * @return the removed child or null if none removed
 	 */
 	public CardObject removeChild(CardObject child);
