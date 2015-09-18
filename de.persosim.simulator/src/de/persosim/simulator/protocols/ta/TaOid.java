@@ -148,7 +148,7 @@ public class TaOid extends Oid implements Tr03110 {
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchProviderException
 	 */	
-	public Signature getSignature() throws NoSuchAlgorithmException, NoSuchProviderException {
+	public Signature getSignature() throws NoSuchAlgorithmException {
 		if (equals(TaOid.id_TA_RSA_v1_5_SHA_1)){
 			return Signature.getInstance("SHA1withRSA", Crypto.getCryptoProvider());
 		} else if (equals(TaOid.id_TA_RSA_v1_5_SHA_256)){
