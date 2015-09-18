@@ -9,6 +9,7 @@ import java.util.List;
 import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.NotParseableException;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.CertificateRole;
@@ -33,9 +34,11 @@ import de.persosim.simulator.utils.Utils;
  */
 public class CardVerifiableCertificate {
 	protected int certificateProfileIdentifier;
+
 	protected PublicKeyReference certificationAuthorityReference;
 	
-	protected TaOid publicKeyOid;
+	protected Oid publicKeyOid;
+	
 	protected PublicKey publicKey;
 	protected ConstructedTlvDataObject publicKeyData;
 	
@@ -47,7 +50,55 @@ public class CardVerifiableCertificate {
 	
 	protected byte[] signature;
 	
+	public CardVerifiableCertificate(
+			int certificateProfileIdentifier,
+			PublicKeyReference certificationAuthorityReference,
+			Oid publicKeyOid,
+			PublicKey publicKey,
+			PublicKeyReference certificateHolderReference,
+			CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate,
+			Date certificateEffectiveDate,
+			Date certificateExpirationDate,
+			List<CertificateExtension> certificateExtensions,
+			byte[] signature) {
+		
+		this.certificateProfileIdentifier = certificateProfileIdentifier;
+		this.certificationAuthorityReference = certificationAuthorityReference;
+		this.publicKeyOid = publicKeyOid;
+		this.publicKey = publicKey;
+		this.certificateHolderReference = certificateHolderReference;
+		this.certificateHolderAuthorizationTemplate = certificateHolderAuthorizationTemplate;
+		this.certificateEffectiveDate = certificateEffectiveDate;
+		this.certificateExpirationDate = certificateExpirationDate;
+		this.certificateExtensions = certificateExtensions;
+		this.signature = signature;
+		
+	}
 	
+	public CardVerifiableCertificate(
+			int certificateProfileIdentifier,
+			PublicKeyReference certificationAuthorityReference,
+			Oid publicKeyOid,
+			ConstructedTlvDataObject publicKeyData,
+			PublicKeyReference certificateHolderReference,
+			CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate,
+			Date certificateEffectiveDate,
+			Date certificateExpirationDate,
+			List<CertificateExtension> certificateExtensions,
+			byte[] signature) {
+		
+		this.certificateProfileIdentifier = certificateProfileIdentifier;
+		this.certificationAuthorityReference = certificationAuthorityReference;
+		this.publicKeyOid = publicKeyOid;
+		this.publicKeyData = publicKeyData;
+		this.certificateHolderReference = certificateHolderReference;
+		this.certificateHolderAuthorizationTemplate = certificateHolderAuthorizationTemplate;
+		this.certificateEffectiveDate = certificateEffectiveDate;
+		this.certificateExpirationDate = certificateExpirationDate;
+		this.certificateExtensions = certificateExtensions;
+		this.signature = signature;
+		
+	}
 	
 	/**
 	 * Create a certificate object from the TLV-encoding using the domain
@@ -90,7 +141,7 @@ public class CardVerifiableCertificate {
 		
 		//Public Key (PK)
 		ConstructedTlvDataObject publicKeyData = (ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F49);
-		publicKeyOid = new TaOid(publicKeyData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
+		publicKeyOid = new Oid(publicKeyData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
 		
 		if(!Tr03110Utils.isPartialKeyRepresentation(publicKeyData)) {
 			throw new CertificateNotParseableException("The public key could not be parsed");
@@ -277,13 +328,13 @@ public class CardVerifiableCertificate {
 	 * 
 	 */
 	public byte[] getEncoded() {
-		return encode().toByteArray();
+		return encodeFull().toByteArray();
 	}
 
 	/**
 	 * @return the public keys oid
 	 */
-	public TaOid getPublicKeyOid() {
+	public Oid getPublicKeyOid() {
 		return publicKeyOid;
 	}
 
@@ -295,7 +346,7 @@ public class CardVerifiableCertificate {
 				+ "]";
 	}
 	
-	public ConstructedTlvDataObject encode() {
+	public ConstructedTlvDataObject encodeFull() {
 		ConstructedTlvDataObject encoding = CertificateUtils.encodeCertificate(
 				certificateProfileIdentifier,
 				certificationAuthorityReference,
@@ -335,6 +386,10 @@ public class CardVerifiableCertificate {
 			return null;
 		}
 		
+	}
+	
+	public void setSignature(byte[] signature) {
+		this.signature = signature;
 	}
 	
 }
