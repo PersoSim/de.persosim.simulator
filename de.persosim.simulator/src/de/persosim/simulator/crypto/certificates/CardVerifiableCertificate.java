@@ -347,7 +347,7 @@ public class CardVerifiableCertificate {
 	}
 	
 	public ConstructedTlvDataObject encodeFull() {
-		ConstructedTlvDataObject encoding = CertificateUtils.encodeCertificate(
+		ConstructedTlvDataObject encoding = CertificateUtils.encodeFullCertificate(
 				certificateProfileIdentifier,
 				certificationAuthorityReference,
 				getPublicKeyRepresentation(),
@@ -357,6 +357,20 @@ public class CardVerifiableCertificate {
 				certificateExpirationDate,
 				getExtensionRepresentation(),
 				signature);
+		
+		return encoding;
+	}
+	
+	public ConstructedTlvDataObject encodeBody() {
+		ConstructedTlvDataObject encoding = CertificateUtils.encodeCertificateBody(
+				certificateProfileIdentifier,
+				certificationAuthorityReference,
+				getPublicKeyRepresentation(),
+				certificateHolderReference,
+				certificateHolderAuthorizationTemplate,
+				certificateEffectiveDate,
+				certificateExpirationDate,
+				getExtensionRepresentation());
 		
 		return encoding;
 	}

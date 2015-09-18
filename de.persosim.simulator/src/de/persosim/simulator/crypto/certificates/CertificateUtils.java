@@ -11,7 +11,7 @@ import de.persosim.simulator.utils.Utils;
 
 public class CertificateUtils implements TlvConstants {
 	
-	public static ConstructedTlvDataObject encodeCertificate(
+	public static ConstructedTlvDataObject encodeFullCertificate(
 			int certificateProfileIdentifier,
 			PublicKeyReference certificationAuthorityReference,
 			ConstructedTlvDataObject publicKeyRepresentation,
@@ -21,6 +21,33 @@ public class CertificateUtils implements TlvConstants {
 			Date certificateExpirationDate,
 			ConstructedTlvDataObject certificateExtensions,
 			byte[] signature) {
+		
+		ConstructedTlvDataObject cvCertificateTlv = encodeFullCertificate(
+				certificateProfileIdentifier,
+				certificationAuthorityReference,
+				publicKeyRepresentation,
+				certificateHolderReference,
+				certificateHolderAuthorizationTemplate,
+				certificateEffectiveDate,
+				certificateExpirationDate,
+				certificateExtensions,
+				signature);
+		
+		PrimitiveTlvDataObject signatureTlv = new PrimitiveTlvDataObject(TAG_5F37, signature);
+		cvCertificateTlv.addTlvDataObject(signatureTlv);
+		
+		return cvCertificateTlv;
+	}
+	
+	public static ConstructedTlvDataObject encodeCertificateBody(
+			int certificateProfileIdentifier,
+			PublicKeyReference certificationAuthorityReference,
+			ConstructedTlvDataObject publicKeyRepresentation,
+			PublicKeyReference certificateHolderReference,
+			CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate,
+			Date certificateEffectiveDate,
+			Date certificateExpirationDate,
+			ConstructedTlvDataObject certificateExtensions) {
 		
 		ConstructedTlvDataObject cvCertificateTlv = new ConstructedTlvDataObject(TAG_7F21);
 		ConstructedTlvDataObject certificateBodyTlv = new ConstructedTlvDataObject(TAG_7F4E);
@@ -45,9 +72,6 @@ public class CertificateUtils implements TlvConstants {
 		if(certificateExtensions != null) {
 			certificateBodyTlv.addTlvDataObject(certificateExtensions);
 		}
-		
-		PrimitiveTlvDataObject signatureTlv = new PrimitiveTlvDataObject(TAG_5F37, signature);
-		cvCertificateTlv.addTlvDataObject(signatureTlv);
 		
 		return cvCertificateTlv;
 	}
