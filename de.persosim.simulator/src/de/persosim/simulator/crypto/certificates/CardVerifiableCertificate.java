@@ -32,20 +32,20 @@ import de.persosim.simulator.utils.Utils;
  * 
  */
 public class CardVerifiableCertificate {
-	int certificateProfileIdentifier;
-	PublicKeyReference certificationAuthorityReference;
+	protected int certificateProfileIdentifier;
+	protected PublicKeyReference certificationAuthorityReference;
 	
-	TaOid publicKeyOid;
-	PublicKey publicKey;
-	ConstructedTlvDataObject publicKeyData;
+	protected TaOid publicKeyOid;
+	protected PublicKey publicKey;
+	protected ConstructedTlvDataObject publicKeyData;
 	
-	PublicKeyReference certificateHolderReference;
-	CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate;
-	Date certificateEffectiveDate;
-	Date certificateExpirationDate;
-	List<CertificateExtension> certificateExtensions;
+	protected PublicKeyReference certificateHolderReference;
+	protected CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate;
+	protected Date certificateEffectiveDate;
+	protected Date certificateExpirationDate;
+	protected List<CertificateExtension> certificateExtensions;
 	
-	byte[] signature;
+	protected byte[] signature;
 	
 	
 
