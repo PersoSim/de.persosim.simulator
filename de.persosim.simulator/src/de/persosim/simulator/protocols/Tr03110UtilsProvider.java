@@ -41,5 +41,7 @@ public interface Tr03110UtilsProvider {
 	public boolean isCompleteKeyRepresentation(ConstructedTlvDataObject publicKeyData);
 	
 	public boolean isPartialKeyRepresentation(ConstructedTlvDataObject publicKeyData);
+	
+	public ConstructedTlvDataObject encodeKey(PublicKey publicKey, Oid oid);
 
 }

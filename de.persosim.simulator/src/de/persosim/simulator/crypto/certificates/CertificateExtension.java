@@ -51,4 +51,11 @@ public class CertificateExtension {
 		TlvDataObjectContainer result = new TlvDataObjectContainer(dataObjects.toByteArray());
 		return result;
 	}
+	
+	public ConstructedTlvDataObject toTlv() {
+		ConstructedTlvDataObject extension = new ConstructedTlvDataObject(TlvConstants.TAG_53);
+		
+		return extension;
+	}
+	
 }

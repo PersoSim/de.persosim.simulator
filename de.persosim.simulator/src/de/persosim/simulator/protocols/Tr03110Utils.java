@@ -106,11 +106,6 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 	 * @throws GeneralSecurityException
 	 * @throws GSSException
 	 */
-	// TODO replace second parameter of type PublicKey with DomainParameterSet
-	// PublicKey is only required as source of domain parameter information in
-	// case the public key data to be parsed does not contain any.
-	// Provide domain parameter information directly if not provided by key data
-	// to be parsed.
 	public static PublicKey parseCertificatePublicKey(
 			ConstructedTlvDataObject publicKeyData,
 			PublicKey trustPointPublicKey) {
@@ -133,7 +128,9 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 		for (Tr03110UtilsProvider provider : providers) {
 			return provider.isPartialKeyRepresentation(publicKeyData);
 		}
+		
 		return false;
+		
 	}
 	
 	public static boolean isCompleteKeyRepresentation(ConstructedTlvDataObject publicKeyData) {
@@ -141,7 +138,25 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 		for (Tr03110UtilsProvider provider : providers) {
 			return provider.isCompleteKeyRepresentation(publicKeyData);
 		}
+		
 		return false;
+		
+	}
+	
+	public static ConstructedTlvDataObject encodeKey(PublicKey publicKey, Oid oid) {
+		
+		ConstructedTlvDataObject keyEncoding;
+		
+		for (Tr03110UtilsProvider provider : providers) {
+			keyEncoding = provider.encodeKey(publicKey, oid);
+			
+			if(keyEncoding != null) {
+				return keyEncoding;
+			}
+		}
+		
+		return null;
+		
 	}
 	
 	/**

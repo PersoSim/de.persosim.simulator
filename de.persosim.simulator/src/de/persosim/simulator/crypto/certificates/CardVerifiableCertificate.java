@@ -48,10 +48,6 @@ public class CardVerifiableCertificate {
 	protected byte[] signature;
 	
 	
-
-	// TODO remove this field as soon as the certificate encoding can be
-	// recreated from the parsed data
-	private ConstructedTlvDataObject initialData;
 	
 	/**
 	 * Create a certificate object from the TLV-encoding using the domain
@@ -74,7 +70,6 @@ public class CardVerifiableCertificate {
 	 */
 	public CardVerifiableCertificate(ConstructedTlvDataObject certificateData, PublicKey currentPublicKey) throws CertificateNotParseableException {
 		
-		initialData = certificateData;
 		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_7F4E);
 		
 		
@@ -282,7 +277,7 @@ public class CardVerifiableCertificate {
 	 * 
 	 */
 	public byte[] getEncoded() {
-		return initialData.toByteArray();
+		return encode().toByteArray();
 	}
 
 	/**
@@ -299,4 +294,47 @@ public class CardVerifiableCertificate {
 				+ ", certificateHolderReference=" + certificateHolderReference
 				+ "]";
 	}
+	
+	public ConstructedTlvDataObject encode() {
+		ConstructedTlvDataObject encoding = CertificateUtils.encodeCertificate(
+				certificateProfileIdentifier,
+				certificationAuthorityReference,
+				getPublicKeyRepresentation(),
+				certificateHolderReference,
+				certificateHolderAuthorizationTemplate,
+				certificateEffectiveDate,
+				certificateExpirationDate,
+				getExtensionRepresentation(),
+				signature);
+		
+		return encoding;
+	}
+	
+	private ConstructedTlvDataObject getPublicKeyRepresentation() {
+		ConstructedTlvDataObject publicKeyRepresentation;
+		
+		if(publicKey != null) {
+			publicKeyRepresentation = Tr03110Utils.encodeKey(publicKey, publicKeyOid);
+		} else{
+			publicKeyRepresentation = publicKeyData;
+		}
+		
+		return publicKeyRepresentation;
+	}
+	
+	private ConstructedTlvDataObject getExtensionRepresentation() {
+		
+		if((certificateExtensions != null) && (!certificateExtensions.isEmpty())) {
+			ConstructedTlvDataObject extensionRepresentation = new ConstructedTlvDataObject(TlvConstants.TAG_65);
+			
+			for(CertificateExtension extension : certificateExtensions) {
+				extensionRepresentation.addTlvDataObject(extension.toTlv());
+			}
+			return extensionRepresentation;
+		} else{
+			return null;
+		}
+		
+	}
+	
 }
