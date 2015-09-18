@@ -28,7 +28,7 @@ public interface Tr03110UtilsProvider {
 	 * @return the public key or null if the key data is not supported
 	 * @throws GeneralSecurityException
 	 */
-	PublicKey parsePublicKey(ConstructedTlvDataObject publicKeyData,
+	public PublicKey parsePublicKey(ConstructedTlvDataObject publicKeyData,
 			PublicKey trustPointPublicKey) throws GeneralSecurityException;
 
 	/**
@@ -36,10 +36,10 @@ public interface Tr03110UtilsProvider {
 	 * @param key the key to extract domain parameters from
 	 * @return the domain parameters or null if the key does not contain supported domain parameters
 	 */
-	DomainParameterSet getDomainParameterSetFromKey(Key key);
+	public DomainParameterSet getDomainParameterSetFromKey(Key key);
 	
-	boolean isCompleteKeyRepresentation(ConstructedTlvDataObject publicKeyData);
+	public boolean isCompleteKeyRepresentation(ConstructedTlvDataObject publicKeyData);
 	
-	boolean isPartialKeyRepresentation(ConstructedTlvDataObject publicKeyData);
+	public boolean isPartialKeyRepresentation(ConstructedTlvDataObject publicKeyData);
 
 }
