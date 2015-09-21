@@ -36,11 +36,6 @@ public class CardVerifiableCertificate {
 
 	protected PublicKeyReference certificationAuthorityReference;
 	
-//	protected Oid publicKeyOid;
-	
-//	protected PublicKey publicKey;
-//	protected ConstructedTlvDataObject publicKeyData;
-	
 	protected CvPublicKey publicKey;
 	
 	protected PublicKeyReference certificateHolderReference;
@@ -115,14 +110,6 @@ public class CardVerifiableCertificate {
 		
 		//Public Key (PK)
 		ConstructedTlvDataObject publicKeyData = (ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F49);
-		
-//		publicKeyOid = new Oid(publicKeyData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
-//		
-//		if(!Tr03110Utils.isPartialKeyRepresentation(publicKeyData)) {
-//			throw new CertificateNotParseableException("The public key could not be parsed");
-//		}
-//		
-//		setPublicKey(publicKeyData, currentPublicKey);
 		
 		publicKey = Tr03110Utils.parseCvPublicKey(publicKeyData);
 		
