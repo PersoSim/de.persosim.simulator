@@ -2,12 +2,17 @@ package de.persosim.simulator.crypto.certificates;
 
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECFieldFp;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
 
+import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.protocols.ta.TaOid;
@@ -136,6 +141,15 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 	@Override
 	public boolean isComplete() {
 		return key != null;
+	}
+	
+	public KeyPairGenerator getKeyPairGenerator(SecureRandom secRandom) throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+		KeyPairGenerator keyPairGenerator;
+		
+		keyPairGenerator = KeyPairGenerator.getInstance(getAlgorithm(), Crypto.getCryptoProvider());
+		keyPairGenerator.initialize(getParams(), secRandom);
+		
+		return keyPairGenerator;
 	}
 
 }

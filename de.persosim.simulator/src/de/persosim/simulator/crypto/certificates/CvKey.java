@@ -1,6 +1,10 @@
 package de.persosim.simulator.crypto.certificates;
 
+import java.security.InvalidAlgorithmParameterException;
 import java.security.Key;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 /**
  * This class represents a Key, public or private. CvKey Objects are
@@ -43,5 +47,7 @@ public abstract class CvKey implements Key {
 	public String getFormat() {
 		return key.getFormat();
 	}
+	
+	abstract public KeyPairGenerator getKeyPairGenerator(SecureRandom secRandom) throws NoSuchAlgorithmException, InvalidAlgorithmParameterException;
 	
 }

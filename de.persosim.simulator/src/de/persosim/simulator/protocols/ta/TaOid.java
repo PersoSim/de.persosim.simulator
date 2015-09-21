@@ -150,28 +150,37 @@ public class TaOid extends Oid implements Tr03110, CvOid {
 	 * @throws NoSuchProviderException
 	 */	
 	public Signature getSignature() throws NoSuchAlgorithmException {
+		String signatureString = getSignatureString();
+		if(signatureString != null) {
+			return Signature.getInstance(signatureString, Crypto.getCryptoProvider());
+		} else{
+			return null;
+		}
+	}
+	
+	public String getSignatureString() {
 		if (equals(TaOid.id_TA_RSA_v1_5_SHA_1)){
-			return Signature.getInstance("SHA1withRSA", Crypto.getCryptoProvider());
+			return "SHA1withRSA";
 		} else if (equals(TaOid.id_TA_RSA_v1_5_SHA_256)){
-			return Signature.getInstance("SHA256withRSA", Crypto.getCryptoProvider());
+			return "SHA256withRSA";
 		} else if (equals(TaOid.id_TA_RSA_v1_5_SHA_512)){
-			return Signature.getInstance("SHA512withRSA", Crypto.getCryptoProvider());
+			return "SHA512withRSA";
 		} else if (equals(TaOid.id_TA_RSA_PSS_SHA_1)){
-			return Signature.getInstance("SHA1withRSA/PSS", Crypto.getCryptoProvider());
+			return "SHA1withRSA/PSS";
 		} else if (equals(TaOid.id_TA_RSA_PSS_SHA_256)){
-			return Signature.getInstance("SHA256withRSA/PSS", Crypto.getCryptoProvider());
+			return "SHA256withRSA/PSS";
 		} else if (equals(TaOid.id_TA_RSA_PSS_SHA_512)){
-			return Signature.getInstance("SHA512withRSA/PSS", Crypto.getCryptoProvider());
+			return "SHA512withRSA/PSS";
 		} else if (equals(TaOid.id_TA_ECDSA_SHA_1)){
-			return Signature.getInstance("SHA1withECDSA", Crypto.getCryptoProvider());
+			return "SHA1withECDSA";
 		} else if (equals(TaOid.id_TA_ECDSA_SHA_224)){
-			return Signature.getInstance("SHA224withECDSA", Crypto.getCryptoProvider());
+			return "SHA224withECDSA";
 		} else if (equals(TaOid.id_TA_ECDSA_SHA_256)){
-			return Signature.getInstance("SHA256withECDSA", Crypto.getCryptoProvider());
+			return "SHA256withECDSA";
 		} else if (equals(TaOid.id_TA_ECDSA_SHA_384)){
-			return Signature.getInstance("SHA384withECDSA", Crypto.getCryptoProvider());
+			return "SHA384withECDSA";
 		} else if (equals(TaOid.id_TA_ECDSA_SHA_512)){
-			return Signature.getInstance("SHA512withECDSA", Crypto.getCryptoProvider());
+			return "SHA512withECDSA";
 		}
 		return null;
 	}
