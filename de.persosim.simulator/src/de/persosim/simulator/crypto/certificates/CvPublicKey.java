@@ -21,8 +21,6 @@ public abstract class CvPublicKey extends CvKey implements PublicKey, TlvConstan
 	
 	public abstract ConstructedTlvDataObject toTlvDataObject(boolean includeConditionalObjects);
 	
-//	public abstract boolean equals(boolean includeDomainParameters);
-	
 	public abstract boolean isComplete();
 
 }
