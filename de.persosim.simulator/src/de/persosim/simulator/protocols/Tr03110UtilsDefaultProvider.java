@@ -15,6 +15,8 @@ import java.security.spec.InvalidKeySpecException;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
+import de.persosim.simulator.crypto.certificates.CvEcPublicKey;
+import de.persosim.simulator.crypto.certificates.CvPublicKey;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -59,6 +61,15 @@ public class Tr03110UtilsDefaultProvider implements Tr03110UtilsProvider {
 		}
 
 		return null;
+	}
+	
+	@Override
+	public CvPublicKey parseCvPublicKey(ConstructedTlvDataObject publicKeyData) {
+		try{
+			return new CvEcPublicKey(publicKeyData);
+		} catch(IllegalArgumentException | GeneralSecurityException e) {
+			return null;
+		}
 	}
 	
 	@Override

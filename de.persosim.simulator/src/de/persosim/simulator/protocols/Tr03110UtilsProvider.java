@@ -5,6 +5,7 @@ import java.security.Key;
 import java.security.PublicKey;
 
 import de.persosim.simulator.crypto.DomainParameterSet;
+import de.persosim.simulator.crypto.certificates.CvPublicKey;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 
 /**
@@ -43,5 +44,7 @@ public interface Tr03110UtilsProvider {
 	public boolean isPartialKeyRepresentation(ConstructedTlvDataObject publicKeyData);
 	
 	public ConstructedTlvDataObject encodeKey(PublicKey publicKey, Oid oid);
+	
+	public CvPublicKey parseCvPublicKey(ConstructedTlvDataObject publicKeyData);
 
 }

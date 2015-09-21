@@ -10,13 +10,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.persosim.simulator.crypto.Crypto;
+import de.persosim.simulator.crypto.certificates.CvOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 //XXX MBK complete this class and extract according methods from TR03110
-public class TaOid extends Oid implements Tr03110 {
+public class TaOid extends Oid implements Tr03110, CvOid {
 	public final static TaOid id_TA                  = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x02, 0x02, 0x02}), "id-TA");
 	
 	public static final TaOid id_TA_RSA              = new TaOid(Utils.appendBytes(id_TA.oidByteArray,     (byte) 0x01),  "id-TA-RSA");

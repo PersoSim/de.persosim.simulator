@@ -22,7 +22,7 @@ public class CertificateUtils implements TlvConstants {
 			ConstructedTlvDataObject certificateExtensions,
 			byte[] signature) {
 		
-		ConstructedTlvDataObject cvCertificateTlv = encodeFullCertificate(
+		ConstructedTlvDataObject cvCertificateTlv = encodeCertificateBody(
 				certificateProfileIdentifier,
 				certificationAuthorityReference,
 				publicKeyRepresentation,
@@ -30,8 +30,7 @@ public class CertificateUtils implements TlvConstants {
 				certificateHolderAuthorizationTemplate,
 				certificateEffectiveDate,
 				certificateExpirationDate,
-				certificateExtensions,
-				signature);
+				certificateExtensions);
 		
 		PrimitiveTlvDataObject signatureTlv = new PrimitiveTlvDataObject(TAG_5F37, signature);
 		cvCertificateTlv.addTlvDataObject(signatureTlv);

@@ -24,6 +24,7 @@ import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
+import de.persosim.simulator.crypto.certificates.CvPublicKey;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.NotParseableException;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -118,6 +119,16 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 				}
 			} catch (GeneralSecurityException e){
 				PersoSimLogger.logException(Tr03110Utils.class, e, PersoSimLogger.WARN);
+			}
+		}
+		return null;
+	}
+	
+	public static CvPublicKey parseCvPublicKey(ConstructedTlvDataObject publicKeyData) {
+		for (Tr03110UtilsProvider provider : providers) {
+			CvPublicKey key = provider.parseCvPublicKey(publicKeyData);
+			if (key != null){
+				return key;
 			}
 		}
 		return null;
