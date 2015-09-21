@@ -1,6 +1,6 @@
 package de.persosim.simulator.protocols;
 
-public interface OidIf {
+public interface GenericOid {
 	
 	public String getIdString();
 	
