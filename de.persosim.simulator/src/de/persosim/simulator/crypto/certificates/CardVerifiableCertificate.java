@@ -69,14 +69,6 @@ public class CardVerifiableCertificate {
 		return body.getCertificateEffectiveDate();
 	}
 
-	public Date getCertificateExpirationDate() {
-		return body.getCertificateExpirationDate();
-	}
-
-	public byte[] getSignature() {
-		return signature;
-	}
-
 	public int getCertificateProfileIdentifier() {
 		return body.getCertificateProfileIdentifier();
 	}
@@ -114,14 +106,14 @@ public class CardVerifiableCertificate {
 	 * @return the date from which the certificate is valid
 	 */
 	public Date getEffectiveDate() {
-		return getCertificateEffectiveDate();
+		return body.getCertificateEffectiveDate();
 	}
 	
 	/**
 	 * @return the date form which the certificate is no longer valid
 	 */
 	public Date getExpirationDate() {
-		return getCertificateExpirationDate();
+		return body.getCertificateExpirationDate();
 	}
 
 	/**
