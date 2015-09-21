@@ -12,6 +12,24 @@ import de.persosim.simulator.utils.Utils;
 public class CertificateUtils implements TlvConstants {
 	
 	public static ConstructedTlvDataObject encodeFullCertificate(
+			CertificateBody body,
+			byte[] signature) {
+		
+		ConstructedTlvDataObject cvCertificateTlv = encodeFullCertificate(
+				body.getCertificateProfileIdentifier(),
+				body.getCertificationAuthorityReference(),
+				body.getPublicKey().toTlvDataObject(true),
+				body.getCertificateHolderReference(),
+				body.getCertificateHolderAuthorizationTemplate(),
+				body.getCertificateEffectiveDate(),
+				body.getCertificateExpirationDate(),
+				body.getExtensionRepresentation(),
+				signature);
+		
+		return cvCertificateTlv;
+	}
+	
+	public static ConstructedTlvDataObject encodeFullCertificate(
 			int certificateProfileIdentifier,
 			PublicKeyReference certificationAuthorityReference,
 			ConstructedTlvDataObject publicKeyRepresentation,
@@ -22,7 +40,9 @@ public class CertificateUtils implements TlvConstants {
 			ConstructedTlvDataObject certificateExtensions,
 			byte[] signature) {
 		
-		ConstructedTlvDataObject cvCertificateTlv = encodeCertificateBody(
+		ConstructedTlvDataObject cvCertificateTlv = new ConstructedTlvDataObject(TAG_7F21);
+		
+		ConstructedTlvDataObject cvCertificateBodyTlv = encodeCertificateBody(
 				certificateProfileIdentifier,
 				certificationAuthorityReference,
 				publicKeyRepresentation,
@@ -33,6 +53,8 @@ public class CertificateUtils implements TlvConstants {
 				certificateExtensions);
 		
 		PrimitiveTlvDataObject signatureTlv = new PrimitiveTlvDataObject(TAG_5F37, signature);
+		
+		cvCertificateTlv.addTlvDataObject(cvCertificateBodyTlv);
 		cvCertificateTlv.addTlvDataObject(signatureTlv);
 		
 		return cvCertificateTlv;
@@ -48,7 +70,6 @@ public class CertificateUtils implements TlvConstants {
 			Date certificateExpirationDate,
 			ConstructedTlvDataObject certificateExtensions) {
 		
-		ConstructedTlvDataObject cvCertificateTlv = new ConstructedTlvDataObject(TAG_7F21);
 		ConstructedTlvDataObject certificateBodyTlv = new ConstructedTlvDataObject(TAG_7F4E);
 		
 		PrimitiveTlvDataObject certificateProfileIdentifierTlv = new PrimitiveTlvDataObject(TAG_5F29, Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(certificateProfileIdentifier)));
@@ -59,7 +80,6 @@ public class CertificateUtils implements TlvConstants {
 		PrimitiveTlvDataObject certificateEffectiveDateTlv = new PrimitiveTlvDataObject(TAG_5F25, encodeDate(certificateEffectiveDate));
 		PrimitiveTlvDataObject certificateExpirationDateTlv = new PrimitiveTlvDataObject(TAG_5F24, encodeDate(certificateExpirationDate));
 		
-		cvCertificateTlv.addTlvDataObject(certificateBodyTlv);
 		certificateBodyTlv.addTlvDataObject(certificateProfileIdentifierTlv);
 		certificateBodyTlv.addTlvDataObject(certificationAuthorityReferenceTlv);
 		certificateBodyTlv.addTlvDataObject(publicKeyTlv);
@@ -72,7 +92,7 @@ public class CertificateUtils implements TlvConstants {
 			certificateBodyTlv.addTlvDataObject(certificateExtensions);
 		}
 		
-		return cvCertificateTlv;
+		return certificateBodyTlv;
 	}
 	
 	public static byte[] encodeDate(Date date) {
