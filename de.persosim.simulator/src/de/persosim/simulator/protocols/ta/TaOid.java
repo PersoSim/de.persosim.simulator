@@ -51,6 +51,9 @@ public class TaOid extends Oid implements Tr03110, CvOid {
 	public static final TaOid id_AT                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x02), "id-AT");                   // TODO no native TA OID, move
 	public static final TaOid id_ST                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x03), "id-ST");                   // TODO no native TA OID, move
 	
+	public static final TaOid id_eIDAccess           = new TaOid(Utils.appendBytes(id_AT.oidByteArray, (byte) 0x01), "id-eIDAccess");               // TODO no native TA OID, move
+	public static final TaOid id_specialFunctions    = new TaOid(Utils.appendBytes(id_AT.oidByteArray, (byte) 0x02), "id-specialFunctions");        // TODO no native TA OID, move
+	
 	// certificate extensions
 
 	public final static TaOid id_Extensions          = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x03}), "id-extensions");         // TODO no native TA OID, move
