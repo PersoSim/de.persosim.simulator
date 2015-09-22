@@ -36,27 +36,27 @@ public class TaOid extends Oid implements Tr03110, CvOid {
 	public static final TaOid id_TA_ECDSA_SHA_512    = new TaOid(Utils.appendBytes(id_TA_ECDSA.oidByteArray, (byte) 0x05), "id-TA-ECDSA-SHA-512");
 
 	// Auxiliary data verification
-	public final static TaOid id_AuxiliaryData       = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x04}), "id-AuxiliaryData");
+	public final static TaOid id_AuxiliaryData       = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x04}), "id-AuxiliaryData");      // TODO no native TA OID, move
 	
-	public static final TaOid id_PSM_MESSAGE         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x04), "id-PSM-Message");
+	public static final TaOid id_PSM_MESSAGE         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x04), "id-PSM-Message");  // TODO no native TA OID, move
 	
-	public static final TaOid id_DateOfBirth         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x01), "id-DateOfBirth");
-	public static final TaOid id_DateOfExpiry        = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x02), "id-DateOfExpiry");
-	public static final TaOid id_CommunityID         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x03), "id-CommunityID");
+	public static final TaOid id_DateOfBirth         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x01), "id-DateOfBirth");  // TODO no native TA OID, move
+	public static final TaOid id_DateOfExpiry        = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x02), "id-DateOfExpiry"); // TODO no native TA OID, move
+	public static final TaOid id_CommunityID         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x03), "id-CommunityID");  // TODO no native TA OID, move
 	
 	// terminal types
-	public final static TaOid id_Roles               = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x02}), "id-roles");
+	public final static TaOid id_Roles               = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x02}), "id-roles");              // TODO no native TA OID, move
 	
-	public static final TaOid id_IS                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x01), "id-IS");
-	public static final TaOid id_AT                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x02), "id-AT");
-	public static final TaOid id_ST                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x03), "id-ST"); 
+	public static final TaOid id_IS                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x01), "id-IS");                   // TODO no native TA OID, move
+	public static final TaOid id_AT                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x02), "id-AT");                   // TODO no native TA OID, move
+	public static final TaOid id_ST                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x03), "id-ST");                   // TODO no native TA OID, move
 	
 	// certificate extensions
 
-	public final static TaOid id_Extensions          = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x03}), "id-extensions");
+	public final static TaOid id_Extensions          = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x03}), "id-extensions");         // TODO no native TA OID, move
 	
-	public static final TaOid id_Description         = new TaOid(Utils.appendBytes(id_Extensions.oidByteArray, (byte) 0x01), "id-description");
-	public static final TaOid id_Sector              = new TaOid(Utils.appendBytes(id_Extensions.oidByteArray, (byte) 0x02), "id-sector");
+	public static final TaOid id_Description         = new TaOid(Utils.appendBytes(id_Extensions.oidByteArray, (byte) 0x01), "id-description");     // TODO no native TA OID, move
+	public static final TaOid id_Sector              = new TaOid(Utils.appendBytes(id_Extensions.oidByteArray, (byte) 0x02), "id-sector");          // TODO no native TA OID, move
 	
 	private static Set<TaOid> allKnownTaOids= new HashSet<>();
 	static {
