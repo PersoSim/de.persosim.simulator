@@ -142,10 +142,6 @@ public class CardVerifiableCertificate {
 		return encoding;
 	}
 	
-	public void setSignature(byte[] signature) {
-		this.signature = signature;
-	}
-	
 	public CvOid getPublicKeyOid() {
 		return body.getPublicKeyOid();
 	}
@@ -156,6 +152,10 @@ public class CardVerifiableCertificate {
 
 	public CertificateBody getBody() {
 		return body;
+	}
+
+	public byte[] getSignature() {
+		return signature;
 	}
 	
 }
