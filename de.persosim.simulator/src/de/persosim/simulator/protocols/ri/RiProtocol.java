@@ -31,6 +31,7 @@ import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Protocol;
+import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.SecMechanism;

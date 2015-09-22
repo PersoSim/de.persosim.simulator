@@ -49,6 +49,7 @@ import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.ResponseData;
+import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.CertificateRole;

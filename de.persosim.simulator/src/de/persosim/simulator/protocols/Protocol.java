@@ -54,11 +54,7 @@ public interface Protocol {
 	 */
 	public abstract Collection<? extends TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf);
 	
-	public enum SecInfoPublicity {
-	    PUBLIC,
-	    AUTHENTICATED,
-	    PRIVILEGED
-	  }
+
 
 
 	/**

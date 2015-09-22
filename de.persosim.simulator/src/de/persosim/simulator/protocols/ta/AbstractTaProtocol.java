@@ -35,6 +35,7 @@ import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.CertificateUpdateException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
+import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
