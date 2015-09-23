@@ -18,6 +18,7 @@ import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Protocol;
+import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.ca.ChipAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.TaOid;
