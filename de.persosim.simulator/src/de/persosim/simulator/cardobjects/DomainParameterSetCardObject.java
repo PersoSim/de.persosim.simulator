@@ -48,6 +48,10 @@ public class DomainParameterSetCardObject extends AbstractCardObject {
 	public DomainParameterSetIdentifier getPrimaryIdentifier() {
 		return primaryIdentifier;
 	}
+	
+	public void removeOidIdentifier(OidIdentifier oidIdentifier) {
+		furtherIdentifiers.remove(oidIdentifier);
+	}
 
 	public DomainParameterSet getDomainParameterSet() {
 		return domainParameterSet;
