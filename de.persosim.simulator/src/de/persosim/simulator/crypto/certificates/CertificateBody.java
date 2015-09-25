@@ -255,7 +255,7 @@ public class CertificateBody {
 	 * 
 	 */
 	public byte[] getEncoded() {
-		return encodeBody().toByteArray();
+		return encodeBody(true).toByteArray();
 	}
 
 	@Override
@@ -266,11 +266,11 @@ public class CertificateBody {
 				+ "]";
 	}
 	
-	public ConstructedTlvDataObject encodeBody() {
+	public ConstructedTlvDataObject encodeBody(boolean withParams) {
 		ConstructedTlvDataObject encoding = CertificateUtils.encodeCertificateBody(
 				certificateProfileIdentifier,
 				certificationAuthorityReference,
-				publicKey.toTlvDataObject(true),
+				publicKey.toTlvDataObject(withParams),
 				certificateHolderReference,
 				certificateHolderAuthorizationTemplate,
 				certificateEffectiveDate,
