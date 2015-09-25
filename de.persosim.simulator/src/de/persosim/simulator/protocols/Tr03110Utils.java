@@ -124,6 +124,11 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 		return null;
 	}
 	
+	/**
+	 * This method parses a public key encoded within a CV certificate
+	 * @param publicKeyData the encoding of a public key
+	 * @return a key matching the encoding from a CV certificate
+	 */
 	public static CvPublicKey parseCvPublicKey(ConstructedTlvDataObject publicKeyData) {
 		for (Tr03110UtilsProvider provider : providers) {
 			CvPublicKey key = provider.parseCvPublicKey(publicKeyData);
@@ -132,42 +137,6 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 			}
 		}
 		return null;
-	}
-	
-	public static boolean isPartialKeyRepresentation(ConstructedTlvDataObject publicKeyData) {
-		
-		for (Tr03110UtilsProvider provider : providers) {
-			return provider.isPartialKeyRepresentation(publicKeyData);
-		}
-		
-		return false;
-		
-	}
-	
-	public static boolean isCompleteKeyRepresentation(ConstructedTlvDataObject publicKeyData) {
-		
-		for (Tr03110UtilsProvider provider : providers) {
-			return provider.isCompleteKeyRepresentation(publicKeyData);
-		}
-		
-		return false;
-		
-	}
-	
-	public static ConstructedTlvDataObject encodeKey(PublicKey publicKey, Oid oid) {
-		
-		ConstructedTlvDataObject keyEncoding;
-		
-		for (Tr03110UtilsProvider provider : providers) {
-			keyEncoding = provider.encodeKey(publicKey, oid);
-			
-			if(keyEncoding != null) {
-				return keyEncoding;
-			}
-		}
-		
-		return null;
-		
 	}
 	
 	/**
