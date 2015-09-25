@@ -20,6 +20,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 import de.persosim.simulator.crypto.Crypto;
+import de.persosim.simulator.crypto.certificates.CvKey;
 import de.persosim.simulator.utils.HexString;
 
 /**
@@ -36,9 +37,14 @@ public class KeyConverter implements Converter {
 	
 	@Override
 	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+		if (CvKey.class.isAssignableFrom(type)){
+			return false;
+		}
+		
 		if (Key.class.isAssignableFrom(type)){
 			return true;
 		}
+		
 		return false;
 	}
 
