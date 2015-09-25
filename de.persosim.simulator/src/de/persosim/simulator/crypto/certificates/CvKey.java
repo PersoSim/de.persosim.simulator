@@ -7,12 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
- * This class represents a Key, public or private. CvKey Objects are
- * deliberately designed to always contain all domain parameters. If keys were
- * to be stored without domain parameters these would still be needed to ensure
- * that the values provided are valid key parameters either during object
- * creation or when the object is actually used. As domain parameters are
- * required in any case they can as well be integrated from the beginning.
+ * This class represents a Key, public or private to be used in the context of CV certificates.
  * 
  * @author slutters
  * 

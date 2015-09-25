@@ -95,6 +95,11 @@ public class CertificateUtils implements TlvConstants {
 		return certificateBodyTlv;
 	}
 	
+	/**
+	 * This method encodes a {@link Date} object to a byte[] representation with each byte encoding a single digit out of YYMMDD.
+	 * @param date the {@link Date} object to encode
+	 * @return the {@link Date} object encoded as byte[]
+	 */
 	public static byte[] encodeDate(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);

@@ -22,7 +22,7 @@ import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.utils.Utils;
 
 /**
- * This class represents an EC public key.
+ * This class represents an EC public key to be used in the context of CV certificates.
  * 
  * @author slutters
  *
@@ -40,40 +40,37 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 	public CvEcPublicKey(ConstructedTlvDataObject publicKeyEncoding) throws GeneralSecurityException {
 		super(parseOid(publicKeyEncoding), null);
 		
-		parsePublicKey(publicKeyEncoding);
-	}
-	
-	public static CvOid parseOid(ConstructedTlvDataObject publicKeyData) {
-		// TODO replace fixed TaOid with OID factory, checking for CvOid compliance
-		return new TaOid(publicKeyData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
-	}
-	
-	private void parsePublicKey(ConstructedTlvDataObject publicKeyData) throws GeneralSecurityException {
 		if (cvOid.getIdString().contains("EC")) {
 			ECParameterSpec paramSpec = null;
-			if (publicKeyData.containsTlvDataObject(TlvConstants.TAG_81)
-					&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_82)
-					&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_83)
-					&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_84)
-					&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_85)
-					&& publicKeyData.containsTlvDataObject(TlvConstants.TAG_87)) {
-				paramSpec = CryptoUtil.parseParameterSpecEc(publicKeyData);
-				
-				if (publicKeyData.containsTlvDataObject(TlvConstants.TAG_86)) {
-					key = CryptoUtil.parsePublicKeyEc(publicKeyData, paramSpec);
-				} else{
-					throw new IllegalArgumentException("no public key component found");
+			
+			if (publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_86)) {
+				if (publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_81)
+						&& publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_82)
+						&& publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_83)
+						&& publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_84)
+						&& publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_85)
+						&& publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_87)) {
+					paramSpec = CryptoUtil.parseParameterSpecEc(publicKeyEncoding);
+					
+					if (publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_86)) {
+						key = CryptoUtil.parsePublicKeyEc(publicKeyEncoding, paramSpec);
+					} else{
+						throw new IllegalArgumentException("no public key component found");
+					}
+				} else {
+					publicPointEncoding = publicKeyEncoding.getTlvDataObject(TAG_86).getValueField();
 				}
-			} else {
-				if (publicKeyData.containsTlvDataObject(TlvConstants.TAG_86)) {
-					publicPointEncoding = publicKeyData.getTlvDataObject(TAG_86).getValueField();
-				} else{
-					throw new IllegalArgumentException("no public key component found");
-				}
+			} else{
+				throw new IllegalArgumentException("no public key component found");
 			}
 		} else{
 			throw new IllegalArgumentException("no EC key indicated by OID");
 		}
+	}
+	
+	private static CvOid parseOid(ConstructedTlvDataObject publicKeyData) {
+		// TODO replace fixed TaOid with OID factory, checking for CvOid compliance
+		return new TaOid(publicKeyData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
 	}
 
 	@Override
@@ -143,6 +140,7 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 		return key != null;
 	}
 	
+	@Override
 	public KeyPairGenerator getKeyPairGenerator(SecureRandom secRandom) throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 		KeyPairGenerator keyPairGenerator;
 		
