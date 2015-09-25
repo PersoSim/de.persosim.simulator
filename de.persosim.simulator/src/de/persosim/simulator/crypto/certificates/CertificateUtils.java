@@ -1,6 +1,5 @@
 package de.persosim.simulator.crypto.certificates;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
@@ -77,8 +76,8 @@ public class CertificateUtils implements TlvConstants {
 		ConstructedTlvDataObject publicKeyTlv = publicKeyRepresentation;
 		PrimitiveTlvDataObject certificateHolderReferenceTlv = new PrimitiveTlvDataObject(TAG_5F20, certificateHolderReference.getBytes());
 		ConstructedTlvDataObject certificateHolderAuthorizationTemplateTlv = encodeCertificateHolderAuthorizationTemplate(certificateHolderAuthorizationTemplate);
-		PrimitiveTlvDataObject certificateEffectiveDateTlv = new PrimitiveTlvDataObject(TAG_5F25, encodeDate(certificateEffectiveDate));
-		PrimitiveTlvDataObject certificateExpirationDateTlv = new PrimitiveTlvDataObject(TAG_5F24, encodeDate(certificateExpirationDate));
+		PrimitiveTlvDataObject certificateEffectiveDateTlv = new PrimitiveTlvDataObject(TAG_5F25, Utils.encodeDate(certificateEffectiveDate));
+		PrimitiveTlvDataObject certificateExpirationDateTlv = new PrimitiveTlvDataObject(TAG_5F24, Utils.encodeDate(certificateExpirationDate));
 		
 		certificateBodyTlv.addTlvDataObject(certificateProfileIdentifierTlv);
 		certificateBodyTlv.addTlvDataObject(certificationAuthorityReferenceTlv);
@@ -93,34 +92,6 @@ public class CertificateUtils implements TlvConstants {
 		}
 		
 		return certificateBodyTlv;
-	}
-	
-	/**
-	 * This method encodes a {@link Date} object to a byte[] representation with each byte encoding a single digit out of YYMMDD.
-	 * @param date the {@link Date} object to encode
-	 * @return the {@link Date} object encoded as byte[]
-	 */
-	public static byte[] encodeDate(Date date) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		
-		int year = calendar.get(Calendar.YEAR);
-		int month = calendar.get(Calendar.MONTH);
-		int day = calendar.get(Calendar.DAY_OF_MONTH);
-		
-		year %= 100;
-		month++;
-		
-		byte y2 = (byte) (year%10);
-		byte y1 = (byte) ((year-y2)/10);
-		
-		byte m2 = (byte) (month%10);
-		byte m1 = (byte) ((month-m2)/10);
-		
-		byte d2 = (byte) (day%10);
-		byte d1 = (byte) ((day-d2)/10);
-		
-		return new byte[]{y1, y2, m1, m2, d1, d2};
 	}
 	
 	public static ConstructedTlvDataObject encodeCertificateHolderAuthorizationTemplate(CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate) {
