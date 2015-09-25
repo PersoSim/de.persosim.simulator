@@ -216,6 +216,7 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 	 * @return a {@link Date} object containing the encoded date
 	 * @throws CertificateNotParseableException
 	 */
+	// TODO check possible code duplication/overlap with Utils.getDate method
 	public static Date parseDate(byte [] dateData) throws NotParseableException {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.MILLISECOND, 0);
@@ -242,6 +243,7 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 	 *            are used
 	 * @return the 6 byte long BCD encoding
 	 */
+	// TODO check possible code duplication/overlap with Utils.encodeDate method
 	public static byte[] encodeDate(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
