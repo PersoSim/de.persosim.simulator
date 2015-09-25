@@ -60,6 +60,14 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		ecParameterSpec = new ECParameterSpec(curve, g,n, h);
 	}
 	
+	/**
+	 * Constructor for constructing a {@link DomainParameterSetEcdh} object from {@link ECParameterSpec}
+	 * @param ecParameterSpec the {@link ECParameterSpec} to import
+	 */
+	public DomainParameterSetEcdh(ECParameterSpec ecParameterSpec) {
+		this.ecParameterSpec = ecParameterSpec;
+	}
+	
 	@Override
 	public BigInteger getPrime() {
 		ECField ecField = ecParameterSpec.getCurve().getField();
@@ -269,6 +277,12 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		return reconstructPublicKey(rawKeyPlain, cryptoProvider);
 	}
 	
+	/**
+	 * This method reconstructs an {@link ECPublicKey} from its public point raw encoding
+	 * @param rawKeyPlain the public point encoding
+	 * @param cryptoProvider the crypto provider to use
+	 * @return the reconstructed {@link ECPublicKey}
+	 */
 	public ECPublicKey reconstructPublicKey(byte[] rawKeyPlain, Provider cryptoProvider) {
 		int l = getPublicPointReferenceLengthL();
 		log(getClass(), "reference length l is: " + l + " bytes", TRACE);
@@ -280,6 +294,16 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		
 		ECPoint point = reconstructPoint(rawKeyPlain);
 		
+		return reconstructPublicKey(point, cryptoProvider);
+	}
+	
+	/**
+	 * This method reconstructs an {@link ECPublicKey} from its public point
+	 * @param point the public point
+	 * @param cryptoProvider the crypto provider to use
+	 * @return the reconstructed {@link ECPublicKey}
+	 */
+	public ECPublicKey reconstructPublicKey(ECPoint point, Provider cryptoProvider) {
 		boolean pointOnCurve = isOnCurve(point);
 		
 		if(pointOnCurve) {
