@@ -24,10 +24,9 @@ import de.persosim.simulator.utils.Utils;
 
 
 /**
- * This class implements card verifiable certificates as described in TR-03110
- * v2.10 Part 3 Appendix C.
+ * This class implements the body of a card verifiable certificate as described
+ * in TR-03110 v2.10 Part 3 Appendix C.
  * 
- * @see CertificateBody
  * @author mboonk
  * 
  */

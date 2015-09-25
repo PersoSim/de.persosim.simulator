@@ -12,10 +12,10 @@ import de.persosim.simulator.tlv.TlvConstants;
 
 
 /**
- * This class implements card verifiable certificates as described in TR-03110
+ * This class implements card verifiable certificate as described in TR-03110
  * v2.10 Part 3 Appendix C.
  * 
- * @see CardVerifiableCertificate
+ * @see CertificateBody
  * @author mboonk
  * 
  */
@@ -64,11 +64,10 @@ public class CardVerifiableCertificate {
 		PrimitiveTlvDataObject signatureData = (PrimitiveTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_5F37);
 		signature = signatureData.getValueField();
 	}
-
-	public Date getCertificateEffectiveDate() {
-		return body.getCertificateEffectiveDate();
-	}
-
+	
+	/**
+	 * @return the certificate profile identifier
+	 */
 	public int getCertificateProfileIdentifier() {
 		return body.getCertificateProfileIdentifier();
 	}

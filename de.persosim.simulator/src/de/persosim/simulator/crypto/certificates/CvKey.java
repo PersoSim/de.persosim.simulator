@@ -43,6 +43,15 @@ public abstract class CvKey implements Key {
 		return key.getFormat();
 	}
 	
+	/**
+	 * This method returns an already initialized {@link KeyPairGenerator}
+	 * capable of generating keys usable for creating an object matching this.
+	 * 
+	 * @param secRandom source of randomness
+	 * @return a KeyPairGenerator for creating matching keys
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidAlgorithmParameterException
+	 */
 	abstract public KeyPairGenerator getKeyPairGenerator(SecureRandom secRandom) throws NoSuchAlgorithmException, InvalidAlgorithmParameterException;
 	
 }
