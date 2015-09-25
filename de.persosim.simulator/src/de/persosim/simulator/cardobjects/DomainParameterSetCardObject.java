@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import de.persosim.simulator.crypto.DomainParameterSet;
+import de.persosim.simulator.exception.AccessDeniedException;
 
 /**
  * This object wraps domain parameters for storing them in the object store.
@@ -47,6 +48,20 @@ public class DomainParameterSetCardObject extends AbstractCardObject {
 	
 	public DomainParameterSetIdentifier getPrimaryIdentifier() {
 		return primaryIdentifier;
+	}
+	
+	/**
+	 * Remove the given OidIdentifier (if present) from the set of identifiers
+	 * @param oidIdentifier
+	 * 		
+	 * @throws AccessDeniedException
+	 */
+	public void removeOidIdentifier(OidIdentifier oidIdentifier) throws AccessDeniedException {
+		if (!CardObjectUtils.checkAccessConditions(getLifeCycleState())){
+			throw new AccessDeniedException("Updating forbidden");
+		}
+		
+		furtherIdentifiers.remove(oidIdentifier);
 	}
 
 	public DomainParameterSet getDomainParameterSet() {
