@@ -9,29 +9,23 @@ import de.persosim.simulator.utils.BitField;
  * @author mboonk
  * 
  */
-public class RelativeAuthorization {
-	CertificateRole role;
-	BitField authorization;
+public class RelativeAuthorization extends Authorization {
+	
+	protected CertificateRole role;
 
 	public RelativeAuthorization() {
 	}
 	
 	public RelativeAuthorization(CertificateRole role, BitField authorization) {
+		super(authorization);
 		this.role = role;
-		this.authorization = authorization;
 	}
 
 	public CertificateRole getRole() {
 		return role;
 	}
 
-	public BitField getAuthorization() {
-		return authorization;
-	}
-
-	/**
-	 * @return the role and relative authorization as a bit field.
-	 */
+	@Override
 	public BitField getRepresentation() {
 		return authorization.concatenate(role.getField());
 	}
@@ -52,4 +46,5 @@ public class RelativeAuthorization {
 		return new RelativeAuthorization(
 				CertificateRole.getFromField(effectiveRole), effectiveAuth);
 	}
+	
 }
