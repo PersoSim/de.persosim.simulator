@@ -53,6 +53,7 @@ import de.persosim.simulator.utils.Utils;
 /**
  * @author mboonk
  * 
+ * FIXME MBK add javadoc
  */
 public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine implements TlvConstants {
 
