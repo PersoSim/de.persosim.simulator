@@ -28,6 +28,9 @@ public class DomainParameterSetIdentifier extends IntegerIdentifier {
 		return false;
 	}
 	
+	public void setDomainParameterId(int domainParameterId){
+		setInteger(domainParameterId);
+	}
 	public int getDomainParameterId() {
 		return getInteger();
 	}

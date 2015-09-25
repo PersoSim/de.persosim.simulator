@@ -40,6 +40,10 @@ public abstract class IntegerIdentifier extends AbstractCardObjectIdentifier {
 		}
 		return false;
 	}
+	
+	public void setInteger(int integer){
+		this.integer = integer;
+	}
 
 	public int getInteger() {
 		return integer;
