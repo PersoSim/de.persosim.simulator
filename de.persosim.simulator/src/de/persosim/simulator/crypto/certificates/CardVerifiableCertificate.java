@@ -141,10 +141,6 @@ public class CardVerifiableCertificate {
 		return encoding;
 	}
 	
-	public CvOid getPublicKeyOid() {
-		return body.getPublicKeyOid();
-	}
-	
 	public Collection<CertificateExtension> getCertificateExtensions() {
 		return body.getCertificateExtensions();
 	}
