@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECFieldFp;
@@ -148,6 +149,29 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 		keyPairGenerator.initialize(getParams(), secRandom);
 		
 		return keyPairGenerator;
+	}
+
+	@Override
+	public boolean updateKey(PublicKey publicKey) {
+		if(key == null) {
+			if(publicKey instanceof ECPublicKey) {
+				ECPublicKey ecPublicKey = (ECPublicKey) publicKey;
+				DomainParameterSetEcdh domParamsEcdh = new DomainParameterSetEcdh(ecPublicKey.getParams());
+				ECPoint publicPoint = DomainParameterSetEcdh.reconstructPoint(publicPointEncoding);
+				key = domParamsEcdh.reconstructPublicKey(publicPoint, Crypto.getCryptoProvider());
+
+				if(key == null) {
+					return false;
+				} else{
+					publicPointEncoding = null;
+					return true;
+				}
+			} else{
+				throw new IllegalArgumentException("updating key must be of type ECPublicKey");
+			}
+		} else{
+			return false; // key already complete and fully usable
+		}
 	}
 
 }

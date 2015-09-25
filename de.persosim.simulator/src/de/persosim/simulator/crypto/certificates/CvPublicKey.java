@@ -26,5 +26,12 @@ public abstract class CvPublicKey extends CvKey implements PublicKey, TlvConstan
 	 * @return true if the key is complete, i.e. fully usable, false otherwise
 	 */
 	public abstract boolean isComplete();
+	
+	/**
+	 * This method updates this object to the parameters of the provided key.
+	 * @param publicKey the reference key providing the parameters
+	 * @return true if key was incomplete AND has been successfully updated, false otherwise
+	 */
+	public abstract boolean updateKey(PublicKey publicKey);
 
 }
