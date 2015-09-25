@@ -39,10 +39,6 @@ public interface Tr03110UtilsProvider {
 	 */
 	public DomainParameterSet getDomainParameterSetFromKey(Key key);
 	
-	public boolean isCompleteKeyRepresentation(ConstructedTlvDataObject publicKeyData);
-	
-	public boolean isPartialKeyRepresentation(ConstructedTlvDataObject publicKeyData);
-	
 	public ConstructedTlvDataObject encodeKey(PublicKey publicKey, Oid oid);
 	
 	public CvPublicKey parseCvPublicKey(ConstructedTlvDataObject publicKeyData);
