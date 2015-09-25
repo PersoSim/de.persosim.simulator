@@ -114,10 +114,6 @@ public class CardVerifiableCertificate {
 	public Date getExpirationDate() {
 		return body.getCertificateExpirationDate();
 	}
-	
-	public byte[] getEncodedX() {
-		return getEncoded().toByteArray();
-	}
 
 	@Override
 	public String toString() {
