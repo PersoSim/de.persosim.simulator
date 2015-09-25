@@ -46,7 +46,7 @@ public interface CardObject extends Iso7816LifeCycle {
 	public void setSecStatus(SecStatus securityStatus) throws AccessDeniedException;
 	
 	/**
-	 * Build a Collection containing all children of this object that match the given {@link CardObjectIdentifier}.
+	 * Build a Collection containing all children of this object that match all given {@link CardObjectIdentifier}.
 	 * 
 	 * @param identifier
 	 *            to match the {@link CardObject}s with
