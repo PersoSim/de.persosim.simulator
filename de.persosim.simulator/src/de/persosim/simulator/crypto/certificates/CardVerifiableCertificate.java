@@ -24,13 +24,9 @@ public class CardVerifiableCertificate {
 	CertificateBody body;
 	protected byte[] signature;
 	
-	public CardVerifiableCertificate(
-			CertificateBody body,
-			byte[] signature) {
-		
+	public CardVerifiableCertificate(CertificateBody body, byte[] signature) {	
 		this.body = body;
 		this.signature = signature;
-		
 	}
 	
 	/**
@@ -40,7 +36,15 @@ public class CardVerifiableCertificate {
 	 * @throws CertificateNotParseableException
 	 */
 	public CardVerifiableCertificate(ConstructedTlvDataObject certificateData) throws CertificateNotParseableException {
-		this(certificateData, null);
+		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_7F4E);
+		
+		//Body
+		body = new CertificateBody(certificateBodyData);
+		
+		
+		//Signature
+		PrimitiveTlvDataObject signatureData = (PrimitiveTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_5F37);
+		signature = signatureData.getValueField();
 	}
 
 	/**
@@ -53,16 +57,9 @@ public class CardVerifiableCertificate {
 	 * @throws CertificateNotParseableException
 	 */
 	public CardVerifiableCertificate(ConstructedTlvDataObject certificateData, PublicKey currentPublicKey) throws CertificateNotParseableException {
+		this(certificateData);
 		
-		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_7F4E);
-		
-		//Body
-		body = new CertificateBody(certificateBodyData);
-		
-		
-		//Signature
-		PrimitiveTlvDataObject signatureData = (PrimitiveTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_5F37);
-		signature = signatureData.getValueField();
+		getPublicKey().updateKey(currentPublicKey);
 	}
 	
 	/**
@@ -89,7 +86,7 @@ public class CardVerifiableCertificate {
 	/**
 	 * @return the public key associated with this certificate
 	 */
-	public PublicKey getPublicKey() {
+	public CvPublicKey getPublicKey() {
 		return body.getPublicKey();
 	}
 	
