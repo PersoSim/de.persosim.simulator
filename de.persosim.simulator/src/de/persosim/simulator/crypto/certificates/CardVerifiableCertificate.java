@@ -141,14 +141,26 @@ public class CardVerifiableCertificate {
 		return encoding;
 	}
 	
+	/**
+	 * This method returns the certificate extensions
+	 * @return the certificate extensions
+	 */
 	public Collection<CertificateExtension> getCertificateExtensions() {
 		return body.getCertificateExtensions();
 	}
-
+	
+	/**
+	 * This method returns the certificate body
+	 * @return the certificate body
+	 */
 	public CertificateBody getBody() {
 		return body;
 	}
-
+	
+	/**
+	 * This method returns the signature of this certificate
+	 * @return the signature of this certificate
+	 */
 	public byte[] getSignature() {
 		return signature;
 	}
