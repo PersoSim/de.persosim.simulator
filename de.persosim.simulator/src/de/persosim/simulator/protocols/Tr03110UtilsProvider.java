@@ -39,8 +39,11 @@ public interface Tr03110UtilsProvider {
 	 */
 	public DomainParameterSet getDomainParameterSetFromKey(Key key);
 	
-	public ConstructedTlvDataObject encodeKey(PublicKey publicKey, Oid oid);
-	
+	/**
+	 * This method parses a public key as encoded within a CV certificate
+	 * @param publicKeyData the encoding of the public key
+	 * @return a public key object matching the provided encoding
+	 */
 	public CvPublicKey parseCvPublicKey(ConstructedTlvDataObject publicKeyData);
 
 }
