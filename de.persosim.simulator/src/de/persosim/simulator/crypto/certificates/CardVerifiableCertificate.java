@@ -114,15 +114,9 @@ public class CardVerifiableCertificate {
 	public Date getExpirationDate() {
 		return body.getCertificateExpirationDate();
 	}
-
-	/**
-	 * Get the DER-encoded representation of this certificate.
-	 * 
-	 * @return
-	 * 
-	 */
-	public byte[] getEncoded() {
-		return encodeFull().toByteArray();
+	
+	public byte[] getEncodedX() {
+		return getEncoded().toByteArray();
 	}
 
 	@Override
@@ -133,7 +127,13 @@ public class CardVerifiableCertificate {
 				+ "]";
 	}
 	
-	public ConstructedTlvDataObject encodeFull() {
+	/**
+	 * Get the DER-encoded representation of this certificate.
+	 * 
+	 * @return the DER-encoded representation of this certificate
+	 * 
+	 */
+	public ConstructedTlvDataObject getEncoded() {
 		ConstructedTlvDataObject encoding = CertificateUtils.encodeFullCertificate(
 				body,
 				signature);
