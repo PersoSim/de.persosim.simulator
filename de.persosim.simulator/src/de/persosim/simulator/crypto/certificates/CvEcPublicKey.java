@@ -1,5 +1,8 @@
 package de.persosim.simulator.crypto.certificates;
 
+import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
@@ -161,15 +164,18 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 				key = domParamsEcdh.reconstructPublicKey(publicPoint, Crypto.getCryptoProvider());
 
 				if(key == null) {
+					log(CvEcPublicKey.class, "key update failed", DEBUG);
 					return false;
 				} else{
 					publicPointEncoding = null;
+					log(CvEcPublicKey.class, "key update successfull", DEBUG);
 					return true;
 				}
 			} else{
 				throw new IllegalArgumentException("updating key must be of type ECPublicKey");
 			}
 		} else{
+			log(CvEcPublicKey.class, "key update unnecessary", DEBUG);
 			return false; // key already complete and fully usable
 		}
 	}
