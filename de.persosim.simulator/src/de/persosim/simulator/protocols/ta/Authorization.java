@@ -3,6 +3,8 @@ package de.persosim.simulator.protocols.ta;
 import de.persosim.simulator.utils.BitField;
 
 /**
+ * This class represents authorization information backed by {@link BitField} storage.
+ * 
  * @author slutters
  * 
  */
@@ -22,7 +24,7 @@ public abstract class Authorization {
 	}
 
 	/**
-	 * @return the role and relative authorization as a bit field.
+	 * @return a bit field representation of this object.
 	 */
 	abstract public BitField getRepresentation();
 	
