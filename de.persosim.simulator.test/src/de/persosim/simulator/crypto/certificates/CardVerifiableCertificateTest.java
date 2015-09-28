@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
+import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -55,9 +56,7 @@ public class CardVerifiableCertificateTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testConstructor_ConstructedTlvDataObjectPublicKey() throws CertificateNotParseableException {
-		CertificateBody cvCertDETESTeID00004Body = new CertificateBody(cvCertDETESTeID00004BodyTlv);
-		CvEcPublicKey cvCertDETESTeID00004CvEcPublicKey = ((CvEcPublicKey) cvCertDETESTeID00004Body.getPublicKey());
-		DomainParameterSetEcdh cvCertDETESTeID00004DomainParameters = new DomainParameterSetEcdh(cvCertDETESTeID00004CvEcPublicKey.getParams());
+		DomainParameterSetEcdh cvCertDETESTeID00004DomainParameters = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
 		
 		byte[] newPublicKeyData = HexString.toByteArray("043E81230E8AE08ACBA9C550D26E89B47A0DA8399A3FA629D0E7E4B19F653F8C7E6139576D3099A4044927137C60ECFFA457D20D61ECFCC7AEB0CEC5F27FA0865B");
 		PublicKey newPublicKey = cvCertDETESTeID00004DomainParameters.reconstructPublicKey(newPublicKeyData);
