@@ -298,5 +298,9 @@ public class CertificateBody {
 	public CvOid getPublicKeyOid() {
 		return publicKey.getCvOid();
 	}
+
+	public void setCertificateExtensions(List<CertificateExtension> certificateExtensions) {
+		this.certificateExtensions = certificateExtensions;
+	}
 	
 }
