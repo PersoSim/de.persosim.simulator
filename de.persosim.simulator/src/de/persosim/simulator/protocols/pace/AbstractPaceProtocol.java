@@ -871,6 +871,8 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			createDomainParameterInfo(secInfos, parameterId, paceOidIdentifier, identifiers, domainParameterCardObjects);
 		}
 		
+		//TODO handle duplicates?
+		
 		return secInfos;
 	}
 
@@ -887,8 +889,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			OidIdentifier paceOidIdentifier, Collection<CardObjectIdentifier> identifiers,
 			Collection<CardObject> domainParameterCardObjects) {
 		
-		//TODO add domainParameterInfo
-		//TODO handle duplicates?
+		//IMPL add required domainParameterInfo elemtens here
 		
 	}
 	
