@@ -15,12 +15,12 @@ import de.persosim.simulator.tlv.TlvDataObjectFactory;
  * @author mboonk
  * 
  */
-public class GenericExtension {
-	TaOid objectIdentifier;
+public class GenericExtension extends CertificateExtension {
 	TlvDataObjectContainer dataObjects;
 
 	public GenericExtension(ConstructedTlvDataObject extensionData) {
-		objectIdentifier = new TaOid(extensionData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
+		super(new TaOid(extensionData.getTlvDataObject(TlvConstants.TAG_06).getValueField()));
+		
 		dataObjects = new TlvDataObjectContainer();
 		boolean firstIgnored = false;
 		for (TlvDataObject object : extensionData.getTlvDataObjectContainer()){
@@ -35,29 +35,18 @@ public class GenericExtension {
 	}
 	
 	public GenericExtension(TaOid objectIdentifier, TlvDataObjectContainer dataObjects) {
-		this.objectIdentifier = objectIdentifier;
+		super(objectIdentifier);
+		
 		this.dataObjects = dataObjects;
 	}
 
-	/**
-	 * Get the OID for this extension.
-	 * 
-	 * @return
-	 */
-	public TaOid getObjectIdentifier() {
-		return objectIdentifier;
-	}
-
-	/**
-	 * Get the context specific data objects contained in this extension.
-	 * 
-	 * @return
-	 */
+	@Override
 	public TlvDataObjectContainer getDataObjects() {
 		TlvDataObjectContainer result = new TlvDataObjectContainer(dataObjects.toByteArray());
 		return result;
 	}
 	
+	@Override
 	public ConstructedTlvDataObject toTlv() {
 		ConstructedTlvDataObject extension = new ConstructedTlvDataObject(TlvConstants.TAG_73);
 		

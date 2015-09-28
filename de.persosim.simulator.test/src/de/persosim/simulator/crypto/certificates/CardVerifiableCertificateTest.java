@@ -3,6 +3,8 @@ package de.persosim.simulator.crypto.certificates;
 import static org.junit.Assert.assertEquals;
 
 import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,8 +12,12 @@ import org.junit.Test;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.CertificateNotParseableException;
+import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
+import de.persosim.simulator.tlv.TlvConstants;
+import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.HexString;
 
 public class CardVerifiableCertificateTest extends PersoSimTestCase {
@@ -65,6 +71,28 @@ public class CardVerifiableCertificateTest extends PersoSimTestCase {
 		CardVerifiableCertificate reconstructedCert = new CardVerifiableCertificate(strippedCertTlv, newPublicKey);
 		
 		assertEquals(cvCertDETESTeID00004FullTlv, reconstructedCert.getEncoded());
+	}
+	
+	/**
+	 * Positive test case: XXX
+	 * @throws CertificateNotParseableException 
+	 */
+	@Test
+	public void testX() throws CertificateNotParseableException {
+		CardVerifiableCertificate cvCertDETESTeID00004 = new CardVerifiableCertificate(cvCertDETESTeID00004FullTlv);
+		CertificateBody body = cvCertDETESTeID00004.getBody();
+		
+		TaOid oid = TaOid.id_eIDAccess;
+		byte[] value = HexString.toByteArray("00112233445566778899");
+		PrimitiveTlvDataObject tlvDataObject = new PrimitiveTlvDataObject(TlvConstants.TAG_42, value); 
+		TlvDataObjectContainer tlvDataObjectContainer = new TlvDataObjectContainer(tlvDataObject);
+		GenericExtension extension = new GenericExtension(oid, tlvDataObjectContainer);
+		
+		List<CertificateExtension> extensions = new ArrayList<>();
+		extensions.add(extension);
+		body.setCertificateExtensions(extensions);
+		
+		System.out.println("ext cert: " + cvCertDETESTeID00004.getEncoded());
 	}
 	
 }
