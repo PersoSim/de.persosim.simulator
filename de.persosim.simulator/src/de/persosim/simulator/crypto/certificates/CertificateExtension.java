@@ -6,7 +6,7 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 
 public abstract class CertificateExtension {
 	
-	TaOid objectIdentifier;
+	protected TaOid objectIdentifier;
 	
 	public CertificateExtension(TaOid objectIdentifier) {
 		this.objectIdentifier = objectIdentifier;
