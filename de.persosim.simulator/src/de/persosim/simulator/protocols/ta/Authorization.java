@@ -8,7 +8,7 @@ import de.persosim.simulator.utils.BitField;
  * @author slutters
  * 
  */
-public abstract class Authorization {
+public class Authorization {
 	
 	protected BitField authorization;
 
@@ -26,6 +26,8 @@ public abstract class Authorization {
 	/**
 	 * @return a bit field representation of this object.
 	 */
-	abstract public BitField getRepresentation();
+	public BitField getRepresentation() {
+		return authorization;
+	}
 	
 }
