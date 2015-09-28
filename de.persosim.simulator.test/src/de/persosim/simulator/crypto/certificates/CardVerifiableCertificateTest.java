@@ -3,8 +3,6 @@ package de.persosim.simulator.crypto.certificates;
 import static org.junit.Assert.assertEquals;
 
 import java.security.PublicKey;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,12 +10,8 @@ import org.junit.Test;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.CertificateNotParseableException;
-import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
-import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
-import de.persosim.simulator.tlv.TlvConstants;
-import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.HexString;
 
 public class CardVerifiableCertificateTest extends PersoSimTestCase {
@@ -74,25 +68,17 @@ public class CardVerifiableCertificateTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: XXX
+	 * Positive test case: check constructor for parsing certificate containing certificate extensions from full TLV encoding.
 	 * @throws CertificateNotParseableException 
 	 */
 	@Test
-	public void testX() throws CertificateNotParseableException {
-		CardVerifiableCertificate cvCertDETESTeID00004 = new CardVerifiableCertificate(cvCertDETESTeID00004FullTlv);
-		CertificateBody body = cvCertDETESTeID00004.getBody();
+	public void testConstructor_ConstructedTlvDataObject_WithCertificateExtensions() throws CertificateNotParseableException {
+		byte[] certDataWithExtensions = HexString.toByteArray("7F218201D27F4E82018A5F290100420E44455445535465494430303030347F4982011D060A04007F000702020202038120A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E537782207D5A0975FC2C3057EEF67530417AFFE7FB8055C126DC5C6CE94A4B44F330B5D9832026DC5C6CE94A4B44F330B5D9BBD77CBF958416295CF7E1CE6BCCDC18FF8C07B68441048BD2AEB9CB7E57CB2C4B482FFC81B7AFB9DE27E1E3BD23C23A4453BD9ACE3262547EF835C3DAC4FD97F8461A14611DC9C27745132DED8E545C1D54C72F0469978520A9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A786410474FF63AB838C73C303AC003DFEE95CF8BF55F91E8FEBCB7395D942036E47CF1845EC786EC95BB453AAC288AD023B6067913CF9B63F908F49304E5CFC8B3050DD8701015F200E44455445535465494430303030347F4C12060904007F0007030102025305FC0F13FFFF5F25060102000501015F2406010500050101651A7318060A04007F00070301020201420A001122334455667788995F37408CAC3E842EB053EE10E9D57FB373FF4E9C36D1EDF966D6535978D498309B00D59C51D83965F4B1C75557FA6B6CA03D360A782B9BC172CE391623D6BB48B9B1AA");
+		ConstructedTlvDataObject certificateData = new ConstructedTlvDataObject(certDataWithExtensions);
 		
-		TaOid oid = TaOid.id_eIDAccess;
-		byte[] value = HexString.toByteArray("00112233445566778899");
-		PrimitiveTlvDataObject tlvDataObject = new PrimitiveTlvDataObject(TlvConstants.TAG_42, value); 
-		TlvDataObjectContainer tlvDataObjectContainer = new TlvDataObjectContainer(tlvDataObject);
-		GenericExtension extension = new GenericExtension(oid, tlvDataObjectContainer);
+		CardVerifiableCertificate cert = new CardVerifiableCertificate(certificateData);
 		
-		List<CertificateExtension> extensions = new ArrayList<>();
-		extensions.add(extension);
-		body.setCertificateExtensions(extensions);
-		
-		System.out.println("ext cert: " + cvCertDETESTeID00004.getEncoded());
+		assertEquals(certificateData, cert.getEncoded());
 	}
 	
 }
