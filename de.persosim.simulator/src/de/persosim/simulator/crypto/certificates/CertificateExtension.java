@@ -2,6 +2,7 @@ package de.persosim.simulator.crypto.certificates;
 
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
@@ -32,6 +33,11 @@ public class CertificateExtension {
 				firstIgnored = true;
 		}
 	}
+	
+	public CertificateExtension(TaOid objectIdentifier, TlvDataObjectContainer dataObjects) {
+		this.objectIdentifier = objectIdentifier;
+		this.dataObjects = dataObjects;
+	}
 
 	/**
 	 * Get the OID for this extension.
@@ -53,7 +59,14 @@ public class CertificateExtension {
 	}
 	
 	public ConstructedTlvDataObject toTlv() {
-		ConstructedTlvDataObject extension = new ConstructedTlvDataObject(TlvConstants.TAG_53);
+		ConstructedTlvDataObject extension = new ConstructedTlvDataObject(TlvConstants.TAG_73);
+		
+		PrimitiveTlvDataObject oidTlv = new PrimitiveTlvDataObject(TlvConstants.TAG_06, objectIdentifier.toByteArray());
+		extension.addTlvDataObject(oidTlv);
+		
+		for(TlvDataObject tlvDataObject:dataObjects) {
+			extension.addTlvDataObject(tlvDataObject);
+		}
 		
 		return extension;
 	}
