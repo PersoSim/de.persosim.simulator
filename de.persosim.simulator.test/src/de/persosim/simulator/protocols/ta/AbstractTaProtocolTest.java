@@ -22,7 +22,7 @@ import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
-import de.persosim.simulator.crypto.certificates.CertificateExtension;
+import de.persosim.simulator.crypto.certificates.GenericExtension;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
@@ -55,7 +55,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	@Mocked
 	CardVerifiableCertificate issuingCertificate;
 	@Mocked
-	CertificateExtension certificateExtension;
+	GenericExtension certificateExtension;
 
 	@Before
 	public void setUp() throws CarParameterInvalidException {
@@ -451,7 +451,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	@Test
 	public void testExtractTerminalSector(){
 		// prepare the mock
-		final HashSet<CertificateExtension> extensions = new HashSet<>();
+		final HashSet<GenericExtension> extensions = new HashSet<>();
 		extensions.add(certificateExtension);
 
 		PrimitiveTlvDataObject firstObject = new PrimitiveTlvDataObject(TlvConstants.TAG_80, new byte [] {1,2,3,4});

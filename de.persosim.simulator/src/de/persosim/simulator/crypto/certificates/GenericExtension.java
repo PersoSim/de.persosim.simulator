@@ -15,11 +15,11 @@ import de.persosim.simulator.tlv.TlvDataObjectFactory;
  * @author mboonk
  * 
  */
-public class CertificateExtension {
+public class GenericExtension {
 	TaOid objectIdentifier;
 	TlvDataObjectContainer dataObjects;
 
-	public CertificateExtension(ConstructedTlvDataObject extensionData) {
+	public GenericExtension(ConstructedTlvDataObject extensionData) {
 		objectIdentifier = new TaOid(extensionData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
 		dataObjects = new TlvDataObjectContainer();
 		boolean firstIgnored = false;
@@ -34,7 +34,7 @@ public class CertificateExtension {
 		}
 	}
 	
-	public CertificateExtension(TaOid objectIdentifier, TlvDataObjectContainer dataObjects) {
+	public GenericExtension(TaOid objectIdentifier, TlvDataObjectContainer dataObjects) {
 		this.objectIdentifier = objectIdentifier;
 		this.dataObjects = dataObjects;
 	}

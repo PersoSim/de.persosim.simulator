@@ -138,7 +138,7 @@ public class CardVerifiableCertificate {
 	 * This method returns the certificate extensions
 	 * @return the certificate extensions
 	 */
-	public Collection<CertificateExtension> getCertificateExtensions() {
+	public Collection<GenericExtension> getCertificateExtensions() {
 		return body.getCertificateExtensions();
 	}
 	

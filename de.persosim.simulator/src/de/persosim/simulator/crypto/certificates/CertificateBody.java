@@ -41,7 +41,7 @@ public class CertificateBody {
 	protected CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate;
 	protected Date certificateEffectiveDate;
 	protected Date certificateExpirationDate;
-	protected List<CertificateExtension> certificateExtensions;
+	protected List<GenericExtension> certificateExtensions;
 	
 	public CertificateBody(
 			int certificateProfileIdentifier,
@@ -51,7 +51,7 @@ public class CertificateBody {
 			CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate,
 			Date certificateEffectiveDate,
 			Date certificateExpirationDate,
-			List<CertificateExtension> certificateExtensions) {
+			List<GenericExtension> certificateExtensions) {
 		
 		this.certificateProfileIdentifier = certificateProfileIdentifier;
 		this.certificationAuthorityReference = certificationAuthorityReference;
@@ -153,13 +153,13 @@ public class CertificateBody {
 	 * @param extensionsData as described in TR03110 v2.10 part 3, C
 	 * @return all parsed extensions
 	 */
-	private List<CertificateExtension> parseExtensions(
+	private List<GenericExtension> parseExtensions(
 			ConstructedTlvDataObject extensionsData) {
-		List<CertificateExtension> result = new ArrayList<>();
+		List<GenericExtension> result = new ArrayList<>();
 		if (extensionsData != null){
 			for (TlvDataObject ddt : extensionsData.getTlvDataObjectContainer()){
 				if (ddt instanceof ConstructedTlvDataObject){
-					result.add(new CertificateExtension((ConstructedTlvDataObject) ddt));
+					result.add(new GenericExtension((ConstructedTlvDataObject) ddt));
 				}
 			}
 		}
@@ -244,7 +244,7 @@ public class CertificateBody {
 	/**
 	 * @return the extensions this certificate has included
 	 */
-	public Collection<CertificateExtension> getCertificateExtensions() {
+	public Collection<GenericExtension> getCertificateExtensions() {
 		return certificateExtensions;
 	}
 
@@ -285,7 +285,7 @@ public class CertificateBody {
 		if((certificateExtensions != null) && (!certificateExtensions.isEmpty())) {
 			ConstructedTlvDataObject extensionRepresentation = new ConstructedTlvDataObject(TlvConstants.TAG_65);
 			
-			for(CertificateExtension extension : certificateExtensions) {
+			for(GenericExtension extension : certificateExtensions) {
 				extensionRepresentation.addTlvDataObject(extension.toTlv());
 			}
 			return extensionRepresentation;
@@ -299,7 +299,7 @@ public class CertificateBody {
 		return publicKey.getCvOid();
 	}
 
-	public void setCertificateExtensions(List<CertificateExtension> certificateExtensions) {
+	public void setCertificateExtensions(List<GenericExtension> certificateExtensions) {
 		this.certificateExtensions = certificateExtensions;
 	}
 	
