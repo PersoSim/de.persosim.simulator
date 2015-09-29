@@ -14,7 +14,7 @@ import de.persosim.simulator.utils.HexString;
 public class CertificateUtilsTest extends PersoSimTestCase {
 	
 	byte[] cvCertDETESTeID00004Data, cvCertDETESTeID00004DataWoDomainParams, cvCertDETESTeID00004BodyData, cvCertDETESTeID00004DataWithExtensions, signature;
-	ConstructedTlvDataObject cvCertDETESTeID00004Tlv, cvCertDETESTeID00004BodyTlv, cvCertDETESTeID00004WoDomainParamsTlv, cvCertDETESTeID00004WithExtensionsTlv;
+	ConstructedTlvDataObject cvCertDETESTeID00004Tlv, cvCertDETESTeID00004BodyTlv;
 	
 	@Before
 	public void setUp() {
@@ -25,8 +25,6 @@ public class CertificateUtilsTest extends PersoSimTestCase {
 		
 		cvCertDETESTeID00004BodyTlv            = new ConstructedTlvDataObject(cvCertDETESTeID00004BodyData);
 		cvCertDETESTeID00004Tlv                = new ConstructedTlvDataObject(cvCertDETESTeID00004Data);
-		cvCertDETESTeID00004WoDomainParamsTlv  = new ConstructedTlvDataObject(cvCertDETESTeID00004DataWoDomainParams);
-		cvCertDETESTeID00004WithExtensionsTlv  = new ConstructedTlvDataObject(cvCertDETESTeID00004DataWithExtensions);
 		
 		signature = HexString.toByteArray("8CAC3E842EB053EE10E9D57FB373FF4E9C36D1EDF966D6535978D498309B00D59C51D83965F4B1C75557FA6B6CA03D360A782B9BC172CE391623D6BB48B9B1AA");
 	}
