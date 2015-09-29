@@ -61,6 +61,12 @@ public class CardVerifiableCertificate {
 		getPublicKey().updateKey(currentPublicKey);
 	}
 	
+	/**
+	 * This method parses and returns the certificate body
+	 * @param certificateBodyData the certificate body to parse
+	 * @return the parsed certificate body
+	 * @throws CertificateNotParseableException
+	 */
 	public CertificateBody parseCertificateBody(ConstructedTlvDataObject certificateBodyData) throws CertificateNotParseableException {
 		return new CertificateBody(certificateBodyData);
 	}
