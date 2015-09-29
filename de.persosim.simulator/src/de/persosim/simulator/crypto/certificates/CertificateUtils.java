@@ -10,11 +10,11 @@ import de.persosim.simulator.utils.Utils;
 
 public class CertificateUtils implements TlvConstants {
 	
-	public static ConstructedTlvDataObject encodeFullCertificate(
+	public static ConstructedTlvDataObject encodeCertificate(
 			CertificateBody body,
 			byte[] signature) {
 		
-		ConstructedTlvDataObject cvCertificateTlv = encodeFullCertificate(
+		ConstructedTlvDataObject cvCertificateTlv = encodeCertificate(
 				body.getCertificateProfileIdentifier(),
 				body.getCertificationAuthorityReference(),
 				body.getPublicKey().toTlvDataObject(true),
@@ -28,7 +28,7 @@ public class CertificateUtils implements TlvConstants {
 		return cvCertificateTlv;
 	}
 	
-	public static ConstructedTlvDataObject encodeFullCertificate(
+	public static ConstructedTlvDataObject encodeCertificate(
 			int certificateProfileIdentifier,
 			PublicKeyReference certificationAuthorityReference,
 			ConstructedTlvDataObject publicKeyRepresentation,

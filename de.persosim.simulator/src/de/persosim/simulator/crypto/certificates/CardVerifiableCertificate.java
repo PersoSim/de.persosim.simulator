@@ -131,7 +131,7 @@ public class CardVerifiableCertificate {
 	 * 
 	 */
 	public ConstructedTlvDataObject getEncoded() {
-		ConstructedTlvDataObject encoding = CertificateUtils.encodeFullCertificate(
+		ConstructedTlvDataObject encoding = CertificateUtils.encodeCertificate(
 				body,
 				signature);
 		
