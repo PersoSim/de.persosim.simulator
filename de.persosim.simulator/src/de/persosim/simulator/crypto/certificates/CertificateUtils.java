@@ -8,8 +8,21 @@ import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.utils.Utils;
 
+
+/**
+ * This class implements the basic utils usable in the context of certificate operations.
+ * 
+ * @author slutters
+ * 
+ */
 public class CertificateUtils implements TlvConstants {
 	
+	/**
+	 * This method returns a TLV encoding for a certificate constructed from the provided parameters
+	 * @param body the certificate body
+	 * @param signature the certificate signature
+	 * @return the certificate TLV encoding
+	 */
 	public static ConstructedTlvDataObject encodeCertificate(
 			CertificateBody body,
 			byte[] signature) {
@@ -28,6 +41,19 @@ public class CertificateUtils implements TlvConstants {
 		return cvCertificateTlv;
 	}
 	
+	/**
+	 * This method returns the TLV encoding for a certificate constructed from the provided parameters
+	 * @param certificateProfileIdentifier the certificate profile identifier
+	 * @param certificationAuthorityReference the certification authority reference
+	 * @param publicKeyRepresentation the public key representation
+	 * @param certificateHolderReference the certificate holder reference
+	 * @param certificateHolderAuthorizationTemplate the certificate holder authorization template
+	 * @param certificateEffectiveDate the certificate effective date
+	 * @param certificateExpirationDate the certificate expiration date
+	 * @param certificateExtensions the certificate extensions
+	 * @param signature the certificate signature
+	 * @return the TLV encoding for a certificate constructed from the provided parameters
+	 */
 	public static ConstructedTlvDataObject encodeCertificate(
 			int certificateProfileIdentifier,
 			PublicKeyReference certificationAuthorityReference,
@@ -59,6 +85,18 @@ public class CertificateUtils implements TlvConstants {
 		return cvCertificateTlv;
 	}
 	
+	/**
+	 * This method returns the TLV encoding for a certificate body constructed from the provided parameters
+	 * @param certificateProfileIdentifier the certificate profile identifier
+	 * @param certificationAuthorityReference the certification authority reference
+	 * @param publicKeyRepresentation the public key representation
+	 * @param certificateHolderReference the certificate holder reference
+	 * @param certificateHolderAuthorizationTemplate the certificate holder authorization template
+	 * @param certificateEffectiveDate the certificate effective date
+	 * @param certificateExpirationDate the certificate expiration date
+	 * @param certificateExtensions the certificate extensions
+	 * @return the TLV encoding for a certificate constructed from the provided parameters
+	 */
 	public static ConstructedTlvDataObject encodeCertificateBody(
 			int certificateProfileIdentifier,
 			PublicKeyReference certificationAuthorityReference,
@@ -94,6 +132,11 @@ public class CertificateUtils implements TlvConstants {
 		return certificateBodyTlv;
 	}
 	
+	/**
+	 * This method returns the TLV encoding for a certificate holder authorization template
+	 * @param certificateHolderAuthorizationTemplate the certificate holder authorization template to encode
+	 * @return the TLV encoding for a certificate holder authorization template
+	 */
 	public static ConstructedTlvDataObject encodeCertificateHolderAuthorizationTemplate(CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate) {
 		ConstructedTlvDataObject certificateHolderAuthorizationTemplateTlv = new ConstructedTlvDataObject(TlvConstants.TAG_7F4C);
 		PrimitiveTlvDataObject oidTlv = new PrimitiveTlvDataObject(TlvConstants.TAG_06, certificateHolderAuthorizationTemplate.getObjectIdentifier().toByteArray());

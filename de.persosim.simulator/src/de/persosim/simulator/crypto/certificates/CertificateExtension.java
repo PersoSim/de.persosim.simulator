@@ -4,6 +4,13 @@ import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 
+
+/**
+ * This class implements the basic functionalities of any certificate extension.
+ * 
+ * @author slutters
+ * 
+ */
 public abstract class CertificateExtension {
 	
 	protected TaOid objectIdentifier;
@@ -15,7 +22,7 @@ public abstract class CertificateExtension {
 	/**
 	 * Get the OID for this extension.
 	 * 
-	 * @return
+	 * @return the OID for this extension
 	 */
 	public TaOid getObjectIdentifier() {
 		return objectIdentifier;
@@ -26,7 +33,7 @@ public abstract class CertificateExtension {
 	/**
 	 * Get the context specific data objects contained in this extension.
 	 * 
-	 * @return
+	 * @return the context specific data objects contained in this extension
 	 */
 	abstract public TlvDataObjectContainer getDataObjects();
 
