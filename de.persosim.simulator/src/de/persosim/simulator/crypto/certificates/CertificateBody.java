@@ -11,15 +11,10 @@ import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.NotParseableException;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
-import de.persosim.simulator.protocols.ta.CertificateRole;
-import de.persosim.simulator.protocols.ta.RelativeAuthorization;
-import de.persosim.simulator.protocols.ta.TaOid;
-import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
-import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.Utils;
 
 
@@ -116,7 +111,7 @@ public class CertificateBody {
 		
 		
 		//Certificate Holder Authorization Template (CHAT)
-		certificateHolderAuthorizationTemplate = parseChat((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F4C));
+		certificateHolderAuthorizationTemplate = new CertificateHolderAuthorizationTemplate((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F4C));
 		
 		
 		
@@ -165,34 +160,6 @@ public class CertificateBody {
 		}
 		return result;
 		
-	}
-	
-	/**
-	 * Create a CHAT object from data as stored in a card verifiable certificate.
-	 * @param chatData as described in TR-03110 V2.10 part 3, C
-	 * @return the {@link CertificateHolderAuthorizationTemplate} object
-	 * @throws CertificateNotParseableException
-	 */
-	private CertificateHolderAuthorizationTemplate parseChat(
-			ConstructedTlvDataObject chatData) throws CertificateNotParseableException {
-
-		TaOid objectIdentifier = new TaOid(chatData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
-		PrimitiveTlvDataObject relativeAuthorizationData = (PrimitiveTlvDataObject) chatData.getTlvDataObject(TlvConstants.TAG_53);
-		CertificateRole role = CertificateRole.getFromMostSignificantBits(relativeAuthorizationData.getValueField()[0]);
-		BitField authorization = BitField.buildFromBigEndian(relativeAuthorizationData.getLengthValue() * 8 - 2, relativeAuthorizationData.getValueField());
-		RelativeAuthorization relativeAuthorization = new RelativeAuthorization(role, authorization);
-		
-		CertificateHolderAuthorizationTemplate result = new CertificateHolderAuthorizationTemplate(objectIdentifier, relativeAuthorization);
-		
-		//check if oid and relative authorization fit together
-		TerminalType type = result.getTerminalType();
-		int authBits = result.getRelativeAuthorization().getRepresentation().getNumberOfBits();
-		
-		if ((type.equals(TerminalType.AT) && authBits != 40) || ((type.equals(TerminalType.IS) || type.equals(TerminalType.ST)) && authBits != 8)){
-			throw new CertificateNotParseableException("invalid combination of OID and terminal type");
-		}
-		
-		return result;
 	}
 
 	public int getCertificateProfileIdentifier() {

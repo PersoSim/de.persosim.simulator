@@ -1,5 +1,11 @@
 package de.persosim.simulator.protocols.ta;
 
+import de.persosim.simulator.crypto.certificates.CertificateUtils;
+import de.persosim.simulator.exception.CertificateNotParseableException;
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
+import de.persosim.simulator.tlv.TlvConstants;
+import de.persosim.simulator.utils.BitField;
 
 /**
  * This class contains the certificate holder authorization template information
@@ -19,6 +25,24 @@ public class CertificateHolderAuthorizationTemplate {
 			RelativeAuthorization relativeAuthorization) {
 		this.objectIdentifier = objectIdentifier;
 		this.relativeAuthorization = relativeAuthorization;
+	}
+	
+	public CertificateHolderAuthorizationTemplate(ConstructedTlvDataObject chatData) throws CertificateNotParseableException {
+
+		objectIdentifier = new TaOid(chatData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
+		PrimitiveTlvDataObject relativeAuthorizationData = (PrimitiveTlvDataObject) chatData.getTlvDataObject(TlvConstants.TAG_53);
+		CertificateRole role = CertificateRole.getFromMostSignificantBits(relativeAuthorizationData.getValueField()[0]);
+		BitField authorization = BitField.buildFromBigEndian(relativeAuthorizationData.getLengthValue() * 8 - 2, relativeAuthorizationData.getValueField());
+		relativeAuthorization = new RelativeAuthorization(role, authorization);
+		
+		//check if oid and relative authorization fit together
+		TerminalType type = getTerminalType();
+		int authBits = getRelativeAuthorization().getRepresentation().getNumberOfBits();
+		
+		if ((type.equals(TerminalType.AT) && authBits != 40) || ((type.equals(TerminalType.IS) || type.equals(TerminalType.ST)) && authBits != 8)){
+			throw new CertificateNotParseableException("invalid combination of OID and terminal type");
+		}
+		
 	}
 
 	public TaOid getObjectIdentifier() {
@@ -43,6 +67,10 @@ public class CertificateHolderAuthorizationTemplate {
 			return TerminalType.ST;
 		}
 		return null;
-
 	}
+	
+	public ConstructedTlvDataObject toTlv() {
+		return CertificateUtils.encodeCertificateHolderAuthorizationTemplate(this);
+	}
+	
 }
