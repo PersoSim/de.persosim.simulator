@@ -246,6 +246,11 @@ public class CertificateBody {
 				+ "]";
 	}
 	
+	/**
+	 * This method returns the TLV encoding of this object
+	 * @param withParams include domain parameters in encoding of public key
+	 * @return the TLV encoding of this object
+	 */
 	public ConstructedTlvDataObject encodeBody(boolean withParams) {
 		ConstructedTlvDataObject encoding = CertificateUtils.encodeCertificateBody(
 				certificateProfileIdentifier,
@@ -260,6 +265,10 @@ public class CertificateBody {
 		return encoding;
 	}
 	
+	/**
+	 * This method returns the TLV encoding of the certificate extensions
+	 * @return the TLV encoding of the certificate extensions
+	 */
 	public ConstructedTlvDataObject getExtensionRepresentation() {
 		
 		if((certificateExtensions != null) && (!certificateExtensions.isEmpty())) {
@@ -274,7 +283,11 @@ public class CertificateBody {
 		}
 		
 	}
-
+	
+	/**
+	 * This method sets the certificate extensions for this object
+	 * @param certificateExtensions the certificate extensions to set
+	 */
 	public void setCertificateExtensions(List<CertificateExtension> certificateExtensions) {
 		this.certificateExtensions = certificateExtensions;
 	}
