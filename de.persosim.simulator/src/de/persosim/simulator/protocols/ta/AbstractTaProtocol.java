@@ -430,7 +430,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 							"The certificate was issued by an not valid instance", resp);
 					return;
 				}
-				if (checkSignature((TaOid) currentCertificate.getBody().getPublicKeyOid(), currentCertificate.getPublicKey(), certificateBodyData.toByteArray(), certificateSignatureData.getValueField())){
+				if (checkSignature((TaOid) currentCertificate.getBody().getPublicKey().getCvOid(), currentCertificate.getPublicKey(), certificateBodyData.toByteArray(), certificateSignatureData.getValueField())){
 					//differentiate between CVCA link certificates and other types for date validation
 					if (checkValidity(certificate, currentCertificate, getCurrentDate().getDate())){
 						try {

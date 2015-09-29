@@ -134,11 +134,19 @@ public class CertificateBody {
 		certificateExtensions = parseExtensions((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_65));
 		
 	}
-
+	
+	/**
+	 * This method returns the certificate effective date
+	 * @return the certificate effective date
+	 */
 	public Date getCertificateEffectiveDate() {
 		return certificateEffectiveDate;
 	}
-
+	
+	/**
+	 * This method returns the certificate expiration date
+	 * @return the certificate expiration date
+	 */
 	public Date getCertificateExpirationDate() {
 		return certificateExpirationDate;
 	}
@@ -161,7 +169,11 @@ public class CertificateBody {
 		return result;
 		
 	}
-
+	
+	/**
+	 * This method returns the certificate profile identifier
+	 * @return the certificate profile identifier
+	 */
 	public int getCertificateProfileIdentifier() {
 		return certificateProfileIdentifier;
 	}
@@ -261,10 +273,6 @@ public class CertificateBody {
 			return null;
 		}
 		
-	}
-	
-	public CvOid getPublicKeyOid() {
-		return publicKey.getCvOid();
 	}
 
 	public void setCertificateExtensions(List<CertificateExtension> certificateExtensions) {
