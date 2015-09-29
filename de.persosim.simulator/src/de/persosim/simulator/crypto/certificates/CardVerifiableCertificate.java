@@ -39,7 +39,7 @@ public class CardVerifiableCertificate {
 		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_7F4E);
 		
 		//Body
-		body = new CertificateBody(certificateBodyData);
+		body = parseCertificateBody(certificateBodyData);
 		
 		//Signature
 		PrimitiveTlvDataObject signatureData = (PrimitiveTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_5F37);
@@ -59,6 +59,10 @@ public class CardVerifiableCertificate {
 		this(certificateData);
 		
 		getPublicKey().updateKey(currentPublicKey);
+	}
+	
+	public CertificateBody parseCertificateBody(ConstructedTlvDataObject certificateBodyData) throws CertificateNotParseableException {
+		return new CertificateBody(certificateBodyData);
 	}
 	
 	/**
