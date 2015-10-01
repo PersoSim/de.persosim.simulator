@@ -223,7 +223,6 @@ public class BitField {
 	 * This method creates a padded big endian byte array representation of this {@link BitField}
 	 * @return a padded big endian byte array representation of this {@link BitField}
 	 */
-	//FIXME this method misses a unit test
 	public byte[] getAsZeroPaddedBigEndianByteArray() {
 		int length = getNumberOfBits() / 8;
 		if (getNumberOfBits() % 8 > 0) {
