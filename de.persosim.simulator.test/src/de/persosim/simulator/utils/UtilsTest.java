@@ -210,6 +210,72 @@ public class UtilsTest {
 	}
 	
 	/**
+	 * Positive test case: encode a date YYMMDD with MM and DD encoding single digit values
+	 */
+	@Test
+	public void testEncodeDate_MmDdSingleDigit() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, 1984);
+		calendar.set(Calendar.MONTH, Calendar.FEBRUARY);
+		calendar.set(Calendar.DATE, 1);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		Date dateInput = calendar.getTime();
+		byte[] dateExpected = new byte[]{(byte) 0x08, (byte) 0x04, (byte) 0x00, (byte) 0x02, (byte) 0x00, (byte) 0x01};
+		
+		byte[] dateReceived = Utils.encodeDate(dateInput);
+		
+		assertArrayEquals(dateExpected, dateReceived);
+	}
+	
+	/**
+	 * Positive test case: encode a date YYMMDD with YY, MM and DD encoding two digit values
+	 */
+	@Test
+	public void testEncodeDate() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, 1984);
+		calendar.set(Calendar.MONTH, Calendar.DECEMBER);
+		calendar.set(Calendar.DATE, 31);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		Date dateInput = calendar.getTime();
+		byte[] dateExpected = new byte[]{(byte) 0x08, (byte) 0x04, (byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x01};
+		
+		byte[] dateReceived = Utils.encodeDate(dateInput);
+		
+		assertArrayEquals(dateExpected, dateReceived);
+	}
+	
+	/**
+	 * Positive test case: encode a date YYMMDD with date encoding leap day
+	 */
+	@Test
+	public void testEncodeDate_LeapDay() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, 1984);
+		calendar.set(Calendar.MONTH, Calendar.FEBRUARY);
+		calendar.set(Calendar.DATE, 29);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		Date dateInput = calendar.getTime();
+		byte[] dateExpected = new byte[]{(byte) 0x08, (byte) 0x04, (byte) 0x00, (byte) 0x02, (byte) 0x02, (byte) 0x09};
+		
+		byte[] dateReceived = Utils.encodeDate(dateInput);
+		
+		assertArrayEquals(dateExpected, dateReceived);
+	}
+	
+	/**
 	 * Positive test case: check data array for smaller prefix.
 	 */
 	@Test

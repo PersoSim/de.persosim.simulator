@@ -73,6 +73,12 @@ public class BitFieldTest extends PersoSimTestCase {
 	}
 	
 	@Test
+	public void testGetAsZeroPaddedBigEndianByteArray() {
+		BitField bf = BitField.buildFromBigEndian(16, field1Content);
+		assertArrayEquals(field1Content, bf.getAsZeroPaddedBigEndianByteArray());
+	}
+	
+	@Test
 	public void testConcatenate(){
 		//create test data
 		byte [] concatenated = Utils.concatByteArrays(field1Content, field2Content);
@@ -123,4 +129,5 @@ public class BitFieldTest extends PersoSimTestCase {
 		
 		assertEquals(expected, result);
 	}
+	
 }

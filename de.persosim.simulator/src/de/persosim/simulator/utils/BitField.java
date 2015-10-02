@@ -67,6 +67,7 @@ public class BitField {
 			 * sign. Then shift this byte such that the currently interesting
 			 * bit is the LSB. Masking the other 7 bits away provides the value
 			 * that is added to the internal representation of the bit field.
+			 * This inverts bit order per byte and preserves byte order.
 			 */
 			setBit(i,
 					(((bitsToStore[i / 8] & 0xFF) >>> i % 8) & 0b00000001) == 1);
@@ -217,4 +218,22 @@ public class BitField {
 		}
 		return result;
 	}
+	
+	/**
+	 * This method creates a padded big endian byte array representation of this {@link BitField}
+	 * @return a padded big endian byte array representation of this {@link BitField}
+	 */
+	public byte[] getAsZeroPaddedBigEndianByteArray() {
+		int length = getNumberOfBits() / 8;
+		if (getNumberOfBits() % 8 > 0) {
+			length++;
+		}
+		byte[] result = new byte[length];
+		for (int i = 0; i < getNumberOfBits(); i++) {
+			byte temp = (byte) ((byte) (getBit(i) ? 1 : 0) << (i % 8));
+			result[result.length - 1 - (i / 8)] |= temp;
+		}
+		return result;
+	}
+	
 }

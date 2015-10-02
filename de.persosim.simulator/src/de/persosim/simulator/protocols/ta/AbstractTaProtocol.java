@@ -54,6 +54,7 @@ import de.persosim.simulator.utils.Utils;
 /**
  * @author mboonk
  * 
+ * FIXME MBK add javadoc
  */
 public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine implements TlvConstants {
 
@@ -422,7 +423,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			ConstructedTlvDataObject certificateData = new ConstructedTlvDataObject(TlvConstants.TAG_7F21);
 			certificateData.addTlvDataObject(certificateBodyData, certificateSignatureData);
 			CardVerifiableCertificate certificate = new CardVerifiableCertificate(certificateData, currentCertificate.getPublicKey());
-			if (certificate.getCertificateAuthorityReference().equals(currentCertificate.getCertificateHolderReference())){
+			if (certificate.getCertificationAuthorityReference().equals(currentCertificate.getCertificateHolderReference())){
 				if (!isCertificateIssuerValid(certificate, currentCertificate)){
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
@@ -430,7 +431,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 							"The certificate was issued by an not valid instance", resp);
 					return;
 				}
-				if (checkSignature(currentCertificate.getPublicKeyOid(), currentCertificate.getPublicKey(), certificateBodyData.toByteArray(), certificateSignatureData.getValueField())){
+				if (checkSignature((TaOid) currentCertificate.getBody().getPublicKey().getCvOid(), currentCertificate.getPublicKey(), certificateBodyData.toByteArray(), certificateSignatureData.getValueField())){
 					//differentiate between CVCA link certificates and other types for date validation
 					if (checkValidity(certificate, currentCertificate, getCurrentDate().getDate())){
 						try {

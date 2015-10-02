@@ -1,50 +1,33 @@
 package de.persosim.simulator.crypto.certificates;
 
 import java.security.PublicKey;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
-import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
-import de.persosim.simulator.exception.NotParseableException;
-import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
-import de.persosim.simulator.protocols.ta.CertificateRole;
-import de.persosim.simulator.protocols.ta.RelativeAuthorization;
-import de.persosim.simulator.protocols.ta.TaOid;
-import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
-import de.persosim.simulator.tlv.TlvDataObject;
-import de.persosim.simulator.utils.BitField;
-import de.persosim.simulator.utils.Utils;
 
 
 /**
- * This class implements card verifiable certificates as described in TR-03110
+ * This class implements card verifiable certificate as described in TR-03110
  * v2.10 Part 3 Appendix C.
  * 
- * @see CardVerifiableCertificate
+ * @see CertificateBody
  * @author mboonk
  * 
  */
 public class CardVerifiableCertificate {
-	int certificateProfileIdentifier;
-	PublicKeyReference certificateAuthorityReference;
-	TaOid publicKeyOid;
-	PublicKey publicKey;
-	PublicKeyReference certificateHolderReference;
-	CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate;
-	Date certificateEffective;
-	Date certificateExpiration;
-	List<CertificateExtension> certificateExtensions;
-
-	// TODO remove this field as soon as the certificate encoding can be
-	// recreated from the parsed data
-	private ConstructedTlvDataObject initialData;
+	
+	CertificateBody body;
+	protected byte[] signature;
+	
+	public CardVerifiableCertificate(CertificateBody body, byte[] signature) {	
+		this.body = body;
+		this.signature = signature;
+	}
 	
 	/**
 	 * Create a certificate object from the TLV-encoding using the domain
@@ -53,7 +36,14 @@ public class CardVerifiableCertificate {
 	 * @throws CertificateNotParseableException
 	 */
 	public CardVerifiableCertificate(ConstructedTlvDataObject certificateData) throws CertificateNotParseableException {
-		this(certificateData, null);
+		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_7F4E);
+		
+		//Body
+		body = parseCertificateBody(certificateBodyData);
+		
+		//Signature
+		PrimitiveTlvDataObject signatureData = (PrimitiveTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_5F37);
+		signature = signatureData.getValueField();
 	}
 
 	/**
@@ -65,121 +55,48 @@ public class CardVerifiableCertificate {
 	 * @param currentPublicKey the public key to be used
 	 * @throws CertificateNotParseableException
 	 */
-	public CardVerifiableCertificate(
-			ConstructedTlvDataObject certificateData,
-			PublicKey currentPublicKey) throws CertificateNotParseableException {
-		initialData = certificateData;
-		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) certificateData.getTlvDataObject(TlvConstants.TAG_7F4E);
+	public CardVerifiableCertificate(ConstructedTlvDataObject certificateData, PublicKey currentPublicKey) throws CertificateNotParseableException {
+		this(certificateData);
 		
-		
-		//certificate profile identifier
-		certificateProfileIdentifier = Utils.getIntFromUnsignedByteArray(certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F29).getValueField());
-		//certification authority reference
-		try {
-			certificateAuthorityReference = new PublicKeyReference(certificateBodyData.getTlvDataObject(TlvConstants.TAG_42));
-		} catch (CarParameterInvalidException e) {
-			throw new CertificateNotParseableException("The certificate authority reference could not be parsed");
-		}
-		//public key
-		ConstructedTlvDataObject publicKeyData = (ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F49);
-		publicKeyOid = new TaOid(publicKeyData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
-		publicKey = Tr03110Utils.parseCertificatePublicKey(publicKeyData, currentPublicKey);
-		if (publicKey == null){
-			throw new CertificateNotParseableException("The public key data could not be parsed");
-		}
-		//certificate holder reference
-		try {
-			certificateHolderReference = new PublicKeyReference(certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F20));
-		} catch (CarParameterInvalidException e) {
-			throw new CertificateNotParseableException("The certificate holder reference could not be parsed");
-		}
-		//dates
-		try {
-			certificateExpiration = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F24)).getValueField());
-			certificateEffective = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F25)).getValueField());
-		} catch (NotParseableException e) {
-			throw new CertificateNotParseableException("The date could not be parsed");
-		}
-		
-		if (certificateExpiration.before(certificateEffective)){
-			throw new CertificateNotParseableException("The certificates expiration date is before the effective date");
-		}
-		
-		//chat
-		certificateHolderAuthorizationTemplate = parseChat((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F4C));
-		//certificate extensions
-		certificateExtensions = parseExtensions((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_65));
-	}
-
-	/**
-	 * Create a list of all certificate extensions
-	 * @param extensionsData as described in TR03110 v2.10 part 3, C
-	 * @return all parsed extensions
-	 */
-	private List<CertificateExtension> parseExtensions(
-			ConstructedTlvDataObject extensionsData) {
-		List<CertificateExtension> result = new ArrayList<>();
-		if (extensionsData != null){
-			for (TlvDataObject ddt : extensionsData.getTlvDataObjectContainer()){
-				if (ddt instanceof ConstructedTlvDataObject){
-					result.add(new CertificateExtension((ConstructedTlvDataObject) ddt));
-				}
-			}
-		}
-		return result;
+		getPublicKey().updateKey(currentPublicKey);
 	}
 	
 	/**
-	 * Create a CHAT object from data as stored in a card verifiable certificate.
-	 * @param chatData as described in TR-03110 V2.10 part 3, C
-	 * @return the {@link CertificateHolderAuthorizationTemplate} object
+	 * This method parses and returns the certificate body
+	 * @param certificateBodyData the certificate body to parse
+	 * @return the parsed certificate body
 	 * @throws CertificateNotParseableException
 	 */
-	private CertificateHolderAuthorizationTemplate parseChat(
-			ConstructedTlvDataObject chatData) throws CertificateNotParseableException {
-
-		TaOid objectIdentifier = new TaOid(chatData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
-		PrimitiveTlvDataObject relativeAuthorizationData = (PrimitiveTlvDataObject) chatData.getTlvDataObject(TlvConstants.TAG_53);
-		CertificateRole role = CertificateRole.getFromMostSignificantBits(relativeAuthorizationData.getValueField()[0]);
-		BitField authorization = BitField.buildFromBigEndian(relativeAuthorizationData.getLengthValue() * 8 - 2, relativeAuthorizationData.getValueField());
-		RelativeAuthorization relativeAuthorization = new RelativeAuthorization(role, authorization);
-		
-		CertificateHolderAuthorizationTemplate result = new CertificateHolderAuthorizationTemplate(objectIdentifier, relativeAuthorization);
-		
-		//check if oid and relative authorization fit together
-		TerminalType type = result.getTerminalType();
-		int authBits = result.getRelativeAuthorization().getRepresentation().getNumberOfBits();
-		
-		if ((type.equals(TerminalType.AT) && authBits != 40) || ((type.equals(TerminalType.IS) || type.equals(TerminalType.ST)) && authBits != 8)){
-			throw new CertificateNotParseableException("invalid combination of OID and terminal type");
-		}
-		
-		return result;
+	public CertificateBody parseCertificateBody(ConstructedTlvDataObject certificateBodyData) throws CertificateNotParseableException {
+		return new CertificateBody(certificateBodyData);
 	}
-
+	
+	/**
+	 * @return the certificate profile identifier
+	 */
 	public int getCertificateProfileIdentifier() {
-		return certificateProfileIdentifier;
+		return body.getCertificateProfileIdentifier();
 	}
 	
 	/**
 	 * @return the reference to the public key of the certificate authority
 	 */
-	public PublicKeyReference getCertificateAuthorityReference() {
-		return certificateAuthorityReference;
+	public PublicKeyReference getCertificationAuthorityReference() {
+		return body.getCertificationAuthorityReference();
 	}
 	
 	/**
 	 * @return the reference to the public key of the certificate holder
 	 */
 	public PublicKeyReference getCertificateHolderReference() {
-		return certificateHolderReference;
+		return body.getCertificateHolderReference();
 	}
 	
 	/**
 	 * @return the public key associated with this certificate
 	 */
-	public PublicKey getPublicKey() {
-		return publicKey;
+	public CvPublicKey getPublicKey() {
+		return body.getPublicKey();
 	}
 	
 	/**
@@ -187,52 +104,67 @@ public class CardVerifiableCertificate {
 	 *         certificate
 	 */
 	public CertificateHolderAuthorizationTemplate getCertificateHolderAuthorizationTemplate() {
-		return certificateHolderAuthorizationTemplate;
+		return body.getCertificateHolderAuthorizationTemplate();
 	}
 
 	/**
 	 * @return the date from which the certificate is valid
 	 */
 	public Date getEffectiveDate() {
-		return certificateEffective;
+		return body.getCertificateEffectiveDate();
 	}
 	
 	/**
 	 * @return the date form which the certificate is no longer valid
 	 */
 	public Date getExpirationDate() {
-		return certificateExpiration;
-	}
-	
-	/**
-	 * @return the extensions this certificate has included
-	 */
-	public Collection<CertificateExtension> getCertificateExtensions() {
-		return certificateExtensions;
-	}
-
-	/**
-	 * Get the DER-encoded representation of this certificate.
-	 * 
-	 * @return
-	 * 
-	 */
-	public byte[] getEncoded() {
-		return initialData.toByteArray();
-	}
-
-	/**
-	 * @return the public keys oid
-	 */
-	public TaOid getPublicKeyOid() {
-		return publicKeyOid;
+		return body.getCertificateExpirationDate();
 	}
 
 	@Override
 	public String toString() {
-		return "CardVerifiableCertificate [certificateAuthorityReference="
-				+ certificateAuthorityReference
-				+ ", certificateHolderReference=" + certificateHolderReference
+		return "CardVerifiableCertificate [certificationAuthorityReference="
+				+ body.getCertificationAuthorityReference()
+				+ ", certificateHolderReference=" + body.certificateHolderReference
 				+ "]";
 	}
+	
+	/**
+	 * Get the DER-encoded representation of this certificate.
+	 * 
+	 * @return the DER-encoded representation of this certificate
+	 * 
+	 */
+	public ConstructedTlvDataObject getEncoded() {
+		ConstructedTlvDataObject encoding = CertificateUtils.encodeCertificate(
+				body,
+				signature);
+		
+		return encoding;
+	}
+	
+	/**
+	 * This method returns the certificate extensions
+	 * @return the certificate extensions
+	 */
+	public Collection<CertificateExtension> getCertificateExtensions() {
+		return body.getCertificateExtensions();
+	}
+	
+	/**
+	 * This method returns the certificate body
+	 * @return the certificate body
+	 */
+	public CertificateBody getBody() {
+		return body;
+	}
+	
+	/**
+	 * This method returns the signature of this certificate
+	 * @return the signature of this certificate
+	 */
+	public byte[] getSignature() {
+		return signature;
+	}
+	
 }
