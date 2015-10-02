@@ -37,6 +37,7 @@ import de.persosim.simulator.crypto.KeyDerivationFunction;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.Iso7816;
+import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.SecInfoPublicity;
@@ -173,7 +174,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 				staticKeyPairPicc = keyPairObject.getKeyPair();
 				caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());
 			} else {
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+				ResponseApdu resp = new ResponseApdu(PlatformUtil.SW_4984_REFERENCE_DATA_NOT_USABLE);
 				processingData.updateResponseAPDU(this, "The domain parameters could not be extracted from the referenced key", resp);
 				return;
 			}
@@ -188,7 +189,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 			processingData.updateResponseAPDU(this, "Command Set AT successfully processed", resp);
 		} catch (ProcessingException e) {
-			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
+			ResponseApdu resp = new ResponseApdu(PlatformUtil.convert6xxxTo4xxxStatusWord(e.getStatusWord()));
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 		}
 	}
@@ -596,6 +597,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 				if (curKey.isPrivilegedOnly()) {
 					privilegedPublicKeyInfos.add(caPublicKeyInfo);
 				} else {
+					// TODO is copying to privileged also needed here?
 					unprivilegedPublicKeyInfos.add(caPublicKeyInfo);
 				}
 			}
