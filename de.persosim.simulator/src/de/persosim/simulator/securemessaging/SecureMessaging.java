@@ -24,9 +24,9 @@ import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.secstatus.SecStatusEventUpdatePropagation;
 import de.persosim.simulator.secstatus.SecurityEvent;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
+import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
-import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.PersoSimLogger;
@@ -44,12 +44,7 @@ import de.persosim.simulator.utils.Utils;
  * @author slutters
  * 
  */
-public class SecureMessaging extends Layer {
-	public static final TlvTag TAG_87 = new TlvTag((byte) 0x87);
-	public static final TlvTag TAG_97 = new TlvTag((byte) 0x97);
-	public static final TlvTag TAG_99 = new TlvTag((byte) 0x99);
-	public static final TlvTag TAG_8E = new TlvTag((byte) 0x8E);
-	
+public class SecureMessaging extends Layer implements TlvConstants{
 	/*--------------------------------------------------------------------------------*/
 	private SmDataProvider dataProvider = null;
 	
