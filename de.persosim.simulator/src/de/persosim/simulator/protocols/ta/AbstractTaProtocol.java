@@ -130,7 +130,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		return true;
 	}
 	
-	void processCommandGetChallenge() {
+	protected void processCommandGetChallenge() {
 		if (!checkSecureMessagingApdu()){
 			return;
 		}		
