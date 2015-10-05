@@ -49,6 +49,7 @@ public class SecureMessaging extends Layer {
 	public static final TlvTag TAG_97 = new TlvTag((byte) 0x97);
 	public static final TlvTag TAG_99 = new TlvTag((byte) 0x99);
 	public static final TlvTag TAG_8E = new TlvTag((byte) 0x8E);
+	public static final TlvTag TAG_85 = new TlvTag((byte) 0x85);
 	
 	/*--------------------------------------------------------------------------------*/
 	private SmDataProvider dataProvider = null;
@@ -276,7 +277,7 @@ public class SecureMessaging extends Layer {
 	 * @return a byte array representation of an SM secured APDU
 	 */
 	public CommandApdu extractPlainTextAPDU() {
-		TlvDataObject tlvObject87, tlvObject8E, tlvObject97;
+		TlvDataObject cryptogram, tlvObject8E, tlvObject97;
 		byte[] encryptedData, paddedData, data, le, plainApduCommandData, dbgIv;
 		int isoCaseOfPlainAPDU;
 		ByteArrayOutputStream apduStream;
@@ -303,10 +304,14 @@ public class SecureMessaging extends Layer {
 			throw new IllegalArgumentException("SM APDU is expected to contain tag 8E (mac)");
 		}
 		
-		tlvObject87 = constructedCommandDataField.getTlvDataObject(TAG_87);
+		if (processingData.getCommandApdu().getIns() %2 == 0) {
+			cryptogram = constructedCommandDataField.getTlvDataObject(TAG_87);
+		} else {
+			cryptogram = constructedCommandDataField.getTlvDataObject(TAG_85);
+		}
 		tlvObject97 = constructedCommandDataField.getTlvDataObject(TAG_97);
 		
-		if(tlvObject87 == null) {
+		if(cryptogram == null) {
 			if(tlvObject97 == null) {
 				isoCaseOfPlainAPDU = 1;
 			} else{
@@ -328,8 +333,8 @@ public class SecureMessaging extends Layer {
 		
 		// append data if present 
 		if(isoCaseOfPlainAPDU > 2) {
-			log(this, "TLV object 87 is: " + tlvObject87);
-			encryptedData = this.getEncryptedDataFromFormattedEncryptedData(tlvObject87);
+			log(this, "Cryptogram is: " + cryptogram);
+			encryptedData = this.getEncryptedDataFromFormattedEncryptedData(cryptogram);
 			log(this, "encrypted data is: " + HexString.encode(encryptedData));
 			log(this, "used cipher iv is     : " + HexString.encode(dataProvider.getCipherIv().getIV()));
 			
@@ -337,9 +342,11 @@ public class SecureMessaging extends Layer {
 			log(this, "decrypted cipher iv is: " + HexString.encode(dbgIv));
 			
 			paddedData = CryptoSupport.decrypt(dataProvider.getCipher(), encryptedData, dataProvider.getKeyEnc(), dataProvider.getCipherIv());
-			log(this, "padded data is: " + HexString.encode(paddedData));
 			
+			//TODO should padding be handled differently for odd instruction/tag 85 contents?
+			log(this, "padded data is: " + HexString.encode(paddedData));
 			data = this.unpadPlainTextData(paddedData);
+			
 			log(this, "plain text data is: " + HexString.encode(data));
 			
 			try {
@@ -387,7 +394,7 @@ public class SecureMessaging extends Layer {
 	 * @return the result of mac verification: true iff verified, false otherwise
 	 */
 	public boolean verifyMac() {
-		TlvDataObject tlvObject87, tlvObject8E, tlvObject97;
+		TlvDataObject cryptogram, tlvObject8E, tlvObject97;
 		byte[] extractedMac, tlv97Plain, tlv87Plain;
 		byte[] header, paddingHeader, paddingMacInput, macResult;
 		int paddingLengthHeader, blockSize, lengthOfMacInputData, paddingLengthMacInput;
@@ -410,10 +417,14 @@ public class SecureMessaging extends Layer {
 			throw new IllegalArgumentException("SM APDU is expected to contain tag 8E (mac)");
 		}
 		
-		tlvObject87 = constructedCommandDataField.getTlvDataObject(TAG_87);
+		if (processingData.getCommandApdu().getIns() %2 == 0) {
+			cryptogram = constructedCommandDataField.getTlvDataObject(TAG_87);
+		} else {
+			cryptogram = constructedCommandDataField.getTlvDataObject(TAG_85);
+		}
 		tlvObject97 = constructedCommandDataField.getTlvDataObject(TAG_97);
 		
-		if(tlvObject87 == null) {
+		if(cryptogram == null) {
 			if(tlvObject97 == null) {
 				isoCaseOfPlainAPDU = 1;
 			} else{
@@ -432,7 +443,7 @@ public class SecureMessaging extends Layer {
 		}
 		
 		if(isoCaseOfPlainAPDU > 2) {
-			log(this, "TLV object 87 is: " + tlvObject87, TRACE);
+			log(this, "TLV object 87 is: " + cryptogram, TRACE);
 		}
 		
 		/* verify mac */
@@ -456,7 +467,7 @@ public class SecureMessaging extends Layer {
 		lengthOfMacInputData = header.length + paddingHeader.length;
 		
 		if(isoCaseOfPlainAPDU > 2) {
-			tlv87Plain = tlvObject87.toByteArray();
+			tlv87Plain = cryptogram.toByteArray();
 			lengthOfMacInputData += tlv87Plain.length;
 			
 			try {
@@ -524,8 +535,11 @@ public class SecureMessaging extends Layer {
 		byte[] encryptedData, tlvDataObjectValuePlain;
 		
 		tlvDataObjectValuePlain = tlvDataObject.getValueField();
-		encryptedData = Arrays.copyOfRange(tlvDataObjectValuePlain, 1, tlvDataObjectValuePlain.length);
-		
+		if (tlvDataObject.getTlvTag().equals(TAG_87)) {
+			encryptedData = Arrays.copyOfRange(tlvDataObjectValuePlain, 1, tlvDataObjectValuePlain.length);
+		} else {
+			encryptedData = Arrays.copyOf(tlvDataObjectValuePlain, tlvDataObjectValuePlain.length);
+		}
 		return encryptedData;
 	}
 	
