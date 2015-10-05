@@ -587,4 +587,15 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		return secretPoint;
 	}
 	
+	/**
+	 * This method returns a projection of the provided point's selected coordinate.
+	 * If the length of the selected encoded coordinate is less than the provided reference length, it is padded to this length.
+	 * @param ecPoint the point to work on
+	 * @param encodeX true: encode x-coordinate, false: encode y-coordinate
+	 * @return the projection of the provided point's selected coordinate
+	 */
+	public byte[] getProjectedRepresentation(ECPoint ecPoint, boolean encodeX) {
+		return CryptoUtil.getProjectedRepresentation(ecPoint, getPublicPointReferenceLengthL(), encodeX);
+	}
+	
 }

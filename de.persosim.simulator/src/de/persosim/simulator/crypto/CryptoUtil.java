@@ -259,26 +259,10 @@ public class CryptoUtil {
 		byte encodingIndicator;
 		byte[] pointEncoding;
 		
-		BigInteger x = ecPoint.getAffineX();
-		BigInteger y = ecPoint.getAffineY();
+		byte[] xBytes = getProjectedRepresentation(ecPoint, referenceLength, true);
+		byte[] yBytes = getProjectedRepresentation(ecPoint, referenceLength, false);
 		
-		// extract coordinates
-		byte[] xBytes = Utils.toUnsignedByteArray(x);
-		byte[] yBytes = Utils.toUnsignedByteArray(y);
-		
-		//check coordinate lengths
-		if ((xBytes.length > referenceLength) || (yBytes.length > referenceLength)) {
-			throw new IllegalArgumentException("Coordinates of point are larger than reference length");
-		}
-
-		// add padding to x coordinate if needed
-		if (xBytes.length < referenceLength) {
-			byte[] padding = new byte[referenceLength - xBytes.length];
-			Arrays.fill(padding, (byte) 0x00);
-			xBytes = Utils.concatByteArrays(padding, xBytes);
-		}
-		
-		boolean yBitSet = y.testBit(0);
+		boolean yBitSet = ecPoint.getAffineY().testBit(0);
 		
 		if(encoding == ENCODING_COMPRESSED) {
 			if(yBitSet) {
@@ -302,17 +286,48 @@ public class CryptoUtil {
 				}
 			}
 			
-			// add padding to y coordinate if needed
-			if (yBytes.length < referenceLength) {
-				byte[] padding = new byte[referenceLength - yBytes.length];
-				Arrays.fill(padding, (byte) 0x00);
-				yBytes = Utils.concatByteArrays(padding, yBytes);
-			}
-			
 			pointEncoding = Utils.concatByteArrays(xBytes, yBytes);
 		}
 		
 		return Utils.concatByteArrays(new byte[] {encodingIndicator}, pointEncoding);
+	}
+	
+	/**
+	 * This method returns a projection of the provided point's selected coordinate.
+	 * If the length of the selected encoded coordinate is less than the provided reference length, it is padded to this length.
+	 * @param ecPoint the point to work on
+	 * @param referenceLength the desired reference length
+	 * @param encodeX true: encode x-coordinate, false: encode y-coordinate
+	 * @return the projection of the provided point's selected coordinate
+	 */
+	public static byte[] getProjectedRepresentation(ECPoint ecPoint, int referenceLength, boolean encodeX) {
+		BigInteger coordinate;
+		String coordinateName;
+		
+		if(encodeX) {
+			coordinate = ecPoint.getAffineX();
+			coordinateName = "x";
+		} else{
+			coordinate = ecPoint.getAffineY();
+			coordinateName = "y";
+		}
+		
+		// extract coordinate
+		byte[] bytes = Utils.toUnsignedByteArray(coordinate);
+		
+		//check coordinate length
+		if (bytes.length > referenceLength) {
+			throw new IllegalArgumentException(coordinateName + "-coordinate of point is larger than reference length");
+		}
+		
+		// add padding to coordinate if needed
+		if (bytes.length < referenceLength) {
+			byte[] padding = new byte[referenceLength - bytes.length];
+			Arrays.fill(padding, (byte) 0x00);
+			bytes = Utils.concatByteArrays(padding, bytes);
+		}
+		
+		return bytes;
 	}
 	
 	public static KeyPair generateKeyPair(DomainParameterSet domParamSet, SecureRandom secRandom) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
