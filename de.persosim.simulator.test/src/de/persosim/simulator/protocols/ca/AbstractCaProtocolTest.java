@@ -38,6 +38,7 @@ import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
+import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
@@ -249,7 +250,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		caProtocol.process(processingData);
 
 		// check results
-		assertEquals("Statusword is not 6A88", Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, processingData.getResponseApdu().getStatusWord());
+		assertEquals("Statusword is not 4A88", PlatformUtil.SW_4A88_REFERENCE_DATA_NOT_FOUND, processingData.getResponseApdu().getStatusWord());
 	}
 	
 	/**
@@ -314,7 +315,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		caProtocol.process(processingData);
 
 		// check results
-		assertEquals("Statusword is not 6A88", Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, processingData.getResponseApdu().getStatusWord());
+		assertEquals("Statusword is not 4A88", PlatformUtil.SW_4A88_REFERENCE_DATA_NOT_FOUND, processingData.getResponseApdu().getStatusWord());
 	}
 	
 	/**
