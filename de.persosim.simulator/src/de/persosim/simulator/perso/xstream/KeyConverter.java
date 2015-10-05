@@ -1,8 +1,8 @@
 package de.persosim.simulator.perso.xstream;
 
+import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
-
 
 import java.security.Key;
 import java.security.KeyFactory;
@@ -13,6 +13,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
@@ -93,28 +94,30 @@ public class KeyConverter implements Converter {
 		
 		if (byteValue == null || algorithmValue == null || algorithmValue.equals("") || byteValue.equals("")) {
 			log(getClass(), "can not create "+ keyType +" object, unmarshal failed", ERROR);
-			throw new NullPointerException ("can not create "+ keyType +" object, unmarshal failed!");
+			throw new XStreamException("can not create "+ keyType +" object, unmarshal failed!");
 		}
 		
 		PKCS8EncodedKeySpec  ks_priv = new PKCS8EncodedKeySpec (HexString.toByteArray(byteValue));
 		X509EncodedKeySpec  ks_pub = new X509EncodedKeySpec (HexString.toByteArray(byteValue));
 		
+		//XXX split into private and public key converters
 		try {
-			//XXX split into private and public key converters
-			if (keyType.contains("publickey"))
-				pk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePublic(ks_pub);
-			else if (keyType.contains("privatekey"))
+			pk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePublic(ks_pub);
+		} catch (InvalidKeySpecException| NoSuchAlgorithmException e1) {
+			log(getClass(), "this is not a valid public key", DEBUG);
+			
+			try {
 				sk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePrivate(ks_priv);
-		} catch (InvalidKeySpecException| NoSuchAlgorithmException e) {
-			log(getClass(), "Invalid KeySpec or Algorithm during unmarshal", ERROR);
-			e.printStackTrace();
+			} catch (InvalidKeySpecException| NoSuchAlgorithmException e2) {
+				log(getClass(), "this is also not a valid private key", DEBUG);
+				throw new XStreamException("Neither a valid private nor public key could be extracted", e2);
+			}
 		}
 		
-
-		if (keyType.contains("publickey"))
+		if (pk != null) {
 			return pk;
-		else if (keyType.contains("privatekey"))
+		} else {
 			return sk;
-		return null;
+		}
 	}
 }
