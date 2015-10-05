@@ -46,7 +46,7 @@ import de.persosim.simulator.utils.Utils;
  */
 public class SecureMessaging extends Layer implements TlvConstants{
 	/*--------------------------------------------------------------------------------*/
-	private SmDataProvider dataProvider = null;
+	protected SmDataProvider dataProvider = null;
 	
 	protected CryptoSupport cryptoSupport;
 	
@@ -135,7 +135,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		handleUpdatePropagations();
 	}
 	
-	private boolean isSmWrappingApplicable(){
+	public boolean isSmWrappingApplicable(){
 		CommandApdu cApdu = processingData.getCommandApdu();
 
 		if (!(cApdu instanceof IsoSecureMessagingCommandApdu)) {
@@ -162,7 +162,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		return true;
 	}
 	
-	private void handleUpdatePropagations() {
+	public void handleUpdatePropagations() {
 		LinkedList<UpdatePropagation> dataProviderList = processingData.getUpdatePropagations(SmDataProvider.class);
 		for (UpdatePropagation curDataProvider : dataProviderList) {
 			if (curDataProvider != null && curDataProvider instanceof SmDataProvider) {
@@ -192,12 +192,13 @@ public class SecureMessaging extends Layer implements TlvConstants{
 			
 			log(this, "data to be padded is: " + HexString.encode(data), TRACE);
 			
-			paddedData = CryptoUtil.padData(data, dataProvider.getCipher().getBlockSize());
+			paddedData = this.padData(data);
 			
 			log(this, "padded data is: " + HexString.encode(paddedData), DEBUG);
 			log(this, "block size is: " + dataProvider.getCipher().getBlockSize(), DEBUG);
 			
 			encryptedData = CryptoSupport.encrypt(dataProvider.getCipher(), paddedData, dataProvider.getKeyEnc(), dataProvider.getCipherIv());
+			
 			log(this, "encrypted data is: " + HexString.encode(encryptedData), DEBUG);
 			
 			postpaddedData = new byte[paddedData.length + 1];
@@ -223,6 +224,10 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		//create and propagate response APDU
 		ResponseApdu resp = new ResponseApdu(container, this.processingData.getResponseApdu().getStatusWord());
 		this.processingData.updateResponseAPDU(this, "Encrypted outgoing SM APDU", resp);
+	}
+	
+	protected byte [] padData(byte[] data) {
+		return CryptoUtil.padData(data, dataProvider.getCipher().getBlockSize());
 	}
 	
 	/**
@@ -348,7 +353,6 @@ public class SecureMessaging extends Layer implements TlvConstants{
 			} catch (IOException e) {
 				logException(this, e);
 			}
-			
 		}
 		
 		// append le if present
