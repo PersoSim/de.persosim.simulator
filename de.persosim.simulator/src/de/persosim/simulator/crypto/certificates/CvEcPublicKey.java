@@ -159,7 +159,15 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 		if(key == null) {
 			if(publicKey instanceof ECPublicKey) {
 				ECPublicKey ecPublicKey = (ECPublicKey) publicKey;
-				DomainParameterSetEcdh domParamsEcdh = new DomainParameterSetEcdh(ecPublicKey.getParams());
+				
+				ECParameterSpec ecParams = ecPublicKey.getParams();
+				
+				if(ecParams == null) {
+					log(CvEcPublicKey.class, "updating key must provide domain parameters", DEBUG);
+					return false;
+				}
+				
+				DomainParameterSetEcdh domParamsEcdh = new DomainParameterSetEcdh(ecParams);
 				ECPoint publicPoint = DomainParameterSetEcdh.reconstructPoint(publicPointEncoding);
 				key = domParamsEcdh.reconstructPublicKey(publicPoint, Crypto.getCryptoProvider());
 

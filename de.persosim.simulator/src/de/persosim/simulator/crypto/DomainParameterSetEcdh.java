@@ -353,10 +353,14 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		return (ECPrivateKey) privateKey;
 	}
 	
-	@Override
-	public byte[] encodePublicKey(PublicKey publicKey) {
-		// This method returns an EC point encoding according to ANSI X9.62 uncompressed mode
-		
+	/**
+	 * This method returns an encoding of the provided public key according to the also provided encoding.
+	 * See {@link CryptoUtil#encode(ECPoint, int, byte)}} for the supported encodings
+	 * @param publicKey the public key to encode
+	 * @param encoding the encoding
+	 * @return the public key encoding
+	 */
+	public byte[] encodePublicKey(PublicKey publicKey, byte encoding) {
 		ECPublicKey ecPublicKey;
 		
 		if(publicKey instanceof ECPublicKey) {
@@ -365,7 +369,13 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 			throw new IllegalArgumentException("invalid public ECDH key");
 		}
 		
-		return encodePoint(ecPublicKey.getW(), CryptoUtil.ENCODING_UNCOMPRESSED);
+		return encodePoint(ecPublicKey.getW(), encoding);
+	}
+	
+	@Override
+	public byte[] encodePublicKey(PublicKey publicKey) {
+		// This method returns an EC point encoding according to ANSI X9.62 uncompressed mode
+		return encodePublicKey(publicKey, CryptoUtil.ENCODING_UNCOMPRESSED);
 	}
 	
 	/**
@@ -585,6 +595,27 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		log(CryptoUtil.class, "H.y: " + HexString.encode(secretPoint.getAffineY()), TRACE);
 		
 		return secretPoint;
+	}
+	
+	/**
+	 * This method returns a projection of the provided point's selected coordinate.
+	 * If the length of the selected encoded coordinate is less than the provided reference length, it is padded to this length.
+	 * @param ecPoint the point to work on
+	 * @param encodeX true: encode x-coordinate, false: encode y-coordinate
+	 * @return the projection of the provided point's selected coordinate
+	 */
+	public byte[] getProjectedRepresentation(ECPoint ecPoint, boolean encodeX) {
+		return CryptoUtil.getProjectedRepresentation(ecPoint, getPublicPointReferenceLengthL(), encodeX);
+	}
+	
+	/**
+	 * This method returns a projection of the provided point's x-coordinate.
+	 * If the length of the encoded x-coordinate is less than the provided reference length, it is padded to this length.
+	 * @param ecPoint the point to work on
+	 * @return the projection of the provided point's x-coordinate
+	 */
+	public byte[] getProjectedRepresentation(ECPoint ecPoint) {
+		return CryptoUtil.getProjectedRepresentation(ecPoint, getPublicPointReferenceLengthL(), true);
 	}
 	
 }
