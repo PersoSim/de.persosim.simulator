@@ -36,6 +36,7 @@ import de.persosim.simulator.exception.CertificateUpdateException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.SecInfoPublicity;
+import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -90,6 +91,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	private RelativeAuthorization currentEffectiveAuthorization;
 	private TrustPointCardObject trustPoint;
 	private TerminalType terminalType;
+	private RelativeAuthorization relativeAuthorization;
 	private byte[] firstSectorPublicKeyHash;
 	private byte[] secondSectorPublicKeyHash;
 	
@@ -164,14 +166,59 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		//get necessary information stored in an earlier protocol (e.g. PACE)
 		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(PaceMechanism.class);
+		previousMechanisms.add(AuthorizationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+		
 		PaceMechanism paceMechanism = null;
-		if (currentMechanisms.size() > 0){
-			// extract the currently used terminal type
-			paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
+		AuthorizationMechanism authMechanism = null;
+		
+		if (currentMechanisms.size() >= 2){
+			for(SecMechanism secMechanism:currentMechanisms) {
+				if(secMechanism instanceof PaceMechanism) {
+					paceMechanism = (PaceMechanism) secMechanism;
+				} else{
+					if(secMechanism instanceof AuthorizationMechanism) {
+						authMechanism = (AuthorizationMechanism) secMechanism;
+					}
+				}
+			}
 			
-			terminalType = paceMechanism.getUsedChat().getTerminalType();
-
+			if(paceMechanism == null) {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "Did not detect execution of previous Pace protocol", resp);
+				return;
+			}
+			
+			// extract the currently used terminal type
+			CertificateHolderAuthorizationTemplate chat = paceMechanism.getUsedChat();
+			
+			if(chat == null) {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide CHAT", resp);
+				return;
+			}
+			
+			terminalType = chat.getTerminalType();
+			
+			if(authMechanism == null) {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide any authorization information", resp);
+				return;
+			}
+			
+			Authorization auth = authMechanism.getAuthorization(TaOid.id_AT);
+			
+			if(auth == null) {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide authorization information from chat", resp);
+				return;
+			}
+			
+			relativeAuthorization = (RelativeAuthorization) auth; 
 
 			// reset the currently set key
 			currentCertificate = null;
@@ -205,9 +252,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					
 					currentEffectiveAuthorization = currentCertificate.getCertificateHolderAuthorizationTemplate().getRelativeAuthorization();
 					
-					if (paceMechanism != null){
-						currentEffectiveAuthorization = currentEffectiveAuthorization.buildEffectiveAuthorization(paceMechanism.getUsedChat().getRelativeAuthorization());
-					}
+					currentEffectiveAuthorization = currentEffectiveAuthorization.buildEffectiveAuthorization(relativeAuthorization);
 					
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
@@ -222,9 +267,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					currentCertificate = trustPoint.getPreviousCertificate();
 					currentEffectiveAuthorization = currentCertificate.getCertificateHolderAuthorizationTemplate().getRelativeAuthorization();
 					
-					if (paceMechanism != null){
-						currentEffectiveAuthorization = currentEffectiveAuthorization.buildEffectiveAuthorization(paceMechanism.getUsedChat().getRelativeAuthorization());
-					}
+					currentEffectiveAuthorization = currentEffectiveAuthorization.buildEffectiveAuthorization(relativeAuthorization);
 					
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
