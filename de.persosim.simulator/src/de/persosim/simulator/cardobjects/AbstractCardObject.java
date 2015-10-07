@@ -26,7 +26,7 @@ public abstract class AbstractCardObject implements CardObject {
 
 	@Override
 	public void setSecStatus(SecStatus securityStatus) throws AccessDeniedException{
-		if (!lifeCycleState.isPersonalizationPhase()){
+		if (this.securityStatus != null && !lifeCycleState.isPersonalizationPhase()){
 			throw new AccessDeniedException("The security status can not be set after leaving the personalization phase");
 		}
 		this.securityStatus = securityStatus;
