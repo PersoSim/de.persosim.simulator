@@ -18,6 +18,7 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import javax.crypto.KeyAgreement;
@@ -47,15 +48,18 @@ import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.ResponseData;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110Utils;
+import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
+import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -119,6 +123,8 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	
 	protected MappingResult mappingResult;
 	
+	protected HashMap<Oid, Authorization> authorizations;
+	
 	TrustPointCardObject trustPoint;
 	CertificateHolderAuthorizationTemplate usedChat;
 	
@@ -128,6 +134,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		super("PACE");
 		
 		secureRandom = new SecureRandom();
+		authorizations = new HashMap<>();
 	}
 	
 	/**
@@ -230,8 +237,10 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				RelativeAuthorization authorization = new RelativeAuthorization(
 						CertificateRole.getFromMostSignificantBits(roleData[0]), BitField.buildFromBigEndian(
 								(roleData.length * 8) - 2, roleData));
-				usedChat = new CertificateHolderAuthorizationTemplate(chatOid,
-						authorization);
+				
+				authorizations.put(TaOid.id_AT, authorization);
+				
+				usedChat = new CertificateHolderAuthorizationTemplate(chatOid, authorization);
 				
 				TerminalType terminalType = usedChat.getTerminalType();
 
@@ -652,6 +661,9 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		if(paceSuccessful) {
 			ConstructedTlvDataObject responseContent = buildMutualAuthenticateResponse(piccToken);
 			if (setSmDataProvider()){
+				AuthorizationMechanism authMechanism = new AuthorizationMechanism(authorizations);
+				processingData.addUpdatePropagation(this, "Security status updated with authorization mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanism));
+				
 				responseApdu = new ResponseApdu(new TlvDataObjectContainer(responseContent), sw);
 			} else {
 				return;
@@ -702,6 +714,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			SmDataProviderTr03110 smDataProvider = new SmDataProviderTr03110(this.secretKeySpecENC, this.secretKeySpecMAC);
 			processingData.addUpdatePropagation(this, "init SM after successful PACE", smDataProvider);
 			
+			//TODO the Pace mechanism is not directly connected to the SM data provider - move code
 			//propagate data about successfully performed SecMechanism in SecStatus 
 			PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), usedChat);
 			processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
