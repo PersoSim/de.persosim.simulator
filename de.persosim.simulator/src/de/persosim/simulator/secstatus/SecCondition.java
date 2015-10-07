@@ -18,7 +18,13 @@ public interface SecCondition {
 	 * Perform the condition check.
 	 * 
 	 * As the calling entity requires the result of this check it is safe to
-	 * rely on it to provide correct mechanisms as input for the check.
+	 * rely on it to provide correct mechanisms as input for the check. This
+	 * means that any {@link SecCondition} can expect to receive correct
+	 * {@link SecMechanism} objects. However there is no guarantee to the number
+	 * and type of received mechanisms. A condition may receive the exact number
+	 * and type of requested mechanisms but it may also receive fewer ore more
+	 * mechanisms. Hence any condition must deal with any number and type of
+	 * conditions received.
 	 * 
 	 * @param mechanisms
 	 *            SecMechanisms required by this SecCondition as input to the
