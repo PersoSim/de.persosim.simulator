@@ -1,5 +1,8 @@
 package de.persosim.simulator.protocols.ta;
 
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static de.persosim.simulator.utils.PersoSimLogger.WARN;
+
 import de.persosim.simulator.utils.BitField;
 
 /**
@@ -8,7 +11,7 @@ import de.persosim.simulator.utils.BitField;
  * @author slutters
  * 
  */
-public abstract class Authorization {
+public class Authorization {
 	
 	protected BitField authorization;
 
@@ -22,10 +25,24 @@ public abstract class Authorization {
 	public BitField getAuthorization() {
 		return authorization;
 	}
-
+	
 	/**
-	 * @return a bit field representation of this object.
+	 * Construct the effective Authorization by calculating a logical and on the
+	 * {@link BitField} representations of role and authorization.
+	 * 
+	 * @param authorization
+	 * @return
 	 */
-	abstract public BitField getRepresentation();
+	public Authorization buildEffectiveAuthorization(Authorization authorization) {
+		BitField newAuthorization = authorization.getAuthorization();
+		
+		BitField effectiveAuth = newAuthorization.and(this.authorization);
+		
+		if(this.authorization.getNumberOfBits() != newAuthorization.getNumberOfBits()) {
+			log(this.getClass(), "updating authorizations of different length", WARN);
+		}
+		
+		return new Authorization(effectiveAuth);
+	}
 	
 }
