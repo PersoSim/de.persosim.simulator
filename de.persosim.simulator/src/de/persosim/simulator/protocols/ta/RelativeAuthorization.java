@@ -20,31 +20,24 @@ public class RelativeAuthorization extends Authorization {
 		super(authorization);
 		this.role = role;
 	}
-
+	
 	public CertificateRole getRole() {
 		return role;
 	}
-
-	@Override
+	
 	public BitField getRepresentation() {
 		return authorization.concatenate(role.getField());
 	}
 
-	/**
-	 * Construct the effective Authorization by calculating a logical and on the
-	 * {@link BitField} representations of role and authorization.
-	 * 
-	 * @param authorization
-	 * @return
-	 */
-	public RelativeAuthorization buildEffectiveAuthorization(
-			RelativeAuthorization authorization) {
-		BitField effectiveRole = authorization.getRole().getField()
-				.and(this.role.getField());
-		BitField effectiveAuth = authorization.getAuthorization().and(
-				this.authorization);
-		return new RelativeAuthorization(
-				CertificateRole.getFromField(effectiveRole), effectiveAuth);
+	@Override
+	public RelativeAuthorization buildEffectiveAuthorization(Authorization authorization) {
+		if (authorization instanceof RelativeAuthorization){
+			BitField effectiveRole = ((RelativeAuthorization) authorization).getRole().getField().and(this.role.getField());
+			BitField effectiveAuth = super.buildEffectiveAuthorization(authorization).getAuthorization(); 
+			return new RelativeAuthorization(CertificateRole.getFromField(effectiveRole), effectiveAuth);	
+		}
+		
+		throw new IllegalArgumentException("parameter must be of type " + RelativeAuthorization.class.getName());
 	}
 	
 }
