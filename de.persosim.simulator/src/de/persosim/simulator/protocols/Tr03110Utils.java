@@ -3,7 +3,6 @@ package de.persosim.simulator.protocols;
 import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 
-import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.PublicKey;
 import java.text.DecimalFormat;
@@ -14,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.ietf.jgss.GSSException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -23,7 +21,6 @@ import de.persosim.simulator.Activator;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
-import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.crypto.certificates.CvPublicKey;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.NotParseableException;
@@ -86,36 +83,6 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 
     }
 	
-	
-	/**
-	 * The given public key data will be parsed and if needed filled in with the
-	 * trust points public key domain parameters.
-	 * 
-	 * @param publicKeyData
-	 *            object from a {@link CardVerifiableCertificate}
-	 * @param trustPointPublicKey
-	 *            or null
-	 * @return the created {@link PublicKey} object
-	 * @throws GeneralSecurityException
-	 * @throws GSSException
-	 */
-	public static PublicKey parseCertificatePublicKey(
-			ConstructedTlvDataObject publicKeyData,
-			PublicKey trustPointPublicKey) {
-		
-		for (Tr03110UtilsProvider provider : providers) {
-			try{
-				PublicKey key = provider.parsePublicKey(publicKeyData, trustPointPublicKey);
-				if (key != null){
-					return key;
-				}
-			} catch (GeneralSecurityException e){
-				PersoSimLogger.logException(Tr03110Utils.class, e, PersoSimLogger.WARN);
-			}
-		}
-		return null;
-	}
-	
 	/**
 	 * This method parses a public key encoded within a CV certificate
 	 * @param publicKeyData the encoding of a public key
@@ -123,9 +90,13 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 	 */
 	public static CvPublicKey parseCvPublicKey(ConstructedTlvDataObject publicKeyData) {
 		for (Tr03110UtilsProvider provider : providers) {
-			CvPublicKey key = provider.parseCvPublicKey(publicKeyData);
-			if (key != null){
-				return key;
+			try {
+				CvPublicKey key = provider.parseCvPublicKey(publicKeyData);
+				if (key != null) {
+					return key;
+				}
+			} catch (Exception e) {
+				PersoSimLogger.logException(Tr03110Utils.class, e, PersoSimLogger.WARN);
 			}
 		}
 		return null;

@@ -6,7 +6,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -28,10 +32,12 @@ import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
+import de.persosim.simulator.crypto.certificates.CvPublicKey;
 import de.persosim.simulator.exception.NotParseableException;
 import de.persosim.simulator.protocols.pace.Pace;
 import de.persosim.simulator.protocols.pace.PaceOid;
 import de.persosim.simulator.test.PersoSimTestCase;
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.HexString;
 
@@ -218,12 +224,12 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				provider.parsePublicKey(null, null);
+				provider.parseCvPublicKey(null);
 				result = new GeneralSecurityException();
 			}
 		};
 		
-		assertNull(Tr03110Utils.parseCertificatePublicKey(null, null));
+		assertNull(Tr03110Utils.parseCvPublicKey(null));
 	}
 	
 	/**
@@ -237,32 +243,41 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 	public void testParseCertificatePublicKeyResultFound(
 			@Capturing final Tr03110UtilsProvider provider) throws GeneralSecurityException{
 		// prepare the mock
-		final PublicKey key = new PublicKey() {
+		final CvPublicKey key = new CvPublicKey(null, null) {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public String getFormat() {
+			public ConstructedTlvDataObject toTlvDataObject(boolean includeConditionalObjects) {
+				// TODO Auto-generated method stub
 				return null;
 			}
-			
+
 			@Override
-			public byte[] getEncoded() {
-				return null;
+			public boolean isComplete() {
+				// TODO Auto-generated method stub
+				return false;
 			}
-			
+
 			@Override
-			public String getAlgorithm() {
-				return null;
+			public boolean updateKey(PublicKey publicKey) {
+				// TODO Auto-generated method stub
+				return false;
 			}
-		};
+
+			@Override
+			public KeyPairGenerator getKeyPairGenerator(SecureRandom secRandom)
+					throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+				return null;
+			}};
 		new Expectations() {
 			{
-				provider.parsePublicKey(null, null);
-				result = key;
+				provider.parseCvPublicKey(null);
+				result =  key;
 			}
 		};
 		
-		assertSame(key, Tr03110Utils.parseCertificatePublicKey(null, null));
+		assertSame(key, Tr03110Utils.parseCvPublicKey(null));
 	}
 	
 }
