@@ -76,16 +76,8 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 				}
 			};
 			
-			serviceTracker = new ServiceTracker<Tr03110UtilsProvider, Tr03110UtilsProvider>(Activator.getContext(), Tr03110UtilsProvider.class.getName(), customizer);
+			serviceTracker = new ServiceTracker<Tr03110UtilsProvider, Tr03110UtilsProvider>(Activator.getContext(), Tr03110UtilsProvider.class, customizer);
 			serviceTracker.open();
-			
-			ServiceReference<Tr03110UtilsProvider> references [] = serviceTracker.getServiceReferences();
-			
-			if (references != null){
-				for(ServiceReference<Tr03110UtilsProvider> providerReference : references){
-					providers.add(Activator.getContext().getService(providerReference));	
-				}	
-			}
 					
 		} else {
 			PersoSimLogger.log(Tr03110Utils.class, "No OSGi context is available, no additional TR03110 functionalities are supported", PersoSimLogger.INFO);
