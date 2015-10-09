@@ -28,13 +28,13 @@ import de.persosim.simulator.utils.BitField;
 public class TaSecurityCondition implements SecCondition {
 
 	TerminalType terminalType;
-	RelativeAuthorization authorization;
+	Authorization authorization;
 
 	public TaSecurityCondition(){
 	}
 			
 	public TaSecurityCondition(TerminalType terminalType,
-			RelativeAuthorization authorization) {
+			Authorization authorization) {
 		super();
 		this.terminalType = terminalType;
 		this.authorization = authorization;
@@ -61,8 +61,8 @@ public class TaSecurityCondition implements SecCondition {
 				} else {
 					if(authorizationMechanism != null) {
 						Authorization auth = authorizationMechanism.getAuthorization(TaOid.id_AT);
-						BitField tempField = authorization.getRepresentation().or(auth.getRepresentation());
-						if (tempField.equals(auth.getRepresentation())) {
+						BitField tempField = authorization.getAuthorization().or(auth.getAuthorization());
+						if (tempField.equals(auth.getAuthorization())) {
 							return true;
 						}
 					}
