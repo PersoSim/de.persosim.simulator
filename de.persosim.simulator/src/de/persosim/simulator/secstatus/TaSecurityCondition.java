@@ -3,7 +3,9 @@ package de.persosim.simulator.secstatus;
 import java.util.Collection;
 import java.util.HashSet;
 
+import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
+import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.utils.BitField;
@@ -40,28 +42,34 @@ public class TaSecurityCondition implements SecCondition {
 
 	@Override
 	public boolean check(Collection<SecMechanism> mechanisms) {
+		TerminalAuthenticationMechanism terminalAuthenticationMechanism = null;
+		AuthorizationMechanism authorizationMechanism = null;
+		
 		for (SecMechanism mechanism : mechanisms) {
 			if (mechanism instanceof TerminalAuthenticationMechanism) {
-				TerminalAuthenticationMechanism terminalAuthenticationMechanism = (TerminalAuthenticationMechanism) mechanism;
-				if (terminalType == null
-						|| terminalAuthenticationMechanism.getTerminalType()
-								.equals(terminalType)) {
-					if (authorization == null) {
-						return true;
-					} else {
-						BitField tempField = authorization.getRepresentation()
-								.or(terminalAuthenticationMechanism
-										.getEffectiveAuthorization()
-										.getRepresentation());
-						if (tempField.equals(terminalAuthenticationMechanism
-								.getEffectiveAuthorization()
-								.getRepresentation())) {
+				terminalAuthenticationMechanism = (TerminalAuthenticationMechanism) mechanism;
+			}
+			if (mechanism instanceof AuthorizationMechanism) {
+				authorizationMechanism = (AuthorizationMechanism) mechanism;
+			}
+		}
+		
+		if(terminalAuthenticationMechanism != null) {
+			if (terminalType == null || terminalAuthenticationMechanism.getTerminalType().equals(terminalType)) {
+				if (authorization == null) {
+					return true;
+				} else {
+					if(authorizationMechanism != null) {
+						Authorization auth = authorizationMechanism.getAuthorization(TaOid.id_AT);
+						BitField tempField = authorization.getRepresentation().or(auth.getRepresentation());
+						if (tempField.equals(auth.getRepresentation())) {
 							return true;
 						}
 					}
 				}
 			}
 		}
+		
 		return false;
 	}
 
@@ -69,6 +77,7 @@ public class TaSecurityCondition implements SecCondition {
 	public Collection<Class<? extends SecMechanism>> getNeededMechanisms() {
 		HashSet<Class<? extends SecMechanism>> result = new HashSet<>();
 		result.add(TerminalAuthenticationMechanism.class);
+		result.add(AuthorizationMechanism.class);
 		return result;
 	}
 
