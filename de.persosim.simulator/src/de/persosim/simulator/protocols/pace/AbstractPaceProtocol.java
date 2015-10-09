@@ -234,13 +234,14 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				TlvDataObject oidData = chatData.getTlvDataObject(TAG_06);
 				byte[] roleData = chatData.getTlvDataObject(TAG_53).getValueField();
 				TaOid chatOid = new TaOid(oidData.getValueField());
+				
 				RelativeAuthorization authorization = new RelativeAuthorization(
 						CertificateRole.getFromMostSignificantBits(roleData[0]), BitField.buildFromBigEndian(
 								(roleData.length * 8) - 2, roleData));
 				
-				authorizations.put(TaOid.id_AT, authorization);
-				
 				usedChat = new CertificateHolderAuthorizationTemplate(chatOid, authorization);
+				
+				authorizations.put(TaOid.id_AT, usedChat.getRelativeAuthorization());
 				
 				TerminalType terminalType = usedChat.getTerminalType();
 
