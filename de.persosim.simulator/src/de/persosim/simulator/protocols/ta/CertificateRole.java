@@ -75,6 +75,11 @@ public enum CertificateRole {
 		}
 		return null;
 	}
+	
+	public static CertificateRole getFromMostSignificantBits(BitField field) {
+		BitField role = new BitField(new boolean [] { field.getBit(field.getNumberOfBits()-2),  field.getBit(field.getNumberOfBits()-1) });
+		return CertificateRole.getFromField(role);
+	}
 
 	CertificateRole(BitField value) {
 		this.value = value;
