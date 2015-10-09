@@ -18,7 +18,6 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import javax.crypto.KeyAgreement;
@@ -48,18 +47,17 @@ import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
-import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.ResponseData;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110Utils;
-import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.AuthorizationMechanism;
+import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -123,7 +121,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	
 	protected MappingResult mappingResult;
 	
-	protected HashMap<Oid, Authorization> authorizations;
+	protected AuthorizationStore authorizationStore;
 	
 	TrustPointCardObject trustPoint;
 	CertificateHolderAuthorizationTemplate usedChat;
@@ -134,7 +132,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		super("PACE");
 		
 		secureRandom = new SecureRandom();
-		authorizations = new HashMap<>();
+		authorizationStore = new AuthorizationStore();
 	}
 	
 	/**
@@ -241,7 +239,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				
 				usedChat = new CertificateHolderAuthorizationTemplate(chatOid, authorization);
 				
-				authorizations.put(TaOid.id_AT, usedChat.getRelativeAuthorization());
+				authorizationStore.updateAuthorization(TaOid.id_AT, usedChat.getRelativeAuthorization());
 				
 				TerminalType terminalType = usedChat.getTerminalType();
 
@@ -662,8 +660,25 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		if(paceSuccessful) {
 			ConstructedTlvDataObject responseContent = buildMutualAuthenticateResponse(piccToken);
 			if (setSmDataProvider()){
-				AuthorizationMechanism authMechanism = new AuthorizationMechanism(authorizations);
-				processingData.addUpdatePropagation(this, "Security status updated with authorization mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanism));
+				
+				HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
+				previousMechanisms.add(AuthorizationMechanism.class);
+				Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+				
+				AuthorizationMechanism authMechanism = null;
+				if (currentMechanisms.size() >= 1){
+					authMechanism = (AuthorizationMechanism) currentMechanisms.toArray()[0];
+				}
+				
+				AuthorizationMechanism newAuthMechanism;
+				
+				if(authMechanism == null) {
+					newAuthMechanism = new AuthorizationMechanism(authorizationStore);
+				} else{
+					newAuthMechanism = authMechanism.getUpdatedMechanism(authorizationStore);
+				}
+				
+				processingData.addUpdatePropagation(this, "Security status updated with authorization mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, newAuthMechanism));
 				
 				responseApdu = new ResponseApdu(new TlvDataObjectContainer(responseContent), sw);
 			} else {
