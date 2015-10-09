@@ -41,12 +41,11 @@ public class AuthorizationMechanism implements SecMechanism {
 	 * This method returns a copy of the provided {@link AuthorizationMechanism} updated with the also provided {@link Authorization}.
 	 * In case the provided mechanism does not contain any authorization registered for the provided OID, the authorization is registered for the specific OID.
 	 * In case the provided mechanism contains an authorization registered for the provided OID, this authorization is replaced with the effective authorization resulting from both authorizations available.
-	 * @param authMechanism the mechanism to update
 	 * @param authorizationStore the authorization information to use for update
 	 * @return a copy of the provided {@link AuthorizationMechanism} updated with the also provided {@link Authorization}
 	 */
-	public AuthorizationMechanism getUpdatedMechanism(AuthorizationMechanism authMechanism, AuthorizationStore authorizationStore) {
-		AuthorizationStore originalAuthStore = authMechanism.getAuthorizationStore();
+	public AuthorizationMechanism getUpdatedMechanism(AuthorizationStore authorizationStore) {
+		AuthorizationStore originalAuthStore = getAuthorizationStore();
 		originalAuthStore.updateAuthorization(authorizationStore);
 		return new AuthorizationMechanism(originalAuthStore);
 	}
