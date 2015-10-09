@@ -37,7 +37,7 @@ public class CertificateHolderAuthorizationTemplate {
 		
 		//check if oid and relative authorization fit together
 		TerminalType type = getTerminalType();
-		int authBits = getRelativeAuthorization().getRepresentation().getNumberOfBits();
+		int authBits = getRelativeAuthorization().getAuthorization().getNumberOfBits();
 		
 		if ((type.equals(TerminalType.AT) && authBits != 40) || ((type.equals(TerminalType.IS) || type.equals(TerminalType.ST)) && authBits != 8)){
 			throw new CertificateNotParseableException("invalid combination of OID and terminal type");

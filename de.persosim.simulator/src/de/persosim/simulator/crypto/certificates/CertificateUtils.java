@@ -140,7 +140,7 @@ public class CertificateUtils implements TlvConstants {
 	public static ConstructedTlvDataObject encodeCertificateHolderAuthorizationTemplate(CertificateHolderAuthorizationTemplate certificateHolderAuthorizationTemplate) {
 		ConstructedTlvDataObject certificateHolderAuthorizationTemplateTlv = new ConstructedTlvDataObject(TlvConstants.TAG_7F4C);
 		PrimitiveTlvDataObject oidTlv = new PrimitiveTlvDataObject(TlvConstants.TAG_06, certificateHolderAuthorizationTemplate.getObjectIdentifier().toByteArray());
-		PrimitiveTlvDataObject authorizationTlv = new PrimitiveTlvDataObject(TlvConstants.TAG_53, certificateHolderAuthorizationTemplate.getRelativeAuthorization().getRepresentation().getAsZeroPaddedBigEndianByteArray());
+		PrimitiveTlvDataObject authorizationTlv = new PrimitiveTlvDataObject(TlvConstants.TAG_53, certificateHolderAuthorizationTemplate.getRelativeAuthorization().getAuthorization().getAsZeroPaddedBigEndianByteArray());
 		certificateHolderAuthorizationTemplateTlv.addTlvDataObject(oidTlv);
 		certificateHolderAuthorizationTemplateTlv.addTlvDataObject(authorizationTlv);
 		return certificateHolderAuthorizationTemplateTlv;
