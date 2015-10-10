@@ -259,13 +259,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					
 					currentCertificate = trustPoint.getCurrentCertificate();
 					anchor = "first";
-				}
-				
-				if (trustPoint.getPreviousCertificate().getCertificateHolderReference() != null
-						&& Arrays.equals(trustPoint.getPreviousCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
-					
-					currentCertificate = trustPoint.getPreviousCertificate();
-					anchor = "second";
+				} else{
+					if (trustPoint.getPreviousCertificate().getCertificateHolderReference() != null
+							&& Arrays.equals(trustPoint.getPreviousCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
+						
+						currentCertificate = trustPoint.getPreviousCertificate();
+						anchor = "second";
+					}
 				}
 				
 				if(currentCertificate != null) {
