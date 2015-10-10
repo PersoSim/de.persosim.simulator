@@ -24,8 +24,11 @@ import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110;
+import de.persosim.simulator.protocols.ta.Authorization;
+import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
+import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -226,16 +229,31 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		//XXX this check should be done by the objects themself
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(TerminalAuthenticationMechanism.class);
-		Collection<SecMechanism> currentMechanisms = cardState
-				.getCurrentMechanisms(SecContext.APPLICATION,
-						previousMechanisms);
+		previousMechanisms.add(AuthorizationMechanism.class);
+		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 		TerminalAuthenticationMechanism taMechanism = null;
-		if (currentMechanisms.size() > 0) {
-			taMechanism = (TerminalAuthenticationMechanism) currentMechanisms
-					.toArray()[0];
-
-			if (!(taMechanism.getTerminalType().equals(TerminalType.AT) && taMechanism
-					.getEffectiveAuthorization().getAuthorization().getBit(5))) {
+		AuthorizationMechanism authMechanism = null;
+		
+		if (currentMechanisms.size() >= 2) {
+			for(SecMechanism secmechanism:currentMechanisms) {
+				if(secmechanism instanceof TerminalAuthenticationMechanism) {
+					taMechanism = (TerminalAuthenticationMechanism) secmechanism;
+				}
+				
+				if(secmechanism instanceof AuthorizationMechanism) {
+					authMechanism = (AuthorizationMechanism) secmechanism;
+				}
+			}
+			
+			if((taMechanism == null) || (authMechanism == null)) {
+				ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, passwordName + " management rights from TA required to perform Deactivate", resp);
+				return;
+			}
+			
+			Authorization auth = authMechanism.getAuthorization(TaOid.id_AT);
+			
+			if (!(taMechanism.getTerminalType().equals(TerminalType.AT) && (auth != null) && auth.getAuthorization().getBit(5))) {
 				ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
 				this.processingData.updateResponseAPDU(this, passwordName + " management rights from TA required to perform Deactivate", resp);
 				return;
