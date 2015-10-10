@@ -91,9 +91,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	private byte [] compressedTerminalEphemeralPublicKey;
 	private TrustPointCardObject trustPoint;
 	private TerminalType terminalType;
-	private AuthorizationStore authorizationStore;
 	private byte[] firstSectorPublicKeyHash;
 	private byte[] secondSectorPublicKeyHash;
+	
+	protected AuthorizationStore authorizationStore;
 	
 	/*--------------------------------------------------------------------------------*/
 
