@@ -31,6 +31,7 @@ import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
+import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
@@ -58,6 +59,8 @@ public class RiProtocolTest extends PersoSimTestCase {
 	KeyPairObject keyObject;
 	@Mocked
 	TerminalAuthenticationMechanism taMechanism;
+	@Mocked
+	AuthorizationMechanism authMechanism;
 	@Mocked
 	RiOid oid;
 	
@@ -145,6 +148,7 @@ public class RiProtocolTest extends PersoSimTestCase {
 		final HashSet<SecMechanism> mechanisms = new HashSet<>();
 		
 		mechanisms.add(taMechanism);
+		mechanisms.add(authMechanism);
 		
 		new Expectations(MessageDigest.class) {
 			{
