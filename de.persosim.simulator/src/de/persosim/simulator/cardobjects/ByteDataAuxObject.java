@@ -6,9 +6,11 @@ import java.util.HashSet;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
+import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
+import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.utils.Utils;
@@ -38,20 +40,48 @@ public class ByteDataAuxObject extends AuxDataObject {
 		//XXX access conditions should be stored separately and evaluated in a more generic way
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(TerminalAuthenticationMechanism.class);
+		previousMechanisms.add(AuthorizationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = securityStatus.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+		
 		TerminalAuthenticationMechanism taMechanism = null;
-		if (currentMechanisms.size() > 0){
-			taMechanism = (TerminalAuthenticationMechanism) currentMechanisms.toArray()[0];
-			if (taMechanism.getTerminalType().equals(TerminalType.ST)
-					|| (taMechanism.getTerminalType().equals(
-							TerminalType.AT) && !taMechanism
-							.getEffectiveAuthorization()
-							.getAuthorization().getBit(1))){
+		AuthorizationMechanism authMechanism = null;
+		
+		if (currentMechanisms.size() >= 2){
+			
+			for(SecMechanism secmechanism:currentMechanisms) {
+				if(secmechanism instanceof TerminalAuthenticationMechanism) {
+					taMechanism = (TerminalAuthenticationMechanism) secmechanism;
+				}
+				
+				if(secmechanism instanceof AuthorizationMechanism) {
+					authMechanism = (AuthorizationMechanism) secmechanism;
+				}
+			}
+			
+			if((taMechanism == null) || (authMechanism == null)) {
 				throw new AccessDeniedException("Community ID verification not allowed");
 			}
+			
+			if (taMechanism.getTerminalType().equals(TerminalType.ST)) {
+				throw new AccessDeniedException("Community ID verification not allowed");
+			}
+			
+			if(taMechanism.getTerminalType().equals(TerminalType.AT)) {
+				Authorization auth = authMechanism.getAuthorization(TaOid.id_AT);
+				
+				if(auth == null) {
+					throw new AccessDeniedException("Community ID verification not allowed");
+				}
+				
+				if(!auth.getAuthorization().getBit(1)) {
+					throw new AccessDeniedException("Community ID verification not allowed");
+				}
+			}
+			
 			if (identifier.getOid().equals(TaOid.id_CommunityID)){
 				return Utils.arrayHasPrefix(data, current.getDiscretionaryData());
 			}
+			
 		}
 		return false;
 	}
