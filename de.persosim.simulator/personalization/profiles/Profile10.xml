@@ -268,9 +268,10 @@
                     <boolean>true</boolean>
                     <boolean>true</boolean>
                     <boolean>true</boolean>
+                    <boolean>true</boolean>
+                    <boolean>true</boolean>
                   </storedBits>
                 </authorization>
-                <role>CVCA</role>
               </relativeAuthorization>
             </certificateHolderAuthorizationTemplate>
             <certificateEffectiveDate id="93">2012-05-11 00:00:00.0 UTC</certificateEffectiveDate>
@@ -401,7 +402,7 @@
             </de.persosim.simulator.secstatus.TaSecurityCondition>
             <de.persosim.simulator.secstatus.TaSecurityCondition id="152">
               <terminalType>AT</terminalType>
-              <authorization id="153">
+              <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="153">
                 <authorization id="154">
                   <storedBits id="155">
                     <boolean>false</boolean>
@@ -410,9 +411,10 @@
                     <boolean>true</boolean>
                     <boolean>false</boolean>
                     <boolean>false</boolean>
+                    <boolean>false</boolean>
+                    <boolean>false</boolean>
                   </storedBits>
                 </authorization>
-                <role>TERMINAL</role>
               </authorization>
             </de.persosim.simulator.secstatus.TaSecurityCondition>
           </a>
@@ -437,7 +439,7 @@
             <readingConditions class="set" id="163">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="164">
                 <terminalType>AT</terminalType>
-                <authorization id="165">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="165">
                   <authorization id="166">
                     <storedBits id="167">
                       <boolean>false</boolean>
@@ -478,9 +480,10 @@
                       <boolean>false</boolean>
                       <boolean>false</boolean>
                       <boolean>false</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </readingConditions>
@@ -501,7 +504,7 @@
             <readingConditions class="set" id="173">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="174">
                 <terminalType>AT</terminalType>
-                <authorization id="175">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="175">
                   <authorization id="176">
                     <storedBits id="177">
                       <boolean>false</boolean>
@@ -542,9 +545,10 @@
                       <boolean>false</boolean>
                       <boolean>false</boolean>
                       <boolean>false</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </readingConditions>
@@ -565,7 +569,7 @@
             <readingConditions class="set" id="183">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="184">
                 <terminalType>AT</terminalType>
-                <authorization id="185">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="185">
                   <authorization id="186">
                     <storedBits id="187">
                       <boolean>false</boolean>
@@ -606,9 +610,10 @@
                       <boolean>false</boolean>
                       <boolean>false</boolean>
                       <boolean>false</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </readingConditions>
@@ -629,7 +634,7 @@
             <readingConditions class="set" id="193">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="194">
                 <terminalType>AT</terminalType>
-                <authorization id="195">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="195">
                   <authorization id="196">
                     <storedBits id="197">
                       <boolean>false</boolean>
@@ -670,9 +675,10 @@
                       <boolean>false</boolean>
                       <boolean>false</boolean>
                       <boolean>false</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </readingConditions>
@@ -693,7 +699,7 @@
             <readingConditions class="set" id="203">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="204">
                 <terminalType>AT</terminalType>
-                <authorization id="205">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="205">
                   <authorization id="206">
                     <storedBits id="207">
                       <boolean>false</boolean>
@@ -734,9 +740,10 @@
                       <boolean>false</boolean>
                       <boolean>false</boolean>
                       <boolean>false</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </readingConditions>
@@ -757,7 +764,7 @@
             <readingConditions class="set" id="213">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="214">
                 <terminalType>AT</terminalType>
-                <authorization id="215">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="215">
                   <authorization id="216">
                     <storedBits id="217">
                       <boolean>false</boolean>
@@ -798,9 +805,10 @@
                       <boolean>false</boolean>
                       <boolean>false</boolean>
                       <boolean>false</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </readingConditions>
@@ -821,7 +829,7 @@
             <readingConditions class="set" id="223">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="224">
                 <terminalType>AT</terminalType>
-                <authorization id="225">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="225">
                   <authorization id="226">
                     <storedBits id="227">
                       <boolean>false</boolean>
@@ -862,9 +870,10 @@
                       <boolean>false</boolean>
                       <boolean>false</boolean>
                       <boolean>false</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </readingConditions>
@@ -885,7 +894,7 @@
             <readingConditions class="set" id="233">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="234">
                 <terminalType>AT</terminalType>
-                <authorization id="235">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="235">
                   <authorization id="236">
                     <storedBits id="237">
                       <boolean>false</boolean>
@@ -926,9 +935,10 @@
                       <boolean>false</boolean>
                       <boolean>false</boolean>
                       <boolean>false</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </readingConditions>
@@ -949,7 +959,7 @@
             <readingConditions class="set" id="243">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="244">
                 <terminalType>AT</terminalType>
-                <authorization id="245">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="245">
                   <authorization id="246">
                     <storedBits id="247">
                       <boolean>false</boolean>
@@ -990,9 +1000,10 @@
                       <boolean>false</boolean>
                       <boolean>false</boolean>
                       <boolean>false</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </readingConditions>
@@ -1013,7 +1024,7 @@
             <readingConditions class="set" id="253">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="254">
                 <terminalType>AT</terminalType>
-                <authorization id="255">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="255">
                   <authorization id="256">
                     <storedBits id="257">
                       <boolean>false</boolean>
@@ -1054,9 +1065,10 @@
                       <boolean>false</boolean>
                       <boolean>false</boolean>
                       <boolean>false</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </readingConditions>
@@ -1077,7 +1089,7 @@
             <readingConditions class="set" id="263">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="264">
                 <terminalType>AT</terminalType>
-                <authorization id="265">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="265">
                   <authorization id="266">
                     <storedBits id="267">
                       <boolean>false</boolean>
@@ -1118,16 +1130,17 @@
                       <boolean>false</boolean>
                       <boolean>false</boolean>
                       <boolean>false</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </readingConditions>
             <writingConditions class="set" id="268">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="269">
                 <terminalType>AT</terminalType>
-                <authorization id="270">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="270">
                   <authorization id="271">
                     <storedBits id="272">
                       <boolean>false</boolean>
@@ -1168,9 +1181,10 @@
                       <boolean>false</boolean>
                       <boolean>false</boolean>
                       <boolean>true</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </writingConditions>
@@ -1190,7 +1204,7 @@
             <readingConditions class="set" id="278">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="279">
                 <terminalType>AT</terminalType>
-                <authorization id="280">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="280">
                   <authorization id="281">
                     <storedBits id="282">
                       <boolean>false</boolean>
@@ -1231,16 +1245,17 @@
                       <boolean>false</boolean>
                       <boolean>false</boolean>
                       <boolean>false</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </readingConditions>
             <writingConditions class="set" id="283">
               <de.persosim.simulator.secstatus.TaSecurityCondition id="284">
                 <terminalType>AT</terminalType>
-                <authorization id="285">
+                <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="285">
                   <authorization id="286">
                     <storedBits id="287">
                       <boolean>false</boolean>
@@ -1281,9 +1296,10 @@
                       <boolean>false</boolean>
                       <boolean>true</boolean>
                       <boolean>false</boolean>
+                      <boolean>false</boolean>
+                      <boolean>false</boolean>
                     </storedBits>
                   </authorization>
-                  <role>TERMINAL</role>
                 </authorization>
               </de.persosim.simulator.secstatus.TaSecurityCondition>
             </writingConditions>
@@ -1351,7 +1367,7 @@
               <a class="de.persosim.simulator.secstatus.SecCondition-array" id="314">
                 <de.persosim.simulator.secstatus.TaSecurityCondition id="315">
                   <terminalType>IS</terminalType>
-                  <authorization id="316">
+                  <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="316">
                     <authorization id="317">
                       <storedBits id="318">
                         <boolean>true</boolean>
@@ -1360,9 +1376,10 @@
                         <boolean>false</boolean>
                         <boolean>false</boolean>
                         <boolean>false</boolean>
+                        <boolean>false</boolean>
+                        <boolean>false</boolean>
                       </storedBits>
                     </authorization>
-                    <role>TERMINAL</role>
                   </authorization>
                 </de.persosim.simulator.secstatus.TaSecurityCondition>
               </a>
@@ -1385,7 +1402,7 @@
               <a class="de.persosim.simulator.secstatus.SecCondition-array" id="325">
                 <de.persosim.simulator.secstatus.TaSecurityCondition id="326">
                   <terminalType>IS</terminalType>
-                  <authorization id="327">
+                  <authorization class="de.persosim.simulator.protocols.ta.RelativeAuthorization" id="327">
                     <authorization id="328">
                       <storedBits id="329">
                         <boolean>false</boolean>
@@ -1394,9 +1411,10 @@
                         <boolean>false</boolean>
                         <boolean>false</boolean>
                         <boolean>false</boolean>
+                        <boolean>false</boolean>
+                        <boolean>false</boolean>
                       </storedBits>
                     </authorization>
-                    <role>TERMINAL</role>
                   </authorization>
                 </de.persosim.simulator.secstatus.TaSecurityCondition>
               </a>
