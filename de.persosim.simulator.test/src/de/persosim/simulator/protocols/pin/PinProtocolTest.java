@@ -24,8 +24,11 @@ import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
+import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
+import de.persosim.simulator.secstatus.AuthorizationMechanism;
+import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
@@ -41,6 +44,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	PinProtocol protocol;
 	
 	TerminalAuthenticationMechanism taMechanism;
+	AuthorizationMechanism authMechanism;
 	HashSet<SecMechanism> currentMechanisms;
 	
 	@Before
@@ -55,8 +59,12 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		authObjectRetry.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
 		currentMechanisms = new HashSet<>();
-		taMechanism = new TerminalAuthenticationMechanism(new byte[]{1,2,3}, TerminalType.IS, new RelativeAuthorization(), new ArrayList<AuthenticatedAuxiliaryData>(), new byte[]{1,2,3}, new byte[]{1,2,3}, "test");
+		taMechanism = new TerminalAuthenticationMechanism(new byte[]{1,2,3}, TerminalType.IS, new ArrayList<AuthenticatedAuxiliaryData>(), new byte[]{1,2,3}, new byte[]{1,2,3}, "test");
+		AuthorizationStore authStore = new AuthorizationStore();
+		authStore.updateAuthorization(TaOid.id_AT, new RelativeAuthorization());
+		authMechanism = new AuthorizationMechanism(authStore);
 		currentMechanisms.add(taMechanism);
+		currentMechanisms.add(authMechanism);
 	}
 	
 	/** 
