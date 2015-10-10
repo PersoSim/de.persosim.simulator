@@ -32,8 +32,11 @@ import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.SecInfoPublicity;
+import de.persosim.simulator.protocols.ta.Authorization;
+import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
+import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -287,10 +290,31 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 			//get necessary information stored in TA
 			HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 			previousMechanisms.add(TerminalAuthenticationMechanism.class);
+			previousMechanisms.add(AuthorizationMechanism.class);
 			Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+			
 			TerminalAuthenticationMechanism taMechanism = null;
-			if (currentMechanisms.size() > 0){
-				taMechanism = (TerminalAuthenticationMechanism) currentMechanisms.toArray()[0];
+			AuthorizationMechanism authMechanism = null;
+			
+			if (currentMechanisms.size() >= 2){
+				for(SecMechanism secmechanism:currentMechanisms) {
+					if(secmechanism instanceof TerminalAuthenticationMechanism) {
+						taMechanism = (TerminalAuthenticationMechanism) secmechanism;
+					}
+					
+					if(secmechanism instanceof AuthorizationMechanism) {
+						authMechanism = (AuthorizationMechanism) secmechanism;
+					}
+				}
+				
+				if((taMechanism == null) || (authMechanism == null)) {
+					// create and propagate response APDU
+					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+					processingData.updateResponseAPDU(this, "Restricted Identification only allowed for Authentication Terminals", resp);
+					return;
+				}
+				
+				Authorization auth = authMechanism.getAuthorization(TaOid.id_AT);
 				
 				if (!(taMechanism.getTerminalType().equals(TerminalType.AT))) {
 					// create and propagate response APDU
@@ -326,7 +350,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 				
 				// check for Restricted Identification bit
 				if(staticKeyObject.isPrivilegedOnly()) {
-					if (!(taMechanism.getEffectiveAuthorization().getAuthorization().getBit(2))) {
+					if ((auth == null) || (!(auth.getAuthorization().getBit(2)))) {
 						// create and propagate response APDU
 						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
 						processingData.updateResponseAPDU(this, "Restricted Identification only allowed for authorized terminals", resp);
