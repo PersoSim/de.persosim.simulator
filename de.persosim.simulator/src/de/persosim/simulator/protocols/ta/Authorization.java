@@ -45,4 +45,8 @@ public class Authorization {
 		return new Authorization(effectiveAuth);
 	}
 	
+	public Authorization getMinimumAuthorization() {
+		return new Authorization(new BitField(authorization.getNumberOfBits()));
+	}
+	
 }
