@@ -17,7 +17,7 @@ private HashMap<Oid, Authorization> authorizations;
 		this();
 		
 		for(Oid currentOid:authorizations.keySet()) {
-			authorizations.put(currentOid, authorizations.get(currentOid));
+			this.authorizations.put(currentOid, authorizations.get(currentOid));
 		}
 	}
 	
@@ -90,8 +90,8 @@ private HashMap<Oid, Authorization> authorizations;
 			currentAuthThis = getAuthorization(currentOid);
 			currentAuthOther = other.getAuthorization(currentOid);
 			
-			if(currentAuthThis != currentAuthOther) {
-				if(!currentAuthThis.equals(currentAuthOther)) {
+			if(currentAuthOther != currentAuthThis) {
+				if(!currentAuthOther.equals(currentAuthThis)) {
 					return false;
 				}
 			}
