@@ -63,4 +63,42 @@ private HashMap<Oid, Authorization> authorizations;
 		return new AuthorizationStore(this);
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AuthorizationStore other = (AuthorizationStore) obj;
+		
+		Authorization currentAuthThis, currentAuthOther;
+		
+		for(Oid currentOid:authorizations.keySet()) {
+			currentAuthThis = getAuthorization(currentOid);
+			currentAuthOther = other.getAuthorization(currentOid);
+			
+			if(currentAuthThis != currentAuthOther) {
+				if(!currentAuthThis.equals(currentAuthOther)) {
+					return false;
+				}
+			}
+		}
+		
+		for(Oid currentOid:other.authorizations.keySet()) {
+			currentAuthThis = getAuthorization(currentOid);
+			currentAuthOther = other.getAuthorization(currentOid);
+			
+			if(currentAuthThis != currentAuthOther) {
+				if(!currentAuthThis.equals(currentAuthOther)) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
+		
+	}
+	
 }
