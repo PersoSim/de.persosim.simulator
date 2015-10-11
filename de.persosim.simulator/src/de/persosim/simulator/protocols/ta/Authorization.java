@@ -61,4 +61,9 @@ public class Authorization {
 		return authorization.equals(((Authorization) obj).authorization);
 	}
 	
+	@Override
+	public String toString() {
+		return authorization.toString();
+	}
+	
 }

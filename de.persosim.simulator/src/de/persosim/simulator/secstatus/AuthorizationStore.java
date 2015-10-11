@@ -101,4 +101,21 @@ private HashMap<Oid, Authorization> authorizations;
 		
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		boolean first = true;
+		for(Oid oid:authorizations.keySet()) {
+			if(first) {
+				first = false;
+			} else{
+				sb.append("\n");
+			}
+			sb.append(oid + " --> " + authorizations.get(oid));
+		}
+		
+		return sb.toString();
+	}
+	
 }

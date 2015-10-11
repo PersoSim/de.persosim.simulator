@@ -236,4 +236,17 @@ public class BitField {
 		return result;
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(getNumberOfBits());
+		for(int i=0; i<getNumberOfBits(); i++) {
+			if(getBit(i)) {
+				sb.append("1");
+			} else{
+				sb.append("0");
+			}
+		}
+		return sb.toString();
+	}
+	
 }
