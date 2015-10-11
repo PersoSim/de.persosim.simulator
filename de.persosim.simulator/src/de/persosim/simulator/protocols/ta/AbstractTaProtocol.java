@@ -295,10 +295,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	public void updateAuthorizations(CardVerifiableCertificate certificate) {
-		HashMap<Oid, Authorization> authorizations = getAuthorizationsFromCertificate(certificate);
-		AuthorizationStore newAuthorizationStore = new AuthorizationStore(authorizations);
-		
-		authorizationStore.updateAuthorization(newAuthorizationStore);
+		authorizationStore.updateAuthorization(getAuthorizationsFromCertificate(certificate));
 	}
 	
 	public HashMap<Oid, Authorization> getAuthorizationsFromCertificate(CardVerifiableCertificate certificate) {
