@@ -2,7 +2,6 @@ package de.persosim.simulator.crypto.certificates;
 
 import java.security.PublicKey;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -224,7 +223,7 @@ public class CertificateBody {
 	/**
 	 * @return the extensions this certificate has included
 	 */
-	public Collection<CertificateExtension> getCertificateExtensions() {
+	public List<CertificateExtension> getCertificateExtensions() {
 		return certificateExtensions;
 	}
 

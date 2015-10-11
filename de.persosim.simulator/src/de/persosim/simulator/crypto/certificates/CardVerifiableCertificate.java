@@ -1,8 +1,8 @@
 package de.persosim.simulator.crypto.certificates;
 
 import java.security.PublicKey;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
@@ -147,7 +147,7 @@ public class CardVerifiableCertificate {
 	 * This method returns the certificate extensions
 	 * @return the certificate extensions
 	 */
-	public Collection<CertificateExtension> getCertificateExtensions() {
+	public List<CertificateExtension> getCertificateExtensions() {
 		return body.getCertificateExtensions();
 	}
 	
