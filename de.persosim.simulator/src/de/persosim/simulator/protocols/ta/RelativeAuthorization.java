@@ -14,12 +14,21 @@ public class RelativeAuthorization extends Authorization {
 	public RelativeAuthorization() {
 	}
 	
+	public RelativeAuthorization(BitField authorization) {
+		super(authorization);
+	}
+	
 	public RelativeAuthorization(CertificateRole role, BitField authorization) {
-		super(authorization.concatenate(role.getField()));
+		this(authorization.concatenate(role.getField()));
 	}
 	
 	public CertificateRole getRole() {
 		return CertificateRole.getFromMostSignificantBits(authorization);
+	}
+	
+	@Override
+	public RelativeAuthorization getMinimumAuthorization() {
+		return new RelativeAuthorization(new BitField(authorization.getNumberOfBits()));
 	}
 	
 }
