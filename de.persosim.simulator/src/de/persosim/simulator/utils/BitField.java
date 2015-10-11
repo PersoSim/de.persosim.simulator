@@ -239,12 +239,18 @@ public class BitField {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(getNumberOfBits());
+		int noOfRemeiningBits = getNumberOfBits();
 		for(int i=0; i<getNumberOfBits(); i++) {
+			if((i > 0) && (noOfRemeiningBits%8 == 0)) {
+				sb.append(" ");
+			}
+			
 			if(getBit(i)) {
 				sb.append("1");
 			} else{
 				sb.append("0");
 			}
+			noOfRemeiningBits--;
 		}
 		return sb.toString();
 	}
