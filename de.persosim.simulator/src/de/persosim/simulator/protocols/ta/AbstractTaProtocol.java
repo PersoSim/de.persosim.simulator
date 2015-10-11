@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -35,6 +36,7 @@ import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.CertificateUpdateException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
@@ -293,8 +295,20 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	public void updateAuthorizations(CardVerifiableCertificate certificate) {
+		HashMap<Oid, Authorization> authorizations = getAuthorizationsFromCertificate(certificate);
+		AuthorizationStore newAuthorizationStore = new AuthorizationStore(authorizations);
+		
+		authorizationStore.updateAuthorization(newAuthorizationStore);
+	}
+	
+	public HashMap<Oid, Authorization> getAuthorizationsFromCertificate(CardVerifiableCertificate certificate) {
+		HashMap<Oid, Authorization> authorizations = new HashMap<>();
+		
 		Authorization authFromChat = certificate.getCertificateHolderAuthorizationTemplate().getRelativeAuthorization();
-		authorizationStore.updateAuthorization(TaOid.id_AT, authFromChat);
+		
+		authorizations.put(TaOid.id_AT, authFromChat);
+		
+		return authorizations;
 	}
 
 	void processCommandSetAt() {
