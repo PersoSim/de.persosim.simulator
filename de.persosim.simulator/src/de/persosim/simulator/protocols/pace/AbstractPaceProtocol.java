@@ -18,6 +18,7 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import javax.crypto.KeyAgreement;
@@ -47,10 +48,12 @@ import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.ResponseData;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110Utils;
+import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
@@ -132,7 +135,6 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		super("PACE");
 		
 		secureRandom = new SecureRandom();
-		authorizationStore = new AuthorizationStore();
 	}
 	
 	/**
@@ -239,7 +241,9 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				
 				usedChat = new CertificateHolderAuthorizationTemplate(chatOid, authorization);
 				
-				authorizationStore.updateAuthorization(TaOid.id_AT, usedChat.getRelativeAuthorization());
+				HashMap<Oid, Authorization> authorizations = new HashMap<>();
+				authorizations.put(TaOid.id_AT, usedChat.getRelativeAuthorization());
+				authorizationStore = new AuthorizationStore(authorizations);
 				
 				TerminalType terminalType = usedChat.getTerminalType();
 
@@ -671,6 +675,10 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				}
 				
 				AuthorizationMechanism newAuthMechanism;
+				
+				if(authorizationStore == null) {
+					authorizationStore = new AuthorizationStore();
+				}
 				
 				if(authMechanism == null) {
 					newAuthMechanism = new AuthorizationMechanism(authorizationStore);
