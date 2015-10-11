@@ -1,7 +1,7 @@
 package de.persosim.simulator.protocols.ta;
 
-import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.WARN;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 import de.persosim.simulator.utils.BitField;
 
@@ -47,6 +47,18 @@ public class Authorization {
 	
 	public Authorization getMinimumAuthorization() {
 		return new Authorization(new BitField(authorization.getNumberOfBits()));
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		
+		return authorization.equals(((Authorization) obj).authorization);
 	}
 	
 }
