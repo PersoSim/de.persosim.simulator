@@ -5,13 +5,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
-
-import mockit.Deencapsulation;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +28,9 @@ import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.BitField;
+import mockit.Deencapsulation;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
 
 public class AbstractTaProtocolTest extends PersoSimTestCase {
 
@@ -451,7 +450,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	@Test
 	public void testExtractTerminalSector(){
 		// prepare the mock
-		final HashSet<GenericExtension> extensions = new HashSet<>();
+		final ArrayList<GenericExtension> extensions = new ArrayList<>();
 		extensions.add(certificateExtension);
 
 		PrimitiveTlvDataObject firstObject = new PrimitiveTlvDataObject(TlvConstants.TAG_80, new byte [] {1,2,3,4});
