@@ -230,16 +230,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		tlvObject = commandData.getTlvDataObject(TAG_7F4C);
 		if (tlvObject != null){
 			try {
-				ConstructedTlvDataObject chatData = (ConstructedTlvDataObject) tlvObject;
-				TlvDataObject oidData = chatData.getTlvDataObject(TAG_06);
-				byte[] roleData = chatData.getTlvDataObject(TAG_53).getValueField();
-				TaOid chatOid = new TaOid(oidData.getValueField());
-				
-				RelativeAuthorization authorization = new RelativeAuthorization(
-						CertificateRole.getFromMostSignificantBits(roleData[0]), BitField.buildFromBigEndian(
-								(roleData.length * 8) - 2, roleData));
-				
-				usedChat = new CertificateHolderAuthorizationTemplate(chatOid, authorization);
+				usedChat = parseChat((ConstructedTlvDataObject) tlvObject);
 				
 				HashMap<Oid, Authorization> authorizations = new HashMap<>();
 				authorizations.put(usedChat.getObjectIdentifier(), usedChat.getRelativeAuthorization());
@@ -303,6 +294,18 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		//create and propagate response APDU
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, "Command SetAt successfully processed", resp);
+	}
+	
+	public CertificateHolderAuthorizationTemplate parseChat(ConstructedTlvDataObject chatData) {
+		TlvDataObject oidData = chatData.getTlvDataObject(TAG_06);
+		byte[] roleData = chatData.getTlvDataObject(TAG_53).getValueField();
+		TaOid chatOid = new TaOid(oidData.getValueField());
+		
+		RelativeAuthorization authorization = new RelativeAuthorization(
+				CertificateRole.getFromMostSignificantBits(roleData[0]), BitField.buildFromBigEndian(
+						(roleData.length * 8) - 2, roleData));
+		
+		return new CertificateHolderAuthorizationTemplate(chatOid, authorization);
 	}
 	
 	/**
