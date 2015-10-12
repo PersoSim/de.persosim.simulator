@@ -5,7 +5,6 @@ import java.util.HashSet;
 
 import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
-import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.utils.BitField;
@@ -60,7 +59,7 @@ public class TaSecurityCondition implements SecCondition {
 					return true;
 				} else {
 					if(authorizationMechanism != null) {
-						Authorization auth = authorizationMechanism.getAuthorization(TaOid.id_AT);
+						Authorization auth = authorizationMechanism.getAuthorization(terminalType.getAsOid());
 						BitField tempField = authorization.getAuthorization().or(auth.getAuthorization());
 						if (tempField.equals(auth.getAuthorization())) {
 							return true;

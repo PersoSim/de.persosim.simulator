@@ -242,7 +242,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				usedChat = new CertificateHolderAuthorizationTemplate(chatOid, authorization);
 				
 				HashMap<Oid, Authorization> authorizations = new HashMap<>();
-				authorizations.put(TaOid.id_AT, usedChat.getRelativeAuthorization());
+				authorizations.put(usedChat.getObjectIdentifier(), usedChat.getRelativeAuthorization());
 				authorizationStore = new AuthorizationStore(authorizations);
 				
 				TerminalType terminalType = usedChat.getTerminalType();

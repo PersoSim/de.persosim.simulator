@@ -223,7 +223,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			
 			authorizationStore = authMechanism.getAuthorizationStore();
 			
-			Authorization auth = authorizationStore.getAuthorization(TaOid.id_AT);
+			Authorization auth = authorizationStore.getAuthorization(chat.getObjectIdentifier());
 			
 			if(auth == null) {
 				// create and propagate response APDU
@@ -301,9 +301,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	public HashMap<Oid, Authorization> getAuthorizationsFromCertificate(CardVerifiableCertificate certificate) {
 		HashMap<Oid, Authorization> authorizations = new HashMap<>();
 		
-		Authorization authFromChat = certificate.getCertificateHolderAuthorizationTemplate().getRelativeAuthorization();
+		CertificateHolderAuthorizationTemplate chat = certificate.getCertificateHolderAuthorizationTemplate();
+		RelativeAuthorization authFromChat = chat.getRelativeAuthorization();
 		
-		authorizations.put(TaOid.id_AT, authFromChat);
+		authorizations.put(chat.getObjectIdentifier(), authFromChat);
 		
 		return authorizations;
 	}
