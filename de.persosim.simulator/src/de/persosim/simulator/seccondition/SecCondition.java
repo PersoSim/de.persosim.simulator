@@ -1,6 +1,9 @@
-package de.persosim.simulator.secstatus;
+package de.persosim.simulator.seccondition;
 
 import java.util.Collection;
+
+import de.persosim.simulator.secstatus.SecMechanism;
+import de.persosim.simulator.secstatus.SecStatus;
 
 /**
  * Describes a SecurityCondition to be checked against given

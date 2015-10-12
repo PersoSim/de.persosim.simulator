@@ -1,7 +1,10 @@
-package de.persosim.simulator.secstatus;
+package de.persosim.simulator.seccondition;
 
 import java.util.Collection;
 import java.util.HashSet;
+
+import de.persosim.simulator.secstatus.PaceMechanism;
+import de.persosim.simulator.secstatus.SecMechanism;
 
 
 

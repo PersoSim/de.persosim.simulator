@@ -1,21 +1,21 @@
-package de.persosim.simulator.secstatus;
+package de.persosim.simulator.seccondition;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ta.Authorization;
+import de.persosim.simulator.secstatus.AuthorizationMechanism;
+import de.persosim.simulator.secstatus.SecMechanism;
 
-/**
- * {@link SecCondition} that ensures that a given AuthorizationExtenension is present in {@link AuthorizationMechanism} 
- * @author amay
- *
- */
-public class AuthorizationExtensionPresentSecCondition implements SecCondition {
+public class SecConditionAuthorization implements SecCondition {
 	
 	protected Oid oid;
-	public AuthorizationExtensionPresentSecCondition(Oid oid) {
+	protected int bit;
+	
+	public SecConditionAuthorization(Oid oid, int bit) {
 		this.oid = oid;
+		this.bit = bit;
 	}
 	
 	@Override
@@ -25,7 +25,8 @@ public class AuthorizationExtensionPresentSecCondition implements SecCondition {
 			if(secMechanism instanceof AuthorizationMechanism) {
 				AuthorizationMechanism authMechanism = (AuthorizationMechanism) secMechanism;
 				Authorization auth = authMechanism.getAuthorization(oid);
-				return auth != null;
+				
+				return auth.getAuthorization().getBit(bit);
 			}
 		}
 		

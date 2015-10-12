@@ -2,7 +2,7 @@ package de.persosim.simulator.cardobjects;
 
 import java.util.Collection;
 
-import de.persosim.simulator.secstatus.SecCondition;
+import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 

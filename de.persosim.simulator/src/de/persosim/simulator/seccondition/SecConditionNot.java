@@ -1,6 +1,8 @@
-package de.persosim.simulator.secstatus;
+package de.persosim.simulator.seccondition;
 
 import java.util.Collection;
+
+import de.persosim.simulator.secstatus.SecMechanism;
 
 /**
  * This class implements a {@link SecCondition} representing the boolean NOT
