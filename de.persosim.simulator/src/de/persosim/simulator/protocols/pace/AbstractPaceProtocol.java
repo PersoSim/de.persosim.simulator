@@ -55,9 +55,6 @@ import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
-import de.persosim.simulator.protocols.ta.CertificateRole;
-import de.persosim.simulator.protocols.ta.RelativeAuthorization;
-import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
@@ -74,7 +71,6 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvPath;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.tlv.TlvValue;
-import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 
 /**
@@ -230,7 +226,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		tlvObject = commandData.getTlvDataObject(TAG_7F4C);
 		if (tlvObject != null){
 			try {
-				usedChat = parseChat((ConstructedTlvDataObject) tlvObject);
+				usedChat = new CertificateHolderAuthorizationTemplate((ConstructedTlvDataObject) tlvObject);
 				
 				HashMap<Oid, Authorization> authorizations = new HashMap<>();
 				authorizations.put(usedChat.getObjectIdentifier(), usedChat.getRelativeAuthorization());
@@ -294,18 +290,6 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		//create and propagate response APDU
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, "Command SetAt successfully processed", resp);
-	}
-	
-	public CertificateHolderAuthorizationTemplate parseChat(ConstructedTlvDataObject chatData) {
-		TlvDataObject oidData = chatData.getTlvDataObject(TAG_06);
-		byte[] roleData = chatData.getTlvDataObject(TAG_53).getValueField();
-		TaOid chatOid = new TaOid(oidData.getValueField());
-		
-		RelativeAuthorization authorization = new RelativeAuthorization(
-				CertificateRole.getFromMostSignificantBits(roleData[0]), BitField.buildFromBigEndian(
-						(roleData.length * 8) - 2, roleData));
-		
-		return new CertificateHolderAuthorizationTemplate(chatOid, authorization);
 	}
 	
 	/**
