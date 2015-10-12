@@ -599,8 +599,12 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @param dgNr
 	 * @return
 	 */
-	protected static Collection<SecCondition> getAccessRightReadEidDg(int dgNr) {
+	protected Collection<SecCondition> getAccessRightReadEidDg(int dgNr) {
 		HashSet<SecCondition> retVal = new HashSet<>();
+		//IS terminals are allowed to read all eID-DGs
+		retVal.add(new TaSecurityCondition(TerminalType.IS, null));
+		
+		//AT terminal may read a DG if relativeAuthorization allows
 		retVal.add(new TaSecurityCondition(TerminalType.AT,
 				new RelativeAuthorization(CertificateRole.TERMINAL,
 						new BitField(38).flipBit(dgNr + 7))));
