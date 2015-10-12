@@ -149,13 +149,22 @@ public class CertificateBody {
 	public Date getCertificateExpirationDate() {
 		return certificateExpirationDate;
 	}
-
+	
 	/**
 	 * Create a list of all certificate extensions
 	 * @param extensionsData as described in TR03110 v2.10 part 3, C
 	 * @return all parsed extensions
 	 */
 	protected List<CertificateExtension> parseExtensions(ConstructedTlvDataObject extensionsData) {
+		return parseCertificateExtensions(extensionsData);
+	}
+
+	/**
+	 * Create a list of all certificate extensions
+	 * @param extensionsData as described in TR03110 v2.10 part 3, C
+	 * @return all parsed extensions
+	 */
+	public static List<CertificateExtension> parseCertificateExtensions(ConstructedTlvDataObject extensionsData) {
 		
 		List<CertificateExtension> result = new ArrayList<>();
 		if (extensionsData != null){
