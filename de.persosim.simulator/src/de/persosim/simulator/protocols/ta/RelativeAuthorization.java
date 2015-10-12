@@ -26,9 +26,4 @@ public class RelativeAuthorization extends Authorization {
 		return CertificateRole.getFromMostSignificantBits(authorization);
 	}
 	
-	@Override
-	public RelativeAuthorization getMinimumAuthorization() {
-		return new RelativeAuthorization(new BitField(authorization.getNumberOfBits()));
-	}
-	
 }

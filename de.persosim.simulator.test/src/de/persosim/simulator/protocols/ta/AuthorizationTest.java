@@ -53,16 +53,4 @@ public class AuthorizationTest extends PersoSimTestCase {
 		assertEquals(auth0, effectiveAuth);
 	}
 	
-	/**
-	 * This test checks the minimum authorization
-	 */
-	@Test
-	public void testGetMinimumAuthorization(){
-		Authorization auth1 = new Authorization(field1);
-		
-		Authorization minAuth = auth1.getMinimumAuthorization();
-		
-		assertEquals(auth0, minAuth);
-	}
-	
 }

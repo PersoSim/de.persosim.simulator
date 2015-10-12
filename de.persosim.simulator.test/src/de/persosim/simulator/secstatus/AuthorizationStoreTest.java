@@ -162,7 +162,6 @@ public class AuthorizationStoreTest extends PersoSimTestCase {
 		HashMap<Oid, Authorization> auths3 = new HashMap<>();
 		auths3.put(oid1, auth1);
 		auths3.put(oid2, auth2);
-		auths3.put(oid3, auth0);
 		AuthorizationStore authStore3 = new AuthorizationStore(auths3);
 		
 		authStore1.updateAuthorization(authStore2);
@@ -189,7 +188,6 @@ public class AuthorizationStoreTest extends PersoSimTestCase {
 		HashMap<Oid, Authorization> auths3 = new HashMap<>();
 		auths3.put(oid1, auth1);
 		auths3.put(oid2, auth2);
-		auths3.put(oid3, auth0);
 		AuthorizationStore authStore3 = new AuthorizationStore(auths3);
 		
 		authStore1.updateAuthorization(authStore2);

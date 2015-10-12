@@ -31,14 +31,13 @@ private HashMap<Oid, Authorization> authorizations;
 	
 	private void updateAuthorization(Oid oid, Authorization authorization) {
 		Authorization auth = authorizations.get(oid);
-		Authorization newAuthorization;
-		
+
+		//do not add new authorizations on the fly
 		if(auth == null) {
-			newAuthorization = authorization.getMinimumAuthorization();
-		} else{
-			newAuthorization = auth.buildEffectiveAuthorization(authorization);
+			return;
 		}
 		
+		Authorization newAuthorization = auth.buildEffectiveAuthorization(authorization);
 		authorizations.put(oid, newAuthorization);
 	}
 	
@@ -49,7 +48,7 @@ private HashMap<Oid, Authorization> authorizations;
 		
 		for(Oid currentOid:this.authorizations.keySet()) {
 			if(authorizations.get(currentOid) == null) {
-				updateAuthorization(currentOid, this.authorizations.get(currentOid).getMinimumAuthorization());
+				updateAuthorization(currentOid, this.authorizations.remove(currentOid));
 			}
 		}
 	}
