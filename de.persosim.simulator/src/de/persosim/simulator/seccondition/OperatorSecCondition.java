@@ -12,11 +12,11 @@ import de.persosim.simulator.secstatus.SecMechanism;
  * @author slutters
  * 
  */
-public abstract class SecConditionOperator implements SecCondition {
+public abstract class OperatorSecCondition implements SecCondition {
 	
 	protected SecCondition[] secConditions;
 	
-	public SecConditionOperator(SecCondition... secConditions) {
+	public OperatorSecCondition(SecCondition... secConditions) {
 		this.secConditions = secConditions;
 	}
 

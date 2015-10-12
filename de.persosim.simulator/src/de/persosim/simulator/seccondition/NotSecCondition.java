@@ -11,9 +11,9 @@ import de.persosim.simulator.secstatus.SecMechanism;
  * @author amay
  * 
  */
-public final class SecConditionNot extends SecConditionOperator {
+public final class NotSecCondition extends OperatorSecCondition {
 	
-	public SecConditionNot(SecCondition secCondition) {
+	public NotSecCondition(SecCondition secCondition) {
 		super(secCondition);
 	}
 	

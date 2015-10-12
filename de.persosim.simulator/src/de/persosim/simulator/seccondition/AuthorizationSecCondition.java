@@ -8,12 +8,12 @@ import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 
-public class SecConditionAuthorization implements SecCondition {
+public class AuthorizationSecCondition implements SecCondition {
 	
 	protected Oid oid;
 	protected int bit;
 	
-	public SecConditionAuthorization(Oid oid, int bit) {
+	public AuthorizationSecCondition(Oid oid, int bit) {
 		this.oid = oid;
 		this.bit = bit;
 	}

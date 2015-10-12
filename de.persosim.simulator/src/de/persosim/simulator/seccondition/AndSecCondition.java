@@ -5,26 +5,26 @@ import java.util.Collection;
 import de.persosim.simulator.secstatus.SecMechanism;
 
 /**
- * This class implements a {@link SecCondition} representing the boolean OR
+ * This class implements a {@link SecCondition} representing the boolean AND
  * operation on {@link SecCondition}
  * 
  * @author slutters
  * 
  */
-public final class SecConditionOr extends SecConditionOperator {
+public final class AndSecCondition extends OperatorSecCondition {
 	
-	public SecConditionOr(SecCondition... secConditions) {
+	public AndSecCondition(SecCondition... secConditions) {
 		super(secConditions);
 	}
 	
 	@Override
 	public boolean check(Collection<SecMechanism> mechanisms) {
 		for(SecCondition secCondition:secConditions) {
-			if(secCondition.check(mechanisms)) {
-				return true;
+			if(!secCondition.check(mechanisms)) {
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 
 }
