@@ -272,9 +272,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				}
 				
 				if(currentCertificate != null) {
+					updateAuthorizations(currentCertificate);
+					
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-					
 					this.processingData.updateResponseAPDU(this, "Command SetDST successfully processed, public key found in " + anchor + " trust anchor", resp);
 					return;
 				}
