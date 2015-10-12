@@ -80,6 +80,14 @@ public class Oid {
 		}
 		return true;
 	}
+	
+	/**
+	 * This method returns the length of this OID in bytes
+	 * @return this OID's length in bytes
+	 */
+	public int getLength() {
+		return oidByteArray.length;
+	}
 
 }
 
