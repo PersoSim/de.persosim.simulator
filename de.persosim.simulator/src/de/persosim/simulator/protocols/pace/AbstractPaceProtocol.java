@@ -228,8 +228,8 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			try {
 				usedChat = new CertificateHolderAuthorizationTemplate((ConstructedTlvDataObject) tlvObject);
 				
-				HashMap<Oid, Authorization> authorizations = new HashMap<>();
-				authorizations.put(usedChat.getObjectIdentifier(), usedChat.getRelativeAuthorization());
+				HashMap<Oid, Authorization> authorizations = getAuthorizationsFromCommandData(commandData);
+				
 				authorizationStore = new AuthorizationStore(authorizations);
 				
 				TerminalType terminalType = usedChat.getTerminalType();
@@ -290,6 +290,14 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		//create and propagate response APDU
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, "Command SetAt successfully processed", resp);
+	}
+	
+	public HashMap<Oid, Authorization> getAuthorizationsFromCommandData(TlvDataObjectContainer commandData) {
+		HashMap<Oid, Authorization> authorizations = new HashMap<Oid, Authorization>();
+		
+		authorizations.put(usedChat.getObjectIdentifier(), usedChat.getRelativeAuthorization());
+		
+		return authorizations;
 	}
 	
 	/**
