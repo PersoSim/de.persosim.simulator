@@ -20,7 +20,7 @@ public class ProtocolSecCondition implements SecCondition {
 		
 		for(SecMechanism secMechanism:mechanisms) {
 			if(secMechanism instanceof ProtocolMechanism) {
-				return protocol.isAssignableFrom(((ProtocolMechanism) secMechanism).getCurrentlyActiveProtocol().getClass());
+				return protocol.isAssignableFrom(((ProtocolMechanism) secMechanism).getCurrentlyActiveProtocol());
 			}
 		}
 		return false;
