@@ -509,7 +509,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		SecCondition taWithIs = new TaSecurityCondition(TerminalType.IS, null);
         SecCondition taWithAtPrivileged = new TaSecurityCondition(
                         TerminalType.AT, new RelativeAuthorization(
-                                        CertificateRole.TERMINAL, new BitField(6).flipBit(3)));
+                                        CertificateRole.TERMINAL, new BitField(38).flipBit(3)));
         
 		CardFile eidDgChipSecurity = new ElementaryFile(new FileIdentifier(0x011B),
 				new ShortFileIdentifier(0x1B),
