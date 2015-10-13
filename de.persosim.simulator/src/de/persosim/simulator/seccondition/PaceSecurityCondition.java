@@ -31,4 +31,9 @@ public class PaceSecurityCondition implements SecCondition {
 		result.add(PaceMechanism.class);
 		return result;
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }

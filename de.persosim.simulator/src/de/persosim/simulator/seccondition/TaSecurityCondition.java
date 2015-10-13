@@ -82,4 +82,9 @@ public class TaSecurityCondition implements SecCondition {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[" + terminalType + ", " + authorization + "]";
+	}
+
 }

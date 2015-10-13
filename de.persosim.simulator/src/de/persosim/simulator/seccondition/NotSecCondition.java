@@ -23,4 +23,9 @@ public final class NotSecCondition extends OperatorSecCondition {
 		return !secConditions[0].check(mechanisms);
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[" + secConditions[0] + "]";
+	}
+
 }

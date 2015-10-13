@@ -35,4 +35,9 @@ public class ProtocolSecCondition implements SecCondition {
 		return mechanisms;
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[" + protocol.getName() + "]";
+	}
+
 }

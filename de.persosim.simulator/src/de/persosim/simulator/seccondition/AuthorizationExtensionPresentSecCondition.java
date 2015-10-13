@@ -44,4 +44,9 @@ public class AuthorizationExtensionPresentSecCondition implements SecCondition {
 		return mechanisms;
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[" + oid + "]";
+	}
+
 }

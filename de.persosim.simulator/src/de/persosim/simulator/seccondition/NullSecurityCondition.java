@@ -24,4 +24,9 @@ public class NullSecurityCondition implements SecCondition {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
+
 }

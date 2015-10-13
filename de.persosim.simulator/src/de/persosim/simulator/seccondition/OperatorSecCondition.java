@@ -1,6 +1,7 @@
 package de.persosim.simulator.seccondition;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import de.persosim.simulator.secstatus.SecMechanism;
@@ -38,6 +39,11 @@ public abstract class OperatorSecCondition implements SecCondition {
 		}
 		
 		return effectiveMechanisms;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[" + Arrays.toString(secConditions) + "]";
 	}
 
 }

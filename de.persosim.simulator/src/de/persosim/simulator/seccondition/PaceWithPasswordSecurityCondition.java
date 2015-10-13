@@ -36,4 +36,9 @@ public class PaceWithPasswordSecurityCondition extends PaceSecurityCondition {
 		}
 		return false;
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[" + neededPassword + "]";
+	}
 }

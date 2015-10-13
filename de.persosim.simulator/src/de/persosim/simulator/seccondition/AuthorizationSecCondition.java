@@ -43,4 +43,9 @@ public class AuthorizationSecCondition implements SecCondition {
 		return mechanisms;
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[" + oid + ", require bit " + bit + "]";
+	}
+
 }
