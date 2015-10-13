@@ -26,6 +26,8 @@ public class AuthorizationSecCondition implements SecCondition {
 				AuthorizationMechanism authMechanism = (AuthorizationMechanism) secMechanism;
 				Authorization auth = authMechanism.getAuthorization(oid);
 				
+				if (auth == null) return false;
+				
 				return auth.getAuthorization().getBit(bit);
 			}
 		}
