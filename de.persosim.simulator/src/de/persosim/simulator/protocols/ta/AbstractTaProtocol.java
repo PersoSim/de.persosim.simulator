@@ -96,7 +96,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	private byte[] firstSectorPublicKeyHash;
 	private byte[] secondSectorPublicKeyHash;
 	
-	protected AuthorizationStore authorizationStore;
+	protected AuthorizationStore authorizationStore = null;
 	
 	/*--------------------------------------------------------------------------------*/
 
@@ -152,6 +152,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	@Override
 	public void reset(){
 		super.reset();
+		authorizationStore = null;
 		currentCertificate = null;
 		mostRecentTemporaryCertificate = null;
 		auxiliaryData = null;
@@ -221,7 +222,9 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				return;
 			}
 			
-			authorizationStore = authMechanism.getAuthorizationStore();
+			if (authorizationStore == null) {
+				authorizationStore = authMechanism.getAuthorizationStore();
+			}
 			
 			Authorization auth = authorizationStore.getAuthorization(chat.getObjectIdentifier());
 			
