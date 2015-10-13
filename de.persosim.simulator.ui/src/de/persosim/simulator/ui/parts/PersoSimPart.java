@@ -145,7 +145,7 @@ public class PersoSimPart {
 						sync.syncExec(new Runnable() {
 							@Override
 							public void run() {
-								 if(listener.isRefreshNeeded()) {
+								 if(checkForRefresh(listener)) {
 									 listener.resetRefreshState();
 									 buildNewConsoleContent();
 									 showNewOutput();
@@ -161,6 +161,18 @@ public class PersoSimPart {
 			}
 		};
 		return updateThread;
+	}
+	
+	private boolean checkForRefresh(LinkedListLogListener listener){
+
+		if(!txtOutput.isDisposed()){ //it is disposed when view not active
+			if(listener.isRefreshNeeded()){
+				return true;
+			} else if(txtOutput.getText().equals("")){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
