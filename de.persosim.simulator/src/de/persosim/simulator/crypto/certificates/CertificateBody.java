@@ -152,8 +152,7 @@ public class CertificateBody {
 	
 	/**
 	 * Create a list of all certificate extensions
-	 * @param extensionsData as described in TR03110 v2.10 part 3, C
-	 * @return all parsed extensions
+	 * see {@link #parseCertificateExtensions(ConstructedTlvDataObject)} for details
 	 */
 	protected List<CertificateExtension> parseExtensions(ConstructedTlvDataObject extensionsData) {
 		return parseCertificateExtensions(extensionsData);
