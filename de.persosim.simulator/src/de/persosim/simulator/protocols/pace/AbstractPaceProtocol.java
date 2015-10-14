@@ -55,6 +55,7 @@ import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
+import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
@@ -124,6 +125,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	
 	TrustPointCardObject trustPoint;
 	CertificateHolderAuthorizationTemplate usedChat;
+	TaOid terminalTypeOid;
 	
 	/*--------------------------------------------------------------------------------*/
 	
@@ -232,6 +234,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				
 				authorizationStore = new AuthorizationStore(authorizations);
 				
+				terminalTypeOid = usedChat.getObjectIdentifier();
 				TerminalType terminalType = usedChat.getTerminalType();
 
 				trustPoint = (TrustPointCardObject) cardState.getObject(
@@ -659,7 +662,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		if(paceSuccessful) {
 			ConstructedTlvDataObject responseContent = buildMutualAuthenticateResponse(piccToken);
 			if (setSmDataProvider()){
-				PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), usedChat.getObjectIdentifier());
+				PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), terminalTypeOid);
 				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
 				
 				
