@@ -442,7 +442,7 @@ public class PersoSimPart {
 
 	}
 	
-	@PreDestroy //FIXME JGE this annotation is used on a different method in the subclass, what are the implications of this?
+	@PreDestroy
 	public void closePersoSimView() {
 		if(updateThread.isAlive()) {
 			updateThread.interrupt();
