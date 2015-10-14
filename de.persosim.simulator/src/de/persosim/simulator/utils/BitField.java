@@ -14,15 +14,31 @@ import de.persosim.simulator.exception.BitFieldOutOfBoundsException;
 public class BitField {
 	boolean[] storedBits;
 
-	public BitField() {
-	}
-
 	/**
 	 * Creates an empty (all zero bits) {@link BitField} of the given length.
 	 * @param numberOfBits
 	 */
 	public BitField(int numberOfBits){
 		storedBits = new boolean[numberOfBits];
+	}
+	
+	/**
+	 * Creates an {@link BitField} of the given size and having all additionally
+	 * given bits set to 1.
+	 * 
+	 * @param numberOfBits
+	 * @param setBits
+	 *            this contains is the zero based indices of the bits to be set
+	 *            to 1
+	 */
+	public BitField(int numberOfBits, int ... setBits){
+		this(numberOfBits);
+		for (int bit : setBits){
+			if (bit > numberOfBits || bit < 0){
+				throw new IllegalArgumentException("The bits to be set must be inside the BitField");
+			}
+			storedBits[bit] = true;
+		}
 	}
 	
 	/**

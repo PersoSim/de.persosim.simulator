@@ -2,6 +2,7 @@ package de.persosim.simulator.utils;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -27,13 +28,13 @@ public class BitFieldTest extends PersoSimTestCase {
 	@Test
 	public void testBuildFromBigEndian(){
 		BitField field = BitField.buildFromBigEndian(10, new byte [] {0b01001011, (byte) 0b10110100});
-		assertTrue(!field.getBit(0));
-		assertTrue(!field.getBit(1));
+		assertFalse(field.getBit(0));
+		assertFalse(field.getBit(1));
 		assertTrue(field.getBit(2));
-		assertTrue(!field.getBit(3));
+		assertFalse(field.getBit(3));
 		assertTrue(field.getBit(4));
 		assertTrue(field.getBit(5));
-		assertTrue(!field.getBit(6));
+		assertFalse(field.getBit(6));
 		assertTrue(field.getBit(7));
 		assertTrue(field.getBit(8));
 		assertTrue(field.getBit(9));
@@ -44,14 +45,48 @@ public class BitFieldTest extends PersoSimTestCase {
 		BitField field = new BitField(10, new byte [] {0b01001011, 0b00001111});
 		assertTrue(field.getBit(0));
 		assertTrue(field.getBit(1));
-		assertTrue(!field.getBit(2));
+		assertFalse(field.getBit(2));
 		assertTrue(field.getBit(3));
-		assertTrue(!field.getBit(4));
-		assertTrue(!field.getBit(5));
+		assertFalse(field.getBit(4));
+		assertFalse(field.getBit(5));
 		assertTrue(field.getBit(6));
-		assertTrue(!field.getBit(7));
+		assertFalse(field.getBit(7));
 		assertTrue(field.getBit(8));
 		assertTrue(field.getBit(9));
+	}
+	
+	@Test
+	public void testConstructorSetBits(){
+		BitField field = new BitField(10, 2, 5);
+		assertFalse(field.getBit(0));
+		assertFalse(field.getBit(1));
+		assertTrue(field.getBit(2));
+		assertFalse(field.getBit(3));
+		assertFalse(field.getBit(4));
+		assertTrue(field.getBit(5));
+		assertFalse(field.getBit(6));
+		assertFalse(field.getBit(7));
+		assertFalse(field.getBit(8));
+		assertFalse(field.getBit(9));
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testConstructorSetBitsNegativeBit(){
+		new BitField(10, 2, -5);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testConstructorSetBitsToBig(){
+		new BitField(10, 2, 200);
+	}
+	
+	@Test
+	public void testConstructor(){
+		BitField field = new BitField(10);
+		
+		for (int i = 0; i < 10; i++){
+			assertFalse(field.getBit(i));
+		}
 	}
 	
 	@Test
