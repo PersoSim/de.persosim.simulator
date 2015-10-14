@@ -163,13 +163,13 @@ public class PersoSimPart {
 								 if(checkForRefresh(listener)) {
 									 listener.resetRefreshState();
 									 buildNewConsoleContent();
-									 
+									 showNewOutput();
 								 }
 							}
 						});
 					try {
 						Thread.sleep(50);
-						showNewOutput();
+						
 					} catch (InterruptedException e) {
 						break;
 					}
