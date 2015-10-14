@@ -168,7 +168,8 @@ public class PersoSimPart {
 		if(!txtOutput.isDisposed()){ //it is disposed when view not active
 			if(listener.isRefreshNeeded()){
 				return true;
-			} else if(txtOutput.getText().equals("")){
+			} else if(txtOutput.getText().equals("") && listener.getNumberOfCachedLines()>0){
+				//empty log happens when view was closed and opened again -> force a refresh
 				return true;
 			}
 		}
