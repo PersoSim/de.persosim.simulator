@@ -83,7 +83,7 @@ public interface DomainParameterSet {
 	 * @throws NoSuchAlgorithmException
 	 *             if the needed algorithms are not available
 	 */
-	public abstract byte[] comp(PublicKey publicKey) throws NoSuchAlgorithmException;
+	public abstract byte[] comp(PublicKey publicKey);
 	
 	/**
 	 * Returns an {@link AlgorithmParameterSpec} representing (a subset of) the data stored in this object.
