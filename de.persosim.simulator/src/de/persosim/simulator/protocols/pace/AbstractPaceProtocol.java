@@ -659,6 +659,9 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		if(paceSuccessful) {
 			ConstructedTlvDataObject responseContent = buildMutualAuthenticateResponse(piccToken);
 			if (setSmDataProvider()){
+				PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), usedChat.getObjectIdentifier());
+				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
+				
 				
 				HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 				previousMechanisms.add(AuthorizationMechanism.class);
@@ -682,6 +685,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				}
 				
 				processingData.addUpdatePropagation(this, "Security status updated with authorization mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, newAuthMechanism));
+				
 				
 				responseApdu = new ResponseApdu(new TlvDataObjectContainer(responseContent), sw);
 			} else {
@@ -733,10 +737,6 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			SmDataProviderTr03110 smDataProvider = new SmDataProviderTr03110(this.secretKeySpecENC, this.secretKeySpecMAC);
 			processingData.addUpdatePropagation(this, "init SM after successful PACE", smDataProvider);
 			
-			//TODO the Pace mechanism is not directly connected to the SM data provider - move code
-			//propagate data about successfully performed SecMechanism in SecStatus 
-			PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), usedChat.getObjectIdentifier());
-			processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
 			return true;
 		} catch (GeneralSecurityException e) {
 			logException(this, e);
