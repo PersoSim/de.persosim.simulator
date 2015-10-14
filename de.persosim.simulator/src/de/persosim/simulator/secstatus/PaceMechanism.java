@@ -3,7 +3,7 @@ package de.persosim.simulator.secstatus;
 import java.util.Arrays;
 
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
-import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
+import de.persosim.simulator.protocols.ta.TaOid;
 
 /**
  * This {@link SecMechanism} implements the information store for security state
@@ -17,12 +17,12 @@ public class PaceMechanism extends
 
 	private PasswordAuthObject usedPassword;
 	private byte [] compressedEphemeralPublicKey;
-	private CertificateHolderAuthorizationTemplate usedChat;
+	private TaOid terminalType;
 
-	public PaceMechanism(PasswordAuthObject usedPassword, byte[] compressedPublicKey, CertificateHolderAuthorizationTemplate chat){
+	public PaceMechanism(PasswordAuthObject usedPassword, byte[] compressedPublicKey, TaOid taOid){
 		this.usedPassword = usedPassword;
 		this.compressedEphemeralPublicKey = compressedPublicKey;
-		this.usedChat = chat;
+		this.terminalType = taOid;
 	}
 	
 	/**
@@ -40,10 +40,10 @@ public class PaceMechanism extends
 	}
 	
 	/**
-	 * @return the usedChat
+	 * @return the {@link TaOid} identifying the terminal type
 	 */
-	public CertificateHolderAuthorizationTemplate getUsedChat() {
-		return usedChat;
+	public TaOid getTerminalType() {
+		return terminalType;
 	}
 
 }

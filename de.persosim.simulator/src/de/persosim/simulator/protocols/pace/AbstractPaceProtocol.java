@@ -735,7 +735,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			
 			//TODO the Pace mechanism is not directly connected to the SM data provider - move code
 			//propagate data about successfully performed SecMechanism in SecStatus 
-			PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), usedChat);
+			PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), usedChat.getObjectIdentifier());
 			processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
 			return true;
 		} catch (GeneralSecurityException e) {

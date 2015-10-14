@@ -27,6 +27,8 @@ import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.crypto.certificates.CvPublicKey;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.NotParseableException;
+import de.persosim.simulator.protocols.ta.TaOid;
+import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -257,4 +259,21 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 				+ formatter.format(calendar.get(Calendar.DAY_OF_MONTH) % 10);
 		return HexString.toByteArray(tempDate);
 	}
+	
+	/**
+	 * This method returns the terminal type from the provided TA OID
+	 * @param objectIdentifier the TA OID to extract the terminal type from
+	 * @return the terminal type extracted from TA OID
+	 */
+	public static TerminalType getTerminalTypeFromTaOid(TaOid objectIdentifier) {
+		if (objectIdentifier.equals(TaOid.id_IS)) {
+			return TerminalType.IS;
+		} else if (objectIdentifier.equals(TaOid.id_AT)) {
+			return TerminalType.AT;
+		} else if (objectIdentifier.equals(TaOid.id_ST)) {
+			return TerminalType.ST;
+		}
+		return null;
+	}
+	
 }

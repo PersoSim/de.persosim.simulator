@@ -38,6 +38,7 @@ import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.SecInfoPublicity;
+import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.PaceMechanism;
@@ -203,30 +204,30 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				return;
 			}
 			
-			// extract the currently used terminal type
-			CertificateHolderAuthorizationTemplate chat = paceMechanism.getUsedChat();
-			
-			if(chat == null) {
-				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-				this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide CHAT", resp);
-				return;
-			}
-			
-			terminalType = chat.getTerminalType();
-			
 			if(authMechanism == null) {
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-				this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide any authorization information", resp);
+				this.processingData.updateResponseAPDU(this, "Did not find any authorization information", resp);
 				return;
 			}
+			
+			// extract the currently used terminal type
+			TaOid terminalTypeOid = paceMechanism.getTerminalType();
+			
+			if(terminalTypeOid == null) {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide information about terminal type", resp);
+				return;
+			}
+			
+			terminalType = Tr03110Utils.getTerminalTypeFromTaOid(terminalTypeOid);
 			
 			if (authorizationStore == null) {
 				authorizationStore = authMechanism.getAuthorizationStore();
 			}
 			
-			Authorization auth = authorizationStore.getAuthorization(chat.getObjectIdentifier());
+			Authorization auth = authorizationStore.getAuthorization(terminalTypeOid);
 			
 			if(auth == null) {
 				// create and propagate response APDU

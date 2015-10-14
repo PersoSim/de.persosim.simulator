@@ -2,6 +2,7 @@ package de.persosim.simulator.protocols.ta;
 
 import de.persosim.simulator.crypto.certificates.CertificateUtils;
 import de.persosim.simulator.exception.CertificateNotParseableException;
+import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -59,14 +60,7 @@ public class CertificateHolderAuthorizationTemplate {
 	 * @return the terminal type stored
 	 */
 	public TerminalType getTerminalType() {
-		if (objectIdentifier.equals(TaOid.id_IS)) {
-			return TerminalType.IS;
-		} else if (objectIdentifier.equals(TaOid.id_AT)) {
-			return TerminalType.AT;
-		} else if (objectIdentifier.equals(TaOid.id_ST)) {
-			return TerminalType.ST;
-		}
-		return null;
+		return Tr03110Utils.getTerminalTypeFromTaOid(objectIdentifier);
 	}
 	
 	public ConstructedTlvDataObject toTlv() {
