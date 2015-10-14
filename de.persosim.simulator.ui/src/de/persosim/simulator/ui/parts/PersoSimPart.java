@@ -108,6 +108,21 @@ public class PersoSimPart {
 			}
 		});
 		
+		txtOutput.addListener(SWT.Resize, new Listener() {
+			public void handleEvent(Event e) {
+				//if the size of the text field changes the shown output should be readjusted
+				final LinkedListLogListener listener = Activator.getListLogListener();
+				if (listener == null) {
+					txtOutput.setText(
+							"The OSGi logging service can not be used.\nPlease check the availability and OSGi configuration"
+									+ System.lineSeparator());
+				} else {
+					buildNewConsoleContent();
+					showNewOutput();
+				}
+
+			}
+		});
 		parent.setLayout(new GridLayout(2, false));		
 		
 		createConsoleIn(parent);
@@ -166,7 +181,7 @@ public class PersoSimPart {
 	private boolean checkForRefresh(LinkedListLogListener listener){
 
 		if(!txtOutput.isDisposed()){ //it is disposed when view not active
-			if(listener.isRefreshNeeded()){
+			if(listener.isRefreshNeeded() && !locked){
 				return true;
 			} else if(txtOutput.getText().equals("") && listener.getNumberOfCachedLines()>0){
 				//empty log happens when view was closed and opened again -> force a refresh
