@@ -389,12 +389,9 @@ public class PersoSimPart {
 		final StringBuilder strConsoleStrings = new StringBuilder();
 
 		// calculates how many lines can be shown without cutting
-		//IMPL remove this dirtyhack and handle the situations of opening/closing a view within the IDE multiple times gracefully (compare commit fcd6c2 for previous implementations, that does not hide the exceptions)
-		try {
-			maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
-		} catch (Exception e) { //IMPL PokémonException
-			maxLineCount = 15;
-		}
+		
+		maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
+
 			
 		//synchronized is used to avoid IndexOutOfBoundsExceptions
 		synchronized (Activator.getListLogListener()) {
