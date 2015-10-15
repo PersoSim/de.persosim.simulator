@@ -155,24 +155,25 @@ public class PersoSimPart {
 		
 		uiThread = Display.getCurrent().getThread();
 		final Thread updateThread = new Thread() {
-			public void run() {		
-				while (!isInterrupted() && uiThread.isAlive()){
-						sync.syncExec(new Runnable() {
-							@Override
-							public void run() {
-								 if(checkForRefresh(listener)) {
-									 listener.resetRefreshState();
-									 buildNewConsoleContent();
-									 showNewOutput();
-								 }
+			public void run() {
+				while (!isInterrupted() && uiThread.isAlive()) {
+					sync.syncExec(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								if (checkForRefresh(listener)) {
+									listener.resetRefreshState();
+									buildNewConsoleContent();
+									Thread.sleep(50);
+									showNewOutput();
+								} else {
+									Thread.sleep(50);
+								}
+							} catch (InterruptedException e) {
+								// sleep got interrupted
 							}
-						});
-					try {
-						Thread.sleep(50);
-						
-					} catch (InterruptedException e) {
-						break;
-					}
+						}
+					});
 				}
 			}
 		};
