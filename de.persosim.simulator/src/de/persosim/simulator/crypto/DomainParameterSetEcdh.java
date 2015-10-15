@@ -26,6 +26,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
+import javax.crypto.interfaces.DHPrivateKey;
+
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -370,6 +372,15 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		}
 		
 		return encodePoint(ecPublicKey.getW(), encoding);
+	}
+	
+	@Override
+	public byte[] encodePrivateKey(PrivateKey privateKey) {
+		if(privateKey instanceof ECPrivateKey) {
+			return Utils.toUnsignedByteArray(((ECPrivateKey) privateKey).getS());
+		} else{
+			throw new IllegalArgumentException("key pair must be ECDH");
+		}
 	}
 	
 	@Override
