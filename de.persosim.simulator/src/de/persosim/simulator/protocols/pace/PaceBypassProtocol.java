@@ -276,7 +276,8 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			
 			//propagate data about successfully performed SecMechanism in SecStatus
 			if (sw == Iso7816.SW_9000_NO_ERROR){
-				PaceMechanism paceMechanism = new PaceMechanism(passwordObject, compEphermeralPublicKey, usedChat.getObjectIdentifier());
+				TaOid terminalTypeOid = usedChat != null ? usedChat.getObjectIdentifier(): null;
+				PaceMechanism paceMechanism = new PaceMechanism(passwordObject, compEphermeralPublicKey, terminalTypeOid);
 				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
 			}
 			
