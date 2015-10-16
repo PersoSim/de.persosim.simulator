@@ -6,7 +6,7 @@ import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ta.Authorization;
 
 /**
- * This class provides an updateable container for storing authorization information.
+ * This class provides an updatable container for storing authorization information.
  * Authorization information is stored within this object backed by a HashMap mapping
  * OIDs to objects of type {@link Authorization}.
  * 
