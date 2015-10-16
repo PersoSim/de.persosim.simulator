@@ -8,6 +8,15 @@ import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 
+/**
+ * This class represents a {@link SecCondition} requiring a certain
+ * authorization status. Authorization information is identified by an OID
+ * mapped to a bit field of single authorizations. This condition requires a
+ * single bit within the bit field identified by a certain OID to be set.
+ * 
+ * @author slutters
+ *
+ */
 public class AuthorizationSecCondition implements SecCondition {
 	
 	protected Oid oid;

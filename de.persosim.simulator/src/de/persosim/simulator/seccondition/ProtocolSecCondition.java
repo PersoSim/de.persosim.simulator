@@ -7,6 +7,13 @@ import de.persosim.simulator.platform.ProtocolMechanism;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.secstatus.SecMechanism;
 
+/**
+ * This {@link SecCondition} requires a protocol of a certain type to be
+ * currently active.
+ * 
+ * @author slutters
+ *
+ */
 public class ProtocolSecCondition implements SecCondition {
 	
 	protected Class<? extends Protocol> protocol;
