@@ -5,6 +5,14 @@ import java.util.HashMap;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ta.Authorization;
 
+/**
+ * This class provides an updateable container for storing authorization information.
+ * Authorization information is stored within this object backed by a HashMap mapping
+ * OIDs to objects of type {@link Authorization}.
+ * 
+ * @author slutters
+ *
+ */
 public class AuthorizationStore {
 	
 private HashMap<Oid, Authorization> authorizations;
@@ -29,6 +37,19 @@ private HashMap<Oid, Authorization> authorizations;
 		return authorizations.get(oid);
 	}
 	
+	/**
+	 * This method updates the authorization information stored within this
+	 * object. If authorization information is already registered for the
+	 * provided OID, it will be updated to the effective authorization resulting
+	 * from present and provided authorization information, see
+	 * {@link Authorization#buildEffectiveAuthorization(Authorization)}} for
+	 * details.
+	 * 
+	 * @param oid
+	 *            the OID for which authorization information is to be updated
+	 * @param authorization
+	 *            the information authorization to be used for the update
+	 */
 	private void updateAuthorization(Oid oid, Authorization authorization) {
 		Authorization auth = authorizations.get(oid);
 
@@ -41,6 +62,18 @@ private HashMap<Oid, Authorization> authorizations;
 		authorizations.put(oid, newAuthorization);
 	}
 	
+	/**
+	 * This method updates the authorization information stored within this
+	 * object. If authorization information is already registered for one of the
+	 * provided OIDs, it will be updated to the effective authorization
+	 * resulting from present and provided authorization information, see
+	 * {@link Authorization#buildEffectiveAuthorization(Authorization)}} for
+	 * details. If the set of provided information lacks information that is
+	 * registered within this object, the information is also removed from this
+	 * object.
+	 * 
+	 * @param authorizations the authorization information to be used for the update
+	 */
 	public void updateAuthorization(HashMap<Oid, Authorization> authorizations) {
 		for(Oid currentOid:authorizations.keySet()) {
 			updateAuthorization(currentOid, authorizations.get(currentOid));
@@ -48,11 +81,17 @@ private HashMap<Oid, Authorization> authorizations;
 		
 		for(Oid currentOid:this.authorizations.keySet()) {
 			if(authorizations.get(currentOid) == null) {
-				updateAuthorization(currentOid, this.authorizations.remove(currentOid));
+				this.authorizations.remove(currentOid);
 			}
 		}
 	}
 	
+	/**
+	 * This method updates the authorization information stored within this
+	 * object. See {@link #updateAuthorization(HashMap)} for details.
+	 * 
+	 * @param authStore the authorization information to be used for the update
+	 */
 	public void updateAuthorization(AuthorizationStore authStore) {
 		updateAuthorization(authStore.authorizations);
 	}
