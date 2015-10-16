@@ -76,6 +76,13 @@ public enum CertificateRole {
 		return null;
 	}
 	
+	/**
+	 * Parse a {@link BitField} for a {@link CertificateRole}.
+	 * 
+	 * @param field
+	 *            the {@link BitField} to parse
+	 * @return the {@link CertificateRole} as defined in the two MSB
+	 */
 	public static CertificateRole getFromMostSignificantBits(BitField field) {
 		BitField role = new BitField(new boolean [] { field.getBit(field.getNumberOfBits()-2),  field.getBit(field.getNumberOfBits()-1) });
 		return CertificateRole.getFromField(role);

@@ -27,7 +27,7 @@ public class Authorization {
 	}
 	
 	/**
-	 * Construct the effective Authorization by calculating a logical and on the
+	 * Construct the effective Authorization by calculating a logical and-operation on the
 	 * {@link BitField} representations of role and authorization.
 	 * 
 	 * @param authorization

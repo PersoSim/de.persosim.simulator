@@ -44,6 +44,7 @@ import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.KeyDerivationFunction;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
+import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
@@ -298,8 +299,20 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	public HashMap<Oid, Authorization> getAuthorizationsFromCommandData(TlvDataObjectContainer commandData) {
 		HashMap<Oid, Authorization> authorizations = new HashMap<Oid, Authorization>();
 		
-		authorizations.put(usedChat.getObjectIdentifier(), usedChat.getRelativeAuthorization());
-		
+		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_7F4C);
+		CertificateHolderAuthorizationTemplate chatFromCommandData = null;
+		if (tlvObject != null){
+				try {
+					chatFromCommandData  = new CertificateHolderAuthorizationTemplate((ConstructedTlvDataObject) tlvObject);
+					authorizations.put(chatFromCommandData.getObjectIdentifier(), chatFromCommandData.getRelativeAuthorization());
+				} catch (CertificateNotParseableException e) {
+					ResponseApdu resp = new ResponseApdu(
+							Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+					this.processingData.updateResponseAPDU(this, e.getMessage(),
+							resp);
+				}
+		}
+
 		return authorizations;
 	}
 	

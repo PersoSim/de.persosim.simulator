@@ -23,12 +23,12 @@ public class BitField {
 	}
 	
 	/**
-	 * Creates an {@link BitField} of the given size and having all additionally
-	 * given bits set to 1.
+	 * Creates a {@link BitField} of the given size and sets all additionally
+	 * given bits to 1.
 	 * 
 	 * @param numberOfBits
 	 * @param setBits
-	 *            this contains is the zero based indices of the bits to be set
+	 *            this contains the zero based indices of the bits to be set
 	 *            to 1
 	 */
 	public BitField(int numberOfBits, int ... setBits){
@@ -255,9 +255,9 @@ public class BitField {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(getNumberOfBits());
-		int noOfRemeiningBits = getNumberOfBits();
+		int noOfRemainingBits = getNumberOfBits();
 		for(int i=0; i<getNumberOfBits(); i++) {
-			if((i > 0) && (noOfRemeiningBits%8 == 0)) {
+			if((i > 0) && (noOfRemainingBits%8 == 0)) {
 				sb.append(" ");
 			}
 			
@@ -266,7 +266,7 @@ public class BitField {
 			} else{
 				sb.append("0");
 			}
-			noOfRemeiningBits--;
+			noOfRemainingBits--;
 		}
 		return sb.toString();
 	}
