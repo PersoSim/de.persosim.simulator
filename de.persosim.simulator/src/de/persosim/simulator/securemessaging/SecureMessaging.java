@@ -45,11 +45,11 @@ import de.persosim.simulator.utils.Utils;
  * 
  */
 public class SecureMessaging extends Layer {
+	public static final TlvTag TAG_85 = new TlvTag((byte) 0x85);
 	public static final TlvTag TAG_87 = new TlvTag((byte) 0x87);
+	public static final TlvTag TAG_8E = new TlvTag((byte) 0x8E);
 	public static final TlvTag TAG_97 = new TlvTag((byte) 0x97);
 	public static final TlvTag TAG_99 = new TlvTag((byte) 0x99);
-	public static final TlvTag TAG_8E = new TlvTag((byte) 0x8E);
-	public static final TlvTag TAG_85 = new TlvTag((byte) 0x85);
 	
 	/*--------------------------------------------------------------------------------*/
 	private SmDataProvider dataProvider = null;
@@ -443,7 +443,7 @@ public class SecureMessaging extends Layer {
 		}
 		
 		if(isoCaseOfPlainAPDU > 2) {
-			log(this, "TLV object 87 is: " + cryptogram, TRACE);
+			log(this, "Cryptogram is: " + cryptogram, TRACE);
 		}
 		
 		/* verify mac */
