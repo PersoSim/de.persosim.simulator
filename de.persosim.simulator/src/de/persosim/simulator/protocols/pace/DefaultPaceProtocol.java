@@ -8,38 +8,38 @@ package de.persosim.simulator.protocols.pace;
 
 /* Command line options: -verbose -p EA -o DefaultPaceProtocol -l java -t PACE:paceclass C:\develop\wd\protocol_pace.xml   */
 /* This file is generated from protocol_pace.xml - do not edit manually  */
-/* Generated on: Fri Aug 01 12:45:35 CEST 2014 / version 3.52beta2 */
+/* Generated on: Tue Oct 13 09:36:37 CEST 2015 / version 3.52beta2 */
 
 
 
 public class DefaultPaceProtocol extends AbstractPaceProtocol
 {
 
-	public static final int PACE_GET_NONCE_RECEIVED = 0;
-	public static final int REGISTER_APDU_MUTUAL_AUTHENTICATE = 1;
-	public static final int PACE_SET_AT_RECEIVED = 2;
-	public static final int PACE_MUTUAL_AUTHENTICATE_RECEIVED = 3;
-	public static final int DUMMY_INITIAL = 4;
-	public static final int PACE_MAP_NONCE_RECEIVED = 5;
-	public static final int REGISTER_APDU_GET_NONCE = 6;
-	public static final int PACE_PERFORM_KEY_AGREEMENT_RECEIVED = 7;
-	public static final int PACE_INIT = 8;
-	public static final int RESET = 9;
-	public static final int PACE_ANNOUNCED = 10;
-	public static final int PROCESSING_ERROR = 11;
-	public static final int PACE_PERFORM_KEY_AGREEMENT_PROCESSED = 12;
-	public static final int REGISTER_APDU_PERFORM_KEY_AGREEMENT = 13;
-	public static final int PACE_GET_NONCE_PROCESSED = 14;
+	public static final int REGISTER_APDU_PERFORM_KEY_AGREEMENT = 0;
+	public static final int PACE_GET_NONCE_RECEIVED = 1;
+	public static final int PACE_MUTUAL_AUTHENTICATE_PROCESSED = 2;
+	public static final int CHAINING_INTERRUPTED = 3;
+	public static final int PACE_MAP_NONCE_RECEIVED = 4;
+	public static final int RESET = 5;
+	public static final int PACE_SET_AT_PROCESSED = 6;
+	public static final int PACE_MUTUAL_AUTHENTICATE_RECEIVED = 7;
+	public static final int PACE_COMPLETED = 8;
+	public static final int REGISTER_APDU_SET_AT = 9;
+	public static final int PACE_GET_NONCE_PROCESSED = 10;
+	public static final int REGISTER_APDUS = 11;
+	public static final int REGISTER_APDU_GET_NONCE = 12;
+	public static final int REGISTER_APDU_MUTUAL_AUTHENTICATE = 13;
+	public static final int PACE_IN_PROGRESS = 14;
 	public static final int PACE_MAP_NONCE_PROCESSED = 15;
-	public static final int REGISTER_APDU_SET_AT = 16;
-	public static final int CHAINING_INTERRUPTED = 17;
-	public static final int REGISTER_APDUS = 18;
-	public static final int PACE_COMPLETED = 19;
-	public static final int PACE_IN_PROGRESS = 20;
-	public static final int PACE_MUTUAL_AUTHENTICATE_PROCESSED = 21;
-	public static final int GENERAL_AUTHENTICATE_CHAINING = 22;
-	public static final int REGISTER_APDU_MAP_NONCE = 23;
-	public static final int PACE_SET_AT_PROCESSED = 24;
+	public static final int PACE_ANNOUNCED = 16;
+	public static final int REGISTER_APDU_MAP_NONCE = 17;
+	public static final int PACE_PERFORM_KEY_AGREEMENT_RECEIVED = 18;
+	public static final int DUMMY_INITIAL = 19;
+	public static final int PACE_INIT = 20;
+	public static final int PROCESSING_ERROR = 21;
+	public static final int PACE_SET_AT_RECEIVED = 22;
+	public static final int GENERAL_AUTHENTICATE_CHAINING = 23;
+	public static final int PACE_PERFORM_KEY_AGREEMENT_PROCESSED = 24;
 	public static final int __UNKNOWN_STATE__ = 25;
 
 
@@ -69,79 +69,79 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 
 	/* Helper to get innermost active state id */
 	public int getInnermostActiveState() {
-		if(isInPACE_MAP_NONCE_PROCESSED()){
-			return PACE_MAP_NONCE_PROCESSED;
-		}else if(isInPACE_GET_NONCE_PROCESSED()){
-			return PACE_GET_NONCE_PROCESSED;
-		}else if(isInPACE_PERFORM_KEY_AGREEMENT_PROCESSED()){
+		if(isInPACE_PERFORM_KEY_AGREEMENT_PROCESSED()){
 			return PACE_PERFORM_KEY_AGREEMENT_PROCESSED;
 		}else if(isInPACE_PERFORM_KEY_AGREEMENT_RECEIVED()){
 			return PACE_PERFORM_KEY_AGREEMENT_RECEIVED;
-		}else if(isInPACE_MAP_NONCE_RECEIVED()){
-			return PACE_MAP_NONCE_RECEIVED;
+		}else if(isInPACE_MAP_NONCE_PROCESSED()){
+			return PACE_MAP_NONCE_PROCESSED;
+		}else if(isInPACE_GET_NONCE_PROCESSED()){
+			return PACE_GET_NONCE_PROCESSED;
 		}else if(isInPACE_MUTUAL_AUTHENTICATE_RECEIVED()){
 			return PACE_MUTUAL_AUTHENTICATE_RECEIVED;
-		}else if(isInPACE_SET_AT_PROCESSED()){
-			return PACE_SET_AT_PROCESSED;
+		}else if(isInPACE_MAP_NONCE_RECEIVED()){
+			return PACE_MAP_NONCE_RECEIVED;
 		}else if(isInPACE_SET_AT_RECEIVED()){
 			return PACE_SET_AT_RECEIVED;
+		}else if(isInPACE_SET_AT_PROCESSED()){
+			return PACE_SET_AT_PROCESSED;
 		}else if(isInPACE_GET_NONCE_RECEIVED()){
 			return PACE_GET_NONCE_RECEIVED;
-		}else if(isInREGISTER_APDU_MAP_NONCE()){
-			return REGISTER_APDU_MAP_NONCE;
-		}else if(isInPACE_MUTUAL_AUTHENTICATE_PROCESSED()){
-			return PACE_MUTUAL_AUTHENTICATE_PROCESSED;
-		}else if(isInREGISTER_APDU_SET_AT()){
-			return REGISTER_APDU_SET_AT;
-		}else if(isInREGISTER_APDU_PERFORM_KEY_AGREEMENT()){
-			return REGISTER_APDU_PERFORM_KEY_AGREEMENT;
 		}else if(isInPACE_INIT()){
 			return PACE_INIT;
-		}else if(isInREGISTER_APDU_GET_NONCE()){
-			return REGISTER_APDU_GET_NONCE;
+		}else if(isInREGISTER_APDU_MAP_NONCE()){
+			return REGISTER_APDU_MAP_NONCE;
 		}else if(isInREGISTER_APDU_MUTUAL_AUTHENTICATE()){
 			return REGISTER_APDU_MUTUAL_AUTHENTICATE;
-		}else if(isInPACE_COMPLETED()){
-			return PACE_COMPLETED;
-		}else if(isInCHAINING_INTERRUPTED()){
-			return CHAINING_INTERRUPTED;
+		}else if(isInREGISTER_APDU_GET_NONCE()){
+			return REGISTER_APDU_GET_NONCE;
+		}else if(isInREGISTER_APDU_SET_AT()){
+			return REGISTER_APDU_SET_AT;
+		}else if(isInPACE_MUTUAL_AUTHENTICATE_PROCESSED()){
+			return PACE_MUTUAL_AUTHENTICATE_PROCESSED;
+		}else if(isInREGISTER_APDU_PERFORM_KEY_AGREEMENT()){
+			return REGISTER_APDU_PERFORM_KEY_AGREEMENT;
 		}else if(isInPROCESSING_ERROR()){
 			return PROCESSING_ERROR;
-		}else if(isInRESET()){
-			return RESET;
 		}else if(isInDUMMY_INITIAL()){
 			return DUMMY_INITIAL;
+		}else if(isInPACE_COMPLETED()){
+			return PACE_COMPLETED;
+		}else if(isInRESET()){
+			return RESET;
+		}else if(isInCHAINING_INTERRUPTED()){
+			return CHAINING_INTERRUPTED;
 		}else{
 			return __UNKNOWN_STATE__;
 		}
 	}
 
 	// Helper(s) to find out if the machine is in a certain state
-	public boolean isInPACE_GET_NONCE_RECEIVED(){return (((stateVarPACE_IN_PROGRESS==  PACE_GET_NONCE_RECEIVED)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInREGISTER_APDU_MUTUAL_AUTHENTICATE(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_MUTUAL_AUTHENTICATE)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInPACE_SET_AT_RECEIVED(){return (((stateVarPACE_IN_PROGRESS==  PACE_SET_AT_RECEIVED)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInPACE_MUTUAL_AUTHENTICATE_RECEIVED(){return (((stateVarGENERAL_AUTHENTICATE_CHAINING==  PACE_MUTUAL_AUTHENTICATE_RECEIVED)&&(stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInDUMMY_INITIAL(){return (((stateVar==  DUMMY_INITIAL)) ? (true) : (false));}
-	public boolean isInPACE_MAP_NONCE_RECEIVED(){return (((stateVarGENERAL_AUTHENTICATE_CHAINING==  PACE_MAP_NONCE_RECEIVED)&&(stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInREGISTER_APDU_GET_NONCE(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_GET_NONCE)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInPACE_PERFORM_KEY_AGREEMENT_RECEIVED(){return (((stateVarGENERAL_AUTHENTICATE_CHAINING==  PACE_PERFORM_KEY_AGREEMENT_RECEIVED)&&(stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInPACE_INIT(){return (((stateVarPACE_ANNOUNCED==  PACE_INIT)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInRESET(){return (((stateVar==  RESET)) ? (true) : (false));}
-	public boolean isInPACE_ANNOUNCED(){return (((stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInPROCESSING_ERROR(){return (((stateVar==  PROCESSING_ERROR)) ? (true) : (false));}
-	public boolean isInPACE_PERFORM_KEY_AGREEMENT_PROCESSED(){return (((stateVarGENERAL_AUTHENTICATE_CHAINING==  PACE_PERFORM_KEY_AGREEMENT_PROCESSED)&&(stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
 	public boolean isInREGISTER_APDU_PERFORM_KEY_AGREEMENT(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_PERFORM_KEY_AGREEMENT)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInPACE_GET_NONCE_PROCESSED(){return (((stateVarGENERAL_AUTHENTICATE_CHAINING==  PACE_GET_NONCE_PROCESSED)&&(stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInPACE_MAP_NONCE_PROCESSED(){return (((stateVarGENERAL_AUTHENTICATE_CHAINING==  PACE_MAP_NONCE_PROCESSED)&&(stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInREGISTER_APDU_SET_AT(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_SET_AT)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInCHAINING_INTERRUPTED(){return (((stateVar==  CHAINING_INTERRUPTED)) ? (true) : (false));}
-	public boolean isInREGISTER_APDUS(){return (((stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInPACE_COMPLETED(){return (((stateVar==  PACE_COMPLETED)) ? (true) : (false));}
-	public boolean isInPACE_IN_PROGRESS(){return (((stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInPACE_GET_NONCE_RECEIVED(){return (((stateVarPACE_IN_PROGRESS==  PACE_GET_NONCE_RECEIVED)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
 	public boolean isInPACE_MUTUAL_AUTHENTICATE_PROCESSED(){return (((stateVarPACE_ANNOUNCED==  PACE_MUTUAL_AUTHENTICATE_PROCESSED)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInGENERAL_AUTHENTICATE_CHAINING(){return (((stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
-	public boolean isInREGISTER_APDU_MAP_NONCE(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_MAP_NONCE)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
+	public boolean isInCHAINING_INTERRUPTED(){return (((stateVar==  CHAINING_INTERRUPTED)) ? (true) : (false));}
+	public boolean isInPACE_MAP_NONCE_RECEIVED(){return (((stateVarGENERAL_AUTHENTICATE_CHAINING==  PACE_MAP_NONCE_RECEIVED)&&(stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInRESET(){return (((stateVar==  RESET)) ? (true) : (false));}
 	public boolean isInPACE_SET_AT_PROCESSED(){return (((stateVarPACE_IN_PROGRESS==  PACE_SET_AT_PROCESSED)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInPACE_MUTUAL_AUTHENTICATE_RECEIVED(){return (((stateVarGENERAL_AUTHENTICATE_CHAINING==  PACE_MUTUAL_AUTHENTICATE_RECEIVED)&&(stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInPACE_COMPLETED(){return (((stateVar==  PACE_COMPLETED)) ? (true) : (false));}
+	public boolean isInREGISTER_APDU_SET_AT(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_SET_AT)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
+	public boolean isInPACE_GET_NONCE_PROCESSED(){return (((stateVarGENERAL_AUTHENTICATE_CHAINING==  PACE_GET_NONCE_PROCESSED)&&(stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInREGISTER_APDUS(){return (((stateVar==  REGISTER_APDUS)) ? (true) : (false));}
+	public boolean isInREGISTER_APDU_GET_NONCE(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_GET_NONCE)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
+	public boolean isInREGISTER_APDU_MUTUAL_AUTHENTICATE(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_MUTUAL_AUTHENTICATE)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
+	public boolean isInPACE_IN_PROGRESS(){return (((stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInPACE_MAP_NONCE_PROCESSED(){return (((stateVarGENERAL_AUTHENTICATE_CHAINING==  PACE_MAP_NONCE_PROCESSED)&&(stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInPACE_ANNOUNCED(){return (((stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInREGISTER_APDU_MAP_NONCE(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_MAP_NONCE)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
+	public boolean isInPACE_PERFORM_KEY_AGREEMENT_RECEIVED(){return (((stateVarGENERAL_AUTHENTICATE_CHAINING==  PACE_PERFORM_KEY_AGREEMENT_RECEIVED)&&(stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInDUMMY_INITIAL(){return (((stateVar==  DUMMY_INITIAL)) ? (true) : (false));}
+	public boolean isInPACE_INIT(){return (((stateVarPACE_ANNOUNCED==  PACE_INIT)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInPROCESSING_ERROR(){return (((stateVar==  PROCESSING_ERROR)) ? (true) : (false));}
+	public boolean isInPACE_SET_AT_RECEIVED(){return (((stateVarPACE_IN_PROGRESS==  PACE_SET_AT_RECEIVED)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInGENERAL_AUTHENTICATE_CHAINING(){return (((stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
+	public boolean isInPACE_PERFORM_KEY_AGREEMENT_PROCESSED(){return (((stateVarGENERAL_AUTHENTICATE_CHAINING==  PACE_PERFORM_KEY_AGREEMENT_PROCESSED)&&(stateVarPACE_IN_PROGRESS==  GENERAL_AUTHENTICATE_CHAINING)&&(stateVarPACE_ANNOUNCED==  PACE_IN_PROGRESS)&&(stateVar==  PACE_ANNOUNCED)) ? (true) : (false));}
 
 
 
@@ -485,6 +485,10 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 						tagSpecification.setRequired(REQ_OPTIONAL);
 						tagSpecification.setAllowUnspecifiedSubTags(true);
 						apduSpecification.addTag(tagSpecification);
+						createNewTagSpecification(TAG_65);
+						tagSpecification.setRequired(REQ_OPTIONAL);
+						tagSpecification.setAllowUnspecifiedSubTags(true);
+						apduSpecification.addTag(tagSpecification);
 						createNewTagSpecification(TAG_84);
 						tagSpecification.setRequired(REQ_OPTIONAL);
 						apduSpecification.addTag(tagSpecification);
@@ -670,8 +674,8 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 											logs("MA_PROCESSED");
 
 											/* adjust state variables  */
-											stateVarGENERAL_AUTHENTICATE_CHAINING =  PACE_GET_NONCE_PROCESSED;
 											stateVarPACE_ANNOUNCED =  PACE_MUTUAL_AUTHENTICATE_PROCESSED;
+											stateVarGENERAL_AUTHENTICATE_CHAINING =  PACE_GET_NONCE_PROCESSED;
 										}else{
 											/* Intentionally left blank */
 										} /*end of event selection */

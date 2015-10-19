@@ -58,10 +58,10 @@ import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TaProtocol;
 import de.persosim.simulator.protocols.ta.TerminalType;
-import de.persosim.simulator.secstatus.NullSecurityCondition;
-import de.persosim.simulator.secstatus.PaceSecurityCondition;
-import de.persosim.simulator.secstatus.SecCondition;
-import de.persosim.simulator.secstatus.TaSecurityCondition;
+import de.persosim.simulator.seccondition.NullSecurityCondition;
+import de.persosim.simulator.seccondition.PaceSecurityCondition;
+import de.persosim.simulator.seccondition.SecCondition;
+import de.persosim.simulator.seccondition.TaSecurityCondition;
 import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 
@@ -599,8 +599,12 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @param dgNr
 	 * @return
 	 */
-	protected static Collection<SecCondition> getAccessRightReadEidDg(int dgNr) {
+	protected Collection<SecCondition> getAccessRightReadEidDg(int dgNr) {
 		HashSet<SecCondition> retVal = new HashSet<>();
+		//IS terminals are allowed to read all eID-DGs
+		retVal.add(new TaSecurityCondition(TerminalType.IS, null));
+		
+		//AT terminal may read a DG if relativeAuthorization allows
 		retVal.add(new TaSecurityCondition(TerminalType.AT,
 				new RelativeAuthorization(CertificateRole.TERMINAL,
 						new BitField(38).flipBit(dgNr + 7))));

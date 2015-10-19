@@ -14,15 +14,31 @@ import de.persosim.simulator.exception.BitFieldOutOfBoundsException;
 public class BitField {
 	boolean[] storedBits;
 
-	public BitField() {
-	}
-
 	/**
 	 * Creates an empty (all zero bits) {@link BitField} of the given length.
 	 * @param numberOfBits
 	 */
 	public BitField(int numberOfBits){
 		storedBits = new boolean[numberOfBits];
+	}
+	
+	/**
+	 * Creates a {@link BitField} of the given size and sets all additionally
+	 * given bits to 1.
+	 * 
+	 * @param numberOfBits
+	 * @param setBits
+	 *            this contains the zero based indices of the bits to be set
+	 *            to 1
+	 */
+	public BitField(int numberOfBits, int ... setBits){
+		this(numberOfBits);
+		for (int bit : setBits){
+			if (bit > numberOfBits || bit < 0){
+				throw new IllegalArgumentException("The bits to be set must be inside the BitField");
+			}
+			storedBits[bit] = true;
+		}
 	}
 	
 	/**
@@ -234,6 +250,25 @@ public class BitField {
 			result[result.length - 1 - (i / 8)] |= temp;
 		}
 		return result;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(getNumberOfBits());
+		int noOfRemainingBits = getNumberOfBits();
+		for(int i=0; i<getNumberOfBits(); i++) {
+			if((i > 0) && (noOfRemainingBits%8 == 0)) {
+				sb.append(" ");
+			}
+			
+			if(getBit(i)) {
+				sb.append("1");
+			} else{
+				sb.append("0");
+			}
+			noOfRemainingBits--;
+		}
+		return sb.toString();
 	}
 	
 }

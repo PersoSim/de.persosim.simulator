@@ -1,7 +1,10 @@
-package de.persosim.simulator.secstatus;
+package de.persosim.simulator.seccondition;
 
 import java.util.Collection;
 import java.util.HashSet;
+
+import de.persosim.simulator.secstatus.PaceMechanism;
+import de.persosim.simulator.secstatus.SecMechanism;
 
 
 
@@ -27,5 +30,10 @@ public class PaceSecurityCondition implements SecCondition {
 		HashSet<Class<? extends SecMechanism>> result = new HashSet<>();
 		result.add(PaceMechanism.class);
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
 	}
 }

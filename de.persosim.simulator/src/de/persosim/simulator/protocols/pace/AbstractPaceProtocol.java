@@ -18,6 +18,7 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import javax.crypto.KeyAgreement;
@@ -43,19 +44,22 @@ import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.KeyDerivationFunction;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
+import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.ResponseData;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110Utils;
+import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
-import de.persosim.simulator.protocols.ta.CertificateRole;
-import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
+import de.persosim.simulator.secstatus.AuthorizationMechanism;
+import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -69,7 +73,6 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvPath;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.tlv.TlvValue;
-import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 
 /**
@@ -119,8 +122,11 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	
 	protected MappingResult mappingResult;
 	
+	protected AuthorizationStore authorizationStore;
+	
 	TrustPointCardObject trustPoint;
 	CertificateHolderAuthorizationTemplate usedChat;
+	TaOid terminalTypeOid;
 	
 	/*--------------------------------------------------------------------------------*/
 	
@@ -223,16 +229,13 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		tlvObject = commandData.getTlvDataObject(TAG_7F4C);
 		if (tlvObject != null){
 			try {
-				ConstructedTlvDataObject chatData = (ConstructedTlvDataObject) tlvObject;
-				TlvDataObject oidData = chatData.getTlvDataObject(TAG_06);
-				byte[] roleData = chatData.getTlvDataObject(TAG_53).getValueField();
-				TaOid chatOid = new TaOid(oidData.getValueField());
-				RelativeAuthorization authorization = new RelativeAuthorization(
-						CertificateRole.getFromMostSignificantBits(roleData[0]), BitField.buildFromBigEndian(
-								(roleData.length * 8) - 2, roleData));
-				usedChat = new CertificateHolderAuthorizationTemplate(chatOid,
-						authorization);
+				usedChat = new CertificateHolderAuthorizationTemplate((ConstructedTlvDataObject) tlvObject);
 				
+				HashMap<Oid, Authorization> authorizations = getAuthorizationsFromCommandData(commandData);
+				
+				authorizationStore = new AuthorizationStore(authorizations);
+				
+				terminalTypeOid = usedChat.getObjectIdentifier();
 				TerminalType terminalType = usedChat.getTerminalType();
 
 				trustPoint = (TrustPointCardObject) cardState.getObject(
@@ -291,6 +294,26 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		//create and propagate response APDU
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, "Command SetAt successfully processed", resp);
+	}
+	
+	public HashMap<Oid, Authorization> getAuthorizationsFromCommandData(TlvDataObjectContainer commandData) {
+		HashMap<Oid, Authorization> authorizations = new HashMap<Oid, Authorization>();
+		
+		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_7F4C);
+		CertificateHolderAuthorizationTemplate chatFromCommandData = null;
+		if (tlvObject != null){
+				try {
+					chatFromCommandData  = new CertificateHolderAuthorizationTemplate((ConstructedTlvDataObject) tlvObject);
+					authorizations.put(chatFromCommandData.getObjectIdentifier(), chatFromCommandData.getRelativeAuthorization());
+				} catch (CertificateNotParseableException e) {
+					ResponseApdu resp = new ResponseApdu(
+							Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+					this.processingData.updateResponseAPDU(this, e.getMessage(),
+							resp);
+				}
+		}
+
+		return authorizations;
 	}
 	
 	/**
@@ -652,6 +675,34 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		if(paceSuccessful) {
 			ConstructedTlvDataObject responseContent = buildMutualAuthenticateResponse(piccToken);
 			if (setSmDataProvider()){
+				PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), terminalTypeOid);
+				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
+				
+				
+				HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
+				previousMechanisms.add(AuthorizationMechanism.class);
+				Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+				
+				AuthorizationMechanism authMechanism = null;
+				if (currentMechanisms.size() >= 1){
+					authMechanism = (AuthorizationMechanism) currentMechanisms.toArray()[0];
+				}
+				
+				AuthorizationMechanism newAuthMechanism;
+				
+				if(authorizationStore == null) {
+					authorizationStore = new AuthorizationStore();
+				}
+				
+				if(authMechanism == null) {
+					newAuthMechanism = new AuthorizationMechanism(authorizationStore);
+				} else{
+					newAuthMechanism = authMechanism.getUpdatedMechanism(authorizationStore);
+				}
+				
+				processingData.addUpdatePropagation(this, "Security status updated with authorization mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, newAuthMechanism));
+				
+				
 				responseApdu = new ResponseApdu(new TlvDataObjectContainer(responseContent), sw);
 			} else {
 				return;
@@ -702,9 +753,6 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			SmDataProviderTr03110 smDataProvider = new SmDataProviderTr03110(this.secretKeySpecENC, this.secretKeySpecMAC);
 			processingData.addUpdatePropagation(this, "init SM after successful PACE", smDataProvider);
 			
-			//propagate data about successfully performed SecMechanism in SecStatus 
-			PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), usedChat);
-			processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
 			return true;
 		} catch (GeneralSecurityException e) {
 			logException(this, e);

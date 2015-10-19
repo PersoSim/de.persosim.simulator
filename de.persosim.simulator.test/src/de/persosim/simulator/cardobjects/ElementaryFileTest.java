@@ -13,8 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.exception.AccessDeniedException;
-import de.persosim.simulator.secstatus.NullSecurityCondition;
-import de.persosim.simulator.secstatus.SecCondition;
+import de.persosim.simulator.seccondition.NullSecurityCondition;
+import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.test.PersoSimTestCase;

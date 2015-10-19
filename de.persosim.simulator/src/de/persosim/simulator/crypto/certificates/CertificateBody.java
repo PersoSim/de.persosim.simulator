@@ -2,7 +2,6 @@ package de.persosim.simulator.crypto.certificates;
 
 import java.security.PublicKey;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -150,13 +149,21 @@ public class CertificateBody {
 	public Date getCertificateExpirationDate() {
 		return certificateExpirationDate;
 	}
+	
+	/**
+	 * Create a list of all certificate extensions
+	 * see {@link #parseCertificateExtensions(ConstructedTlvDataObject)} for details
+	 */
+	protected List<CertificateExtension> parseExtensions(ConstructedTlvDataObject extensionsData) {
+		return parseCertificateExtensions(extensionsData);
+	}
 
 	/**
 	 * Create a list of all certificate extensions
 	 * @param extensionsData as described in TR03110 v2.10 part 3, C
 	 * @return all parsed extensions
 	 */
-	protected List<CertificateExtension> parseExtensions(ConstructedTlvDataObject extensionsData) {
+	public static List<CertificateExtension> parseCertificateExtensions(ConstructedTlvDataObject extensionsData) {
 		
 		List<CertificateExtension> result = new ArrayList<>();
 		if (extensionsData != null){
@@ -224,7 +231,7 @@ public class CertificateBody {
 	/**
 	 * @return the extensions this certificate has included
 	 */
-	public Collection<CertificateExtension> getCertificateExtensions() {
+	public List<CertificateExtension> getCertificateExtensions() {
 		return certificateExtensions;
 	}
 

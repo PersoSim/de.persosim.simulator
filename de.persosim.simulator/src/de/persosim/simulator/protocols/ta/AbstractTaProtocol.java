@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -35,7 +36,11 @@ import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.CertificateUpdateException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.SecInfoPublicity;
+import de.persosim.simulator.protocols.Tr03110Utils;
+import de.persosim.simulator.secstatus.AuthorizationMechanism;
+import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -87,11 +92,12 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	private List<AuthenticatedAuxiliaryData> auxiliaryData;
 	private TaOid crypographicMechanismReference;
 	private byte [] compressedTerminalEphemeralPublicKey;
-	private RelativeAuthorization currentEffectiveAuthorization;
 	private TrustPointCardObject trustPoint;
 	private TerminalType terminalType;
 	private byte[] firstSectorPublicKeyHash;
 	private byte[] secondSectorPublicKeyHash;
+	
+	protected AuthorizationStore authorizationStore = null;
 	
 	/*--------------------------------------------------------------------------------*/
 
@@ -147,6 +153,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	@Override
 	public void reset(){
 		super.reset();
+		authorizationStore = null;
 		currentCertificate = null;
 		mostRecentTemporaryCertificate = null;
 		auxiliaryData = null;
@@ -161,17 +168,73 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 		TlvDataObject publicKeyReference = commandData.getTlvDataObject(TlvConstants.TAG_83);
 		
+		if(publicKeyReference == null) {
+			// create and propagate response APDU
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+			this.processingData.updateResponseAPDU(this,"no public key reference found", resp);
+			return;
+		}
+		
+		byte[] nameOfPublicKeyEncoded = publicKeyReference.getValueField();
+		
 		//get necessary information stored in an earlier protocol (e.g. PACE)
 		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(PaceMechanism.class);
+		previousMechanisms.add(AuthorizationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+		
 		PaceMechanism paceMechanism = null;
-		if (currentMechanisms.size() > 0){
-			// extract the currently used terminal type
-			paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
+		AuthorizationMechanism authMechanism = null;
+		
+		if (currentMechanisms.size() >= 2){
+			for(SecMechanism secMechanism:currentMechanisms) {
+				if(secMechanism instanceof PaceMechanism) {
+					paceMechanism = (PaceMechanism) secMechanism;
+				} else{
+					if(secMechanism instanceof AuthorizationMechanism) {
+						authMechanism = (AuthorizationMechanism) secMechanism;
+					}
+				}
+			}
 			
-			terminalType = paceMechanism.getUsedChat().getTerminalType();
-
+			if(paceMechanism == null) {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "Did not detect execution of previous Pace protocol", resp);
+				return;
+			}
+			
+			if(authMechanism == null) {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "Did not find any authorization information", resp);
+				return;
+			}
+			
+			// extract the currently used terminal type
+			TaOid terminalTypeOid = paceMechanism.getTerminalType();
+			
+			if(terminalTypeOid == null) {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide information about terminal type", resp);
+				return;
+			}
+			
+			terminalType = Tr03110Utils.getTerminalTypeFromTaOid(terminalTypeOid);
+			
+			if (authorizationStore == null) {
+				authorizationStore = authMechanism.getAuthorizationStore();
+			}
+			
+			Authorization auth = authorizationStore.getAuthorization(terminalTypeOid);
+			
+			if(auth == null) {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide authorization information from chat", resp);
+				return;
+			}
 
 			// reset the currently set key
 			currentCertificate = null;
@@ -179,7 +242,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			// get the next certificate to verify against
 			if (mostRecentTemporaryCertificate != null && mostRecentTemporaryCertificate.getCertificateHolderReference() != null) {
 				// the temporary imported key is to be used
-				if (Arrays.equals(publicKeyReference.getValueField(),
+				if (Arrays.equals(nameOfPublicKeyEncoded,
 						mostRecentTemporaryCertificate.getCertificateHolderReference().getBytes())) {
 					currentCertificate = mostRecentTemporaryCertificate;
 					
@@ -192,44 +255,32 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			}
 			
 			// get the stored trust points
-			CardObject trustPointCandidate = cardState.getObject(
-					new TrustPointIdentifier(terminalType),
-					Scope.FROM_MF);
+			CardObject trustPointCandidate = cardState.getObject(new TrustPointIdentifier(terminalType), Scope.FROM_MF);
+			
 			if (trustPointCandidate instanceof TrustPointCardObject) {
 				trustPoint = (TrustPointCardObject) trustPointCandidate;
+				String anchor = "no";
+				
 				if (trustPoint.getCurrentCertificate().getCertificateHolderReference() != null
-						&& Arrays.equals(trustPoint
-								.getCurrentCertificate().getCertificateHolderReference().getBytes(),
-								publicKeyReference.getValueField())) {
+						&& Arrays.equals(trustPoint.getCurrentCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
+					
 					currentCertificate = trustPoint.getCurrentCertificate();
-					
-					currentEffectiveAuthorization = currentCertificate.getCertificateHolderAuthorizationTemplate().getRelativeAuthorization();
-					
-					if (paceMechanism != null){
-						currentEffectiveAuthorization = currentEffectiveAuthorization.buildEffectiveAuthorization(paceMechanism.getUsedChat().getRelativeAuthorization());
+					anchor = "first";
+				} else{
+					if (trustPoint.getPreviousCertificate().getCertificateHolderReference() != null
+							&& Arrays.equals(trustPoint.getPreviousCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
+						
+						currentCertificate = trustPoint.getPreviousCertificate();
+						anchor = "second";
 					}
+				}
+				
+				if(currentCertificate != null) {
+					updateAuthorizations(currentCertificate);
 					
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-					this.processingData.updateResponseAPDU(this,
-							"Command SetDST successfully processed, public key found in first trust anchor", resp);
-					return;
-				} else if (trustPoint.getPreviousCertificate().getCertificateHolderReference() != null
-						&& Arrays.equals(
-								trustPoint.getPreviousCertificate().getCertificateHolderReference()
-										.getBytes(), publicKeyReference
-										.getValueField())) {
-					currentCertificate = trustPoint.getPreviousCertificate();
-					currentEffectiveAuthorization = currentCertificate.getCertificateHolderAuthorizationTemplate().getRelativeAuthorization();
-					
-					if (paceMechanism != null){
-						currentEffectiveAuthorization = currentEffectiveAuthorization.buildEffectiveAuthorization(paceMechanism.getUsedChat().getRelativeAuthorization());
-					}
-					
-					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-					this.processingData.updateResponseAPDU(this,
-							"Command SetDST successfully processed, public key found in second trust anchor", resp);
+					this.processingData.updateResponseAPDU(this, "Command SetDST successfully processed, public key found in " + anchor + " trust anchor", resp);
 					return;
 				}
 			}
@@ -246,6 +297,21 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					"No protocol prepared the execution of terminal authentication, e.g. no PACE/BAC was run before", resp);
 			return;
 		}
+	}
+	
+	public void updateAuthorizations(CardVerifiableCertificate certificate) {
+		authorizationStore.updateAuthorization(getAuthorizationsFromCertificate(certificate));
+	}
+	
+	public HashMap<Oid, Authorization> getAuthorizationsFromCertificate(CardVerifiableCertificate certificate) {
+		HashMap<Oid, Authorization> authorizations = new HashMap<>();
+		
+		CertificateHolderAuthorizationTemplate chat = certificate.getCertificateHolderAuthorizationTemplate();
+		RelativeAuthorization authFromChat = chat.getRelativeAuthorization();
+		
+		authorizations.put(chat.getObjectIdentifier(), authFromChat);
+		
+		return authorizations;
 	}
 
 	void processCommandSetAt() {
@@ -436,10 +502,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					if (checkValidity(certificate, currentCertificate, getCurrentDate().getDate())){
 						try {
 							importCertificate(certificate, currentCertificate);
-							currentEffectiveAuthorization = currentEffectiveAuthorization
-									.buildEffectiveAuthorization(currentCertificate
-											.getCertificateHolderAuthorizationTemplate()
-											.getRelativeAuthorization());
+							updateAuthorizations(currentCertificate);
 						} catch (CertificateUpdateException e) {
 							// create and propagate response APDU
 							ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
@@ -692,8 +755,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			try {
 				if (checkSignature(crypographicMechanismReference, currentCertificate.getPublicKey() , dataToVerify, terminalSignatureData)){
 					extractTerminalSector(currentCertificate);
-					TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(compressedTerminalEphemeralPublicKey, terminalType, currentEffectiveAuthorization, auxiliaryData, firstSectorPublicKeyHash, secondSectorPublicKeyHash, crypographicMechanismReference.getHashAlgorithmName());
+					
+					TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(compressedTerminalEphemeralPublicKey, terminalType, auxiliaryData, firstSectorPublicKeyHash, secondSectorPublicKeyHash, crypographicMechanismReference.getHashAlgorithmName());
 					processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
+					
+					AuthorizationMechanism authMechanism = new AuthorizationMechanism(authorizationStore);
+					processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanism));
+					
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 					this.processingData.updateResponseAPDU(this,

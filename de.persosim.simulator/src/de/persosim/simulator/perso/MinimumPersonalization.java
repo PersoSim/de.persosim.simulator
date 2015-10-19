@@ -11,8 +11,8 @@ import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.protocols.file.FileProtocol;
-import de.persosim.simulator.secstatus.NullSecurityCondition;
-import de.persosim.simulator.secstatus.SecCondition;
+import de.persosim.simulator.seccondition.NullSecurityCondition;
+import de.persosim.simulator.seccondition.SecCondition;
 
 /**
  * This class represents a minimum of personalization e.g. for testing purposes.

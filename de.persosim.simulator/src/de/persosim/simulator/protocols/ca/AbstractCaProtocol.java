@@ -221,11 +221,8 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	protected void assertEphemeralPublicKeyPcdMatchesCompressedKeyReceivedDuringTa(PublicKey ephemeralPublicKeyPcd) {
 		//compare expected PCD's (compressed) public key with the key previously received during TA
 		byte[] ephemeralPublicKeyPcdCompressedExpected;
-		try {
-			ephemeralPublicKeyPcdCompressedExpected = caDomainParameters.comp(ephemeralPublicKeyPcd);
-		} catch (NoSuchAlgorithmException e) {
-			throw new ProcessingException(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR, e.getMessage());
-		}
+		
+		ephemeralPublicKeyPcdCompressedExpected = caDomainParameters.comp(ephemeralPublicKeyPcd);
 		
 		byte[] ephemeralPublicKeyPcdCompressedReceived = getEphemeralPublicKeyPcdFromTa();
 		

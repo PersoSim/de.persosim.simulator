@@ -16,17 +16,15 @@ import de.persosim.simulator.secstatus.SecurityEvent;
 public class TerminalAuthenticationMechanism implements SecMechanism {
 
 	private Collection<AuthenticatedAuxiliaryData> auxiliaryData;
-	private RelativeAuthorization effectiveAuthorization;
 	private TerminalType terminalType;
 	private byte [] compressedTerminalEphemeralPublicKey;
 	private byte [] firstSectorPublicKeyHash;
 	private byte [] secondSectorPublicKeyHash;
 	private String sectorPublicKeyHashAlgorithm;
 
-	public TerminalAuthenticationMechanism(byte [] compressedEphemeralTerminalPublicKey, TerminalType terminalType, RelativeAuthorization effectiveAuthorization,
+	public TerminalAuthenticationMechanism(byte [] compressedEphemeralTerminalPublicKey, TerminalType terminalType,
 			Collection<AuthenticatedAuxiliaryData> auxiliaryData, byte [] firstSectorPublicKeyHash, byte [] secondSectorPublicKeyHash, String sectorPublicKeyHashAlgorithm) {
 		this.auxiliaryData = auxiliaryData;
-		this.effectiveAuthorization = effectiveAuthorization;
 		this.terminalType = terminalType;
 		this.compressedTerminalEphemeralPublicKey = Arrays.copyOf(compressedEphemeralTerminalPublicKey, compressedEphemeralTerminalPublicKey.length);
 		if (firstSectorPublicKeyHash != null){
@@ -76,13 +74,6 @@ public class TerminalAuthenticationMechanism implements SecMechanism {
 	@Override
 	public boolean needsDeletionInCaseOf(SecurityEvent event) {
 		return true;
-	}
-
-	/**
-	 * @return the effectiveAuthorization
-	 */
-	public RelativeAuthorization getEffectiveAuthorization() {
-		return effectiveAuthorization;
 	}
 
 	/**

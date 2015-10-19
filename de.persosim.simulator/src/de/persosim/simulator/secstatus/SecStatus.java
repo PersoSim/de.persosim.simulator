@@ -69,7 +69,7 @@ public class SecStatus {
 	 * 
 	 * @param updatePropagation
 	 */
-	private void updateMechanisms(
+	public void updateMechanisms(
 			SecStatusMechanismUpdatePropagation... updatePropagation) {
 		for (SecStatusMechanismUpdatePropagation curUpdate : updatePropagation) {
 			SecStatusMechanismUpdatePropagation mechanismPropagation = (SecStatusMechanismUpdatePropagation) curUpdate;

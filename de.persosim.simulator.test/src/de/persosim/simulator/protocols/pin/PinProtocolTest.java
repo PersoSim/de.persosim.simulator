@@ -1,12 +1,11 @@
 package de.persosim.simulator.protocols.pin;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-
-import mockit.Expectations;
-import mockit.Mocked;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,15 +20,22 @@ import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
+import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
+import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
+import de.persosim.simulator.secstatus.AuthorizationMechanism;
+import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
+import mockit.Expectations;
+import mockit.Mocked;
 
 public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	@Mocked CardStateAccessor mockedCardStateAccessor;
@@ -41,6 +47,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	PinProtocol protocol;
 	
 	TerminalAuthenticationMechanism taMechanism;
+	AuthorizationMechanism authMechanism;
 	HashSet<SecMechanism> currentMechanisms;
 	
 	@Before
@@ -55,8 +62,13 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		authObjectRetry.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
 		currentMechanisms = new HashSet<>();
-		taMechanism = new TerminalAuthenticationMechanism(new byte[]{1,2,3}, TerminalType.IS, new RelativeAuthorization(), new ArrayList<AuthenticatedAuxiliaryData>(), new byte[]{1,2,3}, new byte[]{1,2,3}, "test");
+		taMechanism = new TerminalAuthenticationMechanism(new byte[]{1,2,3}, TerminalType.IS, new ArrayList<AuthenticatedAuxiliaryData>(), new byte[]{1,2,3}, new byte[]{1,2,3}, "test");
+		HashMap<Oid, Authorization> authorizations = new HashMap<>();
+		authorizations.put(TaOid.id_AT, new RelativeAuthorization());
+		AuthorizationStore authStore = new AuthorizationStore(authorizations);
+		authMechanism = new AuthorizationMechanism(authStore);
 		currentMechanisms.add(taMechanism);
+		currentMechanisms.add(authMechanism);
 	}
 	
 	/** 

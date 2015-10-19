@@ -1,8 +1,10 @@
-package de.persosim.simulator.secstatus;
+package de.persosim.simulator.seccondition;
 
 import java.util.Collection;
 
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
+import de.persosim.simulator.secstatus.PaceMechanism;
+import de.persosim.simulator.secstatus.SecMechanism;
 
 /**
  * This condition can be used to check for past executions of PACE. The used
@@ -33,5 +35,10 @@ public class PaceWithPasswordSecurityCondition extends PaceSecurityCondition {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[" + neededPassword + "]";
 	}
 }

@@ -34,10 +34,10 @@ import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
-import de.persosim.simulator.secstatus.NullSecurityCondition;
-import de.persosim.simulator.secstatus.PaceSecurityCondition;
-import de.persosim.simulator.secstatus.SecCondition;
-import de.persosim.simulator.secstatus.TaSecurityCondition;
+import de.persosim.simulator.seccondition.NullSecurityCondition;
+import de.persosim.simulator.seccondition.PaceSecurityCondition;
+import de.persosim.simulator.seccondition.SecCondition;
+import de.persosim.simulator.seccondition.TaSecurityCondition;
 import de.persosim.simulator.tlv.Asn1;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -509,7 +509,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		SecCondition taWithIs = new TaSecurityCondition(TerminalType.IS, null);
         SecCondition taWithAtPrivileged = new TaSecurityCondition(
                         TerminalType.AT, new RelativeAuthorization(
-                                        CertificateRole.TERMINAL, new BitField(6).flipBit(3)));
+                                        CertificateRole.TERMINAL, new BitField(38).flipBit(3)));
         
 		CardFile eidDgChipSecurity = new ElementaryFile(new FileIdentifier(0x011B),
 				new ShortFileIdentifier(0x1B),

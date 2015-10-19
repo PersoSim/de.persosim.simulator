@@ -1,7 +1,9 @@
-package de.persosim.simulator.secstatus;
+package de.persosim.simulator.seccondition;
 
 import java.util.Collection;
 import java.util.Collections;
+
+import de.persosim.simulator.secstatus.SecMechanism;
 
 /**
  * This {@link SecCondition} is used to implement unprotected files. It will
@@ -20,6 +22,11 @@ public class NullSecurityCondition implements SecCondition {
 	@Override
 	public boolean check(Collection<SecMechanism> mechanisms) {
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
 	}
 
 }

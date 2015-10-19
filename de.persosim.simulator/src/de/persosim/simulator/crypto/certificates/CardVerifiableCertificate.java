@@ -1,8 +1,8 @@
 package de.persosim.simulator.crypto.certificates;
 
 import java.security.PublicKey;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
@@ -14,6 +14,17 @@ import de.persosim.simulator.tlv.TlvConstants;
 /**
  * This class implements card verifiable certificate as described in TR-03110
  * v2.10 Part 3 Appendix C.
+ * 
+ * Its TLV data is structured as follows:
+ * 
+ *  7F21 (CV Certificate)
+ *    |- 7F4E (Certificate Body)
+ *    |    |- 5F29 (Certificate Profile identifier)
+ *    |    |-   42 (Certification Authority Reference)
+ *    |    |- 7F49 (Public Key)
+ *    |    |- 5F20 (Certificate Holder Reference)
+ *    |    L-   65 (Certificate Extensions)
+ *    L- 5F37 (Signature)
  * 
  * @see CertificateBody
  * @author mboonk
@@ -147,7 +158,7 @@ public class CardVerifiableCertificate {
 	 * This method returns the certificate extensions
 	 * @return the certificate extensions
 	 */
-	public Collection<CertificateExtension> getCertificateExtensions() {
+	public List<CertificateExtension> getCertificateExtensions() {
 		return body.getCertificateExtensions();
 	}
 	

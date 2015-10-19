@@ -26,6 +26,7 @@ import de.persosim.simulator.protocols.ProtocolStateMachine;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
+import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.statemachine.AbstractStateMachine;
 import de.persosim.simulator.statemachine.StateMachine;
@@ -189,8 +190,11 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	 * List of available protocols
 	 */
 	protected ArrayList<Protocol> protocols = new ArrayList<>();
-	protected Protocol currentlyActiveProtocol;
-
+	
+	private Protocol currentlyActiveProtocol;
+	
+	
+	
 	/**
 	 * stackPointer is a pointer pointing at an element of protocolStack, i.e.
 	 * the currently active/unfinished/interrupted protocols
@@ -222,10 +226,31 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	}
 
 	public void makeStackPointerCurrentlyActiveProtocol() {
-		this.currentlyActiveProtocol = this.protocolStack
-				.get(this.stackPointer);
+		setCurrentlyActiveProtocol(this.protocolStack.get(this.stackPointer));
+		
 		log(this, "currently active protocol is now: "
-				+ this.currentlyActiveProtocol.getProtocolName());
+				+ getCurrentlyActiveProtocol().getProtocolName());
+	}
+	
+	protected Protocol getCurrentlyActiveProtocol() {
+		return currentlyActiveProtocol;
+	}
+	
+	protected void setCurrentlyActiveProtocol(Protocol nextActiveProtocol) {
+		currentlyActiveProtocol = nextActiveProtocol;
+		
+		ProtocolMechanism protocolMechanism;
+		
+		if(nextActiveProtocol == null) {
+			// this effectively deletes the security mechanism
+			protocolMechanism = null;
+		} else{
+			protocolMechanism = new ProtocolMechanism(currentlyActiveProtocol.getClass());
+		}
+		
+		SecStatusMechanismUpdatePropagation updatePropagation = new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, protocolMechanism);
+		
+		securityStatus.updateMechanisms(updatePropagation);
 	}
 
 	public void incrementStackPointer() {
@@ -233,9 +258,8 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	}
 
 	public void currentProtocolProcess() {
-		log(this, "protocol chosen for processing is: "
-				+ currentlyActiveProtocol.getProtocolName()); 
-		currentlyActiveProtocol.process(processingData);
+		log(this, "protocol chosen for processing is: " + getCurrentlyActiveProtocol().getProtocolName()); 
+		getCurrentlyActiveProtocol().process(processingData);
 	}
 
 	/**
@@ -347,7 +371,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	 * protocol.
 	 */
 	public void makeProtocolAtProtocolPointerCurrentlyActiveProtocol() {
-		currentlyActiveProtocol = protocols.get(this.protocolPointer);
+		setCurrentlyActiveProtocol(protocols.get(this.protocolPointer));
 	}
 
 	/**

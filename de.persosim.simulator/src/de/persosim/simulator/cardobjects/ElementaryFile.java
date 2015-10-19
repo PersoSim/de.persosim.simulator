@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import de.persosim.simulator.exception.AccessDeniedException;
-import de.persosim.simulator.secstatus.SecCondition;
+import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;

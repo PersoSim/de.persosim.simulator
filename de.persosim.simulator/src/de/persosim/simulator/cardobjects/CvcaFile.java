@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.AccessDeniedException;
-import de.persosim.simulator.secstatus.SecCondition;
+import de.persosim.simulator.seccondition.SecCondition;
 
 /**
  * This interface describes the EF.CVCA as described in TR-03110 v2.10 Part 3
