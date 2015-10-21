@@ -108,6 +108,21 @@ public class PersoSimPart {
 			}
 		});
 		
+		txtOutput.addListener(SWT.Resize, new Listener() {
+			public void handleEvent(Event e) {
+				//if the size of the text field changes the shown output should be readjusted
+				final LinkedListLogListener listener = Activator.getListLogListener();
+				if (listener == null) {
+					txtOutput.setText(
+							"The OSGi logging service can not be used.\nPlease check the availability and OSGi configuration"
+									+ System.lineSeparator());
+				} else {
+					buildNewConsoleContent();
+					showNewOutput();
+				}
+
+			}
+		});
 		parent.setLayout(new GridLayout(2, false));		
 		
 		createConsoleIn(parent);
@@ -140,27 +155,48 @@ public class PersoSimPart {
 		
 		uiThread = Display.getCurrent().getThread();
 		final Thread updateThread = new Thread() {
-			public void run() {		
-				while (!isInterrupted() && uiThread.isAlive()){
-						sync.syncExec(new Runnable() {
-							@Override
-							public void run() {
-								 if(listener.isRefreshNeeded()) {
-									 listener.resetRefreshState();
-									 buildNewConsoleContent();
-									 showNewOutput();
-								 }
+			public void run() {
+				while (!isInterrupted() && uiThread.isAlive()) {
+					sync.syncExec(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								if (checkForRefresh(listener)) {
+									listener.resetRefreshState();
+									buildNewConsoleContent();
+									Thread.sleep(50);
+									showNewOutput();
+								} else {
+									Thread.sleep(50);
+								}
+							} catch (InterruptedException e) {
+								// sleep got interrupted
 							}
-						});
-					try {
-						Thread.sleep(50);
-					} catch (InterruptedException e) {
-						break;
-					}
+						}
+					});
 				}
 			}
 		};
 		return updateThread;
+	}
+	
+	
+	/**
+	 * Checks if a refresh of the logging part is necessary.
+	 * 
+	 * @return true for refresh and false for no refresh
+	 */
+	private boolean checkForRefresh(LinkedListLogListener listener){
+
+		if(!txtOutput.isDisposed()){ //it is disposed when view not active
+			if(listener.isRefreshNeeded() && !locked){
+				return true;
+			} else if(txtOutput.getText().isEmpty() && listener.getNumberOfCachedLines()>0){
+				//empty log happens when view was closed and opened again -> force a refresh
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -189,6 +225,9 @@ public class PersoSimPart {
 		return slider;
 	}
 	
+	/**
+	 * This function adds a new menu entry to the logging part. 
+	 */
 	private void addConsoleOutMenu(Text console) {
 		Menu consoleMenu = createConsoleMenu(console);
 		console.setMenu(consoleMenu);
@@ -341,7 +380,6 @@ public class PersoSimPart {
 							+ slider.getThumb()
 							- maxLineCount + 1);
 				}
-				slider.setSelection(slider.getMaximum());	
 			}
 		});
 	}
@@ -361,12 +399,9 @@ public class PersoSimPart {
 		final StringBuilder strConsoleStrings = new StringBuilder();
 
 		// calculates how many lines can be shown without cutting
-		//IMPL remove this dirtyhack and handle the situations of opening/closing a view within the IDE multiple times gracefully (compare commit fcd6c2 for previous implementations, that does not hide the exceptions)
-		try {
-			maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
-		} catch (Exception e) { //IMPL PokémonException
-			maxLineCount = 15;
-		}
+		
+		maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
+
 			
 		//synchronized is used to avoid IndexOutOfBoundsExceptions
 		synchronized (Activator.getListLogListener()) {
@@ -417,7 +452,10 @@ public class PersoSimPart {
 
 	}
 	
-	@PreDestroy //FIXME JGE this annotation is used on a different method in the subclass, what are the implications of this?
+	/**
+	 * This method closes the part and interrupts all threads if needed.
+	 */
+	@PreDestroy
 	public void closePersoSimView() {
 		if(updateThread.isAlive()) {
 			updateThread.interrupt();
