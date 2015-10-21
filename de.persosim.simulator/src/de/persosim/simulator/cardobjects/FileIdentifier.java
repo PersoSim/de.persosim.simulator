@@ -12,13 +12,6 @@ public class FileIdentifier extends AbstractCardObjectIdentifier {
 	private int identifier;
 	
 	/**
-	 * Default constructor for usage with JAXB.
-	 * 
-	 */
-	public FileIdentifier() {
-	}
-	
-	/**
 	 * Default constructor.
 	 * 
 	 * @param identifier
