@@ -180,12 +180,18 @@ public class PersoSimPart {
 		return updateThread;
 	}
 	
+	
+	/**
+	 * Checks if a refresh of the logging part is necessary.
+	 * 
+	 * @return true for refresh and false for no refresh
+	 */
 	private boolean checkForRefresh(LinkedListLogListener listener){
 
 		if(!txtOutput.isDisposed()){ //it is disposed when view not active
 			if(listener.isRefreshNeeded() && !locked){
 				return true;
-			} else if(txtOutput.getText().equals("") && listener.getNumberOfCachedLines()>0){
+			} else if(txtOutput.getText().isEmpty() && listener.getNumberOfCachedLines()>0){
 				//empty log happens when view was closed and opened again -> force a refresh
 				return true;
 			}
@@ -219,6 +225,9 @@ public class PersoSimPart {
 		return slider;
 	}
 	
+	/**
+	 * This function adds a new menu entry to the logging part. 
+	 */
 	private void addConsoleOutMenu(Text console) {
 		Menu consoleMenu = createConsoleMenu(console);
 		console.setMenu(consoleMenu);
@@ -443,6 +452,9 @@ public class PersoSimPart {
 
 	}
 	
+	/**
+	 * This method closes the part and interrupts all threads if needed.
+	 */
 	@PreDestroy
 	public void closePersoSimView() {
 		if(updateThread.isAlive()) {
