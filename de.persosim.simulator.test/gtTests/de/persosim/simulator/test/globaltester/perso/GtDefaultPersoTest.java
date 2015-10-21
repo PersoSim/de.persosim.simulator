@@ -41,25 +41,16 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 	@Override
 	public Collection<String> getSupportedProfiles() {
 		HashSet<String> retVal = new HashSet<String>();
-		retVal.add(GtConstants.PROFILE_CA2);
-		retVal.add(GtConstants.PROFILE_CS);
 		retVal.add(GtConstants.PROFILE_ECDH);
 		retVal.add(GtConstants.PROFILE_PACE);
 		retVal.add(GtConstants.PROFILE_PACE_CAN);
 		retVal.add(GtConstants.PROFILE_PACE_ECDH);
 		retVal.add(GtConstants.PROFILE_PACE_GM);
+		retVal.add(GtConstants.PROFILE_CA2);
+		retVal.add(GtConstants.PROFILE_CS);
 		retVal.add(GtConstants.PROFILE_TA2);
-		retVal.add(GtConstants.PROFILE_EPASSPORT);
-		retVal.add(GtConstants.PROFILE_eID);
-		retVal.add(GtConstants.PROFILE_MIG);
 		retVal.add(GtConstants.PROFILE_ECDSA);
-		retVal.add(GtConstants.PROFILE_EPASSPORT_DG3);
-		retVal.add(GtConstants.PROFILE_EPASSPORT_DG4);
-		retVal.add(GtConstants.PROFILE_RI);
-		retVal.add(GtConstants.PROFILE_AUX);
-		retVal.add(GtConstants.PROFILE_CNG_PIN_PUK);
-		retVal.add(GtConstants.PROFILE_CNG_PIN_AR);
-		retVal.add(GtConstants.PROFILE_CNG_CAN_AR);
+		retVal.add(GtConstants.PROFILE_eID);
 		retVal.add(GtConstants.PROFILE_eID_DG1);
 		retVal.add(GtConstants.PROFILE_eID_DG2);
 		retVal.add(GtConstants.PROFILE_eID_DG3);
@@ -78,6 +69,17 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 //		retVal.add(GtConstants.PROFILE_eID_DG19);
 //		retVal.add(GtConstants.PROFILE_eID_DG20);
 //		retVal.add(GtConstants.PROFILE_eID_DG21);
+		retVal.add(GtConstants.PROFILE_EPASSPORT);
+		retVal.add(GtConstants.PROFILE_EPASSPORT_DG3);
+		retVal.add(GtConstants.PROFILE_EPASSPORT_DG4);
+		retVal.add(GtConstants.PROFILE_CNG_CAN_AR);
+		retVal.add(GtConstants.PROFILE_CNG_PIN_AR);
+		retVal.add(GtConstants.PROFILE_CNG_PIN_PUK);
+		retVal.add(GtConstants.PROFILE_AUX);
+		retVal.add(GtConstants.PROFILE_RI);
+		retVal.add(GtConstants.PROFILE_RI_DP);
+		retVal.add(GtConstants.PROFILE_MIG);
+		
 		return retVal;
 	}
 	
