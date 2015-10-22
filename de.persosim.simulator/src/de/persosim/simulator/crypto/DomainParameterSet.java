@@ -68,6 +68,13 @@ public interface DomainParameterSet {
 	public abstract byte[] encodePublicKey(PublicKey publicKey);
 	
 	/**
+	 * This method returns the minimum encoding of the provided private key.
+	 * @param privateKey the private key to be encoded
+	 * @return the minimum encoding of the provided public key
+	 */
+	public byte[] encodePrivateKey(PrivateKey privateKey);
+	
+	/**
 	 * This method returns the tag used to identify the encoding of the public key in the authentication token input data.
 	 * @return the tag used to identify the public key encoding
 	 */
