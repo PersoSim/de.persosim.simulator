@@ -1,8 +1,6 @@
 package de.persosim.simulator.protocols;
 
-import java.security.GeneralSecurityException;
 import java.security.Key;
-import java.security.PublicKey;
 
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.certificates.CvPublicKey;
@@ -15,22 +13,6 @@ import de.persosim.simulator.tlv.ConstructedTlvDataObject;
  *
  */
 public interface Tr03110UtilsProvider {
-
-	/**
-	 * This method parses a given TLV-encoded public key using the domain
-	 * parameters form a given public key. This is usually the key of a trust
-	 * point.
-	 * 
-	 * @param publicKeyData
-	 *            the TLV data to parse
-	 * @param trustPointPublicKey
-	 *            the key containing domain parameters or null if the public key
-	 *            data contains domain parameters
-	 * @return the public key or null if the key data is not supported
-	 * @throws GeneralSecurityException
-	 */
-	public PublicKey parsePublicKey(ConstructedTlvDataObject publicKeyData,
-			PublicKey trustPointPublicKey) throws GeneralSecurityException;
 
 	/**
 	 * This method creates domain parameters from a given key object.

@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
+import de.persosim.simulator.crypto.certificates.CvEcPublicKey;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -89,7 +90,10 @@ public class Tr03110UtilsDefaultProviderTest extends PersoSimTestCase {
 	@Test
 	public void testParsePublicKeyEcUsingTrustPointKey() throws Exception {
 		//call mut
-		assertArrayEquals(publicKeyEc.getEncoded(), new Tr03110UtilsDefaultProvider().parsePublicKey(publicKeyDataEcNoDomainParameters, publicKeyEc).getEncoded());
+		CvEcPublicKey parseCvPublicKey = (CvEcPublicKey) new Tr03110UtilsDefaultProvider().parseCvPublicKey(publicKeyDataEcNoDomainParameters);
+		parseCvPublicKey.updateKey(publicKeyEc);
+		byte[] pubKey = parseCvPublicKey.getEncoded();
+		assertArrayEquals(publicKeyEc.getEncoded(), pubKey);
 	}
 	
 	/**
@@ -101,6 +105,6 @@ public class Tr03110UtilsDefaultProviderTest extends PersoSimTestCase {
 	@Test
 	public void testParsePublicKeyEcNoTrustPointKey() throws Exception {
 		//call mut
-		assertArrayEquals(publicKeyEc.getEncoded(), new Tr03110UtilsDefaultProvider().parsePublicKey(publicKeyDataEc, null).getEncoded());
+		assertArrayEquals(publicKeyEc.getEncoded(), ((ECPublicKey) new Tr03110UtilsDefaultProvider().parseCvPublicKey(publicKeyDataEc)).getEncoded());
 	}
 }
