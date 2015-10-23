@@ -47,7 +47,7 @@ public class CommandApduImpl implements CommandApdu {
 	 * @param apdu
 	 * @param previousCommandApdu the predecessor of this instance, may be null
 	 */
-	CommandApduImpl(byte[] apdu, CommandApdu previousCommandApdu) {
+	protected CommandApduImpl(byte[] apdu, CommandApdu previousCommandApdu) {
 		//store history
 		predecessor = previousCommandApdu;
 		

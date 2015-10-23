@@ -25,6 +25,7 @@ Export-Package: com.thoughtworks.xstream,
  de.persosim.simulator.protocols.ta,
  de.persosim.simulator.seccondition,
  de.persosim.simulator.secstatus,
+ de.persosim.simulator.securemessaging,
  de.persosim.simulator.statemachine,
  de.persosim.simulator.tlv,
  de.persosim.simulator.utils

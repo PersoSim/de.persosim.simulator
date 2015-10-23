@@ -24,9 +24,9 @@ import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.secstatus.SecStatusEventUpdatePropagation;
 import de.persosim.simulator.secstatus.SecurityEvent;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
+import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
-import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.PersoSimLogger;
@@ -44,15 +44,9 @@ import de.persosim.simulator.utils.Utils;
  * @author slutters
  * 
  */
-public class SecureMessaging extends Layer {
-	public static final TlvTag TAG_85 = new TlvTag((byte) 0x85);
-	public static final TlvTag TAG_87 = new TlvTag((byte) 0x87);
-	public static final TlvTag TAG_8E = new TlvTag((byte) 0x8E);
-	public static final TlvTag TAG_97 = new TlvTag((byte) 0x97);
-	public static final TlvTag TAG_99 = new TlvTag((byte) 0x99);
-	
+public class SecureMessaging extends Layer implements TlvConstants{
 	/*--------------------------------------------------------------------------------*/
-	private SmDataProvider dataProvider = null;
+	protected SmDataProvider dataProvider = null;
 	
 	protected CryptoSupport cryptoSupport;
 	
@@ -141,7 +135,7 @@ public class SecureMessaging extends Layer {
 		handleUpdatePropagations();
 	}
 	
-	private boolean isSmWrappingApplicable(){
+	public boolean isSmWrappingApplicable(){
 		CommandApdu cApdu = processingData.getCommandApdu();
 
 		if (!(cApdu instanceof IsoSecureMessagingCommandApdu)) {
@@ -168,7 +162,7 @@ public class SecureMessaging extends Layer {
 		return true;
 	}
 	
-	private void handleUpdatePropagations() {
+	public void handleUpdatePropagations() {
 		LinkedList<UpdatePropagation> dataProviderList = processingData.getUpdatePropagations(SmDataProvider.class);
 		for (UpdatePropagation curDataProvider : dataProviderList) {
 			if (curDataProvider != null && curDataProvider instanceof SmDataProvider) {
@@ -198,7 +192,7 @@ public class SecureMessaging extends Layer {
 			
 			log(this, "data to be padded is: " + HexString.encode(data), TRACE);
 			
-			paddedData = CryptoUtil.padData(data, dataProvider.getCipher().getBlockSize());
+			paddedData = this.padData(data);
 			
 			log(this, "padded data is: " + HexString.encode(paddedData), DEBUG);
 			log(this, "block size is: " + dataProvider.getCipher().getBlockSize(), DEBUG);
@@ -229,6 +223,10 @@ public class SecureMessaging extends Layer {
 		//create and propagate response APDU
 		ResponseApdu resp = new ResponseApdu(container, this.processingData.getResponseApdu().getStatusWord());
 		this.processingData.updateResponseAPDU(this, "Encrypted outgoing SM APDU", resp);
+	}
+	
+	protected byte [] padData(byte[] data) {
+		return CryptoUtil.padData(data, dataProvider.getCipher().getBlockSize());
 	}
 	
 	/**
@@ -345,8 +343,8 @@ public class SecureMessaging extends Layer {
 			
 			//TODO should padding be handled differently for odd instruction/tag 85 contents?
 			log(this, "padded data is: " + HexString.encode(paddedData));
-			data = this.unpadPlainTextData(paddedData);
 			
+			data = this.unpadPlainTextData(paddedData);
 			log(this, "plain text data is: " + HexString.encode(data));
 			
 			try {
