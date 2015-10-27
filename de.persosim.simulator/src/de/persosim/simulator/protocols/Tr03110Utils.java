@@ -151,7 +151,7 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 			throw new IllegalArgumentException("no matching selection found");
 			
 		case 1:
-			CardObject matchingCardObject = cardObjects.iterator().next();;
+			CardObject matchingCardObject = cardObjects.iterator().next();
 			log(Tr03110Utils.class, "selected " + matchingCardObject, DEBUG);
 			return matchingCardObject;
 
