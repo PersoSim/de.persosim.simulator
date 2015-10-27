@@ -48,8 +48,6 @@ public class SecureMessaging extends Layer implements TlvConstants{
 	/*--------------------------------------------------------------------------------*/
 	protected SmDataProvider dataProvider = null;
 	
-	protected CryptoSupport cryptoSupport;
-	
 	/*--------------------------------------------------------------------------------*/
 	
 	public SecureMessaging(int id) {
