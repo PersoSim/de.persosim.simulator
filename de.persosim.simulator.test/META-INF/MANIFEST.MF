@@ -16,3 +16,6 @@ Export-Package: de.persosim.simulator.perso,
  mockit
 Import-Package: org.eclipse.ui.keys,
  org.osgi.framework;version="1.8.0"
+Bundle-ClassPath: lib/jmockit-coverage.jar,
+ lib/jmockit.jar,
+ .
