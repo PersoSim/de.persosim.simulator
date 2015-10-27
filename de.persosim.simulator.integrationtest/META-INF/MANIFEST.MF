@@ -1,19 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: PersoSim Simulator Test
-Bundle-SymbolicName: de.persosim.simulator.test
+Bundle-Name: PersoSim Simulator Integrationtest
+Bundle-SymbolicName: de.persosim.simulator.integrationtest
 Bundle-Version: 0.6.0.qualifier
-Bundle-Vendor: HJP Consulting GmbH
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit;bundle-version="4.11.0",
  org.globaltester.cryptoprovider.bc,
  de.persosim.simulator;bundle-version="0.6.0",
  org.globaltester.simulator
-Export-Package: de.persosim.simulator.perso,
- de.persosim.simulator.test,
- mockit
+Export-Package: de.persosim.simulator.test.globaltester,
+ de.persosim.simulator.test.globaltester.perso
 Import-Package: org.eclipse.ui.keys,
  org.osgi.framework;version="1.8.0"
-Bundle-ClassPath: lib/jmockit-coverage.jar,
- lib/jmockit.jar,
- .
