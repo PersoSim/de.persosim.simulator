@@ -1,10 +1,11 @@
 package de.persosim.simulator.securemessaging;
 
 import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
-import javax.crypto.SecretKey;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -22,21 +23,23 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 	}
 
 	private Cipher cipher;
-	private SecretKey keyEnc;
+	private SecretKeySpec keyEnc;
 
 	private Mac mac;
-	private SecretKey keyMac;
+	private SecretKeySpec keyMac;
+	
+	private boolean pendingCommandApdu;
 	
 	/**
 	 * SendSequenceCounter according to BSI TR-03110
 	 */
 	private SendSequenceCounter ssc;
 	
-	public SmDataProviderTr03110(SecretKeySpec cipherKey, SecretKeySpec macKey) throws GeneralSecurityException {
+	public SmDataProviderTr03110(SecretKeySpec cipherKey, SecretKeySpec macKey, SendSequenceCounter newSsc) throws GeneralSecurityException {
 		keyEnc = cipherKey;
 		keyMac = macKey;
 		
-		cipher = Cipher.getInstance(keyEnc.getAlgorithm(), Crypto.getCryptoProvider());
+		cipher = getCipher(keyEnc.getAlgorithm());
 		
 		// XXX AMY use new Crypto wrappers here
 		// According to developer consens we want to create wrapper objects that
@@ -57,8 +60,17 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 			mac = Mac.getInstance(keyMac.getAlgorithm(), Crypto.getCryptoProvider());
 		}
 		
+		ssc = newSsc;
 		
-		ssc = new SendSequenceCounter(this.cipher.getBlockSize());
+		pendingCommandApdu = false;
+	}
+	
+	public SmDataProviderTr03110(SecretKeySpec cipherKey, SecretKeySpec macKey) throws GeneralSecurityException {
+		this(cipherKey, macKey, new SendSequenceCounter(getCipher(cipherKey.getAlgorithm()).getBlockSize()));
+	}
+	
+	private static Cipher getCipher(String algorithm) throws NoSuchAlgorithmException, NoSuchPaddingException {
+		return Cipher.getInstance(algorithm, Crypto.getCryptoProvider());
 	}
 
 	@Override
@@ -69,12 +81,18 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 
 	@Override
 	public void nextIncoming() {
-		ssc.increment();
+		if(!pendingCommandApdu) {
+			ssc.increment();
+			pendingCommandApdu = true;
+		}
 	}
 
 	@Override
 	public void nextOutgoing() {
-		ssc.increment();
+		if(pendingCommandApdu) {
+			ssc.increment();
+			pendingCommandApdu = false;
+		}
 	}
 
 	@Override
@@ -97,7 +115,7 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 	}
 
 	@Override
-	public SecretKey getKeyEnc() {
+	public SecretKeySpec getKeyEnc() {
 		return keyEnc;
 	}
 
@@ -113,13 +131,66 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 	}
 
 	@Override
-	public SecretKey getKeyMac() {
+	public SecretKeySpec getKeyMac() {
 		return keyMac;
 	}
 
 	@Override
 	public Integer getMacLength() {
 		return 8;
+	}
+
+	@Override
+	public SmDataProviderTr03110Generator getSmDataProviderGenerator() {
+		return new SmDataProviderTr03110Generator(this);
+	}
+	
+	public SendSequenceCounter getSsc() {
+		return ssc;
+	}
+
+	public boolean isPendingCommandApdu() {
+		return pendingCommandApdu;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((keyEnc == null) ? 0 : keyEnc.hashCode());
+		result = prime * result + ((keyMac == null) ? 0 : keyMac.hashCode());
+		result = prime * result + (pendingCommandApdu ? 1231 : 1237);
+		result = prime * result + ((ssc == null) ? 0 : ssc.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SmDataProviderTr03110 other = (SmDataProviderTr03110) obj;
+		if (keyEnc == null) {
+			if (other.keyEnc != null)
+				return false;
+		} else if (!keyEnc.equals(other.keyEnc))
+			return false;
+		if (keyMac == null) {
+			if (other.keyMac != null)
+				return false;
+		} else if (!keyMac.equals(other.keyMac))
+			return false;
+		if (pendingCommandApdu != other.pendingCommandApdu)
+			return false;
+		if (ssc == null) {
+			if (other.ssc != null)
+				return false;
+		} else if (!ssc.equals(other.ssc))
+			return false;
+		return true;
 	}
 
 }

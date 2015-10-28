@@ -153,4 +153,11 @@ public class SmDataProviderContainerProxy implements SmDataProvider {
 		}
 	}
 
+	@Override
+	public SmDataProviderGenerator getSmDataProviderGenerator() {
+		// IMPL implement method when needed
+		// currently objects of these class are only used for tests not relying on this function
+		return null;
+	}
+
 }

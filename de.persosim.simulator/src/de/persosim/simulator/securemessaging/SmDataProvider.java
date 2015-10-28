@@ -126,5 +126,19 @@ public interface SmDataProvider extends UpdatePropagation {
 	 * @param macLength
 	 */
 	public Integer getMacLength();
+	
+	/**
+	 * Return an {@link SmDataProviderGenerator} able to reconstruct a fully
+	 * functional clone of an object of the implementing {@link SmDataProvider}.
+	 * The reconstructed {@link SmDataProvider} must represent the state after
+	 * processing the outgoing SM APDU for any incoming command APDU that has
+	 * not yet been responded to with an appropriate response APDU. If there is
+	 * no command APDU waiting for a response, the reconstructed object is to
+	 * represent the current state. The generator object must be immutable.
+	 * 
+	 * @return an {@link SmDataProviderGenerator} able to reconstruct a fully
+	 *         functional {@link SmDataProvider}
+	 */
+	public SmDataProviderGenerator getSmDataProviderGenerator();
 
 }
