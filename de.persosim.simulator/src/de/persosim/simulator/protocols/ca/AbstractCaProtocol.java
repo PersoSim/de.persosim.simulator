@@ -5,7 +5,6 @@ import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 
-import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
@@ -35,6 +34,7 @@ import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.KeyDerivationFunction;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
+import de.persosim.simulator.exception.CryptoException;
 import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
@@ -360,7 +360,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		try {
 			smDataProvider = new SmDataProviderTr03110(this.secretKeySpecENC, this.secretKeySpecMAC);
 			processingData.addUpdatePropagation(this, "init SM after successful CA", smDataProvider);
-		} catch (GeneralSecurityException e) {
+		} catch (CryptoException e) {
 			throw new ProcessingException(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR, "Unable to initialize new secure messaging");
 		}
 	}

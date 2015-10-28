@@ -7,7 +7,6 @@ import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.logException;
 
-import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -45,6 +44,7 @@ import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.KeyDerivationFunction;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CertificateNotParseableException;
+import de.persosim.simulator.exception.CryptoException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
@@ -754,7 +754,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			processingData.addUpdatePropagation(this, "init SM after successful PACE", smDataProvider);
 			
 			return true;
-		} catch (GeneralSecurityException e) {
+		} catch (CryptoException e) {
 			logException(this, e);
 			ResponseApdu failureResponse = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
 			processingData.updateResponseAPDU(this, "Unable to initialize new secure messaging", failureResponse);

@@ -1,6 +1,5 @@
 package de.persosim.simulator.securemessaging;
 
-import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
@@ -13,6 +12,7 @@ import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.SendSequenceCounter;
+import de.persosim.simulator.exception.CryptoException;
 import de.persosim.simulator.processing.UpdatePropagation;
 
 public class SmDataProviderTr03110 implements SmDataProvider {
@@ -34,30 +34,34 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 	 * SendSequenceCounter according to BSI TR-03110
 	 */
 	private SendSequenceCounter ssc;
-	
-	public SmDataProviderTr03110(SecretKeySpec cipherKey, SecretKeySpec macKey, SendSequenceCounter newSsc) throws GeneralSecurityException {
+
+	public SmDataProviderTr03110(SecretKeySpec cipherKey, SecretKeySpec macKey, SendSequenceCounter newSsc) {
 		keyEnc = cipherKey;
 		keyMac = macKey;
 		
-		cipher = getCipher(keyEnc.getAlgorithm());
-		
-		// XXX AMY use new Crypto wrappers here
-		// According to developer consens we want to create wrapper objects that
-		// encapsulate Cipher or Mac resp. together with the relevant key. These
-		// objects can be passed as method parameters and encapsulate all
-		// different behavior by overloading. Thus protocols dont need to switch
-		// on objecttype while the OID classes work as factory for these
-		// wrappers.
-		// The differentiation between Cipher and Mac wrappers is intended to be
-		// according to the JavaCryptoApi. 
-		// {@link CryptoSupport}
-		if (CryptoUtil.getCipherNameAsString(cipher.getAlgorithm()).equals(
-				"DESede")) {
-			// 3DES
-			mac = Mac.getInstance("ISO9797ALG3", Crypto.getCryptoProvider());
-		} else {
-			//AES
-			mac = Mac.getInstance(keyMac.getAlgorithm(), Crypto.getCryptoProvider());
+		try {
+			cipher = getCipher(keyEnc.getAlgorithm());
+			
+			// XXX AMY use new Crypto wrappers here
+			// According to developer consens we want to create wrapper objects that
+			// encapsulate Cipher or Mac resp. together with the relevant key. These
+			// objects can be passed as method parameters and encapsulate all
+			// different behavior by overloading. Thus protocols dont need to switch
+			// on objecttype while the OID classes work as factory for these
+			// wrappers.
+			// The differentiation between Cipher and Mac wrappers is intended to be
+			// according to the JavaCryptoApi. 
+			// {@link CryptoSupport}
+			if (CryptoUtil.getCipherNameAsString(cipher.getAlgorithm()).equals(
+					"DESede")) {
+				// 3DES
+				mac = Mac.getInstance("ISO9797ALG3", Crypto.getCryptoProvider());
+			} else {
+				//AES
+				mac = Mac.getInstance(keyMac.getAlgorithm(), Crypto.getCryptoProvider());
+			}
+		} catch (NoSuchAlgorithmException e) {
+			throw new CryptoException(e);
 		}
 		
 		ssc = newSsc;
@@ -65,12 +69,16 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 		pendingCommandApdu = false;
 	}
 	
-	public SmDataProviderTr03110(SecretKeySpec cipherKey, SecretKeySpec macKey) throws GeneralSecurityException {
+	public SmDataProviderTr03110(SecretKeySpec cipherKey, SecretKeySpec macKey) {
 		this(cipherKey, macKey, new SendSequenceCounter(getCipher(cipherKey.getAlgorithm()).getBlockSize()));
 	}
 	
-	private static Cipher getCipher(String algorithm) throws NoSuchAlgorithmException, NoSuchPaddingException {
-		return Cipher.getInstance(algorithm, Crypto.getCryptoProvider());
+	private static Cipher getCipher(String algorithm) {
+		try {
+			return Cipher.getInstance(algorithm, Crypto.getCryptoProvider());
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+			throw new CryptoException(e);
+		}
 	}
 
 	@Override
