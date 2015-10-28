@@ -25,25 +25,26 @@ public class SecStatusTest extends PersoSimTestCase{
 	//TODO define tests for SecStatus
 	
 	/**
-	 * Positive test case: check the updateSecStatus method in the SecStatus class.
-	 */
-	@Test
-	public void testUpdateSecStatus_Input_Is_ProcessingData_Object()
-	{
-		SecStatus test = new SecStatus();
-		ProcessingData lol = new ProcessingData();
-		test.updateSecStatus(lol);		
-	}
-	
-	/**
-	 * Positive test case: check the getCurrentMechanisms method in the Secstatus class.
+	 * Positive test case: check that the getCurrentMechanisms method correctly finds mechanisms
 	 */
 	@Test
 	public void testGetCurrentMechanisms()
 	{
+		SecMechanism mechanismToFind = new SecMechanism() {
+			@Override
+			public boolean needsDeletionInCaseOf(SecurityEvent event) {
+				return false;
+			}
+		};
+		
+		populateSecStatus(SecContext.APPLICATION, mechanismToFind);
+		
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
-		@SuppressWarnings("unused")
-		Collection<SecMechanism> test = securityStatus.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+		previousMechanisms.add(mechanismToFind.getClass());
+		
+		Collection<SecMechanism> foundMechanisms = securityStatus.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+		assertEquals(1, foundMechanisms.size());
+		assertSame(mechanismToFind, foundMechanisms.iterator().next());
 		
 	}
 	
