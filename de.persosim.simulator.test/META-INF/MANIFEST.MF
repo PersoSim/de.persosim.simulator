@@ -8,12 +8,10 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.junit;bundle-version="4.11.0",
  org.globaltester.cryptoprovider.bc,
  de.persosim.simulator;bundle-version="0.6.0",
- org.globaltester.simulator
+ org.globaltester.simulator,
+ org.globaltester.base.test
 Export-Package: de.persosim.simulator.perso,
- de.persosim.simulator.test,
- mockit
+ de.persosim.simulator.test
 Import-Package: org.eclipse.ui.keys,
  org.osgi.framework;version="1.8.0"
-Bundle-ClassPath: lib/jmockit-coverage.jar,
- lib/jmockit.jar,
- .
+Bundle-ClassPath: .
