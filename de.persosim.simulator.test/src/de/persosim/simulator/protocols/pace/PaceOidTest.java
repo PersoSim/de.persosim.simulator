@@ -13,7 +13,7 @@ public class PaceOidTest {
 	 */
 	@Test
 	public void testGetStringRepresentation_nonPaceOid() {
-		assertNull (new PaceOid().getStringRepresentation(Ca.id_CA_DH_3DES_CBC_CBC));
+		assertNull (PaceOid.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128.getStringRepresentation(Ca.id_CA_DH_3DES_CBC_CBC));
 	}
 
 }

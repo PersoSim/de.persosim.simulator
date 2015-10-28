@@ -16,9 +16,6 @@ public class PaceOid extends Oid implements Pace {
 	
 	/*----------------------------------------------------------------*/
 	
-	public PaceOid() {
-	}
-	
 	/**
 	 * This constructor constructs a {@link PaceOid} based on a byte array representation of a Pace OID.
 	 * @param oidByteArray the byte array representation of a Pace OID
