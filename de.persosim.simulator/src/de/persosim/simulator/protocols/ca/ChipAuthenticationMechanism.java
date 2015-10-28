@@ -4,6 +4,8 @@ import java.security.PublicKey;
 
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecurityEvent;
+import de.persosim.simulator.utils.Serialized;
+import de.persosim.simulator.utils.Serializer;
 
 /**
  * This {@link SecMechanism} is used to communicate all useful information
@@ -16,12 +18,12 @@ public class ChipAuthenticationMechanism implements SecMechanism {
 	
 	CaOid caOid;
 	int keyReference;
-	PublicKey uncompressedTerminalEphemeralPublicKey;
+	Serialized<PublicKey> uncompressedTerminalEphemeralPublicKey;
 	
 	public ChipAuthenticationMechanism(CaOid caOid, int keyReference, PublicKey uncompressedPublicKey) {
 		this.caOid = caOid;
 		this.keyReference = keyReference;
-		this.uncompressedTerminalEphemeralPublicKey = uncompressedPublicKey;
+		this.uncompressedTerminalEphemeralPublicKey = Serializer.serialize(uncompressedPublicKey);
 	}
 	
 	public CaOid getCaOid() {
@@ -33,7 +35,7 @@ public class ChipAuthenticationMechanism implements SecMechanism {
 	}
 
 	public PublicKey getUncompressedTerminalEphemeralPublicKey() {
-		return uncompressedTerminalEphemeralPublicKey;
+		return Serializer.deserialize(uncompressedTerminalEphemeralPublicKey);
 	}
 
 	@Override
