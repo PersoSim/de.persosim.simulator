@@ -75,6 +75,11 @@ public class SecureMessaging extends Layer implements TlvConstants{
 			if (((IsoSecureMessagingCommandApdu) processingData.getCommandApdu()).getSecureMessaging() != SM_OFF_OR_NO_INDICATION) {
 				if (dataProvider != null) {
 					processIncomingSmApdu();
+					
+					//propagate changes in SM status
+					SmDataProviderGenerator smDataProviderGenerator = dataProvider.getSmDataProviderGenerator();
+					processingData.addUpdatePropagation(this, "init SM after successful PACE", smDataProviderGenerator);
+					
 					logPlain(PersoSimLogger.PREFIX_IN_DEC + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
 					log(this, "successfully processed ascending secured APDU", TRACE);
 					return;
