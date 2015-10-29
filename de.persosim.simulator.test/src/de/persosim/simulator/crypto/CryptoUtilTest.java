@@ -404,4 +404,56 @@ public class CryptoUtilTest extends PersoSimTestCase {
 		assertTrue(keyPair != null);
 	}
 	
+	/**
+	 * Positive test case: get cipher name as string from string containing delimiters
+	 */
+	@Test
+	public void testGetCipherNameAsString_withDelimiters() {
+		String input = "DESede/CBC/NoPadding";
+		String expected = "DESede";
+		
+		String received = CryptoUtil.getCipherNameAsString(input);
+		
+		assertEquals(expected, received);
+	}
+	
+	/**
+	 * Positive test case: get cipher name as string from string not containing any delimiters
+	 */
+	@Test
+	public void testGetCipherNameAsString_withoutDelimiters() {
+		String input = "DESede";
+		String expected = "DESede";
+		
+		String received = CryptoUtil.getCipherNameAsString(input);
+		
+		assertEquals(expected, received);
+	}
+	
+	/**
+	 * Positive test case: get cipher name as string from empty string
+	 */
+	@Test
+	public void testGetCipherNameAsString_empty() {
+		String input = "";
+		String expected = "";
+		
+		String received = CryptoUtil.getCipherNameAsString(input);
+		
+		assertEquals(expected, received);
+	}
+	
+	/**
+	 * Positive test case: get cipher name as string from string starting with delimiter
+	 */
+	@Test
+	public void testGetCipherNameAsString_delimiterFirst() {
+		String input = "/";
+		String expected = "";
+		
+		String received = CryptoUtil.getCipherNameAsString(input);
+		
+		assertEquals(expected, received);
+	}
+	
 }
