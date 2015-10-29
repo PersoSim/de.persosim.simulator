@@ -37,17 +37,23 @@ public class TerminalAuthenticationMechanism implements SecMechanism {
 	}
 
 	/**
-	 * @return the firstSectorPublicKeyHash
+	 * @return the firstSectorPublicKeyHash or null if none set
 	 */
 	public byte[] getFirstSectorPublicKeyHash() {
-		return firstSectorPublicKeyHash;
+		if (firstSectorPublicKeyHash != null){
+			return Arrays.copyOf(firstSectorPublicKeyHash, firstSectorPublicKeyHash.length);	
+		}
+		return null;
 	}
 
 	/**
-	 * @return the secondSectorPublicKeyHash
+	 * @return the secondSectorPublicKeyHash or null if none set
 	 */
 	public byte[] getSecondSectorPublicKeyHash() {
-		return secondSectorPublicKeyHash;
+		if (secondSectorPublicKeyHash != null){
+			return Arrays.copyOf(secondSectorPublicKeyHash, secondSectorPublicKeyHash.length);	
+		}
+		return null;
 	}
 
 	/**
@@ -77,9 +83,12 @@ public class TerminalAuthenticationMechanism implements SecMechanism {
 	}
 
 	/**
-	 * @return the compressedTerminalEphemeralPublicKey
+	 * @return the compressedTerminalEphemeralPublicKey or null if none set
 	 */
 	public byte[] getCompressedTerminalEphemeralPublicKey() {
-		return compressedTerminalEphemeralPublicKey;
+		if (compressedTerminalEphemeralPublicKey != null){
+			return Arrays.copyOf(compressedTerminalEphemeralPublicKey, compressedTerminalEphemeralPublicKey.length);	
+		}
+		return null;
 	}
 }
