@@ -65,7 +65,13 @@ public class CryptoUtil {
 	 * @return the basic cipher name
 	 */
 	public static String getCipherNameAsString(String cAlgNMP) {
-		return cAlgNMP.substring(0, cAlgNMP.indexOf(CIPHER_DELIMITER));
+		int index = cAlgNMP.indexOf(CIPHER_DELIMITER);
+		if(index < 0) {
+			//if no delimiter is found
+			return cAlgNMP;
+		} else{
+			return cAlgNMP.substring(0, index);
+		}
 	}
 	
 	/**
