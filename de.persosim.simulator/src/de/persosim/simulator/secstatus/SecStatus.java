@@ -134,13 +134,13 @@ public class SecStatus {
 	 * 
 	 * @param state
 	 *            the lifecycle state of the {@link CardObject}
-	 * @param secConditions
-	 *            the {@link SecCondition}s to verify
+	 * @param secCondition
+	 *            the {@link SecCondition} to verify
 	 * @return true, if at least one security condition is fulfilled or the if
 	 *         the {@link Iso7816LifeCycleState} grants access
 	 */
-	public boolean checkAccessConditions(Iso7816LifeCycleState state, Collection<SecCondition> secConditions){
-		return checkAccessConditions(state, secConditions, SecContext.APPLICATION);
+	public boolean checkAccessConditions(Iso7816LifeCycleState state, SecCondition secCondition){
+		return checkAccessConditions(state, secCondition, SecContext.APPLICATION);
 	}
 
 	
@@ -150,24 +150,21 @@ public class SecStatus {
 	 * 
 	 * @param state
 	 *            the lifecycle state of the {@link CardObject}
-	 * @param secConditions
-	 *            the {@link SecCondition}s to verify
+	 * @param secCondition
+	 *            the {@link SecCondition} to verify
 	 * @param context
 	 *            {@link SecContext} the context to check the conditions for
 	 * @return true, if at least one security condition is fulfilled or the if
 	 *         the {@link Iso7816LifeCycleState} grants access
 	 */
-	public boolean checkAccessConditions(Iso7816LifeCycleState state, Collection<SecCondition> secConditions, SecContext context){
+	public boolean checkAccessConditions(Iso7816LifeCycleState state, SecCondition secConditions, SecContext context){
 		if (checkAccessConditions(state)){
 			return true;
+		} else if (secConditions.check(this.getCurrentMechanisms(context, secConditions.getNeededMechanisms()))){
+			return true;
+		} else {
+			return false;
 		}
-				
-		for (SecCondition condition : secConditions){
-			if (condition.check(this.getCurrentMechanisms(context, condition.getNeededMechanisms()))){
-				return true;
-			}
-		}
-		return false;
 	}
 	
 	/**
