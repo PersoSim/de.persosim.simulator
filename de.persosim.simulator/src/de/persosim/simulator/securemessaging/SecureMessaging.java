@@ -180,7 +180,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 	 */
 	public void processOutgoingSmApdu() {
 		log(this, "START encryption of outgoing SM APDU");
-		dataProvider.nextIncoming();
+		dataProvider.nextOutgoing();
 		
 		TlvDataObjectContainer container = new TlvDataObjectContainer();
 		
