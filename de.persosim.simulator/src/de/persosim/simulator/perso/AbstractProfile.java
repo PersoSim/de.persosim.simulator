@@ -161,8 +161,9 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				new FileIdentifier(0x0101),
 				new ShortFileIdentifier(0x01),
 				ePassDg1.toByteArray(),
-				new OrSecCondition(new PaceSecurityCondition()),
-				null, null);
+				new PaceSecurityCondition(),
+				SecCondition.DENIED, 
+				SecCondition.DENIED);
 		ePassAppl.addChild(epassDg1);
 	}
 	
@@ -289,7 +290,8 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				new ShortFileIdentifier(0x01),
 				dg1Tlv.toByteArray(),
 				getAccessRightReadEidDg(1),
-				null, null);
+				SecCondition.DENIED, 
+				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg1);
 	}
 	
@@ -326,7 +328,8 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				new ShortFileIdentifier(0x02),
 				dg2Tlv.toByteArray(),
 				getAccessRightReadEidDg(2),
-				null, null);
+				SecCondition.DENIED,
+				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg1);
 	}
 	
@@ -339,7 +342,8 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				new ShortFileIdentifier(0x03),
 				dg3Tlv.toByteArray(),
 				getAccessRightReadEidDg(3),
-				null, null);
+				SecCondition.DENIED,
+				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg3);
 	}
 	
@@ -352,7 +356,8 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				new ShortFileIdentifier(0x04),
 				dg4Tlv.toByteArray(),
 				getAccessRightReadEidDg(4),
-				null, null);
+				SecCondition.DENIED,
+				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg4);
 	}
 	
@@ -366,7 +371,8 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				new ShortFileIdentifier(0x05),
 				dg5Tlv.toByteArray(),
 				getAccessRightReadEidDg(5),
-				null, null);
+				SecCondition.DENIED,
+				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg5);
 	}
 	
@@ -380,7 +386,8 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				new ShortFileIdentifier(0x06),
 				dg6Tlv.toByteArray(),
 				getAccessRightReadEidDg(6),
-				null, null);
+				SecCondition.DENIED,
+				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg6);
 	}
 	
@@ -394,7 +401,8 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				new ShortFileIdentifier(0x07),
 				dg7Tlv.toByteArray(),
 				getAccessRightReadEidDg(7),
-				null, null);
+				SecCondition.DENIED,
+				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg7);
 	}
 	
@@ -408,7 +416,8 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				new ShortFileIdentifier(0x08),
 				dg8Tlv.toByteArray(),
 				getAccessRightReadEidDg(8),
-				null, null);
+				SecCondition.DENIED,
+				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg8);
 	}
 	
@@ -424,7 +433,8 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 					new ShortFileIdentifier(0x09),
 					dg9Tlv.toByteArray(),
 					getAccessRightReadEidDg(9),
-					null, null);
+					SecCondition.DENIED,
+					SecCondition.DENIED);
 			eIdAppl.addChild(eidDg9);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -456,7 +466,8 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				new ShortFileIdentifier(0x0D),
 				dg13Tlv.toByteArray(),
 				getAccessRightReadEidDg(13),
-				null, null);
+				SecCondition.DENIED,
+				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg13);
 	}
 	
@@ -468,8 +479,9 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		CardFile eidDgCardAccess = new ElementaryFile(new FileIdentifier(0x011C),
 				new ShortFileIdentifier(0x1C),
 				efCardAccessTlv.toByteArray(),
-				new OrSecCondition(new NullSecurityCondition()),
-				null, null);
+				new NullSecurityCondition(),
+				SecCondition.DENIED,
+				SecCondition.DENIED);
 		mf.addChild(eidDgCardAccess);
 	}
 	
@@ -481,8 +493,9 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		CardFile eidDgCardSecurity = new ElementaryFile(new FileIdentifier(0x011D),
 				new ShortFileIdentifier(0x1D),
 				efCardSecurityTlv.toByteArray(),
-				new OrSecCondition(new TaSecurityCondition()),
-				null, null);
+				new TaSecurityCondition(),
+				SecCondition.DENIED,
+				SecCondition.DENIED);
 		mf.addChild(eidDgCardSecurity);
 	}
 	
@@ -501,7 +514,8 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				new ShortFileIdentifier(0x1B),
 				efChipSecurityTlv.toByteArray(),
 				new OrSecCondition(taWithIs, taWithAtPrivileged),
-				null, null);
+				SecCondition.DENIED,
+				SecCondition.DENIED);
 		mf.addChild(eidDgChipSecurity);
         		
 	}
@@ -600,7 +614,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 					dg17Tlv.toByteArray(),
 					getAccessRightReadEidDg(17),
 					getAccessRightUpdateEidDg(17),
-					null);
+					SecCondition.DENIED);
 			eIdAppl.addChild(eidDg17);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -632,7 +646,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				dg18Tlv.toByteArray(),
 				getAccessRightReadEidDg(18),
 				getAccessRightUpdateEidDg(18),
-				null);
+				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg18);
 	}
 	

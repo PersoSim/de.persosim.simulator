@@ -151,7 +151,7 @@ public class SecStatus {
 	 * @param state
 	 *            the lifecycle state of the {@link CardObject}
 	 * @param secCondition
-	 *            the {@link SecCondition} to verify
+	 *            the {@link SecCondition} to verify. Must not be null.
 	 * @param context
 	 *            {@link SecContext} the context to check the conditions for
 	 * @return true, if at least one security condition is fulfilled or the if
@@ -160,7 +160,7 @@ public class SecStatus {
 	public boolean checkAccessConditions(Iso7816LifeCycleState state, SecCondition secCondition, SecContext context){
 		if (checkAccessConditions(state)){
 			return true;
-		} else if (secCondition != null && secCondition.check(this.getCurrentMechanisms(context, secCondition.getNeededMechanisms()))){
+		} else if (secCondition.check(this.getCurrentMechanisms(context, secCondition.getNeededMechanisms()))){
 			return true;
 		} else {
 			return false;
