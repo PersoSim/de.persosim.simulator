@@ -32,7 +32,6 @@ import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
-import de.persosim.simulator.seccondition.NullSecurityCondition;
 import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.PaceSecurityCondition;
 import de.persosim.simulator.seccondition.SecCondition;
@@ -479,7 +478,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		CardFile eidDgCardAccess = new ElementaryFile(new FileIdentifier(0x011C),
 				new ShortFileIdentifier(0x1C),
 				efCardAccessTlv.toByteArray(),
-				new NullSecurityCondition(),
+				SecCondition.ALLOWED,
 				SecCondition.DENIED,
 				SecCondition.DENIED);
 		mf.addChild(eidDgCardAccess);
