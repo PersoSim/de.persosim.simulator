@@ -6,13 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
-import java.util.LinkedList;
-
-import mockit.Deencapsulation;
-import mockit.Delegate;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,9 +13,9 @@ import org.junit.Test;
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.cardobjects.AbstractFile;
 import de.persosim.simulator.cardobjects.CardFile;
-import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
+import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ObjectStore;
 import de.persosim.simulator.cardobjects.Scope;
@@ -33,7 +26,6 @@ import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.processing.UpdatePropagation;
-import de.persosim.simulator.seccondition.NullSecurityCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.test.PersoSimTestCase;
@@ -43,6 +35,11 @@ import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.InfoSource;
+import mockit.Deencapsulation;
+import mockit.Delegate;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
 
 /**
  * Unit tests for the file management protocol.
@@ -69,9 +66,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		elementaryFileContent = new byte[] { 1, 2, 3, 4, 5, 6 };
 
 		// create file to test
-		LinkedList<SecCondition> unprotected = new LinkedList<>();
-		unprotected.add(new NullSecurityCondition());
-		elementaryFile = new ElementaryFile(new FileIdentifier(0x011A), new ShortFileIdentifier(1), elementaryFileContent, unprotected, unprotected, unprotected);
+		elementaryFile = new ElementaryFile(new FileIdentifier(0x011A), new ShortFileIdentifier(1), elementaryFileContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
 		elementaryFile.setSecStatus(new SecStatus());
 		
 		//create and init the object under test

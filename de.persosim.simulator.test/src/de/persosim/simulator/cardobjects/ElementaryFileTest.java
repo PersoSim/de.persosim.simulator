@@ -4,22 +4,19 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
-import java.util.LinkedList;
-
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.exception.AccessDeniedException;
-import de.persosim.simulator.seccondition.NullSecurityCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
 
 public class ElementaryFileTest extends PersoSimTestCase {
 
@@ -38,9 +35,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 		};
 		
 		// create file to test
-		LinkedList<SecCondition> unprotected = new LinkedList<>();
-		unprotected.add(new NullSecurityCondition());
-		file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), new byte[] { 1, 2, 3, 4 }, unprotected, unprotected, unprotected);
+		file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), new byte[] { 1, 2, 3, 4 }, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
 		file.setSecStatus(mockedSecurityStatus);
 				
 	}
