@@ -610,8 +610,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @return
 	 */
 	protected static SecCondition getAccessRightUpdateEidDg(int dgNr) {
-		SecCondition retVal = new OrSecCondition(new TaSecurityCondition(TerminalType.AT,
-				new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(54 - dgNr))));
+		SecCondition retVal = new TaSecurityCondition(TerminalType.AT,
+				new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(54 - dgNr)));
 		return retVal;
 	}
 

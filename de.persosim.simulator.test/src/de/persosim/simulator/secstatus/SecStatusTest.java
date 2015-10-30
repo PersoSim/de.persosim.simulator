@@ -62,7 +62,7 @@ public class SecStatusTest extends PersoSimTestCase{
 	public void testCheckAccessConditionsLifecycleAllows() {
 		Iso7816LifeCycleState state = Iso7816LifeCycleState.CREATION;
 		SecStatus securityStatus = new SecStatus();
-		OrSecCondition secConditions = new OrSecCondition(new SecCondition() {
+		SecCondition secCondition = new SecCondition() {
 			
 			@Override
 			public Collection<Class<? extends SecMechanism>> getNeededMechanisms() {
@@ -73,8 +73,8 @@ public class SecStatusTest extends PersoSimTestCase{
 			public boolean check(Collection<SecMechanism> mechanisms) {
 				return false;
 			}
-		});
-		assertTrue(securityStatus.checkAccessConditions(state, secConditions, SecContext.APPLICATION));
+		};
+		assertTrue(securityStatus.checkAccessConditions(state, secCondition, SecContext.APPLICATION));
 	}
 	
 	/**
@@ -85,7 +85,7 @@ public class SecStatusTest extends PersoSimTestCase{
 
 		Iso7816LifeCycleState state = Iso7816LifeCycleState.OPERATIONAL_ACTIVATED;
 		SecStatus securityStatus = new SecStatus();
-		OrSecCondition secConditions = new OrSecCondition(new SecCondition() {
+		SecCondition secCondition = new SecCondition() {
 			
 			@Override
 			public Collection<Class<? extends SecMechanism>> getNeededMechanisms() {
@@ -96,8 +96,8 @@ public class SecStatusTest extends PersoSimTestCase{
 			public boolean check(Collection<SecMechanism> mechanisms) {
 				return false;
 			}
-		});
-		assertFalse(securityStatus.checkAccessConditions(state, secConditions, SecContext.APPLICATION));
+		};
+		assertFalse(securityStatus.checkAccessConditions(state, secCondition, SecContext.APPLICATION));
 	}
 	
 	/**
@@ -108,7 +108,7 @@ public class SecStatusTest extends PersoSimTestCase{
 
 		Iso7816LifeCycleState state = Iso7816LifeCycleState.OPERATIONAL_ACTIVATED;
 		SecStatus securityStatus = new SecStatus();
-		OrSecCondition secConditions = new OrSecCondition(new SecCondition() {
+		SecCondition secCondition = new SecCondition() {
 			
 			@Override
 			public Collection<Class<? extends SecMechanism>> getNeededMechanisms() {
@@ -119,7 +119,7 @@ public class SecStatusTest extends PersoSimTestCase{
 			public boolean check(Collection<SecMechanism> mechanisms) {
 				return true;
 			}
-		});
-		assertTrue(securityStatus.checkAccessConditions(state, secConditions, SecContext.APPLICATION));
+		};
+		assertTrue(securityStatus.checkAccessConditions(state, secCondition, SecContext.APPLICATION));
 	}
 }
