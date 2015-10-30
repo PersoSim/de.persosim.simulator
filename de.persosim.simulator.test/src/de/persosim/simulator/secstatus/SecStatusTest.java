@@ -7,17 +7,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
-import mockit.Mocked;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.processing.ProcessingData;
-import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
+import mockit.Mocked;
 
 public class SecStatusTest extends PersoSimTestCase{
 	
