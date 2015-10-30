@@ -24,12 +24,12 @@ public class ElementaryFile extends AbstractFile {
 	
 	private ShortFileIdentifier shortFileIdentifier;
 
-	private OrSecCondition readingConditions;
+	private SecCondition readingConditions;
 	
-	private OrSecCondition writingConditions;
+	private SecCondition writingConditions;
 	
 	@SuppressWarnings("unused")  //IMPL MBK implement the ISO7816 erase functionality for files
-	private OrSecCondition erasingConditions;
+	private SecCondition erasingConditions;
 	
 	/**
 	 * Default constructor fur JAXB usage.
@@ -39,7 +39,7 @@ public class ElementaryFile extends AbstractFile {
 	}
 			
 	public ElementaryFile(FileIdentifier fileIdentifier,
-			ShortFileIdentifier shortFileIdentifier, byte[] content, OrSecCondition readingConditions, OrSecCondition writingConditions, OrSecCondition erasingConditions) {
+			ShortFileIdentifier shortFileIdentifier, byte[] content, SecCondition readingConditions, SecCondition writingConditions, SecCondition erasingConditions) {
 		super(fileIdentifier);
 		this.shortFileIdentifier = shortFileIdentifier;
 		this.content = content;
