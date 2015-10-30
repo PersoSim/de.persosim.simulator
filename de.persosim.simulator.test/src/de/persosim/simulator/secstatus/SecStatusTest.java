@@ -1,6 +1,10 @@
 package de.persosim.simulator.secstatus;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 import mockit.Mocked;
@@ -8,7 +12,10 @@ import mockit.Mocked;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.seccondition.OrSecCondition;
+import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
 
@@ -47,4 +54,72 @@ public class SecStatusTest extends PersoSimTestCase{
 		
 	}
 	
+	/**
+	 * Positive test case checking the life cycle allowing access even if the
+	 * security conditions do not match.
+	 */
+	@Test
+	public void testCheckAccessConditionsLifecycleAllows() {
+		Iso7816LifeCycleState state = Iso7816LifeCycleState.CREATION;
+		SecStatus securityStatus = new SecStatus();
+		OrSecCondition secConditions = new OrSecCondition(new SecCondition() {
+			
+			@Override
+			public Collection<Class<? extends SecMechanism>> getNeededMechanisms() {
+				return Collections.emptySet();
+			}
+			
+			@Override
+			public boolean check(Collection<SecMechanism> mechanisms) {
+				return false;
+			}
+		});
+		assertTrue(securityStatus.checkAccessConditions(state, secConditions, SecContext.APPLICATION));
+	}
+	
+	/**
+	 * Positive test case checking whether the security conditions prohibit access.
+	 */
+	@Test
+	public void testCheckAccessConditionsSecurityConditionsProhibit(){
+
+		Iso7816LifeCycleState state = Iso7816LifeCycleState.OPERATIONAL_ACTIVATED;
+		SecStatus securityStatus = new SecStatus();
+		OrSecCondition secConditions = new OrSecCondition(new SecCondition() {
+			
+			@Override
+			public Collection<Class<? extends SecMechanism>> getNeededMechanisms() {
+				return Collections.emptySet();
+			}
+			
+			@Override
+			public boolean check(Collection<SecMechanism> mechanisms) {
+				return false;
+			}
+		});
+		assertFalse(securityStatus.checkAccessConditions(state, secConditions, SecContext.APPLICATION));
+	}
+	
+	/**
+	 * Positive test case checking whether the security conditions can allow access.
+	 */
+	@Test
+	public void testCheckAccessConditionsSecurityConditionsAllow(){
+
+		Iso7816LifeCycleState state = Iso7816LifeCycleState.OPERATIONAL_ACTIVATED;
+		SecStatus securityStatus = new SecStatus();
+		OrSecCondition secConditions = new OrSecCondition(new SecCondition() {
+			
+			@Override
+			public Collection<Class<? extends SecMechanism>> getNeededMechanisms() {
+				return Collections.emptySet();
+			}
+			
+			@Override
+			public boolean check(Collection<SecMechanism> mechanisms) {
+				return true;
+			}
+		});
+		assertTrue(securityStatus.checkAccessConditions(state, secConditions, SecContext.APPLICATION));
+	}
 }
