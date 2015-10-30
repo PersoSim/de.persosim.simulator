@@ -160,7 +160,7 @@ public class SecStatus {
 	public boolean checkAccessConditions(Iso7816LifeCycleState state, SecCondition secCondition, SecContext context){
 		if (checkAccessConditions(state)){
 			return true;
-		} else if (secCondition.check(this.getCurrentMechanisms(context, secCondition.getNeededMechanisms()))){
+		} else if (secCondition != null && secCondition.check(this.getCurrentMechanisms(context, secCondition.getNeededMechanisms()))){
 			return true;
 		} else {
 			return false;
