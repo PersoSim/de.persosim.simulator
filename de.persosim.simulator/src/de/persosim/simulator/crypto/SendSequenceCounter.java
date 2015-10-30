@@ -1,53 +1,97 @@
 package de.persosim.simulator.crypto;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 
+import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 /**
+ * This class represents a counter to be used in the context of sequence numbers
+ * in secure messaging. The counter is limited to positive numbers including 0.
+ * The default value is 0, the default increment is 1. When exceeding the
+ * maximum value the counter is reset to 0.
+ * 
  * @author slutters
  *
  */
 public class SendSequenceCounter {
-	/* the current value */
+	
+	// the current value
+	// 0 <= current value <= maxValue
 	protected BigInteger value;
 	
-	/* current value must always fit into maxByteLength */
-	protected int maxByteLength;
-	
-	/* current value must always be <= maxValue */
+	// maximum achievable value
 	private BigInteger maxValue;
 	
 	/*--------------------------------------------------------------------------------*/
 	
+	/**
+	 * This constructor constructs a {@link SendSequenceCounter} object
+	 * @param value the value to start counting from
+	 * @param maxValue the maximum possible value
+	 */
 	public SendSequenceCounter(BigInteger value, BigInteger maxValue) {
-		this.setValue(value);
-		this.setMaxValue(maxValue);
+		if(maxValue.compareTo(BigInteger.ZERO) <= 0) {throw new IllegalArgumentException("max value must not be smaller than 1");}
+		
+		this.maxValue = maxValue;
+		
+		if(value.compareTo(BigInteger.ZERO) < 0) {throw new IllegalArgumentException("ssc must not be smaller than 0");}
+		if(value.compareTo(this.maxValue) > 0) {throw new IllegalArgumentException("ssc must not be larger than max value");}
+		
+		this.value = value;	
 	}
 	
+	/**
+	 * This constructor constructs a {@link SendSequenceCounter} object
+	 * @param maxValue the maximum possible value
+	 */
 	public SendSequenceCounter(BigInteger maxValue) {
 		this(BigInteger.ZERO, maxValue);
 	}
 	
+	/**
+	 * This constructor constructs a {@link SendSequenceCounter} object
+	 * @param value the value to start counting from
+	 * @param maxByteLength the maximum byte length representation of the value
+	 */
 	public SendSequenceCounter(BigInteger value, int maxByteLength) {
-		this.setMaxByteLength(maxByteLength);
-		this.setValue(value);
+		this(value, ((new BigInteger("2")).pow(maxByteLength * 8)).subtract(BigInteger.ONE));
 	}
 	
+	/**
+	 * This constructor constructs a {@link SendSequenceCounter} object
+	 * @param maxByteLength the maximum byte length representation of the value
+	 */
 	public SendSequenceCounter(int maxByteLength) {
 		this(BigInteger.ZERO, maxByteLength);
 	}
 	
 	/*--------------------------------------------------------------------------------*/
 	
-	private void setMaxValue(BigInteger maxValue) {
-		if(maxValue.compareTo(BigInteger.ZERO) <= 0) {throw new IllegalArgumentException("max value must not be smaller than 1");}
-		
-		this.maxValue = maxValue;
-		this.maxByteLength = (int) (Math.ceil(maxValue.bitLength()/8.0));
+	/**
+	 * @return the maxValue
+	 */
+	public BigInteger getMaxValue() {
+		return maxValue;
 	}
 	
+	/**
+	 * @return the value
+	 */
+	public BigInteger getValue() {
+		return value;
+	}
+
+	/**
+	 * @return the byteLength
+	 */
+	public int getMaxByteLength() {
+		return (int) (Math.ceil(maxValue.bitLength()/8.0));
+	}
+	
+	/**
+	 * This method increments the current value by 1
+	 */
 	public void increment() {
 		this.value = this.value.add(BigInteger.ONE);
 		
@@ -56,83 +100,58 @@ public class SendSequenceCounter {
 		}
 	}
 	
-	@Override
-	public String toString() {
-		return this.value.toString();
-	}
-	
-	private int getCurrentBitLength() {
-		int bl;
-		
-		bl = this.value.bitLength();
-		
-		if(bl <= 0) {
-			return 1;	
-		} else{
-			return bl;
-		}
-	}
-	
-	public int getCurrentByteLength() {
-		return (int) Math.ceil(this.getCurrentBitLength()/8.0);
-	}
-	
+	/**
+	 * This method resets the current value to 0
+	 */
 	public void reset() {
 		this.value = BigInteger.ZERO;
 	}
 	
+	/**
+	 * This method returns a byte[] representation of the current value padded
+	 * to the length of the byte[] representation of the maximum value.
+	 * 
+	 * @return a byte[] representation of the current value
+	 */
 	public byte[] toByteArray() {
-		byte[] tmp, out;
-		
-		tmp = Utils.toUnsignedByteArray(this.value);
-		
-		if(tmp.length < this.maxByteLength) {
-			/* we will have to pad the output */
-			out = new byte[this.maxByteLength];
-			Arrays.fill(out, (byte) 0x00);
-			System.arraycopy(tmp, 0, out, out.length - tmp.length, tmp.length);
-		} else{
-			out = tmp;
-		}
-		
-		return out;
-	}
-
-	/**
-	 * @return the ssc
-	 */
-	public BigInteger getValue() {
-		return value;
-	}
-
-	/**
-	 * @param ssc the ssc to set
-	 */
-	public void setValue(BigInteger ssc) {
-		if(ssc.compareTo(BigInteger.ZERO) < 0) {throw new IllegalArgumentException("ssc must not be smaller than 0");}
-		if(ssc.compareTo(this.maxValue) > 0) {throw new IllegalArgumentException("ssc must not be larger than max value");}
-		
-		this.value = ssc;
+		byte[] out = Utils.toUnsignedByteArray(this.value);
+		return Utils.padWithLeadingZeroes(out, getMaxByteLength());
 	}
 	
-	public void setValue(byte[] newValue) {
-		this.setValue(new BigInteger(1, newValue));
+	@Override
+	public String toString() {
+		return this.value.toString() + " [" + HexString.encode(toByteArray()) + "]";
 	}
 
-	/**
-	 * @return the byteLength
-	 */
-	public int getMaxByteLength() {
-		return this.maxByteLength;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((maxValue == null) ? 0 : maxValue.hashCode());
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		return result;
 	}
 
-	/**
-	 * @param maxByteLength the byteLength to set
-	 */
-	public void setMaxByteLength(int maxByteLength) {
-		if(maxByteLength < 1) {throw new IllegalArgumentException("max byte length must not be smaller than 1");}
-		
-		this.maxByteLength = maxByteLength;
-		this.maxValue = ((new BigInteger((new Integer(2)).toString())).pow(maxByteLength * 8)).subtract(BigInteger.ONE);
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SendSequenceCounter other = (SendSequenceCounter) obj;
+		if (maxValue == null) {
+			if (other.maxValue != null)
+				return false;
+		} else if (!maxValue.equals(other.maxValue))
+			return false;
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
+			return false;
+		return true;
 	}
+	
 }
