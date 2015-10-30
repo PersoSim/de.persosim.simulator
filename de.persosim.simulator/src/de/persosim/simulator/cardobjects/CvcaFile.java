@@ -21,13 +21,13 @@ public class CvcaFile extends AbstractFile {
 	PublicKeyReference currentCertificateAuthorityReference;
 	PublicKeyReference previousCertificateAuthorityReference;
 
-	Collection<SecCondition> readingConditions;
-	Collection<SecCondition> updatingConditions;
+	OrSecCondition readingConditions;
+	OrSecCondition updatingConditions;
 
 	public CvcaFile(FileIdentifier fileIdentifier,
 			ShortFileIdentifier shortFileIdentifier,
-			Collection<SecCondition> readingConditions,
-			Collection<SecCondition> updatingConditions) {
+			OrSecCondition readingConditions,
+			OrSecCondition updatingConditions) {
 		super(fileIdentifier);
 		this.shortFileIdentifier = shortFileIdentifier;
 		this.readingConditions = readingConditions;
@@ -42,8 +42,7 @@ public class CvcaFile extends AbstractFile {
 	 *             when writing access is denied because of security conditions
 	 */
 	public void update(PublicKeyReference certificateAuthorityReference) throws AccessDeniedException {
-		OrSecCondition updatingConditionsAsOr = new OrSecCondition(updatingConditions.toArray(new SecCondition[updatingConditions.size()]));
-		if (securityStatus.checkAccessConditions(getLifeCycleState(), updatingConditionsAsOr)){
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), updatingConditions)){
 			previousCertificateAuthorityReference = currentCertificateAuthorityReference;
 			currentCertificateAuthorityReference = certificateAuthorityReference;
 		}
@@ -55,8 +54,7 @@ public class CvcaFile extends AbstractFile {
 	 * @throws AccessDeniedException
 	 */
 	public PublicKeyReference getCurrentCertificateAuthorityReference() throws AccessDeniedException {
-		OrSecCondition readingConditionsAsOr = new OrSecCondition(readingConditions.toArray(new SecCondition[readingConditions.size()]));
-		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditionsAsOr)){
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions)){
 			return currentCertificateAuthorityReference;
 		}
 		throw new AccessDeniedException("Reading forbidden");
@@ -68,8 +66,7 @@ public class CvcaFile extends AbstractFile {
 	 * @throws AccessDeniedException
 	 */
 	public PublicKeyReference getPreviousCertificateAuthorityReference() throws AccessDeniedException {
-		OrSecCondition readingConditionsAsOr = new OrSecCondition(readingConditions.toArray(new SecCondition[readingConditions.size()]));
-		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditionsAsOr)){
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions)){
 			return previousCertificateAuthorityReference;
 		}
 		throw new AccessDeniedException("Reading forbidden");

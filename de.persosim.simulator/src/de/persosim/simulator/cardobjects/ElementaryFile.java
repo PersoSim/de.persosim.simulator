@@ -24,12 +24,12 @@ public class ElementaryFile extends AbstractFile {
 	
 	private ShortFileIdentifier shortFileIdentifier;
 
-	private Collection<SecCondition> readingConditions;
+	private OrSecCondition readingConditions;
 	
-	private Collection<SecCondition> writingConditions;
+	private OrSecCondition writingConditions;
 	
 	@SuppressWarnings("unused")  //IMPL MBK implement the ISO7816 erase functionality for files
-	private Collection<SecCondition> erasingConditions;
+	private OrSecCondition erasingConditions;
 	
 	/**
 	 * Default constructor fur JAXB usage.
@@ -39,7 +39,7 @@ public class ElementaryFile extends AbstractFile {
 	}
 			
 	public ElementaryFile(FileIdentifier fileIdentifier,
-			ShortFileIdentifier shortFileIdentifier, byte[] content, Collection<SecCondition> readingConditions, Collection<SecCondition> writingConditions, Collection<SecCondition> erasingConditions) {
+			ShortFileIdentifier shortFileIdentifier, byte[] content, OrSecCondition readingConditions, OrSecCondition writingConditions, OrSecCondition erasingConditions) {
 		super(fileIdentifier);
 		this.shortFileIdentifier = shortFileIdentifier;
 		this.content = content;
@@ -58,8 +58,7 @@ public class ElementaryFile extends AbstractFile {
 	 * @return stored data as byte array
 	 */
 	public byte[] getContent() throws AccessDeniedException {
-		OrSecCondition readingConditionsAsOr = new OrSecCondition(readingConditions.toArray(new SecCondition[readingConditions.size()]));
-		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditionsAsOr)){
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions)){
 			return Arrays.copyOf(content, content.length);
 		}
 		throw new AccessDeniedException("Reading forbidden");
@@ -70,8 +69,7 @@ public class ElementaryFile extends AbstractFile {
 	 * @param data to be used as a replacement
 	 */
 	public void update(int offset, byte[] data) throws AccessDeniedException {
-		OrSecCondition writingConditionsAsOr = new OrSecCondition(writingConditions.toArray(new SecCondition[writingConditions.size()]));
-		if (securityStatus.checkAccessConditions(getLifeCycleState(), writingConditionsAsOr)){
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), writingConditions)){
 			for(int i = 0; i < data.length; i++){
 				content[i + offset] = data[i];
 			}
