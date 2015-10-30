@@ -1,10 +1,7 @@
 package de.persosim.simulator.cardobjects;
 
-import java.util.Collection;
-
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.AccessDeniedException;
-import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 
 /**
@@ -21,13 +18,13 @@ public class CvcaFile extends AbstractFile {
 	PublicKeyReference currentCertificateAuthorityReference;
 	PublicKeyReference previousCertificateAuthorityReference;
 
-	OrSecCondition readingConditions;
-	OrSecCondition updatingConditions;
+	SecCondition readingConditions;
+	SecCondition updatingConditions;
 
 	public CvcaFile(FileIdentifier fileIdentifier,
 			ShortFileIdentifier shortFileIdentifier,
-			OrSecCondition readingConditions,
-			OrSecCondition updatingConditions) {
+			SecCondition readingConditions,
+			SecCondition updatingConditions) {
 		super(fileIdentifier);
 		this.shortFileIdentifier = shortFileIdentifier;
 		this.readingConditions = readingConditions;
