@@ -157,10 +157,10 @@ public class SecStatus {
 	 * @return true, if at least one security condition is fulfilled or the if
 	 *         the {@link Iso7816LifeCycleState} grants access
 	 */
-	public boolean checkAccessConditions(Iso7816LifeCycleState state, SecCondition secConditions, SecContext context){
+	public boolean checkAccessConditions(Iso7816LifeCycleState state, SecCondition secCondition, SecContext context){
 		if (checkAccessConditions(state)){
 			return true;
-		} else if (secConditions.check(this.getCurrentMechanisms(context, secConditions.getNeededMechanisms()))){
+		} else if (secCondition.check(this.getCurrentMechanisms(context, secCondition.getNeededMechanisms()))){
 			return true;
 		} else {
 			return false;
