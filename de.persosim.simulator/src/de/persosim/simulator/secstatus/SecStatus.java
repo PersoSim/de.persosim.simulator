@@ -174,7 +174,7 @@ public class SecStatus {
 	 *            the lifecycle state of the {@link CardObject}
 	 * @return true, if the {@link Iso7816LifeCycleState} grants access
 	 */
-	public boolean checkAccessConditions(Iso7816LifeCycleState state){
+	public static boolean checkAccessConditions(Iso7816LifeCycleState state){
 		if (state.equals(Iso7816LifeCycleState.CREATION)){
 			return true;
 		}

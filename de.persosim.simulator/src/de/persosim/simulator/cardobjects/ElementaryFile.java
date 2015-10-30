@@ -5,7 +5,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.SecCondition;
+import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
@@ -56,7 +58,8 @@ public class ElementaryFile extends AbstractFile {
 	 * @return stored data as byte array
 	 */
 	public byte[] getContent() throws AccessDeniedException {
-		if (CardObjectUtils.checkAccessConditions(getLifeCycleState(), securityStatus, readingConditions)){
+		OrSecCondition readingConditionsAsOr = new OrSecCondition(readingConditions.toArray(new SecCondition[readingConditions.size()]));
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditionsAsOr)){
 			return Arrays.copyOf(content, content.length);
 		}
 		throw new AccessDeniedException("Reading forbidden");
@@ -67,7 +70,8 @@ public class ElementaryFile extends AbstractFile {
 	 * @param data to be used as a replacement
 	 */
 	public void update(int offset, byte[] data) throws AccessDeniedException {
-		if (CardObjectUtils.checkAccessConditions(getLifeCycleState(), securityStatus, writingConditions)){
+		OrSecCondition writingConditionsAsOr = new OrSecCondition(writingConditions.toArray(new SecCondition[writingConditions.size()]));
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), writingConditionsAsOr)){
 			for(int i = 0; i < data.length; i++){
 				content[i + offset] = data[i];
 			}
@@ -81,7 +85,7 @@ public class ElementaryFile extends AbstractFile {
 	 * @param data to be used as a replacement
 	 */
 	public void replace(byte[] data) throws AccessDeniedException {
-		if (CardObjectUtils.checkAccessConditions(getLifeCycleState())){
+		if (SecStatus.checkAccessConditions(getLifeCycleState())){
 			content = Arrays.copyOf(data, data.length);
 			return;
 		}

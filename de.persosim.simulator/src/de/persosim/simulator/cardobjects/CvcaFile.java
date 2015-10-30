@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 
 /**
@@ -41,7 +42,8 @@ public class CvcaFile extends AbstractFile {
 	 *             when writing access is denied because of security conditions
 	 */
 	public void update(PublicKeyReference certificateAuthorityReference) throws AccessDeniedException {
-		if (CardObjectUtils.checkAccessConditions(getLifeCycleState(), securityStatus, updatingConditions)){
+		OrSecCondition updatingConditionsAsOr = new OrSecCondition(updatingConditions.toArray(new SecCondition[updatingConditions.size()]));
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), updatingConditionsAsOr)){
 			previousCertificateAuthorityReference = currentCertificateAuthorityReference;
 			currentCertificateAuthorityReference = certificateAuthorityReference;
 		}
@@ -53,7 +55,8 @@ public class CvcaFile extends AbstractFile {
 	 * @throws AccessDeniedException
 	 */
 	public PublicKeyReference getCurrentCertificateAuthorityReference() throws AccessDeniedException {
-		if (CardObjectUtils.checkAccessConditions(getLifeCycleState(), securityStatus, readingConditions)){
+		OrSecCondition readingConditionsAsOr = new OrSecCondition(readingConditions.toArray(new SecCondition[readingConditions.size()]));
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditionsAsOr)){
 			return currentCertificateAuthorityReference;
 		}
 		throw new AccessDeniedException("Reading forbidden");
@@ -65,7 +68,8 @@ public class CvcaFile extends AbstractFile {
 	 * @throws AccessDeniedException
 	 */
 	public PublicKeyReference getPreviousCertificateAuthorityReference() throws AccessDeniedException {
-		if (CardObjectUtils.checkAccessConditions(getLifeCycleState(), securityStatus, readingConditions)){
+		OrSecCondition readingConditionsAsOr = new OrSecCondition(readingConditions.toArray(new SecCondition[readingConditions.size()]));
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditionsAsOr)){
 			return previousCertificateAuthorityReference;
 		}
 		throw new AccessDeniedException("Reading forbidden");
