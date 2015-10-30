@@ -3,7 +3,7 @@ package de.persosim.simulator.securemessaging;
 import de.persosim.simulator.processing.UpdatePropagation;
 
 /**
- * This interface describes the behavior of am SM data provider generator able
+ * This interface describes the behavior of a SM data provider generator able
  * to generate a fully functional {@link SmDataProvider}. Classes implementing
  * this interface are expected to be immutable.
  * 

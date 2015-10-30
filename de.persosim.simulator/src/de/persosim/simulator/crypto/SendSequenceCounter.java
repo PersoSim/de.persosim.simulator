@@ -8,7 +8,7 @@ import de.persosim.simulator.utils.Utils;
 /**
  * This class represents a counter to be used in the context of sequence numbers
  * in secure messaging. The counter is limited to positive numbers including 0.
- * The default value is 0, the default increment is 1. Wwhen exceeding the
+ * The default value is 0, the default increment is 1. When exceeding the
  * maximum value the counter is reset to 0.
  * 
  * @author slutters
