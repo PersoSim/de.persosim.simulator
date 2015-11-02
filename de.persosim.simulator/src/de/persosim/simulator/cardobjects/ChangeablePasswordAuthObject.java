@@ -34,7 +34,7 @@ public class ChangeablePasswordAuthObject extends PasswordAuthObject {
 	}
 	
 	public void setPassword(byte[] newPassword) {
-		if(!lifeCycleState.equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)) {throw new IllegalStateException(passwordName + " must be in state operational activated");}
+		if(!getLifeCycleState().equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)) {throw new IllegalStateException(passwordName + " must be in state operational activated");}
 		if(newPassword == null) {throw new IllegalArgumentException("new " + passwordName + " must not be null");}
 		if(newPassword.length < minLengthOfPasswordInBytes) {throw new IllegalArgumentException("new " + passwordName + " must be at least " + minLengthOfPasswordInBytes + " bytes long but is only " + newPassword.length + " bytes long");}
 		if(newPassword.length > maxLengthOfPasswordInBytes) {throw new IllegalArgumentException("new " + passwordName + " must be at most " + maxLengthOfPasswordInBytes + " bytes long but is " + newPassword.length + " bytes long");}
