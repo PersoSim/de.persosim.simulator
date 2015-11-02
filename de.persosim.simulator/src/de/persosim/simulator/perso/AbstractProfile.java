@@ -25,6 +25,7 @@ import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.documents.Mrz;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.protocols.ri.Ri;
 import de.persosim.simulator.protocols.ri.RiOid;
@@ -133,13 +134,13 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	public void buildObjectTree() {
+	public void buildObjectTree() throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		super.buildObjectTree();
 	}
 	
 	@Override
-	protected void addEpassDatagroup1(DedicatedFile ePassAppl) {
+	protected void addEpassDatagroup1(DedicatedFile ePassAppl) throws AccessDeniedException {
 		String mrz = persoDataContainer.getEpassDg1PlainData();
 		byte[] mrzPlainBytes;
 		
@@ -168,7 +169,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	
 	@Override
 	protected void addAuthObjects() throws NoSuchAlgorithmException,
-			NoSuchProviderException, IOException, UnsupportedEncodingException {
+			NoSuchProviderException, IOException, UnsupportedEncodingException, AccessDeniedException {
 		MrzAuthObject mrz = new MrzAuthObject(
 				new AuthObjectIdentifier(1),
 				persoDataContainer.getMrz());
@@ -191,7 +192,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addAuxData() {
+	protected void addAuxData() throws AccessDeniedException {
 		
 		initPersonalizationDataContainer();
 		
@@ -281,7 +282,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg1(DedicatedFile eIdAppl) {
+	protected void addEidDg1(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		ConstructedTlvDataObject dg1Tlv = getIcaoStringDgTlv(new TlvTag((byte) 0x61), persoDataContainer.getDg1PlainData());
 		
@@ -319,7 +320,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg2(DedicatedFile eIdAppl) {
+	protected void addEidDg2(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		ConstructedTlvDataObject dg2Tlv = getIssuingStateDgTlv(new TlvTag((byte) 0x62), persoDataContainer.getDg2PlainData());
 		
@@ -333,7 +334,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg3(DedicatedFile eIdAppl) {
+	protected void addEidDg3(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		ConstructedTlvDataObject dg3Tlv = getDateDgTlv(new TlvTag((byte) 0x63), persoDataContainer.getDg3PlainData());
 		
@@ -347,7 +348,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg4(DedicatedFile eIdAppl) {
+	protected void addEidDg4(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		ConstructedTlvDataObject dg4Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x64), persoDataContainer.getDg4PlainData());
 
@@ -361,7 +362,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg5(DedicatedFile eIdAppl) {
+	protected void addEidDg5(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		ConstructedTlvDataObject dg5Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x65), persoDataContainer.getDg5PlainData());
 		
@@ -376,7 +377,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg6(DedicatedFile eIdAppl) {
+	protected void addEidDg6(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		ConstructedTlvDataObject dg6Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x66), persoDataContainer.getDg6PlainData());
 		
@@ -391,7 +392,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg7(DedicatedFile eIdAppl) {
+	protected void addEidDg7(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
 		ConstructedTlvDataObject dg7Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x67), persoDataContainer.getDg7PlainData());
@@ -406,7 +407,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg8(DedicatedFile eIdAppl) {
+	protected void addEidDg8(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
 		ConstructedTlvDataObject dg8Tlv = getDateDgTlv(new TlvTag((byte) 0x68), persoDataContainer.getDg8PlainData());
@@ -421,7 +422,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg9(DedicatedFile eIdAppl) {
+	protected void addEidDg9(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
 		try {
@@ -456,7 +457,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg13(DedicatedFile eIdAppl) {
+	protected void addEidDg13(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
 		ConstructedTlvDataObject dg13Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x6D), persoDataContainer.getDg13PlainData());
@@ -470,7 +471,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		eIdAppl.addChild(eidDg13);
 	}
 	
-	protected void addEfCardAccess() {
+	protected void addEfCardAccess() throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
 		TlvDataObject efCardAccessTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfCardAccess());
@@ -484,7 +485,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		mf.addChild(eidDgCardAccess);
 	}
 	
-	protected void addEfCardSecurity() {
+	protected void addEfCardSecurity() throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
 		TlvDataObject efCardSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfCardSecurity());
@@ -498,7 +499,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		mf.addChild(eidDgCardSecurity);
 	}
 	
-	protected void addEfChipSecurity() {
+	protected void addEfChipSecurity() throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
 		TlvDataObject efChipSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfChipSecurity());
@@ -595,7 +596,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg17(DedicatedFile eIdAppl) {
+	protected void addEidDg17(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
 		try {
@@ -635,7 +636,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg18(DedicatedFile eIdAppl) {
+	protected void addEidDg18(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
 		ConstructedTlvDataObject dg18Tlv = getCommunityIdDgTlv(new TlvTag((byte) 0x72), persoDataContainer.getDg18PlainData());
@@ -665,7 +666,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addCaKeys() {
+	protected void addCaKeys() throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
 		ArrayList<KeyPair> caKeys = persoDataContainer.getCaKeys();
@@ -682,7 +683,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addRiKeys() {
+	protected void addRiKeys() throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
 		ArrayList<KeyPair> riKeys = persoDataContainer.getRiKeys();

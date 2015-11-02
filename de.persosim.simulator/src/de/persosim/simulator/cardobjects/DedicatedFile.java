@@ -2,6 +2,7 @@ package de.persosim.simulator.cardobjects;
 
 import java.util.Collection;
 
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -30,9 +31,11 @@ public class DedicatedFile extends AbstractFile {
 	}
 	
 	@Override
-	public void addChild(CardObject newChild) {
+	public void addChild(CardObject newChild) throws AccessDeniedException {
 		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(), createFiles)){
 			super.addChild(newChild);
+		} else {
+			throw new AccessDeniedException("The access conditions for add file were not fulfilled");
 		}
 	}
 

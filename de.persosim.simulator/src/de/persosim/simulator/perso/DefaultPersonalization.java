@@ -35,6 +35,7 @@ import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.protocols.NpaProtocol;
 import de.persosim.simulator.protocols.Tr03110;
@@ -79,7 +80,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	public static final String AID_EID = "E8 07 04 00 7F 00 07 03 02";
 
 	@Override
-	public void buildObjectTree() {
+	public void buildObjectTree() throws AccessDeniedException {
 		try {
 			mf = new MasterFile(new FileIdentifier(0x3F00),
 					new DedicatedFileIdentifier(new byte[] { (byte) 0xA0, 0x0,
@@ -105,7 +106,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 			addEpassApplication();
 
 		} catch (CertificateNotParseableException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
+				| NoSuchProviderException | AccessDeniedException | IOException e) {
 			// don't care for the moment
 			e.printStackTrace();
 		}
@@ -113,8 +114,9 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 	/**
 	 * Add the eID application to the card and fill it with content
+	 * @throws AccessDeniedException 
 	 */
-	protected void addEidApplication() {
+	protected void addEidApplication() throws AccessDeniedException {
 		// eID application
 		DedicatedFile eIdAppl = new DedicatedFile(null,
 				new DedicatedFileIdentifier(HexString
@@ -143,8 +145,9 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 	/**
 	 * Add the ePassport application to the card and fill it with content
+	 * @throws AccessDeniedException 
 	 */
-	protected void addEpassApplication() {
+	protected void addEpassApplication() throws AccessDeniedException {
 		// ePass application
 		DedicatedFile ePassAppl = new DedicatedFile(null,
 				new DedicatedFileIdentifier(
@@ -158,8 +161,9 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 	/**
 	 * Add auxiliary data to the object tree, used for AuxDataVerification protocol
+	 * @throws AccessDeniedException 
 	 */
-	protected void addAuxData() {
+	protected void addAuxData() throws AccessDeniedException {
 		// Aux data
 		byte[] communityId = HexString.toByteArray("02761100000000");
 		Calendar calendar = Calendar.getInstance();
@@ -180,8 +184,9 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 	/**
 	 * Configure the chips simulated time
+	 * @throws AccessDeniedException 
 	 */
-	protected void addTime() {
+	protected void addTime() throws AccessDeniedException {
 		// Time store
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2014, 4, 5, 0, 0, 0);
@@ -194,13 +199,15 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	/**
 	 * Add the available trustpoint objects for terminal authentication.
 	 * @throws CertificateNotParseableException
+	 * @throws AccessDeniedException 
 	 */
-	protected abstract void addTaTrustPoints() throws CertificateNotParseableException;
+	protected abstract void addTaTrustPoints() throws CertificateNotParseableException, AccessDeniedException;
 
 	/**
 	 * Add an EF.Dir below MF
+	 * @throws AccessDeniedException 
 	 */
-	protected void addEfDir() {
+	protected void addEfDir() throws AccessDeniedException {
 		byte[] content = HexString
 				.toByteArray("61324F0FE828BD080FA000000167455349474E500F434941207A752044462E655369676E5100730C4F0AA000000167455349474E61094F07A0000002471001610B4F09E80704007F00070302610C4F0AA000000167455349474E");
 		
@@ -215,30 +222,34 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	
 	/**
 	 * Add an EF.ChipSecurity below MF as described by TR03110
+	 * @throws AccessDeniedException 
 	 */
-	protected void addEfChipSecurity() {
+	protected void addEfChipSecurity() throws AccessDeniedException {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
 	/**
 	 * Add an EF.CardSecurity below MF as described by TR03110
+	 * @throws AccessDeniedException 
 	 */
-	protected void addEfCardSecurity() {
+	protected void addEfCardSecurity() throws AccessDeniedException {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
 	/**
 	 * Add an EF.CardAccess below MF as described by TR03110
+	 * @throws AccessDeniedException 
 	 */
-	protected void addEfCardAccess() {
+	protected void addEfCardAccess() throws AccessDeniedException {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
 	/**
 	 * Add all required keyObjects for RestrictedIdentification to the personalized object tree
+	 * @throws AccessDeniedException 
 	 * 
 	 */
-	protected void addRiKeys() {
+	protected void addRiKeys() throws AccessDeniedException {
 		DomainParameterSet domainParameterSet;
 		byte[] publicKeyMaterial;
 		byte[] privateKeyMaterial;
@@ -267,9 +278,10 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	
 	/**
 	 * Add all required keyObjects for ChipAuthentication to the personalized object tree
+	 * @throws AccessDeniedException 
 	 * 
 	 */
-	protected void addCaKeys() {
+	protected void addCaKeys() throws AccessDeniedException {
 		// CA static key pair PICC
 		DomainParameterSet domainParameterSet = StandardizedDomainParameters
 				.getDomainParameterSetById(13);
@@ -291,13 +303,14 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 	/**
 	 * Add domainparameters to the personalized object tree
+	 * @throws AccessDeniedException 
 	 * 
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchProviderException
 	 * @throws IOException
 	 * @throws UnsupportedEncodingException
 	 */
-	protected void addDomainParameters() {
+	protected void addDomainParameters() throws AccessDeniedException {
 		// create domain parameters
 		DomainParameterSet domainParameterSet13 = StandardizedDomainParameters
 				.getDomainParameterSetById(13);
@@ -312,7 +325,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				.addOidIdentifier(Pace.OID_IDENTIFIER_id_PACE_ECDH_GM_AES_CBC_CMAC_128);
 	}
 
-	protected void addEpassDatagroup1(DedicatedFile ePassAppl) {
+	protected void addEpassDatagroup1(DedicatedFile ePassAppl) throws AccessDeniedException {
 		// ePass DG1
 		CardFile epassDg1 = new ElementaryFile(
 				new FileIdentifier(0x0101),
@@ -325,7 +338,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		ePassAppl.addChild(epassDg1);
 	}
 
-	protected void addEpassDatagroup2(DedicatedFile ePassAppl) {
+	protected void addEpassDatagroup2(DedicatedFile ePassAppl) throws AccessDeniedException {
 		// ePass DG2
 		CardFile epassDg2 = new ElementaryFile(
 				new FileIdentifier(0x0102),
@@ -338,7 +351,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		ePassAppl.addChild(epassDg2);
 	}
 
-	protected void addEpassDatagroup3(DedicatedFile ePassAppl) {
+	protected void addEpassDatagroup3(DedicatedFile ePassAppl) throws AccessDeniedException {
 		// ePass DG3
 		CardFile epassDg3 = new ElementaryFile(
 				new FileIdentifier(0x0103),
@@ -351,7 +364,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		ePassAppl.addChild(epassDg3);
 	}
 
-	protected void addEpassDatagroup4(DedicatedFile ePassAppl) {
+	protected void addEpassDatagroup4(DedicatedFile ePassAppl) throws AccessDeniedException {
 		// ePass DG4
 		CardFile epassDg4 = new ElementaryFile(
 				new FileIdentifier(0x0104),
@@ -366,7 +379,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 	
 	
-	protected void addEidDg1(DedicatedFile eIdAppl) {
+	protected void addEidDg1(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0101),
 				new ShortFileIdentifier(0x01),
 				HexString.toByteArray("61 04 13 02 54 50"),
@@ -376,7 +389,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg1);
 	}
 
-	protected void addEidDg2(DedicatedFile eIdAppl) {
+	protected void addEidDg2(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg2 = new ElementaryFile(new FileIdentifier(0x0102),
 				new ShortFileIdentifier(0x02),
 				HexString.toByteArray("62 03 13 01 44"),
@@ -386,7 +399,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg2);
 	}
 
-	protected void addEidDg3(DedicatedFile eIdAppl) {
+	protected void addEidDg3(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg3 = new ElementaryFile(new FileIdentifier(0x0103),
 				new ShortFileIdentifier(0x03),
 				HexString.toByteArray("63 0A 12 08 32 30 32 30 31 30 33 31"),
@@ -396,7 +409,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg3);
 	}
 
-	protected void addEidDg4(DedicatedFile eIdAppl) {
+	protected void addEidDg4(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg4 = new ElementaryFile(new FileIdentifier(0x0104),
 				new ShortFileIdentifier(0x04),
 				HexString.toByteArray("64 07 0C 05 45 72 69 6B 61"),
@@ -406,7 +419,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg4);
 	}
 	
-	protected void addEidDg5(DedicatedFile eIdAppl) {
+	protected void addEidDg5(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg5 = new ElementaryFile(
 				new FileIdentifier(0x0105),
 				new ShortFileIdentifier(0x05),
@@ -418,7 +431,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg5);
 	}
 
-	protected void addEidDg6(DedicatedFile eIdAppl) {
+	protected void addEidDg6(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg6 = new ElementaryFile(
 				new FileIdentifier(0x0106),
 				new ShortFileIdentifier(0x06),
@@ -430,7 +443,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg6);
 	}
 
-	protected void addEidDg7(DedicatedFile eIdAppl) {
+	protected void addEidDg7(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg7 = new ElementaryFile(new FileIdentifier(0x0107),
 				new ShortFileIdentifier(0x07),
 				HexString.toByteArray("67 02 0C 00"),
@@ -440,7 +453,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg7);
 	}
 
-	protected void addEidDg8(DedicatedFile eIdAppl) {
+	protected void addEidDg8(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg8 = new ElementaryFile(new FileIdentifier(0x0108),
 				new ShortFileIdentifier(0x08),
 				HexString.toByteArray("68 0A 12 08 31 39 36 34 30 38 31 32"),
@@ -450,7 +463,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg8);
 	}
 
-	protected void addEidDg9(DedicatedFile eIdAppl) {
+	protected void addEidDg9(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg9 = new ElementaryFile(
 				new FileIdentifier(0x0109),
 				new ShortFileIdentifier(0x09),
@@ -462,7 +475,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg9);
 	}
 	
-	protected void addEidDg10(DedicatedFile eIdAppl) {
+	protected void addEidDg10(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg10 = new ElementaryFile(new FileIdentifier(0x010A),
 				new ShortFileIdentifier(0x0A),
 				HexString.toByteArray("6A 03 13 01 44"),
@@ -472,7 +485,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg10);
 	}
 
-	protected void addEidDg11(DedicatedFile eIdAppl) {
+	protected void addEidDg11(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg11 = new ElementaryFile(new FileIdentifier(0x010B),
 				new ShortFileIdentifier(0x0B),
 				HexString.toByteArray("6B 03 13 01 46"),
@@ -482,7 +495,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg11);
 	}
 
-	protected void addEidDg12(DedicatedFile eIdAppl) {
+	protected void addEidDg12(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg12 = new ElementaryFile(
 				new FileIdentifier(0x010C),
 				new ShortFileIdentifier(0x0C),
@@ -494,7 +507,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg12);
 	}
 
-	protected void addEidDg13(DedicatedFile eIdAppl) {
+	protected void addEidDg13(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg13 = new ElementaryFile(new FileIdentifier(0x010D),
 				new ShortFileIdentifier(0x0D),
 				HexString.toByteArray("6D 09 0C 07 4D 75 65 6C 6C 65 72"),
@@ -504,7 +517,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg13);
 	}
 
-	protected void addEidDg17(DedicatedFile eIdAppl) {
+	protected void addEidDg17(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg17 = new ElementaryFile(
 				new FileIdentifier(0x0111),
 				new ShortFileIdentifier(0x11),
@@ -515,7 +528,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg17);
 	}
 
-	protected void addEidDg18(DedicatedFile eIdAppl) {
+	protected void addEidDg18(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg18 = new ElementaryFile(new FileIdentifier(0x0112),
 				new ShortFileIdentifier(0x12),
 				HexString.toByteArray("72 09 04 07 02 76 11 00 00 00 00"),
@@ -524,7 +537,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg18);
 	}
 
-	protected void addEidDg19(DedicatedFile eIdAppl) {
+	protected void addEidDg19(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg19 = new ElementaryFile(
 				new FileIdentifier(0x0113),
 				new ShortFileIdentifier(0x13),
@@ -535,7 +548,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg19);
 	}
 
-	protected void addEidDg20(DedicatedFile eIdAppl) {
+	protected void addEidDg20(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg20 = new ElementaryFile(
 				new FileIdentifier(0x0114),
 				new ShortFileIdentifier(0x14),
@@ -546,7 +559,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		eIdAppl.addChild(eidDg20);
 	}
 
-	protected void addEidDg21(DedicatedFile eIdAppl) {
+	protected void addEidDg21(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg21 = new ElementaryFile(
 				new FileIdentifier(0x0115),
 				new ShortFileIdentifier(0x15),
@@ -564,9 +577,10 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @throws NoSuchProviderException
 	 * @throws IOException
 	 * @throws UnsupportedEncodingException
+	 * @throws AccessDeniedException 
 	 */
 	protected void addAuthObjects() throws NoSuchAlgorithmException,
-			NoSuchProviderException, IOException, UnsupportedEncodingException {
+			NoSuchProviderException, IOException, UnsupportedEncodingException, AccessDeniedException {
 		MrzAuthObject mrz = new MrzAuthObject(
 				new AuthObjectIdentifier(ID_MRZ),
 				"P<D<<C11T002JM4<<<<<<<<<<<<<<<9608122F2310314D<<<<<<<<<<<<<4MUSTERMANN<<ERIKA<<<<<<<<<<<<<");

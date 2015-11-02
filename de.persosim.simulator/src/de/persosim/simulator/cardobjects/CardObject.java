@@ -64,6 +64,7 @@ public interface CardObject extends Iso7816LifeCycle {
 	 * @param child
 	 *        element to remove from the collection
 	 * @return the removed child or null if none removed
+	 * @throws AccessDeniedException 
 	 */
-	public CardObject removeChild(CardObject child);
+	public CardObject removeChild(CardObject child) throws AccessDeniedException;
 }

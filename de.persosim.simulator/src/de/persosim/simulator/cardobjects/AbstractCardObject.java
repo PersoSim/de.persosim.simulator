@@ -52,14 +52,18 @@ public abstract class AbstractCardObject implements CardObject {
 	/**
 	 * Add new child to the collection.
 	 * <p/>
-	 * This method also sets the SecStatus of the new child. If the new child is of
-	 * type AbstractCardObject also the parent is set.
+	 * This method also sets the SecStatus of the new child. If the new child is
+	 * of type AbstractCardObject also the parent is set. Overriding this method
+	 * requires calling {@link #addChild(CardObject)} of super or handling
+	 * setting of the security status for the object. Additionally the
+	 * implementation must be able to handle the {@link SecStatus} variable
+	 * being <code>null</code>.
 	 * 
 	 * @param newChild
 	 *            child to add to the collection
 	 * @throws AccessDeniedException 
 	 */
-	public void addChild(CardObject newChild) {
+	public void addChild(CardObject newChild) throws AccessDeniedException {
 		children.add(newChild);
 		if (newChild instanceof AbstractCardObject) {
 			((AbstractCardObject) newChild).parent = this;
@@ -72,7 +76,7 @@ public abstract class AbstractCardObject implements CardObject {
 	}
 
 	@Override
-	public CardObject removeChild(CardObject child) {
+	public CardObject removeChild(CardObject child) throws AccessDeniedException{
 		if (children.contains(child)) {
 			children.remove(child);
 			if (child instanceof AbstractCardObject) {
