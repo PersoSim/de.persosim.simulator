@@ -129,15 +129,15 @@ public class SecStatus {
 	}
 	
 	/**
-	 * This method can be used to check if necessary access conditions are
+	 * This method can be used to check whether necessary access conditions are
 	 * fulfilled. It uses the application security context.
 	 * 
 	 * @param state
 	 *            the lifecycle state of the {@link CardObject}
 	 * @param secCondition
 	 *            the {@link SecCondition} to verify
-	 * @return true, if at least one security condition is fulfilled or the if
-	 *         the {@link Iso7816LifeCycleState} grants access
+	 * @return true, if at least one security condition is fulfilled or the
+	 *         {@link Iso7816LifeCycleState} grants access
 	 */
 	public boolean checkAccessConditions(Iso7816LifeCycleState state, SecCondition secCondition){
 		return checkAccessConditions(state, secCondition, SecContext.APPLICATION);
@@ -145,7 +145,7 @@ public class SecStatus {
 
 	
 	/**
-	 * This method can be used to check if necessary access conditions are
+	 * This method can be used to check whether necessary access conditions are
 	 * fulfilled.
 	 * 
 	 * @param state
@@ -154,8 +154,8 @@ public class SecStatus {
 	 *            the {@link SecCondition} to verify. Must not be null.
 	 * @param context
 	 *            {@link SecContext} the context to check the conditions for
-	 * @return true, if at least one security condition is fulfilled or the if
-	 *         the {@link Iso7816LifeCycleState} grants access
+	 * @return true, if at least one security condition is fulfilled or the
+	 *         {@link Iso7816LifeCycleState} grants access
 	 */
 	public boolean checkAccessConditions(Iso7816LifeCycleState state, SecCondition secCondition, SecContext context){
 		if (checkAccessConditions(state)){
