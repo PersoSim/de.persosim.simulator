@@ -5,7 +5,7 @@ package de.persosim.simulator.cardobjects;
  * ObjectStore, should correspond to FileIdentifier from ISO7816 or similar
  * concepts.
  * 
- * Implementing objects are expected to be immutable (at least wtr to the
+ * Implementing objects are expected to be immutable (at least wrt to the
  * methods defined here).
  * 
  * @author amay
