@@ -1,6 +1,7 @@
 package de.persosim.simulator.seccondition;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
@@ -16,6 +17,40 @@ import de.persosim.simulator.secstatus.SecStatus;
  * 
  */
 public interface SecCondition {
+	
+	/**
+	 * Implements a {@link SecCondition} where the condition check always returns true.
+	 */
+	public static final SecCondition ALLOWED = new SecCondition() {
+
+		@Override
+		public boolean check(Collection<SecMechanism> mechanisms) {
+			return true;
+		}
+
+		@Override
+		public Collection<Class<? extends SecMechanism>> getNeededMechanisms() {
+			return Collections.emptySet();
+		}
+		
+	};
+
+	/**
+	 * Implements a {@link SecCondition} where the condition check always returns false.
+	 */
+	public static final SecCondition DENIED = new SecCondition() {
+
+		@Override
+		public boolean check(Collection<SecMechanism> mechanisms) {
+			return false;
+		}
+
+		@Override
+		public Collection<Class<? extends SecMechanism>> getNeededMechanisms() {
+			return Collections.emptySet();
+		}
+		
+	};
 
 	/**
 	 * Perform the condition check.

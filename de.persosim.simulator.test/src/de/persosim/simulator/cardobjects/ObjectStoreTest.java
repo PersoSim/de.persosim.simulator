@@ -5,18 +5,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
-import java.util.LinkedList;
-
-import mockit.Mocked;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.exception.AccessDeniedException;
-import de.persosim.simulator.seccondition.NullSecurityCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.test.PersoSimTestCase;
+import mockit.Mocked;
 
 public class ObjectStoreTest extends PersoSimTestCase {
 	
@@ -52,11 +49,7 @@ public class ObjectStoreTest extends PersoSimTestCase {
 	 */
 	@Before
 	public void setUp() throws ReflectiveOperationException, AccessDeniedException{
-		
-		// define access conditions
-		LinkedList<SecCondition> unprotected = new LinkedList<>();
-		unprotected.add(new NullSecurityCondition());
-		
+				
 		//define file contents
 		elementaryFile1UnderDFContent = new byte []{1,2,3,4,5,6};
 		elementaryFile2UnderDFContent = new byte []{7,8,9,10,11,12};
@@ -69,15 +62,15 @@ public class ObjectStoreTest extends PersoSimTestCase {
 		objectStore = new ObjectStore(masterFile);
 		objectStore.selectMasterFile();
 		
-		elementaryFile3UnderMF = new ElementaryFile(new FileIdentifier(0x011C), new ShortFileIdentifier(3), elementaryFile3UnderMFContent, unprotected, unprotected, unprotected);
+		elementaryFile3UnderMF = new ElementaryFile(new FileIdentifier(0x011C), new ShortFileIdentifier(3), elementaryFile3UnderMFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
 		masterFile.addChild(elementaryFile3UnderMF);
 		authenticationObjectUnderMF = new PasswordAuthObject(new AuthObjectIdentifier(1), authenticationObjectUnderMFContent);
 		masterFile.addChild(authenticationObjectUnderMF);
 		dedicatedFile = new DedicatedFile(new FileIdentifier(0x0110), new DedicatedFileIdentifier(new byte [] {0x0A, 0x00, 0x00, 0x01}));
 		masterFile.addChild(dedicatedFile);
-		elementaryFile1UnderDF = new ElementaryFile(new FileIdentifier(0x011A), new ShortFileIdentifier(1), elementaryFile1UnderDFContent, unprotected, unprotected, unprotected);
+		elementaryFile1UnderDF = new ElementaryFile(new FileIdentifier(0x011A), new ShortFileIdentifier(1), elementaryFile1UnderDFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
 		dedicatedFile.addChild(elementaryFile1UnderDF);
-		elementaryFile2UnderDF = new ElementaryFile(new FileIdentifier(0x011B), new ShortFileIdentifier(2), elementaryFile2UnderDFContent, unprotected, unprotected, unprotected);
+		elementaryFile2UnderDF = new ElementaryFile(new FileIdentifier(0x011B), new ShortFileIdentifier(2), elementaryFile2UnderDFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
 		dedicatedFile.addChild(elementaryFile2UnderDF);
 		
 	}

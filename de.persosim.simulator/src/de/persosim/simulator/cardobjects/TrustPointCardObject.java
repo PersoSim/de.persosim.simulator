@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.exception.CertificateUpdateException;
+import de.persosim.simulator.secstatus.SecStatus;
 
 /**
  * This describes a trust point consisting of 2 public keys stored on the card.
@@ -77,7 +78,7 @@ public class TrustPointCardObject extends AbstractCardObject {
 	 * modification.
 	 */
 	public void clear(){
-		if (CardObjectUtils.checkAccessConditions(getLifeCycleState())){
+		if (SecStatus.checkAccessConditions(getLifeCycleState())){
 			previousCertificate = null;
 			currentCertificate = null;
 		}

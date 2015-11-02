@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.secstatus.SecStatus;
 
 /**
  * This object wraps domain parameters for storing them in the object store.
@@ -57,7 +58,7 @@ public class DomainParameterSetCardObject extends AbstractCardObject {
 	 * @throws AccessDeniedException
 	 */
 	public void removeOidIdentifier(OidIdentifier oidIdentifier) throws AccessDeniedException {
-		if (!CardObjectUtils.checkAccessConditions(getLifeCycleState())){
+		if (!SecStatus.checkAccessConditions(getLifeCycleState())){
 			throw new AccessDeniedException("Updating forbidden");
 		}
 		

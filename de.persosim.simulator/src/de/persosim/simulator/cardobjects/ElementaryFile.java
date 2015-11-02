@@ -6,6 +6,7 @@ import java.util.Collections;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.seccondition.SecCondition;
+import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
@@ -22,12 +23,12 @@ public class ElementaryFile extends AbstractFile {
 	
 	private ShortFileIdentifier shortFileIdentifier;
 
-	private Collection<SecCondition> readingConditions;
+	private SecCondition readingConditions;
 	
-	private Collection<SecCondition> writingConditions;
+	private SecCondition writingConditions;
 	
 	@SuppressWarnings("unused")  //IMPL MBK implement the ISO7816 erase functionality for files
-	private Collection<SecCondition> erasingConditions;
+	private SecCondition erasingConditions;
 	
 	/**
 	 * Default constructor fur JAXB usage.
@@ -37,7 +38,7 @@ public class ElementaryFile extends AbstractFile {
 	}
 			
 	public ElementaryFile(FileIdentifier fileIdentifier,
-			ShortFileIdentifier shortFileIdentifier, byte[] content, Collection<SecCondition> readingConditions, Collection<SecCondition> writingConditions, Collection<SecCondition> erasingConditions) {
+			ShortFileIdentifier shortFileIdentifier, byte[] content, SecCondition readingConditions, SecCondition writingConditions, SecCondition erasingConditions) {
 		super(fileIdentifier);
 		this.shortFileIdentifier = shortFileIdentifier;
 		this.content = content;
@@ -56,7 +57,7 @@ public class ElementaryFile extends AbstractFile {
 	 * @return stored data as byte array
 	 */
 	public byte[] getContent() throws AccessDeniedException {
-		if (CardObjectUtils.checkAccessConditions(getLifeCycleState(), securityStatus, readingConditions)){
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions)){
 			return Arrays.copyOf(content, content.length);
 		}
 		throw new AccessDeniedException("Reading forbidden");
@@ -67,7 +68,7 @@ public class ElementaryFile extends AbstractFile {
 	 * @param data to be used as a replacement
 	 */
 	public void update(int offset, byte[] data) throws AccessDeniedException {
-		if (CardObjectUtils.checkAccessConditions(getLifeCycleState(), securityStatus, writingConditions)){
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), writingConditions)){
 			for(int i = 0; i < data.length; i++){
 				content[i + offset] = data[i];
 			}
@@ -81,7 +82,7 @@ public class ElementaryFile extends AbstractFile {
 	 * @param data to be used as a replacement
 	 */
 	public void replace(byte[] data) throws AccessDeniedException {
-		if (CardObjectUtils.checkAccessConditions(getLifeCycleState())){
+		if (SecStatus.checkAccessConditions(getLifeCycleState())){
 			content = Arrays.copyOf(data, data.length);
 			return;
 		}

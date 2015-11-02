@@ -5,20 +5,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
-
-import mockit.Mocked;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.protocols.Oid;
-import de.persosim.simulator.seccondition.NullSecurityCondition;
-import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
+import mockit.Mocked;
 
 public class AbstractCardObjectTest extends PersoSimTestCase {
 	
@@ -100,11 +96,7 @@ public class AbstractCardObjectTest extends PersoSimTestCase {
 		identifiableObjectImpl123.addOidIdentifier(oidIdentifier1);
 		identifiableObjectImpl123.addOidIdentifier(oidIdentifier2);
 		identifiableObjectImpl123.addOidIdentifier(oidIdentifier3);
-		
-		// define access conditions
-		LinkedList<SecCondition> unprotected = new LinkedList<>();
-		unprotected.add(new NullSecurityCondition());
-		
+				
 		// setup fresh file tree in ObjectStore
 		masterFile = new MasterFile();
 		masterFile.setSecStatus(mockedSecurityStatus);

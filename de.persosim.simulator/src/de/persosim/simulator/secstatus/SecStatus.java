@@ -5,9 +5,12 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.platform.CommandProcessor;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.processing.UpdatePropagation;
+import de.persosim.simulator.seccondition.SecCondition;
 
 /**
  * Representation of the current security status of the card.
@@ -204,4 +207,60 @@ public class SecStatus {
 		}
 		return copy;
 	}
+	
+	/**
+	 * This method can be used to check whether necessary access conditions are
+	 * fulfilled. It uses the application security context.
+	 * 
+	 * @param state
+	 *            the lifecycle state of the {@link CardObject}
+	 * @param secCondition
+	 *            the {@link SecCondition} to verify
+	 * @return true, if at least one security condition is fulfilled or the
+	 *         {@link Iso7816LifeCycleState} grants access
+	 */
+	public boolean checkAccessConditions(Iso7816LifeCycleState state, SecCondition secCondition){
+		return checkAccessConditions(state, secCondition, SecContext.APPLICATION);
+	}
+
+	
+	/**
+	 * This method can be used to check whether necessary access conditions are
+	 * fulfilled.
+	 * 
+	 * @param state
+	 *            the lifecycle state of the {@link CardObject}
+	 * @param secCondition
+	 *            the {@link SecCondition} to verify. Must not be null.
+	 * @param context
+	 *            {@link SecContext} the context to check the conditions for
+	 * @return true, if at least one security condition is fulfilled or the
+	 *         {@link Iso7816LifeCycleState} grants access
+	 */
+	public boolean checkAccessConditions(Iso7816LifeCycleState state, SecCondition secCondition, SecContext context){
+		if (checkAccessConditions(state)){
+			return true;
+		} else if (secCondition.check(this.getCurrentMechanisms(context, secCondition.getNeededMechanisms()))){
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * This only checks the lifecycle state for necessary access conditions.
+	 * 
+	 * @param state
+	 *            the lifecycle state of the {@link CardObject}
+	 * @return true, if the {@link Iso7816LifeCycleState} grants access
+	 */
+	public static boolean checkAccessConditions(Iso7816LifeCycleState state){
+		if (state.equals(Iso7816LifeCycleState.CREATION)){
+			return true;
+		}
+		return false;
+		// IMPL the implementation of checks regarding the initialization state
+		// is missing, as it is not yet needed since personalization happens before starting the simulator
+	}
+	
 }
