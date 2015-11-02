@@ -29,18 +29,19 @@ public class SecStatus {
 	EnumMap<SecContext, HashMap<Class<? extends SecMechanism>, SecMechanism>> contexts = new EnumMap<>(
 			SecContext.class);
 
+	HashMap<Integer, EnumMap<SecContext, HashMap<Class<? extends SecMechanism>, SecMechanism>>> storedSecStatusContents = new HashMap<>();
+
 	public SecStatus() {
 		reset();
 	}
 
-	public void reset(){
+	public void reset() {
 		// initialize the contexts
 		for (SecContext curSecContext : SecContext.values()) {
-			contexts.put(curSecContext,
-					new HashMap<Class<? extends SecMechanism>, SecMechanism>());
+			contexts.put(curSecContext, new HashMap<Class<? extends SecMechanism>, SecMechanism>());
 		}
 	}
-	
+
 	/**
 	 * This method finds all currently active mechanisms (instances) as defined
 	 * by wantedMechanisms.
@@ -56,7 +57,7 @@ public class SecStatus {
 		HashSet<SecMechanism> result = new HashSet<>();
 		for (Class<? extends SecMechanism> clazz : wantedMechanisms) {
 			HashMap<Class<? extends SecMechanism>, SecMechanism> securityContext = contexts.get(context);
-			if (securityContext.containsKey(clazz)){
+			if (securityContext.containsKey(clazz)) {
 				result.add(contexts.get(context).get(clazz));
 			}
 		}
@@ -69,15 +70,15 @@ public class SecStatus {
 	 * 
 	 * @param updatePropagation
 	 */
-	public void updateMechanisms(
-			SecStatusMechanismUpdatePropagation... updatePropagation) {
+	public void updateMechanisms(SecStatusMechanismUpdatePropagation... updatePropagation) {
 		for (SecStatusMechanismUpdatePropagation curUpdate : updatePropagation) {
 			SecStatusMechanismUpdatePropagation mechanismPropagation = (SecStatusMechanismUpdatePropagation) curUpdate;
-			contexts.get(mechanismPropagation.getContext()).put(
-					mechanismPropagation.getMechanism().getClass(),
-					mechanismPropagation.getMechanism());
-
+			updateContext(mechanismPropagation.getContext(), mechanismPropagation.getMechanism());
 		}
+	}
+
+	private void updateContext(SecContext context, SecMechanism mechanism) {
+		contexts.get(context).put(mechanism.getClass(), mechanism);
 	}
 
 	/**
@@ -86,16 +87,14 @@ public class SecStatus {
 	 * 
 	 * @param updatePropagation
 	 */
-	private void updateEvents(SecStatusEventUpdatePropagation... updatePropagation){
-		for (SecStatusEventUpdatePropagation curUpdate : updatePropagation){
+	private void updateEvents(SecStatusEventUpdatePropagation... updatePropagation) {
+		for (SecStatusEventUpdatePropagation curUpdate : updatePropagation) {
 
 			SecStatusEventUpdatePropagation eventPropagation = (SecStatusEventUpdatePropagation) curUpdate;
 			for (SecContext context : contexts.keySet()) {
 				Collection<Class<? extends SecMechanism>> toBeDeleted = new HashSet<Class<? extends SecMechanism>>();
-				for (Class<? extends SecMechanism> clazz : contexts
-						.get(context).keySet()) {
-					if (contexts.get(context).get(clazz)
-							.needsDeletionInCaseOf(eventPropagation.getEvent())) {
+				for (Class<? extends SecMechanism> clazz : contexts.get(context).keySet()) {
+					if (contexts.get(context).get(clazz).needsDeletionInCaseOf(eventPropagation.getEvent())) {
 						toBeDeleted.add(clazz);
 					}
 				}
@@ -107,7 +106,7 @@ public class SecStatus {
 		}
 
 	}
-	
+
 	/**
 	 * This method updates internal state of the SecStatus according to the
 	 * UpdatePropagations contained in the processing data.
@@ -117,11 +116,92 @@ public class SecStatus {
 	 * @param processingData
 	 */
 	public void updateSecStatus(ProcessingData processingData) {
-		for (UpdatePropagation update : processingData.getUpdatePropagations(SecStatusEventUpdatePropagation.class)){
-			updateEvents((SecStatusEventUpdatePropagation)update);
+		for (UpdatePropagation update : processingData.getUpdatePropagations(SecStatusEventUpdatePropagation.class)) {
+			updateEvents((SecStatusEventUpdatePropagation) update);
 		}
-		for (UpdatePropagation update : processingData.getUpdatePropagations(SecStatusMechanismUpdatePropagation.class)){
-			updateMechanisms((SecStatusMechanismUpdatePropagation)update);
+		for (UpdatePropagation update : processingData
+				.getUpdatePropagations(SecStatusMechanismUpdatePropagation.class)) {
+			updateMechanisms((SecStatusMechanismUpdatePropagation) update);
 		}
+	}
+
+	/**
+	 * This stores all {@link SecMechanism}s currently existing in the
+	 * {@link SecStatus}. Already existing stored contents are replaced when the
+	 * same id is reused.
+	 * 
+	 * @param id
+	 *            the integer id to reference the stored contents
+	 */
+	public void storeSecStatus(int id) {
+		storedSecStatusContents.put(id, createCopyForStoring(contexts));
+	}
+
+	/**
+	 * This calls {@link #storeSecStatus(int)} using a unused id and returns it
+	 * for further use.
+	 * 
+	 * @see #storeSecStatus(int)
+	 * @return the id used for storing the {@link SecStatus} contents
+	 */
+	public int storeSecStatus() {
+		int freeId = 0;
+		while (storedSecStatusContents.containsKey(freeId)) {
+			freeId++;
+		}
+		storeSecStatus(freeId);
+		return freeId;
+	}
+
+	/**
+	 * Restores the previously stored contents to be the current content of the
+	 * {@link SecStatus}. This implicitly removes all {@link SecMechanism}s that
+	 * were added or differ from the ones in the restored state.
+	 * 
+	 * @param id
+	 *            the id of the stored contents to be restored
+	 * @throws IllegalArgumentException
+	 *             if the no contents were stored using the given id
+	 */
+	public void restoreSecStatus(int id) {
+		EnumMap<SecContext, HashMap<Class<? extends SecMechanism>, SecMechanism>> toRestore = storedSecStatusContents
+				.get(id);
+
+		if (toRestore == null) {
+			throw new IllegalArgumentException("The given id does not exist in the stored contents.");
+		}
+
+		reset();
+		for (SecContext context : contexts.keySet()) {
+			for (SecMechanism mechanism : toRestore.get(context).values()) {
+				updateContext(context, mechanism);
+			}
+		}
+	}
+
+	// TODO move this suppression into the cast as soon as compliance level 1.8
+	// is used for this code
+	/**
+	 * Creates a copy of the data structure storing the {@link SecMechanism}s.
+	 * The returned object is a duplicate using the same references to
+	 * {@link SecMechanism} objects. This relies on the immutability of the
+	 * {@link SecMechanism}s.
+	 * 
+	 * @param source
+	 *            the object to copy
+	 * @return the copied object
+	 */
+	@SuppressWarnings("unchecked") // This suppression is needed because
+									// Object.clone() does not support generics
+	private EnumMap<SecContext, HashMap<Class<? extends SecMechanism>, SecMechanism>> createCopyForStoring(
+			EnumMap<SecContext, HashMap<Class<? extends SecMechanism>, SecMechanism>> source) {
+
+		EnumMap<SecContext, HashMap<Class<? extends SecMechanism>, SecMechanism>> copy = new EnumMap<>(
+				SecContext.class);
+
+		for (SecContext context : source.keySet()) {
+			copy.put(context, (HashMap<Class<? extends SecMechanism>, SecMechanism>) source.get(context).clone());
+		}
+		return copy;
 	}
 }

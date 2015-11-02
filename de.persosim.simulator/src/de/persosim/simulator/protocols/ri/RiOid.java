@@ -28,8 +28,6 @@ public class RiOid extends Oid implements Ri, TlvConstants {
 
 	private String idString;
 
-	public RiOid() {}
-	
 	public RiOid(byte[] byteArrayRepresentation) {
 		super(byteArrayRepresentation);
 

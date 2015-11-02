@@ -92,9 +92,6 @@ public class TaOid extends Oid implements Tr03110, CvOid {
 	
 	private String idString;
 
-	public TaOid() {
-	}
-	
 	private TaOid(byte[] oidByteArray, String idString) {
 		super(oidByteArray);
 		this.idString = idString;

@@ -10,7 +10,8 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  de.persosim.simulator;bundle-version="0.6.0",
  org.globaltester.simulator,
  org.globaltester.base.test
-Export-Package: de.persosim.simulator.perso,
+Export-Package: de.persosim.simulator,
+ de.persosim.simulator.perso,
  de.persosim.simulator.test
 Import-Package: org.eclipse.ui.keys,
  org.osgi.framework;version="1.8.0"

@@ -1,7 +1,10 @@
 package de.persosim.simulator.utils;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.core.util.CompositeClassLoader;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+
+import de.persosim.simulator.crypto.Crypto;
 
 /**
  * This class contains methods to serialize and deserialize objects. The format
@@ -12,8 +15,17 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  */
 public class Serializer {
 
-	private static XStream xstream = new XStream(new DomDriver("UTF-8"));
+	private static XStream xstream;
 
+	static {
+		CompositeClassLoader loader = new CompositeClassLoader();
+		loader.add(Thread.currentThread().getContextClassLoader());
+		loader.add(Crypto.getCryptoProvider().getClass().getClassLoader());
+		
+		xstream = new XStream(new DomDriver("UTF-8"));
+		xstream.setClassLoader(loader);
+	}
+	
 	/**
 	 * Creates a deep copy of the given object.
 	 * 

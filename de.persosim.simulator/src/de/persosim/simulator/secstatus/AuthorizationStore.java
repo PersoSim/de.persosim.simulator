@@ -1,6 +1,7 @@
 package de.persosim.simulator.secstatus;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ta.Authorization;
@@ -79,9 +80,12 @@ private HashMap<Oid, Authorization> authorizations;
 			updateAuthorization(currentOid, authorizations.get(currentOid));
 		}
 		
-		for(Oid currentOid:this.authorizations.keySet()) {
+		Iterator<Oid> iter = this.authorizations.keySet().iterator();
+		
+		while (iter.hasNext()){
+			Oid currentOid = iter.next();
 			if(authorizations.get(currentOid) == null) {
-				this.authorizations.remove(currentOid);
+				iter.remove();
 			}
 		}
 	}

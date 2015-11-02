@@ -5,17 +5,14 @@ import java.util.Arrays;
 import de.persosim.simulator.utils.HexString;
 
 /**
- * 
- * This abstract class implements common functionality for OIDs.
+ * This abstract class implements common functionality for OIDs. All specific
+ * {@link Oid} implementations are to be immutable.
  * 
  * @author slutters
  *
  */
 public class Oid {
 	protected byte[] oidByteArray;
-	
-	public Oid() {
-	}
 	
 	public Oid(byte[] byteArrayRepresentation) {
 		if(byteArrayRepresentation == null) {throw new NullPointerException("oid byte array is null but must not be null");}

@@ -13,8 +13,6 @@ import de.persosim.simulator.utils.HexString;
 public class CaOid extends Oid implements Ca {
 	
 	private String idString;
-
-	public CaOid() {}
 	
 	/**
 	 * This constructor constructs a {@link CaOid} based on a byte array representation of a CA OID.
