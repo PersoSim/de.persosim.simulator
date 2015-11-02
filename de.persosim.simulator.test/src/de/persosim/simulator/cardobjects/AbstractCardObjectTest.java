@@ -11,10 +11,13 @@ import org.junit.Test;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus;
+import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
 import mockit.Mocked;
+import mockit.NonStrictExpectations;
 
 public class AbstractCardObjectTest extends PersoSimTestCase {
 	
@@ -98,7 +101,14 @@ public class AbstractCardObjectTest extends PersoSimTestCase {
 		identifiableObjectImpl123.addOidIdentifier(oidIdentifier1);
 		identifiableObjectImpl123.addOidIdentifier(oidIdentifier2);
 		identifiableObjectImpl123.addOidIdentifier(oidIdentifier3);
-				
+
+		new NonStrictExpectations(SecStatus.class) {
+			{
+				mockedSecurityStatus.checkAccessConditions(Iso7816LifeCycleState.CREATION, (SecCondition) any, (SecContext) any);
+				result = true;
+			}
+		};
+		
 		// setup fresh file tree in ObjectStore
 		masterFile = new MasterFile();
 		masterFile.setSecStatus(mockedSecurityStatus);

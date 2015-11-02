@@ -2,7 +2,7 @@ package de.persosim.simulator.cardobjects;
 
 import java.util.Collection;
 
-
+import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
@@ -17,14 +17,23 @@ import de.persosim.simulator.tlv.TlvTag;
 public class DedicatedFile extends AbstractFile {
 
 	protected DedicatedFileIdentifier dedicatedFileName;
-
-	public DedicatedFile() {
-		
-	}
+	private SecCondition createFiles;
 	
 	public DedicatedFile(FileIdentifier fileIdentifier, DedicatedFileIdentifier dedicatedFileName) {
+		this(fileIdentifier, dedicatedFileName, SecCondition.ALLOWED);
+	}
+	
+	public DedicatedFile(FileIdentifier fileIdentifier, DedicatedFileIdentifier dedicatedFileName, SecCondition createFilesAccess){
 		super(fileIdentifier);
 		this.dedicatedFileName = dedicatedFileName;
+		this.createFiles = createFilesAccess;
+	}
+	
+	@Override
+	public void addChild(CardObject newChild) {
+		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(), createFiles)){
+			super.addChild(newChild);
+		}
 	}
 
 	@Override
