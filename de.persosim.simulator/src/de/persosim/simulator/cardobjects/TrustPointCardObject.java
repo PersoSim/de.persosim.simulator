@@ -1,7 +1,6 @@
 package de.persosim.simulator.cardobjects;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.exception.CertificateUpdateException;
@@ -30,7 +29,7 @@ public class TrustPointCardObject extends AbstractCardObject {
 
 	@Override
 	public Collection<CardObjectIdentifier> getAllIdentifiers() {
-		Collection<CardObjectIdentifier> result = new HashSet<>();
+		Collection<CardObjectIdentifier> result = super.getAllIdentifiers();
 		result.add(identifier);
 		return result;
 	}

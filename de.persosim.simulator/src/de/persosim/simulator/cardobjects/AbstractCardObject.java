@@ -2,6 +2,7 @@ package de.persosim.simulator.cardobjects;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import de.persosim.simulator.exception.AccessDeniedException;
@@ -21,6 +22,7 @@ public abstract class AbstractCardObject implements CardObject {
 	protected CardObject parent;
 	protected List<CardObject> children = new ArrayList<>();
 	SecStatus securityStatus;
+	private TypeIdentifier identifier;
 	
 	protected Iso7816LifeCycleState lifeCycleState = Iso7816LifeCycleState.CREATION;
 
@@ -145,6 +147,16 @@ public abstract class AbstractCardObject implements CardObject {
 		
 		// if no fitting child has been found, collection is empty
 		return matchingChildren;
+	}
+
+	@Override
+	public Collection<CardObjectIdentifier> getAllIdentifiers() {
+		if (identifier == null){
+			identifier = new TypeIdentifier(this.getClass());
+		}
+		HashSet<CardObjectIdentifier> set = new HashSet<>();
+		set.add(identifier);
+		return set;
 	}
 	
 }

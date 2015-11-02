@@ -2,7 +2,6 @@ package de.persosim.simulator.cardobjects;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 
 
 /**
@@ -25,7 +24,7 @@ public class DateTimeCardObject extends AbstractCardObject {
 
 	@Override
 	public Collection<CardObjectIdentifier> getAllIdentifiers() {
-		HashSet<CardObjectIdentifier> result = new HashSet<>();
+		Collection<CardObjectIdentifier> result = super.getAllIdentifiers();
 		result.add(identifier);
 		return result;
 	}

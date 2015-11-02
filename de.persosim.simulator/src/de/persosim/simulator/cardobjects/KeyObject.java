@@ -21,10 +21,10 @@ public class KeyObject extends AbstractCardObject {
 	
 	@Override
 	public Collection<CardObjectIdentifier> getAllIdentifiers() {
-		Collection<CardObjectIdentifier> allIdentifiers = new ArrayList<CardObjectIdentifier>();
-		allIdentifiers.add(primaryIdentifier);
-		allIdentifiers.addAll(furtherIdentifiers);
-		return allIdentifiers;
+		Collection<CardObjectIdentifier> result = super.getAllIdentifiers();
+		result.add(primaryIdentifier);
+		result.addAll(furtherIdentifiers);
+		return result;
 	}
 
 	/**

@@ -35,7 +35,9 @@ public class AbstractCardObjectTest extends PersoSimTestCase {
 		
 		@Override
 		public Collection<CardObjectIdentifier> getAllIdentifiers() {
-			return new ArrayList<CardObjectIdentifier>(identifiers);
+			Collection<CardObjectIdentifier> result = super.getAllIdentifiers();
+			result.addAll(identifiers);
+			return result;
 		}
 
 		public void addOidIdentifier(CardObjectIdentifier identifier) {

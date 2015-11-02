@@ -32,9 +32,10 @@ public class DomainParameterSetCardObject extends AbstractCardObject {
 	
 	@Override
 	public Collection<CardObjectIdentifier> getAllIdentifiers() {
-		Collection<CardObjectIdentifier> allIdentifiers = new ArrayList<CardObjectIdentifier>(furtherIdentifiers);
-		allIdentifiers.add(primaryIdentifier);
-		return allIdentifiers;
+		Collection<CardObjectIdentifier> result = super.getAllIdentifiers();
+		result.add(primaryIdentifier);
+		result.addAll(furtherIdentifiers);
+		return result;
 	}
 
 	/**
