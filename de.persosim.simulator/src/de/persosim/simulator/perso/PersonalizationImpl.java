@@ -56,7 +56,7 @@ public class PersonalizationImpl implements Personalization {
 	}
 
 	@Override
-	public List<Layer> getLayers() {
+	public List<Layer> getLayerList() {
 		return layers;
 	}
 	
