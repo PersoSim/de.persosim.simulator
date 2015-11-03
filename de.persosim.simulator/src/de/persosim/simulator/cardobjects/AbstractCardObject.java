@@ -20,7 +20,7 @@ public abstract class AbstractCardObject implements CardObject {
 
 	protected CardObject parent;
 	protected List<CardObject> children = new ArrayList<>();
-	SecStatus securityStatus;
+	protected SecStatus securityStatus;
 	
 	protected Iso7816LifeCycleState lifeCycleState = Iso7816LifeCycleState.CREATION;
 
