@@ -5,6 +5,7 @@ import java.util.List;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.CommandProcessor;
+import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.protocols.Protocol;
 
 /**
@@ -34,5 +35,12 @@ public interface Personalization {
 	 * @return
 	 */
 	List<Protocol> getProtocolList();
+	
+	/**
+	 * Returns the list of layers to be used.
+	 * 
+	 * @return
+	 */
+	List<Layer> getLayers();
 
 }
