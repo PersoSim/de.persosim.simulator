@@ -15,6 +15,7 @@ public class PersonalizationImpl implements Personalization {
 	protected MasterFile mf = null;
 	
 	public PersonalizationImpl() {
+		buildLayerList();
 		buildProtocolList();
 		buildObjectTree();
 	}
