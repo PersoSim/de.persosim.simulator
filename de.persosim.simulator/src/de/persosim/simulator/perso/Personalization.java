@@ -41,6 +41,6 @@ public interface Personalization {
 	 * 
 	 * @return
 	 */
-	List<Layer> getLayers();
+	List<Layer> getLayerList();
 
 }
