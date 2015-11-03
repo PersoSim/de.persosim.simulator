@@ -3,8 +3,10 @@ package de.persosim.simulator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.thoughtworks.xstream.io.StreamException;
@@ -16,8 +18,18 @@ import de.persosim.simulator.perso.PersonalizationFactory;
 public class CommandParserTest {
 
 	
-	private String DUMMY_PERSONALIZATION_FILE = "tmp/dummyPerso.xml";
-
+	
+	private String DUMMY_PERSONALIZATION_FOLDER = new File("").getAbsolutePath() +  "/tmp";
+	private String DUMMY_PERSONALIZATION_FILE = DUMMY_PERSONALIZATION_FOLDER + "/dummyPerso.xml";
+	
+	@Before
+	public void setUp(){
+		File folder = new File(DUMMY_PERSONALIZATION_FOLDER);
+		if (!folder.exists()) {
+			folder.mkdirs();			
+		}
+	}
+	
 	/**
 	 * Positive test case: parse arguments from an empty String.
 	 */
