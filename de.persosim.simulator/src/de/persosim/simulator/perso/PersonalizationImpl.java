@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.persosim.simulator.cardobjects.MasterFile;
+import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.protocols.Protocol;
 
 public class PersonalizationImpl implements Personalization {
-
+	
+	protected List<Layer> layers = null;
 	protected List<Protocol> protocols = null;
 	
 	protected MasterFile mf = null;
@@ -51,6 +53,22 @@ public class PersonalizationImpl implements Personalization {
 	 */
 	protected void buildObjectTree() {
 		mf = new MasterFile();
+	}
+
+	@Override
+	public List<Layer> getLayers() {
+		return layers;
+	}
+	
+	/**
+	 * (Re)Build the layer list (in {@link #protocols})
+	 * <p/>
+	 * This method is called from {@link #reset()} and should be implemented at
+	 * least in all Subclasses that are used within tests that need to reset the
+	 * personalization.
+	 */
+	protected void buildLayerList() {
+		layers = new ArrayList<>();
 	}
 	
 }
