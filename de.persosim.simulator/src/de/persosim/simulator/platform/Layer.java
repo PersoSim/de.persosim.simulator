@@ -26,7 +26,7 @@ public abstract class Layer implements Iso7816, InfoSource {
 	 * This method finalizes the layer so it can actually be used. It is to be
 	 * called when the layer is ready to be used.
 	 */
-	abstract public void initialize();
+	abstract public void initializeForUse();
 	
 	/**
 	 * Power-management function. This method is called by the
