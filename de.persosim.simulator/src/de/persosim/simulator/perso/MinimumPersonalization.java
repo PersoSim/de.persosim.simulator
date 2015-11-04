@@ -1,6 +1,7 @@
 package de.persosim.simulator.perso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
@@ -8,6 +9,7 @@ import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.file.FileProtocol;
 import de.persosim.simulator.seccondition.SecCondition;
 
@@ -34,19 +36,19 @@ public class MinimumPersonalization extends PersonalizationImpl {
 		this(DEFAULT_EF_CA_VALUE);
 	}
 	
-	@Override
-	protected void buildProtocolList() {
-		protocols = new ArrayList<>();
+	protected List<Protocol> buildProtocolList() {
+		List<Protocol> protocols = new ArrayList<>();
 
 		/* load FM protocol */
 		FileProtocol fileManagementProtocol = new FileProtocol();
 		fileManagementProtocol.init();
 		protocols.add(fileManagementProtocol);
+		
+		return protocols;
 	}
 	
-	@Override
-	public void buildObjectTree() {
-		mf = new MasterFile(new FileIdentifier(0x3F00),
+	public MasterFile buildObjectTree() {
+		MasterFile mf = new MasterFile(new FileIdentifier(0x3F00),
 				new DedicatedFileIdentifier(new byte[] { (byte) 0xA0, 0x0,
 						0x0, 0x2, 0x47, 0x10, 0x03 }));
 		
@@ -58,6 +60,8 @@ public class MinimumPersonalization extends PersonalizationImpl {
 				SecCondition.DENIED,
 				SecCondition.DENIED);
 		mf.addChild(efCardAccess);
+		
+		return mf;
 	}
 	
 }

@@ -18,6 +18,7 @@ import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyPairObject;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.MrzAuthObject;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
@@ -133,9 +134,9 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	public void buildObjectTree() {
+	public MasterFile buildObjectTree() {
 		initPersonalizationDataContainer();
-		super.buildObjectTree();
+		return super.buildObjectTree();
 	}
 	
 	@Override
@@ -167,7 +168,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addAuthObjects() throws NoSuchAlgorithmException,
+	protected void addAuthObjects(MasterFile mf) throws NoSuchAlgorithmException,
 			NoSuchProviderException, IOException, UnsupportedEncodingException {
 		MrzAuthObject mrz = new MrzAuthObject(
 				new AuthObjectIdentifier(1),
@@ -191,7 +192,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addAuxData() {
+	protected void addAuxData(MasterFile mf) {
 		
 		initPersonalizationDataContainer();
 		
@@ -470,7 +471,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		eIdAppl.addChild(eidDg13);
 	}
 	
-	protected void addEfCardAccess() {
+	protected void addEfCardAccess(MasterFile mf) {
 		initPersonalizationDataContainer();
 		
 		TlvDataObject efCardAccessTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfCardAccess());
@@ -484,7 +485,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		mf.addChild(eidDgCardAccess);
 	}
 	
-	protected void addEfCardSecurity() {
+	protected void addEfCardSecurity(MasterFile mf) {
 		initPersonalizationDataContainer();
 		
 		TlvDataObject efCardSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfCardSecurity());
@@ -498,7 +499,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		mf.addChild(eidDgCardSecurity);
 	}
 	
-	protected void addEfChipSecurity() {
+	protected void addEfChipSecurity(MasterFile mf) {
 		initPersonalizationDataContainer();
 		
 		TlvDataObject efChipSecurityTlv = TlvDataObjectFactory.createTLVDataObject(persoDataContainer.getEfChipSecurity());
@@ -665,7 +666,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addCaKeys() {
+	protected void addCaKeys(MasterFile mf) {
 		initPersonalizationDataContainer();
 		
 		ArrayList<KeyPair> caKeys = persoDataContainer.getCaKeys();
@@ -682,7 +683,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addRiKeys() {
+	protected void addRiKeys(MasterFile mf) {
 		initPersonalizationDataContainer();
 		
 		ArrayList<KeyPair> riKeys = persoDataContainer.getRiKeys();
