@@ -41,6 +41,7 @@ public interface TlvConstants {
 	public static final TlvTag TAG_7F4C = new TlvTag(new byte []{0x7F, 0x4C});
 	public static final TlvTag TAG_7F4E = new TlvTag(new byte []{0x7F, 0x4E});
 
+	public static final TlvTag TAG_NULL = new TlvTag(Asn1.UNIVERSAL_NULL);
 	public static final TlvTag TAG_BOOLEAN = new TlvTag(Asn1.BOOLEAN);
 	public static final TlvTag TAG_INTEGER = new TlvTag(Asn1.INTEGER);
 	public static final TlvTag TAG_BIT_STRING = new TlvTag(Asn1.BIT_STRING);
