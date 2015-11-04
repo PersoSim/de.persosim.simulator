@@ -11,7 +11,6 @@ public class PersonalizationImpl implements Personalization {
 	
 	public PersonalizationImpl() {
 		buildLayerList();
-		
 	}
 
 	@Override
