@@ -10,6 +10,7 @@ import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ByteDataAuxObject;
@@ -35,8 +36,13 @@ import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
+import de.persosim.simulator.platform.CommandProcessor;
+import de.persosim.simulator.platform.IoManager;
+import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.protocols.NpaProtocol;
+import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.protocols.auxVerification.AuxProtocol;
 import de.persosim.simulator.protocols.ca.Ca;
@@ -58,6 +64,7 @@ import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.PaceSecurityCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.seccondition.TaSecurityCondition;
+import de.persosim.simulator.securemessaging.SecureMessaging;
 import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 
@@ -77,44 +84,47 @@ import de.persosim.simulator.utils.HexString;
 public abstract class DefaultPersonalization extends PersonalizationImpl implements Tr03110 {
 
 	public static final String AID_EID = "E8 07 04 00 7F 00 07 03 02";
-
-	@Override
-	public void buildObjectTree() {
+	
+	public MasterFile buildObjectTree() {
+		MasterFile mf = null;
+		
 		try {
 			mf = new MasterFile(new FileIdentifier(0x3F00),
 					new DedicatedFileIdentifier(new byte[] { (byte) 0xA0, 0x0,
 							0x0, 0x2, 0x47, 0x10, 0x03 }));
 
-			addAuthObjects();
+			addAuthObjects(mf);
 
-			addDomainParameters();
-			addCaKeys();
-			addRiKeys();
+			addDomainParameters(mf);
+			addCaKeys(mf);
+			addRiKeys(mf);
 
-			addTaTrustPoints();
-			addTime();
+			addTaTrustPoints(mf);
+			addTime(mf);
 
-			addAuxData();
+			addAuxData(mf);
 
-			addEfDir();
-			addEfCardAccess();
-			addEfCardSecurity();
-			addEfChipSecurity();
+			addEfDir(mf);
+			addEfCardAccess(mf);
+			addEfCardSecurity(mf);
+			addEfChipSecurity(mf);
 
-			addEidApplication();
-			addEpassApplication();
+			addEidApplication(mf);
+			addEpassApplication(mf);
 
 		} catch (CertificateNotParseableException | NoSuchAlgorithmException
 				| NoSuchProviderException | IOException e) {
 			// don't care for the moment
 			e.printStackTrace();
 		}
+		
+		return mf;
 	}
 
 	/**
 	 * Add the eID application to the card and fill it with content
 	 */
-	protected void addEidApplication() {
+	protected void addEidApplication(MasterFile mf) {
 		// eID application
 		DedicatedFile eIdAppl = new DedicatedFile(null,
 				new DedicatedFileIdentifier(HexString
@@ -144,7 +154,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	/**
 	 * Add the ePassport application to the card and fill it with content
 	 */
-	protected void addEpassApplication() {
+	protected void addEpassApplication(MasterFile mf) {
 		// ePass application
 		DedicatedFile ePassAppl = new DedicatedFile(null,
 				new DedicatedFileIdentifier(
@@ -159,7 +169,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	/**
 	 * Add auxiliary data to the object tree, used for AuxDataVerification protocol
 	 */
-	protected void addAuxData() {
+	protected void addAuxData(MasterFile mf) {
 		// Aux data
 		byte[] communityId = HexString.toByteArray("02761100000000");
 		Calendar calendar = Calendar.getInstance();
@@ -181,7 +191,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	/**
 	 * Configure the chips simulated time
 	 */
-	protected void addTime() {
+	protected void addTime(MasterFile mf) {
 		// Time store
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2014, 4, 5, 0, 0, 0);
@@ -195,12 +205,12 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * Add the available trustpoint objects for terminal authentication.
 	 * @throws CertificateNotParseableException
 	 */
-	protected abstract void addTaTrustPoints() throws CertificateNotParseableException;
+	protected abstract void addTaTrustPoints(MasterFile mf) throws CertificateNotParseableException;
 
 	/**
 	 * Add an EF.Dir below MF
 	 */
-	protected void addEfDir() {
+	protected void addEfDir(MasterFile mf) {
 		byte[] content = HexString
 				.toByteArray("61324F0FE828BD080FA000000167455349474E500F434941207A752044462E655369676E5100730C4F0AA000000167455349474E61094F07A0000002471001610B4F09E80704007F00070302610C4F0AA000000167455349474E");
 		
@@ -216,21 +226,21 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	/**
 	 * Add an EF.ChipSecurity below MF as described by TR03110
 	 */
-	protected void addEfChipSecurity() {
+	protected void addEfChipSecurity(MasterFile mf) {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
 	/**
 	 * Add an EF.CardSecurity below MF as described by TR03110
 	 */
-	protected void addEfCardSecurity() {
+	protected void addEfCardSecurity(MasterFile mf) {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
 	/**
 	 * Add an EF.CardAccess below MF as described by TR03110
 	 */
-	protected void addEfCardAccess() {
+	protected void addEfCardAccess(MasterFile mf) {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
@@ -238,7 +248,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * Add all required keyObjects for RestrictedIdentification to the personalized object tree
 	 * 
 	 */
-	protected void addRiKeys() {
+	protected void addRiKeys(MasterFile mf) {
 		DomainParameterSet domainParameterSet;
 		byte[] publicKeyMaterial;
 		byte[] privateKeyMaterial;
@@ -269,7 +279,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * Add all required keyObjects for ChipAuthentication to the personalized object tree
 	 * 
 	 */
-	protected void addCaKeys() {
+	protected void addCaKeys(MasterFile mf) {
 		// CA static key pair PICC
 		DomainParameterSet domainParameterSet = StandardizedDomainParameters
 				.getDomainParameterSetById(13);
@@ -297,7 +307,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @throws IOException
 	 * @throws UnsupportedEncodingException
 	 */
-	protected void addDomainParameters() {
+	protected void addDomainParameters(MasterFile mf) {
 		// create domain parameters
 		DomainParameterSet domainParameterSet13 = StandardizedDomainParameters
 				.getDomainParameterSetById(13);
@@ -565,7 +575,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @throws IOException
 	 * @throws UnsupportedEncodingException
 	 */
-	protected void addAuthObjects() throws NoSuchAlgorithmException,
+	protected void addAuthObjects(MasterFile mf) throws NoSuchAlgorithmException,
 			NoSuchProviderException, IOException, UnsupportedEncodingException {
 		MrzAuthObject mrz = new MrzAuthObject(
 				new AuthObjectIdentifier(ID_MRZ),
@@ -614,10 +624,9 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(54 - dgNr)));
 		return retVal;
 	}
-
-	@Override
-	protected void buildProtocolList() {
-		protocols = new ArrayList<>();
+	
+	protected List<Protocol> buildProtocolList() {
+		List<Protocol> protocols = new ArrayList<>();
 
 		/* load PACE bypass protocol */
 		PaceBypassProtocol paceBypassProtocol = new PaceBypassProtocol();
@@ -656,6 +665,40 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 		/* load nPA protocol */
 		protocols.add(new NpaProtocol());
+		
+		return protocols;
+	}
+	
+	@Override
+	protected void buildLayerList() {
+		MasterFile mf = buildObjectTree();
+		List<Protocol> protocols = buildProtocolList();
+		
+		int layerId = 0;
+		layers = new ArrayList<>();
+		
+		// load IO manager layer
+		layers.add(new IoManager(layerId++));
+		
+		// load secure messaging layer
+		layers.add(new SecureMessaging(layerId++));
+		
+		// load command processor layer
+		CommandProcessor commandProcessor;
+		try {
+			commandProcessor = new CommandProcessor(layerId++, protocols, mf);
+		} catch (AccessDeniedException e) {
+			throw new RuntimeException("The creation of the CommandProcessor layer failed.", e);
+		}
+		commandProcessor.init();
+		layers.add(commandProcessor);
+	}
+	
+	@Override
+	public void initialize() {
+		for(Layer layer:layers) {
+			layer.initialize();
+		}
 	}
 
 }
