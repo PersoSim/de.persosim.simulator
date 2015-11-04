@@ -697,7 +697,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	@Override
 	public void initialize() {
 		for(Layer layer:layers) {
-			layer.initialize();
+			layer.initializeForUse();
 		}
 	}
 
