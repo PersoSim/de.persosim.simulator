@@ -4,12 +4,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.Collection;
 
 import org.junit.Test;
 
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.platform.CommandProcessor;
+import de.persosim.simulator.platform.PersonalizationHelper;
 import de.persosim.simulator.test.PersoSimTestCase;
 
 public abstract class PersonalizationTest extends PersoSimTestCase {
@@ -40,8 +43,11 @@ public abstract class PersonalizationTest extends PersoSimTestCase {
 		Personalization unmarshalledPerso = (Personalization) PersonalizationFactory.unmarshal(xmlFile);
 		assertTrue(perso.getClass().equals(unmarshalledPerso.getClass()));
 		
-		//check all CardObjects, their children and all Identifiers of the card object tree
-		assertObjectTypes(unmarshalledPerso.getObjectTree());
+		Collection<CommandProcessor> compatibleLayers = PersonalizationHelper.getCompatibleLayers(perso.getLayerList(), CommandProcessor.class);
+		for(CommandProcessor commandProcessor: compatibleLayers) {
+			//check all CardObjects, their children and all Identifiers of the card object tree
+			assertObjectTypes(commandProcessor.getObjectTree());
+		}
 
 	}
 
