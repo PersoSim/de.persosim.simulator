@@ -27,15 +27,7 @@ public class ElementaryFile extends AbstractFile {
 	
 	private SecCondition writingConditions;
 	
-	@SuppressWarnings("unused")  //IMPL MBK implement the ISO7816 erase functionality for files
 	private SecCondition erasingConditions;
-	
-	/**
-	 * Default constructor fur JAXB usage.
-	 */
-	public ElementaryFile(){
-		
-	}
 			
 	public ElementaryFile(FileIdentifier fileIdentifier,
 			ShortFileIdentifier shortFileIdentifier, byte[] content, SecCondition readingConditions, SecCondition writingConditions, SecCondition erasingConditions) {
@@ -117,5 +109,11 @@ public class ElementaryFile extends AbstractFile {
 		return result;
 	}
 
-
+	public void delete() throws AccessDeniedException{
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), erasingConditions)){
+			getParent().removeChild(this);
+			return;
+		}
+		throw new AccessDeniedException("The access conditions do not allow deletion of this file.");
+	}
 }
