@@ -17,7 +17,7 @@ import de.persosim.simulator.utils.PersoSimLogger;
  */
 public class PersonalizationHelper {
 	
-	public static <T> Collection<? extends T> getCompatibleLayers(Collection<Layer> layers, Class<T> type){
+	public static <T> Collection<T> getCompatibleLayers(Collection<Layer> layers, Class<T> type){
 		HashSet<T> result = new HashSet<>();
 		
 		for (Layer layer : layers) {
