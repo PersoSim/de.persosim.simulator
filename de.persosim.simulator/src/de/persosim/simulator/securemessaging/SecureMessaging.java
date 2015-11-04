@@ -623,7 +623,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 	}
 
 	@Override
-	public void initialize() {
+	public void initializeForUse() {
 		// nothing to do here
 	}
 	
