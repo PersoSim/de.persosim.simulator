@@ -454,7 +454,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	}
 	
 	@Override
-	public void initialize() {
+	public void initializeForUse() {
 		PersonalizationHelper.setLifeCycleStates(objectStore.getMasterFile());
 	}
 
