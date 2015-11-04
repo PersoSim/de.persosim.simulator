@@ -6,6 +6,7 @@ import static de.persosim.simulator.utils.PersoSimLogger.log;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.CommandApduFactory;
@@ -26,15 +27,19 @@ import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.ResponseData;
 import de.persosim.simulator.protocols.SecInfoPublicity;
+import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
+import de.persosim.simulator.secstatus.AuthorizationMechanism;
+import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -278,6 +283,16 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			if (sw == Iso7816.SW_9000_NO_ERROR){
 				TaOid terminalTypeOid = usedChat != null ? usedChat.getObjectIdentifier(): null;
 				PaceMechanism paceMechanism = new PaceMechanism(passwordObject, compEphermeralPublicKey, terminalTypeOid);
+				
+				if (usedChat != null){
+					HashMap<Oid, Authorization> authorizations = new HashMap<>();
+					authorizations.put(usedChat.getObjectIdentifier(), usedChat.getRelativeAuthorization());
+					AuthorizationStore authorizationStore = new AuthorizationStore(authorizations);
+					AuthorizationMechanism authMechanism = new AuthorizationMechanism(authorizationStore);
+					processingData.addUpdatePropagation(this, "Security status updated with authorization mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanism));
+				}
+				
+				
 				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
 			}
 			
