@@ -21,7 +21,13 @@ public abstract class Layer implements Iso7816, InfoSource {
 	public Layer(int id) {
 		layerId = id;
 	}
-
+	
+	/**
+	 * This method finalizes the layer so it can actually be used. It is to be
+	 * called when the layer is ready to be used.
+	 */
+	abstract public void initialize();
+	
 	/**
 	 * Power-management function. This method is called by the
 	 * {@link PersoSimKernel} to notify each layer of the simulated power on of
