@@ -1,8 +1,12 @@
 package de.persosim.simulator.platform;
 
 
+import java.util.List;
+
 import de.persosim.simulator.cardobjects.CardFile;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ObjectStore;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.secstatus.SecStatus;
@@ -16,20 +20,20 @@ import de.persosim.simulator.secstatus.SecStatus;
  */
 public class CommandProcessor extends CommandProcessorStateMachine {
 
-	private Personalization perso;
-
-	public CommandProcessor(int id, Personalization newPerso, ObjectStore objectStore, SecStatus securityStatus) {
+	public CommandProcessor(int id, List<Protocol> protocolList, MasterFile mf) throws AccessDeniedException {
 		layerId = id;
-		perso = newPerso;
-
 		
 		//create object tree
+		ObjectStore objectStore = new ObjectStore(mf);
+		objectStore.selectMasterFile();
+		SecStatus securityStatus = new SecStatus();
+		mf.setSecStatus(securityStatus);
+		
 		this.objectStore = objectStore;
 		this.securityStatus = securityStatus;
 		
-		
 		//register protocols
-		for (Protocol curProtocol : perso.getProtocolList()) {
+		for (Protocol curProtocol : protocolList) {
 			addProtocol(curProtocol);
 		}
 	}
