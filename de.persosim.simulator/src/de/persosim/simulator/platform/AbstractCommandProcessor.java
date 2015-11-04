@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import de.persosim.simulator.apdu.ResponseApdu;
@@ -451,6 +452,11 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	public boolean isInitialized() {
 		return initialized;
 	}
+	
+	@Override
+	public void initialize() {
+		PersonalizationHelper.setLifeCycleStates(objectStore.getMasterFile());
+	}
 
 	@Override
 	public void reset() {
@@ -470,6 +476,26 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	 */
 	public boolean apduHasBeenProcessed() {
 		return this.processingData.isProcessingFinished();
+	}
+
+	/**
+	 * Returns the root element of the object tree.
+	 */
+	public MasterFile getObjectTree(){
+		return objectStore.getMasterFile();
+	}
+
+	/**
+	 * Returns the list of activated protocols.
+	 * <p/>
+	 * The protocols contained in this List are required to be already
+	 * initialized and ready to be added to a {@link CardStateAccessor} and
+	 * used afterwards
+	 * 
+	 * @return
+	 */
+	public List<Protocol> getProtocolList(){
+		return protocols;
 	}
 
 }
