@@ -59,7 +59,7 @@ public class IoManager extends Layer {
 	}
 
 	@Override
-	public void initialize() {
+	public void initializeForUse() {
 		// nothing to do here
 	}
 	
