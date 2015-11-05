@@ -27,8 +27,8 @@ import de.persosim.simulator.protocols.ProtocolStateMachine;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
-import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
+import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
 import de.persosim.simulator.statemachine.AbstractStateMachine;
 import de.persosim.simulator.statemachine.StateMachine;
 
@@ -134,7 +134,6 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	 *            to use
 	 */
 	public void addProtocol(Protocol newProtocol) {
-		newProtocol.setCardStateAccessor(this);
 		protocols.add(newProtocol);
 	}
 
@@ -190,7 +189,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	/**
 	 * List of available protocols
 	 */
-	protected ArrayList<Protocol> protocols = new ArrayList<>();
+	protected List<Protocol> protocols = new ArrayList<>();
 	
 	private Protocol currentlyActiveProtocol;
 	
@@ -455,6 +454,10 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	
 	@Override
 	public void initializeForUse() {
+		for(Protocol protocol:protocols) {
+			protocol.setCardStateAccessor(this);
+		}
+		
 		PersonalizationHelper.setLifeCycleStates(objectStore.getMasterFile());
 	}
 
