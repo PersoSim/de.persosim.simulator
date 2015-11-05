@@ -17,6 +17,19 @@ import de.persosim.simulator.utils.PersoSimLogger;
  */
 public class PersonalizationHelper {
 	
+	/**
+	 * This method accepts a {@link Collection} of type {@link Layer} and a
+	 * reference type T. It will return a {@link Collection} of type T which is
+	 * an intersecting set of the provided {@link Collection} containing all of
+	 * its elements matching the provided type T. The returned
+	 * {@link Collection} will never be null but may be empty.
+	 * 
+	 * @param layers
+	 *            the layers to check
+	 * @param type
+	 *            the type to check for
+	 * @return the intersecting set
+	 */
 	public static <T> Collection<T> getCompatibleLayers(Collection<Layer> layers, Class<T> type){
 		HashSet<T> result = new HashSet<>();
 		
@@ -28,6 +41,25 @@ public class PersonalizationHelper {
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * 
+	 * @param layers
+	 * @param type
+	 * @return
+	 */
+	public static <T> T getUniqueCompatibleLayer(Collection<Layer> layers, Class<T> type) {
+		Collection<T> compatibleLayers = PersonalizationHelper.getCompatibleLayers(layers, type);
+		if(compatibleLayers.size() <= 1) {
+			if(compatibleLayers.size() == 1) {
+				return compatibleLayers.iterator().next();
+			} else{
+				return null;
+			}
+		} else{
+			throw new IllegalArgumentException("more than 1 matching layers found");
+		}
 	}
 	
 	public static void setLifeCycleStates(CardObject objectTree) {
