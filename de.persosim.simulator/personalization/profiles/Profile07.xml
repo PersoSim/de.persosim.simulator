@@ -1,13 +1,8 @@
 <de.persosim.simulator.perso.Profile07 id="1">
   <layers id="2">
-    <de.persosim.simulator.platform.IoManager id="3">
-      <layerId>0</layerId>
-    </de.persosim.simulator.platform.IoManager>
-    <de.persosim.simulator.securemessaging.SecureMessaging id="4">
-      <layerId>1</layerId>
-    </de.persosim.simulator.securemessaging.SecureMessaging>
+    <de.persosim.simulator.platform.IoManager id="3"/>
+    <de.persosim.simulator.securemessaging.SecureMessaging id="4"/>
     <de.persosim.simulator.platform.CommandProcessor id="5">
-      <layerId>2</layerId>
       <securityStatus id="6">
         <contexts id="7" enum-type="de.persosim.simulator.secstatus.SecStatus$SecContext">
           <entry>
@@ -1575,9 +1570,7 @@
         <de.persosim.simulator.protocols.pin.PinProtocol id="357"/>
         <de.persosim.simulator.protocols.NpaProtocol id="358"/>
       </protocols>
-      <stackPointer>0</stackPointer>
       <protocolStack id="359"/>
-      <protocolPointer>0</protocolPointer>
       <initialized>true</initialized>
       <continueProcessing>false</continueProcessing>
       <m__initialized>true</m__initialized>
