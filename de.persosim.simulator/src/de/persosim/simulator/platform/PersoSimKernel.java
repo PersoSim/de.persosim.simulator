@@ -44,9 +44,8 @@ public class PersoSimKernel implements InfoSource {
 	public void init(Personalization perso) {
 		log(this, "init called", TRACE);
 		
-		layers = perso.getLayerList();
-		
 		perso.initialize();
+		layers = perso.getLayerList();
 		
 		log(this, "init finished", TRACE);
 	}
