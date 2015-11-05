@@ -31,7 +31,7 @@ public class PersonalizationImpl implements Personalization {
 
 	@Override
 	public void initialize() {
-		
+		// nothing to do here
 	}
 	
 }
