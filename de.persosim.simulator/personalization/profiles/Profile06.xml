@@ -1570,9 +1570,6 @@
         <de.persosim.simulator.protocols.pin.PinProtocol id="357"/>
         <de.persosim.simulator.protocols.NpaProtocol id="358"/>
       </protocols>
-      <protocolStack id="359"/>
-      <initialized>true</initialized>
-      <continueProcessing>false</continueProcessing>
       <m__initialized>true</m__initialized>
       <stateVar>5</stateVar>
       <stateVarCOMMAND__PROCESSOR>8</stateVarCOMMAND__PROCESSOR>
