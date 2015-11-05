@@ -44,10 +44,17 @@ public class PersonalizationHelper {
 	}
 	
 	/**
+	 * This method accepts a {@link Collection} of type {@link Layer} and a
+	 * reference type T. It will return the single object of type T if such is
+	 * found within the provided {@link Collection}. If there is no such object
+	 * null will be returned. If there is more than one object of this type an
+	 * IllegalArgumentException will be thrown.
 	 * 
 	 * @param layers
+	 *            the layers to check
 	 * @param type
-	 * @return
+	 *            the type to check for
+	 * @return the matching object
 	 */
 	public static <T> T getUniqueCompatibleLayer(Collection<Layer> layers, Class<T> type) {
 		Collection<T> compatibleLayers = PersonalizationHelper.getCompatibleLayers(layers, type);
@@ -62,6 +69,13 @@ public class PersonalizationHelper {
 		}
 	}
 	
+	/**
+	 * This method recursively sets the card life cycle state for the provided
+	 * {@link CardObject} and all of its children to operational activated
+	 * 
+	 * @param objectTree
+	 *            the root object for which to set the card life cycle state
+	 */
 	public static void setLifeCycleStates(CardObject objectTree) {
 		Collection<CardObject> children = objectTree.getChildren();
 		if (children.size() > 0){
