@@ -1,7 +1,6 @@
 package de.persosim.simulator.cardobjects;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -55,7 +54,7 @@ public abstract class AbstractFile extends AbstractCardObject implements
 
 	@Override
 	public Collection<CardObjectIdentifier> getAllIdentifiers() {
-		HashSet<CardObjectIdentifier> result = new HashSet<>();
+		Collection<CardObjectIdentifier> result = super.getAllIdentifiers();
 		result.add(fileIdentifier);
 		return result;
 	}

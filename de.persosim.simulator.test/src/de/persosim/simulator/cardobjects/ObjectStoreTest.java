@@ -12,8 +12,10 @@ import org.junit.Test;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus;
+import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
 import mockit.Mocked;
+import mockit.NonStrictExpectations;
 
 public class ObjectStoreTest extends PersoSimTestCase {
 	
@@ -50,6 +52,13 @@ public class ObjectStoreTest extends PersoSimTestCase {
 	@Before
 	public void setUp() throws ReflectiveOperationException, AccessDeniedException{
 				
+		new NonStrictExpectations(SecStatus.class) {
+			{
+				mockedSecurityStatus.checkAccessConditions(Iso7816LifeCycleState.CREATION, (SecCondition) any, (SecContext) any);
+				result = true;
+			}
+		};
+		
 		//define file contents
 		elementaryFile1UnderDFContent = new byte []{1,2,3,4,5,6};
 		elementaryFile2UnderDFContent = new byte []{7,8,9,10,11,12};

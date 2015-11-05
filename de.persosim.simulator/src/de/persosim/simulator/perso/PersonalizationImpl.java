@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.persosim.simulator.cardobjects.MasterFile;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.protocols.Protocol;
 
 public class PersonalizationImpl implements Personalization {
@@ -14,7 +15,11 @@ public class PersonalizationImpl implements Personalization {
 	
 	public PersonalizationImpl() {
 		buildProtocolList();
-		buildObjectTree();
+		try {
+			buildObjectTree();
+		} catch (AccessDeniedException e) {
+			throw new PersoCreationFailedException("Creation of personalization failed because of denied access", e);
+		}
 	}
 
 	public MasterFile getMf() {
@@ -48,8 +53,9 @@ public class PersonalizationImpl implements Personalization {
 	 * This method is called from {@link #reset()} and should be implemented at
 	 * least in all Subclasses that are used within tests that need to reset the
 	 * personalization.
+	 * @throws AccessDeniedException 
 	 */
-	protected void buildObjectTree() {
+	protected void buildObjectTree() throws AccessDeniedException {
 		mf = new MasterFile();
 	}
 	

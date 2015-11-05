@@ -45,7 +45,7 @@ public class MinimumPersonalization extends PersonalizationImpl {
 	}
 	
 	@Override
-	public void buildObjectTree() {
+	public void buildObjectTree() throws AccessDeniedException {
 		mf = new MasterFile(new FileIdentifier(0x3F00),
 				new DedicatedFileIdentifier(new byte[] { (byte) 0xA0, 0x0,
 						0x0, 0x2, 0x47, 0x10, 0x03 }));

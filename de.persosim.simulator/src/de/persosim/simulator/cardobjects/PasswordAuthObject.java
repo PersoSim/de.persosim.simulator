@@ -3,7 +3,6 @@ package de.persosim.simulator.cardobjects;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 
 import de.persosim.simulator.utils.HexString;
 
@@ -52,7 +51,7 @@ public class PasswordAuthObject extends AbstractCardObject implements AuthObject
 
 	@Override
 	public Collection<CardObjectIdentifier> getAllIdentifiers() {
-		Collection<CardObjectIdentifier> result = new HashSet<>();
+		Collection<CardObjectIdentifier> result = super.getAllIdentifiers();
 		result.add(identifier);
 		return result;
 	}

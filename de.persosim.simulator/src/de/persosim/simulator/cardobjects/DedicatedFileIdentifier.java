@@ -11,9 +11,6 @@ import java.util.Arrays;
 public class DedicatedFileIdentifier extends AbstractCardObjectIdentifier {
 
 	byte [] fileName;
-
-	public DedicatedFileIdentifier() {
-	}
 	
 	/**
 	 * Default constructor.
