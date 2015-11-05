@@ -39,7 +39,7 @@ public class CvcaFile extends AbstractFile {
 	 *             when writing access is denied because of security conditions
 	 */
 	public void update(PublicKeyReference certificateAuthorityReference) throws AccessDeniedException {
-		if (securityStatus.checkAccessConditions(getLifeCycleState(), updatingConditions)){
+		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(), updatingConditions)){
 			previousCertificateAuthorityReference = currentCertificateAuthorityReference;
 			currentCertificateAuthorityReference = certificateAuthorityReference;
 		}
@@ -51,7 +51,7 @@ public class CvcaFile extends AbstractFile {
 	 * @throws AccessDeniedException
 	 */
 	public PublicKeyReference getCurrentCertificateAuthorityReference() throws AccessDeniedException {
-		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions)){
+		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions)){
 			return currentCertificateAuthorityReference;
 		}
 		throw new AccessDeniedException("Reading forbidden");
@@ -63,7 +63,7 @@ public class CvcaFile extends AbstractFile {
 	 * @throws AccessDeniedException
 	 */
 	public PublicKeyReference getPreviousCertificateAuthorityReference() throws AccessDeniedException {
-		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions)){
+		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions)){
 			return previousCertificateAuthorityReference;
 		}
 		throw new AccessDeniedException("Reading forbidden");
