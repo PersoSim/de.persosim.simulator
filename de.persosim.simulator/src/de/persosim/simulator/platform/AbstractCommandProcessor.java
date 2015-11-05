@@ -191,7 +191,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	 */
 	protected List<Protocol> protocols = new ArrayList<>();
 	
-	private Protocol currentlyActiveProtocol;
+	private transient Protocol currentlyActiveProtocol;
 	
 	
 	
@@ -199,18 +199,18 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	 * stackPointer is a pointer pointing at an element of protocolStack, i.e.
 	 * the currently active/unfinished/interrupted protocols
 	 */
-	protected int stackPointer;
+	protected transient int stackPointer;
 
 	/**
 	 * the stack containing all active/unfinished/interrupted protocols
 	 */
-	protected ArrayList<Protocol> protocolStack;
+	protected transient ArrayList<Protocol> protocolStack;
 
 	/**
 	 * protocolPointer is a pointer pointing at an element of protocols, i.e.
 	 * the list of known/supported protocols
 	 */
-	protected int protocolPointer;
+	protected transient int protocolPointer;
 
 	public void setStackPointerToBottom() {
 		this.stackPointer = 0;
@@ -436,8 +436,8 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	// -----------------------
 	// Control of StateMachine
 	// -----------------------
-	private boolean initialized = false;
-	protected boolean continueProcessing;
+	private transient boolean initialized = false;
+	protected transient boolean continueProcessing;
 
 	@Override
 	public void init() {
@@ -459,6 +459,8 @@ public abstract class AbstractCommandProcessor extends Layer implements
 		}
 		
 		PersonalizationHelper.setLifeCycleStates(objectStore.getMasterFile());
+		
+		init();
 	}
 
 	@Override
