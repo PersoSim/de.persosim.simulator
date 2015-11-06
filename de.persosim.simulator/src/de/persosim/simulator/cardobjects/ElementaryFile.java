@@ -13,24 +13,26 @@ import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.Utils;
 
 /**
- * This class represents an ISO7816-4 compliant elementary file in the object hierarchy on the card
+ * This class represents an ISO7816-4 compliant elementary file in the object
+ * hierarchy on the card
+ * 
  * @author mboonk
  *
  */
 public class ElementaryFile extends AbstractFile {
 
 	private byte[] content;
-	
+
 	private ShortFileIdentifier shortFileIdentifier;
 
 	private SecCondition readingConditions;
-	
+
 	private SecCondition writingConditions;
-	
+
 	private SecCondition erasingConditions;
-			
-	public ElementaryFile(FileIdentifier fileIdentifier,
-			ShortFileIdentifier shortFileIdentifier, byte[] content, SecCondition readingConditions, SecCondition writingConditions, SecCondition erasingConditions) {
+
+	public ElementaryFile(FileIdentifier fileIdentifier, ShortFileIdentifier shortFileIdentifier, byte[] content,
+			SecCondition readingConditions, SecCondition writingConditions, SecCondition erasingConditions) {
 		super(fileIdentifier);
 		this.shortFileIdentifier = shortFileIdentifier;
 		this.content = content;
@@ -46,10 +48,11 @@ public class ElementaryFile extends AbstractFile {
 
 	/**
 	 * Reads the files internal data.
+	 * 
 	 * @return stored data as byte array
 	 */
 	public byte[] getContent() throws AccessDeniedException {
-		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions)){
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions)) {
 			return Arrays.copyOf(content, content.length);
 		}
 		throw new AccessDeniedException("Reading forbidden");
@@ -57,11 +60,13 @@ public class ElementaryFile extends AbstractFile {
 
 	/**
 	 * Replaces the files internal data.
-	 * @param data to be used as a replacement
+	 * 
+	 * @param data
+	 *            to be used as a replacement
 	 */
 	public void update(int offset, byte[] data) throws AccessDeniedException {
-		if (securityStatus.checkAccessConditions(getLifeCycleState(), writingConditions)){
-			for(int i = 0; i < data.length; i++){
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), writingConditions)) {
+			for (int i = 0; i < data.length; i++) {
 				content[i + offset] = data[i];
 			}
 			return;
@@ -71,10 +76,12 @@ public class ElementaryFile extends AbstractFile {
 
 	/**
 	 * Completely replaces the files internal data.
-	 * @param data to be used as a replacement
+	 * 
+	 * @param data
+	 *            to be used as a replacement
 	 */
 	public void replace(byte[] data) throws AccessDeniedException {
-		if (SecStatus.checkAccessConditions(getLifeCycleState())){
+		if (SecStatus.checkAccessConditions(getLifeCycleState())) {
 			content = Arrays.copyOf(data, data.length);
 			return;
 		}
@@ -87,17 +94,13 @@ public class ElementaryFile extends AbstractFile {
 
 	@Override
 	public ConstructedTlvDataObject getFileControlParameterDataObject() {
-		ConstructedTlvDataObject result = super
-				.getFileControlParameterDataObject();
+		ConstructedTlvDataObject result = super.getFileControlParameterDataObject();
 
-		result.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag(
-				(byte) 0x80), Utils.removeLeadingZeroBytes(Utils
-				.toUnsignedByteArray(content.length))));
+		result.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag((byte) 0x80),
+				Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(content.length))));
 
-		result.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag(
-				(byte) 0x88), Utils
-				.toUnsignedByteArray((byte) shortFileIdentifier
-						.getShortFileIdentifier())));
+		result.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag((byte) 0x88),
+				Utils.toUnsignedByteArray((byte) shortFileIdentifier.getShortFileIdentifier())));
 
 		return result;
 	}
@@ -115,5 +118,59 @@ public class ElementaryFile extends AbstractFile {
 			return;
 		}
 		throw new AccessDeniedException("The access conditions do not allow deletion of this file.");
+	}
+
+	/**
+	 * This method erases the indicated content of this file. The sequence of
+	 * bytes between the offsets is erased.
+	 * 
+	 * @param startingOffset
+	 *            the first byte to erase
+	 * @param endingOffset
+	 *            the first byte NOT to erase
+	 * @throws AccessDeniedException
+	 * @throws {@link
+	 *             IllegalArgumentException}, if the given offsets can not be
+	 *             used for erasing contents
+	 */
+	public void erase(int startingOffset, int endingOffset) throws AccessDeniedException {
+		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(), erasingConditions)) {
+
+			if (startingOffset < 0 | endingOffset > content.length | endingOffset < startingOffset) {
+				throw new IllegalArgumentException(
+						"The given offset combination (" + startingOffset + "," + endingOffset + ") is not feasible");
+			}
+
+			for (int i = startingOffset; i < endingOffset; i++) {
+				content[i] = 0;
+			}
+
+			return;
+		}
+		throw new AccessDeniedException("The access conditions do not allow erasing of this files contents.");
+	}
+
+	/**
+	 * This method erases the content of this file.
+	 * 
+	 * @throws AccessDeniedException
+	 */
+	public void erase() throws AccessDeniedException {
+		erase(0, content.length);
+	}
+
+	/**
+	 * This method erases the indicated content of this file. The sequence of
+	 * bytes between the startingOffset and the end of the file is erased.
+	 * 
+	 * @param startingOffset
+	 *            the first byte to erase
+	 * @throws AccessDeniedException
+	 * @throws {@link
+	 *             IllegalArgumentException}, if the given offset does not fit
+	 *             the file
+	 */
+	public void erase(int startingOffset) throws AccessDeniedException {
+		erase(startingOffset, content.length);
 	}
 }
