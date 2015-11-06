@@ -75,6 +75,7 @@ import de.persosim.simulator.perso.xstream.KeyConverter;
 import de.persosim.simulator.perso.xstream.KeyPairConverter;
 import de.persosim.simulator.perso.xstream.ProtocolConverter;
 import de.persosim.simulator.perso.xstream.TlvConverter;
+import de.persosim.simulator.platform.CommandProcessorStateMachine;
 import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
@@ -95,6 +96,13 @@ public class PersonalizationFactory {
 			throw new NullPointerException ("Personalization object is null!");
 		}
 		XStream xstream = getXStream();
+		xstream.autodetectAnnotations(true);
+		
+		//TODO find better solution for static removal of elements from marshalled perso
+		xstream.omitField(CommandProcessorStateMachine.class, "m_initialized");
+		xstream.omitField(CommandProcessorStateMachine.class, "stateVar");
+		xstream.omitField(CommandProcessorStateMachine.class, "stateVarCOMMAND_PROCESSOR");
+		
 		StringWriter xmlWriter = new StringWriter();
 		xstream.toXML (pers, xmlWriter);
 		
