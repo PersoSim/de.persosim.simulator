@@ -20,7 +20,9 @@ import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ObjectStore;
 import de.persosim.simulator.cardobjects.Scope;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.NotImplementedException;
+import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ProtocolStateMachine;
@@ -112,7 +114,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	// methods/fields handling/representing the card state
 	// ---------------------------------------------------
 
-	protected SecStatus securityStatus;
+	protected transient SecStatus securityStatus;
 	protected ObjectStore objectStore;
 
 	@Override
@@ -454,6 +456,14 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	
 	@Override
 	public void initializeForUse() {
+		securityStatus = new SecStatus();
+		
+		try {
+			getObjectTree().setSecStatus(securityStatus);
+		} catch (AccessDeniedException e) {
+			throw new ProcessingException(SW_6FFF_IMPLEMENTATION_ERROR, "something went wrong reinitializing the command processor");
+		}
+		
 		for(Protocol protocol:protocols) {
 			protocol.setCardStateAccessor(this);
 		}
