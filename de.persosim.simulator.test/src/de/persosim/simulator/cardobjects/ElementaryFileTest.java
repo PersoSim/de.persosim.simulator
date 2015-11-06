@@ -23,6 +23,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 
 	@Mocked
 	SecStatus mockedSecurityStatus;
+	
 
 	@Before
 	public void setUp() throws ReflectiveOperationException, AccessDeniedException {
@@ -72,8 +73,6 @@ public class ElementaryFileTest extends PersoSimTestCase {
 	public void testErase() throws AccessDeniedException{
 		// create files to test
 		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), new byte[] { 1, 2, 3, 4 }, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
-		file.setSecStatus(mockedSecurityStatus);
-
 		file.erase();
 		
 		assertArrayEquals(new byte [] {0,0,0,0}, file.getContent());
@@ -86,8 +85,6 @@ public class ElementaryFileTest extends PersoSimTestCase {
 	public void testEraseWithNegativeOffset() throws AccessDeniedException{
 		// create files to test
 		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), new byte[] { 1, 2, 3, 4 }, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
-		file.setSecStatus(mockedSecurityStatus);
-		
 		file.erase(-2);
 	}
 
@@ -98,8 +95,6 @@ public class ElementaryFileTest extends PersoSimTestCase {
 	public void testEraseWithOffset() throws AccessDeniedException{
 		// create files to test
 		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), new byte[] { 1, 2, 3, 4 }, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
-		file.setSecStatus(mockedSecurityStatus);
-		
 		file.erase(2);
 		
 		assertArrayEquals(new byte [] {1,2,0,0}, file.getContent());
@@ -112,8 +107,6 @@ public class ElementaryFileTest extends PersoSimTestCase {
 	public void testEraseWithBothOffsets() throws AccessDeniedException{
 		// create files to test
 		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), new byte[] { 1, 2, 3, 4 }, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
-		file.setSecStatus(mockedSecurityStatus);
-		
 		file.erase(1,3);
 		
 		assertArrayEquals(new byte [] {1,0,0,4}, file.getContent());
@@ -126,8 +119,6 @@ public class ElementaryFileTest extends PersoSimTestCase {
 	public void testEraseWithFirstOffsetHigher() throws AccessDeniedException{
 		// create files to test
 		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), new byte[] { 1, 2, 3, 4 }, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
-		file.setSecStatus(mockedSecurityStatus);
-		
 		file.erase(2,1);
 	}
 
@@ -138,8 +129,6 @@ public class ElementaryFileTest extends PersoSimTestCase {
 	public void testEraseWithBadSecondOffset() throws AccessDeniedException{
 		// create files to test
 		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), new byte[] { 1, 2, 3, 4 }, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
-		file.setSecStatus(mockedSecurityStatus);
-		
 		file.erase(2,5);
 	}
 
