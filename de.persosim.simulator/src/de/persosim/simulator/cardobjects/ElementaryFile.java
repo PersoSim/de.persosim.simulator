@@ -57,7 +57,7 @@ public class ElementaryFile extends AbstractFile {
 	 * @return stored data as byte array
 	 */
 	public byte[] getContent() throws AccessDeniedException {
-		if (securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions)){
+		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions)){
 			return Arrays.copyOf(content, content.length);
 		}
 		throw new AccessDeniedException("Reading forbidden");
@@ -68,7 +68,7 @@ public class ElementaryFile extends AbstractFile {
 	 * @param data to be used as a replacement
 	 */
 	public void update(int offset, byte[] data) throws AccessDeniedException {
-		if (securityStatus.checkAccessConditions(getLifeCycleState(), writingConditions)){
+		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(), writingConditions)){
 			for(int i = 0; i < data.length; i++){
 				content[i + offset] = data[i];
 			}
