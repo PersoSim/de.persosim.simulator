@@ -1499,9 +1499,6 @@
         <de.persosim.simulator.protocols.pin.PinProtocol id="345"/>
         <de.persosim.simulator.protocols.NpaProtocol id="346"/>
       </protocols>
-      <m__initialized>true</m__initialized>
-      <stateVar>5</stateVar>
-      <stateVarCOMMAND__PROCESSOR>8</stateVarCOMMAND__PROCESSOR>
     </de.persosim.simulator.platform.CommandProcessor>
   </layers>
 </de.persosim.simulator.perso.Profile05>
