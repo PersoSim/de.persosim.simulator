@@ -290,7 +290,7 @@
                     <boolean>true</boolean>
                     <boolean>true</boolean>
                     <boolean>true</boolean>
-                    <boolean>false</boolean>
+                    <boolean>true</boolean>
                     <boolean>true</boolean>
                     <boolean>true</boolean>
                     <boolean>true</boolean>
@@ -335,7 +335,7 @@
             <certificateExpirationDate id="115">2016-11-05 00:00:00.0 UTC</certificateExpirationDate>
             <certificateExtensions id="116"/>
           </body>
-          <signature id="117">7E254B54F394E2C8A56C3C8F88B1D72DC509724C165C51E54FEACD114C4631858E2126A4B3850AB94117CB6C5AD99121A8F612685C65123D6F136A1A1962FFF5</signature>
+          <signature id="117">8BD0D199516491AD5128AA65E5480412F5A55E4E40C8ED7D6173A4D5CD53B91013228A376F27B5D190A94367ACEF0C022FAE1B694AD106C443E2A0EF57A9ECCD</signature>
         </currentCertificate>
         <identifier id="118">
           <terminalType>AT</terminalType>
@@ -1500,6 +1500,7 @@
         <dedicatedFileName id="346">
           <fileName id="347">E80704007F00070302</fileName>
         </dedicatedFileName>
+        <createFiles class="de.persosim.simulator.seccondition.SecCondition$1" reference="167"/>
       </de.persosim.simulator.cardobjects.DedicatedFile>
       <de.persosim.simulator.cardobjects.DedicatedFile id="348">
         <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="12"/>
@@ -1609,6 +1610,7 @@
         <dedicatedFileName id="384">
           <fileName id="385">A0000002471001</fileName>
         </dedicatedFileName>
+        <createFiles class="de.persosim.simulator.seccondition.SecCondition$1" reference="167"/>
       </de.persosim.simulator.cardobjects.DedicatedFile>
     </children>
     <lifeCycleState>CREATION</lifeCycleState>
@@ -1618,5 +1620,6 @@
     <dedicatedFileName id="387">
       <fileName id="388">A0000002471003</fileName>
     </dedicatedFileName>
+    <createFiles class="de.persosim.simulator.seccondition.SecCondition$1" reference="167"/>
   </mf>
 </de.persosim.simulator.perso.DefaultPersoGt>
