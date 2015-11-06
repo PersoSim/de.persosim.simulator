@@ -3,34 +3,33 @@
     <de.persosim.simulator.platform.IoManager id="3"/>
     <de.persosim.simulator.securemessaging.SecureMessaging id="4"/>
     <de.persosim.simulator.platform.CommandProcessor id="5">
-      <securityStatus id="6">
-        <contexts id="7" enum-type="de.persosim.simulator.secstatus.SecStatus$SecContext">
-          <entry>
-            <de.persosim.simulator.secstatus.SecStatus_-SecContext>GLOBAL</de.persosim.simulator.secstatus.SecStatus_-SecContext>
-            <map id="8"/>
-          </entry>
-          <entry>
-            <de.persosim.simulator.secstatus.SecStatus_-SecContext>APPLICATION</de.persosim.simulator.secstatus.SecStatus_-SecContext>
-            <map id="9"/>
-          </entry>
-          <entry>
-            <de.persosim.simulator.secstatus.SecStatus_-SecContext>FILE</de.persosim.simulator.secstatus.SecStatus_-SecContext>
-            <map id="10"/>
-          </entry>
-          <entry>
-            <de.persosim.simulator.secstatus.SecStatus_-SecContext>COMMAND</de.persosim.simulator.secstatus.SecStatus_-SecContext>
-            <map id="11"/>
-          </entry>
-        </contexts>
-        <storedSecStatusContents id="12"/>
-      </securityStatus>
-      <objectStore id="13">
-        <masterFile id="14">
-          <children id="15">
-            <de.persosim.simulator.cardobjects.MrzAuthObject id="16">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
-              <children id="17"/>
-              <securityStatus reference="6"/>
+      <objectStore id="6">
+        <masterFile id="7">
+          <children id="8">
+            <de.persosim.simulator.cardobjects.MrzAuthObject id="9">
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
+              <children id="10"/>
+              <securityStatus id="11">
+                <contexts id="12" enum-type="de.persosim.simulator.secstatus.SecStatus$SecContext">
+                  <entry>
+                    <de.persosim.simulator.secstatus.SecStatus_-SecContext>GLOBAL</de.persosim.simulator.secstatus.SecStatus_-SecContext>
+                    <map id="13"/>
+                  </entry>
+                  <entry>
+                    <de.persosim.simulator.secstatus.SecStatus_-SecContext>APPLICATION</de.persosim.simulator.secstatus.SecStatus_-SecContext>
+                    <map id="14"/>
+                  </entry>
+                  <entry>
+                    <de.persosim.simulator.secstatus.SecStatus_-SecContext>FILE</de.persosim.simulator.secstatus.SecStatus_-SecContext>
+                    <map id="15"/>
+                  </entry>
+                  <entry>
+                    <de.persosim.simulator.secstatus.SecStatus_-SecContext>COMMAND</de.persosim.simulator.secstatus.SecStatus_-SecContext>
+                    <map id="16"/>
+                  </entry>
+                </contexts>
+                <storedSecStatusContents id="17"/>
+              </securityStatus>
               <lifeCycleState>CREATION</lifeCycleState>
               <identifier id="18">
                 <identifier>1</identifier>
@@ -40,9 +39,9 @@
               <mrz>IDD&lt;&lt;0000000011&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;6408125F2010315D&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;8MUSTERMANN&lt;&lt;ERIKA&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</mrz>
             </de.persosim.simulator.cardobjects.MrzAuthObject>
             <de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject id="20">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="21"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <identifier id="22">
                 <identifier>2</identifier>
@@ -53,9 +52,9 @@
               <maxLengthOfPasswordInBytes>6</maxLengthOfPasswordInBytes>
             </de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject>
             <de.persosim.simulator.cardobjects.PinObject id="24">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="25"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <identifier id="26">
                 <identifier>3</identifier>
@@ -68,9 +67,9 @@
               <retryCounterCurrentValue>3</retryCounterCurrentValue>
             </de.persosim.simulator.cardobjects.PinObject>
             <de.persosim.simulator.cardobjects.PasswordAuthObject id="28">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="29"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <identifier id="30">
                 <identifier>4</identifier>
@@ -79,9 +78,9 @@
               <passwordName>PUK</passwordName>
             </de.persosim.simulator.cardobjects.PasswordAuthObject>
             <de.persosim.simulator.cardobjects.DomainParameterSetCardObject id="32">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="33"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <domainParameterSet class="de.persosim.simulator.crypto.DomainParameterSetEcdh" id="34">
                 <ecParameterSpec id="35">
@@ -113,9 +112,9 @@
               </furtherIdentifiers>
             </de.persosim.simulator.cardobjects.DomainParameterSetCardObject>
             <de.persosim.simulator.cardobjects.KeyPairObject id="43">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="44"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <primaryIdentifier id="45">
                 <integer>41</integer>
@@ -141,9 +140,9 @@
               </keyPair>
             </de.persosim.simulator.cardobjects.KeyPairObject>
             <de.persosim.simulator.cardobjects.KeyPairObject id="53">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="54"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <primaryIdentifier id="55">
                 <integer>45</integer>
@@ -164,9 +163,9 @@
               </keyPair>
             </de.persosim.simulator.cardobjects.KeyPairObject>
             <de.persosim.simulator.cardobjects.KeyPairObject id="60">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="61"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <primaryIdentifier id="62">
                 <integer>1</integer>
@@ -192,9 +191,9 @@
               </keyPair>
             </de.persosim.simulator.cardobjects.KeyPairObject>
             <de.persosim.simulator.cardobjects.KeyPairObject id="70">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="71"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <primaryIdentifier id="72">
                 <integer>2</integer>
@@ -220,9 +219,9 @@
               </keyPair>
             </de.persosim.simulator.cardobjects.KeyPairObject>
             <de.persosim.simulator.cardobjects.TrustPointCardObject id="79">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="80"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <currentCertificate id="81">
                 <body id="82">
@@ -278,9 +277,9 @@
               </identifier>
             </de.persosim.simulator.cardobjects.TrustPointCardObject>
             <de.persosim.simulator.cardobjects.TrustPointCardObject id="100">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="101"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <currentCertificate id="102">
                 <body id="103">
@@ -368,9 +367,9 @@
               </identifier>
             </de.persosim.simulator.cardobjects.TrustPointCardObject>
             <de.persosim.simulator.cardobjects.TrustPointCardObject id="121">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="122"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <currentCertificate id="123">
                 <body id="124">
@@ -426,17 +425,17 @@
               </identifier>
             </de.persosim.simulator.cardobjects.TrustPointCardObject>
             <de.persosim.simulator.cardobjects.DateTimeCardObject id="142">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="143"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <currentDate id="144">2014-05-04 22:00:00.0 UTC</currentDate>
               <identifier id="145"/>
             </de.persosim.simulator.cardobjects.DateTimeCardObject>
             <de.persosim.simulator.cardobjects.ByteDataAuxObject id="146">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="147"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <identifier id="148">
                 <oid class="de.persosim.simulator.protocols.ta.TaOid" id="149">
@@ -447,9 +446,9 @@
               <data id="151">02760503150000</data>
             </de.persosim.simulator.cardobjects.ByteDataAuxObject>
             <de.persosim.simulator.cardobjects.DateAuxObject id="152">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="153"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <identifier id="154">
                 <oid class="de.persosim.simulator.protocols.ta.TaOid" id="155">
@@ -460,9 +459,9 @@
               <date id="157">1964-08-11 23:00:00.0 UTC</date>
             </de.persosim.simulator.cardobjects.DateAuxObject>
             <de.persosim.simulator.cardobjects.DateAuxObject id="158">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="159"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <identifier id="160">
                 <oid class="de.persosim.simulator.protocols.ta.TaOid" id="161">
@@ -473,9 +472,9 @@
               <date id="163">2020-10-30 23:00:00.0 UTC</date>
             </de.persosim.simulator.cardobjects.DateAuxObject>
             <de.persosim.simulator.cardobjects.ElementaryFile id="164">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="165"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <fileIdentifier id="166">
                 <identifier>12032</identifier>
@@ -489,9 +488,9 @@
               <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="170"/>
             </de.persosim.simulator.cardobjects.ElementaryFile>
             <de.persosim.simulator.cardobjects.ElementaryFile id="171">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="172"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <fileIdentifier id="173">
                 <identifier>284</identifier>
@@ -505,9 +504,9 @@
               <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="170"/>
             </de.persosim.simulator.cardobjects.ElementaryFile>
             <de.persosim.simulator.cardobjects.ElementaryFile id="176">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="177"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <fileIdentifier id="178">
                 <identifier>285</identifier>
@@ -521,9 +520,9 @@
               <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="170"/>
             </de.persosim.simulator.cardobjects.ElementaryFile>
             <de.persosim.simulator.cardobjects.ElementaryFile id="182">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="183"/>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <fileIdentifier id="184">
                 <identifier>283</identifier>
@@ -592,12 +591,12 @@
               <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="170"/>
             </de.persosim.simulator.cardobjects.ElementaryFile>
             <de.persosim.simulator.cardobjects.DedicatedFile id="194">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="195">
                 <de.persosim.simulator.cardobjects.ElementaryFile id="196">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="194"/>
                   <children id="197"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="198">
                     <identifier>257</identifier>
@@ -668,7 +667,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="208">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="194"/>
                   <children id="209"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="210">
                     <identifier>258</identifier>
@@ -739,7 +738,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="220">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="194"/>
                   <children id="221"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="222">
                     <identifier>259</identifier>
@@ -810,7 +809,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="232">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="194"/>
                   <children id="233"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="234">
                     <identifier>260</identifier>
@@ -881,7 +880,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="244">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="194"/>
                   <children id="245"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="246">
                     <identifier>261</identifier>
@@ -952,7 +951,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="256">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="194"/>
                   <children id="257"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="258">
                     <identifier>262</identifier>
@@ -1023,7 +1022,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="268">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="194"/>
                   <children id="269"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="270">
                     <identifier>263</identifier>
@@ -1094,7 +1093,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="280">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="194"/>
                   <children id="281"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="282">
                     <identifier>264</identifier>
@@ -1165,7 +1164,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="292">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="194"/>
                   <children id="293"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="294">
                     <identifier>265</identifier>
@@ -1236,7 +1235,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="304">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="194"/>
                   <children id="305"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="306">
                     <identifier>269</identifier>
@@ -1307,7 +1306,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="316">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="194"/>
                   <children id="317"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="318">
                     <identifier>273</identifier>
@@ -1426,7 +1425,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="332">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="194"/>
                   <children id="333"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="334">
                     <identifier>274</identifier>
@@ -1543,19 +1542,19 @@
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="170"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
               </children>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <dedicatedFileName id="348">
                 <fileName id="349">E80704007F00070302</fileName>
               </dedicatedFileName>
             </de.persosim.simulator.cardobjects.DedicatedFile>
             <de.persosim.simulator.cardobjects.DedicatedFile id="350">
-              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+              <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
               <children id="351">
                 <de.persosim.simulator.cardobjects.ElementaryFile id="352">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="350"/>
                   <children id="353"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="354">
                     <identifier>257</identifier>
@@ -1571,7 +1570,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="358">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="350"/>
                   <children id="359"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="360">
                     <identifier>258</identifier>
@@ -1587,7 +1586,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="364">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="350"/>
                   <children id="365"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="366">
                     <identifier>259</identifier>
@@ -1623,7 +1622,7 @@
                 <de.persosim.simulator.cardobjects.ElementaryFile id="375">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="350"/>
                   <children id="376"/>
-                  <securityStatus reference="6"/>
+                  <securityStatus reference="11"/>
                   <lifeCycleState>CREATION</lifeCycleState>
                   <fileIdentifier id="377">
                     <identifier>260</identifier>
@@ -1657,14 +1656,14 @@
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="170"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
               </children>
-              <securityStatus reference="6"/>
+              <securityStatus reference="11"/>
               <lifeCycleState>CREATION</lifeCycleState>
               <dedicatedFileName id="386">
                 <fileName id="387">A0000002471001</fileName>
               </dedicatedFileName>
             </de.persosim.simulator.cardobjects.DedicatedFile>
           </children>
-          <securityStatus reference="6"/>
+          <securityStatus reference="11"/>
           <lifeCycleState>CREATION</lifeCycleState>
           <fileIdentifier id="388">
             <identifier>16128</identifier>
@@ -1673,7 +1672,7 @@
             <fileName id="390">A0000002471003</fileName>
           </dedicatedFileName>
         </masterFile>
-        <currentFile class="de.persosim.simulator.cardobjects.MasterFile" reference="14"/>
+        <currentFile class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
       </objectStore>
       <protocols id="391">
         <de.persosim.simulator.protocols.pace.PaceBypassProtocol id="392"/>
