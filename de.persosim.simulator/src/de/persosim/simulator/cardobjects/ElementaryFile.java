@@ -31,6 +31,8 @@ public class ElementaryFile extends AbstractFile {
 
 	private SecCondition erasingConditions;
 
+	private SecCondition deletionConditions;
+
 	/**
 	 * Creates a new {@link ElementaryFile} using both a full file identifier
 	 * and a short file identifier.
@@ -53,8 +55,33 @@ public class ElementaryFile extends AbstractFile {
 	 *            tree) of the file
 	 */
 	public ElementaryFile(FileIdentifier fileIdentifier, ShortFileIdentifier shortFileIdentifier, byte[] content,
+			SecCondition readingConditions, SecCondition writingConditions, SecCondition erasingConditions,
+			SecCondition deletionConditions) {
+		this(fileIdentifier, content, readingConditions, writingConditions, erasingConditions, deletionConditions);
+		this.shortFileIdentifier = shortFileIdentifier;
+	}
+	
+	/**
+	 * Creates a new {@link ElementaryFile} using both a full file identifier
+	 * and a short file identifier.
+	 * 
+	 * @param fileIdentifier
+	 *            used for identification of the file in the object tree
+	 * @param shortFileIdentifier
+	 *            used for identification of the file in the object tree
+	 * @param content
+	 *            the initial contents of the file
+	 * @param readingConditions
+	 *            access restrictions for reading the file contents
+	 * @param writingConditions
+	 *            access restrictions for updating or writing the file contents
+	 * @param erasingConditions
+	 *            access restrictions for erasing (setting bytes to zero) of the
+	 *            file contents
+	 */
+	public ElementaryFile(FileIdentifier fileIdentifier, ShortFileIdentifier shortFileIdentifier, byte[] content,
 			SecCondition readingConditions, SecCondition writingConditions, SecCondition erasingConditions) {
-		this(fileIdentifier, content, readingConditions, writingConditions, erasingConditions);
+		this(fileIdentifier, shortFileIdentifier, content, readingConditions, writingConditions, erasingConditions, SecCondition.DENIED);
 		this.shortFileIdentifier = shortFileIdentifier;
 	}
 	
@@ -77,12 +104,13 @@ public class ElementaryFile extends AbstractFile {
 	 *            tree) of the file
 	 */
 	public ElementaryFile(FileIdentifier fileIdentifier, byte[] content, SecCondition readingConditions,
-			SecCondition writingConditions, SecCondition erasingConditions) {
+			SecCondition writingConditions, SecCondition erasingConditions, SecCondition deletionConditions) {
 		super(fileIdentifier);
 		this.content = content;
 		this.readingConditions = readingConditions;
 		this.writingConditions = writingConditions;
 		this.erasingConditions = erasingConditions;
+		this.deletionConditions = deletionConditions;
 	}
 
 	@Override
@@ -156,8 +184,13 @@ public class ElementaryFile extends AbstractFile {
 		return result;
 	}
 
-	public void delete() throws AccessDeniedException{
-		if (securityStatus.checkAccessConditions(getLifeCycleState(), erasingConditions)){
+	/**
+	 * Removes this file from its parent.
+	 * 
+	 * @throws AccessDeniedException
+	 */
+	public void delete() throws AccessDeniedException {
+		if (securityStatus.checkAccessConditions(getLifeCycleState(), deletionConditions)) {
 			getParent().removeChild(this);
 			return;
 		}

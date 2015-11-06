@@ -1,6 +1,7 @@
 package de.persosim.simulator.cardobjects;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
@@ -49,6 +50,9 @@ public class ElementaryFileTest extends PersoSimTestCase {
 		assertArrayEquals("file content not as expected", newContent, file.getContent());
 	}
 
+	/**
+	 * Positive test: delete a file from the object tree.
+	 */
 	@Test
 	public void testDelete() throws AccessDeniedException{
 		// create files to test
