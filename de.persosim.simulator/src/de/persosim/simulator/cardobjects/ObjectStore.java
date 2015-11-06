@@ -26,6 +26,10 @@ public class ObjectStore {
 	 */
 	private MasterFile masterFile; 
 	
+	public MasterFile getMasterFile() {
+		return masterFile;
+	}
+
 	/**
 	 * handle for the currently selected file, this is the last file selected
 	 */

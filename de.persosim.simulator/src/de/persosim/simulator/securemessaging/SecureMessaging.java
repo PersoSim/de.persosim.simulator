@@ -621,5 +621,10 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		newProvider.init(dataProvider);
 		dataProvider = newProvider;
 	}
+
+	@Override
+	public void initializeForUse() {
+		// nothing to do here
+	}
 	
 }

@@ -37,7 +37,7 @@ public interface StateMachine {
 	public abstract void init();
 
 	/**
-	 * Returns true when init() was called before. Can be used within the state
+	 * Returns true when {@link #init()} was called before, i.e. the {@link StateMachine} has been properly initialized. Can be used within the state
 	 * machine to prevent execution of initialization steps that are required
 	 * only once and would be executed for every APDU instead.
 	 */

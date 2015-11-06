@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import de.persosim.simulator.apdu.ResponseApdu;
@@ -19,15 +20,17 @@ import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ObjectStore;
 import de.persosim.simulator.cardobjects.Scope;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.NotImplementedException;
+import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ProtocolStateMachine;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
-import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
+import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
 import de.persosim.simulator.statemachine.AbstractStateMachine;
 import de.persosim.simulator.statemachine.StateMachine;
 
@@ -111,7 +114,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	// methods/fields handling/representing the card state
 	// ---------------------------------------------------
 
-	protected SecStatus securityStatus;
+	protected transient SecStatus securityStatus;
 	protected ObjectStore objectStore;
 
 	@Override
@@ -133,7 +136,6 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	 *            to use
 	 */
 	public void addProtocol(Protocol newProtocol) {
-		newProtocol.setCardStateAccessor(this);
 		protocols.add(newProtocol);
 	}
 
@@ -189,9 +191,9 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	/**
 	 * List of available protocols
 	 */
-	protected ArrayList<Protocol> protocols = new ArrayList<>();
+	protected List<Protocol> protocols = new ArrayList<>();
 	
-	private Protocol currentlyActiveProtocol;
+	private transient Protocol currentlyActiveProtocol;
 	
 	
 	
@@ -199,18 +201,18 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	 * stackPointer is a pointer pointing at an element of protocolStack, i.e.
 	 * the currently active/unfinished/interrupted protocols
 	 */
-	protected int stackPointer;
+	protected transient int stackPointer;
 
 	/**
 	 * the stack containing all active/unfinished/interrupted protocols
 	 */
-	protected ArrayList<Protocol> protocolStack;
+	protected transient ArrayList<Protocol> protocolStack;
 
 	/**
 	 * protocolPointer is a pointer pointing at an element of protocols, i.e.
 	 * the list of known/supported protocols
 	 */
-	protected int protocolPointer;
+	protected transient int protocolPointer;
 
 	public void setStackPointerToBottom() {
 		this.stackPointer = 0;
@@ -436,8 +438,8 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	// -----------------------
 	// Control of StateMachine
 	// -----------------------
-	private boolean initialized = false;
-	protected boolean continueProcessing;
+	private transient boolean initialized = false;
+	protected transient boolean continueProcessing;
 
 	@Override
 	public void init() {
@@ -450,6 +452,25 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	@Override
 	public boolean isInitialized() {
 		return initialized;
+	}
+	
+	@Override
+	public void initializeForUse() {
+		securityStatus = new SecStatus();
+		
+		try {
+			getObjectTree().setSecStatus(securityStatus);
+		} catch (AccessDeniedException e) {
+			throw new ProcessingException(SW_6FFF_IMPLEMENTATION_ERROR, "something went wrong reinitializing the command processor");
+		}
+		
+		for(Protocol protocol:protocols) {
+			protocol.setCardStateAccessor(this);
+		}
+		
+		PersonalizationHelper.setLifeCycleStates(objectStore.getMasterFile());
+		
+		init();
 	}
 
 	@Override
@@ -470,6 +491,26 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	 */
 	public boolean apduHasBeenProcessed() {
 		return this.processingData.isProcessingFinished();
+	}
+
+	/**
+	 * Returns the root element of the object tree.
+	 */
+	public MasterFile getObjectTree(){
+		return objectStore.getMasterFile();
+	}
+
+	/**
+	 * Returns the list of activated protocols.
+	 * <p/>
+	 * The protocols contained in this List are required to be already
+	 * initialized and ready to be added to a {@link CardStateAccessor} and
+	 * used afterwards
+	 * 
+	 * @return
+	 */
+	public List<Protocol> getProtocolList(){
+		return protocols;
 	}
 
 }

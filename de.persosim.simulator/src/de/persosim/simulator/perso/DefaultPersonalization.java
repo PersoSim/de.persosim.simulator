@@ -10,6 +10,7 @@ import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ByteDataAuxObject;
@@ -37,7 +38,11 @@ import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
+import de.persosim.simulator.platform.CommandProcessor;
+import de.persosim.simulator.platform.IoManager;
+import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.protocols.NpaProtocol;
+import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.protocols.auxVerification.AuxProtocol;
 import de.persosim.simulator.protocols.ca.Ca;
@@ -59,6 +64,7 @@ import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.PaceSecurityCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.seccondition.TaSecurityCondition;
+import de.persosim.simulator.securemessaging.SecureMessaging;
 import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 
@@ -79,44 +85,47 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 	public static final String AID_EID = "E8 07 04 00 7F 00 07 03 02";
 
-	@Override
-	public void buildObjectTree() throws AccessDeniedException {
+	public MasterFile buildObjectTree() throws AccessDeniedException {
+		MasterFile mf = null;
+		
 		try {
 			mf = new MasterFile(new FileIdentifier(0x3F00),
 					new DedicatedFileIdentifier(new byte[] { (byte) 0xA0, 0x0,
 							0x0, 0x2, 0x47, 0x10, 0x03 }));
 
-			addAuthObjects();
+			addAuthObjects(mf);
 
-			addDomainParameters();
-			addCaKeys();
-			addRiKeys();
+			addDomainParameters(mf);
+			addCaKeys(mf);
+			addRiKeys(mf);
 
-			addTaTrustPoints();
-			addTime();
+			addTaTrustPoints(mf);
+			addTime(mf);
 
-			addAuxData();
+			addAuxData(mf);
 
-			addEfDir();
-			addEfCardAccess();
-			addEfCardSecurity();
-			addEfChipSecurity();
+			addEfDir(mf);
+			addEfCardAccess(mf);
+			addEfCardSecurity(mf);
+			addEfChipSecurity(mf);
 
-			addEidApplication();
-			addEpassApplication();
+			addEidApplication(mf);
+			addEpassApplication(mf);
 
 		} catch (CertificateNotParseableException | NoSuchAlgorithmException
-				| NoSuchProviderException | AccessDeniedException | IOException e) {
+				| NoSuchProviderException | IOException e) {
 			// don't care for the moment
 			e.printStackTrace();
 		}
+		
+		return mf;
 	}
 
 	/**
 	 * Add the eID application to the card and fill it with content
 	 * @throws AccessDeniedException 
 	 */
-	protected void addEidApplication() throws AccessDeniedException {
+	protected void addEidApplication(MasterFile mf) throws AccessDeniedException {
 		// eID application
 		DedicatedFile eIdAppl = new DedicatedFile(null,
 				new DedicatedFileIdentifier(HexString
@@ -145,9 +154,10 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 	/**
 	 * Add the ePassport application to the card and fill it with content
+	 * @param mf 
 	 * @throws AccessDeniedException 
 	 */
-	protected void addEpassApplication() throws AccessDeniedException {
+	protected void addEpassApplication(MasterFile mf) throws AccessDeniedException {
 		// ePass application
 		DedicatedFile ePassAppl = new DedicatedFile(null,
 				new DedicatedFileIdentifier(
@@ -163,7 +173,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * Add auxiliary data to the object tree, used for AuxDataVerification protocol
 	 * @throws AccessDeniedException 
 	 */
-	protected void addAuxData() throws AccessDeniedException {
+	protected void addAuxData(MasterFile mf) throws AccessDeniedException {
 		// Aux data
 		byte[] communityId = HexString.toByteArray("02761100000000");
 		Calendar calendar = Calendar.getInstance();
@@ -186,7 +196,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * Configure the chips simulated time
 	 * @throws AccessDeniedException 
 	 */
-	protected void addTime() throws AccessDeniedException {
+	protected void addTime(MasterFile mf) throws AccessDeniedException {
 		// Time store
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2014, 4, 5, 0, 0, 0);
@@ -201,13 +211,13 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @throws CertificateNotParseableException
 	 * @throws AccessDeniedException 
 	 */
-	protected abstract void addTaTrustPoints() throws CertificateNotParseableException, AccessDeniedException;
+	protected abstract void addTaTrustPoints(MasterFile mf) throws CertificateNotParseableException, AccessDeniedException;
 
 	/**
 	 * Add an EF.Dir below MF
 	 * @throws AccessDeniedException 
 	 */
-	protected void addEfDir() throws AccessDeniedException {
+	protected void addEfDir(MasterFile mf) throws AccessDeniedException {
 		byte[] content = HexString
 				.toByteArray("61324F0FE828BD080FA000000167455349474E500F434941207A752044462E655369676E5100730C4F0AA000000167455349474E61094F07A0000002471001610B4F09E80704007F00070302610C4F0AA000000167455349474E");
 		
@@ -224,7 +234,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * Add an EF.ChipSecurity below MF as described by TR03110
 	 * @throws AccessDeniedException 
 	 */
-	protected void addEfChipSecurity() throws AccessDeniedException {
+	protected void addEfChipSecurity(MasterFile mf) throws AccessDeniedException {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
@@ -232,7 +242,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * Add an EF.CardSecurity below MF as described by TR03110
 	 * @throws AccessDeniedException 
 	 */
-	protected void addEfCardSecurity() throws AccessDeniedException {
+	protected void addEfCardSecurity(MasterFile mf) throws AccessDeniedException {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
@@ -240,7 +250,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * Add an EF.CardAccess below MF as described by TR03110
 	 * @throws AccessDeniedException 
 	 */
-	protected void addEfCardAccess() throws AccessDeniedException {
+	protected void addEfCardAccess(MasterFile mf) throws AccessDeniedException {
 		// force auto generation by DefaultNpaUnmarshallerCallback
 	}
 
@@ -249,7 +259,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @throws AccessDeniedException 
 	 * 
 	 */
-	protected void addRiKeys() throws AccessDeniedException {
+	protected void addRiKeys(MasterFile mf) throws AccessDeniedException {
 		DomainParameterSet domainParameterSet;
 		byte[] publicKeyMaterial;
 		byte[] privateKeyMaterial;
@@ -281,7 +291,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @throws AccessDeniedException 
 	 * 
 	 */
-	protected void addCaKeys() throws AccessDeniedException {
+	protected void addCaKeys(MasterFile mf) throws AccessDeniedException {
 		// CA static key pair PICC
 		DomainParameterSet domainParameterSet = StandardizedDomainParameters
 				.getDomainParameterSetById(13);
@@ -310,7 +320,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @throws IOException
 	 * @throws UnsupportedEncodingException
 	 */
-	protected void addDomainParameters() throws AccessDeniedException {
+	protected void addDomainParameters(MasterFile mf) throws AccessDeniedException {
 		// create domain parameters
 		DomainParameterSet domainParameterSet13 = StandardizedDomainParameters
 				.getDomainParameterSetById(13);
@@ -572,6 +582,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 	/**
 	 * Add all required authObjects to the personalized object tree
+	 * @param mf 
 	 * 
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchProviderException
@@ -579,7 +590,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @throws UnsupportedEncodingException
 	 * @throws AccessDeniedException 
 	 */
-	protected void addAuthObjects() throws NoSuchAlgorithmException,
+	protected void addAuthObjects(MasterFile mf) throws NoSuchAlgorithmException,
 			NoSuchProviderException, IOException, UnsupportedEncodingException, AccessDeniedException {
 		MrzAuthObject mrz = new MrzAuthObject(
 				new AuthObjectIdentifier(ID_MRZ),
@@ -629,9 +640,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		return retVal;
 	}
 
-	@Override
-	protected void buildProtocolList() {
-		protocols = new ArrayList<>();
+	protected List<Protocol> buildProtocolList() {
+		List<Protocol>protocols = new ArrayList<>();
 
 		/* load PACE bypass protocol */
 		PaceBypassProtocol paceBypassProtocol = new PaceBypassProtocol();
@@ -670,6 +680,45 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 		/* load nPA protocol */
 		protocols.add(new NpaProtocol());
+		
+		return protocols;
+	}
+	
+	@Override
+	protected void buildLayerList() {
+		MasterFile mf;
+		try {
+			mf = buildObjectTree();
+		} catch (AccessDeniedException e) {
+			throw new RuntimeException("Couldn't create objectTree", e);
+		}
+		List<Protocol> protocols = buildProtocolList();
+		
+		int layerId = 0;
+		layers = new ArrayList<>();
+		
+		// load IO manager layer
+		layers.add(new IoManager(layerId++));
+		
+		// load secure messaging layer
+		layers.add(new SecureMessaging(layerId++));
+		
+		// load command processor layer
+		CommandProcessor commandProcessor;
+		try {
+			commandProcessor = new CommandProcessor(layerId++, protocols, mf);
+		} catch (AccessDeniedException e) {
+			throw new RuntimeException("The creation of the CommandProcessor layer failed.", e);
+		}
+		commandProcessor.init();
+		layers.add(commandProcessor);
+	}
+	
+	@Override
+	public void initialize() {
+		for(Layer layer:layers) {
+			layer.initializeForUse();
+		}
 	}
 
 }

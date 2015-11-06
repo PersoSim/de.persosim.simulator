@@ -5,19 +5,13 @@ import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.logPlain;
 
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
-import de.persosim.simulator.cardobjects.CardObject;
-import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
-import de.persosim.simulator.cardobjects.ObjectStore;
 import de.persosim.simulator.exception.AccessDeniedException;
-import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.processing.UpdatePropagation;
-import de.persosim.simulator.secstatus.SecStatus;
-import de.persosim.simulator.securemessaging.SecureMessaging;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.InfoSource;
 import de.persosim.simulator.utils.PersoSimLogger;
@@ -33,9 +27,7 @@ import de.persosim.simulator.utils.Utils;
  */
 public class PersoSimKernel implements InfoSource {
 
-	private LinkedList<Layer> layers;
-	private SecStatus securityStatus;
-	private ObjectStore objectStore;
+	private List<Layer> layers;
 	
 	/**
 	 * Constructor that provides the inital {@link Personalization}
@@ -45,22 +37,6 @@ public class PersoSimKernel implements InfoSource {
 		super();
 	}
 
-	private void setLifeCycleStates(CardObject objectTree) {
-		Collection<CardObject> children = objectTree.getChildren();
-		if (children.size() > 0){
-			for (CardObject cardObject : children) {
-				setLifeCycleStates(cardObject);
-				if (cardObject.getLifeCycleState().isPersonalizationPhase()){
-					try {
-						cardObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
-					} catch (LifeCycleChangeException e) {
-						PersoSimLogger.logException(this, e, PersoSimLogger.WARN);
-					}	
-				}
-			}
-		}
-	}
-
 	/**
 	 * Performs initialization of object.
 	 * @param perso 
@@ -68,23 +44,8 @@ public class PersoSimKernel implements InfoSource {
 	public void init(Personalization perso) {
 		log(this, "init called", TRACE);
 		
-		this.objectStore = new ObjectStore(perso.getObjectTree());
-		objectStore.selectMasterFile();
-		this.securityStatus = new SecStatus();
-		try {
-			perso.getObjectTree().setSecStatus(securityStatus);
-		} catch (AccessDeniedException e) {
-			e.printStackTrace();
-		}
-		setLifeCycleStates(perso.getObjectTree());
-		
-		int layerId = 0;
-		layers = new LinkedList<>();
-		layers.add(new IoManager(layerId++));
-		layers.add(new SecureMessaging(layerId++));
-		CommandProcessor commandProcessor = new CommandProcessor(layerId++, perso, objectStore, securityStatus);
-		commandProcessor.init();
-		layers.add(commandProcessor);
+		perso.initialize();
+		layers = perso.getLayerList();
 		
 		log(this, "init finished", TRACE);
 	}
@@ -141,13 +102,18 @@ public class PersoSimKernel implements InfoSource {
 		
 		//propagate the event all layers up
 		int curLayerId = 0;
+		Layer currentLayer;
 		for (; curLayerId < layers.size(); curLayerId++) {
-			layers.get(curLayerId).processAscending(processingData);	
+			currentLayer = layers.get(curLayerId);
+			currentLayer.setLayerId(curLayerId);
+			currentLayer.processAscending(processingData);
 		}
 		
 		//propagate the event all layers down
 		for (curLayerId--; curLayerId >= 0; curLayerId--) {
-			layers.get(curLayerId).processDescending(processingData);
+			currentLayer = layers.get(curLayerId);
+			currentLayer.setLayerId(curLayerId);
+			currentLayer.processDescending(processingData);
 		}
 		
 		//extract prepared response

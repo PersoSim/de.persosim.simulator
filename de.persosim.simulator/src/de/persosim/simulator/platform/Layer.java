@@ -14,14 +14,20 @@ import de.persosim.simulator.utils.InfoSource;
  */
 public abstract class Layer implements Iso7816, InfoSource {
 
-	protected int layerId;
+	protected transient int layerId;
 	
 	protected ProcessingData processingData;
 	
 	public Layer(int id) {
 		layerId = id;
 	}
-
+	
+	/**
+	 * This method finalizes the layer so it can actually be used. It is to be
+	 * called when the layer is ready to be used.
+	 */
+	abstract public void initializeForUse();
+	
 	/**
 	 * Power-management function. This method is called by the
 	 * {@link PersoSimKernel} to notify each layer of the simulated power on of
@@ -126,4 +132,9 @@ public abstract class Layer implements Iso7816, InfoSource {
 	public ProcessingData getProcessingData() {
 		return processingData;
 	}
+	
+	public void setLayerId(int layerId) {
+		this.layerId = layerId;
+	}
+	
 }

@@ -24,13 +24,16 @@ import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.MrzAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.platform.CommandProcessor;
 import de.persosim.simulator.platform.Iso7816;
+import de.persosim.simulator.platform.PersonalizationHelper;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.InfoSource;
@@ -183,7 +186,9 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 	}
 
 	private CardFile getEidDg(int sfid) {
-		Collection<CardObject> cardApplications = getPersonalization().getObjectTree().findChildren(new DedicatedFileIdentifier(HexString
+		MasterFile mf = PersonalizationHelper.getUniqueCompatibleLayer(getPersonalization().getLayerList(), CommandProcessor.class).getObjectTree();
+		
+		Collection<CardObject> cardApplications = mf.findChildren(new DedicatedFileIdentifier(HexString
 				.toByteArray(DefaultPersonalization.AID_EID)));
 		
 		for (Iterator<CardObject> iterator = cardApplications.iterator(); iterator.hasNext();) {
@@ -307,7 +312,10 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 	 */
 	protected PasswordAuthObject getPasswordAuthObject(int passwordIdentifier) {
 		Personalization testP = getPersonalization();
-		Collection<CardObject> cardObjects = testP.getObjectTree().findChildren(new AuthObjectIdentifier(passwordIdentifier));
+		
+		MasterFile mf = PersonalizationHelper.getUniqueCompatibleLayer(testP.getLayerList(), CommandProcessor.class).getObjectTree();
+		
+		Collection<CardObject> cardObjects = mf.findChildren(new AuthObjectIdentifier(passwordIdentifier));
 		
 		if(cardObjects.isEmpty()) {
 			return null;

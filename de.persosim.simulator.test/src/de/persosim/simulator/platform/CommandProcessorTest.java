@@ -1,16 +1,7 @@
 package de.persosim.simulator.platform;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-
-import mockit.Delegate;
-import mockit.Invocation;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
-import mockit.Verifications;
-import mockit.VerificationsInOrder;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,16 +9,20 @@ import org.junit.Test;
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.MasterFile;
-import de.persosim.simulator.cardobjects.ObjectStore;
-import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ProtocolUpdate;
-import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.TlvValuePlain;
 import de.persosim.simulator.utils.InfoSource;
+import mockit.Delegate;
+import mockit.Invocation;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
+import mockit.Verifications;
+import mockit.VerificationsInOrder;
 
 public class CommandProcessorTest extends PersoSimTestCase {
 
@@ -41,26 +36,17 @@ public class CommandProcessorTest extends PersoSimTestCase {
 	/**
 	 * Instantiate and initialize the object under test
 	 * {@link #commandProcessor} with the mocked personalization.
+	 * @throws AccessDeniedException 
 	 * 
 	 */
 	@Before
-	public void setUp() {
-		final Personalization mockedPerso = new MockUp<Personalization>() {
-	        @Mock
-	        public List<AbstractProtocolStateMachine> getProtocolList(){
-	        	return Arrays.asList(new AbstractProtocolStateMachine[]{mockedProtocol});
-	        }
-	        
-	        @Mock
-	        public MasterFile getObjectTree(){
-	        	return new MasterFile();
-	        }
-	    }.getMockInstance();
+	public void setUp() throws AccessDeniedException {
+		MasterFile mf = new MasterFile();
+	    List<Protocol> protocols = new ArrayList<>();
+	    protocols.add(mockedProtocol);
 	    
-	    
-		commandProcessor = new CommandProcessor(LAYER_ID, mockedPerso, new ObjectStore(new MasterFile()), new SecStatus());
+		commandProcessor = new CommandProcessor(LAYER_ID, protocols, mf);
 		commandProcessor.init();
-		
 	}
 	
 	/**
