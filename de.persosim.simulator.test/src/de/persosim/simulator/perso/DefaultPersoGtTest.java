@@ -4,7 +4,7 @@ import org.junit.Before;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 
-public class DefaultPersoGtTest extends PersonalizationTest {
+public class DefaultPersoGtTest extends ArtifactPersonalizationTest {
 
 	Personalization perso;
 	

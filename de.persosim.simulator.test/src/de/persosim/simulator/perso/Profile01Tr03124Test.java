@@ -1,10 +1,12 @@
 package de.persosim.simulator.perso;
 
+import java.io.File;
+
 import org.junit.Before;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 
-public class Profile01Tr03124Test extends PersonalizationTest {
+public class Profile01Tr03124Test extends ArtifactPersonalizationTest {
 
 	Personalization perso;
 	
@@ -23,4 +25,9 @@ public class Profile01Tr03124Test extends PersonalizationTest {
 		return perso;
 	}
 
+	@Override
+	protected String getArtifactFolder() {
+		return super.getArtifactFolder() + "TR-03124" + File.separator;
+	}
+	
 }

@@ -4,7 +4,7 @@ import org.junit.Before;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 
-public class Profile02Test extends PersonalizationTest {
+public class Profile02Test extends ArtifactPersonalizationTest {
 
 	Personalization perso;
 	
