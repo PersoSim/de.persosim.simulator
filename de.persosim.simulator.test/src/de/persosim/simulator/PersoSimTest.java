@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
@@ -15,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.perso.Profile01;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
@@ -26,10 +26,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	
 	public static final String SELECT_APDU = "00A4020C02011C";
 	public static final String SW_NO_ERROR = "9000"; //FIXME why this constant?
-	
-	public static String DEFAULT_PERSONALIZATION_FILE_PROJECT = "de.persosim.simulator";
-	public static String DEFAULT_PERSONALIZATION_FILE_PATH = DEFAULT_PERSONALIZATION_FILE_PROJECT + File.separator + "personalization" + File.separator + "profiles";
-	public static String DEFAULT_PERSONALIZATION_FILE = DEFAULT_PERSONALIZATION_FILE_PATH + File.separator + "Profile01.xml";
 	
 	static PrintStream	origOut;
 	static ByteArrayOutputStream redStdOut;
@@ -51,18 +47,15 @@ public class PersoSimTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * This method returns the default personalization of profile 1 loaded from
-	 * Profile01.xml from de.persosim.simulator repository.
+	 * This method returns the default personalization. Currently we use
+	 * Profile01 as no specific requirements are known. This might change in the
+	 * future.
 	 * 
 	 * @return the default personalization
 	 * @throws FileNotFoundException
 	 */
 	public Personalization getDefaultPerso() throws FileNotFoundException {
-		File currentPath = new File("");
-		String currentPathString = currentPath.getAbsolutePath();
-		String repoPathString = currentPathString.substring(0, currentPathString.lastIndexOf(File.separator) + File.separator.length() - 1);
-		String defaultPersoFileString = repoPathString + File.separator + DEFAULT_PERSONALIZATION_FILE;
-		return CommandParser.parsePersonalization(defaultPersoFileString);
+		return new Profile01();
 	}
 	
 	/**
