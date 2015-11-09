@@ -370,6 +370,7 @@
               <readingConditions class="de.persosim.simulator.seccondition.SecCondition$1" id="127"/>
               <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" id="128"/>
               <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+              <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
             </de.persosim.simulator.cardobjects.ElementaryFile>
             <de.persosim.simulator.cardobjects.ElementaryFile id="129">
               <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
@@ -386,6 +387,7 @@
               <readingConditions class="de.persosim.simulator.seccondition.SecCondition$1" reference="127"/>
               <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
               <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+              <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
             </de.persosim.simulator.cardobjects.ElementaryFile>
             <de.persosim.simulator.cardobjects.ElementaryFile id="134">
               <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
@@ -402,6 +404,7 @@
               <readingConditions class="de.persosim.simulator.seccondition.TaSecurityCondition" id="139"/>
               <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
               <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+              <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
             </de.persosim.simulator.cardobjects.ElementaryFile>
             <de.persosim.simulator.cardobjects.ElementaryFile id="140">
               <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
@@ -473,6 +476,7 @@
               </readingConditions>
               <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
               <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+              <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
             </de.persosim.simulator.cardobjects.ElementaryFile>
             <de.persosim.simulator.cardobjects.DedicatedFile id="152">
               <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
@@ -547,6 +551,7 @@
                   </readingConditions>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="166">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="152"/>
@@ -618,6 +623,7 @@
                   </readingConditions>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="178">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="152"/>
@@ -689,6 +695,7 @@
                   </readingConditions>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="190">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="152"/>
@@ -760,6 +767,7 @@
                   </readingConditions>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="202">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="152"/>
@@ -831,6 +839,7 @@
                   </readingConditions>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="214">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="152"/>
@@ -902,6 +911,7 @@
                   </readingConditions>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="226">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="152"/>
@@ -973,6 +983,7 @@
                   </readingConditions>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="238">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="152"/>
@@ -1044,6 +1055,7 @@
                   </readingConditions>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="250">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="152"/>
@@ -1115,6 +1127,7 @@
                   </readingConditions>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="262">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="152"/>
@@ -1186,6 +1199,7 @@
                   </readingConditions>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="274">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="152"/>
@@ -1195,7 +1209,7 @@
                   <fileIdentifier id="276">
                     <identifier>273</identifier>
                   </fileIdentifier>
-                  <content id="277">712F302DAA110C0F484549444553545241535345203137AB0A0C084BC383E280934C4EAD03130144AE0713053531313437</content>
+                  <content id="277">712C302AAA110C0F484549444553545241535345203137AB070C054BC3964C4EAD03130144AE0713053531313437</content>
                   <shortFileIdentifier id="278">
                     <identifier>17</identifier>
                   </shortFileIdentifier>
@@ -1305,6 +1319,7 @@
                     </authorization>
                   </writingConditions>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="290">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="152"/>
@@ -1424,6 +1439,7 @@
                     </authorization>
                   </writingConditions>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
               </children>
               <securityStatus reference="11"/>
@@ -1431,6 +1447,7 @@
               <dedicatedFileName id="306">
                 <fileName id="307">E80704007F00070302</fileName>
               </dedicatedFileName>
+              <createFiles class="de.persosim.simulator.seccondition.SecCondition$1" reference="127"/>
             </de.persosim.simulator.cardobjects.DedicatedFile>
             <de.persosim.simulator.cardobjects.DedicatedFile id="308">
               <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
@@ -1450,6 +1467,7 @@
                   <readingConditions class="de.persosim.simulator.seccondition.PaceSecurityCondition" id="315"/>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="316">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="308"/>
@@ -1466,6 +1484,7 @@
                   <readingConditions class="de.persosim.simulator.seccondition.PaceSecurityCondition" id="321"/>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="322">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="308"/>
@@ -1502,6 +1521,7 @@
                   </readingConditions>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
                 <de.persosim.simulator.cardobjects.ElementaryFile id="333">
                   <parent class="de.persosim.simulator.cardobjects.DedicatedFile" reference="308"/>
@@ -1538,6 +1558,7 @@
                   </readingConditions>
                   <writingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                   <erasingConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
+                  <deletionConditions class="de.persosim.simulator.seccondition.SecCondition$2" reference="128"/>
                 </de.persosim.simulator.cardobjects.ElementaryFile>
               </children>
               <securityStatus reference="11"/>
@@ -1545,6 +1566,7 @@
               <dedicatedFileName id="344">
                 <fileName id="345">A0000002471001</fileName>
               </dedicatedFileName>
+              <createFiles class="de.persosim.simulator.seccondition.SecCondition$1" reference="127"/>
             </de.persosim.simulator.cardobjects.DedicatedFile>
           </children>
           <securityStatus reference="11"/>
@@ -1555,6 +1577,7 @@
           <dedicatedFileName id="347">
             <fileName id="348">A0000002471003</fileName>
           </dedicatedFileName>
+          <createFiles class="de.persosim.simulator.seccondition.SecCondition$1" reference="127"/>
         </masterFile>
         <currentFile class="de.persosim.simulator.cardobjects.MasterFile" reference="7"/>
       </objectStore>
