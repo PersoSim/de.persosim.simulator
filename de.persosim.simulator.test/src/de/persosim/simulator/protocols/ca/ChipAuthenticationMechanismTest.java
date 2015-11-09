@@ -8,11 +8,11 @@ import java.security.PublicKey;
 
 import org.junit.Test;
 
-import de.persosim.simulator.PersoSimTest;
 import de.persosim.simulator.crypto.CryptoUtil;
+import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
 
-public class ChipAuthenticationMechanismTest extends PersoSimTest {
+public class ChipAuthenticationMechanismTest extends PersoSimTestCase {
 	@Test
 	public void testGetUncompressedTerminalEphemeralPublicKeyImmutability() {
 		byte[] pubKeyBytes = HexString.toByteArray(

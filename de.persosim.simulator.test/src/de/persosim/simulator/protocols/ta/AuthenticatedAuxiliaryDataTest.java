@@ -6,9 +6,9 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import de.persosim.simulator.PersoSimTest;
+import de.persosim.simulator.test.PersoSimTestCase;
 
-public class AuthenticatedAuxiliaryDataTest extends PersoSimTest {
+public class AuthenticatedAuxiliaryDataTest extends PersoSimTestCase {
 	@Test
 	public void testGetDiscretionaryDataImmutability() {
 		byte[] data = new byte[] { 1, 2, 3, 4, 5 };

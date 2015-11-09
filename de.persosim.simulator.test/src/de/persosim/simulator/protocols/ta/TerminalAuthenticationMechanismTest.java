@@ -1,15 +1,15 @@
 package de.persosim.simulator.protocols.ta;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
 import org.junit.Test;
 
-import de.persosim.simulator.PersoSimTest;
+import de.persosim.simulator.test.PersoSimTestCase;
 
-public class TerminalAuthenticationMechanismTest extends PersoSimTest {
+public class TerminalAuthenticationMechanismTest extends PersoSimTestCase {
 	@Test
 	public void testGetCompressedTerminalEphemeralPublicKeyImmutability() {
 		byte [] data = new byte [] {1,2,3,4,5};
