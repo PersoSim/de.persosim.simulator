@@ -97,8 +97,7 @@ public class KeyDerivationFunction {
 		if(nonce == null) {
 			input = Utils.concatByteArrays(secret, counter);
 		} else{
-			input = Utils.concatByteArrays(secret, nonce);
-			input = Utils.concatByteArrays(input, counter);
+			input = Utils.concatByteArrays(secret, nonce, counter);
 		}
 		
 		log(KeyDerivationFunction.class, "message digest input is: " + HexString.encode(input), DEBUG);
