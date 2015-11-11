@@ -274,13 +274,19 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	 */
 	protected void computeSessionKeys(byte[] sharedSecret, byte[] rPiccNonce) {
 		//compute session keys
-		KeyDerivationFunction kdf = new KeyDerivationFunction(caOid.getSymmetricCipherKeyLengthInBytes());
+		int keyLengthInBytes = caOid.getSymmetricCipherKeyLengthInBytes();
+		KeyDerivationFunction kdf = new KeyDerivationFunction(keyLengthInBytes);
+		
+		log(this, "computing " + getIDString() + " session keys", DEBUG);
+		log(this, "shared secret is: " + HexString.encode(sharedSecret), DEBUG);
+		log(this, "nonce is        : " + HexString.encode(rPiccNonce), DEBUG);
+		log(this, "key length specified by " + getIDString() + " OID " + caOid + " is: " + keyLengthInBytes, DEBUG);
 		
 		byte[] keyMaterialMac = kdf.deriveMAC(sharedSecret, rPiccNonce);
 		byte[] keyMaterialEnc = kdf.deriveENC(sharedSecret, rPiccNonce);
 		
-		log(this, "PICC's session key for MAC of " + keyMaterialMac.length + " bytes length is: " + HexString.encode(keyMaterialMac), DEBUG);
-		log(this, "PICC's session key for ENC of " + keyMaterialMac.length + " bytes length is: " + HexString.encode(keyMaterialEnc), DEBUG);
+		log(this, "chip's session key for MAC of " + keyMaterialMac.length + " bytes length is: " + HexString.encode(keyMaterialMac), DEBUG);
+		log(this, "chip's session key for ENC of " + keyMaterialMac.length + " bytes length is: " + HexString.encode(keyMaterialEnc), DEBUG);
 		
 		secretKeySpecMAC = cryptoSupport.generateSecretKeySpecMac(keyMaterialMac);
 		secretKeySpecENC = cryptoSupport.generateSecretKeySpecCipher(keyMaterialEnc);
