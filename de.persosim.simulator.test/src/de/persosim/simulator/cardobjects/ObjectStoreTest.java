@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,12 +25,18 @@ public class ObjectStoreTest extends PersoSimTestCase {
 	AbstractFile dedicatedFile;
 	CardFile elementaryFile1UnderDF;
 	CardFile elementaryFile2UnderDF;
-	CardFile elementaryFile3UnderMF;
+	CardFile elementaryFile3UnderDF;
+	CardFile elementaryFile4UnderMF;
+	CardFile elementaryFile5UnderMF;
+	CardFile elementaryFile6UnderMF;
 	CardObject authenticationObjectUnderMF;
 
 	byte [] elementaryFile1UnderDFContent;
 	byte [] elementaryFile2UnderDFContent;
-	byte [] elementaryFile3UnderMFContent;
+	byte [] elementaryFile3UnderDFContent;
+	byte [] elementaryFile4UnderMFContent;
+	byte [] elementaryFile5UnderMFContent;
+	byte [] elementaryFile6UnderMFContent;
 	byte [] authenticationObjectUnderMFContent;
 	
 	@Mocked
@@ -42,10 +50,16 @@ public class ObjectStoreTest extends PersoSimTestCase {
 	 * MF ------DF(0110) - EF1(011A,1)
 	 *    \      \
 	 *     \      ----- EF2(011B,2)
-	 *      \
-	 *       --- EF3(011C,3)
+	 *      \      \
+	 *       \      -----EF3(011B,4)
 	 *        \
-	 *         - AO(1)
+	 *         --- EF4(011C,3)
+	 *          \
+	 *           - AO(1)
+	 *            \
+	 *             -----EF5(011B,5)
+	 *              \
+	 *               -----EF6(011B,5)
 	 * @throws ReflectiveOperationException 
 	 * @throws AccessDeniedException 
 	 */
@@ -62,7 +76,10 @@ public class ObjectStoreTest extends PersoSimTestCase {
 		//define file contents
 		elementaryFile1UnderDFContent = new byte []{1,2,3,4,5,6};
 		elementaryFile2UnderDFContent = new byte []{7,8,9,10,11,12};
-		elementaryFile3UnderMFContent = new byte []{13,14,15,16,17,18};
+		elementaryFile3UnderDFContent = new byte []{19,20,21,22,23,24};
+		elementaryFile4UnderMFContent = new byte []{13,14,15,16,17,18};
+		elementaryFile5UnderMFContent = new byte []{25,26,27,28,29,30};
+		elementaryFile6UnderMFContent = new byte []{31,32,33,34,35,36};
 		authenticationObjectUnderMFContent = new byte []{1,2,3,4};
 		
 		// setup fresh file tree in ObjectStore
@@ -71,16 +88,22 @@ public class ObjectStoreTest extends PersoSimTestCase {
 		objectStore = new ObjectStore(masterFile);
 		objectStore.selectMasterFile();
 		
-		elementaryFile3UnderMF = new ElementaryFile(new FileIdentifier(0x011C), new ShortFileIdentifier(3), elementaryFile3UnderMFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
-		masterFile.addChild(elementaryFile3UnderMF);
+		elementaryFile4UnderMF = new ElementaryFile(new FileIdentifier(0x011C), new ShortFileIdentifier(3), elementaryFile4UnderMFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
+		masterFile.addChild(elementaryFile4UnderMF);
 		authenticationObjectUnderMF = new PasswordAuthObject(new AuthObjectIdentifier(1), authenticationObjectUnderMFContent);
 		masterFile.addChild(authenticationObjectUnderMF);
+		elementaryFile5UnderMF = new ElementaryFile(new FileIdentifier(0x011B), new ShortFileIdentifier(5), elementaryFile5UnderMFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
+		masterFile.addChild(elementaryFile5UnderMF);
+		elementaryFile6UnderMF = new ElementaryFile(new FileIdentifier(0x011B), new ShortFileIdentifier(6), elementaryFile6UnderMFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
+		masterFile.addChild(elementaryFile6UnderMF);
 		dedicatedFile = new DedicatedFile(new FileIdentifier(0x0110), new DedicatedFileIdentifier(new byte [] {0x0A, 0x00, 0x00, 0x01}));
 		masterFile.addChild(dedicatedFile);
 		elementaryFile1UnderDF = new ElementaryFile(new FileIdentifier(0x011A), new ShortFileIdentifier(1), elementaryFile1UnderDFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
 		dedicatedFile.addChild(elementaryFile1UnderDF);
 		elementaryFile2UnderDF = new ElementaryFile(new FileIdentifier(0x011B), new ShortFileIdentifier(2), elementaryFile2UnderDFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
 		dedicatedFile.addChild(elementaryFile2UnderDF);
+		elementaryFile3UnderDF = new ElementaryFile(new FileIdentifier(0x011B), new ShortFileIdentifier(4), elementaryFile3UnderDFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
+		dedicatedFile.addChild(elementaryFile3UnderDF);
 		
 	}
 	
@@ -97,7 +120,7 @@ public class ObjectStoreTest extends PersoSimTestCase {
 		objectStore.selectFile(id, Scope.FROM_MF);
 		
 		// make sure currentFile has been set
-		assertTrue(getField(objectStore, "currentFile").equals(elementaryFile3UnderMF));
+		assertTrue(getField(objectStore, "currentFile").equals(elementaryFile4UnderMF));
 	}
 	
 	/**
@@ -118,11 +141,11 @@ public class ObjectStoreTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Search for the auth object using the MF scope with EF1 as the last selected file. An elementary file is expected as result.
-	 * @throws FileNotFoundException 
+	 * Search for the auth object using the MF scope with EF1 as the last
+	 * selected file. An elementary file is expected as result.
 	 */
 	@Test
-	public void testGetObjectFromMF() throws FileNotFoundException{
+	public void testGetObjectFromMF() {
 		objectStore.selectFileForPersonalization(elementaryFile1UnderDF);
 		
 		//select file in different subtree
@@ -135,13 +158,13 @@ public class ObjectStoreTest extends PersoSimTestCase {
 		assertTrue("Returned object does not implement correct interface", result instanceof PasswordAuthObject);
 		assertTrue("File is not equal", authenticationObjectUnderMF.equals(result));
 	}
-	
+
 	/**
-	 * Search for EF2 using the DF scope with EF1 as the last selected file. An elementary file is expected as result.
-	 * @throws FileNotFoundException 
+	 * Search for EF2 using the DF scope with EF1 as the last selected file. An
+	 * elementary file is expected as result.
 	 */
 	@Test
-	public void testGetObjectFromDF() throws FileNotFoundException{		//construct test data
+	public void testGetObjectFromDF() {
 		objectStore.selectFileForPersonalization(elementaryFile1UnderDF);
 		
 		FileIdentifier id = new FileIdentifier(0x011B);
@@ -154,6 +177,108 @@ public class ObjectStoreTest extends PersoSimTestCase {
 		assertTrue("File is not equal", elementaryFile2UnderDF.equals(result));
 	}
 	
+	/**
+	 * Search for files with id 0x011B using the DF scope with EF1 as the last
+	 * selected file. Elementary files are expected as result.
+	 */
+	@Test
+	public void testGetObjectsWithSameIdFromDF() {
+		objectStore.selectFileForPersonalization(elementaryFile1UnderDF);
+		
+		FileIdentifier id = new FileIdentifier(0x011B);
+		
+		//run mut
+		Collection<CardObject> result = objectStore.getObjectsWithSameId(id, Scope.FROM_DF);
+		
+		assertTrue("Did not find the correct number of objects", result.size() == 2);
+		
+		//check result
+		Iterator<CardObject> iterator = result.iterator();
+		CardObject nextFile = iterator.next();
+		boolean foundEF2 = elementaryFile2UnderDF.equals(nextFile);
+		boolean foundEF3 = elementaryFile3UnderDF.equals(nextFile);
+		assertTrue("Returned object does not implement correct interface", nextFile instanceof ElementaryFile);
+		assertTrue("File is not equal", foundEF2 || foundEF3);
+		nextFile = iterator.next();
+		boolean nextFileFound = false;
+		if(foundEF2) {
+			nextFileFound = elementaryFile3UnderDF.equals(nextFile);
+		} else {
+			nextFileFound = elementaryFile2UnderDF.equals(nextFile);
+		}
+		assertTrue("Returned object does not implement correct interface", nextFile instanceof ElementaryFile);
+		assertTrue("File is not equal", nextFileFound);
+	}
+	
+	/**
+	 * Search for files with id 0x011B using the MF scope with EF1 as the last
+	 * selected file. Elementary files are expected as result.
+	 */
+	@Test
+	public void testGetObjectsWithSameIdFromMF() {
+		objectStore.selectFileForPersonalization(elementaryFile1UnderDF);
+		
+		FileIdentifier id = new FileIdentifier(0x011B);
+		
+		//run mut
+		Collection<CardObject> result = objectStore.getObjectsWithSameId(id, Scope.FROM_MF);
+		
+		assertTrue("Did not find the correct number of objects", result.size() == 2);
+		
+		//check result
+		Iterator<CardObject> iterator = result.iterator();
+		CardObject nextFile = iterator.next();
+		boolean foundEF5 = elementaryFile5UnderMF.equals(nextFile);
+		boolean foundEF6 = elementaryFile6UnderMF.equals(nextFile);
+		assertTrue("Returned object does not implement correct interface", nextFile instanceof ElementaryFile);
+		assertTrue("File is not equal", foundEF5 || foundEF6);
+		nextFile = iterator.next();
+		boolean nextFileFound = false;
+		if(foundEF5) {
+			nextFileFound = elementaryFile6UnderMF.equals(nextFile);
+		} else {
+			nextFileFound = elementaryFile5UnderMF.equals(nextFile);
+		}
+		assertTrue("Returned object does not implement correct interface", nextFile instanceof ElementaryFile);
+		assertTrue("File is not equal", nextFileFound);
+	}
+	
+	/**
+	 * Search for not existing file identifier using the DF scope with EF1 as
+	 * the last selected file. A NullCardObject is expected as result.
+	 */
+	@Test
+	public void testGetObjectFromDFWrongId() {
+		objectStore.selectFileForPersonalization(elementaryFile1UnderDF);
+		
+		FileIdentifier id = new FileIdentifier(0x111B);
+		
+		//run mut
+		CardObject result = objectStore.getObject(id, Scope.FROM_DF);
+		
+		//check result
+		assertTrue("Returned object does not implement correct interface", result instanceof NullCardObject);
+	}
+		
+	/**
+	 * Search for several objects with not existing file identifier using the DF
+	 * scope with EF1 as the last selected file. An empty set is expected as
+	 * result.
+	 */
+	@Test
+	public void testGetObjectsWithSameIdFromDFWrongId() {
+		objectStore.selectFileForPersonalization(elementaryFile1UnderDF);
+		
+		FileIdentifier id = new FileIdentifier(0x111B);
+		
+		//run mut
+		Collection<CardObject> result = objectStore.getObjectsWithSameId(id, Scope.FROM_DF);
+		
+		//check result
+		assertTrue("Found objects, but should not have found anything", result.isEmpty());
+		
+	}
+		
 	@Test
 	public void testSelectCachedFile() throws FileNotFoundException{
 		FileIdentifier id = new FileIdentifier(0x011C);

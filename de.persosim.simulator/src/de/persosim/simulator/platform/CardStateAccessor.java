@@ -68,6 +68,17 @@ public interface CardStateAccessor {
 	public CardObject getObject(CardObjectIdentifier id, Scope scope);
 
 	/**
+	 * Proxy method for the
+	 * {@link ObjectStore#getObjectsWithSameId(CardObjectIdentifier, Scope)}
+	 * 
+	 * @param shortFileIdentifierImpl
+	 * @param fromDf
+	 * @return
+	 */
+	//XXX this method is used quite often to get the MasterFile using a MasterFileIdentifier, maybe provide a dedicated method for this usecase.
+	public Collection<CardObject> getObjectsWithSameId(CardObjectIdentifier id, Scope scope);
+	
+	/**
 	 * Proxy method for the {@link ObjectStore#selectFileForPersonalization(CardFile)} method.
 	 * 
 	 * @param file to select
