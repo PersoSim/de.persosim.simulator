@@ -143,6 +143,12 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 		
 		return null;
 	}
+	
+	protected void processCommandEraseBinary(){
+	}
+	
+	protected void processCommandEraseBinaryOdd(){
+	}
 
 	protected void processCommandUpdateBinary() {
 
