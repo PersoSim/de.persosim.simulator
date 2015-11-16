@@ -194,20 +194,23 @@ public class ObjectStoreTest extends PersoSimTestCase {
 		
 		//check result
 		Iterator<CardObject> iterator = result.iterator();
-		CardObject nextFile = iterator.next();
-		boolean foundEF2 = elementaryFile2UnderDF.equals(nextFile);
-		boolean foundEF3 = elementaryFile3UnderDF.equals(nextFile);
-		assertTrue("Returned object does not implement correct interface", nextFile instanceof ElementaryFile);
-		assertTrue("File is not equal", foundEF2 || foundEF3);
-		nextFile = iterator.next();
-		boolean nextFileFound = false;
+		CardObject firstFile = iterator.next();
+		assertTrue("First element of collection does not implement expected interface", firstFile instanceof ElementaryFile);
+
+		boolean foundEF2 = elementaryFile2UnderDF.equals(firstFile);
+		boolean foundEF3 = elementaryFile3UnderDF.equals(firstFile);
+		assertTrue("First element matches none of the expected values", foundEF2 || foundEF3);
+		
+		CardObject secondFile = iterator.next();
+		assertTrue("Second element of collection does not implement expected interface", secondFile instanceof ElementaryFile);
+		
 		if(foundEF2) {
-			nextFileFound = elementaryFile3UnderDF.equals(nextFile);
+			assertEquals("Second element of collection does noit match expected element", elementaryFile3UnderDF, secondFile);
+			
 		} else {
-			nextFileFound = elementaryFile2UnderDF.equals(nextFile);
+			assertEquals("Second element of collection does noit match expected element", elementaryFile2UnderDF, secondFile);
 		}
-		assertTrue("Returned object does not implement correct interface", nextFile instanceof ElementaryFile);
-		assertTrue("File is not equal", nextFileFound);
+
 	}
 	
 	/**
@@ -227,20 +230,22 @@ public class ObjectStoreTest extends PersoSimTestCase {
 		
 		//check result
 		Iterator<CardObject> iterator = result.iterator();
-		CardObject nextFile = iterator.next();
-		boolean foundEF5 = elementaryFile5UnderMF.equals(nextFile);
-		boolean foundEF6 = elementaryFile6UnderMF.equals(nextFile);
-		assertTrue("Returned object does not implement correct interface", nextFile instanceof ElementaryFile);
-		assertTrue("File is not equal", foundEF5 || foundEF6);
-		nextFile = iterator.next();
-		boolean nextFileFound = false;
+		CardObject firstFile = iterator.next();
+		assertTrue("First element of collection does not implement expected interface", firstFile instanceof ElementaryFile);
+
+		boolean foundEF5 = elementaryFile5UnderMF.equals(firstFile);
+		boolean foundEF6 = elementaryFile6UnderMF.equals(firstFile);
+		assertTrue("First element matches none of the expected values", foundEF5 || foundEF6);
+		
+		CardObject secondFile = iterator.next();
+		assertTrue("Second element of collection does not implement expected interface", secondFile instanceof ElementaryFile);
+		
 		if(foundEF5) {
-			nextFileFound = elementaryFile6UnderMF.equals(nextFile);
+			assertEquals("Second element of collection does noit match expected element", elementaryFile6UnderMF, secondFile);
+			
 		} else {
-			nextFileFound = elementaryFile5UnderMF.equals(nextFile);
+			assertEquals("Second element of collection does noit match expected element", elementaryFile5UnderMF, secondFile);
 		}
-		assertTrue("Returned object does not implement correct interface", nextFile instanceof ElementaryFile);
-		assertTrue("File is not equal", nextFileFound);
 	}
 	
 	/**
