@@ -258,6 +258,9 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 				this.processingData.updateResponseAPDU(this, passwordName + " management rights from TA required to perform Deactivate", resp);
 				return;
 			}
+		} else {
+			ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			this.processingData.updateResponseAPDU(this, passwordName + " management rights from TA required to perform Deactivate", resp);
 		}
 		try {
 			((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
