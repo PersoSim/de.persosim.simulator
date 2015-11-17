@@ -16,10 +16,10 @@ import de.persosim.simulator.apdu.SmMarkerApdu;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.CardObjectUtils;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
-import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
@@ -149,7 +149,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		PasswordAuthObject passwordObject = null;
 		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_83);
 		
-		CardObject pwdCandidate = cardState.getObject(new AuthObjectIdentifier(tlvObject.getValueField()), Scope.FROM_MF);
+		CardObject pwdCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new AuthObjectIdentifier(tlvObject.getValueField()));
 		if (pwdCandidate instanceof PasswordAuthObject){
 			passwordObject = (PasswordAuthObject) pwdCandidate;
 			log(this, "selected password is: " + AbstractPaceProtocol.getPasswordName(passwordObject.getPasswordIdentifier()), DEBUG);
@@ -188,8 +188,8 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			
 			TerminalType terminalType = usedChat.getTerminalType();
 
-			trustPoint = (TrustPointCardObject) cardState.getObject(
-					new TrustPointIdentifier(terminalType), Scope.FROM_MF);
+			trustPoint = (TrustPointCardObject) CardObjectUtils.getSpecificChild(cardState.getMasterFile(),
+					new TrustPointIdentifier(terminalType));
 			if (!AbstractPaceProtocol.checkPasswordAndAccessRights(usedChat, passwordObject)){
 				if (sw == Iso7816.SW_9000_NO_ERROR) {
 					sw = Iso7816.SW_6A80_WRONG_DATA;

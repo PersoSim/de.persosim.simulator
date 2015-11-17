@@ -27,15 +27,14 @@ import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
+import de.persosim.simulator.cardobjects.CardObjectUtils;
 import de.persosim.simulator.cardobjects.DomainParameterSetCardObject;
 import de.persosim.simulator.cardobjects.DomainParameterSetIdentifier;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.MasterFile;
-import de.persosim.simulator.cardobjects.MasterFileIdentifier;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
-import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.Crypto;
@@ -45,6 +44,7 @@ import de.persosim.simulator.crypto.KeyDerivationFunction;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.CryptoException;
+import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
@@ -173,8 +173,14 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		/* PACE password */
 		/* Check for the PACE password itself */
 		tlvObject = commandData.getTlvDataObject(TAG_83);
-		
-		CardObject pwdCandidate = cardState.getObject(new AuthObjectIdentifier(tlvObject.getValueField()), Scope.FROM_MF);
+		CardObject pwdCandidate;
+		try {
+			pwdCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new AuthObjectIdentifier(tlvObject.getValueField()));
+		} catch (ProcessingException e) {
+			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
+			processingData.updateResponseAPDU(this, e.getMessage(), resp);
+			return;
+		}
 		if (pwdCandidate instanceof PasswordAuthObject){
 			pacePassword = (PasswordAuthObject) pwdCandidate;
 			log(this, "selected password is: " + getPasswordName(), DEBUG);
@@ -203,7 +209,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		
 		CardObject cardObject;
 		try {
-			cardObject = Tr03110Utils.getSpecificChild(cardState.getObject(new MasterFileIdentifier(), Scope.FROM_MF), domainParameterSetIdentifier, new OidIdentifier(paceOid));
+			cardObject = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), domainParameterSetIdentifier, new OidIdentifier(paceOid));
 		} catch (IllegalArgumentException e) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
 			this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
@@ -238,8 +244,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				terminalTypeOid = usedChat.getObjectIdentifier();
 				TerminalType terminalType = usedChat.getTerminalType();
 
-				trustPoint = (TrustPointCardObject) cardState.getObject(
-						new TrustPointIdentifier(terminalType), Scope.FROM_MF);
+				trustPoint = (TrustPointCardObject) CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new TrustPointIdentifier(terminalType));
 				if (!checkPasswordAndAccessRights(usedChat, pacePassword)){
 					ResponseApdu resp = new ResponseApdu(
 							Iso7816.SW_6A80_WRONG_DATA);

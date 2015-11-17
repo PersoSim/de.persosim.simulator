@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,12 +18,10 @@ import de.persosim.simulator.cardobjects.DomainParameterSetCardObject;
 import de.persosim.simulator.cardobjects.DomainParameterSetIdentifier;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.MasterFile;
-import de.persosim.simulator.cardobjects.MasterFileIdentifier;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.PinObject;
-import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
@@ -38,6 +33,8 @@ import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
 
 public class PinManagementTest extends PersoSimTestCase {
 	
@@ -164,7 +161,6 @@ public class PinManagementTest extends PersoSimTestCase {
 		assertFalse("PIN temporarily resumed", AbstractPaceProtocol.isPinTemporarilyResumed(mockedCardStateAccessor));
 	}
 	
-	//ok
 	/**
 	 * Positive test case: perform PACE with PIN. PIN retry counter is 3 (default), PIN activated.
 	 */
@@ -180,24 +176,18 @@ public class PinManagementTest extends PersoSimTestCase {
 				// previously used password
 				result = csmEmpty;
 				
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(MasterFileIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
-
+				
 				mockedMf.findChildren(
 						withInstanceOf(DomainParameterSetIdentifier.class),
 						withInstanceOf(OidIdentifier.class));
 				result = domainParameters0;
 
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedMf.findChildren(withInstanceOf(DomainParameterSetIdentifier.class));
 				result = domainParameters0;
 				
-				mockedCardStateAccessor.getObject(withInstanceOf(AuthObjectIdentifier.class),null);
-				
-				// currently used password
+				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
 				result = pwdaoWithPinRc3Activated;
 			}
 		};
@@ -217,7 +207,6 @@ public class PinManagementTest extends PersoSimTestCase {
 		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, sw);
 	}
 	
-	//ok
 	/**
 	 * Positive test case: perform PACE with PIN. PIN retry counter is 3 (default), PIN deactivated.
 	 */
@@ -232,9 +221,7 @@ public class PinManagementTest extends PersoSimTestCase {
 				// previously used password
 				result = csmEmpty;
 				
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(MasterFileIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 
 				mockedMf.findChildren(
@@ -242,13 +229,11 @@ public class PinManagementTest extends PersoSimTestCase {
 						withInstanceOf(OidIdentifier.class));
 				result = domainParameters0;
 
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedMf.findChildren(
+						withInstanceOf(DomainParameterSetIdentifier.class));
 				result = domainParameters0;
 
-				mockedCardStateAccessor.getObject(withInstanceOf(AuthObjectIdentifier.class),null);
-				// currently used password
+				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
 				result = pwdaoWithPinRc3Deactivated;
 			}
 		};
@@ -268,7 +253,6 @@ public class PinManagementTest extends PersoSimTestCase {
 		assertEquals("Statusword is not 6283", Iso7816.SW_6283_SELECTED_FILE_DEACTIVATED, sw);
 	}
 	
-	//ok
 	/**
 	 * Positive test case: perform PACE with PIN. PIN retry counter is 2, PIN activated.
 	 */
@@ -280,13 +264,9 @@ public class PinManagementTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getCurrentMechanisms(
 						withInstanceOf(SecContext.class),
 						null);
-				
-				// previously used password
 				result = csmEmpty;
 				
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(MasterFileIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 
 				mockedMf.findChildren(
@@ -294,14 +274,11 @@ public class PinManagementTest extends PersoSimTestCase {
 						withInstanceOf(OidIdentifier.class));
 				result = domainParameters0;
 
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedMf.findChildren(
+						withInstanceOf(DomainParameterSetIdentifier.class));
 				result = domainParameters0;
 				
-				mockedCardStateAccessor.getObject(withInstanceOf(AuthObjectIdentifier.class),null);
-				
-				// currently used password
+				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
 				result = pwdaoWithPinRc2Activated;
 			}
 		};
@@ -321,7 +298,6 @@ public class PinManagementTest extends PersoSimTestCase {
 		assertEquals("Statusword is not 63C2", (short) 0x63C2, sw);
 	}
 	
-	//ok
 	/**
 	 * Positive test case: perform PACE with PIN. PIN retry counter is 1, PIN activated.
 	 */
@@ -333,13 +309,9 @@ public class PinManagementTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getCurrentMechanisms(
 						withInstanceOf(SecContext.class),
 						null);
-				
-				// previously used password
 				result = csmWithCan;
 
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(MasterFileIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 
 				mockedMf.findChildren(
@@ -347,14 +319,10 @@ public class PinManagementTest extends PersoSimTestCase {
 						withInstanceOf(OidIdentifier.class));
 				result = domainParameters0;
 
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedMf.findChildren(withInstanceOf(DomainParameterSetIdentifier.class));
 				result = domainParameters0;
 
-				mockedCardStateAccessor.getObject(withInstanceOf(AuthObjectIdentifier.class), withInstanceOf(Scope.class));
-				
-				// currently used password
+				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
 				result = pwdaoWithPinRc1Activated;
 			}
 		};
@@ -387,13 +355,9 @@ public class PinManagementTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getCurrentMechanisms(
 						withInstanceOf(SecContext.class),
 						null);
-				
-				// previously used password
 				result = csmWithCan;
 				
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(MasterFileIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 
 				mockedMf.findChildren(
@@ -401,14 +365,10 @@ public class PinManagementTest extends PersoSimTestCase {
 						withInstanceOf(OidIdentifier.class));
 				result = domainParameters0;
 
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedMf.findChildren(withInstanceOf(DomainParameterSetIdentifier.class));
 				result = domainParameters0;
 				
-				mockedCardStateAccessor.getObject(withInstanceOf(AuthObjectIdentifier.class),null);
-				
-				// currently used password
+				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
 				result = pwdaoWithPinRc1Activated;
 			}
 		};
@@ -544,8 +504,6 @@ public class PinManagementTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getCurrentMechanisms(
 						withInstanceOf(SecContext.class),
 						null);
-
-				// previously used password
 				result = csmEmpty;
 			}
 		};
@@ -568,8 +526,6 @@ public class PinManagementTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getCurrentMechanisms(
 						withInstanceOf(SecContext.class),
 						null);
-
-				// previously used password
 				result = csmWithCan;
 			}
 		};
@@ -593,13 +549,9 @@ public class PinManagementTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getCurrentMechanisms(
 						withInstanceOf(SecContext.class),
 						null);
-				
-				// previously used password
 				result = csmEmpty;
 				
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(MasterFileIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 
 				mockedMf.findChildren(
@@ -607,14 +559,10 @@ public class PinManagementTest extends PersoSimTestCase {
 						withInstanceOf(OidIdentifier.class));
 				result = domainParameters0;
 
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedMf.findChildren(withInstanceOf(DomainParameterSetIdentifier.class));
 				result = domainParameters0;
 				
-				mockedCardStateAccessor.getObject(withInstanceOf(AuthObjectIdentifier.class),null);
-				
-				// currently used password
+				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
 				result = pwdaoWithPinRc0Activated;
 			}
 		};
