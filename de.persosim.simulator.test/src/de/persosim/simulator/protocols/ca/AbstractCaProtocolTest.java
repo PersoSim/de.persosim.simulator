@@ -12,12 +12,6 @@ import java.util.Collection;
 
 import javax.crypto.spec.SecretKeySpec;
 
-import mockit.Deencapsulation;
-import mockit.Delegate;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,11 +21,8 @@ import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
-import de.persosim.simulator.cardobjects.MasterFileIdentifier;
-import de.persosim.simulator.cardobjects.NullCardObject;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
-import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
@@ -50,6 +41,11 @@ import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
+import mockit.Deencapsulation;
+import mockit.Delegate;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
 
 /**
  * @author slutters
@@ -190,19 +186,12 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(MasterFileIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 				
 				mockedMf.findChildren(
 						withInstanceOf(KeyIdentifier.class));
 				result = ecdhKeys;
-				
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(KeyIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = ecdhKeyObject;
 			}
 		};
 		
@@ -225,9 +214,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(MasterFileIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 
 				mockedMf.findChildren(
@@ -235,10 +222,10 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 						withInstanceOf(KeyIdentifier.class));
 				result = ecdhKeys;
 
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(KeyIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = new NullCardObject();
+//				mockedCardStateAccessor.getObject(
+//						withInstanceOf(KeyIdentifier.class),
+//						withInstanceOf(Scope.class));
+//				result = new NullCardObject();
 			}
 		};
 		
@@ -261,17 +248,17 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(withInstanceOf(MasterFileIdentifier.class), Scope.FROM_MF);
+				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 
 				mockedMf.findChildren(
 						withInstanceOf(KeyIdentifier.class));
 				result = ecdhKeys;
 
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(KeyIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = ecdhKeyObject;
+//				mockedCardStateAccessor.getObject(
+//						withInstanceOf(KeyIdentifier.class),
+//						withInstanceOf(Scope.class));
+//				result = ecdhKeyObject;
 			}
 		};
 		
@@ -294,7 +281,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject(withInstanceOf(MasterFileIdentifier.class), Scope.FROM_MF);
+				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 			}
 		};
