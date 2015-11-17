@@ -102,9 +102,6 @@ public abstract class AbstractCommandProcessor extends Layer implements
 		removeCurrentProtocolAndAboveFromStack();
 		reset();
 		
-		log(this, "powerOn, select MF", TRACE);
-		objectStore.selectMasterFile();
-
 		log(this, "powerOn, reset SecStatus", TRACE);
 		securityStatus.reset();
 
@@ -115,17 +112,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	// ---------------------------------------------------
 
 	protected transient SecStatus securityStatus;
-	protected ObjectStore objectStore;
-
-	@Override
-	public CardObject getObject(CardObjectIdentifier id, Scope scope) {
-		return objectStore.getObject(id, scope);
-	}
-	
-	@Override
-	public Collection<CardObject> getObjectsWithSameId(CardObjectIdentifier id, Scope scope) {
-		return objectStore.getObjectsWithSameId(id, scope);
-	}
+	protected MasterFile masterFile;
 
 	/**
 	 * Adds a new protocol to the list of available protocols. The new protocol
@@ -148,27 +135,6 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	// methods implementing {@link CardStateAccessor} interface
 	// --------------------------------------------------------
 	@Override
-	public CardFile selectFile(CardObjectIdentifier id, Scope scope)
-			throws FileNotFoundException {
-		return objectStore.selectFile(id, scope);
-	}
-
-	@Override
-	public MasterFile selectMasterFile() {
-		return objectStore.selectMasterFile();
-	}
-
-	@Override
-	public CardObject getCurrentFile() {
-		return objectStore.getCurrentFile();
-	}
-
-	@Override
-	public void selectFile() throws FileNotFoundException {
-		objectStore.selectCachedFile();
-	}
-
-	@Override
 	public Iso7816LifeCycleState getLifeCycleState() {
 		return Iso7816LifeCycleState.OPERATIONAL_ACTIVATED;
 	}
@@ -177,11 +143,6 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	public void updateLifeCycleState(Iso7816LifeCycleState state) {
 		// TODO implement life cycle state changes according to ISO7816-13 5.2
 		throw new NotImplementedException();
-	}
-
-	@Override
-	public void selectFileForPersonalization(CardFile file) {
-		objectStore.selectFileForPersonalization(file);
 	}
 
 	@Override
@@ -473,7 +434,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 			protocol.setCardStateAccessor(this);
 		}
 		
-		PersonalizationHelper.setLifeCycleStates(objectStore.getMasterFile());
+		PersonalizationHelper.setLifeCycleStates(masterFile);
 		
 		init();
 	}
@@ -502,7 +463,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	 * Returns the root element of the object tree.
 	 */
 	public MasterFile getObjectTree(){
-		return objectStore.getMasterFile();
+		return masterFile;
 	}
 
 	/**

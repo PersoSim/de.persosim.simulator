@@ -3,7 +3,6 @@ package de.persosim.simulator.protocols;
 import java.util.Collection;
 
 import de.persosim.simulator.cardobjects.MasterFile;
-import de.persosim.simulator.cardobjects.ObjectStore;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.CommandProcessor;
 import de.persosim.simulator.processing.ProcessingData;
