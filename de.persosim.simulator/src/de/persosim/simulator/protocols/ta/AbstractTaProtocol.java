@@ -39,8 +39,9 @@ import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110Utils;
-import de.persosim.simulator.secstatus.AuthorizationMechanism;
+import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
+import de.persosim.simulator.secstatus.ConfinedAuthorizationMechanism;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -180,19 +181,20 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		//get necessary information stored in an earlier protocol (e.g. PACE)
 		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(PaceMechanism.class);
-		previousMechanisms.add(AuthorizationMechanism.class);
+		previousMechanisms.add(ConfinedAuthorizationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 		
 		PaceMechanism paceMechanism = null;
-		AuthorizationMechanism authMechanism = null;
+//		EffectiveAuthorizationMechanism authMechanism = null;
+		ConfinedAuthorizationMechanism authMechanism = null;
 		
 		if (currentMechanisms.size() >= 2){
 			for(SecMechanism secMechanism:currentMechanisms) {
 				if(secMechanism instanceof PaceMechanism) {
 					paceMechanism = (PaceMechanism) secMechanism;
 				} else{
-					if(secMechanism instanceof AuthorizationMechanism) {
-						authMechanism = (AuthorizationMechanism) secMechanism;
+					if(secMechanism instanceof ConfinedAuthorizationMechanism) {
+						authMechanism = (ConfinedAuthorizationMechanism) secMechanism;
 					}
 				}
 			}
@@ -759,7 +761,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(compressedTerminalEphemeralPublicKey, terminalType, auxiliaryData, firstSectorPublicKeyHash, secondSectorPublicKeyHash, crypographicMechanismReference.getHashAlgorithmName());
 					processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
 					
-					AuthorizationMechanism authMechanism = new AuthorizationMechanism(authorizationStore);
+					EffectiveAuthorizationMechanism authMechanism = new EffectiveAuthorizationMechanism(authorizationStore);
 					processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanism));
 					
 					// create and propagate response APDU

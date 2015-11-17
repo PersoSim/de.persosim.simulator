@@ -10,7 +10,7 @@ import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
-import de.persosim.simulator.secstatus.AuthorizationMechanism;
+import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.utils.Utils;
@@ -41,10 +41,10 @@ public class DateAuxObject extends AuxDataObject {
 		//XXX access conditions should be stored separately and evaluated in a more generic (identifier independent) way
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(TerminalAuthenticationMechanism.class);
-		previousMechanisms.add(AuthorizationMechanism.class);
+		previousMechanisms.add(EffectiveAuthorizationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = securityStatus.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 		TerminalAuthenticationMechanism taMechanism = null;
-		AuthorizationMechanism authMechanism  = null;
+		EffectiveAuthorizationMechanism authMechanism  = null;
 		
 		if (currentMechanisms.size() >= 2) {
 			for(SecMechanism secmechanism:currentMechanisms) {
@@ -52,8 +52,8 @@ public class DateAuxObject extends AuxDataObject {
 					taMechanism = (TerminalAuthenticationMechanism) secmechanism;
 				}
 				
-				if(secmechanism instanceof AuthorizationMechanism) {
-					authMechanism = (AuthorizationMechanism) secmechanism;
+				if(secmechanism instanceof EffectiveAuthorizationMechanism) {
+					authMechanism = (EffectiveAuthorizationMechanism) secmechanism;
 				}
 			}
 			

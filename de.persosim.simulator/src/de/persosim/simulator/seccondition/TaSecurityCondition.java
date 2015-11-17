@@ -7,7 +7,7 @@ import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
-import de.persosim.simulator.secstatus.AuthorizationMechanism;
+import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.utils.BitField;
 
@@ -44,14 +44,14 @@ public class TaSecurityCondition implements SecCondition {
 	@Override
 	public boolean check(Collection<SecMechanism> mechanisms) {
 		TerminalAuthenticationMechanism terminalAuthenticationMechanism = null;
-		AuthorizationMechanism authorizationMechanism = null;
+		EffectiveAuthorizationMechanism authorizationMechanism = null;
 		
 		for (SecMechanism mechanism : mechanisms) {
 			if (mechanism instanceof TerminalAuthenticationMechanism) {
 				terminalAuthenticationMechanism = (TerminalAuthenticationMechanism) mechanism;
 			}
-			if (mechanism instanceof AuthorizationMechanism) {
-				authorizationMechanism = (AuthorizationMechanism) mechanism;
+			if (mechanism instanceof EffectiveAuthorizationMechanism) {
+				authorizationMechanism = (EffectiveAuthorizationMechanism) mechanism;
 			}
 		}
 		
@@ -78,7 +78,7 @@ public class TaSecurityCondition implements SecCondition {
 	public Collection<Class<? extends SecMechanism>> getNeededMechanisms() {
 		HashSet<Class<? extends SecMechanism>> result = new HashSet<>();
 		result.add(TerminalAuthenticationMechanism.class);
-		result.add(AuthorizationMechanism.class);
+		result.add(EffectiveAuthorizationMechanism.class);
 		return result;
 	}
 
