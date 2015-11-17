@@ -77,9 +77,8 @@ public class ObjectStore {
 	
 	/**
 	 * Search for all {@link CardObject}s with a particular id reachable from
-	 * current selection, select it if its a CardFile and return it. If no
-	 * fitting {@link CardObject} can be found, a {@link NullCardObject} is
-	 * returned.
+	 * current selection and return it. If no fitting {@link CardObject} can be
+	 * found, an empty set is returned.
 	 * 
 	 * @param id
 	 *            identifier that describes the objects to return
