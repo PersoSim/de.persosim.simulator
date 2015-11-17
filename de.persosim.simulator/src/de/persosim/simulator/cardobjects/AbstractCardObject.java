@@ -134,17 +134,8 @@ public abstract class AbstractCardObject implements CardObject {
 		Collection<CardObject> matchingChildren = new ArrayList<>();
 
 		// check the immediate children of the current DF
-		boolean fullMatch;
 		for (CardObject curChild : getChildren()) {
-			fullMatch = true;
-			for (CardObjectIdentifier cardObjectIdentifier : cardObjectIdentifiers) {
-				if (!cardObjectIdentifier.matches(curChild)) {
-					fullMatch = false;
-					break;
-				}
-			}
-
-			if (fullMatch) {
+			if (CardObjectUtils.matches(curChild, cardObjectIdentifiers)) {
 				matchingChildren.add(curChild);
 			}
 		}

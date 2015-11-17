@@ -17,11 +17,11 @@ import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
+import de.persosim.simulator.cardobjects.CardObjectUtils;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
-import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.VerificationException;
@@ -452,9 +452,8 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 							.getValueField());
 			
 			KeyIdentifier keyIdentifier = new KeyIdentifier(privateKeyReference);
-			CardObject cardObject = cardState.getObject(keyIdentifier,
-					Scope.FROM_MF);
-
+			CardObject cardObject = CardObjectUtils.findObject(cardState.getMasterFile(), keyIdentifier);
+			
 			if ((cardObject instanceof KeyPairObject)) {
 				staticKeyObject = (KeyPairObject) cardObject;
 			} else {

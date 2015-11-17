@@ -13,10 +13,10 @@ import org.junit.Test;
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.PinObject;
-import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.processing.ProcessingData;
@@ -39,6 +39,7 @@ import mockit.Mocked;
 
 public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	@Mocked CardStateAccessor mockedCardStateAccessor;
+	MasterFile mf;
 
 	
 	PasswordAuthObject authObject;
@@ -76,14 +77,14 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 * and receives a 63Cx where x stands for the number of left retries. 
 	 */
 	@Test
-	public void testProcessCommandVerifyPassword() {
+	public void testProcessCommandVerifyPassword() throws Exception {
 		// prepare the mock
+		mf = new MasterFile();
+		mf.addChild(pinObject);
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = pinObject;
+				mockedCardStateAccessor.getMasterFile();
+				result = mf;
 			}
 		};
 		
@@ -109,12 +110,11 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	@Test
 	public void testProcessCommandVerifyPassword_PasswordObjectIsNull() {
 		// prepare the mock
+		mf = new MasterFile();
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = null;
+				mockedCardStateAccessor.getMasterFile();
+				result = mf;
 			}
 		};
 		
@@ -137,15 +137,14 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 * 9000 if the PIN was successfully changed. 
 	 */
 	@Test
-	public void testProcessCommandChangePassword() {
+	public void testProcessCommandChangePassword() throws Exception {
 		// prepare the mock
+		mf = new MasterFile();
+		mf.addChild(authObjectRetry);
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = authObjectRetry;
-				
+				mockedCardStateAccessor.getMasterFile();
+				result = mf;
 			}
 		};
 		
@@ -169,14 +168,14 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 * and receives a 6984 because the object has no retry counter.
 	 */
 	@Test
-	public void testProcessCommandChangePassword_NoRertyCnt() {
+	public void testProcessCommandChangePassword_NoRertyCnt() throws Exception {
 		// prepare the mock
+		mf = new MasterFile();
+		mf.addChild(authObject);
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = authObject;
+				mockedCardStateAccessor.getMasterFile();
+				result = mf;
 			}
 		};
 		
@@ -200,14 +199,14 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 *  to the simulator (tlvData is empty) and receives 6A80.
 	 */
 	@Test
-	public void testProcessCommandChangePassword_EmptyPassword() {
+	public void testProcessCommandChangePassword_EmptyPassword() throws Exception {
 		// prepare the mock
+		mf = new MasterFile();
+		mf.addChild(authObjectRetry);
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = authObjectRetry;
+				mockedCardStateAccessor.getMasterFile();
+				result = mf;
 			}
 		};
 		
@@ -230,14 +229,14 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 * Positive test case. Send apdu to unblock PIN and receives 9000 
 	 */
 	@Test
-	public void testProcessCommandUnblockPassword_PasswordBlocked() {
+	public void testProcessCommandUnblockPassword_PasswordBlocked() throws Exception {
 		// prepare the mock
+		mf = new MasterFile();
+		mf.addChild(pinObject);
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = pinObject;
+				mockedCardStateAccessor.getMasterFile();
+				result = mf;
 			}
 		};
 		
@@ -261,15 +260,14 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 * but the PIN is already unblocked (retry counter is 3). 
 	 */
 	@Test
-	public void testProcessCommandUnblockPassword_PasswordUnblocked() {
+	public void testProcessCommandUnblockPassword_PasswordUnblocked() throws Exception {
 		// prepare the mock
+		mf = new MasterFile();
+		mf.addChild(pinObject);
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = pinObject;
-				
+				mockedCardStateAccessor.getMasterFile();
+				result = mf;
 			}
 		};
 		
@@ -294,16 +292,15 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 * @throws LifeCycleChangeException 
 	 */
 	@Test
-	public void testProcessCommandActivatePassword() throws LifeCycleChangeException {
+	public void testProcessCommandActivatePassword() throws Exception {
 		// prepare the mock
 		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
+		mf = new MasterFile();
+		mf.addChild(pinObject);
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = pinObject;
-				
+				mockedCardStateAccessor.getMasterFile();
+				result = mf;
 			}
 		};
 		
@@ -327,14 +324,14 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 * Positive test case. Send apdu to deactivate the PIN an receives a 9000.
 	 */
 	@Test
-	public void testProcessCommandDeactivatePassword() {
+	public void testProcessCommandDeactivatePassword() throws Exception {
 		// prepare the mock
+		mf = new MasterFile();
+		mf.addChild(pinObject);
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = pinObject;
+				mockedCardStateAccessor.getMasterFile();
+				result = mf;
 				
 				mockedCardStateAccessor
 						.getCurrentMechanisms(
@@ -364,14 +361,14 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 * management rights from TA are required to perform the deactivate.
 	 */
 	@Test
-	public void testProcessCommandDeactivatePassword_SecStatusNotSatisfied() {
+	public void testProcessCommandDeactivatePassword_SecStatusNotSatisfied() throws Exception {
 		// prepare the mock
+		mf = new MasterFile();
+		mf.addChild(pinObject);
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(AuthObjectIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = pinObject;
+				mockedCardStateAccessor.getMasterFile();
+				result = mf;
 				
 				mockedCardStateAccessor
 						.getCurrentMechanisms(
