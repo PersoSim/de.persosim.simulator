@@ -194,7 +194,8 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 
 	@Override
 	public void process(ProcessingData processingData) {
-		if (processingData.getCommandApdu().getIns() == INS_22_MANAGE_SECURITY_ENVIRONMENT) {
+		
+		if (processingData.getCommandApdu().getIns() == INS_22_MANAGE_SECURITY_ENVIRONMENT && processingData.getCommandApdu().getP1() == (byte) 0x41) {
 			processCommandSetAt(processingData);
 		} else if (processingData.getCommandApdu().getIns() == INS_86_GENERAL_AUTHENTICATE) {
 			processCommandGeneralAuthenticate(processingData);
@@ -418,12 +419,15 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 	}
 
 	private void processCommandSetAt(ProcessingData processingData) {
+
 		TlvDataObject cryptographicMechanismReferenceData = processingData
 				.getCommandApdu().getCommandDataObjectContainer()
 				.getTlvDataObject(TlvConstants.TAG_80);
 		TlvDataObject privateKeyReferenceData = processingData.getCommandApdu()
 				.getCommandDataObjectContainer()
 				.getTlvDataObject(TlvConstants.TAG_84);
+		
+		
 
 		if (cryptographicMechanismReferenceData != null) {
 			try{
