@@ -5,7 +5,6 @@ import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
@@ -15,7 +14,7 @@ import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.MasterFile;
-import de.persosim.simulator.cardobjects.PinObject;
+import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
@@ -24,13 +23,6 @@ import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110;
-import de.persosim.simulator.protocols.ta.Authorization;
-import de.persosim.simulator.protocols.ta.TaOid;
-import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
-import de.persosim.simulator.protocols.ta.TerminalType;
-import de.persosim.simulator.secstatus.AuthorizationMechanism;
-import de.persosim.simulator.secstatus.SecMechanism;
-import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvValue;
@@ -139,7 +131,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
 		
 		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
-		if(!(object instanceof PinObject)) {
+		if(!(object instanceof PasswordAuthObjectWithRetryCounter)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
 			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
 			/* there is nothing more to be done here */
@@ -147,15 +139,16 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		}
 		
 		try {
-			((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+			((PasswordAuthObjectWithRetryCounter) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		} catch (LifeCycleChangeException e) {
 			ResponseApdu resp = new ResponseApdu(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
 			this.processingData.updateResponseAPDU(this, "PIN object transition from state " + e.getOldState() + " to " + e.getNewState() + " not possible", resp);
 			/* there is nothing more to be done here */
 			return;
 		}
-		String passwordName = ((PinObject) object).getPasswordName();
+		
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
+		String passwordName = ((PasswordAuthObjectWithRetryCounter) object).getPasswordName();
 		this.processingData.updateResponseAPDU(this, passwordName + " successfully activated", resp);
 		
 		log(this, "processed COMMAND_ACTIVATE_PASSWORD", DEBUG);
@@ -214,56 +207,19 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 	
 	private void processCommandDeactivatePassword() {
 		CommandApdu cApdu = processingData.getCommandApdu();
+		
 		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
 		
 		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
-		
-		if(!(object instanceof PinObject)) {
+		if(!(object instanceof PasswordAuthObjectWithRetryCounter)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
 			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
 			/* there is nothing more to be done here */
 			return;
 		}
 		
-		String passwordName = ((PinObject) object).getPasswordName();
-		//XXX this check should be done by the objects themself
-		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
-		previousMechanisms.add(TerminalAuthenticationMechanism.class);
-		previousMechanisms.add(AuthorizationMechanism.class);
-		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
-		TerminalAuthenticationMechanism taMechanism = null;
-		AuthorizationMechanism authMechanism = null;
-		
-		if (currentMechanisms.size() >= 2) {
-			for(SecMechanism secmechanism:currentMechanisms) {
-				if(secmechanism instanceof TerminalAuthenticationMechanism) {
-					taMechanism = (TerminalAuthenticationMechanism) secmechanism;
-				}
-				
-				if(secmechanism instanceof AuthorizationMechanism) {
-					authMechanism = (AuthorizationMechanism) secmechanism;
-				}
-			}
-			
-			if((taMechanism == null) || (authMechanism == null)) {
-				ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-				this.processingData.updateResponseAPDU(this, passwordName + " management rights from TA required to perform Deactivate", resp);
-				return;
-			}
-			
-			Authorization auth = authMechanism.getAuthorization(TaOid.id_AT);
-			
-			if (!(taMechanism.getTerminalType().equals(TerminalType.AT) && (auth != null) && auth.getAuthorization().getBit(5))) {
-				ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-				this.processingData.updateResponseAPDU(this, passwordName + " management rights from TA required to perform Deactivate", resp);
-				return;
-			}
-		} else {
-			ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this, passwordName + " management rights from TA required to perform Deactivate", resp);
-		}
 		try {
-			((PinObject) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
+			((PasswordAuthObjectWithRetryCounter) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
 		} catch (LifeCycleChangeException e) {
 			ResponseApdu resp = new ResponseApdu(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
 			this.processingData.updateResponseAPDU(this, "PIN object transition from state " + e.getOldState() + " to " + e.getNewState() + " not possible", resp);
@@ -272,6 +228,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		}
 		
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
+		String passwordName = ((PasswordAuthObjectWithRetryCounter) object).getPasswordName();
 		this.processingData.updateResponseAPDU(this, passwordName + " successfully deactivated", resp);
 		
 		log(this, "processed COMMAND_DEACTIVATE_PASSWORD" , DEBUG);
@@ -283,14 +240,14 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		
 		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
 		
-		if(!(object instanceof PinObject)) {
+		if(!(object instanceof PasswordAuthObjectWithRetryCounter)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
 			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
 			/* there is nothing more to be done here */
 			return;
 		}
 		
-		PinObject pinObject = (PinObject) object;
+		PasswordAuthObjectWithRetryCounter pinObject = (PasswordAuthObjectWithRetryCounter) object;
 		String passwordName =  pinObject.getPasswordName();
 		
 		log(this, "old " + passwordName +" retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
@@ -323,13 +280,13 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		
 		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
 		
-		if(!(object instanceof PinObject)) {
+		if(!(object instanceof PasswordAuthObjectWithRetryCounter)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
 			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
 			/* there is nothing more to be done here */
 			return;
 		}
-		PinObject pinObject = (PinObject) object;
+		PasswordAuthObjectWithRetryCounter pinObject = (PasswordAuthObjectWithRetryCounter) object;
 		String passwordName = pinObject.getPasswordName();
 		ResponseApdu resp = new ResponseApdu((short) (SW_63C0_COUNTER_IS_0 + (pinObject.getRetryCounterCurrentValue())));
 		this.processingData.updateResponseAPDU(this, passwordName + " retry counter is: " + pinObject.getRetryCounterCurrentValue(), resp);

@@ -32,7 +32,6 @@ import de.persosim.simulator.cardobjects.MrzAuthObject;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
-import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
@@ -596,15 +595,15 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new AuthObjectIdentifier(ID_MRZ),
 				"P<D<<C11T002JM4<<<<<<<<<<<<<<<9608122F2310314D<<<<<<<<<<<<<4MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
 		mf.addChild(mrz);
-
-		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(
-				new AuthObjectIdentifier(ID_CAN), "500540".getBytes("UTF-8"), "CAN",
-				6, 6);
+		
+		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(new AuthObjectIdentifier(ID_CAN),
+				"500540".getBytes("UTF-8"), "CAN", 6, 6, new TaSecurityCondition(TerminalType.AT,
+						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))));
 		mf.addChild(can);
 
-		PasswordAuthObjectWithRetryCounter pin = new PinObject(
-				new AuthObjectIdentifier(ID_PIN), "123456".getBytes("UTF-8"), 6, 6,
-				3);
+		PasswordAuthObjectWithRetryCounter pin = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(ID_PIN),
+				"123456".getBytes("UTF-8"), "PIN", 6, 6, 3, new TaSecurityCondition(TerminalType.AT,
+						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))));
 		mf.addChild(pin);
 
 		PasswordAuthObject puk = new PasswordAuthObject(

@@ -23,7 +23,6 @@ import de.persosim.simulator.cardobjects.MrzAuthObject;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
-import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.documents.Mrz;
 import de.persosim.simulator.exception.AccessDeniedException;
@@ -176,14 +175,14 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				persoDataContainer.getMrz());
 		mf.addChild(mrz);
 
-		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(
-				new AuthObjectIdentifier(2), getCan().getBytes("UTF-8"), "CAN",
-				6, 6);
+		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(new AuthObjectIdentifier(2),
+				getCan().getBytes("UTF-8"), "CAN", 6, 6, new TaSecurityCondition(TerminalType.AT,
+						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))));
 		mf.addChild(can);
 
-		PasswordAuthObjectWithRetryCounter pin = new PinObject(
-				new AuthObjectIdentifier(3), getPin().getBytes("UTF-8"), 6, 6,
-				3);
+		PasswordAuthObjectWithRetryCounter pin = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(3),
+				getPin().getBytes("UTF-8"), "PIN", 6, 6, 3, new TaSecurityCondition(TerminalType.AT,
+						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))));
 		mf.addChild(pin);
 
 		PasswordAuthObject puk = new PasswordAuthObject(

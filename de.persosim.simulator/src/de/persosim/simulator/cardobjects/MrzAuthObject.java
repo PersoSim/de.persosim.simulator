@@ -20,10 +20,7 @@ public class MrzAuthObject extends PasswordAuthObject {
 	
 	//XXX add serialization for this object including mrt field and unmarshaller that can reproduce password[] from mrz
 	protected String mrz;
-	
-	public MrzAuthObject() {
-	}
-	
+		
 	public MrzAuthObject(AuthObjectIdentifier identifier, String mrz)
 			throws NoSuchAlgorithmException, NoSuchProviderException,
 			IOException {

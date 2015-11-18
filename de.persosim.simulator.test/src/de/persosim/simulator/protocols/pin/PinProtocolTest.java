@@ -15,7 +15,6 @@ import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
-import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
@@ -24,15 +23,18 @@ import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.Authorization;
+import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
+import de.persosim.simulator.seccondition.TaSecurityCondition;
 import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
+import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -42,7 +44,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 
 	
 	PasswordAuthObject authObject;
-	PinObject pinObject;
+	PasswordAuthObjectWithRetryCounter pinObject;
 	PasswordAuthObjectWithRetryCounter authObjectRetry;
 	PinProtocol protocol;
 	
@@ -56,9 +58,15 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.setCardStateAccessor(mockedCardStateAccessor);
 		
 		authObject = new PasswordAuthObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN");
-		pinObject = new PinObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), 6, 6, 3);
+		
+		TaSecurityCondition pinManagementCondition = new TaSecurityCondition(TerminalType.AT,
+				new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5)));
+		
+		pinObject = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN", 6, 6, 3,
+				pinManagementCondition);
 		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
-		authObjectRetry = new PasswordAuthObjectWithRetryCounter (new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN", 6, 6, 3);
+		authObjectRetry = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(),
+				"PIN", 6, 6, 3, pinManagementCondition);
 		authObjectRetry.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
 		currentMechanisms = new HashSet<>();
@@ -336,6 +344,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 						withInstanceOf(Scope.class));
 				result = pinObject;
 				
+				//TODO Add mocked secstatus etc.
 				mockedCardStateAccessor
 						.getCurrentMechanisms(
 								withInstanceOf(SecContext.class),
@@ -373,11 +382,14 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 						withInstanceOf(Scope.class));
 				result = pinObject;
 				
+				//TODO Add mechanism
 				mockedCardStateAccessor
 						.getCurrentMechanisms(
 								withInstanceOf(SecContext.class),
 								withInstanceLike(new HashSet<Class<? extends SecMechanism>>()));
 				result = currentMechanisms;
+				
+				//TODO Add mocked secstatus
 			}
 		};
 		

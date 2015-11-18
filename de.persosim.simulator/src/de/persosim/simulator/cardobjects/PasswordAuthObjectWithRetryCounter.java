@@ -1,6 +1,6 @@
 package de.persosim.simulator.cardobjects;
 
-
+import de.persosim.simulator.seccondition.SecCondition;
 
 /**
  * This class represents a {@link PasswordAuthObject} extended to provide a retry counter.
@@ -12,15 +12,12 @@ package de.persosim.simulator.cardobjects;
 public class PasswordAuthObjectWithRetryCounter extends ChangeablePasswordAuthObject {
 	protected int retryCounterDefaultValue;
 	protected int retryCounterCurrentValue;
-	
-	public PasswordAuthObjectWithRetryCounter(){
-	}
-	
+		
 	public PasswordAuthObjectWithRetryCounter(AuthObjectIdentifier identifier,
 			byte [] password, String passwordName, int minLengthOfPasswordInBytes, int maxLengthOfPasswordInBytes,
-			int defaultValueRetryCounter){
+			int defaultValueRetryCounter, SecCondition pinManagementCondition){
 		
-		super(identifier, password, passwordName, minLengthOfPasswordInBytes, maxLengthOfPasswordInBytes);
+		super(identifier, password, passwordName, minLengthOfPasswordInBytes, maxLengthOfPasswordInBytes, pinManagementCondition);
 		
 		if(defaultValueRetryCounter < 1) {throw new IllegalArgumentException("initial value of retry counter must be > 0");}
 		
