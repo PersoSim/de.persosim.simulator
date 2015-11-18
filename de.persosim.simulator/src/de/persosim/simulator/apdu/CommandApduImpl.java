@@ -9,6 +9,7 @@ import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvValue;
+import de.persosim.simulator.tlv.TlvValuePlain;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
@@ -65,7 +66,7 @@ public class CommandApduImpl implements CommandApdu {
 			commandData = Iso7816Lib.getCommandData(apdu);
 		} else {
 			nc = 0;
-			commandData = null;
+			commandData = new TlvValuePlain(new byte [0]);
 		}
 		
 		//store ne (if present)

@@ -65,7 +65,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 			switch (p1) {
 			case P1_SELECT_FILE_MF_DF_EF:
 				if ((p2 & P2_SELECT_OCCURRENCE_MASK) == P2_SELECT_OCCURRENCE_FIRST) {
-					if ((cmdApdu.getCommandData() == null)
+					if ((cmdApdu.getCommandData().isEmpty())
 							|| ((cmdApdu.getNc() == 2 && Arrays.equals(cmdApdu.getCommandData().toByteArray(),
 									new byte[] { 0x3F, 0x00 })))) {
 						// special file identifier for the master file (absent or 3f00)
