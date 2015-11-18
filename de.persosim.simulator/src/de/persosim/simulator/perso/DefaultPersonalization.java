@@ -61,6 +61,7 @@ import de.persosim.simulator.protocols.ta.TaProtocol;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.PaceSecurityCondition;
+import de.persosim.simulator.seccondition.PaceWithPasswordSecurityCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.seccondition.TaSecurityCondition;
 import de.persosim.simulator.securemessaging.SecureMessaging;
@@ -601,9 +602,11 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))));
 		mf.addChild(can);
 
-		PasswordAuthObjectWithRetryCounter pin = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(ID_PIN),
-				"123456".getBytes("UTF-8"), "PIN", 6, 6, 3, new TaSecurityCondition(TerminalType.AT,
-						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))));
+		PasswordAuthObjectWithRetryCounter pin = new PasswordAuthObjectWithRetryCounter(
+				new AuthObjectIdentifier(ID_PIN), "123456".getBytes("UTF-8"), "PIN", 6, 6, 3,
+				new TaSecurityCondition(TerminalType.AT,
+						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))),
+				new PaceWithPasswordSecurityCondition("PIN"));
 		mf.addChild(pin);
 
 		PasswordAuthObject puk = new PasswordAuthObject(

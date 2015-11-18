@@ -35,6 +35,7 @@ import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.PaceSecurityCondition;
+import de.persosim.simulator.seccondition.PaceWithPasswordSecurityCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.seccondition.TaSecurityCondition;
 import de.persosim.simulator.tlv.Asn1;
@@ -181,8 +182,10 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		mf.addChild(can);
 
 		PasswordAuthObjectWithRetryCounter pin = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(3),
-				getPin().getBytes("UTF-8"), "PIN", 6, 6, 3, new TaSecurityCondition(TerminalType.AT,
-						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))));
+				getPin().getBytes("UTF-8"), "PIN", 6, 6, 3,
+				new TaSecurityCondition(TerminalType.AT,
+						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))),
+				new PaceWithPasswordSecurityCondition("PIN"));
 		mf.addChild(pin);
 
 		PasswordAuthObject puk = new PasswordAuthObject(

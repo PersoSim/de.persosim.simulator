@@ -2,7 +2,6 @@ package de.persosim.simulator.seccondition;
 
 import java.util.Collection;
 
-import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 
@@ -14,13 +13,13 @@ import de.persosim.simulator.secstatus.SecMechanism;
  * 
  */
 public class PaceWithPasswordSecurityCondition extends PaceSecurityCondition {
-	PasswordAuthObject neededPassword;
+	String neededPassword;
 
 	public PaceWithPasswordSecurityCondition() {
 	}
 	
-	public PaceWithPasswordSecurityCondition(PasswordAuthObject neededPassword) {
-		this.neededPassword = neededPassword;
+	public PaceWithPasswordSecurityCondition(String passwordName) {
+		this.neededPassword = passwordName;
 	}
 
 	@Override
@@ -29,7 +28,7 @@ public class PaceWithPasswordSecurityCondition extends PaceSecurityCondition {
 			for (SecMechanism mechanism : mechanisms) {
 				if (mechanism instanceof PaceMechanism
 						&& ((PaceMechanism) mechanism)
-								.getUsedPassword().equals(neededPassword)) {
+								.getUsedPassword().getPasswordName().equals(neededPassword)) {
 					return true;
 				}
 			}

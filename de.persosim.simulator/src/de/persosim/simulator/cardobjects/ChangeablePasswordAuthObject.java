@@ -49,11 +49,15 @@ public class ChangeablePasswordAuthObject extends PasswordAuthObject {
 		if (securityStatus == null
 				|| (!state.equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)
 						&& !state.equals(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED))
-				|| securityStatus.checkAccessConditions(getLifeCycleState(), pinManagementCondition)) {
+				|| securityStatus.checkAccessConditions(getLifeCycleState(), getPinManagementCondition())) {
 			super.updateLifeCycleState(state);
 		} else {
 			throw new LifeCycleChangeException("Access conditions to change life cycle state not matched", getLifeCycleState(), state);
 		}
+	}
+
+	public SecCondition getPinManagementCondition() {
+		return pinManagementCondition;
 	}
 	
 }
