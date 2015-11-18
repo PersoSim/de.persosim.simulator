@@ -121,6 +121,11 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	public CardObject getObject(CardObjectIdentifier id, Scope scope) {
 		return objectStore.getObject(id, scope);
 	}
+	
+	@Override
+	public Collection<CardObject> getObjectsWithSameId(CardObjectIdentifier id, Scope scope) {
+		return objectStore.getObjectsWithSameId(id, scope);
+	}
 
 	/**
 	 * Adds a new protocol to the list of available protocols. The new protocol

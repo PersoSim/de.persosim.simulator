@@ -1,6 +1,9 @@
 package de.persosim.simulator.cardobjects;
 
 import java.io.FileNotFoundException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 
 import de.persosim.simulator.platform.CommandProcessor;
 
@@ -53,21 +56,39 @@ public class ObjectStore {
 	 * 
 	 * @param id
 	 *            identifier that describes the object to return
-	 * @param acc
-	 *            access mode that is required for the object
 	 * @param scope
 	 *            scope in which to search using the given identifier
 	 * @return the described CardObject that enforces access mode according to
 	 *         mode parameter or a {@link NullCardobject}
 	 */
 	public CardObject getObject(CardObjectIdentifier id, Scope scope) {
-		CardObject selected = searchObject(id, scope);
+		Collection<CardObject> result = searchObjects(id, scope, true);
+		if(result.isEmpty()) {
+			return new NullCardObject();
+		}
+		CardObject selected = result.iterator().next();
 		if (selected instanceof CardFile) {
 			cachedFile = (CardFile) selected;
 		} else {
 			cachedFile = null;
 		}
 		return selected;
+	}
+	
+	/**
+	 * Search for all {@link CardObject}s with a particular id reachable from
+	 * current selection and return it. If no fitting {@link CardObject} can be
+	 * found, an empty set is returned.
+	 * 
+	 * @param id
+	 *            identifier that describes the objects to return
+	 * @param scope
+	 *            scope in which to search using the given identifier
+	 * @return the described CardObject that enforces access mode according to
+	 *         mode parameter or an empty set
+	 */
+	public Collection<CardObject> getObjectsWithSameId(CardObjectIdentifier id, Scope scope) {
+		return searchObjects(id, scope, false);
 	}
 
 	/**
@@ -85,7 +106,8 @@ public class ObjectStore {
 	 */
 	public CardFile selectFile(CardObjectIdentifier id, Scope scope)
 			throws FileNotFoundException {
-		CardObject newSelection = searchObject(id, scope);
+		Collection<CardObject> result = searchObjects(id, scope, true);
+		CardObject newSelection = result.iterator().next();
 		if (!(newSelection instanceof NullCardObject)) {
 			currentFile = (CardFile) newSelection;
 			return currentFile;
@@ -136,15 +158,20 @@ public class ObjectStore {
 		currentFile = masterFile;
 		return (MasterFile) currentFile;
 	}
-
+	
 	/**
-	 * Search a CardObject starting from the currentFile
+	 * Search {@link CardObject}s starting from the currentFile
 	 * 
+	 * @param id
+	 *            identifier that describes the object to return
 	 * @param scope
-	 * @return the searched object or {@link NullCardObject} if no fitting
-	 *         object was found
+	 *            scope in which to search using the given identifier
+	 * @param onlyFirst
+	 *            if true, only the first found object will be returned
+	 * @return the searched objects or an empty set if no fitting object was
+	 *         found
 	 */
-	private CardObject searchObject(CardObjectIdentifier id, Scope scope) {
+	private Collection<CardObject> searchObjects(CardObjectIdentifier id, Scope scope, boolean onlyFirst) {
 		CardObject searchRoot = null;
 
 		switch (scope) {
@@ -163,13 +190,13 @@ public class ObjectStore {
 		}
 
 		if (searchRoot != null) {
-			return findFirstChild(id, searchRoot);
+			return findChildren(id, searchRoot, onlyFirst);
 		}
-		return new NullCardObject();
+		return Collections.emptySet();
 	}
-
+	
 	/**
-	 * Search for a child {@link CardObject} in the object stores
+	 * Search for children {@link CardObject}s in the object stores
 	 * tree, starting in the given {@link CardObject}.
 	 * </p>
 	 * Search pattern (according to ISO7816-4 7.1.1):
@@ -187,11 +214,11 @@ public class ObjectStore {
 	 * @param identifier
 	 *            to match the {@link CardObject}s with
 	 * @param {@link CardObject} to start the search with
-	 * @return a child that fits the given identifier or {@link NullCardObject}
+	 * @param onlyFirst if true, only the first found child will be returned
+	 * @return children that fit the given identifier or an empty set
 	 *         if no fitting child was found
 	 */
-	private CardObject findFirstChild(CardObjectIdentifier id,
-			CardObject currentObject) {
+	private Collection<CardObject> findChildren(CardObjectIdentifier id, CardObject currentObject, boolean onlyFirst) {
 		
 		DedicatedFile currentDf;
 		
@@ -202,27 +229,42 @@ public class ObjectStore {
 			currentDf = findFirstParentDedicatedFile(currentObject);
 		}
 		
+		HashSet<CardObject> children = new HashSet<CardObject>();
+		
 		//check the immediate children of the current DF
 		for (CardObject curChild : currentDf.getChildren()){
 			if (id.matches(curChild)){
-				return curChild;
+				children.add(curChild);
+				if(onlyFirst) {
+					return children;
+				}
 			}
 		}
 		
 		//check the parentDF
 		DedicatedFile parentDf = findFirstParentDedicatedFile(currentDf);
 		if (id.matches(parentDf)){
-			return parentDf;
+			children.add(parentDf);
+			if(onlyFirst) {
+				return children;
+			}
 		}
 		//check for parent DF immediate children
 		for (CardObject curChild : parentDf.getChildren()){
 			if (id.matches(curChild)){
-				return curChild;
+				children.add(curChild);
+				if(onlyFirst) {
+					return children;
+				}
 			}
 		}
 		
+		if(!children.isEmpty()){
+			return children;
+		}
+		
 		// No fitting child found
-		return new NullCardObject();
+		return Collections.emptySet();
 	}
 
 	/**
