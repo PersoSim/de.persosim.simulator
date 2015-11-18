@@ -17,6 +17,7 @@ import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.FileIdentifierIncorrectValueException;
 import de.persosim.simulator.exception.FileToShortException;
+import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.exception.TagNotFoundException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
@@ -46,7 +47,9 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 	static final byte P1_MASK_SHORT_FILE_IDENTIFIER = (byte) 0b10000000;
 	static final byte ODDINS_RESPONSE_TAG = 0x53;
 	static final byte ODDINS_COMMAND_TAG = 0x54;
-	private static final byte [] ODDINS_COMMAND_DDO_TAGS = new byte [] {0x73, 0x53};
+	static final byte ODDINS_COMMAND_DDO_TAG_73 = 0x73;
+	static final byte ODDINS_COMMAND_DDO_TAG_53 = 0x53;
+	
 	static final short P1P2_MASK_SFI = 0b0000000000011111;
 	static final byte P1_MASK_SFI = 0b00011111;
 		
@@ -145,9 +148,97 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 	}
 	
 	protected void processCommandEraseBinary(){
+		CardFile file;
+		try {
+			file = (CardFile) getFile(processingData.getCommandApdu(), cardState, false);
+		} catch (FileNotFoundException e) {
+			ResponseApdu resp = new ResponseApdu(
+					Iso7816.SW_6A82_FILE_NOT_FOUND);
+			this.processingData.updateResponseAPDU(this,
+					"binary file not found for selection", resp);
+			return;
+		}
+		
+		ElementaryFile ef;
+		if (!(file instanceof ElementaryFile)){
+			throw new ProcessingException(Iso7816.SW_6986_COMMAND_NOT_ALLOWED_NO_EF, "The used file is not an EF and can note be erased.");
+		} else {
+			ef = (ElementaryFile) file;
+		}
+		
+		TlvValue apduData = processingData.getCommandApdu().getCommandData();		
+
+		try {
+			if (apduData.getLength() > 0) {
+				int startingOffset = Utils.getIntFromUnsignedByteArray(apduData.toByteArray());
+				ef.erase(startingOffset);
+			} else {
+				ef.erase();
+			}
+			ResponseApdu resp = new ResponseApdu(
+					Iso7816.SW_9000_NO_ERROR);
+			this.processingData.updateResponseAPDU(this,
+					"binary file updated successfully", resp);
+			processingData.addUpdatePropagation(this,
+					"FileManagement protocol is not supposed to stay on the stack",
+					new ProtocolUpdate(true));
+		} catch (AccessDeniedException e) {
+			throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED,
+					"The used file can not be erased due to access conditions.");
+		}
 	}
 	
 	protected void processCommandEraseBinaryOdd(){
+		CardFile file;
+		try {
+			file = (CardFile) getFile(processingData.getCommandApdu(), cardState, true);
+		} catch (FileNotFoundException e) {
+			ResponseApdu resp = new ResponseApdu(
+					Iso7816.SW_6A82_FILE_NOT_FOUND);
+			this.processingData.updateResponseAPDU(this,
+					"binary file not found for erasing", resp);
+			return;
+		}
+		
+		ElementaryFile ef;
+		if (!(file instanceof ElementaryFile)){
+			throw new ProcessingException(Iso7816.SW_6986_COMMAND_NOT_ALLOWED_NO_EF, "The used file is not an EF and can note be erased.");
+		} else {
+			ef = (ElementaryFile) file;
+		}
+		
+		int startingOffset = -1;
+		try {
+			startingOffset = Utils.getIntFromUnsignedByteArray(getDDO(processingData.getCommandApdu(), 0).getValueField());
+		} catch (TagNotFoundException | IllegalArgumentException e) {
+			ResponseApdu resp = new ResponseApdu(
+					Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+			this.processingData.updateResponseAPDU(this, e.getMessage(),
+					resp);
+			return;
+		}
+		try {
+			try {
+				int endingOffset = Utils
+						.getIntFromUnsignedByteArray(getDDO(processingData.getCommandApdu(), 1).getValueField());
+				ef.erase(startingOffset, endingOffset);
+			} catch (TagNotFoundException e) {
+				ef.erase(startingOffset);
+			}
+			ResponseApdu resp = new ResponseApdu(
+					Iso7816.SW_9000_NO_ERROR);
+			this.processingData.updateResponseAPDU(this,
+					"binary file erased successfully", resp);
+			processingData.addUpdatePropagation(this,
+					"FileManagement protocol is not supposed to stay on the stack",
+					new ProtocolUpdate(true));
+			
+		} catch (AccessDeniedException e) {
+			throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED, "The used file can not be erased due to access conditions.");
+		} catch (IllegalArgumentException e){
+			throw new ProcessingException(Iso7816.SW_6B00_WRONG_P1P2, "The given offsets are outside the EF.");
+		}
+			
 	}
 
 	protected void processCommandUpdateBinary() {
@@ -156,7 +247,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 		
 		CardFile file;
 		try {
-			file = (CardFile) getFile(processingData.getCommandApdu(), cardState);
+			file = (CardFile) getFile(processingData.getCommandApdu(), cardState, isOddInstruction);
 		} catch (FileNotFoundException e) {
 			ResponseApdu resp = new ResponseApdu(
 					Iso7816.SW_6A82_FILE_NOT_FOUND);
@@ -171,7 +262,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 
 		try {
 			if (isOddInstruction) {
-				updateData = getDDO(processingData.getCommandApdu())
+				updateData = getDDO(processingData.getCommandApdu(), 1)
 						.getValueField();
 			} else {
 				updateData = processingData.getCommandApdu()
@@ -225,19 +316,27 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 	}
 	
 	/**
+	 * Finds a discretionary data object at the given position.
+	 * 
 	 * @param apdu
-	 * @return the first discretionary data object found in the give apdu 
+	 * @param ddoNumber the position of the searched for DDO
+	 * @return the discretionary data object found in the given apdu at 
 	 * @throws TagNotFoundException
 	 */
-	private TlvDataObject getDDO(CommandApdu apdu) throws TagNotFoundException{
-		for (byte tag : ODDINS_COMMAND_DDO_TAGS){
-			TlvDataObject result = apdu.getCommandDataObjectContainer().getTlvDataObject(new TlvTag(tag)); 
-			if (result != null){
-				return result;
+	private TlvDataObject getDDO(CommandApdu apdu, int ddoNumber) throws TagNotFoundException{
+		TlvDataObjectContainer ddoEncapsulation = apdu.getCommandDataObjectContainer();
+		
+		if (ddoEncapsulation.getNoOfElements() <= ddoNumber)
+			throw new TagNotFoundException("DDO encapsulation object does not contain enough DDOs.");
+		
+		TlvDataObject candidate = ddoEncapsulation.getTlvObjects().get(ddoNumber);
+		if (candidate.getTlvTag().equals(new TlvTag(ODDINS_COMMAND_TAG)) || 
+				candidate.getTlvTag().equals(new TlvTag(ODDINS_COMMAND_DDO_TAG_73)) || 
+						candidate.getTlvTag().equals(new TlvTag(ODDINS_COMMAND_DDO_TAG_53))){
+			return candidate;
 			}
+		throw new TagNotFoundException("DDO at index " + ddoNumber + " does not have tag " + ODDINS_COMMAND_TAG);
 		}
-		throw new TagNotFoundException("DDO was not found.");
-	}
 	
 	/**
 	 * This method is used if the file offset is encoded in the P1P2 bytes.
@@ -363,9 +462,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 	 * @return the {@link CardObject} fitting the given apdu or null if no match is found 
 	 * @throws FileNotFoundException 
 	 */
-	private static CardObject getFile(CommandApdu apdu, CardStateAccessor cardState) throws FileNotFoundException {
-		boolean isOddInstruction = ((apdu.getIns() & INS_MASK_ODDINS) == INS_MASK_ODDINS);
-		
+	protected static CardObject getFile(CommandApdu apdu, CardStateAccessor cardState, boolean isOddInstruction) throws FileNotFoundException {
 		if (isOddInstruction){
 			return getFileOddInstruction(apdu, cardState);
 		} else {
@@ -408,7 +505,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 		CardObject file = null;
 
 		try {
-			file = getFile(processingData.getCommandApdu(), cardState);
+			file = getFile(processingData.getCommandApdu(), cardState, isOddInstruction);
 		} catch (FileNotFoundException e) {
 			ResponseApdu resp = new ResponseApdu(
 					Iso7816.SW_6A82_FILE_NOT_FOUND);

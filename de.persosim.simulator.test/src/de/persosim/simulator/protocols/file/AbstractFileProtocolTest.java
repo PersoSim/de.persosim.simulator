@@ -1,9 +1,5 @@
 package de.persosim.simulator.protocols.file;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,6 +7,10 @@ import java.util.LinkedList;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.cardobjects.CardFile;
@@ -461,8 +461,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		fileProtocol.process(processingData);
 
 		// check results
-		assertTrue("Statusword is not 9000", processingData.getResponseApdu()
-				.getStatusWord() == Iso7816.SW_9000_NO_ERROR);
+		assertTrue(processingData.getResponseApdu().getStatusWord() == Iso7816.SW_9000_NO_ERROR);
 		assertArrayEquals("file content not updated correctly", new byte[]{1, 2, (byte) 0xFF, (byte) 0xFF, 5, 6}, elementaryFileUnderMf.getContent());
 	}
 
@@ -546,6 +545,23 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		assertArrayEquals("array not matching", dataExpected, dataReceived);
 	}
 	//TODO missing tests getContents, with zero offset, with range larger than file, etc.
+
+	@Test
+	public void testEraseFileEvenInstructionNoCommandData() throws Exception{
+
+		// erase binary APDU
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = new byte[] { 0x00, (byte) 0x0E, 0x00, 0x00 };
+		processingData.updateCommandApdu(this, "erase binary APDU", CommandApduFactory.createCommandApdu(apduBytes));
+
+		// call mut
+		fileProtocol.process(processingData);
+
+		// check results
+		assertEquals("Statusword is not 9000", processingData.getResponseApdu().getStatusWord(),
+				Iso7816.SW_9000_NO_ERROR);
+		assertArrayEquals(new byte [] {0,0,0,0,0,0}, elementaryFileContent);
+	}
 	
 	
 	/**
@@ -599,4 +615,70 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		assertEquals("wrong file returned", elementaryFileUnderMf, result);
 	}
 	
+	@Test
+	public void testEraseFileEvenInstructionValidOffset() throws Exception{
+
+		// erase binary APDU
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = new byte[] { 0x00, (byte) 0x0E, 0x00, 0x00, 0x01, 0x02 };
+		processingData.updateCommandApdu(this, "erase binary APDU", CommandApduFactory.createCommandApdu(apduBytes));
+
+		// call mut
+		fileProtocol.process(processingData);
+
+		assertEquals("Statusword is not 9000", processingData.getResponseApdu().getStatusWord(),
+				Iso7816.SW_9000_NO_ERROR);
+
+		assertArrayEquals(new byte [] {1,2,0,0,0,0}, elementaryFileContent);
+	}
+	
+	@Test
+	public void testEraseFileOddInstructionInvalidOffsetDataObject() throws Exception{
+
+		// erase binary APDU
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = new byte[] { 0x00, (byte) 0x0F, 0x00, 0x00, 0x02, 0x54, 0x00 };
+		processingData.updateCommandApdu(this, "erase binary APDU", CommandApduFactory.createCommandApdu(apduBytes));
+
+		// call mut
+		fileProtocol.process(processingData);
+
+		assertEquals(processingData.getResponseApdu().getStatusWord(), Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+
+		assertArrayEquals(new byte [] {1,2,3,4,5,6}, elementaryFileContent);
+	}
+	
+	@Test
+	public void testEraseFileOddInstructionValidOffsetDataObject() throws Exception{
+
+		// erase binary APDU
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = new byte[] { 0x00, (byte) 0x0F, 0x00, 0x00, 0x03, 0x54, 0x01, 0x03 };
+		processingData.updateCommandApdu(this, "erase binary APDU", CommandApduFactory.createCommandApdu(apduBytes));
+
+		// call mut
+		fileProtocol.process(processingData);
+
+		assertEquals("Statusword is not 9000", processingData.getResponseApdu().getStatusWord(),
+				Iso7816.SW_9000_NO_ERROR);
+
+		assertArrayEquals(new byte [] {1,2,3,0,0,0}, elementaryFileUnderMf.getContent());
+	}
+	
+	@Test
+	public void testEraseFileOddInstructionTwoValidOffsetDataObjects() throws Exception{
+
+		// erase binary APDU
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = new byte[] { 0x00, (byte) 0x0F, 0x00, 0x00, 0x06, 0x54, 0x01, 0x03, 0x54, 0x01, 0x04 };
+		processingData.updateCommandApdu(this, "erase binary APDU", CommandApduFactory.createCommandApdu(apduBytes));
+
+		// call mut
+		fileProtocol.process(processingData);
+
+		assertEquals("Statusword is not 9000", processingData.getResponseApdu().getStatusWord(),
+				Iso7816.SW_9000_NO_ERROR);
+
+		assertArrayEquals(new byte [] {1,2,3,0,5,6}, elementaryFileContent);
+	}
 }
