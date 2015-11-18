@@ -11,7 +11,7 @@ import de.persosim.simulator.processing.UpdatePropagation;
  */
 public class SecStatusEventUpdatePropagation extends SecStatusUpdatePropagation {
 
-	SecurityEvent event;
+	protected SecurityEvent event;
 
 	public SecStatusEventUpdatePropagation(SecurityEvent event) {
 		this.event = event;
