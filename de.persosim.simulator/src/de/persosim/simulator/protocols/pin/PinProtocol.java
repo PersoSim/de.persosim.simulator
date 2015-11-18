@@ -179,7 +179,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		ChangeablePasswordAuthObject passwordObject = (ChangeablePasswordAuthObject) object;
 		String passwordName = passwordObject.getPasswordName();
 		
-		if(tlvData == null) {
+		if(tlvData.isEmpty()) {
 			ResponseApdu resp = new ResponseApdu(SW_6A80_WRONG_DATA);
 			this.processingData.updateResponseAPDU(this, "no new " + passwordName + " data received", resp);
 			/* there is nothing more to be done here */
