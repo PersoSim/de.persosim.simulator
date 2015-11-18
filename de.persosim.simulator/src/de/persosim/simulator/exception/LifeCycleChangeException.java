@@ -10,7 +10,7 @@ import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
  * @author mboonk
  * 
  */
-public class LifeCycleChangeException extends Exception {
+public class LifeCycleChangeException extends AccessDeniedException {
 
 	private static final long serialVersionUID = 1L;
 

@@ -15,7 +15,6 @@ import java.util.List;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ByteDataAuxObject;
 import de.persosim.simulator.cardobjects.CardFile;
-import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.DateAuxObject;
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
 import de.persosim.simulator.cardobjects.DateTimeObjectIdentifier;
@@ -597,16 +596,15 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				"P<D<<C11T002JM4<<<<<<<<<<<<<<<9608122F2310314D<<<<<<<<<<<<<4MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
 		mf.addChild(mrz);
 		
-		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(new AuthObjectIdentifier(ID_CAN),
-				"500540".getBytes("UTF-8"), "CAN", 6, 6, new TaSecurityCondition(TerminalType.AT,
-						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))));
+		PasswordAuthObject can = new PasswordAuthObject(new AuthObjectIdentifier(ID_CAN),
+				"500540".getBytes("UTF-8"), "CAN");
 		mf.addChild(can);
 
 		PasswordAuthObjectWithRetryCounter pin = new PasswordAuthObjectWithRetryCounter(
 				new AuthObjectIdentifier(ID_PIN), "123456".getBytes("UTF-8"), "PIN", 6, 6, 3,
 				new TaSecurityCondition(TerminalType.AT,
 						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))),
-				new PaceWithPasswordSecurityCondition("PIN"));
+				new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")));
 		mf.addChild(pin);
 
 		PasswordAuthObject puk = new PasswordAuthObject(

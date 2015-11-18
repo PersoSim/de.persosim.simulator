@@ -16,6 +16,7 @@ import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.Scope;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
@@ -145,6 +146,11 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			this.processingData.updateResponseAPDU(this, "PIN object transition from state " + e.getOldState() + " to " + e.getNewState() + " not possible", resp);
 			/* there is nothing more to be done here */
 			return;
+		} catch (AccessDeniedException e) {
+			ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			this.processingData.updateResponseAPDU(this, "Access conditions to activate password not met", resp);
+			/* there is nothing more to be done here */
+			return;
 		}
 		
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
@@ -196,6 +202,13 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
 			/* there is nothing more to be done here */
 			return;
+		} catch (AccessDeniedException e) {
+			ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			this.processingData.updateResponseAPDU(this,
+					"Access conditions to change " + passwordObject.getPasswordName() + " not met",
+					resp);
+			/* there is nothing more to be done here */
+			return;
 		}
 		log(this, "new " + passwordName + " is: " + HexString.dump(newPasswordPlain), DEBUG);
 		
@@ -223,6 +236,11 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		} catch (LifeCycleChangeException e) {
 			ResponseApdu resp = new ResponseApdu(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
 			this.processingData.updateResponseAPDU(this, "PIN object transition from state " + e.getOldState() + " to " + e.getNewState() + " not possible", resp);
+			/* there is nothing more to be done here */
+			return;
+		} catch (AccessDeniedException e) {
+			ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			this.processingData.updateResponseAPDU(this, "Access conditions to deactivate password not met", resp);
 			/* there is nothing more to be done here */
 			return;
 		}

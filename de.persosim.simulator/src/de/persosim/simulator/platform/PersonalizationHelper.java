@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
-import de.persosim.simulator.exception.LifeCycleChangeException;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
@@ -84,7 +84,7 @@ public class PersonalizationHelper {
 				if (cardObject.getLifeCycleState().isPersonalizationPhase()){
 					try {
 						cardObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
-					} catch (LifeCycleChangeException e) {
+					} catch (AccessDeniedException e) {
 						PersoSimLogger.logException(PersonalizationHelper.class, e, PersoSimLogger.WARN);
 					}	
 				}

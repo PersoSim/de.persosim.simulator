@@ -11,7 +11,6 @@ import java.util.Date;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ByteDataAuxObject;
 import de.persosim.simulator.cardobjects.CardFile;
-import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.DateAuxObject;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.ElementaryFile;
@@ -176,16 +175,15 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				persoDataContainer.getMrz());
 		mf.addChild(mrz);
 
-		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(new AuthObjectIdentifier(2),
-				getCan().getBytes("UTF-8"), "CAN", 6, 6, new TaSecurityCondition(TerminalType.AT,
-						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))));
+		PasswordAuthObject can = new PasswordAuthObject(new AuthObjectIdentifier(2),
+				getCan().getBytes("UTF-8"), "CAN");
 		mf.addChild(can);
 
 		PasswordAuthObjectWithRetryCounter pin = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(3),
 				getPin().getBytes("UTF-8"), "PIN", 6, 6, 3,
 				new TaSecurityCondition(TerminalType.AT,
 						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))),
-				new PaceWithPasswordSecurityCondition("PIN"));
+				new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")));
 		mf.addChild(pin);
 
 		PasswordAuthObject puk = new PasswordAuthObject(
