@@ -206,7 +206,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword", SW_6984_REFERENCE_DATA_NOT_USABLE, processingData
+		assertEquals("Statusword", SW_6982_SECURITY_STATUS_NOT_SATISFIED, processingData
 				.getResponseApdu().getStatusWord());
 		assertArrayEquals("Password", "111111".getBytes(), authObject.getPassword());
 	}

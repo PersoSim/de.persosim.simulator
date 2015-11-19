@@ -72,7 +72,7 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 		retVal.add(GtConstants.PROFILE_EPASSPORT);
 		retVal.add(GtConstants.PROFILE_EPASSPORT_DG3);
 		retVal.add(GtConstants.PROFILE_EPASSPORT_DG4);
-		retVal.add(GtConstants.PROFILE_CNG_CAN_AR);
+		retVal.add(GtConstants.PROFILE_NOT_CNG_CAN_AR);
 		retVal.add(GtConstants.PROFILE_CNG_PIN_AR);
 		retVal.add(GtConstants.PROFILE_CNG_PIN_PUK);
 		retVal.add(GtConstants.PROFILE_AUX);

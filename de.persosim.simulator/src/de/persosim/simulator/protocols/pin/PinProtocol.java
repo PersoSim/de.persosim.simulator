@@ -139,18 +139,21 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			return;
 		}
 		
-		try {
-			((PasswordAuthObjectWithRetryCounter) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
-		} catch (LifeCycleChangeException e) {
-			ResponseApdu resp = new ResponseApdu(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this, "PIN object transition from state " + e.getOldState() + " to " + e.getNewState() + " not possible", resp);
-			/* there is nothing more to be done here */
-			return;
-		} catch (AccessDeniedException e) {
-			ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this, "Access conditions to activate password not met", resp);
-			/* there is nothing more to be done here */
-			return;
+		PasswordAuthObjectWithRetryCounter passwordObject = ((PasswordAuthObjectWithRetryCounter) object);
+		if(!passwordObject.getLifeCycleState().equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)) {
+			try {
+				passwordObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+			} catch (LifeCycleChangeException e) {
+				ResponseApdu resp = new ResponseApdu(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "PIN object transition from state " + e.getOldState() + " to " + e.getNewState() + " not possible", resp);
+				/* there is nothing more to be done here */
+				return;
+			} catch (AccessDeniedException e) {
+				ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "Access conditions to activate password not met", resp);
+				/* there is nothing more to be done here */
+				return;
+			}
 		}
 		
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
@@ -168,8 +171,8 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
 		
 		if(!(object instanceof ChangeablePasswordAuthObject)) {
-			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
-			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
+			ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			this.processingData.updateResponseAPDU(this, "Password is not changeable", resp);
 			/* there is nothing more to be done here */
 			return;
 		}
@@ -231,18 +234,21 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			return;
 		}
 		
-		try {
-			((PasswordAuthObjectWithRetryCounter) object).updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
-		} catch (LifeCycleChangeException e) {
-			ResponseApdu resp = new ResponseApdu(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this, "PIN object transition from state " + e.getOldState() + " to " + e.getNewState() + " not possible", resp);
-			/* there is nothing more to be done here */
-			return;
-		} catch (AccessDeniedException e) {
-			ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this, "Access conditions to deactivate password not met", resp);
-			/* there is nothing more to be done here */
-			return;
+		PasswordAuthObjectWithRetryCounter passwordObject = ((PasswordAuthObjectWithRetryCounter) object);
+		if(!passwordObject.getLifeCycleState().equals(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED)) {
+			try {
+				passwordObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
+			} catch (LifeCycleChangeException e) {
+				ResponseApdu resp = new ResponseApdu(SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "PIN object transition from state " + e.getOldState() + " to " + e.getNewState() + " not possible", resp);
+				/* there is nothing more to be done here */
+				return;
+			} catch (AccessDeniedException e) {
+				ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "Access conditions to deactivate password not met", resp);
+				/* there is nothing more to be done here */
+				return;
+			}
 		}
 		
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
