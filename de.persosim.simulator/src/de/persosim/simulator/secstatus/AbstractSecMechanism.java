@@ -14,4 +14,9 @@ public class AbstractSecMechanism implements SecMechanism {
 		return true;
 	}
 
+	@Override
+	public Class<? extends SecMechanism> getKey() {
+		return this.getClass();
+	}
+
 }

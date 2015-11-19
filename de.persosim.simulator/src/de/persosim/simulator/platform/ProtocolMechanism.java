@@ -1,6 +1,7 @@
 package de.persosim.simulator.platform;
 
 import de.persosim.simulator.protocols.Protocol;
+import de.persosim.simulator.secstatus.AbstractSecMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecurityEvent;
 
@@ -11,7 +12,7 @@ import de.persosim.simulator.secstatus.SecurityEvent;
  * @author slutters
  *
  */
-public class ProtocolMechanism implements SecMechanism {
+public class ProtocolMechanism extends AbstractSecMechanism {
 	
 	protected Class<? extends Protocol> currentlyActiveProtocol;
 	

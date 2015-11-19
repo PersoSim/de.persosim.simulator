@@ -8,7 +8,7 @@ import de.persosim.simulator.protocols.ta.Authorization;
  * @author slutters
  *
  */
-public class AuthorizationMechanism implements SecMechanism {
+public class AuthorizationMechanism extends AbstractSecMechanism {
 	
 	private AuthorizationStore authorizationStore;
 	

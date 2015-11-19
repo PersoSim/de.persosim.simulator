@@ -23,4 +23,7 @@ public interface SecMechanism {
 	 * @return true, if deletion is necessary
 	 */
 	boolean needsDeletionInCaseOf(SecurityEvent event);
+	
+
+	public Class<? extends SecMechanism> getKey();
 }

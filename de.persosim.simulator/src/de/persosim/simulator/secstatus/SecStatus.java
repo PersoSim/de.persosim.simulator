@@ -13,6 +13,7 @@ import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.seccondition.SecCondition;
+import de.persosim.simulator.securemessaging.SmDataProviderGenerator;
 import de.persosim.simulator.utils.InfoSource;
 
 /**
@@ -86,7 +87,7 @@ public class SecStatus implements InfoSource{
 	}
 
 	private void updateContext(SecContext context, SecMechanism mechanism) {
-		contexts.get(context).put(mechanism.getClass(), mechanism);
+		contexts.get(context).put(mechanism.getKey(), mechanism);
 	}
 
 	/**
@@ -222,6 +223,15 @@ public class SecStatus implements InfoSource{
 				SecStatusStoreUpdatePropagation eventPropagation = (SecStatusStoreUpdatePropagation) curUpdate;
 				if (eventPropagation.getEvent().equals(SecurityEvent.RESTORE_SESSION_CONTEXT)){
 					restoreSecStatus(eventPropagation.sessionContextIdentifier);
+					HashSet<Class<? extends SecMechanism>> set = new HashSet<>();
+					set.add(SmDataProviderGenerator.class);
+					Collection<SecMechanism> generators = getCurrentMechanisms(SecContext.APPLICATION, set);
+					if (generators.size() > 1){
+						// kaputt statuswort
+					}
+					if (generators.size() == 1){
+						processingData.addUpdatePropagation(this, "restore Secure Messaging", ((SmDataProviderGenerator)generators.iterator().next()).generateSmDataProvider());
+					}
 				}
 				
 				if (eventPropagation.getEvent().equals(SecurityEvent.STORE_SESSION_CONTEXT)){

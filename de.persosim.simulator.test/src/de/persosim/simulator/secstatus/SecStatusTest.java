@@ -125,7 +125,7 @@ public class SecStatusTest extends PersoSimTestCase{
 	@Test
 	public void testGetCurrentMechanisms()
 	{
-		SecMechanism mechanismToFind = new SecMechanism() {
+		SecMechanism mechanismToFind = new AbstractSecMechanism() {
 			@Override
 			public boolean needsDeletionInCaseOf(SecurityEvent event) {
 				return false;
@@ -165,13 +165,13 @@ public class SecStatusTest extends PersoSimTestCase{
 	
 	@Test
 	public void testStoreAndRestoreStatus(){
-		SecMechanism beforeStoring = new SecMechanism() {
+		SecMechanism beforeStoring = new AbstractSecMechanism() {
 			@Override
 			public boolean needsDeletionInCaseOf(SecurityEvent event) {
 				return false;
 			}
 		};
-		SecMechanism afterStoring = new SecMechanism() {
+		SecMechanism afterStoring = new AbstractSecMechanism() {
 			
 			@Override
 			public boolean needsDeletionInCaseOf(SecurityEvent event) {

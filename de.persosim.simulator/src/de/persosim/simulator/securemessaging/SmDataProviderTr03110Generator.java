@@ -3,7 +3,8 @@ package de.persosim.simulator.securemessaging;
 import javax.crypto.spec.SecretKeySpec;
 
 import de.persosim.simulator.crypto.SendSequenceCounter;
-import de.persosim.simulator.processing.UpdatePropagation;
+import de.persosim.simulator.secstatus.AbstractSecMechanism;
+import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.utils.Serialized;
 import de.persosim.simulator.utils.Serializer;
 
@@ -13,7 +14,7 @@ import de.persosim.simulator.utils.Serializer;
  * @author slutters
  *
  */
-public class SmDataProviderTr03110Generator implements SmDataProviderGenerator {
+public class SmDataProviderTr03110Generator extends AbstractSecMechanism implements SmDataProviderGenerator {
 	
 	private Serialized<SecretKeySpec> serializedKeyEnc;
 	private Serialized<SecretKeySpec> serializedKeyMac;
@@ -51,7 +52,7 @@ public class SmDataProviderTr03110Generator implements SmDataProviderGenerator {
 	}
 	
 	@Override
-	public Class<? extends UpdatePropagation> getKey() {
+	public Class<? extends SecMechanism> getKey() {
 		return SmDataProviderGenerator.class;
 	}
 

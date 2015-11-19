@@ -1,6 +1,6 @@
 package de.persosim.simulator.securemessaging;
 
-import de.persosim.simulator.processing.UpdatePropagation;
+import de.persosim.simulator.secstatus.SecMechanism;
 
 /**
  * This interface describes the behavior of a SM data provider generator able
@@ -10,7 +10,7 @@ import de.persosim.simulator.processing.UpdatePropagation;
  * @author slutters
  * 
  */
-public interface SmDataProviderGenerator extends UpdatePropagation {
+public interface SmDataProviderGenerator extends SecMechanism {
 	
 	/**
 	 * This method generates a fully functional {@link SmDataProvider}.
