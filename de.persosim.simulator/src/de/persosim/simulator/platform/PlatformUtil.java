@@ -21,6 +21,7 @@ public class PlatformUtil {
 	public static final short SW_4A88_REFERENCE_DATA_NOT_FOUND           = (short) 0x4A88;
 
 	public static final short SW_4982_SECURITY_STATUS_NOT_SATISFIED = (short) 0x4982;
+	public static final short SW_4985_CONDITIONS_OF_USE_NOT_SATISFIED    = (short) 0x4985;
 	
 	
 	public static final short MASK_STATUS_WORD_4XXX = 0b0100000000000000;
