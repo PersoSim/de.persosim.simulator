@@ -4,7 +4,6 @@ import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.logException;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -12,16 +11,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import de.persosim.simulator.apdu.ResponseApdu;
-import de.persosim.simulator.cardobjects.CardFile;
-import de.persosim.simulator.cardobjects.CardObject;
-import de.persosim.simulator.cardobjects.CardObjectIdentifier;
-import de.persosim.simulator.cardobjects.Iso7816LifeCycle;
-import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.MasterFile;
-import de.persosim.simulator.cardobjects.ObjectStore;
-import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.exception.AccessDeniedException;
-import de.persosim.simulator.exception.NotImplementedException;
 import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.protocols.Protocol;
@@ -43,7 +34,7 @@ import de.persosim.simulator.statemachine.StateMachine;
  * 
  */
 public abstract class AbstractCommandProcessor extends Layer implements
-		CardStateAccessor, Iso7816LifeCycle, StateMachine {
+		CardStateAccessor, StateMachine {
 
 	public AbstractCommandProcessor() {
 		super(-1);
@@ -135,20 +126,14 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	// methods implementing {@link CardStateAccessor} interface
 	// --------------------------------------------------------
 	@Override
-	public Iso7816LifeCycleState getLifeCycleState() {
-		return Iso7816LifeCycleState.OPERATIONAL_ACTIVATED;
-	}
-
-	@Override
-	public void updateLifeCycleState(Iso7816LifeCycleState state) {
-		// TODO implement life cycle state changes according to ISO7816-13 5.2
-		throw new NotImplementedException();
-	}
-
-	@Override
 	public Collection<SecMechanism> getCurrentMechanisms(SecContext context,
 			Collection<Class<? extends SecMechanism>> wantedMechanisms) {
 		return securityStatus.getCurrentMechanisms(context, wantedMechanisms);
+	}
+
+	@Override
+	public MasterFile getMasterFile() {
+		return masterFile;
 	}
 
 	// ---------------------------------------------------
