@@ -34,6 +34,11 @@ public class PasswordAuthObjectWithRetryCounter extends ChangeablePasswordAuthOb
 		this.resetPinCondition = resetPinCondition;
 	}
 	
+	public void setPassword(byte[] newPassword) throws AccessDeniedException {
+		super.setPassword(newPassword);
+		resetRetryCounterToDefault();
+	}
+	
 	public void decrementRetryCounter() {
 		if(retryCounterCurrentValue == 0) {
 			throw new IllegalStateException(passwordName + " retry counter is not allowed to be decremented below 0");
