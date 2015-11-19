@@ -19,7 +19,7 @@ public class ProtocolConverter implements Converter {
 
 	@Override
 	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-		return Protocol.class.isAssignableFrom(type);
+		return Protocol.class.isAssignableFrom(type) && type.getClassLoader() == this.getClass().getClassLoader();
 	}
 	
 	@Override
