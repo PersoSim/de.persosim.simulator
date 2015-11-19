@@ -302,7 +302,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 	 * @return a child that fits the given identifier or {@link NullCardObject}
 	 *         if no fitting child was found
 	 */
-	private static CardFile getFileForSelection(DedicatedFile currentDf, CardObjectIdentifier identifier) throws FileNotFoundException{
+	public static CardFile getFileForSelection(DedicatedFile currentDf, CardObjectIdentifier identifier) throws FileNotFoundException{
 		
 		//check the immediate children of the current DF
 		for (CardObject curChild : currentDf.getChildren()){

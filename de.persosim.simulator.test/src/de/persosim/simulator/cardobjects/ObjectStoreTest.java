@@ -1,28 +1,32 @@
 package de.persosim.simulator.cardobjects;
 
-import static mockit.Deencapsulation.getField;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.util.Collection;
+<<<<<<< HEAD
 import java.util.Iterator;
+=======
+>>>>>>> Adjust ObjectStoreTests to new arch (need to be moved to final location)
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.platform.CardStateAccessor;
+import de.persosim.simulator.protocols.file.AbstractFileProtocol;
 import de.persosim.simulator.seccondition.SecCondition;
+import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 public class ObjectStoreTest extends PersoSimTestCase {
 	
+	CardStateAccessor cardStateAccessor;
+	SecStatus secStatus;
 	MasterFile masterFile;
-	AbstractFile dedicatedFile;
+	DedicatedFile dedicatedFile;
 	CardFile elementaryFile1UnderDF;
 	CardFile elementaryFile2UnderDF;
 	CardFile elementaryFile3UnderDF;
@@ -39,9 +43,6 @@ public class ObjectStoreTest extends PersoSimTestCase {
 	byte [] elementaryFile6UnderMFContent;
 	byte [] authenticationObjectUnderMFContent;
 	
-	@Mocked
-	SecStatus mockedSecurityStatus;
-	ObjectStore objectStore;
 	
 
 	/**
@@ -65,14 +66,8 @@ public class ObjectStoreTest extends PersoSimTestCase {
 	 */
 	@Before
 	public void setUp() throws ReflectiveOperationException, AccessDeniedException{
+		secStatus = new SecStatus();
 				
-		new NonStrictExpectations(SecStatus.class) {
-			{
-				mockedSecurityStatus.checkAccessConditions(Iso7816LifeCycleState.CREATION, (SecCondition) any, (SecContext) any);
-				result = true;
-			}
-		};
-		
 		//define file contents
 		elementaryFile1UnderDFContent = new byte []{1,2,3,4,5,6};
 		elementaryFile2UnderDFContent = new byte []{7,8,9,10,11,12};
@@ -84,9 +79,7 @@ public class ObjectStoreTest extends PersoSimTestCase {
 		
 		// setup fresh file tree in ObjectStore
 		masterFile = new MasterFile();
-		masterFile.setSecStatus(mockedSecurityStatus);
-		objectStore = new ObjectStore(masterFile);
-		objectStore.selectMasterFile();
+		masterFile.setSecStatus(secStatus);
 		
 		elementaryFile4UnderMF = new ElementaryFile(new FileIdentifier(0x011C), new ShortFileIdentifier(3), elementaryFile4UnderMFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
 		masterFile.addChild(elementaryFile4UnderMF);
@@ -105,6 +98,19 @@ public class ObjectStoreTest extends PersoSimTestCase {
 		elementaryFile3UnderDF = new ElementaryFile(new FileIdentifier(0x011B), new ShortFileIdentifier(4), elementaryFile3UnderDFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
 		dedicatedFile.addChild(elementaryFile3UnderDF);
 		
+		cardStateAccessor = new CardStateAccessor(){
+			@Override
+			public MasterFile getMasterFile() {
+				return masterFile;
+			}
+
+			@Override
+			public Collection<SecMechanism> getCurrentMechanisms(SecContext context,
+					Collection<Class<? extends SecMechanism>> wantedMechanisms) {
+				return secStatus.getCurrentMechanisms(context, wantedMechanisms);
+			}
+		};
+		
 	}
 	
 	/**
@@ -117,10 +123,16 @@ public class ObjectStoreTest extends PersoSimTestCase {
 		FileIdentifier id = new FileIdentifier(0x011C);
 		
 		//run mut
-		objectStore.selectFile(id, Scope.FROM_MF);
+		CardFile result = AbstractFileProtocol.getFileForSelection(masterFile, id);
+
 		
+<<<<<<< HEAD
 		// make sure currentFile has been set
 		assertTrue(getField(objectStore, "currentFile").equals(elementaryFile4UnderMF));
+=======
+		// evaluate result
+		assertEquals("wrong file returned", elementaryFile3UnderMF, result);
+>>>>>>> Adjust ObjectStoreTests to new arch (need to be moved to final location)
 	}
 	
 	/**
@@ -129,11 +141,11 @@ public class ObjectStoreTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testSelectFileFromDF() throws FileNotFoundException{
-		objectStore.selectFileForPersonalization(dedicatedFile);
-
 		//construct test data
 		FileIdentifier id = new FileIdentifier(0x011A);
+
 		//run mut
+<<<<<<< HEAD
 		objectStore.selectFile(id, Scope.FROM_DF);
 		
 		// make sure currentFile has been set
@@ -153,13 +165,17 @@ public class ObjectStoreTest extends PersoSimTestCase {
 		
 		//run mut
 		CardObject result = objectStore.getObject(objectId, Scope.FROM_MF);
+=======
+		CardFile result = AbstractFileProtocol.getFileForSelection(dedicatedFile, id);
+
+>>>>>>> Adjust ObjectStoreTests to new arch (need to be moved to final location)
 		
-		//check result
-		assertTrue("Returned object does not implement correct interface", result instanceof PasswordAuthObject);
-		assertTrue("File is not equal", authenticationObjectUnderMF.equals(result));
+		// evaluate result
+		assertEquals("wrong file returned", elementaryFile1UnderDF, result);
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Search for EF2 using the DF scope with EF1 as the last selected file. An
 	 * elementary file is expected as result.
 	 */
@@ -286,12 +302,21 @@ public class ObjectStoreTest extends PersoSimTestCase {
 		
 	@Test
 	public void testSelectCachedFile() throws FileNotFoundException{
+=======
+	 * Search for EF3 using with DF as the last selected file.
+	 * @throws FileNotFoundException 
+	 */
+	@Test
+	public void testGetObjectFromDF() throws FileNotFoundException{		//construct test data
+		//construct test data
+>>>>>>> Adjust ObjectStoreTests to new arch (need to be moved to final location)
 		FileIdentifier id = new FileIdentifier(0x011C);
-		Object result = objectStore.getObject(id, Scope.FROM_MF);
 		
 		//run mut
-		objectStore.selectCachedFile();
+		CardFile result = AbstractFileProtocol.getFileForSelection(dedicatedFile, id);
+
 		
-		assertEquals(result, getField(objectStore, "currentFile"));
+		// evaluate result
+		assertEquals("wrong file returned", elementaryFile3UnderMF, result);
 	}
 }
