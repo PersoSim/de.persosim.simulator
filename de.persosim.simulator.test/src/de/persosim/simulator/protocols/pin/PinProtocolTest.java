@@ -30,13 +30,13 @@ import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.seccondition.OrSecCondition;
-import de.persosim.simulator.seccondition.PaceWithPasswordSecurityCondition;
 import de.persosim.simulator.seccondition.PaceWithPasswordRunningSecurityCondition;
+import de.persosim.simulator.seccondition.PaceWithPasswordSecurityCondition;
 import de.persosim.simulator.seccondition.TaSecurityCondition;
 import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.SecMechanism;
-import de.persosim.simulator.secstatus.SecStatus.SecContext;
+import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
@@ -46,6 +46,7 @@ import mockit.Mocked;
 public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	@Mocked CardStateAccessor mockedCardStateAccessor;
 
+	@Mocked SecStatus mockedSecurityStatus;
 	
 	PasswordAuthObject authObject;
 	PasswordAuthObjectWithRetryCounter pinObject;
@@ -161,8 +162,6 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
 				result = authObjectRetry;
-				
-				//TODO Add mocked secstatus etc.
 			}
 		};
 		
@@ -342,9 +341,10 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	
 	/**
 	 * Positive test case. Send apdu to deactivate the PIN an receives a 9000.
+	 * @throws AccessDeniedException 
 	 */
 	@Test
-	public void testProcessCommandDeactivatePassword() {
+	public void testProcessCommandDeactivatePassword() throws AccessDeniedException {
 		// prepare the mock
 		new Expectations() {
 			{
@@ -353,14 +353,13 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 						withInstanceOf(Scope.class));
 				result = pinObject;
 				
-				//TODO Add mocked secstatus etc.
-				mockedCardStateAccessor
-						.getCurrentMechanisms(
-								withInstanceOf(SecContext.class),
-								withInstanceLike(new HashSet<Class<? extends SecMechanism>>()));
-				result = new HashSet<>();
+				mockedSecurityStatus.checkAccessConditions(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED, 
+						(TaSecurityCondition) any);
+				result = true;
 			}
 		};
+		
+		pinObject.setSecStatus(mockedSecurityStatus);
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -380,9 +379,10 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	/**
 	 * Negative test case. Send apdu to deactivate the Pin but Pin
 	 * management rights from TA are required to perform the deactivate.
+	 * @throws AccessDeniedException 
 	 */
 	@Test
-	public void testProcessCommandDeactivatePassword_SecStatusNotSatisfied() {
+	public void testProcessCommandDeactivatePassword_SecStatusNotSatisfied() throws AccessDeniedException {
 		// prepare the mock
 		new Expectations() {
 			{
@@ -390,17 +390,10 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 						withInstanceOf(AuthObjectIdentifier.class),
 						withInstanceOf(Scope.class));
 				result = pinObject;
-				
-				//TODO Add mechanism
-				mockedCardStateAccessor
-						.getCurrentMechanisms(
-								withInstanceOf(SecContext.class),
-								withInstanceLike(new HashSet<Class<? extends SecMechanism>>()));
-				result = currentMechanisms;
-				
-				//TODO Add mocked secstatus
 			}
 		};
+		
+		pinObject.setSecStatus(mockedSecurityStatus);
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
