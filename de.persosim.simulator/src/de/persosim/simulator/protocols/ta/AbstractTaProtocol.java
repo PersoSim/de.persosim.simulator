@@ -315,22 +315,34 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		
 		return authorizations;
 	}
+	
+	/**
+	 * Checks if there are any known previous TA runs in the session.
+	 * 
+	 * @return true if previous TA runs were found
+	 */
+	protected boolean checkForPreviousTa(){
+		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
+		wantedMechanisms.add(TerminalAuthenticationMechanism.class);
+		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, wantedMechanisms);
+		if (currentMechanisms.size() > 0){
+			// create and propagate response APDU
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			this.processingData.updateResponseAPDU(this,
+					"TA must not be executed more than once in the same session", resp);
+			return true;
+		} else return false;
+	}
 
 	void processCommandSetAt() {
 		if (!checkSecureMessagingApdu()){
 			return;
 		}
 		
-		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
-		wantedMechanisms.add(TerminalAuthenticationMechanism.class);
-//		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, wantedMechanisms);
-//		if (currentMechanisms.size() > 0){
-//			// create and propagate response APDU
-//			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-//			this.processingData.updateResponseAPDU(this,
-//					"TA must not be executed more than once in the same session", resp);
-//			return;
-//		}
+		if (checkForPreviousTa()){
+			// Not the first TA in the session
+			return;
+		}
 		
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 		TlvDataObject cryptographicMechanismReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_80);
