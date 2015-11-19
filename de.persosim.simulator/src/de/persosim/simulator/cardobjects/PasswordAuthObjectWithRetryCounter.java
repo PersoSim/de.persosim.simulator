@@ -1,5 +1,7 @@
 package de.persosim.simulator.cardobjects;
 
+import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 
 /**
@@ -13,9 +15,12 @@ public class PasswordAuthObjectWithRetryCounter extends ChangeablePasswordAuthOb
 	protected int retryCounterDefaultValue;
 	protected int retryCounterCurrentValue;
 	
+	private SecCondition unblockPinCondition;
+	private SecCondition resetPinCondition;
+	
 	public PasswordAuthObjectWithRetryCounter(AuthObjectIdentifier identifier, byte[] password, String passwordName,
 			int minLengthOfPasswordInBytes, int maxLengthOfPasswordInBytes, int defaultValueRetryCounter,
-			SecCondition pinManagementCondition, SecCondition changePinCondition) {
+			SecCondition pinManagementCondition, SecCondition changePinCondition, SecCondition unblockPinCondition, SecCondition resetPinCondition) {
 
 		super(identifier, password, passwordName, minLengthOfPasswordInBytes, maxLengthOfPasswordInBytes,
 				pinManagementCondition, changePinCondition);
@@ -24,6 +29,9 @@ public class PasswordAuthObjectWithRetryCounter extends ChangeablePasswordAuthOb
 		
 		retryCounterDefaultValue = defaultValueRetryCounter;
 		retryCounterCurrentValue = retryCounterDefaultValue;
+		
+		this.unblockPinCondition = unblockPinCondition;
+		this.resetPinCondition = resetPinCondition;
 	}
 	
 	public void decrementRetryCounter() {
@@ -34,8 +42,14 @@ public class PasswordAuthObjectWithRetryCounter extends ChangeablePasswordAuthOb
 		}
 	}
 	
-	public void resetRetryCounterToDefault() {
-		retryCounterCurrentValue = retryCounterDefaultValue;
+	public void resetRetryCounterToDefault() throws AccessDeniedException {
+		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(),
+				new OrSecCondition(unblockPinCondition, getPinManagementCondition()))
+				|| (securityStatus.checkAccessConditions(getLifeCycleState(), resetPinCondition) && retryCounterCurrentValue > 0)) {
+			retryCounterCurrentValue = retryCounterDefaultValue;
+		} else {
+			throw new AccessDeniedException("Access conditions to unblock " + passwordName + " not met");
+		}
 	}
 
 	public int getRetryCounterCurrentValue() {

@@ -31,6 +31,7 @@ import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.PaceWithPasswordSecurityCondition;
+import de.persosim.simulator.seccondition.PaceWithPasswordRunningSecurityCondition;
 import de.persosim.simulator.seccondition.TaSecurityCondition;
 import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
@@ -66,10 +67,14 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5)));
 		
 		pinObject = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN",
-				6, 6, 3, pinManagementCondition, new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")));
+				6, 6, 3, pinManagementCondition, new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")),
+				new PaceWithPasswordSecurityCondition("PUK"),
+				new PaceWithPasswordRunningSecurityCondition("PIN"));
 		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		authObjectRetry = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(),
-				"PIN", 6, 6, 3, pinManagementCondition, new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")));
+				"PIN", 6, 6, 3, pinManagementCondition, new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")),
+				new PaceWithPasswordSecurityCondition("PUK"),
+				new PaceWithPasswordRunningSecurityCondition("PIN"));
 		authObjectRetry.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
 		currentMechanisms = new HashSet<>();

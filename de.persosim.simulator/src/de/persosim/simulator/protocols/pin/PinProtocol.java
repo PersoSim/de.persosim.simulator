@@ -282,6 +282,13 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
 			/* there is nothing more to be done here */
 			return;
+		} catch (AccessDeniedException e) {
+			ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			this.processingData.updateResponseAPDU(this,
+					"Access conditions to unblock " + pinObject.getPasswordName() + " not met",
+					resp);
+			/* there is nothing more to be done here */
+			return;
 		}
 		
 		log(this, "new " + passwordName + " retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);

@@ -43,6 +43,7 @@ import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.KeyDerivationFunction;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.CryptoException;
 import de.persosim.simulator.platform.CardStateAccessor;
@@ -61,6 +62,7 @@ import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.PaceMechanism;
+import de.persosim.simulator.secstatus.PaceUsedPasswordMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
@@ -184,6 +186,9 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			/* there is nothing more to be done here */
 			return;
 		}
+		
+		PaceUsedPasswordMechanism paceUsedPasswordMechanism = new PaceUsedPasswordMechanism(pacePassword);
+		processingData.addUpdatePropagation(this, "PACE started with "+pacePassword.getPasswordName(), new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceUsedPasswordMechanism));
 		
 		/* PACE domain parameters */
 		/*
@@ -811,7 +816,11 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				if(pinRetryCounter == 1) {
 					if (isPinTemporarilyResumed(cardState)) {
 						// everything ok, password is PIN, PIN activated, retry counter is not default value, retry counter == 1, PIN is suspended, PIN is temporarily resumed
-						pacePasswordPin.resetRetryCounterToDefault();
+						try {
+							pacePasswordPin.resetRetryCounterToDefault();
+						} catch (AccessDeniedException e) {
+							throw new IllegalStateException(e);
+						}
 						sw = Iso7816.SW_9000_NO_ERROR;
 						note = "MutualAuthenticate processed successfully with password PIN after CAN - PIN retry counter has been reset from: " + pinRetryCounter + " to: " + pacePasswordPin.getRetryCounterCurrentValue();
 					} else{
@@ -825,7 +834,11 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 					note = "MutualAuthenticate processed successfully but PIN is blocked";
 				} else{
 					// everything ok, password is PIN, PIN activated, retry counter is not default value, retry counter > 1
-					pacePasswordPin.resetRetryCounterToDefault();
+					try {
+						pacePasswordPin.resetRetryCounterToDefault();
+					} catch (AccessDeniedException e) {
+						throw new IllegalStateException(e);
+					}
 					
 					sw = Iso7816.SW_9000_NO_ERROR;
 					note = "MutualAuthenticate processed successfully with password PIN - PIN retry counter has been reset from: " + pinRetryCounter + " to: " + pacePasswordPin.getRetryCounterCurrentValue();
