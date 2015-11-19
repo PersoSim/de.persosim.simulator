@@ -96,5 +96,36 @@ public class CardObjectUtils {
 		}
 		return true;
 	}
+	
+	/**
+	 * Recursively search all children of the given tree for a specific object.
+	 * 
+	 * @param tree
+	 *            object the search is started on
+	 * @param element
+	 *            element to search for
+	 * @return true iff element is part of the tree
+	 */
+	public static boolean isObjectPartOfTree(CardObject tree, CardObject element) {
+		LinkedList<CardObject> objectsToSearch = new LinkedList<>();
+
+		objectsToSearch.add(tree);
+
+		while (!objectsToSearch.isEmpty()) {
+			CardObject curElem = objectsToSearch.removeFirst();
+
+			if (curElem == element) {
+				return true;
+			} else {
+				// add children to the list
+				for (CardObject curChild : curElem.getChildren()) {
+					objectsToSearch.add(curChild);
+				}
+			}
+		}
+
+		// no matching element found
+		return false;
+	}
 
 }
