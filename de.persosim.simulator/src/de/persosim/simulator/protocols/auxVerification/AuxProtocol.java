@@ -8,9 +8,9 @@ import java.util.HashSet;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.AuxDataObject;
 import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.CardObjectUtils;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
-import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.VerificationException;
 import de.persosim.simulator.platform.CardStateAccessor;
@@ -114,7 +114,7 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 			taMechanism = (TerminalAuthenticationMechanism) currentMechanisms.toArray()[0];
 			Collection<AuthenticatedAuxiliaryData> auxDataFromTa = taMechanism.getAuxiliaryData();
 	
-			CardObject auxDataCandidate = cardState.getObject(new OidIdentifier(oid), Scope.FROM_MF);
+			CardObject auxDataCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new OidIdentifier(oid));
 			AuxDataObject auxDataObject = null;
 			
 			if (auxDataCandidate instanceof AuxDataObject){

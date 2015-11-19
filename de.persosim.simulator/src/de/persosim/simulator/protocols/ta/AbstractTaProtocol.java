@@ -24,7 +24,7 @@ import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
 import de.persosim.simulator.cardobjects.DateTimeObjectIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
-import de.persosim.simulator.cardobjects.Scope;
+import de.persosim.simulator.cardobjects.CardObjectUtils;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.CryptoUtil;
@@ -256,7 +256,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			}
 			
 			// get the stored trust points
-			CardObject trustPointCandidate = cardState.getObject(new TrustPointIdentifier(terminalType), Scope.FROM_MF);
+			CardObject trustPointCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new TrustPointIdentifier(terminalType));
 			
 			if (trustPointCandidate instanceof TrustPointCardObject) {
 				trustPoint = (TrustPointCardObject) trustPointCandidate;
@@ -643,7 +643,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @return the currently stored date
 	 */
 	private DateTimeCardObject getCurrentDate(){
-		return (DateTimeCardObject) cardState.getObject(new DateTimeObjectIdentifier(), Scope.FROM_MF);
+		return (DateTimeCardObject) CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new DateTimeObjectIdentifier());
 	}
 
 	/**

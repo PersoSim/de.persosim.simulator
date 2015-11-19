@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
 import de.persosim.simulator.cardobjects.DateTimeObjectIdentifier;
-import de.persosim.simulator.cardobjects.Scope;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
@@ -36,6 +36,8 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 
 	@Mocked
 	CardStateAccessor mockedCardStateAccessor;
+	@Mocked
+	MasterFile mockedMf;
 	DateTimeCardObject currentDate;
 	Date future;
 	Date past;
@@ -112,13 +114,13 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(TrustPointIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
+				result = mockedMf;
+				mockedMf.findChildren(
+						withInstanceOf(TrustPointIdentifier.class));
 				result = trustPoint;
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DateTimeObjectIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedMf.findChildren(
+						withInstanceOf(DateTimeObjectIdentifier.class));
 				result = currentDate;
 				issuingCertificate.getEffectiveDate();
 				result = past;
@@ -155,13 +157,13 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(TrustPointIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
+				result = mockedMf;
+				mockedMf.findChildren(
+						withInstanceOf(TrustPointIdentifier.class));
 				result = trustPoint;
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DateTimeObjectIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedMf.findChildren(
+						withInstanceOf(DateTimeObjectIdentifier.class));
 				result = currentDate;
 				certificate.getEffectiveDate();
 				result = current;
@@ -189,9 +191,10 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DateTimeObjectIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
+				result = mockedMf;
+				mockedMf.findChildren(
+						withInstanceOf(DateTimeObjectIdentifier.class));
 				result = currentDate;
 				certificate.getCertificateHolderAuthorizationTemplate();
 				result = isDvDomesticChat;
@@ -215,9 +218,10 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DateTimeObjectIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
+				result = mockedMf;
+				mockedMf.findChildren(
+						withInstanceOf(DateTimeObjectIdentifier.class));
 				result = currentDate;
 				certificate.getCertificateHolderAuthorizationTemplate();
 				result = isDvDomesticChat;
@@ -242,9 +246,10 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DateTimeObjectIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
+				result = mockedMf;
+				mockedMf.findChildren(
+						withInstanceOf(DateTimeObjectIdentifier.class));
 				result = currentDate;
 				issuingCertificate.getCertificateHolderAuthorizationTemplate();
 				result = isDvForeignChat;
@@ -267,9 +272,10 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DateTimeObjectIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
+				result = mockedMf;
+				mockedMf.findChildren(
+						withInstanceOf(DateTimeObjectIdentifier.class));
 				result = currentDate;
 				certificate.getCertificateHolderAuthorizationTemplate();
 				result = isCvcaChat;
@@ -294,9 +300,10 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DateTimeObjectIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
+				result = mockedMf;
+				mockedMf.findChildren(
+						withInstanceOf(DateTimeObjectIdentifier.class));
 				result = currentDate;
 				certificate.getCertificateHolderAuthorizationTemplate();
 				result = isCvcaChat;
@@ -321,9 +328,10 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DateTimeObjectIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
+				result = mockedMf;
+				mockedMf.findChildren(
+						withInstanceOf(DateTimeObjectIdentifier.class));
 				result = currentDate;
 				certificate.getCertificateHolderAuthorizationTemplate();
 				result = isDvDomesticChat;
