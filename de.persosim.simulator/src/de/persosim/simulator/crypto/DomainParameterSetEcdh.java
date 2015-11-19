@@ -328,16 +328,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		return (ECPublicKey) mappedPublicKey;
 	}
 	
-	@Override
-	public ECPrivateKey reconstructPrivateKey(byte[] rawKeyPlain) {
-		byte[] prime = Utils.toUnsignedByteArray(this.getPrime());
-		
-		if(rawKeyPlain.length != prime.length) {
-			throw new IllegalArgumentException("public key data length mismatches expected length of " + rawKeyPlain.length + " bytes according to domain parameters");
-		}
-		
-		BigInteger privateS = new BigInteger(1, rawKeyPlain);
-		
+	public ECPrivateKey reconstructPrivateKey(BigInteger privateS) {
 		KeySpec reconstructedPrivateKeySpec = new ECPrivateKeySpec(privateS, ecParameterSpec);
 		
 		PrivateKey privateKey;
@@ -351,6 +342,19 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		}
 		
 		return (ECPrivateKey) privateKey;
+	}
+	
+	@Override
+	public ECPrivateKey reconstructPrivateKey(byte[] rawKeyPlain) {
+		byte[] prime = Utils.toUnsignedByteArray(this.getPrime());
+		
+		if(rawKeyPlain.length != prime.length) {
+			throw new IllegalArgumentException("public key data length mismatches expected length of " + rawKeyPlain.length + " bytes according to domain parameters");
+		}
+		
+		BigInteger privateS = new BigInteger(1, rawKeyPlain);
+		
+		return reconstructPrivateKey(privateS);
 	}
 	
 	/**
@@ -625,6 +629,26 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	 */
 	public byte[] getProjectedRepresentation(ECPoint ecPoint) {
 		return CryptoUtil.getProjectedRepresentation(ecPoint, getPublicPointReferenceLengthL(), true);
+	}
+	
+	/**
+	 * This method returns a public {@link ECPoint} matching the provided private {@link BigInteger} s
+	 * @param privateS the private component
+	 * @return the public component
+	 */
+	public ECPoint computePublicPoint(BigInteger privateS) {
+		return CryptoUtil.scalarPointMultiplication(getCurve(), getGenerator(), privateS);
+	}
+	
+	/**
+	 * This method returns the {@link ECPublicKey} matching the provided {@link ECPrivateKey}.
+	 * @param ecPrivateKey the private key to use
+	 * @param cryptoProvider the crypto provider to use
+	 * @return the public key matching the provided private key
+	 */
+	public ECPublicKey computePublicKey(ECPrivateKey ecPrivateKey, Provider cryptoProvider) {
+		ECPoint publicPoint = computePublicPoint(ecPrivateKey.getS());
+		return reconstructPublicKey(publicPoint, cryptoProvider);
 	}
 	
 }

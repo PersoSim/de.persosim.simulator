@@ -1,11 +1,15 @@
 package de.persosim.simulator.crypto;
 
+import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
+import static de.persosim.simulator.utils.PersoSimLogger.log;
+
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.Arrays;
 
+import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -79,6 +83,9 @@ public class KeyDerivationFunction {
 		
 		if(nonce != null) {
 			inputLength += nonce.length;
+			log(KeyDerivationFunction.class, "deriving key from secret \"" + HexString.encode(secret) + "\", nonce \"" + HexString.encode(nonce) + "\" and counter \"" + HexString.encode(counter) +  "\"", DEBUG);
+		} else{
+			log(KeyDerivationFunction.class, "deriving key from secret \"" + HexString.encode(secret) + "\", no nonce and counter \"" + HexString.encode(counter) +  "\"", DEBUG);
 		}
 		
 		if(inputLength <= 0) {
@@ -90,11 +97,13 @@ public class KeyDerivationFunction {
 		if(nonce == null) {
 			input = Utils.concatByteArrays(secret, counter);
 		} else{
-			input = Utils.concatByteArrays(secret, nonce);
-			input = Utils.concatByteArrays(input, counter);
+			input = Utils.concatByteArrays(secret, nonce, counter);
 		}
 		
+		log(KeyDerivationFunction.class, "message digest input is: " + HexString.encode(input), DEBUG);
+		log(KeyDerivationFunction.class, "message digest algorithm is: " + messageDigest.getAlgorithm() + " of " + keyLengthInBytes + " bytes length", DEBUG);
 		digest = this.messageDigest.digest(input);
+		log(KeyDerivationFunction.class, "message digest result is: " + HexString.encode(digest), DEBUG);
 		
 		return Arrays.copyOf(digest, this.keyLengthInBytes);
 	}

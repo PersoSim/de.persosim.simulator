@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SocketAdapter
 Bundle-SymbolicName: de.persosim.simulator.adapter.socket
-Bundle-Version: 0.6.0.qualifier
+Bundle-Version: 0.7.0
 Bundle-Activator: de.persosim.simulator.adapter.socket.Activator
-Bundle-Vendor: HJP Consulting
+Bundle-Vendor: HJP Consulting GmbH
 Require-Bundle: org.eclipse.core.runtime,
  de.persosim.simulator;bundle-version="0.5.0",
  org.globaltester.simulator

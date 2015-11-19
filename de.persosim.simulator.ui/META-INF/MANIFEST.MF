@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Ui
 Bundle-SymbolicName: de.persosim.simulator.ui;singleton:=true
-Bundle-Version: 0.6.0.qualifier
+Bundle-Version: 0.7.0
 Require-Bundle: org.eclipse.swt;bundle-version="3.103.0",
  org.eclipse.jface;bundle-version="3.10.0",
  org.eclipse.e4.core.di;bundle-version="1.4.0",
@@ -27,3 +27,4 @@ Export-Package: de.persosim.simulator.ui,
  de.persosim.simulator.ui.parts,
  de.persosim.simulator.ui.utils
 Import-Package: de.persosim.driver.connector.service
+Bundle-Vendor: HJP Consulting GmbH

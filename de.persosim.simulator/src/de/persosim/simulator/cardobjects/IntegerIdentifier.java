@@ -1,5 +1,6 @@
 package de.persosim.simulator.cardobjects;
 
+import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -39,6 +40,11 @@ public abstract class IntegerIdentifier extends AbstractCardObjectIdentifier {
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return integer + " (0x" + HexString.encode(Utils.toUnsignedByteArray(integer)) + ")";
 	}
 	
 	public void setInteger(int integer){
