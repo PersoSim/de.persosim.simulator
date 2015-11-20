@@ -13,6 +13,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.apdu.CommandApduFactory;
+import de.persosim.simulator.cardobjects.CardFile;
+import de.persosim.simulator.cardobjects.DedicatedFile;
+import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
@@ -48,21 +51,45 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	CardStateAccessor cardStateAccessor;
 	SecStatus secStatus;
 	MasterFile masterFile;
-	ElementaryFile elementaryFile;
+	DedicatedFile dedicatedFile;
+	CardFile elementaryFileUnderDF1;
+	CardFile elementaryFileUnderDF2;
+	ElementaryFile elementaryFileUnderMf;
 	byte[] elementaryFileContent;
 	DefaultFileProtocol fileProtocol;
 
 	/**
-	 * Create the test environment containing an elementary file and the mocked
-	 * object store.
+	 * Set up a fresh file tree for each test. 
+	 * 
+	 * MF ------DF(0110) - EF1(011A,1)
+	 *    \      \
+	 *     \      ----- EF2(011B,2)
+	 *      \
+	 *       --- EF3(011C,3)
 	 * @throws ReflectiveOperationException 
 	 * @throws AccessDeniedException 
 	 */
-	@Before
-	public void setUp() throws ReflectiveOperationException, AccessDeniedException {
+	@Before	public void setUp() throws ReflectiveOperationException, AccessDeniedException {
 		secStatus = new SecStatus();
 
+		//define file contents
+		byte[] elementaryFile1UnderDFContent = new byte []{1,2,3,4,5,6};
+		byte[] elementaryFile2UnderDFContent = new byte []{7,8,9,10,11,12};
+		elementaryFileContent = new byte[] { 1, 2, 3, 4, 5, 6 };
+		
+		// setup fresh file tree in ObjectStore
 		masterFile = new MasterFile();
+		masterFile.setSecStatus(secStatus);
+		
+		dedicatedFile = new DedicatedFile(new FileIdentifier(0x0110), new DedicatedFileIdentifier(new byte [] {0x0A, 0x00, 0x00, 0x01}));
+		masterFile.addChild(dedicatedFile);
+		elementaryFileUnderMf = new ElementaryFile(new FileIdentifier(0x011C), new ShortFileIdentifier(3), elementaryFileContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
+		elementaryFileUnderMf.setSecStatus(new SecStatus());
+		masterFile.addChild(elementaryFileUnderMf);
+		elementaryFileUnderDF1 = new ElementaryFile(new FileIdentifier(0x011A), new ShortFileIdentifier(1), elementaryFile1UnderDFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
+		dedicatedFile.addChild(elementaryFileUnderDF1);
+		elementaryFileUnderDF2 = new ElementaryFile(new FileIdentifier(0x011B), new ShortFileIdentifier(2), elementaryFile2UnderDFContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
+		dedicatedFile.addChild(elementaryFileUnderDF2);
 	
 		cardStateAccessor = new CardStateAccessor(){
 			@Override
@@ -77,12 +104,9 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 			}
 		};
 		
-		elementaryFileContent = new byte[] { 1, 2, 3, 4, 5, 6 };
+		
 
 		// create file to test
-		elementaryFile = new ElementaryFile(new FileIdentifier(0x011A), new ShortFileIdentifier(1), elementaryFileContent, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
-		elementaryFile.setSecStatus(new SecStatus());
-		masterFile.addChild(elementaryFile);
 		
 		//create and init the object under test
 		fileProtocol = new DefaultFileProtocol();
@@ -99,7 +123,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	public void testSelectFile() throws FileNotFoundException {
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00A4020C02011A");
+		byte[] apduBytes = HexString.toByteArray("00A4020C02011C");
 		processingData.updateCommandApdu(this, "select file APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
@@ -110,7 +134,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		assertTrue("Statusword is not 9000", processingData.getResponseApdu()
 				.getStatusWord() == Iso7816.SW_9000_NO_ERROR);
 		secStatus.updateMechanisms(processingData.getUpdatePropagations(SecStatusMechanismUpdatePropagation.class).toArray(new SecStatusMechanismUpdatePropagation[]{}));
-		assertEquals("file not correctly selected", elementaryFile, CurrentFileHandler.getCurrentFile(cardStateAccessor));
+		assertEquals("file not correctly selected", elementaryFileUnderMf, CurrentFileHandler.getCurrentFile(cardStateAccessor));
 	}
 
 	/**
@@ -143,7 +167,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	public void testSelectMf() throws FileNotFoundException {
 		//prepare test data (select elementaryFile)
 		secStatus.updateMechanisms(
-				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFile)));
+				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 
 		//select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -169,7 +193,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	public void testSelectMf_emptyDataField() throws FileNotFoundException {
 		//prepare test data
 		secStatus.updateMechanisms(
-				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFile)));
+				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -195,7 +219,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	public void testReadBinaryTooLong() throws FileNotFoundException {
 		//prepare test data (select elementaryFile)
 		secStatus.updateMechanisms(
-				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFile)));
+				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 
 		// read binary APDU
 		ProcessingData processingData = new ProcessingData();
@@ -227,7 +251,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 			throws FileNotFoundException {
 		//prepare test data (select elementaryFile)
 		secStatus.updateMechanisms(
-				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFile)));
+				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 
 		// read binary APDU
 		ProcessingData processingData = new ProcessingData();
@@ -252,7 +276,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	public void testReadBinaryExpectedLengthZero() throws FileNotFoundException {
 		//prepare test data (select elementaryFile)
 		secStatus.updateMechanisms(
-				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFile)));
+				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 
 		// read binary APDU
 		ProcessingData processingData = new ProcessingData();
@@ -276,7 +300,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	public void testReadBinary() throws FileNotFoundException {
 		//prepare test data (select elementaryFile)
 		secStatus.updateMechanisms(
-				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFile)));
+				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 
 		// read binary APDU
 		ProcessingData processingData = new ProcessingData();
@@ -304,7 +328,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	public void testReadBinaryShortFileIdentifier() throws FileNotFoundException {
 		// read binary APDU
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = new byte[] { 0x00, (byte) 0xB0, (byte) 0x81, 0x01, 0x04 }; // read a file with SFI = 1 and offset 1
+		byte[] apduBytes = new byte[] { 0x00, (byte) 0xB0, (byte) 0x83, 0x01, 0x04 }; // read a file with SFI = 1 and offset 1
 		processingData.updateCommandApdu(this, "read binary APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
 
@@ -326,7 +350,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	public void testReadBinaryOddInstruction() throws FileNotFoundException {
 		//prepare test data (select elementaryFile)
 		secStatus.updateMechanisms(
-				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFile)));
+				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 
 		// read binary APDU
 		ProcessingData processingData = new ProcessingData();
@@ -359,7 +383,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	public void testReadBinaryOddInstructionWithShortFileIdentifier() throws FileNotFoundException {
 		// read binary APDU
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = new byte[] { 0x00, (byte) 0xB1, 0x00, 0x01, 0x03,
+		byte[] apduBytes = new byte[] { 0x00, (byte) 0xB1, 0x00, 0x03, 0x03,
 				0x54, 0x01, 0x00, 0x04 };
 		processingData.updateCommandApdu(this, "read binary APDU",
 				CommandApduFactory.createCommandApdu(apduBytes));
@@ -389,7 +413,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 	public void testUpdateBinary() throws FileNotFoundException, AccessDeniedException {
 		//prepare test data (select elementaryFile)
 		secStatus.updateMechanisms(
-				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFile)));
+				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 
 		// update binary APDU
 		ProcessingData processingData = new ProcessingData();
@@ -404,7 +428,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		// check results
 		assertTrue("Statusword is not 9000", processingData.getResponseApdu()
 				.getStatusWord() == Iso7816.SW_9000_NO_ERROR);
-		assertArrayEquals("file content not updated correctly", new byte[]{0, 0, 0, 0, 0, 0}, elementaryFile.getContent());
+		assertArrayEquals("file content not updated correctly", new byte[]{0, 0, 0, 0, 0, 0}, elementaryFileUnderMf.getContent());
 	}
 
 	/**
@@ -421,7 +445,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 			AccessDeniedException {
 		//prepare test data (select elementaryFile)
 		secStatus.updateMechanisms(
-				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFile)));
+				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 
 		// update binary APDU
 		ProcessingData processingData = new ProcessingData();
@@ -439,14 +463,14 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		// check results
 		assertTrue("Statusword is not 9000", processingData.getResponseApdu()
 				.getStatusWord() == Iso7816.SW_9000_NO_ERROR);
-		assertArrayEquals("file content not updated correctly", new byte[]{1, 2, (byte) 0xFF, (byte) 0xFF, 5, 6}, elementaryFile.getContent());
+		assertArrayEquals("file content not updated correctly", new byte[]{1, 2, (byte) 0xFF, (byte) 0xFF, 5, 6}, elementaryFileUnderMf.getContent());
 	}
 
 	@Test
 	public void testProtocolRemovalAfterSelect() throws FileNotFoundException {
 		//prepare test data (select elementaryFile)
 		secStatus.updateMechanisms(
-				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFile)));
+				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 
 		final ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = new byte[] { 0x00, (byte) 0xA4, 0x02, 0x0C, 0x02,
@@ -468,7 +492,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 			throws FileNotFoundException {
 		//prepare test data (select elementaryFile)
 		secStatus.updateMechanisms(
-				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFile)));
+				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 
 		// read binary APDU
 		final ProcessingData processingData = new ProcessingData();
@@ -490,7 +514,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 			throws FileNotFoundException {
 		//prepare test data (select elementaryFile)
 		secStatus.updateMechanisms(
-				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFile)));
+				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 
 		// update binary APDU
 		final ProcessingData processingData = new ProcessingData();
@@ -522,5 +546,57 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		assertArrayEquals("array not matching", dataExpected, dataReceived);
 	}
 	//TODO missing tests getContents, with zero offset, with range larger than file, etc.
+	
+	
+	/**
+	 * Select a file from MF.
+	 * @throws FileNotFoundException 
+	 */
+	@Test
+	public void testSelectFileFromMF() throws FileNotFoundException{
+		//construct test data
+		FileIdentifier id = new FileIdentifier(0x011C);
+		
+		//run mut
+		CardFile result = AbstractFileProtocol.getFileForSelection(masterFile, id);
+
+		
+		// evaluate result
+		assertEquals("wrong file returned", elementaryFileUnderMf, result);
+	}
+	
+	/**
+	 * Select a file from DF.
+	 * @throws FileNotFoundException 
+	 */
+	@Test
+	public void testSelectFileFromDF() throws FileNotFoundException{
+		//construct test data
+		FileIdentifier id = new FileIdentifier(0x011A);
+
+		//run mut
+		CardFile result = AbstractFileProtocol.getFileForSelection(dedicatedFile, id);
+
+		
+		// evaluate result
+		assertEquals("wrong file returned", elementaryFileUnderDF1, result);
+	}
+	
+	/**
+	 * Search for EF3 using with DF as the last selected file.
+	 * @throws FileNotFoundException 
+	 */
+	@Test
+	public void testGetObjectFromDF() throws FileNotFoundException{		//construct test data
+		//construct test data
+		FileIdentifier id = new FileIdentifier(0x011C);
+		
+		//run mut
+		CardFile result = AbstractFileProtocol.getFileForSelection(dedicatedFile, id);
+
+		
+		// evaluate result
+		assertEquals("wrong file returned", elementaryFileUnderMf, result);
+	}
 	
 }
