@@ -108,7 +108,7 @@ public class AbstractCardObjectTest extends PersoSimTestCase {
 			}
 		};
 		
-		// setup fresh file tree in ObjectStore
+		// setup fresh object tree
 		masterFile = new MasterFile();
 		masterFile.setSecStatus(mockedSecurityStatus);
 		

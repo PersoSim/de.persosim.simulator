@@ -77,7 +77,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		byte[] elementaryFile2UnderDFContent = new byte []{7,8,9,10,11,12};
 		elementaryFileContent = new byte[] { 1, 2, 3, 4, 5, 6 };
 		
-		// setup fresh file tree in ObjectStore
+		// setup fresh object tree
 		masterFile = new MasterFile();
 		masterFile.setSecStatus(secStatus);
 		

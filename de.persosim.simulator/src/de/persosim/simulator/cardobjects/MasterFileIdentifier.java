@@ -3,7 +3,7 @@ package de.persosim.simulator.cardobjects;
 
 /**
  * {@link CardObjectIdentifier} that can be used to search for
- * {@link MasterFile}s in {@link ObjectStore}
+ * {@link MasterFile}s
  * 
  * @author amay
  * 

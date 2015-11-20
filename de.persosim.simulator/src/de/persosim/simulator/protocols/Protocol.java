@@ -32,13 +32,13 @@ public interface Protocol {
 	public abstract String getProtocolName();
 
 	/**
-	 * As some may protocols require access to the cards internal state (in
-	 * terms of the {@link SecStatus} and {@link ObjectStore}) users of
+	 * As some protocols may require access to the cards internal state (in
+	 * terms of the {@link SecStatus} and object tree) users of
 	 * Protocols are required to call this method before usage of the protocol
 	 * in order to provide an instance of {@link CardStateAccessor} that may be
 	 * cached by the protocol if known to be required later.
 	 * 
-	 * @param cardState accessor object for {@link SecStatus} and {@link ObjectStore}
+	 * @param cardState accessor object for {@link SecStatus} and object tree
 	 */
 	public abstract void setCardStateAccessor(CardStateAccessor cardState);
 

@@ -28,7 +28,7 @@ import de.persosim.simulator.statemachine.StateMachine;
 /**
  * This class implements the processing of CommandApdus. It orchestrates
  * registered protocols and mediates between those protocols and the card
- * internal state, such as {@link SecStatus} and {@link ObjectStore}.
+ * internal state, such as {@link SecStatus} and the object tree.
  * 
  * @author amay
  * 

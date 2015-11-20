@@ -2,7 +2,7 @@ package de.persosim.simulator.cardobjects;
 
 /**
  * Identifier for a CardObject. Primary used for identifying objects within
- * ObjectStore, should correspond to FileIdentifier from ISO7816 or similar
+ * trees, should correspond to FileIdentifier from ISO7816 or similar
  * concepts.
  * 
  * Implementing objects are expected to be immutable (at least wrt to the
