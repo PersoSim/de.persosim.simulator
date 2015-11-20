@@ -10,5 +10,7 @@ package de.persosim.simulator.secstatus;
  * 
  */
 public enum SecurityEvent {
-	SECURE_MESSAGING_SESSION_ENDED
+	SECURE_MESSAGING_SESSION_ENDED,
+	STORE_SESSION_CONTEXT,
+	RESTORE_SESSION_CONTEXT
 }

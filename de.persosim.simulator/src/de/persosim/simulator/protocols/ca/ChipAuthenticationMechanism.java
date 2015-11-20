@@ -2,6 +2,7 @@ package de.persosim.simulator.protocols.ca;
 
 import java.security.PublicKey;
 
+import de.persosim.simulator.secstatus.AbstractSecMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecurityEvent;
 import de.persosim.simulator.utils.Serialized;
@@ -14,7 +15,7 @@ import de.persosim.simulator.utils.Serializer;
  * @author slutters
  *
  */
-public class ChipAuthenticationMechanism implements SecMechanism {
+public class ChipAuthenticationMechanism extends AbstractSecMechanism {
 	
 	CaOid caOid;
 	int keyReference;

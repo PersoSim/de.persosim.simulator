@@ -1,8 +1,8 @@
 package de.persosim.simulator.secstatus;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -12,7 +12,9 @@ import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
+import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -32,6 +34,63 @@ public class SecStatusTest extends PersoSimTestCase{
 	//TODO define tests for SecStatus
 	
 	/**
+	 * Positive test case: This test checks that a session is stored correctly
+	 */
+	@Test
+	public void testSecStatus_StoreSession()
+	{
+		SecStatus secStatus = new SecStatus();
+		ProcessingData processingData = new ProcessingData();
+		processingData.updateResponseAPDU(this, "Session context successful stored", new ResponseApdu(SW_9000_NO_ERROR));
+		
+		processingData.addUpdatePropagation(this, "Inform the SecStatus to restore the security status",
+				new SecStatusStoreUpdatePropagation(SecurityEvent.STORE_SESSION_CONTEXT, 1));
+		secStatus.updateSecStatus(processingData);
+		
+		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu()
+				.getStatusWord());
+	}
+	
+	/**
+	 * Negative test case: This test tries to restore a session with an not existing session identifier
+	 */
+	@Test
+	public void testSecStatus_RestoreNotExistingSession()
+	{
+		SecStatus secStatus = new SecStatus();
+		ProcessingData processingData = new ProcessingData();
+		processingData.updateResponseAPDU(this, "Session context successful stored", new ResponseApdu(SW_9000_NO_ERROR));
+		
+		processingData.addUpdatePropagation(this, "Inform the SecStatus to restore the security status",
+				new SecStatusStoreUpdatePropagation(SecurityEvent.RESTORE_SESSION_CONTEXT, 1));
+		secStatus.updateSecStatus(processingData);
+		
+		assertEquals("Statusword is not 9000", Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, processingData.getResponseApdu()
+				.getStatusWord());
+	}
+	
+	/**
+	 * Positive test case: This test stores a session and restores a session
+	 */
+	@Test
+	public void testSecStatus_StoreRestoreSession()
+	{
+		SecStatus secStatus = new SecStatus();
+		ProcessingData processingData = new ProcessingData();
+		processingData.updateResponseAPDU(this, "Session context successful stored", new ResponseApdu(SW_9000_NO_ERROR));
+		
+		processingData.addUpdatePropagation(this, "Inform the SecStatus to restore the security status",
+				new SecStatusStoreUpdatePropagation(SecurityEvent.STORE_SESSION_CONTEXT, 1));
+		
+		processingData.addUpdatePropagation(this, "Inform the SecStatus to restore the security status",
+				new SecStatusStoreUpdatePropagation(SecurityEvent.RESTORE_SESSION_CONTEXT, 1));
+		secStatus.updateSecStatus(processingData);
+		
+		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu()
+				.getStatusWord());
+	}
+	
+	/**
 	 * Positive test case: check the updateSecStatus method in the SecStatus class.
 	 */
 	@Test
@@ -48,7 +107,7 @@ public class SecStatusTest extends PersoSimTestCase{
 	@Test
 	public void testGetCurrentMechanisms()
 	{
-		SecMechanism mechanismToFind = new SecMechanism() {
+		SecMechanism mechanismToFind = new AbstractSecMechanism() {
 			@Override
 			public boolean needsDeletionInCaseOf(SecurityEvent event) {
 				return false;
@@ -88,13 +147,13 @@ public class SecStatusTest extends PersoSimTestCase{
 	
 	@Test
 	public void testStoreAndRestoreStatus(){
-		SecMechanism beforeStoring = new SecMechanism() {
+		SecMechanism beforeStoring = new AbstractSecMechanism() {
 			@Override
 			public boolean needsDeletionInCaseOf(SecurityEvent event) {
 				return false;
 			}
 		};
-		SecMechanism afterStoring = new SecMechanism() {
+		SecMechanism afterStoring = new AbstractSecMechanism() {
 			
 			@Override
 			public boolean needsDeletionInCaseOf(SecurityEvent event) {

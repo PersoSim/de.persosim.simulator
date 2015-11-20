@@ -22,7 +22,9 @@ import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.secstatus.SecStatusEventUpdatePropagation;
+import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
 import de.persosim.simulator.secstatus.SecurityEvent;
+import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
@@ -76,7 +78,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 					
 					//propagate changes in SM status
 					SmDataProviderGenerator smDataProviderGenerator = dataProvider.getSmDataProviderGenerator();
-					processingData.addUpdatePropagation(this, "init SM after successful PACE", smDataProviderGenerator);
+					processingData.addUpdatePropagation(this, "init SM after successful PACE", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, smDataProviderGenerator));
 					
 					logPlain(PersoSimLogger.PREFIX_IN_DEC + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
 					log(this, "successfully processed ascending secured APDU", TRACE);

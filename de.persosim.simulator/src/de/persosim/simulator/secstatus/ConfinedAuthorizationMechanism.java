@@ -8,7 +8,7 @@ import de.persosim.simulator.protocols.ta.Authorization;
  * @author jkoch
  *
  */
-public class ConfinedAuthorizationMechanism implements SecMechanism{
+public class ConfinedAuthorizationMechanism extends AbstractSecMechanism {
 	
 	private AuthorizationStore authorizationStore;
 	

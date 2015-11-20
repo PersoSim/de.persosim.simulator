@@ -1,7 +1,7 @@
 package de.persosim.simulator.protocols.file;
 
 import de.persosim.simulator.cardobjects.CardFile;
-import de.persosim.simulator.secstatus.SecMechanism;
+import de.persosim.simulator.secstatus.AbstractSecMechanism;
 import de.persosim.simulator.secstatus.SecurityEvent;
 
 /**
@@ -10,7 +10,7 @@ import de.persosim.simulator.secstatus.SecurityEvent;
  * @author amay
  *
  */
-public class CurrentFileSecMechanism implements SecMechanism {
+public class CurrentFileSecMechanism extends AbstractSecMechanism {
 
 	private CardFile curFile;
 

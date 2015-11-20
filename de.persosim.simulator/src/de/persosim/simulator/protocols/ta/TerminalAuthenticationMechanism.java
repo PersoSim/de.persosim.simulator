@@ -3,6 +3,7 @@ package de.persosim.simulator.protocols.ta;
 import java.util.Arrays;
 import java.util.Collection;
 
+import de.persosim.simulator.secstatus.AbstractSecMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecurityEvent;
 
@@ -13,7 +14,7 @@ import de.persosim.simulator.secstatus.SecurityEvent;
  * @author mboonk
  * 
  */
-public class TerminalAuthenticationMechanism implements SecMechanism {
+public class TerminalAuthenticationMechanism extends AbstractSecMechanism {
 
 	private Collection<AuthenticatedAuxiliaryData> auxiliaryData;
 	private TerminalType terminalType;

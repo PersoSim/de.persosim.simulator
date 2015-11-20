@@ -5,12 +5,16 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.platform.CommandProcessor;
+import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.seccondition.SecCondition;
+import de.persosim.simulator.securemessaging.SmDataProviderGenerator;
+import de.persosim.simulator.utils.InfoSource;
 
 /**
  * Representation of the current security status of the card.
@@ -23,8 +27,8 @@ import de.persosim.simulator.seccondition.SecCondition;
  * @author amay
  * 
  */
-public class SecStatus {
-
+public class SecStatus implements InfoSource{
+	
 	public enum SecContext {
 		GLOBAL, APPLICATION, FILE, COMMAND
 	}
@@ -81,7 +85,7 @@ public class SecStatus {
 	}
 
 	private void updateContext(SecContext context, SecMechanism mechanism) {
-		contexts.get(context).put(mechanism.getClass(), mechanism);
+		contexts.get(context).put(mechanism.getKey(), mechanism);
 	}
 
 	/**
@@ -118,7 +122,10 @@ public class SecStatus {
 	 * 
 	 * @param processingData
 	 */
-	public void updateSecStatus(ProcessingData processingData) {
+	public void updateSecStatus(ProcessingData processingData) {	
+		for (UpdatePropagation update : processingData.getUpdatePropagations(SecStatusStoreUpdatePropagation.class)) {
+			storeRestoreSession(processingData,(SecStatusStoreUpdatePropagation) update);
+		}
 		for (UpdatePropagation update : processingData.getUpdatePropagations(SecStatusEventUpdatePropagation.class)) {
 			updateEvents((SecStatusEventUpdatePropagation) update);
 		}
@@ -208,6 +215,32 @@ public class SecStatus {
 		return copy;
 	}
 	
+	private void storeRestoreSession(ProcessingData processingData, SecStatusStoreUpdatePropagation ... update) {
+		try {
+			for (SecStatusStoreUpdatePropagation curUpdate : update) {
+				SecStatusStoreUpdatePropagation eventPropagation = (SecStatusStoreUpdatePropagation) curUpdate;
+				if (eventPropagation.getEvent().equals(SecurityEvent.RESTORE_SESSION_CONTEXT)){
+					restoreSecStatus(eventPropagation.sessionContextIdentifier);
+					HashSet<Class<? extends SecMechanism>> set = new HashSet<>();
+					set.add(SmDataProviderGenerator.class);
+					Collection<SecMechanism> generators = getCurrentMechanisms(SecContext.APPLICATION, set);
+					if (generators.size() > 1){
+						processingData.updateResponseAPDU(this, "More than one secure messaging context found", new ResponseApdu(Iso7816.SW_6400_EXECUTION_ERROR));
+					}
+					if (generators.size() == 1){
+						processingData.addUpdatePropagation(this, "restore Secure Messaging", ((SmDataProviderGenerator)generators.iterator().next()).generateSmDataProvider());
+					}
+				}
+				
+				if (eventPropagation.getEvent().equals(SecurityEvent.STORE_SESSION_CONTEXT)){
+						storeSecStatus(eventPropagation.sessionContextIdentifier);
+				}
+			}
+		} catch(IllegalArgumentException e) {
+			processingData.updateResponseAPDU(this, e.getMessage(), new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND));
+		}
+	}
+	
 	/**
 	 * This method can be used to check whether necessary access conditions are
 	 * fulfilled. It uses the application security context.
@@ -261,6 +294,11 @@ public class SecStatus {
 		return false;
 		// IMPL the implementation of checks regarding the initialization state
 		// is missing, as it is not yet needed since personalization happens before starting the simulator
+	}
+
+	@Override
+	public String getIDString() {
+		return "SecStatus";
 	}
 	
 }
