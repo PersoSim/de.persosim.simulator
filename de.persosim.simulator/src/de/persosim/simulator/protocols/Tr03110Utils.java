@@ -1,14 +1,10 @@
 package de.persosim.simulator.protocols;
 
-import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
-
 import java.security.Key;
 import java.security.PublicKey;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -18,8 +14,6 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import de.persosim.simulator.Activator;
-import de.persosim.simulator.cardobjects.CardObject;
-import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.certificates.CvPublicKey;
 import de.persosim.simulator.exception.CertificateNotParseableException;
@@ -125,39 +119,6 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 		authenticationTokenInput.addTlvDataObject(constructed7F49);
 		
 		return authenticationTokenInput;
-	}
-	
-	/**
-	 * This method returns the only existing child {@link CardObject} of parent
-	 * parameter, that match all provided {@link CardObjectIdentifier}.
-	 * <p/>
-	 * It is expected that exactly one CardObject is returned (meaning that the
-	 * given Set of Identifiers is unambiguous). If no or more matching elements
-	 * are found an {@link IllegalArgumentException} is thrown.
-	 * 
-	 * @param parent CardObject whose children should be searched
-	 * @param cardObjectIdentifier set of identifiers that are required to match on the returned element
-	 * @return the one and only child element of parent that matches all provided identifiers
-	 * @throws IllegalArgumentException if none or several matching children are found
-	 * 
-	 */
-	public static CardObject getSpecificChild(CardObject parent, CardObjectIdentifier... cardObjectIdentifier) {
-
-		Collection<CardObject> cardObjects = parent.findChildren(cardObjectIdentifier);
-		
-		// assume that selection is not ambiguous and can be performed implicitly
-		switch (cardObjects.size()) {
-		case 0:
-			throw new IllegalArgumentException("no matching selection found");
-			
-		case 1:
-			CardObject matchingCardObject = cardObjects.iterator().next();
-			log(Tr03110Utils.class, "selected " + matchingCardObject, DEBUG);
-			return matchingCardObject;
-
-		default:
-			throw new IllegalArgumentException("selection is ambiguous, more identifiers required");
-		}
 	}
 	
 	/**

@@ -25,7 +25,6 @@ public class AbstractCardObjectTest extends PersoSimTestCase {
 	
 	@Mocked
 	SecStatus mockedSecurityStatus;
-	ObjectStore objectStore;
 	
 	class IdentifiableObjectImpl extends AbstractCardObject {
 		protected int id;
@@ -109,11 +108,9 @@ public class AbstractCardObjectTest extends PersoSimTestCase {
 			}
 		};
 		
-		// setup fresh file tree in ObjectStore
+		// setup fresh object tree
 		masterFile = new MasterFile();
 		masterFile.setSecStatus(mockedSecurityStatus);
-		objectStore = new ObjectStore((MasterFile)masterFile);
-		objectStore.selectMasterFile();
 		
 		masterFile.addChild(identifiableObjectImpl1);
 		masterFile.addChild(identifiableObjectImpl2);

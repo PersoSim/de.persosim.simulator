@@ -4,7 +4,6 @@ import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 import static de.persosim.simulator.utils.PersoSimLogger.logException;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -12,16 +11,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import de.persosim.simulator.apdu.ResponseApdu;
-import de.persosim.simulator.cardobjects.CardFile;
-import de.persosim.simulator.cardobjects.CardObject;
-import de.persosim.simulator.cardobjects.CardObjectIdentifier;
-import de.persosim.simulator.cardobjects.Iso7816LifeCycle;
-import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.MasterFile;
-import de.persosim.simulator.cardobjects.ObjectStore;
-import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.exception.AccessDeniedException;
-import de.persosim.simulator.exception.NotImplementedException;
 import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.protocols.Protocol;
@@ -37,13 +28,13 @@ import de.persosim.simulator.statemachine.StateMachine;
 /**
  * This class implements the processing of CommandApdus. It orchestrates
  * registered protocols and mediates between those protocols and the card
- * internal state, such as {@link SecStatus} and {@link ObjectStore}.
+ * internal state, such as {@link SecStatus} and the object tree.
  * 
  * @author amay
  * 
  */
 public abstract class AbstractCommandProcessor extends Layer implements
-		CardStateAccessor, Iso7816LifeCycle, StateMachine {
+		CardStateAccessor, StateMachine {
 
 	public AbstractCommandProcessor() {
 		super(-1);
@@ -102,9 +93,6 @@ public abstract class AbstractCommandProcessor extends Layer implements
 		removeCurrentProtocolAndAboveFromStack();
 		reset();
 		
-		log(this, "powerOn, select MF", TRACE);
-		objectStore.selectMasterFile();
-
 		log(this, "powerOn, reset SecStatus", TRACE);
 		securityStatus.reset();
 
@@ -115,17 +103,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	// ---------------------------------------------------
 
 	protected transient SecStatus securityStatus;
-	protected ObjectStore objectStore;
-
-	@Override
-	public CardObject getObject(CardObjectIdentifier id, Scope scope) {
-		return objectStore.getObject(id, scope);
-	}
-	
-	@Override
-	public Collection<CardObject> getObjectsWithSameId(CardObjectIdentifier id, Scope scope) {
-		return objectStore.getObjectsWithSameId(id, scope);
-	}
+	protected MasterFile masterFile;
 
 	/**
 	 * Adds a new protocol to the list of available protocols. The new protocol
@@ -148,46 +126,14 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	// methods implementing {@link CardStateAccessor} interface
 	// --------------------------------------------------------
 	@Override
-	public CardFile selectFile(CardObjectIdentifier id, Scope scope)
-			throws FileNotFoundException {
-		return objectStore.selectFile(id, scope);
-	}
-
-	@Override
-	public MasterFile selectMasterFile() {
-		return objectStore.selectMasterFile();
-	}
-
-	@Override
-	public CardObject getCurrentFile() {
-		return objectStore.getCurrentFile();
-	}
-
-	@Override
-	public void selectFile() throws FileNotFoundException {
-		objectStore.selectCachedFile();
-	}
-
-	@Override
-	public Iso7816LifeCycleState getLifeCycleState() {
-		return Iso7816LifeCycleState.OPERATIONAL_ACTIVATED;
-	}
-
-	@Override
-	public void updateLifeCycleState(Iso7816LifeCycleState state) {
-		// TODO implement life cycle state changes according to ISO7816-13 5.2
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public void selectFileForPersonalization(CardFile file) {
-		objectStore.selectFileForPersonalization(file);
-	}
-
-	@Override
 	public Collection<SecMechanism> getCurrentMechanisms(SecContext context,
 			Collection<Class<? extends SecMechanism>> wantedMechanisms) {
 		return securityStatus.getCurrentMechanisms(context, wantedMechanisms);
+	}
+
+	@Override
+	public MasterFile getMasterFile() {
+		return masterFile;
 	}
 
 	// ---------------------------------------------------
@@ -473,7 +419,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 			protocol.setCardStateAccessor(this);
 		}
 		
-		PersonalizationHelper.setLifeCycleStates(objectStore.getMasterFile());
+		PersonalizationHelper.setLifeCycleStates(masterFile);
 		
 		init();
 	}
@@ -502,7 +448,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	 * Returns the root element of the object tree.
 	 */
 	public MasterFile getObjectTree(){
-		return objectStore.getMasterFile();
+		return masterFile;
 	}
 
 	/**

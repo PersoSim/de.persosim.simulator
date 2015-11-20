@@ -12,11 +12,12 @@ import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
+import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.CardObjectUtils;
 import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.PinObject;
-import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
@@ -138,7 +139,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		
 		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
 		
-		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
+		CardObject object = CardObjectUtils.findObject(cardState.getMasterFile(), new AuthObjectIdentifier(identifier));
 		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
 			this.processingData.updateResponseAPDU(this, "PIN object not found", resp);
@@ -166,7 +167,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		TlvValue tlvData = cApdu.getCommandData();
 		
 		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
-		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
+		CardObject object = CardObjectUtils.findObject(cardState.getMasterFile(), new AuthObjectIdentifier(identifier));
 		
 		if(!(object instanceof ChangeablePasswordAuthObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
@@ -216,7 +217,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		CommandApdu cApdu = processingData.getCommandApdu();
 		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
 		
-		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
+		CardObject object = CardObjectUtils.findObject(cardState.getMasterFile(), new AuthObjectIdentifier(identifier));
 		
 		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
@@ -278,7 +279,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		CommandApdu cApdu = processingData.getCommandApdu();
 		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
 		
-		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
+		CardObject object = CardObjectUtils.findObject(cardState.getMasterFile(), new AuthObjectIdentifier(identifier));
 		
 		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);
@@ -318,7 +319,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		CommandApdu cApdu = processingData.getCommandApdu();		
 		int identifier = Utils.maskUnsignedByteToInt(cApdu.getP2());
 		
-		Object object = cardState.getObject(new AuthObjectIdentifier(identifier), Scope.FROM_MF);
+		CardObject object = CardObjectUtils.findObject(cardState.getMasterFile(), new AuthObjectIdentifier(identifier));
 		
 		if(!(object instanceof PinObject)) {
 			ResponseApdu resp = new ResponseApdu(SW_6984_REFERENCE_DATA_NOT_USABLE);

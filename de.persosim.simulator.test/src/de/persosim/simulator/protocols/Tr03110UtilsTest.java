@@ -12,16 +12,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.interfaces.ECPublicKey;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.TimeZone;
-
-import mockit.Capturing;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +33,10 @@ import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.HexString;
+import mockit.Capturing;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
 
 public class Tr03110UtilsTest extends PersoSimTestCase {
 	@Mocked
@@ -83,62 +80,7 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 		assertArrayEquals("token mismatch", tokenExpected, tokenReceivedPlain);
 	}
 	
-	/**
-	 * Positive test: check that the combination of OID and id-able object returns the correct object.
-	 */
-	@Test
-	public void testGetSpecificChild_MatchingSingleElement() {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mf.findChildren(
-						withInstanceOf(OidIdentifier.class),
-						withInstanceOf(DomainParameterSetIdentifier.class)
-						);
-				result = Arrays.asList(domainParameters12);
-			}
-		};
-				
-		assertEquals(domainParameters12, Tr03110Utils.getSpecificChild(mf, oidIdentifier2, domainparameterSetIdentifier12));
-	}
 	
-	/**
-	 * Negative test: check that the combination of OID and id-able object is not allowed.
-	 */
-	@Test(expected = IllegalArgumentException.class)
-	public void testGetSpecificChild_NonMatching_SecondaryIdentifier() {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mf.findChildren(
-						withInstanceOf(OidIdentifier.class),
-						withInstanceOf(DomainParameterSetIdentifier.class)
-						);
-				result = Collections.EMPTY_SET;
-			}
-		};
-				
-		Tr03110Utils.getSpecificChild(mf, oidIdentifier2, domainparameterSetIdentifier12);
-	}
-	
-	/**
-	 * Negative test: check that an {@link IllegalArgumentException} is thrown when the selection is  ambiguous.
-	 */
-	@Test(expected = IllegalArgumentException.class)
-	public void testGetImplicitId_Ambiguous() {
-		// prepare the mock
-				new NonStrictExpectations() {
-					{
-						mf.findChildren(
-								withInstanceOf(OidIdentifier.class),
-								withInstanceOf(DomainParameterSetIdentifier.class)
-								);
-						result = Arrays.asList(domainParameters12, domainParameters13);
-					}
-				};
-				
-		Tr03110Utils.getSpecificChild(mf, oidIdentifier2, domainparameterSetIdentifier12);
-	}
 	
 	/**
 	 * Positive test: check parsing of a valid date encoding for input length 6.

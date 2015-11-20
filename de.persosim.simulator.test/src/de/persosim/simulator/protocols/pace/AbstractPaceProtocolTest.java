@@ -8,25 +8,19 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
-
 import org.ietf.jgss.GSSException;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.apdu.CommandApduFactory;
-import de.persosim.simulator.cardobjects.AbstractCardObject;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DomainParameterSetCardObject;
 import de.persosim.simulator.cardobjects.DomainParameterSetIdentifier;
-import de.persosim.simulator.cardobjects.MasterFileIdentifier;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.NullCardObject;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
-import de.persosim.simulator.cardobjects.Scope;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
@@ -44,11 +38,14 @@ import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.HexString;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
 
 public class AbstractPaceProtocolTest extends PersoSimTestCase {
 	private DefaultPaceProtocol paceProtocol;
 	@Mocked
-	AbstractCardObject mockedMf;
+	MasterFile mockedMf;
 	@Mocked
 	CardStateAccessor mockedCardStateAccessor;
 	PasswordAuthObject passwordAuthObject;
@@ -92,18 +89,15 @@ public class AbstractPaceProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new Expectations() {
 			{
-				mockedCardStateAccessor.getObject(withInstanceOf(AuthObjectIdentifier.class),null);
+				mockedCardStateAccessor.getMasterFile();
+				result = mockedMf;
+				
+				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
 				result = passwordAuthObject;
 
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(MasterFileIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
-			}
-		};
-		
-		new Expectations() {
-			{
+
 				mockedMf.findChildren(
 						withInstanceOf(DomainParameterSetIdentifier.class),
 						withInstanceOf(OidIdentifier.class));
@@ -130,25 +124,22 @@ public class AbstractPaceProtocolTest extends PersoSimTestCase {
 		// prepare the mock
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(withInstanceOf(AuthObjectIdentifier.class),null);
-				result = passwordAuthObject;
-				
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(MasterFileIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 				
+				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
+				result = passwordAuthObject;
+				
 				mockedMf.findChildren(
-						withInstanceOf(OidIdentifier.class),
+						withInstanceOf(DomainParameterSetIdentifier.class),
+						withInstanceOf(OidIdentifier.class));
+				result = domainParameters13;
+				
+				mockedMf.findChildren(
 						withInstanceOf(DomainParameterSetIdentifier.class));
 				result = domainParameters13;
 				
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(Scope.class));
-				result = domainParameters13;
-				
-				mockedCardStateAccessor.getObject(withInstanceOf(TrustPointIdentifier.class),null);
+				mockedMf.findChildren(withInstanceOf(TrustPointIdentifier.class));
 				result = new NullCardObject();
 			}
 		};
@@ -174,25 +165,22 @@ public class AbstractPaceProtocolTest extends PersoSimTestCase {
 		
 		new NonStrictExpectations() {
 			{
-				mockedCardStateAccessor.getObject(withInstanceOf(AuthObjectIdentifier.class),null);
-				result = passwordAuthObject;
-				
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(MasterFileIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
+				
+				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
+				result = passwordAuthObject;
 				
 				mockedMf.findChildren(
 						withInstanceOf(DomainParameterSetIdentifier.class),
 						withInstanceOf(OidIdentifier.class));
 				result = domainParameters13;
 				
-				mockedCardStateAccessor.getObject(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(Scope.class));
+				mockedMf.findChildren(
+						withInstanceOf(DomainParameterSetIdentifier.class));
 				result = domainParameters13;
 
-				mockedCardStateAccessor.getObject(withInstanceOf(TrustPointIdentifier.class),null);
+				mockedMf.findChildren(withInstanceOf(TrustPointIdentifier.class));
 				result = trustpoint;
 			}
 		};

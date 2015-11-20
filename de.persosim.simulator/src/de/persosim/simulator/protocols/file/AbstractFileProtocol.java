@@ -7,10 +7,12 @@ import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.CardObjectIdentifier;
+import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
-import de.persosim.simulator.cardobjects.Scope;
+import de.persosim.simulator.cardobjects.NullCardObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.FileIdentifierIncorrectValueException;
@@ -20,6 +22,8 @@ import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.ProtocolUpdate;
+import de.persosim.simulator.secstatus.SecStatus.SecContext;
+import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
@@ -65,12 +69,11 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 							|| ((cmdApdu.getNc() == 2 && Arrays.equals(cmdApdu.getCommandData().toByteArray(),
 									new byte[] { 0x3F, 0x00 })))) {
 						// special file identifier for the master file (absent or 3f00)
-						file = cardState.selectMasterFile();
+						file = cardState.getMasterFile();
 					} else {
-						file = cardState.selectFile(
+						file = getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState),
 								new FileIdentifier(
-										Utils.getShortFromUnsignedByteArray(cmdApdu.getCommandData().toByteArray())),
-								Scope.FROM_DF);
+										Utils.getShortFromUnsignedByteArray(cmdApdu.getCommandData().toByteArray())));
 					}
 				} else {
 					// IMPL implement handling of other file occurrence values
@@ -81,14 +84,13 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 				}
 				break;
 			case P1_SELECT_FILE_EF_UNDER_CURRENT_DF:
-				file = cardState.selectFile(
+				file = getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState),
 						new FileIdentifier(Utils
-								.getShortFromUnsignedByteArray(cmdApdu.getCommandData().toByteArray())),
-						Scope.FROM_DF);
+								.getShortFromUnsignedByteArray(cmdApdu.getCommandData().toByteArray())));
 				break;
 			case P1_SELECT_FILE_DF_BY_NAME:
-				file = cardState.selectFile(new DedicatedFileIdentifier(
-						cmdApdu.getCommandData().toByteArray()), Scope.FROM_MF);
+				file = getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState),
+						new DedicatedFileIdentifier(cmdApdu.getCommandData().toByteArray()));
 				// IMPL support multiple calls selecting files successively (ISO7816-4
 				// 7.1.1)
 				break;
@@ -96,6 +98,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 			}
 			
 			if (file != null){
+				selectFile(file);
 				TlvDataObjectContainer fco = getFileControlInformation(file, p2);
 				ResponseApdu resp = new ResponseApdu(fco, SW_9000_NO_ERROR);
 				this.processingData.updateResponseAPDU(this,
@@ -145,7 +148,16 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 
 		boolean isOddInstruction = ((processingData.getCommandApdu().getIns() & INS_MASK_ODDINS) == INS_MASK_ODDINS);
 		
-		CardObject file = getFile(processingData.getCommandApdu(), cardState);
+		CardFile file;
+		try {
+			file = (CardFile) getFile(processingData.getCommandApdu(), cardState);
+		} catch (FileNotFoundException e) {
+			ResponseApdu resp = new ResponseApdu(
+					Iso7816.SW_6A82_FILE_NOT_FOUND);
+			this.processingData.updateResponseAPDU(this,
+					"binary file not found for selection", resp);
+			return;
+		}
 
 		
 		int updateOffset = getOffset(processingData.getCommandApdu());
@@ -163,18 +175,11 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 			if (file instanceof ElementaryFile) {
 				try {
 					((ElementaryFile) file).update(updateOffset, updateData);
-					try {
-						cardState.selectFile();
-						ResponseApdu resp = new ResponseApdu(
-								Iso7816.SW_9000_NO_ERROR);
-						this.processingData.updateResponseAPDU(this,
-								"binary file updated successfully", resp);
-					} catch (FileNotFoundException e) {
-						ResponseApdu resp = new ResponseApdu(
-								Iso7816.SW_6A82_FILE_NOT_FOUND);
-						this.processingData.updateResponseAPDU(this,
-								"binary file not found for selection", resp);
-					}
+					selectFile((CardFile) file);
+					ResponseApdu resp = new ResponseApdu(
+							Iso7816.SW_9000_NO_ERROR);
+					this.processingData.updateResponseAPDU(this,
+							"binary file updated successfully", resp);
 				} catch (AccessDeniedException e) {
 					ResponseApdu resp = new ResponseApdu(
 							Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
@@ -258,38 +263,91 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 	 * @param apdu
 	 * @param cardState
 	 * @return the {@link CardObject} fitting the given apdu or null if no match is found 
+	 * @throws FileNotFoundException 
 	 */
-	private static CardObject getFileOddInstruction(CommandApdu apdu, CardStateAccessor cardState){
+	private static CardObject getFileOddInstruction(CommandApdu apdu, CardStateAccessor cardState) throws FileNotFoundException{
 		if ((apdu.getP1P2() | P1P2_MASK_SFI) == 0b11111 && apdu.getP1P2() != 0 && apdu.getP1P2() != 0b11111){
 			//short file identifier in the last 5 bits of P1P2
-			return cardState.getObject(
-					new ShortFileIdentifier(apdu.getP1P2()), Scope.FROM_DF);
+			return getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState), 
+					new ShortFileIdentifier(apdu.getP1P2()));
 		} else if (apdu.getP1P2() == 0x0000){
 			//select the current file
-			return cardState.getCurrentFile();
+			return CurrentFileHandler.getCurrentFile(cardState);
 		} else {
 			//P1P2 encodes a card file identifier
-			return cardState.getObject(new FileIdentifier(apdu.getP1P2()), Scope.FROM_DF);
+			return getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState), 
+							new FileIdentifier(apdu.getP1P2()));
 		}
 	}
 	
+	/**
+	 * Search for a child {@link CardObject} in the object 
+	 * tree, starting in the given {@link DedicatedFile}.
+	 * </p>
+	 * Search pattern (according to ISO7816-4 7.1.1):
+	 * <ol>
+	 * <li>
+	 *	 immediate children of currently selected DF
+	 * </li>
+	 * <li>
+	 *	 the parent DF of the currently selected DF
+	 * </li>
+	 * <li>
+	 *	 immediate children of the parent DF
+	 * </li>
+	 * 
+	 * @param identifier
+	 *            to match the {@link CardObject}s with
+	 * @param currentDf {@link CardObject} to start the search with
+	 * @return a child that fits the given identifier or {@link NullCardObject}
+	 *         if no fitting child was found
+	 */
+	public static CardFile getFileForSelection(DedicatedFile currentDf, CardObjectIdentifier identifier) throws FileNotFoundException{
+		
+		//check the immediate children of the current DF
+		for (CardObject curChild : currentDf.getChildren()){
+			if (identifier.matches(curChild) && curChild instanceof CardFile){
+				return (CardFile) curChild;
+			}
+		}
+		
+		//check the parentDF
+		if (currentDf.getParent() instanceof DedicatedFile) {
+			DedicatedFile parentDf = (DedicatedFile) currentDf.getParent();
+			if (identifier.matches(parentDf)){
+				return parentDf;
+			}
+			
+			//check for parent DF immediate children
+			for (CardObject curChild : parentDf.getChildren()){
+				if (identifier.matches(curChild) && curChild instanceof CardFile){
+					return (CardFile) curChild;
+				}
+			}
+		}
+		
+		// No fitting child found
+		throw new FileNotFoundException();
+	}
+
 	/**
 	 * Access method for files using an even instruction byte
 	 * @param apdu
 	 * @param cardState
 	 * @return the {@link CardObject} fitting the given apdu or null if no match is found 
+	 * @throws FileNotFoundException 
 	 */
-	private static CardObject getFileEvenInstruction(CommandApdu apdu, CardStateAccessor cardState){
+	private static CardObject getFileEvenInstruction(CommandApdu apdu, CardStateAccessor cardState) throws FileNotFoundException{
 		if ((apdu.getP1() & P1_MASK_SHORT_FILE_IDENTIFIER) == P1_MASK_SHORT_FILE_IDENTIFIER){
 			int shortFileIdentifier = apdu.getP1() & P1_MASK_SFI;			
 			if (MINIMUM_SHORT_FILE_IDENTIFIER > shortFileIdentifier
 					|| MAXIMUM_SHORT_FILE_IDENTIFIER < shortFileIdentifier) {
 				throw new FileIdentifierIncorrectValueException();
 			}
-			return cardState.getObject(
-					new ShortFileIdentifier(shortFileIdentifier), Scope.FROM_DF);
+			return getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState), 
+					new ShortFileIdentifier(shortFileIdentifier));
 		}
-		return cardState.getCurrentFile();
+		return CurrentFileHandler.getCurrentFile(cardState);
 	}
 	
 	/**
@@ -297,8 +355,9 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 	 * @param apdu
 	 * @param cardState
 	 * @return the {@link CardObject} fitting the given apdu or null if no match is found 
+	 * @throws FileNotFoundException 
 	 */
-	private static CardObject getFile(CommandApdu apdu, CardStateAccessor cardState) {
+	private static CardObject getFile(CommandApdu apdu, CardStateAccessor cardState) throws FileNotFoundException {
 		boolean isOddInstruction = ((apdu.getIns() & INS_MASK_ODDINS) == INS_MASK_ODDINS);
 		
 		if (isOddInstruction){
@@ -342,7 +401,14 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 		int offset = getOffset(processingData.getCommandApdu());
 		CardObject file = null;
 
-		file = getFile(processingData.getCommandApdu(), cardState);
+		try {
+			file = getFile(processingData.getCommandApdu(), cardState);
+		} catch (FileNotFoundException e) {
+			ResponseApdu resp = new ResponseApdu(
+					Iso7816.SW_6A82_FILE_NOT_FOUND);
+			this.processingData.updateResponseAPDU(this,
+					"binary file not found for selection", resp);
+		}
 		
 
 		if (file instanceof ElementaryFile) {
@@ -361,20 +427,13 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 					toSend = new TlvValuePlain(data);
 				}
 				
-				try {
-					cardState.selectFile();
+					selectFile((CardFile)file);
 					ResponseApdu resp = new ResponseApdu(toSend,
 							shortRead
 									? Iso7816.SW_6282_END_OF_FILE_REACHED_BEFORE_READING_NE_BYTES
 									: Iso7816.SW_9000_NO_ERROR);
 					this.processingData.updateResponseAPDU(this,
 							"binary file read successfully", resp);
-				} catch (FileNotFoundException e) {
-					ResponseApdu resp = new ResponseApdu(toSend,
-							Iso7816.SW_6A82_FILE_NOT_FOUND);
-					this.processingData.updateResponseAPDU(this,
-							"binary file not found for selection", resp);
-				}
 			} catch (FileToShortException e) {
 				ResponseApdu resp = new ResponseApdu(
 						Iso7816.SW_6282_END_OF_FILE_REACHED_BEFORE_READING_NE_BYTES);
@@ -397,6 +456,11 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 		processingData.addUpdatePropagation(this,
 				"FileManagement protocol is not supposed to stay on the stack",
 				new ProtocolUpdate(true));
+	}
+
+	private void selectFile(CardFile file) {
+		this.processingData.addUpdatePropagation(this, "select file",
+				new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(file)));
 	}
 
 }
