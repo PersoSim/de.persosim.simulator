@@ -1,8 +1,8 @@
 package de.persosim.simulator.secstatus;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -87,24 +87,6 @@ public class SecStatusTest extends PersoSimTestCase{
 		secStatus.updateSecStatus(processingData);
 		
 		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu()
-				.getStatusWord());
-	}
-	
-	/**
-	 * Negative test case: This test case tries to store a session but the maximum of stored sessions is reached
-	 */
-	@Test
-	public void testSecStatus_StoreSessionMaxSessionIdentifierReached()
-	{
-		SecStatus secStatus = new SecStatus();
-		ProcessingData processingData = new ProcessingData();
-		processingData.updateResponseAPDU(this, "Session context successful stored", new ResponseApdu(SW_9000_NO_ERROR));
-		
-		processingData.addUpdatePropagation(this, "Inform the SecStatus to restore the security status",
-				new SecStatusStoreUpdatePropagation(SecurityEvent.STORE_SESSION_CONTEXT, SecStatus.MAX_SESSION_IDENTIFIER +1));
-		secStatus.updateSecStatus(processingData);
-		
-		assertEquals("Statusword is not 6400", Iso7816.SW_6400_EXECUTION_ERROR, processingData.getResponseApdu()
 				.getStatusWord());
 	}
 	

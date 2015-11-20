@@ -29,8 +29,6 @@ import de.persosim.simulator.utils.InfoSource;
  */
 public class SecStatus implements InfoSource{
 	
-	public static final int MAX_SESSION_IDENTIFIER = 167;
-	
 	public enum SecContext {
 		GLOBAL, APPLICATION, FILE, COMMAND
 	}
@@ -235,18 +233,12 @@ public class SecStatus implements InfoSource{
 				}
 				
 				if (eventPropagation.getEvent().equals(SecurityEvent.STORE_SESSION_CONTEXT)){
-					if (eventPropagation.sessionContextIdentifier > MAX_SESSION_IDENTIFIER) {
-						processingData.updateResponseAPDU(this, "Max number of session identifier reached", new ResponseApdu(Iso7816.SW_6400_EXECUTION_ERROR));
-						return;
-					}
-					else
 						storeSecStatus(eventPropagation.sessionContextIdentifier);
 				}
 			}
 		} catch(IllegalArgumentException e) {
 			processingData.updateResponseAPDU(this, e.getMessage(), new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND));
 		}
-		
 	}
 	
 	/**
