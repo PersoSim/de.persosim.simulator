@@ -185,7 +185,6 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 		
 		PaceMechanism paceMechanism = null;
-//		EffectiveAuthorizationMechanism authMechanism = null;
 		ConfinedAuthorizationMechanism authMechanism = null;
 		
 		if (currentMechanisms.size() >= 2){
@@ -331,7 +330,9 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			this.processingData.updateResponseAPDU(this,
 					"TA must not be executed more than once in the same session", resp);
 			return true;
-		} else return false;
+		} else {
+			return false;
+		}
 	}
 
 	void processCommandSetAt() {

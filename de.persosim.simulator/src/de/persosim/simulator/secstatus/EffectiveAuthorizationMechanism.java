@@ -3,7 +3,7 @@ package de.persosim.simulator.secstatus;
 import de.persosim.simulator.protocols.ta.Authorization;
 
 /**
- * This class represents a {@link SecMechanism} storing (accumulated) authorization information.
+ * This class represents a {@link SecMechanism} storing authorization information with update functionality.
  * @author slutters
  *
  */

@@ -678,10 +678,6 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), terminalTypeOid);
 				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
 				
-				
-				HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
-				previousMechanisms.add(ConfinedAuthorizationMechanism.class);
-				
 				ConfinedAuthorizationMechanism newAuthMechanism;
 				
 				if(authorizationStore == null) {

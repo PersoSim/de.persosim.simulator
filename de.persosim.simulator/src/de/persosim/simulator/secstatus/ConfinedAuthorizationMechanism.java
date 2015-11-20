@@ -3,6 +3,11 @@ package de.persosim.simulator.secstatus;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ta.Authorization;
 
+/**
+ * This class represents a {@link SecMechanism} storing unchangeable authorization information which are provided in PACE.
+ * @author jkoch
+ *
+ */
 public class ConfinedAuthorizationMechanism implements SecMechanism{
 	
 	private AuthorizationStore authorizationStore;
