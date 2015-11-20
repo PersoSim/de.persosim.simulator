@@ -28,7 +28,7 @@ import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
-import de.persosim.simulator.secstatus.AuthorizationMechanism;
+import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -47,7 +47,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	PinProtocol protocol;
 	
 	TerminalAuthenticationMechanism taMechanism;
-	AuthorizationMechanism authMechanism;
+	EffectiveAuthorizationMechanism authMechanism;
 	HashSet<SecMechanism> currentMechanisms;
 	
 	@Before
@@ -66,7 +66,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		HashMap<Oid, Authorization> authorizations = new HashMap<>();
 		authorizations.put(TaOid.id_AT, new RelativeAuthorization());
 		AuthorizationStore authStore = new AuthorizationStore(authorizations);
-		authMechanism = new AuthorizationMechanism(authStore);
+		authMechanism = new EffectiveAuthorizationMechanism(authStore);
 		currentMechanisms.add(taMechanism);
 		currentMechanisms.add(authMechanism);
 	}

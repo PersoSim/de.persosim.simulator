@@ -58,8 +58,8 @@ import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
-import de.persosim.simulator.secstatus.AuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
+import de.persosim.simulator.secstatus.ConfinedAuthorizationMechanism;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -589,7 +589,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		
 		/* get commandDataContainer */
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-						
+		
 		tlvObject = commandData.getTlvDataObject(path);
 		pcdTokenReceivedFromPCD = tlvObject.getValueField();
 		
@@ -678,30 +678,15 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), terminalTypeOid);
 				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
 				
-				
-				HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
-				previousMechanisms.add(AuthorizationMechanism.class);
-				Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
-				
-				AuthorizationMechanism authMechanism = null;
-				if (currentMechanisms.size() >= 1){
-					authMechanism = (AuthorizationMechanism) currentMechanisms.toArray()[0];
-				}
-				
-				AuthorizationMechanism newAuthMechanism;
+				ConfinedAuthorizationMechanism newAuthMechanism;
 				
 				if(authorizationStore == null) {
 					authorizationStore = new AuthorizationStore();
 				}
 				
-				if(authMechanism == null) {
-					newAuthMechanism = new AuthorizationMechanism(authorizationStore);
-				} else{
-					newAuthMechanism = authMechanism.getUpdatedMechanism(authorizationStore);
-				}
+				newAuthMechanism = new ConfinedAuthorizationMechanism(authorizationStore);
 				
 				processingData.addUpdatePropagation(this, "Security status updated with authorization mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, newAuthMechanism));
-				
 				
 				responseApdu = new ResponseApdu(new TlvDataObjectContainer(responseContent), sw);
 			} else {

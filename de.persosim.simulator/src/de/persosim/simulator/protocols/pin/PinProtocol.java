@@ -28,7 +28,7 @@ import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
-import de.persosim.simulator.secstatus.AuthorizationMechanism;
+import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -229,10 +229,10 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		//XXX this check should be done by the objects themself
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(TerminalAuthenticationMechanism.class);
-		previousMechanisms.add(AuthorizationMechanism.class);
+		previousMechanisms.add(EffectiveAuthorizationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 		TerminalAuthenticationMechanism taMechanism = null;
-		AuthorizationMechanism authMechanism = null;
+		EffectiveAuthorizationMechanism authMechanism = null;
 		
 		if (currentMechanisms.size() >= 2) {
 			for(SecMechanism secmechanism:currentMechanisms) {
@@ -240,8 +240,8 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 					taMechanism = (TerminalAuthenticationMechanism) secmechanism;
 				}
 				
-				if(secmechanism instanceof AuthorizationMechanism) {
-					authMechanism = (AuthorizationMechanism) secmechanism;
+				if(secmechanism instanceof EffectiveAuthorizationMechanism) {
+					authMechanism = (EffectiveAuthorizationMechanism) secmechanism;
 				}
 			}
 			

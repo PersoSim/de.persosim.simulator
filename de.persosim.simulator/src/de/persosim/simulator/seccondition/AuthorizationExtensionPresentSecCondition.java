@@ -5,11 +5,11 @@ import java.util.Collection;
 
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ta.Authorization;
-import de.persosim.simulator.secstatus.AuthorizationMechanism;
+import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 
 /**
- * {@link SecCondition} that ensures that a given AuthorizationExtenension is present in {@link AuthorizationMechanism} 
+ * {@link SecCondition} that ensures that a given AuthorizationExtenension is present in {@link EffectiveAuthorizationMechanism} 
  * @author amay
  *
  */
@@ -24,8 +24,8 @@ public class AuthorizationExtensionPresentSecCondition implements SecCondition {
 	public boolean check(Collection<SecMechanism> mechanisms) {
 
 		for(SecMechanism secMechanism:mechanisms) {
-			if(secMechanism instanceof AuthorizationMechanism) {
-				AuthorizationMechanism authMechanism = (AuthorizationMechanism) secMechanism;
+			if(secMechanism instanceof EffectiveAuthorizationMechanism) {
+				EffectiveAuthorizationMechanism authMechanism = (EffectiveAuthorizationMechanism) secMechanism;
 				Authorization auth = authMechanism.getAuthorization(oid);
 				return auth != null;
 			}
@@ -39,7 +39,7 @@ public class AuthorizationExtensionPresentSecCondition implements SecCondition {
 	public Collection<Class<? extends SecMechanism>> getNeededMechanisms() {
 		Collection<Class<? extends SecMechanism>> mechanisms = new ArrayList<>();
 		
-		mechanisms.add(AuthorizationMechanism.class);
+		mechanisms.add(EffectiveAuthorizationMechanism.class);
 		
 		return mechanisms;
 	}
