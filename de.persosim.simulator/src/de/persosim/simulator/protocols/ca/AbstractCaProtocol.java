@@ -22,6 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
+import de.persosim.simulator.cardobjects.CardObjectUtils;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyObject;
 import de.persosim.simulator.cardobjects.KeyPairObject;
@@ -131,7 +132,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	protected KeyObject getkeyObjectForKeyIdentifier(KeyIdentifier keyIdentifier, CardObjectIdentifier... cardObjectIdentifier) {
 		CardObject cardObject;
 		try {
-			cardObject = Tr03110Utils.getSpecificChild(cardState.getMasterFile(), keyIdentifier);
+			cardObject = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), keyIdentifier);
 		} catch (IllegalArgumentException e) {
 			throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, e.getMessage());
 		}
