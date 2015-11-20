@@ -227,7 +227,7 @@ public class SecStatus implements InfoSource{
 					set.add(SmDataProviderGenerator.class);
 					Collection<SecMechanism> generators = getCurrentMechanisms(SecContext.APPLICATION, set);
 					if (generators.size() > 1){
-						// kaputt statuswort
+						processingData.updateResponseAPDU(this, "More than one secure messaging context found", new ResponseApdu(Iso7816.SW_6400_EXECUTION_ERROR));
 					}
 					if (generators.size() == 1){
 						processingData.addUpdatePropagation(this, "restore Secure Messaging", ((SmDataProviderGenerator)generators.iterator().next()).generateSmDataProvider());
