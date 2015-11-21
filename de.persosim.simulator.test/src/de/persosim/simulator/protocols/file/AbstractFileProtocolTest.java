@@ -553,7 +553,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = new byte[] { 0x00, (byte) 0x0E, 0x00, 0x00 };
 		processingData.updateCommandApdu(this, "erase binary APDU", CommandApduFactory.createCommandApdu(apduBytes));
-
+		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 		// call mut
 		fileProtocol.process(processingData);
 
@@ -622,7 +622,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = new byte[] { 0x00, (byte) 0x0E, 0x00, 0x00, 0x01, 0x02 };
 		processingData.updateCommandApdu(this, "erase binary APDU", CommandApduFactory.createCommandApdu(apduBytes));
-
+		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 		// call mut
 		fileProtocol.process(processingData);
 
@@ -639,7 +639,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = new byte[] { 0x00, (byte) 0x0F, 0x00, 0x00, 0x02, 0x54, 0x00 };
 		processingData.updateCommandApdu(this, "erase binary APDU", CommandApduFactory.createCommandApdu(apduBytes));
-
+		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 		// call mut
 		fileProtocol.process(processingData);
 
@@ -655,7 +655,8 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = new byte[] { 0x00, (byte) 0x0F, 0x00, 0x00, 0x03, 0x54, 0x01, 0x03 };
 		processingData.updateCommandApdu(this, "erase binary APDU", CommandApduFactory.createCommandApdu(apduBytes));
-
+		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
+		
 		// call mut
 		fileProtocol.process(processingData);
 
@@ -672,6 +673,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = new byte[] { 0x00, (byte) 0x0F, 0x00, 0x00, 0x06, 0x54, 0x01, 0x03, 0x54, 0x01, 0x04 };
 		processingData.updateCommandApdu(this, "erase binary APDU", CommandApduFactory.createCommandApdu(apduBytes));
+		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 
 		// call mut
 		fileProtocol.process(processingData);
