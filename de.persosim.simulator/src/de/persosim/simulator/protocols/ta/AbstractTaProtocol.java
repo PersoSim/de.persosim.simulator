@@ -823,7 +823,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 
 	@Override
-	public Collection<? extends TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 		// TAInfo
 		ConstructedTlvDataObject taInfo = new ConstructedTlvDataObject(
 				new TlvTag(Asn1.SEQUENCE));
@@ -838,7 +838,9 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		taInfo.addTlvDataObject(protocol);
 		taInfo.addTlvDataObject(version);
 		
-		return Arrays.asList(taInfo);
+		Collection<TlvDataObject> result = new HashSet<>();
+		result.add(taInfo);
+		return result;
 	}
 
 }
