@@ -8,10 +8,6 @@ import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 public abstract class AuxDataObject extends AbstractCardObject {
 	OidIdentifier identifier;
 	
-	public AuxDataObject(){
-		
-	}
-	
 	public AuxDataObject(OidIdentifier identifier){
 		this.identifier = identifier;
 	}

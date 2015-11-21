@@ -18,10 +18,6 @@ import de.persosim.simulator.utils.Utils;
 public class DateAuxObject extends AuxDataObject {
 	Date date;
 
-	public DateAuxObject(){
-		
-	}
-	
 	public DateAuxObject(OidIdentifier identifier, Date date) {
 		super(identifier);
 		this.date = date;
