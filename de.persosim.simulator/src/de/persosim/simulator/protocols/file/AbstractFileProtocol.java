@@ -202,7 +202,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 		
 		ElementaryFile ef;
 		if (!(file instanceof ElementaryFile)){
-			throw new ProcessingException(Iso7816.SW_6986_COMMAND_NOT_ALLOWED_NO_EF, "The used file is not an EF and can note be erased.");
+			throw new ProcessingException(Iso7816.SW_6986_COMMAND_NOT_ALLOWED_NO_EF, "The used file is not an EF and can not be erased.");
 		} else {
 			ef = (ElementaryFile) file;
 		}
