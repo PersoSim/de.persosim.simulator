@@ -1,6 +1,8 @@
 package de.persosim.simulator.cardobjects;
 
-
+import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.seccondition.OrSecCondition;
+import de.persosim.simulator.seccondition.SecCondition;
 
 /**
  * This class represents a {@link PasswordAuthObject} extended to provide a retry counter.
@@ -13,21 +15,30 @@ public class PasswordAuthObjectWithRetryCounter extends ChangeablePasswordAuthOb
 	protected int retryCounterDefaultValue;
 	protected int retryCounterCurrentValue;
 	
-	public PasswordAuthObjectWithRetryCounter(){
-	}
+	private SecCondition unblockPinCondition;
+	private SecCondition resetPinCondition;
 	
-	public PasswordAuthObjectWithRetryCounter(AuthObjectIdentifier identifier,
-			byte [] password, String passwordName, int minLengthOfPasswordInBytes, int maxLengthOfPasswordInBytes,
-			int defaultValueRetryCounter){
-		
-		super(identifier, password, passwordName, minLengthOfPasswordInBytes, maxLengthOfPasswordInBytes);
+	public PasswordAuthObjectWithRetryCounter(AuthObjectIdentifier identifier, byte[] password, String passwordName,
+			int minLengthOfPasswordInBytes, int maxLengthOfPasswordInBytes, int defaultValueRetryCounter,
+			SecCondition pinManagementCondition, SecCondition changePinCondition, SecCondition unblockPinCondition, SecCondition resetPinCondition) {
+
+		super(identifier, password, passwordName, minLengthOfPasswordInBytes, maxLengthOfPasswordInBytes,
+				pinManagementCondition, changePinCondition);
 		
 		if(defaultValueRetryCounter < 1) {throw new IllegalArgumentException("initial value of retry counter must be > 0");}
 		
 		retryCounterDefaultValue = defaultValueRetryCounter;
 		retryCounterCurrentValue = retryCounterDefaultValue;
+		
+		this.unblockPinCondition = unblockPinCondition;
+		this.resetPinCondition = resetPinCondition;
 	}
-
+	
+	public void setPassword(byte[] newPassword) throws AccessDeniedException {
+		super.setPassword(newPassword);
+		resetRetryCounterToDefault();
+	}
+	
 	public void decrementRetryCounter() {
 		if(retryCounterCurrentValue == 0) {
 			throw new IllegalStateException(passwordName + " retry counter is not allowed to be decremented below 0");
@@ -36,8 +47,14 @@ public class PasswordAuthObjectWithRetryCounter extends ChangeablePasswordAuthOb
 		}
 	}
 	
-	public void resetRetryCounterToDefault() {
-		retryCounterCurrentValue = retryCounterDefaultValue;
+	public void resetRetryCounterToDefault() throws AccessDeniedException {
+		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(),
+				new OrSecCondition(unblockPinCondition, getPinManagementCondition()))
+				|| (securityStatus.checkAccessConditions(getLifeCycleState(), resetPinCondition) && retryCounterCurrentValue > 0)) {
+			retryCounterCurrentValue = retryCounterDefaultValue;
+		} else {
+			throw new AccessDeniedException("Access conditions to unblock " + passwordName + " not met");
+		}
 	}
 
 	public int getRetryCounterCurrentValue() {

@@ -21,17 +21,24 @@ import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
-import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.ResponseData;
+import de.persosim.simulator.protocols.ta.CertificateRole;
+import de.persosim.simulator.protocols.ta.RelativeAuthorization;
+import de.persosim.simulator.protocols.ta.TerminalType;
+import de.persosim.simulator.seccondition.OrSecCondition;
+import de.persosim.simulator.seccondition.PaceWithPasswordRunningSecurityCondition;
+import de.persosim.simulator.seccondition.PaceWithPasswordSecurityCondition;
+import de.persosim.simulator.seccondition.TaSecurityCondition;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
+import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
@@ -58,31 +65,50 @@ public class PinManagementTest extends PersoSimTestCase {
 	 * @throws ReflectiveOperationException 
 	 */
 	@Before
-	public void setUp() throws LifeCycleChangeException {
+	public void setUp() throws Exception {
 		AuthObjectIdentifier aoiCan = new AuthObjectIdentifier(new byte[]{(byte) 0x02});
 		AuthObjectIdentifier aoiPin = new AuthObjectIdentifier(new byte[]{(byte) 0x03});
 		
 		pwdaoWithCan = new PasswordAuthObject(aoiCan, new byte[]{(byte) 0xFF});
 		
-		pwdaoWithPinRc0Activated = new PinObject(aoiPin, new byte[]{(byte) 0xFF}, 0, 16, 3);
+		TaSecurityCondition pinManagementCondition = new TaSecurityCondition(TerminalType.AT,
+				new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5)));
+		
+		pwdaoWithPinRc0Activated = new PasswordAuthObjectWithRetryCounter(aoiPin, new byte[] { (byte) 0xFF }, "PIN", 0,
+				16, 3, pinManagementCondition, new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")),
+				new PaceWithPasswordSecurityCondition("PUK"),
+				new PaceWithPasswordRunningSecurityCondition("PIN"));
 		pwdaoWithPinRc0Activated.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		pwdaoWithPinRc0Activated.decrementRetryCounter();
 		pwdaoWithPinRc0Activated.decrementRetryCounter();
 		pwdaoWithPinRc0Activated.decrementRetryCounter();
-		
-		pwdaoWithPinRc1Activated = new PinObject(aoiPin, new byte[]{(byte) 0xFF}, 0, 16, 3);
+
+		pwdaoWithPinRc1Activated = new PasswordAuthObjectWithRetryCounter(aoiPin, new byte[] { (byte) 0xFF }, "PIN", 0,
+				16, 3, pinManagementCondition, new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")),
+				new PaceWithPasswordSecurityCondition("PUK"),
+				new PaceWithPasswordRunningSecurityCondition("PIN"));
 		pwdaoWithPinRc1Activated.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		pwdaoWithPinRc1Activated.decrementRetryCounter();
 		pwdaoWithPinRc1Activated.decrementRetryCounter();
-		
-		pwdaoWithPinRc2Activated = new PinObject(aoiPin, new byte[]{(byte) 0xFF}, 0, 16, 3);
+
+		pwdaoWithPinRc2Activated = new PasswordAuthObjectWithRetryCounter(aoiPin, new byte[] { (byte) 0xFF }, "PIN", 0,
+				16, 3, pinManagementCondition, new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")),
+				new PaceWithPasswordSecurityCondition("PUK"),
+				new PaceWithPasswordRunningSecurityCondition("PIN"));
 		pwdaoWithPinRc2Activated.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		pwdaoWithPinRc2Activated.decrementRetryCounter();
-		
-		pwdaoWithPinRc3Activated = new PinObject(aoiPin, new byte[]{(byte) 0xFF}, 0, 16, 3);
+
+		pwdaoWithPinRc3Activated = new PasswordAuthObjectWithRetryCounter(aoiPin, new byte[] { (byte) 0xFF }, "PIN", 0,
+				16, 3, pinManagementCondition, new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")),
+				new PaceWithPasswordSecurityCondition("PUK"),
+				new PaceWithPasswordRunningSecurityCondition("PIN"));
 		pwdaoWithPinRc3Activated.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
-		
-		pwdaoWithPinRc3Deactivated = new PinObject(aoiPin, new byte[]{(byte) 0xFF}, 0, 16, 3);
+
+		pwdaoWithPinRc3Deactivated = new PasswordAuthObjectWithRetryCounter(aoiPin, new byte[] { (byte) 0xFF }, "PIN",
+				0, 16, 3, pinManagementCondition, new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")),
+				new PaceWithPasswordSecurityCondition("PUK"),
+				new PaceWithPasswordRunningSecurityCondition("PIN"));
+		pwdaoWithPinRc3Deactivated.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		pwdaoWithPinRc3Deactivated.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
 		
 		PaceMechanism paceMechanismWithCan = new PaceMechanism(pwdaoWithCan, null, null);

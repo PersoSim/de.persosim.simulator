@@ -1,5 +1,6 @@
 package de.persosim.simulator.cardobjects;
 
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.LifeCycleChangeException;
 
 /**
@@ -20,8 +21,9 @@ public interface Iso7816LifeCycle {
 	 *             if the desired state change is not allowed (due to ISO7816
 	 *             restrictions on the state machine or access conditions at the
 	 *             discretion of the implementing class)
+	 * @throws AccessDeniedException 
 	 */
 	void updateLifeCycleState(Iso7816LifeCycleState state)
-			throws LifeCycleChangeException;
+			throws AccessDeniedException;
 
 }

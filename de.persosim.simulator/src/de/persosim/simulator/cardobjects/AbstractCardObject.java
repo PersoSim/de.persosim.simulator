@@ -21,7 +21,7 @@ public abstract class AbstractCardObject implements CardObject {
 
 	private CardObject parent;
 	private List<CardObject> children = new ArrayList<>();
-	protected SecStatus securityStatus;
+	protected transient SecStatus securityStatus;
 	private TypeIdentifier identifier;
 
 	private Iso7816LifeCycleState lifeCycleState = Iso7816LifeCycleState.CREATION;
@@ -93,7 +93,7 @@ public abstract class AbstractCardObject implements CardObject {
 	}
 
 	@Override
-	public void updateLifeCycleState(Iso7816LifeCycleState state) throws LifeCycleChangeException {
+	public void updateLifeCycleState(Iso7816LifeCycleState state) throws AccessDeniedException {
 		if (lifeCycleState.isPersonalizationPhase() && 
 				state.equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)){
 			lifeCycleState = state;
@@ -104,26 +104,32 @@ public abstract class AbstractCardObject implements CardObject {
 		case INITIALISATION:
 			if (state.equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)) {
 				lifeCycleState = state;
+				return;
 			}
 			break;
 		case CREATION:
 			if(state.equals(Iso7816LifeCycleState.INITIALISATION) || state.equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)){
 				lifeCycleState = state;
+				return;
 			}
 			break;
 		case OPERATIONAL_ACTIVATED:
 			if(state.equals(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED) || state.equals(Iso7816LifeCycleState.TERMINATION)){
 				lifeCycleState = state;
+				return;
 			}
 			break;
 		case OPERATIONAL_DEACTIVATED:
 			if(state.equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED) || state.equals(Iso7816LifeCycleState.TERMINATION)){
 				lifeCycleState = state;
+				return;
 			}
 			break;
 		default:
-			throw new LifeCycleChangeException("Change is not allowed.", lifeCycleState, state);
+			break;
 		}
+		
+		throw new LifeCycleChangeException("Change is not allowed.", lifeCycleState, state);
 
 	}
 

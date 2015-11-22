@@ -16,7 +16,6 @@ import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
-import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.processing.ProcessingData;
@@ -43,7 +42,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 
 	
 	PasswordAuthObject authObject;
-	PinObject pinObject;
+	PasswordAuthObjectWithRetryCounter pinObject;
 	PasswordAuthObjectWithRetryCounter authObjectRetry;
 	PinProtocol protocol;
 	
@@ -52,14 +51,24 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	HashSet<SecMechanism> currentMechanisms;
 	
 	@Before
-	public void setUp() throws LifeCycleChangeException {
+	public void setUp() throws Exception {
 		protocol = new PinProtocol();
 		protocol.setCardStateAccessor(mockedCardStateAccessor);
 		
 		authObject = new PasswordAuthObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN");
-		pinObject = new PinObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), 6, 6, 3);
+		
+		TaSecurityCondition pinManagementCondition = new TaSecurityCondition(TerminalType.AT,
+				new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5)));
+		
+		pinObject = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN",
+				6, 6, 3, pinManagementCondition, new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")),
+				new PaceWithPasswordSecurityCondition("PUK"),
+				new PaceWithPasswordRunningSecurityCondition("PIN"));
 		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
-		authObjectRetry = new PasswordAuthObjectWithRetryCounter (new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN", 6, 6, 3);
+		authObjectRetry = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(),
+				"PIN", 6, 6, 3, pinManagementCondition, new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")),
+				new PaceWithPasswordSecurityCondition("PUK"),
+				new PaceWithPasswordRunningSecurityCondition("PIN"));
 		authObjectRetry.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
 		currentMechanisms = new HashSet<>();
@@ -189,7 +198,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		protocol.process(processingData);
 		
 		// check results
-		assertEquals("Statusword", SW_6984_REFERENCE_DATA_NOT_USABLE, processingData
+		assertEquals("Statusword", SW_6982_SECURITY_STATUS_NOT_SATISFIED, processingData
 				.getResponseApdu().getStatusWord());
 		assertArrayEquals("Password", "111111".getBytes(), authObject.getPassword());
 	}
@@ -322,6 +331,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	
 	/**
 	 * Positive test case. Send apdu to deactivate the PIN an receives a 9000.
+	 * @throws AccessDeniedException 
 	 */
 	@Test
 	public void testProcessCommandDeactivatePassword() throws Exception {
@@ -333,13 +343,13 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				mockedCardStateAccessor.getMasterFile();
 				result = mf;
 				
-				mockedCardStateAccessor
-						.getCurrentMechanisms(
-								withInstanceOf(SecContext.class),
-								withInstanceLike(new HashSet<Class<? extends SecMechanism>>()));
-				result = new HashSet<>();
+				mockedSecurityStatus.checkAccessConditions(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED, 
+						(TaSecurityCondition) any);
+				result = true;
 			}
 		};
+		
+		pinObject.setSecStatus(mockedSecurityStatus);
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -377,6 +387,8 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 				result = currentMechanisms;
 			}
 		};
+		
+		pinObject.setSecStatus(mockedSecurityStatus);
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();

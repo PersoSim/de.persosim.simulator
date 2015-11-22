@@ -11,7 +11,6 @@ import java.util.Date;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ByteDataAuxObject;
 import de.persosim.simulator.cardobjects.CardFile;
-import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.DateAuxObject;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.ElementaryFile;
@@ -23,7 +22,6 @@ import de.persosim.simulator.cardobjects.MrzAuthObject;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
-import de.persosim.simulator.cardobjects.PinObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.documents.Mrz;
 import de.persosim.simulator.exception.AccessDeniedException;
@@ -36,6 +34,8 @@ import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.PaceSecurityCondition;
+import de.persosim.simulator.seccondition.PaceWithPasswordSecurityCondition;
+import de.persosim.simulator.seccondition.PaceWithPasswordRunningSecurityCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.seccondition.TaSecurityCondition;
 import de.persosim.simulator.tlv.Asn1;
@@ -176,14 +176,17 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				persoDataContainer.getMrz());
 		mf.addChild(mrz);
 
-		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(
-				new AuthObjectIdentifier(2), getCan().getBytes("UTF-8"), "CAN",
-				6, 6);
+		PasswordAuthObject can = new PasswordAuthObject(new AuthObjectIdentifier(2),
+				getCan().getBytes("UTF-8"), "CAN");
 		mf.addChild(can);
 
-		PasswordAuthObjectWithRetryCounter pin = new PinObject(
-				new AuthObjectIdentifier(3), getPin().getBytes("UTF-8"), 6, 6,
-				3);
+		PasswordAuthObjectWithRetryCounter pin = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(3),
+				getPin().getBytes("UTF-8"), "PIN", 6, 6, 3,
+				new TaSecurityCondition(TerminalType.AT,
+						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))),
+				new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")),
+				new PaceWithPasswordSecurityCondition("PUK"),
+				new PaceWithPasswordRunningSecurityCondition("PIN"));
 		mf.addChild(pin);
 
 		PasswordAuthObject puk = new PasswordAuthObject(

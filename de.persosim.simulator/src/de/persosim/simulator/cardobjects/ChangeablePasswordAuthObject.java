@@ -1,5 +1,9 @@
 package de.persosim.simulator.cardobjects;
 
+import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.seccondition.OrSecCondition;
+import de.persosim.simulator.seccondition.SecCondition;
+
 /**
  * This class extends a {@link PasswordAuthObject} by functionality which makes
  * it possible to change the PIN after creation.
@@ -13,12 +17,12 @@ public class ChangeablePasswordAuthObject extends PasswordAuthObject {
 	protected int minLengthOfPasswordInBytes;
 	protected int maxLengthOfPasswordInBytes;
 	
-	public ChangeablePasswordAuthObject() {
+	private SecCondition pinManagementCondition;
+	private SecCondition changePinCondition;
 		
-	}
-	
-	public ChangeablePasswordAuthObject(AuthObjectIdentifier identifier,
-			byte [] password, String passwordName, int minLengthOfPasswordInBytes, int maxLengthOfPasswordInBytes){
+	public ChangeablePasswordAuthObject(AuthObjectIdentifier identifier, byte[] password, String passwordName,
+			int minLengthOfPasswordInBytes, int maxLengthOfPasswordInBytes, SecCondition pinManagementCondition,
+			SecCondition changePinCondition) {
 		
 		super(identifier, password, passwordName);
 		
@@ -28,18 +32,40 @@ public class ChangeablePasswordAuthObject extends PasswordAuthObject {
 		if(password.length < minLengthOfPasswordInBytes) {throw new IllegalArgumentException(passwordName + " must be at least " + minLengthOfPasswordInBytes + " bytes long but is only " + password.length + " bytes long");}
 		if(password.length > maxLengthOfPasswordInBytes) {throw new IllegalArgumentException(passwordName + " must be at most " + maxLengthOfPasswordInBytes + " bytes long but is " + password.length + " bytes long");}
 		
-		
 		this.minLengthOfPasswordInBytes = minLengthOfPasswordInBytes;
 		this.maxLengthOfPasswordInBytes = maxLengthOfPasswordInBytes;
+		
+		this.pinManagementCondition = pinManagementCondition;
+		this.changePinCondition = changePinCondition;
 	}
 	
-	public void setPassword(byte[] newPassword) {
+	public void setPassword(byte[] newPassword) throws AccessDeniedException {
 		if(!getLifeCycleState().equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)) {throw new IllegalStateException(passwordName + " must be in state operational activated");}
 		if(newPassword == null) {throw new IllegalArgumentException("new " + passwordName + " must not be null");}
 		if(newPassword.length < minLengthOfPasswordInBytes) {throw new IllegalArgumentException("new " + passwordName + " must be at least " + minLengthOfPasswordInBytes + " bytes long but is only " + newPassword.length + " bytes long");}
 		if(newPassword.length > maxLengthOfPasswordInBytes) {throw new IllegalArgumentException("new " + passwordName + " must be at most " + maxLengthOfPasswordInBytes + " bytes long but is " + newPassword.length + " bytes long");}
 		
-		this.password = newPassword;
+		if (securityStatus == null
+				|| securityStatus.checkAccessConditions(getLifeCycleState(), new OrSecCondition(changePinCondition,getPinManagementCondition()))) {
+			this.password = newPassword;
+		} else {
+			throw new AccessDeniedException("Access conditions to change " + passwordName + " not met");
+		}
+	}
+	
+	@Override
+	public void updateLifeCycleState(Iso7816LifeCycleState state) throws AccessDeniedException {
+		if (securityStatus == null
+				|| !state.isOperational()
+				|| securityStatus.checkAccessConditions(getLifeCycleState(), getPinManagementCondition())) {
+			super.updateLifeCycleState(state);
+		} else {
+			throw new AccessDeniedException("Access conditions to change life cycle state not matched");
+		}
+	}
+
+	public SecCondition getPinManagementCondition() {
+		return pinManagementCondition;
 	}
 	
 }
