@@ -215,12 +215,20 @@ public class SecStatus implements InfoSource{
 		return copy;
 	}
 	
+	/**
+	 * Processes all restore session context event update propagations. Calls for every event the appropriate function either
+	 * storeSecStatus or restoreSecStatus. If the SecStatus has to be restored this function also set the {@link SmDataProviderGenerator}
+	 * to restore all needed keys for the securemessaging.
+	 * 
+	 * @param processingData the processind data
+	 * @param update the SecStatusStoreUpdatePropagation 
+	 */
 	private void storeRestoreSession(ProcessingData processingData, SecStatusStoreUpdatePropagation ... update) {
 		try {
 			for (SecStatusStoreUpdatePropagation curUpdate : update) {
 				SecStatusStoreUpdatePropagation eventPropagation = (SecStatusStoreUpdatePropagation) curUpdate;
 				if (eventPropagation.getEvent().equals(SecurityEvent.RESTORE_SESSION_CONTEXT)){
-					restoreSecStatus(eventPropagation.sessionContextIdentifier);
+					restoreSecStatus(eventPropagation.getSessionContextIdentifier());
 					HashSet<Class<? extends SecMechanism>> set = new HashSet<>();
 					set.add(SmDataProviderGenerator.class);
 					Collection<SecMechanism> generators = getCurrentMechanisms(SecContext.APPLICATION, set);
@@ -233,7 +241,7 @@ public class SecStatus implements InfoSource{
 				}
 				
 				if (eventPropagation.getEvent().equals(SecurityEvent.STORE_SESSION_CONTEXT)){
-						storeSecStatus(eventPropagation.sessionContextIdentifier);
+						storeSecStatus(eventPropagation.getSessionContextIdentifier());
 				}
 			}
 		} catch(IllegalArgumentException e) {
