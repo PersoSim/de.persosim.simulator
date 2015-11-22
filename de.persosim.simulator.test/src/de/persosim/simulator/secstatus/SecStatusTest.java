@@ -45,8 +45,12 @@ public class SecStatusTest extends PersoSimTestCase{
 		
 		processingData.addUpdatePropagation(this, "Inform the SecStatus to restore the security status",
 				new SecStatusStoreUpdatePropagation(SecurityEvent.STORE_SESSION_CONTEXT, 1));
+		
+		assertEquals(secStatus.storedSecStatusContents.size(), 0);
+		
 		secStatus.updateSecStatus(processingData);
 		
+		assertEquals(secStatus.storedSecStatusContents.size(), 1);
 		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu()
 				.getStatusWord());
 	}
@@ -65,7 +69,8 @@ public class SecStatusTest extends PersoSimTestCase{
 				new SecStatusStoreUpdatePropagation(SecurityEvent.RESTORE_SESSION_CONTEXT, 1));
 		secStatus.updateSecStatus(processingData);
 		
-		assertEquals("Statusword is not 9000", Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, processingData.getResponseApdu()
+		assertEquals(secStatus.storedSecStatusContents.size(), 0);
+		assertEquals("Statusword is not 6A88", Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, processingData.getResponseApdu()
 				.getStatusWord());
 	}
 	
@@ -84,8 +89,12 @@ public class SecStatusTest extends PersoSimTestCase{
 		
 		processingData.addUpdatePropagation(this, "Inform the SecStatus to restore the security status",
 				new SecStatusStoreUpdatePropagation(SecurityEvent.RESTORE_SESSION_CONTEXT, 1));
+		
+		assertEquals(secStatus.storedSecStatusContents.size(), 0);
+		
 		secStatus.updateSecStatus(processingData);
 		
+		assertEquals(secStatus.storedSecStatusContents.size(), 1);
 		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu()
 				.getStatusWord());
 	}
