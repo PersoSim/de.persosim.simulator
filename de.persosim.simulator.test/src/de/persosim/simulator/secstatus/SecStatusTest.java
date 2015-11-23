@@ -7,7 +7,17 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import javax.crypto.Cipher;
+import javax.crypto.Mac;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,9 +25,14 @@ import org.junit.Test;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.platform.Iso7816;
+import de.persosim.simulator.platform.ProtocolMechanism;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.processing.UpdatePropagation;
+import de.persosim.simulator.protocols.file.FileProtocol;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
+import de.persosim.simulator.securemessaging.SmDataProvider;
+import de.persosim.simulator.securemessaging.SmDataProviderGenerator;
 import de.persosim.simulator.test.PersoSimTestCase;
 import mockit.Mocked;
 
@@ -29,6 +44,7 @@ public class SecStatusTest extends PersoSimTestCase{
 	@Before
 	public void setUp(){
 		securityStatus = new SecStatus();
+		
 	}
 	
 	//TODO define tests for SecStatus
@@ -39,18 +55,41 @@ public class SecStatusTest extends PersoSimTestCase{
 	@Test
 	public void testSecStatus_StoreSession()
 	{
+		// create secstatus and dummy protocol mechanism
 		SecStatus secStatus = new SecStatus();
+		ProtocolMechanism protocolMechanism = new ProtocolMechanism(FileProtocol.class);
+		SecStatusMechanismUpdatePropagation myMechanism = new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, protocolMechanism);
+		secStatus.updateMechanisms(myMechanism);
+		
+		// create processinf data
 		ProcessingData processingData = new ProcessingData();
 		processingData.updateResponseAPDU(this, "Session context successful stored", new ResponseApdu(SW_9000_NO_ERROR));
 		
-		processingData.addUpdatePropagation(this, "Inform the SecStatus to restore the security status",
+		// send update propagation to store the security status
+		processingData.addUpdatePropagation(this, "Inform the SecStatus to store the security status",
 				new SecStatusStoreUpdatePropagation(SecurityEvent.STORE_SESSION_CONTEXT, 1));
 		
+		// check that no security event has beed stored
 		assertEquals(secStatus.storedSecStatusContents.size(), 0);
 		
+		// update the security status and check that it has been stored
 		secStatus.updateSecStatus(processingData);
-		
 		assertEquals(secStatus.storedSecStatusContents.size(), 1);
+		
+		// get the current stored mechanism from the stored security status
+		EnumMap<SecContext, HashMap<Class<? extends SecMechanism>, SecMechanism>> contexts = secStatus.storedSecStatusContents.values().iterator().next();
+		Set<Entry<SecContext, HashMap<Class<? extends SecMechanism>, SecMechanism>>> contextSet = contexts.entrySet();
+		
+		SecMechanism storedMechanism = null;
+		for( Entry<SecContext, HashMap<Class<? extends SecMechanism>, SecMechanism>> context : contextSet){
+			Set<Entry<Class<? extends SecMechanism>, SecMechanism>> test = context.getValue().entrySet();
+			if (!test.isEmpty()){
+				storedMechanism = test.iterator().next().getValue();
+			}
+		}
+		
+		// checks that the stored security machanism is equal to the one created
+		assertEquals(storedMechanism, protocolMechanism);
 		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu()
 				.getStatusWord());
 	}
@@ -80,23 +119,158 @@ public class SecStatusTest extends PersoSimTestCase{
 	@Test
 	public void testSecStatus_StoreRestoreSession()
 	{
+		// test cases set up
+		final SmDataProvider provider = new SmDataProvider(){
+
+			@Override
+			public Class<? extends UpdatePropagation> getKey() {
+				return this.getClass();
+			}
+
+			@Override
+			public void init(SmDataProvider prev) {
+				
+			}
+
+			@Override
+			public void nextIncoming() {
+				
+			}
+
+			@Override
+			public void nextOutgoing() {
+				
+			}
+
+			@Override
+			public Cipher getCipher() {
+				return null;
+			}
+
+			@Override
+			public IvParameterSpec getCipherIv() {
+				return null;
+			}
+
+			@Override
+			public SecretKey getKeyEnc() {
+				return null;
+			}
+
+			@Override
+			public Mac getMac() {
+				return null;
+			}
+
+			@Override
+			public byte[] getMacAuxiliaryData() {
+				return null;
+			}
+
+			@Override
+			public SecretKey getKeyMac() {
+				return null;
+			}
+			@Override
+			public Integer getMacLength() {
+				return null;
+			}
+			@Override
+			public SmDataProviderGenerator getSmDataProviderGenerator() {
+				return null;
+			}};
+			
+		SmDataProviderGenerator dataProvider = new SmDataProviderGenerator(){
+
+			@Override
+			public boolean needsDeletionInCaseOf(SecurityEvent event) {
+				return false;
+			}
+
+			@Override
+			public Class<? extends SecMechanism> getKey() {
+				return SmDataProviderGenerator.class;
+			}
+
+			@Override
+			public SmDataProvider generateSmDataProvider() {
+				return provider;
+			}
+			
+		};
+		
+		
+		
 		SecStatus secStatus = new SecStatus();
+		SecStatusMechanismUpdatePropagation mySecMechanism = new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, dataProvider);
+		secStatus.updateMechanisms(mySecMechanism);
+		
+		// create processing data
 		ProcessingData processingData = new ProcessingData();
 		processingData.updateResponseAPDU(this, "Session context successful stored", new ResponseApdu(SW_9000_NO_ERROR));
 		
-		processingData.addUpdatePropagation(this, "Inform the SecStatus to restore the security status",
+		// call store security status update propagation 
+		processingData.addUpdatePropagation(this, "Inform the SecStatus to store the security status", 
 				new SecStatusStoreUpdatePropagation(SecurityEvent.STORE_SESSION_CONTEXT, 1));
 		
+		// update the security status
+		secStatus.updateSecStatus(processingData);
+		
+		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu()
+				.getStatusWord());
+				
+		// get the stored security mechanism 	
+		EnumMap<SecContext, HashMap<Class<? extends SecMechanism>, SecMechanism>> contexts = secStatus.storedSecStatusContents.values().iterator().next();
+		Set<Entry<SecContext, HashMap<Class<? extends SecMechanism>, SecMechanism>>> contextSet = contexts.entrySet();
+		
+		SecMechanism storedSecMechanism = null;
+		for( Entry<SecContext, HashMap<Class<? extends SecMechanism>, SecMechanism>> context : contextSet){
+			
+			Set<Entry<Class<? extends SecMechanism>, SecMechanism>> secMechanisms = context.getValue().entrySet();
+			
+			if (!secMechanisms.isEmpty()){
+				Object object = secMechanisms.iterator().next().getValue();
+				if (object instanceof SmDataProviderGenerator) {
+					storedSecMechanism =  (SecMechanism) object;
+				}
+				
+			}
+		}
+		
+		// compare that the stored security status and the one created before are equal
+		assertEquals(dataProvider, storedSecMechanism);
+		assertEquals(secStatus.storedSecStatusContents.size(), 1);
+		
+		// insert a new protocol mechanism
+		ProtocolMechanism protocolMechanism = new ProtocolMechanism(FileProtocol.class);
+		SecStatusMechanismUpdatePropagation myMechanism = new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, protocolMechanism);
+		secStatus.updateMechanisms(myMechanism);
+		
+		processingData = new ProcessingData();
+		processingData.updateResponseAPDU(this, "Session context successful restored", new ResponseApdu(SW_9000_NO_ERROR));
 		processingData.addUpdatePropagation(this, "Inform the SecStatus to restore the security status",
 				new SecStatusStoreUpdatePropagation(SecurityEvent.RESTORE_SESSION_CONTEXT, 1));
 		
-		assertEquals(secStatus.storedSecStatusContents.size(), 0);
 		
 		secStatus.updateSecStatus(processingData);
 		
-		assertEquals(secStatus.storedSecStatusContents.size(), 1);
+		// check if restore security status propagation has been processed
+		LinkedList<UpdatePropagation> secStoreUpdatePropagations = processingData.getUpdatePropagations(SecStatusStoreUpdatePropagation.class);
+		assertEquals(1, secStoreUpdatePropagations.size());
+		
+		HashSet<Class<? extends SecMechanism>>  smDataMechanisms = new HashSet<>();
+		smDataMechanisms.add(SmDataProviderGenerator.class);
+		Collection<SecMechanism> storedSmDataMechanism = secStatus.getCurrentMechanisms(SecContext.APPLICATION, smDataMechanisms);
+		assertEquals(1, storedSmDataMechanism.size());
+		
+		HashSet<Class<? extends SecMechanism>> protocolMechanisms = new HashSet<>();
+		protocolMechanisms.add(ProtocolMechanism.class);
+		Collection<SecMechanism> storedProtocolMechanism = secStatus.getCurrentMechanisms(SecContext.APPLICATION, protocolMechanisms);
+		assertEquals(0, storedProtocolMechanism.size());
+		
 		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu()
 				.getStatusWord());
+		
 	}
 	
 	/**
