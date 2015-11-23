@@ -211,7 +211,14 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 			public KeyPairGenerator getKeyPairGenerator(SecureRandom secRandom)
 					throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 				return null;
+			}
+
+			@Override
+			public boolean matchesCoreMaterial(CvPublicKey publicKey) {
+				// TODO Auto-generated method stub
+				return false;
 			}};
+			
 		new Expectations() {
 			{
 				provider.parseCvPublicKey(null);

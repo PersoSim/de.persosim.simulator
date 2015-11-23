@@ -33,5 +33,13 @@ public abstract class CvPublicKey extends CvKey implements PublicKey, TlvConstan
 	 * @return true if key was incomplete AND has been successfully updated, false otherwise
 	 */
 	public abstract boolean updateKey(PublicKey publicKey);
+	
+	/**
+	 * Matches this key to the given parameters core values. This check is done
+	 * under exemption of e.g. domain parameters.
+	 * 
+	 * @return true, iff the keys match
+	 */
+	public abstract boolean matchesCoreMaterial(CvPublicKey publicKey);
 
 }
