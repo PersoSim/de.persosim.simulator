@@ -769,9 +769,11 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			
 			try {
 				if (checkSignature(crypographicMechanismReference, currentCertificate.getPublicKey() , dataToVerify, terminalSignatureData)){
+					List<CertificateExtension> certificateExtensions = extractExtensions(currentCertificate);
+					
 					extractTerminalSector(currentCertificate);
 					
-					TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(compressedTerminalEphemeralPublicKey, terminalType, auxiliaryData, firstSectorPublicKeyHash, secondSectorPublicKeyHash, crypographicMechanismReference.getHashAlgorithmName());
+					TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(compressedTerminalEphemeralPublicKey, terminalType, auxiliaryData, firstSectorPublicKeyHash, secondSectorPublicKeyHash, crypographicMechanismReference.getHashAlgorithmName(), certificateExtensions);
 					processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
 					
 					EffectiveAuthorizationMechanism authMechanism = new EffectiveAuthorizationMechanism(authorizationStore);
@@ -800,6 +802,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
 			this.processingData.updateResponseAPDU(this,"No protocol providing data for ID_PICC calculation was run", resp);
 		}
+	}
+	
+	protected List<CertificateExtension> extractExtensions(CardVerifiableCertificate certificate) {
+		return certificate.getCertificateExtensions();
 	}
 	
 	/**
