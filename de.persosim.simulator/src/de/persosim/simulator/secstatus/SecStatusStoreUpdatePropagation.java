@@ -3,7 +3,6 @@ package de.persosim.simulator.secstatus;
 import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.secstatus.SecStatusEventUpdatePropagation;
 import de.persosim.simulator.secstatus.SecurityEvent;
-import de.persosim.simulator.utils.Serializer;
 
 /**
  * This {@link UpdatePropagation} is used to propagate store and restore session context events
@@ -26,11 +25,7 @@ public final class SecStatusStoreUpdatePropagation extends SecStatusEventUpdateP
 		return SecStatusStoreUpdatePropagation.class;
 	}
 
-	/**
-	 * Returns a deep copy of the sessionContextIdentifier
-	 * @return sessionContextIdentifier
-	 */
 	public int getSessionContextIdentifier() {
-		return Serializer.deepCopy(sessionContextIdentifier);
+		return sessionContextIdentifier;
 	}
 }
