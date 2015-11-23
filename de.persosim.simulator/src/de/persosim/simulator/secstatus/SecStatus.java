@@ -30,7 +30,7 @@ import de.persosim.simulator.utils.InfoSource;
 public class SecStatus implements InfoSource{
 	
 	public enum SecContext {
-		GLOBAL, APPLICATION, FILE, COMMAND
+		GLOBAL, APPLICATION, FILE, COMMAND, PERSISTANT
 	}
 
 	EnumMap<SecContext, HashMap<Class<? extends SecMechanism>, SecMechanism>> contexts = new EnumMap<>(
@@ -42,9 +42,26 @@ public class SecStatus implements InfoSource{
 		reset();
 	}
 
+	/**
+	 * Resets the complete contents of this security status.
+	 */
 	public void reset() {
+		reset(true);
+	}
+
+	/**
+	 * Resets the security status. The parameter decides if a complete reset of
+	 * all inner state is performed. In case of a partial reset the
+	 * {@link SecContext#PERSISTANT} is not cleared.
+	 * 
+	 * @param completeReset
+	 */
+	private void reset(boolean completeReset) {
 		// initialize the contexts
 		for (SecContext curSecContext : SecContext.values()) {
+			if (!completeReset && curSecContext == SecContext.PERSISTANT && contexts.containsKey(SecContext.PERSISTANT)){
+				continue;
+			}
 			contexts.put(curSecContext, new HashMap<Class<? extends SecMechanism>, SecMechanism>());
 		}
 	}
@@ -181,10 +198,12 @@ public class SecStatus implements InfoSource{
 			throw new IllegalArgumentException("The given id does not exist in the stored contents.");
 		}
 
-		reset();
+		reset(false);
 		for (SecContext context : contexts.keySet()) {
-			for (SecMechanism mechanism : toRestore.get(context).values()) {
-				updateContext(context, mechanism);
+			if (toRestore.containsKey(context)){
+				for (SecMechanism mechanism : toRestore.get(context).values()) {
+					updateContext(context, mechanism);
+				}	
 			}
 		}
 	}
@@ -210,6 +229,9 @@ public class SecStatus implements InfoSource{
 				SecContext.class);
 
 		for (SecContext context : source.keySet()) {
+			if (context == SecContext.PERSISTANT){
+				continue;
+			}
 			copy.put(context, (HashMap<Class<? extends SecMechanism>, SecMechanism>) source.get(context).clone());
 		}
 		return copy;
