@@ -15,7 +15,7 @@ public class TerminalAuthenticationMechanismTest extends PersoSimTestCase {
 		byte [] data = new byte [] {1,2,3,4,5};
 		byte [] expected = Arrays.copyOf(data, data.length);
 		
-		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(data, TerminalType.AT, new HashSet<AuthenticatedAuxiliaryData>(), new byte [] {}, new byte [] {}, "test");
+		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(data, TerminalType.AT, new HashSet<AuthenticatedAuxiliaryData>(), new byte [] {}, new byte [] {}, "test", null);
 		
 		data[0] = 2;
 		
@@ -34,7 +34,7 @@ public class TerminalAuthenticationMechanismTest extends PersoSimTestCase {
 		byte[] expected = Arrays.copyOf(data, data.length);
 
 		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(new byte[] {}, TerminalType.AT,
-				new HashSet<AuthenticatedAuxiliaryData>(), data, new byte[] {}, "test");
+				new HashSet<AuthenticatedAuxiliaryData>(), data, new byte[] {}, "test", null);
 
 		data[0] = 2;
 
@@ -52,7 +52,7 @@ public class TerminalAuthenticationMechanismTest extends PersoSimTestCase {
 		byte [] data = new byte [] {1,2,3,4,5};
 		byte [] expected = Arrays.copyOf(data, data.length);
 		
-		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(new byte [] {}, TerminalType.AT, new HashSet<AuthenticatedAuxiliaryData>(), new byte [] {}, data, "test");
+		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(new byte [] {}, TerminalType.AT, new HashSet<AuthenticatedAuxiliaryData>(), new byte [] {}, data, "test", null);
 		
 		data[0] = 2;
 		
