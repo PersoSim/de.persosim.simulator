@@ -24,6 +24,9 @@ public interface SecMechanism {
 	 */
 	boolean needsDeletionInCaseOf(SecurityEvent event);
 	
-
+	/**
+	 * This function returns the key which identifies the {@link SecMechanism}
+	 * @return a class object which identifies the {@link SecMechanism}
+	 */
 	public Class<? extends SecMechanism> getKey();
 }
