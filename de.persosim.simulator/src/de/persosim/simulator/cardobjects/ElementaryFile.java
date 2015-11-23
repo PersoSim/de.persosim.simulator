@@ -123,7 +123,7 @@ public class ElementaryFile extends AbstractFile {
 	 * @return stored data as byte array
 	 */
 	public byte[] getContent() throws AccessDeniedException {
-		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions)) {
+		if (securityStatus == null || (readingConditions != null && securityStatus.checkAccessConditions(getLifeCycleState(), readingConditions))) {
 			return Arrays.copyOf(content, content.length);
 		}
 		throw new AccessDeniedException("Reading forbidden");
@@ -136,7 +136,7 @@ public class ElementaryFile extends AbstractFile {
 	 *            to be used as a replacement
 	 */
 	public void update(int offset, byte[] data) throws AccessDeniedException {
-		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(), writingConditions)){
+		if (securityStatus == null || (writingConditions != null && securityStatus.checkAccessConditions(getLifeCycleState(), writingConditions))){
 			for(int i = 0; i < data.length; i++) {
 				content[i + offset] = data[i];
 			}
@@ -179,7 +179,9 @@ public class ElementaryFile extends AbstractFile {
 	@Override
 	public Collection<CardObjectIdentifier> getAllIdentifiers() {
 		Collection<CardObjectIdentifier> result = super.getAllIdentifiers();
-		result.add(shortFileIdentifier);
+		if (shortFileIdentifier != null){
+			result.add(shortFileIdentifier);	
+		}
 		return result;
 	}
 
@@ -189,7 +191,7 @@ public class ElementaryFile extends AbstractFile {
 	 * @throws AccessDeniedException
 	 */
 	public void delete() throws AccessDeniedException {
-		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(), deletionConditions)) {
+		if (securityStatus == null || (deletionConditions != null && securityStatus.checkAccessConditions(getLifeCycleState(), deletionConditions))) {
 			getParent().removeChild(this);
 			return;
 		}
@@ -210,7 +212,7 @@ public class ElementaryFile extends AbstractFile {
 	 *             used for erasing contents
 	 */
 	public void erase(int startingOffset, int endingOffset) throws AccessDeniedException {
-		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(), erasingConditions)) {
+		if (securityStatus == null || (erasingConditions != null && securityStatus.checkAccessConditions(getLifeCycleState(), erasingConditions))) {
 
 			if (startingOffset < 0 | endingOffset > content.length | endingOffset < startingOffset) {
 				throw new IllegalArgumentException(

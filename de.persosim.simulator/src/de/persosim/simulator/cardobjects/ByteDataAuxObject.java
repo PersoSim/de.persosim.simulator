@@ -18,10 +18,6 @@ import de.persosim.simulator.utils.Utils;
 public class ByteDataAuxObject extends AuxDataObject {
 	byte [] data;
 	
-	public ByteDataAuxObject(){
-		
-	}
-	
 	public ByteDataAuxObject(OidIdentifier identifier, byte [] data) {
 		super(identifier);
 		this.data = Arrays.copyOf(data, data.length);

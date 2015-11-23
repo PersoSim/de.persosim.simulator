@@ -4,8 +4,8 @@ import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
@@ -73,8 +73,8 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 	}
 
 	@Override
-	public Collection<? extends TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
-		return Collections.emptySet();
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
+		return new HashSet<>();
 	}
 	
 	@Override

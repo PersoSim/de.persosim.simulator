@@ -19,12 +19,7 @@ public class ProtocolConverter implements Converter {
 
 	@Override
 	public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-		
-		String name = type.getName();
-		if (name.toLowerCase().endsWith("protocol"))
-			return true;
-		else
-			return false;
+		return Protocol.class.isAssignableFrom(type) && type.getClassLoader() == this.getClass().getClassLoader();
 	}
 	
 	@Override
@@ -40,8 +35,10 @@ public class ProtocolConverter implements Converter {
 		String protocolName = reader.getNodeName();
 		
 		try {
-			@SuppressWarnings("unchecked")
-			Class<Protocol> protocol = (Class<Protocol>) Class.forName(protocolName);
+			Class<?> protocol = Class.forName(protocolName);
+			if (!Protocol.class.isAssignableFrom(protocol)){
+				throw new XStreamException("Class " + protocol + " is not assignable to " + Protocol.class);
+			}
 			return protocol.newInstance();
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			throw new XStreamException (protocolName + " is unknown, unmarshaling failed!");
