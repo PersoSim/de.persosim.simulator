@@ -1,5 +1,10 @@
 package de.persosim.simulator.protocols.file;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,10 +12,6 @@ import java.util.LinkedList;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.cardobjects.CardFile;
@@ -21,6 +22,7 @@ import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
@@ -620,7 +622,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 
 		// erase binary APDU
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = new byte[] { 0x00, (byte) 0x0E, 0x00, 0x00, 0x01, 0x02 };
+		byte[] apduBytes = new byte[] { 0x00, (byte) 0x0E, 0x00, 0x02 };
 		processingData.updateCommandApdu(this, "erase binary APDU", CommandApduFactory.createCommandApdu(apduBytes));
 		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
 		// call mut
@@ -640,12 +642,18 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		byte[] apduBytes = new byte[] { 0x00, (byte) 0x0F, 0x00, 0x00, 0x02, 0x54, 0x00 };
 		processingData.updateCommandApdu(this, "erase binary APDU", CommandApduFactory.createCommandApdu(apduBytes));
 		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.GLOBAL, new CurrentFileSecMechanism(elementaryFileUnderMf)));
+		
 		// call mut
+		try {
 		fileProtocol.process(processingData);
+		} catch (ProcessingException e) {
 
-		assertEquals(processingData.getResponseApdu().getStatusWord(), Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
-
-		assertArrayEquals(new byte [] {1,2,3,4,5,6}, elementaryFileContent);
+			assertEquals(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE, e.getStatusWord());
+	
+			assertArrayEquals(new byte [] {1,2,3,4,5,6}, elementaryFileContent);
+			return;
+		}
+		fail("Expected Exception not thrown");
 	}
 	
 	@Test

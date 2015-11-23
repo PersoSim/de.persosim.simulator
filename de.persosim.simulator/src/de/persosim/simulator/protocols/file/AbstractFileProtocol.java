@@ -165,15 +165,17 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 		} else {
 			ef = (ElementaryFile) file;
 		}
+
+		int startingOffset = getOffset(processingData.getCommandApdu());
 		
 		TlvValue apduData = processingData.getCommandApdu().getCommandData();		
 
 		try {
 			if (apduData.getLength() > 0) {
-				int startingOffset = Utils.getIntFromUnsignedByteArray(apduData.toByteArray());
-				ef.erase(startingOffset);
+				int endingOffset = Utils.getIntFromUnsignedByteArray(apduData.toByteArray());
+				ef.erase(startingOffset, endingOffset);
 			} else {
-				ef.erase();
+				ef.erase(startingOffset);
 			}
 			ResponseApdu resp = new ResponseApdu(
 					Iso7816.SW_9000_NO_ERROR);
@@ -207,24 +209,26 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 			ef = (ElementaryFile) file;
 		}
 		
-		int startingOffset = -1;
 		try {
-			startingOffset = Utils.getIntFromUnsignedByteArray(getDDO(processingData.getCommandApdu(), 0).getValueField());
-		} catch (TagNotFoundException | IllegalArgumentException e) {
-			ResponseApdu resp = new ResponseApdu(
-					Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
-			this.processingData.updateResponseAPDU(this, e.getMessage(),
-					resp);
-			return;
-		}
-		try {
+			
+			int startingOffset = -1;
+			int endingOffset = -1 ;
 			try {
-				int endingOffset = Utils
+				startingOffset = Utils.getIntFromUnsignedByteArray(getDDO(processingData.getCommandApdu(), 0).getValueField());
+				endingOffset = Utils
 						.getIntFromUnsignedByteArray(getDDO(processingData.getCommandApdu(), 1).getValueField());
-				ef.erase(startingOffset, endingOffset);
 			} catch (TagNotFoundException e) {
-				ef.erase(startingOffset);
+				//ignore, will be handled in the following conditional
 			}
+			
+			if (startingOffset < 0) {
+				ef.erase();
+			} else if (endingOffset < 0) {
+				ef.erase(startingOffset);				
+			} else {
+				ef.erase(startingOffset, endingOffset);
+			}
+			
 			ResponseApdu resp = new ResponseApdu(
 					Iso7816.SW_9000_NO_ERROR);
 			this.processingData.updateResponseAPDU(this,
@@ -236,7 +240,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 		} catch (AccessDeniedException e) {
 			throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED, "The used file can not be erased due to access conditions.");
 		} catch (IllegalArgumentException e){
-			throw new ProcessingException(Iso7816.SW_6B00_WRONG_P1P2, "The given offsets are outside the EF.");
+			throw new ProcessingException(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE, "The given offsets are invalid.");
 		}
 			
 	}
