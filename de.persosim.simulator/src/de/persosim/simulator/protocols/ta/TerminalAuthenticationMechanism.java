@@ -2,7 +2,9 @@ package de.persosim.simulator.protocols.ta;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
+import de.persosim.simulator.crypto.certificates.CertificateExtension;
 import de.persosim.simulator.secstatus.AbstractSecMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecurityEvent;
@@ -22,9 +24,10 @@ public class TerminalAuthenticationMechanism extends AbstractSecMechanism {
 	private byte [] firstSectorPublicKeyHash;
 	private byte [] secondSectorPublicKeyHash;
 	private String sectorPublicKeyHashAlgorithm;
+	private List<CertificateExtension> certificateExtensions;
 
 	public TerminalAuthenticationMechanism(byte [] compressedEphemeralTerminalPublicKey, TerminalType terminalType,
-			Collection<AuthenticatedAuxiliaryData> auxiliaryData, byte [] firstSectorPublicKeyHash, byte [] secondSectorPublicKeyHash, String sectorPublicKeyHashAlgorithm) {
+			Collection<AuthenticatedAuxiliaryData> auxiliaryData, byte [] firstSectorPublicKeyHash, byte [] secondSectorPublicKeyHash, String sectorPublicKeyHashAlgorithm, List<CertificateExtension> certificateExtensions) {
 		this.auxiliaryData = auxiliaryData;
 		this.terminalType = terminalType;
 		this.compressedTerminalEphemeralPublicKey = Arrays.copyOf(compressedEphemeralTerminalPublicKey, compressedEphemeralTerminalPublicKey.length);
@@ -35,6 +38,7 @@ public class TerminalAuthenticationMechanism extends AbstractSecMechanism {
 			this.secondSectorPublicKeyHash = Arrays.copyOf(secondSectorPublicKeyHash, secondSectorPublicKeyHash.length);
 		}
 		this.sectorPublicKeyHashAlgorithm = sectorPublicKeyHashAlgorithm;
+		this.certificateExtensions = certificateExtensions;
 	}
 
 	/**
@@ -92,4 +96,9 @@ public class TerminalAuthenticationMechanism extends AbstractSecMechanism {
 		}
 		return null;
 	}
+
+	public List<CertificateExtension> getCertificateExtensions() {
+		return certificateExtensions;
+	}
+	
 }
