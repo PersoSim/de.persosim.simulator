@@ -50,7 +50,8 @@ public class PasswordAuthObjectWithRetryCounter extends ChangeablePasswordAuthOb
 	public void resetRetryCounterToDefault() throws AccessDeniedException {
 		if (securityStatus == null || securityStatus.checkAccessConditions(getLifeCycleState(),
 				new OrSecCondition(unblockPinCondition, getPinManagementCondition()))
-				|| (securityStatus.checkAccessConditions(getLifeCycleState(), resetPinCondition) && retryCounterCurrentValue > 0)) {
+				|| (securityStatus.checkAccessConditions(getLifeCycleState(), resetPinCondition) && retryCounterCurrentValue > 0)
+				|| (securityStatus.checkAccessConditions(getLifeCycleState(), new OrSecCondition(changePinCondition,getPinManagementCondition())) && retryCounterCurrentValue > 0)) {
 			retryCounterCurrentValue = retryCounterDefaultValue;
 		} else {
 			throw new AccessDeniedException("Access conditions to unblock " + passwordName + " not met");

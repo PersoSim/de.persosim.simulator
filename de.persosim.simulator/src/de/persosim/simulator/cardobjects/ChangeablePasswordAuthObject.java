@@ -18,7 +18,7 @@ public class ChangeablePasswordAuthObject extends PasswordAuthObject {
 	protected int maxLengthOfPasswordInBytes;
 	
 	private SecCondition pinManagementCondition;
-	private SecCondition changePinCondition;
+	protected SecCondition changePinCondition;
 		
 	public ChangeablePasswordAuthObject(AuthObjectIdentifier identifier, byte[] password, String passwordName,
 			int minLengthOfPasswordInBytes, int maxLengthOfPasswordInBytes, SecCondition pinManagementCondition,
