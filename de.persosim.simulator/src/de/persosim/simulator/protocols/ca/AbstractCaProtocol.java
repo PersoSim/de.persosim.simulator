@@ -440,7 +440,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			//store the new session context id provided in MSE: setAT
 			if (sessionContextIdentifier>0x00){
 				SessionContextIdMechanism scim = new SessionContextIdMechanism(sessionContextIdentifier);
-				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, scim));
+				processingData.addUpdatePropagation(this, "Security status updated with SessionContextIdMechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, scim));
 			}
 			
 			ResponseApdu resp = new ResponseApdu(responseData, Iso7816.SW_9000_NO_ERROR);

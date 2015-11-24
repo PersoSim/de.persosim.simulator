@@ -703,7 +703,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				
 				//store the new session context id (0 for default session context)
 				SessionContextIdMechanism scim = new SessionContextIdMechanism(0);
-				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, scim));
+				processingData.addUpdatePropagation(this, "Security status updated with SessionContextIdMechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, scim));
 				
 			} else {
 				return;
