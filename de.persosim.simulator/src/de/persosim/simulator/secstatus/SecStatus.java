@@ -199,11 +199,9 @@ public class SecStatus implements InfoSource{
 		}
 
 		reset(false);
-		for (SecContext context : contexts.keySet()) {
-			if (toRestore.containsKey(context)){
-				for (SecMechanism mechanism : toRestore.get(context).values()) {
-					updateContext(context, mechanism);
-				}	
+		for (SecContext context : toRestore.keySet()) {
+			for (SecMechanism mechanism : toRestore.get(context).values()) {
+				updateContext(context, mechanism);
 			}
 		}
 	}

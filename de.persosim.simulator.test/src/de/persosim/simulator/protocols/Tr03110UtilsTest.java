@@ -190,22 +190,13 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public ConstructedTlvDataObject toTlvDataObject(boolean includeConditionalObjects) {
-				// TODO Auto-generated method stub
-				return null;
-			}
+			public ConstructedTlvDataObject toTlvDataObject(boolean includeConditionalObjects) {return null;}
 
 			@Override
-			public boolean isComplete() {
-				// TODO Auto-generated method stub
-				return false;
-			}
+			public boolean isComplete() {return false;}
 
 			@Override
-			public boolean updateKey(PublicKey publicKey) {
-				// TODO Auto-generated method stub
-				return false;
-			}
+			public boolean updateKey(PublicKey publicKey) {return false;}
 
 			@Override
 			public KeyPairGenerator getKeyPairGenerator(SecureRandom secRandom)
@@ -215,7 +206,6 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 
 			@Override
 			public boolean matchesCoreMaterial(CvPublicKey publicKey) {
-				// TODO Auto-generated method stub
 				return false;
 			}};
 			
