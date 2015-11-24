@@ -300,6 +300,15 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 						createNewTagSpecification(TAG_84);
 						tagSpecification.setRequired(REQ_OPTIONAL);
 						apduSpecification.addTag(tagSpecification);
+						createNewTagSpecification(TAG_E0);
+						tagSpecification.setRequired(REQ_OPTIONAL);
+						apduSpecification.addTag(tagSpecification);
+						
+						createNewPath();
+						path.add(TAG_E0);
+						createNewTagSpecification(TAG_81);
+						apduSpecification.addTag(path, tagSpecification);
+						
 						apduSpecification.setInitialApdu();
 						registerApduSpecification(apduSpecification);
 

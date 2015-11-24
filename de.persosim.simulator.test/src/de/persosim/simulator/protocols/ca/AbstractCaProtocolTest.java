@@ -9,6 +9,7 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -17,6 +18,7 @@ import org.junit.Test;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.CommandApduFactory;
+import de.persosim.simulator.apdu.InterindustryCommandApduImpl;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyPairObject;
@@ -31,10 +33,12 @@ import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
+import de.persosim.simulator.secstatus.SecStatusStoreUpdatePropagation;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
@@ -387,6 +391,108 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		byte[] caioExpected = HexString.toByteArray("30110609010203040506070809020101020142");
 		
 		assertArrayEquals(caioExpected, caioReceived);
+	}
+	
+	/**
+	 * Positive test case: perform Set AT command with attached Tag for storing session context
+	 */
+	@Test
+	public void testSetAt_ExplicitStoreSession(){
+		// prepare the mock
+		new NonStrictExpectations() {
+			{
+				mockedCardStateAccessor.getMasterFile();
+				result = mockedMf;
+				
+				mockedMf.findChildren(
+						withInstanceOf(KeyIdentifier.class));
+				result = ecdhKeys;
+			}
+		};
+		
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 14 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02 E0 03 81 01 01");
+		processingData.updateCommandApdu(this, "setAT APDU", CommandApduFactory.createCommandApdu(apduBytes));
+
+		// call mut
+		caProtocol.process(processingData);
+		
+		assertEquals(caProtocol.sessionContextIdentifier, 1);
+		
+		// check results
+		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
+	}
+	
+	/**
+	 * Positive test case: perform Set AT command without attached Tag for storing session context
+	 */
+	@Test
+	public void testSetAt_WihtoutStore(){
+		// prepare the mock
+		new NonStrictExpectations() {
+			{
+				mockedCardStateAccessor.getMasterFile();
+				result = mockedMf;
+				
+				mockedMf.findChildren(
+						withInstanceOf(KeyIdentifier.class));
+				result = ecdhKeys;
+			}
+		};
+		
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 0F 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02");
+		processingData.updateCommandApdu(this, "setAT APDU", CommandApduFactory.createCommandApdu(apduBytes));
+
+		// call mut
+		caProtocol.process(processingData);
+		
+		assertEquals(caProtocol.sessionContextIdentifier, -1);
+		
+		// check results
+		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
+	}
+	
+	/**
+	 * Positive test case: perform 2 Set AT commands. The first with attached Tag for storing session context and the second without.
+	 */
+	@Test
+	public void testSetAt_ExplicitStore_WithoutStore(){
+		// prepare the mock
+		new NonStrictExpectations() {
+			{
+				mockedCardStateAccessor.getMasterFile();
+				result = mockedMf;
+				
+				mockedMf.findChildren(
+						withInstanceOf(KeyIdentifier.class));
+				result = ecdhKeys;
+			}
+		};
+		
+		ProcessingData processingData = new ProcessingData();
+		
+		byte[] apduBytesStore = HexString.toByteArray("00 22 41 A4 14 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02 E0 03 81 01 01");
+		InterindustryCommandApduImpl cApduStore = (InterindustryCommandApduImpl) CommandApduFactory.createCommandApdu(apduBytesStore);
+		processingData.updateCommandApdu(this, "setAT APDU", cApduStore);
+		
+		caProtocol.process(processingData);
+		assertEquals(caProtocol.sessionContextIdentifier, 1);
+				
+		caProtocol = new DefaultCaProtocol();
+		caProtocol.setCardStateAccessor(mockedCardStateAccessor);
+		caProtocol.init();
+		
+		byte[] apduBytesNoStore = HexString.toByteArray("00 22 41 A4 0F 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02");
+		InterindustryCommandApduImpl cApduNoStore = (InterindustryCommandApduImpl) CommandApduFactory.createCommandApdu(apduBytesNoStore, cApduStore);
+		processingData.updateCommandApdu(this, "setAT APDU", cApduNoStore);
+
+		// call mut
+		caProtocol.process(processingData);
+		assertEquals(-1, caProtocol.sessionContextIdentifier);
+		
+		// check results
+		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
 	}
 	
 }

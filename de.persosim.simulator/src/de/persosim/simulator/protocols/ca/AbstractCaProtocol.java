@@ -46,6 +46,9 @@ import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
+import de.persosim.simulator.secstatus.SecStatusStoreUpdatePropagation;
+import de.persosim.simulator.secstatus.SecurityEvent;
+import de.persosim.simulator.secstatus.SessionContextIdMechanism;
 import de.persosim.simulator.securemessaging.SmDataProviderTr03110;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -82,6 +85,8 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	
 	protected SecretKeySpec secretKeySpecMAC;
 	protected SecretKeySpec secretKeySpecENC;
+	
+	protected int sessionContextIdentifier;
 	
 	
 	
@@ -155,12 +160,32 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	/**
+	 * This method searches for the Session Context ID in the MSE: SetAT
+	 * @return the ID as int or -1 if no ID was attached to the Command APDU
+	 */
+	protected int extractSessionContextId(){
+		ConstructedTlvDataObject constructedTlvContextIdentifier = (ConstructedTlvDataObject) processingData.getCommandApdu().getCommandDataObjectContainer().getTlvDataObject(TlvConstants.TAG_E0);
+		TlvDataObject tlvContextIdentifier = null;
+		
+		if (constructedTlvContextIdentifier != null)	{
+			tlvContextIdentifier = constructedTlvContextIdentifier.getTlvDataObject(TlvConstants.TAG_81);
+			String hex = HexString.encode(tlvContextIdentifier.getTlvValue().toByteArray());
+			int sessionContextIdentifier = Integer.decode("0x" + hex);
+			return sessionContextIdentifier;
+		}
+		return -1; // no ID found 
+	}
+	
+	/**
 	 * This method performs the processing of the CA Set AT command.
 	 */
 	public void processCommandSetAT() {
 		try {
 			//get commandDataContainer
 			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
+			
+			//extract Session Contect ID from APDU
+			sessionContextIdentifier = extractSessionContextId();
 			
 			caOid = extractCaOidFromCommandData(commandData);
 			
@@ -403,10 +428,20 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			byte[] authenticationTokenTpicc = computeAuthenticationTokenTpicc(ephemeralPublicKeyPcd);
 			propagateSessionKeys();
 			
+			//Save Default Session Context
+			processingData.addUpdatePropagation(this, "Inform the SecStatus to store the session context",
+								new SecStatusStoreUpdatePropagation(SecurityEvent.STORE_SESSION_CONTEXT, getSessionContextId()));
+			
 			ChipAuthenticationMechanism mechanism = new ChipAuthenticationMechanism(caOid, keyReference, ephemeralPublicKeyPcd);
 			processingData.addUpdatePropagation(this, "Updated security status with chip authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
 			
 			TlvValue responseData = prepareResponseData(rPiccNonce, authenticationTokenTpicc);
+			
+			//store the new session context id provided in MSE: setAT
+			if (sessionContextIdentifier>0x00){
+				SessionContextIdMechanism scim = new SessionContextIdMechanism(sessionContextIdentifier);
+				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, scim));
+			}
 			
 			ResponseApdu resp = new ResponseApdu(responseData, Iso7816.SW_9000_NO_ERROR);
 			processingData.updateResponseAPDU(this, "Command General Authenticate successfully processed", resp);
@@ -421,6 +456,27 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 		}
+	}
+	
+	/**
+	 * Returns the current Session Context ID to use from the SecStatus 
+	 * @return the Session Context ID
+	 */
+	protected int getSessionContextId(){
+		int id = -1;
+		
+		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
+		wantedMechanisms.add(SessionContextIdMechanism.class);
+		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, wantedMechanisms);
+		
+		for(SecMechanism secMechanism : currentMechanisms) {
+			if(secMechanism instanceof SessionContextIdMechanism) {
+				id = ((SessionContextIdMechanism) secMechanism).getSessionContextId();
+				break;
+			}
+		}
+		
+		return id;
 	}
 	
 	/**

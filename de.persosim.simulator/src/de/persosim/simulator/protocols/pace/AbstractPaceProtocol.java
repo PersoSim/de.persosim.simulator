@@ -66,6 +66,7 @@ import de.persosim.simulator.secstatus.PaceUsedPasswordMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
+import de.persosim.simulator.secstatus.SessionContextIdMechanism;
 import de.persosim.simulator.securemessaging.SmDataProviderTr03110;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -699,6 +700,11 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				processingData.addUpdatePropagation(this, "Security status updated with authorization mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, newAuthMechanism));
 				
 				responseApdu = new ResponseApdu(new TlvDataObjectContainer(responseContent), sw);
+				
+				//store the new session context id (0 for default session context)
+				SessionContextIdMechanism scim = new SessionContextIdMechanism(0);
+				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, scim));
+				
 			} else {
 				return;
 			}
