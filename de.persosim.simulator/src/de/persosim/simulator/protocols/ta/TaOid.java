@@ -60,6 +60,7 @@ public class TaOid extends Oid implements Tr03110, CvOid {
 	
 	public static final TaOid id_Description         = new TaOid(Utils.appendBytes(id_Extensions.oidByteArray, (byte) 0x01), "id-description");     // TODO no native TA OID, move
 	public static final TaOid id_Sector              = new TaOid(Utils.appendBytes(id_Extensions.oidByteArray, (byte) 0x02), "id-sector");          // TODO no native TA OID, move
+	public static final TaOid id_Ps_Sector           = new TaOid(Utils.appendBytes(id_Extensions.oidByteArray, (byte) 0x03), "id-PS-sector");          // TODO no native TA OID, move
 	
 //	id-CVCExtension OBJECT IDENTIFIER ::= {
 //			iso(1) member-body(2) f(250) type-org(1) anssi(223) eIDAStoken(1001) 1

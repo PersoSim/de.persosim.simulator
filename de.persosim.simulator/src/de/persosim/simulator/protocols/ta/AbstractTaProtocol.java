@@ -795,6 +795,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			this.processingData.updateResponseAPDU(this,"No protocol providing data for ID_PICC calculation was run", resp);
 		}
 	}
+	
+	protected List<CertificateExtension> extractExtensions(CardVerifiableCertificate certificate) {
+		return certificate.getCertificateExtensions();
+	}
 
 	/**
 	 * This methods handles a successful terminal authentication and sets the
@@ -803,10 +807,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @param verifiedTerminalCertificate
 	 */
 	protected void handleSuccessfulTerminalAuthentication(CardVerifiableCertificate verifiedTerminalCertificate) {
-		extractTerminalSector(verifiedTerminalCertificate);
+		List<CertificateExtension> certificateExtensions = extractExtensions(currentCertificate);
 		
-		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(compressedTerminalEphemeralPublicKey, terminalType, auxiliaryData, firstSectorPublicKeyHash, secondSectorPublicKeyHash, cryptographicMechanismReference.getHashAlgorithmName());
-		processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
+		extractTerminalSector(verifiedTerminalCertificate);
+					
+		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(compressedTerminalEphemeralPublicKey, terminalType, auxiliaryData, firstSectorPublicKeyHash, secondSectorPublicKeyHash, cryptographicMechanismReference.getHashAlgorithmName(), certificateExtensions);
+			processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
+		
 		
 		EffectiveAuthorizationMechanism authMechanism = new EffectiveAuthorizationMechanism(authorizationStore);
 		processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanism));

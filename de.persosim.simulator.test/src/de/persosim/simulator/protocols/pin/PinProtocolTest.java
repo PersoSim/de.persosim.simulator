@@ -79,8 +79,8 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		pinObject.setSecStatus(secStatus);
 		pinObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
-		taMechanismIs = new TerminalAuthenticationMechanism(new byte[]{1,2,3}, TerminalType.IS, new ArrayList<AuthenticatedAuxiliaryData>(), new byte[]{1,2,3}, new byte[]{1,2,3}, "test");
-		taMechanismAt = new TerminalAuthenticationMechanism(new byte[]{1,2,3}, TerminalType.AT, new ArrayList<AuthenticatedAuxiliaryData>(), new byte[]{1,2,3}, new byte[]{1,2,3}, "test");
+		taMechanismIs = new TerminalAuthenticationMechanism(new byte[]{1,2,3}, TerminalType.IS, new ArrayList<AuthenticatedAuxiliaryData>(), new byte[]{1,2,3}, new byte[]{1,2,3}, "test", null);
+		taMechanismAt = new TerminalAuthenticationMechanism(new byte[]{1,2,3}, TerminalType.AT, new ArrayList<AuthenticatedAuxiliaryData>(), new byte[]{1,2,3}, new byte[]{1,2,3}, "test", null);
 		
 		HashMap<Oid, Authorization> authorizations = new HashMap<>();
 		authorizations.put(TaOid.id_AT, new RelativeAuthorization(new BitField(40).flipBit(5)));
