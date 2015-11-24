@@ -429,7 +429,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			propagateSessionKeys();
 			
 			//Save Default Session Context
-			processingData.addUpdatePropagation(this, "Inform the SecStatus to store the sessopn context",
+			processingData.addUpdatePropagation(this, "Inform the SecStatus to store the session context",
 								new SecStatusStoreUpdatePropagation(SecurityEvent.STORE_SESSION_CONTEXT, getSessionContextId()));
 			
 			ChipAuthenticationMechanism mechanism = new ChipAuthenticationMechanism(caOid, keyReference, ephemeralPublicKeyPcd);
