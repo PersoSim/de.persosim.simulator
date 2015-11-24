@@ -47,10 +47,12 @@ public class Serializer {
 	}
 	
 	private static void updateLoaders(Object object){
-		ClassLoader newLoader = object.getClass().getClassLoader();
-		if (!loaders.contains(newLoader)){
-			loaders.add(newLoader);
-			((CompositeClassLoader)xstream.getClassLoader()).add(newLoader);
+		if(object != null) {
+			ClassLoader newLoader = object.getClass().getClassLoader();
+			if (!loaders.contains(newLoader)){
+				loaders.add(newLoader);
+				((CompositeClassLoader)xstream.getClassLoader()).add(newLoader);
+			}
 		}
 	}
 
