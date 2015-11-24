@@ -472,7 +472,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		for(SecMechanism secMechanism : currentMechanisms) {
 			if(secMechanism instanceof SessionContextIdMechanism) {
 				id = ((SessionContextIdMechanism) secMechanism).getSessionContextId();
-				break; // there is at most one TerminalAuthenticationMechanism
+				break;
 			}
 		}
 		
