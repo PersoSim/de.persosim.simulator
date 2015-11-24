@@ -1,5 +1,7 @@
 package de.persosim.simulator.utils;
 
+import java.util.HashSet;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.core.util.CompositeClassLoader;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -16,11 +18,19 @@ import de.persosim.simulator.crypto.Crypto;
 public class Serializer {
 
 	private static XStream xstream;
+	private static HashSet<ClassLoader> loaders;
 
 	static {
 		CompositeClassLoader loader = new CompositeClassLoader();
-		loader.add(Thread.currentThread().getContextClassLoader());
-		loader.add(Crypto.getCryptoProvider().getClass().getClassLoader());
+		
+		loaders = new HashSet<>();
+		loaders.add(Thread.currentThread().getContextClassLoader());
+		loaders.add(Crypto.getCryptoProvider().getClass().getClassLoader());
+		
+		for (ClassLoader current:loaders){
+			loader.add(current);
+		}
+		
 		
 		xstream = new XStream(new DomDriver("UTF-8"));
 		xstream.setClassLoader(loader);
@@ -35,6 +45,16 @@ public class Serializer {
 	public static <T> T deepCopy(T objectToCopy) {
 		return (T) deserialize(serialize(objectToCopy));
 	}
+	
+	private static void updateLoaders(Object object){
+		if(object != null) {
+			ClassLoader newLoader = object.getClass().getClassLoader();
+			if (!loaders.contains(newLoader)){
+				loaders.add(newLoader);
+				((CompositeClassLoader)xstream.getClassLoader()).add(newLoader);
+			}
+		}
+	}
 
 	/**
 	 * Serializes an object to a format that can be correctly deserialized by
@@ -45,6 +65,7 @@ public class Serializer {
 	 * @return the serialized representation
 	 */
 	public static <T> Serialized<T> serialize(T toSerialize) {
+		updateLoaders(toSerialize);
 		return new XstreamSerialized<T>(xstream.toXML(toSerialize));
 	}
 
