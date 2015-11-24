@@ -21,10 +21,10 @@ import java.util.List;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.CardObjectUtils;
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
 import de.persosim.simulator.cardobjects.DateTimeObjectIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
-import de.persosim.simulator.cardobjects.CardObjectUtils;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.CryptoUtil;
@@ -39,9 +39,9 @@ import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110Utils;
-import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.ConfinedAuthorizationMechanism;
+import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -91,7 +91,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 
 	private byte [] challenge;
 	private List<AuthenticatedAuxiliaryData> auxiliaryData;
-	private TaOid crypographicMechanismReference;
+	private TaOid cryptographicMechanismReference;
 	private byte [] compressedTerminalEphemeralPublicKey;
 	private TrustPointCardObject trustPoint;
 	private TerminalType terminalType;
@@ -181,36 +181,12 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		//get necessary information stored in an earlier protocol (e.g. PACE)
 		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(PaceMechanism.class);
-		previousMechanisms.add(ConfinedAuthorizationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 		
 		PaceMechanism paceMechanism = null;
-		ConfinedAuthorizationMechanism authMechanism = null;
 		
-		if (currentMechanisms.size() >= 2){
-			for(SecMechanism secMechanism:currentMechanisms) {
-				if(secMechanism instanceof PaceMechanism) {
-					paceMechanism = (PaceMechanism) secMechanism;
-				} else{
-					if(secMechanism instanceof ConfinedAuthorizationMechanism) {
-						authMechanism = (ConfinedAuthorizationMechanism) secMechanism;
-					}
-				}
-			}
-			
-			if(paceMechanism == null) {
-				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-				this.processingData.updateResponseAPDU(this, "Did not detect execution of previous Pace protocol", resp);
-				return;
-			}
-			
-			if(authMechanism == null) {
-				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-				this.processingData.updateResponseAPDU(this, "Did not find any authorization information", resp);
-				return;
-			}
+		if (currentMechanisms.size() == 1){
+			paceMechanism = (PaceMechanism) currentMechanisms.iterator().next();
 			
 			// extract the currently used terminal type
 			TaOid terminalTypeOid = paceMechanism.getTerminalType();
@@ -223,83 +199,114 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			}
 			
 			terminalType = Tr03110Utils.getTerminalTypeFromTaOid(terminalTypeOid);
-			
-			if (authorizationStore == null) {
-				authorizationStore = authMechanism.getAuthorizationStore();
-			}
-			
-			Authorization auth = authorizationStore.getAuthorization(terminalTypeOid);
-			
-			if(auth == null) {
-				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-				this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide authorization information from chat", resp);
-				return;
-			}
+		}
 
-			// reset the currently set key
-			currentCertificate = null;
-
-			// get the next certificate to verify against
-			if (mostRecentTemporaryCertificate != null && mostRecentTemporaryCertificate.getCertificateHolderReference() != null) {
-				// the temporary imported key is to be used
-				if (Arrays.equals(nameOfPublicKeyEncoded,
-						mostRecentTemporaryCertificate.getCertificateHolderReference().getBytes())) {
-					currentCertificate = mostRecentTemporaryCertificate;
-					
-					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-					this.processingData.updateResponseAPDU(this,
-							"Command SetDST successfully processed, public key found in temporary imported certificate", resp);
-					return;
-				}
+		// reset the currently set key
+		currentCertificate = null;
+		
+		// get the next certificate to verify against
+		if (mostRecentTemporaryCertificate != null && mostRecentTemporaryCertificate.getCertificateHolderReference() != null) {
+			// the temporary imported key is to be used
+			if (Arrays.equals(nameOfPublicKeyEncoded,
+					mostRecentTemporaryCertificate.getCertificateHolderReference().getBytes())) {
+				currentCertificate = mostRecentTemporaryCertificate;
 			}
-			
-			// get the stored trust points
-			CardObject trustPointCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new TrustPointIdentifier(terminalType));
-			
-			if (trustPointCandidate instanceof TrustPointCardObject) {
-				trustPoint = (TrustPointCardObject) trustPointCandidate;
-				String anchor = "no";
-				
-				if (trustPoint.getCurrentCertificate().getCertificateHolderReference() != null
-						&& Arrays.equals(trustPoint.getCurrentCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
-					
-					currentCertificate = trustPoint.getCurrentCertificate();
-					anchor = "first";
-				} else{
-					if (trustPoint.getPreviousCertificate().getCertificateHolderReference() != null
-							&& Arrays.equals(trustPoint.getPreviousCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
-						
-						currentCertificate = trustPoint.getPreviousCertificate();
-						anchor = "second";
-					}
-				}
-				
-				if(currentCertificate != null) {
-					updateAuthorizations(currentCertificate);
-					
-					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-					this.processingData.updateResponseAPDU(this, "Command SetDST successfully processed, public key found in " + anchor + " trust anchor", resp);
-					return;
-				}
-			}
-
+		}
+		
+		if (currentCertificate != null){
 			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 			this.processingData.updateResponseAPDU(this,
-					"The identified public key could not be found in a trust point or temporarily imported certificate", resp);
-			return;
-		} else {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this,
-					"No protocol prepared the execution of terminal authentication, e.g. no PACE/BAC was run before", resp);
+					"Command SetDST successfully processed, public key found in temporary imported certificate", resp);
 			return;
 		}
+			
+		String anchor = "";
+		
+		// get the stored trust points
+		CardObject trustPointCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new TrustPointIdentifier(terminalType));
+		
+		if (trustPointCandidate instanceof TrustPointCardObject) {
+			trustPoint = (TrustPointCardObject) trustPointCandidate;
+			
+			
+			if (trustPoint.getCurrentCertificate().getCertificateHolderReference() != null
+					&& Arrays.equals(trustPoint.getCurrentCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
+				
+				currentCertificate = trustPoint.getCurrentCertificate();
+				anchor = "first";
+			} else{
+				if (trustPoint.getPreviousCertificate().getCertificateHolderReference() != null
+						&& Arrays.equals(trustPoint.getPreviousCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
+					
+					currentCertificate = trustPoint.getPreviousCertificate();
+					anchor = "second";
+				}
+			}
+			
+			if (currentCertificate != null){
+				// a new root certificate was selected
+				authorizationStore = getInitialAuthorizations(currentCertificate);
+				Authorization auth = null;
+				if (authorizationStore != null){
+					auth = authorizationStore.getAuthorization(terminalType.getAsOid());
+				}
+					
+				if(auth == null) {
+					// create and propagate response APDU
+					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+					this.processingData.updateResponseAPDU(this, "Previous protocol did not provide authorization information from chat", resp);
+					return;
+				}
+			}
+		}
+			
+		if (currentCertificate != null){
+			updateAuthorizations(currentCertificate);
+			
+			// create and propagate response APDU
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
+			this.processingData.updateResponseAPDU(this, "Command SetDST successfully processed, public key found in " + anchor + " trust anchor", resp);
+			return;
+		}
+
+		// create and propagate response APDU
+		ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+		this.processingData.updateResponseAPDU(this,
+				"The identified public key could not be found in a trust point or temporarily imported certificate", resp);
+		return;
 	}
 	
+	/**
+	 * Get the authorization information that should be used as the initial
+	 * authorization for the terminal authentication process. This method is
+	 * called after choosing a new trust point.
+	 * 
+	 * @param newRootCertificate
+	 *            the newly set trustpoint certificate
+	 * @return the {@link AuthorizationStore} containing the initial access
+	 *         rights
+	 */
+	protected AuthorizationStore getInitialAuthorizations(CardVerifiableCertificate newRootCertificate){
+		//get necessary information stored in an earlier protocol (e.g. PACE)
+		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
+		previousMechanisms.add(ConfinedAuthorizationMechanism.class);
+		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+		
+		ConfinedAuthorizationMechanism authMechanism = null;
+		
+		if (currentMechanisms.size() == 1){
+			authMechanism = (ConfinedAuthorizationMechanism) currentMechanisms.iterator().next();
+			
+			if (authorizationStore == null) {
+				return authMechanism.getAuthorizationStore();
+			} else {
+				return authorizationStore;
+			}
+		}
+		return null;
+	} 
+
 	public void updateAuthorizations(CardVerifiableCertificate certificate) {
 		authorizationStore.updateAuthorization(getAuthorizationsFromCertificate(certificate));
 	}
@@ -318,30 +325,21 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	/**
 	 * Checks if there are any known previous TA runs in the session.
 	 * 
-	 * @return true if previous TA runs were found
+	 * @return true if TA generally can be executed
 	 */
-	protected boolean checkForPreviousTa(){
+	protected boolean isTaAllowed(){
 		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
 		wantedMechanisms.add(TerminalAuthenticationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, wantedMechanisms);
 		if (currentMechanisms.size() > 0){
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this,
-					"TA must not be executed more than once in the same session", resp);
-			return true;
-		} else {
 			return false;
+		} else {
+			return true;
 		}
 	}
 
 	void processCommandSetAt() {
 		if (!checkSecureMessagingApdu()){
-			return;
-		}
-		
-		if (checkForPreviousTa()){
-			// Not the first TA in the session
 			return;
 		}
 		
@@ -381,7 +379,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			//add missing Tag and Length
 			TlvDataObject cryptographicMechanismReferenceDataReconstructed = new PrimitiveTlvDataObject(TlvConstants.TAG_06, cryptographicMechanismReferenceData.getValueField());
 			try {
-				crypographicMechanismReference = new TaOid(cryptographicMechanismReferenceDataReconstructed.getValueField());
+				cryptographicMechanismReference = new TaOid(cryptographicMechanismReferenceDataReconstructed.getValueField());
 			} catch (IllegalArgumentException e) {
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
@@ -517,7 +515,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					if (checkValidity(certificate, currentCertificate, getCurrentDate().getDate())){
 						try {
 							importCertificate(certificate, currentCertificate);
-							updateAuthorizations(currentCertificate);
+							handleSuccessfulVerification(currentCertificate);
 						} catch (CertificateUpdateException e) {
 							// create and propagate response APDU
 							ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
@@ -711,7 +709,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @param certificate
 	 * @return true, iff the given certificate uses the {@link CertificateRole#TERMINAL}
 	 */
-	private static boolean isTerminalCertificate(CardVerifiableCertificate certificate) {
+	public static boolean isTerminalCertificate(CardVerifiableCertificate certificate) {
 		return certificate.getCertificateHolderAuthorizationTemplate()
 				.getRelativeAuthorization().getRole()
 				.equals(CertificateRole.TERMINAL);
@@ -742,10 +740,17 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		if (challenge == null) {
 			// create and propagate response APDU
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this,"No challenge was generated, please call GetChellenge first", resp);
+			this.processingData.updateResponseAPDU(this,"No challenge was generated, please call GetChallenge first", resp);
 			return;
 		}
 		
+		if (!isTaAllowed()){
+			// create and propagate response APDU
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			this.processingData.updateResponseAPDU(this,
+					"TA execution is not allowed", resp);
+			return;
+		}
 		
 		byte [] terminalSignatureData = processingData.getCommandApdu().getCommandData().toByteArray();
 		
@@ -768,19 +773,8 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			}
 			
 			try {
-				if (checkSignature(crypographicMechanismReference, currentCertificate.getPublicKey() , dataToVerify, terminalSignatureData)){
-					extractTerminalSector(currentCertificate);
-					
-					TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(compressedTerminalEphemeralPublicKey, terminalType, auxiliaryData, firstSectorPublicKeyHash, secondSectorPublicKeyHash, crypographicMechanismReference.getHashAlgorithmName());
-					processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
-					
-					EffectiveAuthorizationMechanism authMechanism = new EffectiveAuthorizationMechanism(authorizationStore);
-					processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanism));
-					
-					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-					this.processingData.updateResponseAPDU(this,
-							"Command External Authenticate successfully processed", resp);
+				if (checkSignature(cryptographicMechanismReference, currentCertificate.getPublicKey() , dataToVerify, terminalSignatureData)){
+					handleSuccessfulTerminalAuthentication(currentCertificate);
 				} else {
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6300_AUTHENTICATION_FAILED);
@@ -801,7 +795,36 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			this.processingData.updateResponseAPDU(this,"No protocol providing data for ID_PICC calculation was run", resp);
 		}
 	}
-	
+
+	/**
+	 * This methods handles a successful terminal authentication and sets the
+	 * protocol state accordingly.
+	 * 
+	 * @param verifiedTerminalCertificate
+	 */
+	protected void handleSuccessfulTerminalAuthentication(CardVerifiableCertificate verifiedTerminalCertificate) {
+		extractTerminalSector(verifiedTerminalCertificate);
+		
+		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(compressedTerminalEphemeralPublicKey, terminalType, auxiliaryData, firstSectorPublicKeyHash, secondSectorPublicKeyHash, cryptographicMechanismReference.getHashAlgorithmName());
+		processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
+		
+		EffectiveAuthorizationMechanism authMechanism = new EffectiveAuthorizationMechanism(authorizationStore);
+		processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanism));
+		
+		// create and propagate response APDU
+		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
+		this.processingData.updateResponseAPDU(this,
+				"Command External Authenticate successfully processed", resp);
+	}
+
+	/**
+	 * This method handles the internal state changes caused by successfully
+	 * verified certificates.
+	 */
+	protected void handleSuccessfulVerification(CardVerifiableCertificate verifiedCertificate) {
+		updateAuthorizations(verifiedCertificate);
+	}
+
 	/**
 	 * Extract the terminal sector information from the current certificate.
 	 * This method should be called on terminal certificates.

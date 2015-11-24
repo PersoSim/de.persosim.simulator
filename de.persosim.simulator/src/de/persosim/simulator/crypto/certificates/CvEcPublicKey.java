@@ -188,4 +188,13 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 		}
 	}
 
+	@Override
+	public boolean matchesCoreMaterial(CvPublicKey publicKey) {
+		if (publicKey instanceof CvEcPublicKey){
+			CvEcPublicKey cvKey = (CvEcPublicKey) publicKey;
+			return cvKey.getW().equals(this.getW());
+		}
+		return false;
+	}
+
 }
