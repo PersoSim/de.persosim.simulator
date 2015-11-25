@@ -8,7 +8,7 @@ package de.persosim.simulator.protocols.ca;
 
 /* Command line options: -verbose -p EA -o DefaultCaProtocol -l java -t CA:caclass C:\develop\wd\protocol_ca.xml   */
 /* This file is generated from protocol_ca.xml - do not edit manually  */
-/* Generated on: Fri Aug 01 12:45:22 CEST 2014 / version 3.52beta2 */
+/* Generated on: Wed Nov 25 11:47:22 CET 2015 / version 3.52beta2 */
 
 
 
@@ -16,18 +16,18 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 {
 
 	public static final int CA_GENERAL_AUTHENTICATE_RECEIVED = 0;
-	public static final int REGISTER_APDU_SET_AT = 1;
-	public static final int CA_SET_AT_RECEIVED = 2;
-	public static final int DUMMY_INITIAL = 3;
-	public static final int CA_INIT = 4;
-	public static final int RESET = 5;
-	public static final int CA_IN_PROGRESS = 6;
-	public static final int PROCESSING_ERROR = 7;
-	public static final int REGISTER_APDUS = 8;
-	public static final int CA_COMPLETED = 9;
-	public static final int CA_GENERAL_AUTHENTICATE_PROCESSED = 10;
-	public static final int REGISTER_APDU_MAP_NONCE = 11;
-	public static final int CA_SET_AT_PROCESSED = 12;
+	public static final int CA_GENERAL_AUTHENTICATE_PROCESSED = 1;
+	public static final int CA_IN_PROGRESS = 2;
+	public static final int REGISTER_APDU_MAP_NONCE = 3;
+	public static final int RESET = 4;
+	public static final int CA_SET_AT_PROCESSED = 5;
+	public static final int DUMMY_INITIAL = 6;
+	public static final int CA_INIT = 7;
+	public static final int CA_COMPLETED = 8;
+	public static final int PROCESSING_ERROR = 9;
+	public static final int REGISTER_APDU_SET_AT = 10;
+	public static final int CA_SET_AT_RECEIVED = 11;
+	public static final int REGISTER_APDUS = 12;
 	public static final int __UNKNOWN_STATE__ = 13;
 
 
@@ -53,28 +53,28 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 
 	/* Helper to get innermost active state id */
 	public int getInnermostActiveState() {
-		if(isInCA_SET_AT_PROCESSED()){
+		if(isInCA_SET_AT_RECEIVED()){
+			return CA_SET_AT_RECEIVED;
+		}else if(isInREGISTER_APDU_SET_AT()){
+			return REGISTER_APDU_SET_AT;
+		}else if(isInCA_INIT()){
+			return CA_INIT;
+		}else if(isInCA_SET_AT_PROCESSED()){
 			return CA_SET_AT_PROCESSED;
 		}else if(isInREGISTER_APDU_MAP_NONCE()){
 			return REGISTER_APDU_MAP_NONCE;
 		}else if(isInCA_GENERAL_AUTHENTICATE_PROCESSED()){
 			return CA_GENERAL_AUTHENTICATE_PROCESSED;
-		}else if(isInCA_INIT()){
-			return CA_INIT;
-		}else if(isInCA_SET_AT_RECEIVED()){
-			return CA_SET_AT_RECEIVED;
-		}else if(isInREGISTER_APDU_SET_AT()){
-			return REGISTER_APDU_SET_AT;
 		}else if(isInCA_GENERAL_AUTHENTICATE_RECEIVED()){
 			return CA_GENERAL_AUTHENTICATE_RECEIVED;
-		}else if(isInCA_COMPLETED()){
-			return CA_COMPLETED;
 		}else if(isInPROCESSING_ERROR()){
 			return PROCESSING_ERROR;
-		}else if(isInRESET()){
-			return RESET;
+		}else if(isInCA_COMPLETED()){
+			return CA_COMPLETED;
 		}else if(isInDUMMY_INITIAL()){
 			return DUMMY_INITIAL;
+		}else if(isInRESET()){
+			return RESET;
 		}else{
 			return __UNKNOWN_STATE__;
 		}
@@ -82,18 +82,18 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 
 	// Helper(s) to find out if the machine is in a certain state
 	public boolean isInCA_GENERAL_AUTHENTICATE_RECEIVED(){return (((stateVarCA_IN_PROGRESS==  CA_GENERAL_AUTHENTICATE_RECEIVED)&&(stateVar==  CA_IN_PROGRESS)) ? (true) : (false));}
-	public boolean isInREGISTER_APDU_SET_AT(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_SET_AT)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInCA_SET_AT_RECEIVED(){return (((stateVarCA_IN_PROGRESS==  CA_SET_AT_RECEIVED)&&(stateVar==  CA_IN_PROGRESS)) ? (true) : (false));}
+	public boolean isInCA_GENERAL_AUTHENTICATE_PROCESSED(){return (((stateVarCA_IN_PROGRESS==  CA_GENERAL_AUTHENTICATE_PROCESSED)&&(stateVar==  CA_IN_PROGRESS)) ? (true) : (false));}
+	public boolean isInCA_IN_PROGRESS(){return (((stateVar==  CA_IN_PROGRESS)) ? (true) : (false));}
+	public boolean isInREGISTER_APDU_MAP_NONCE(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_MAP_NONCE)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
+	public boolean isInRESET(){return (((stateVar==  RESET)) ? (true) : (false));}
+	public boolean isInCA_SET_AT_PROCESSED(){return (((stateVarCA_IN_PROGRESS==  CA_SET_AT_PROCESSED)&&(stateVar==  CA_IN_PROGRESS)) ? (true) : (false));}
 	public boolean isInDUMMY_INITIAL(){return (((stateVar==  DUMMY_INITIAL)) ? (true) : (false));}
 	public boolean isInCA_INIT(){return (((stateVarCA_IN_PROGRESS==  CA_INIT)&&(stateVar==  CA_IN_PROGRESS)) ? (true) : (false));}
-	public boolean isInRESET(){return (((stateVar==  RESET)) ? (true) : (false));}
-	public boolean isInCA_IN_PROGRESS(){return (((stateVar==  CA_IN_PROGRESS)) ? (true) : (false));}
-	public boolean isInPROCESSING_ERROR(){return (((stateVar==  PROCESSING_ERROR)) ? (true) : (false));}
-	public boolean isInREGISTER_APDUS(){return (((stateVar==  REGISTER_APDUS)) ? (true) : (false));}
 	public boolean isInCA_COMPLETED(){return (((stateVar==  CA_COMPLETED)) ? (true) : (false));}
-	public boolean isInCA_GENERAL_AUTHENTICATE_PROCESSED(){return (((stateVarCA_IN_PROGRESS==  CA_GENERAL_AUTHENTICATE_PROCESSED)&&(stateVar==  CA_IN_PROGRESS)) ? (true) : (false));}
-	public boolean isInREGISTER_APDU_MAP_NONCE(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_MAP_NONCE)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
-	public boolean isInCA_SET_AT_PROCESSED(){return (((stateVarCA_IN_PROGRESS==  CA_SET_AT_PROCESSED)&&(stateVar==  CA_IN_PROGRESS)) ? (true) : (false));}
+	public boolean isInPROCESSING_ERROR(){return (((stateVar==  PROCESSING_ERROR)) ? (true) : (false));}
+	public boolean isInREGISTER_APDU_SET_AT(){return (((stateVarREGISTER_APDUS==  REGISTER_APDU_SET_AT)&&(stateVar==  REGISTER_APDUS)) ? (true) : (false));}
+	public boolean isInCA_SET_AT_RECEIVED(){return (((stateVarCA_IN_PROGRESS==  CA_SET_AT_RECEIVED)&&(stateVar==  CA_IN_PROGRESS)) ? (true) : (false));}
+	public boolean isInREGISTER_APDUS(){return (((stateVar==  REGISTER_APDUS)) ? (true) : (false));}
 
 
 
@@ -303,12 +303,10 @@ public class DefaultCaProtocol extends AbstractCaProtocol
 						createNewTagSpecification(TAG_E0);
 						tagSpecification.setRequired(REQ_OPTIONAL);
 						apduSpecification.addTag(tagSpecification);
-						
 						createNewPath();
 						path.add(TAG_E0);
 						createNewTagSpecification(TAG_81);
 						apduSpecification.addTag(path, tagSpecification);
-						
 						apduSpecification.setInitialApdu();
 						registerApduSpecification(apduSpecification);
 
