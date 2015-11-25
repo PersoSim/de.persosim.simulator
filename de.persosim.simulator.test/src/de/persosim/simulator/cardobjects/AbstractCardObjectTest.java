@@ -1,30 +1,25 @@
 package de.persosim.simulator.cardobjects;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.protocols.Oid;
-import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.secstatus.SecStatus;
-import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 public class AbstractCardObjectTest extends PersoSimTestCase {
 	
 	AbstractFile masterFile;
 	
-	@Mocked
-	SecStatus mockedSecurityStatus;
+	SecStatus securityStatus;
 	
 	class IdentifiableObjectImpl extends AbstractCardObject {
 		protected int id;
@@ -87,30 +82,25 @@ public class AbstractCardObjectTest extends PersoSimTestCase {
 		};
 		OidIdentifier oidIdentifier3 = new OidIdentifier(anonymousTypeOid3);
 		
-		IdentifiableObjectImpl identifiableObjectImpl1 = new IdentifiableObjectImpl(mockedSecurityStatus, 1);
+		IdentifiableObjectImpl identifiableObjectImpl1 = new IdentifiableObjectImpl(securityStatus, 1);
 		identifiableObjectImpl1.addOidIdentifier(oidIdentifier1);
 		
-		IdentifiableObjectImpl identifiableObjectImpl2 = new IdentifiableObjectImpl(mockedSecurityStatus, 2);
+		IdentifiableObjectImpl identifiableObjectImpl2 = new IdentifiableObjectImpl(securityStatus, 2);
 		identifiableObjectImpl2.addOidIdentifier(oidIdentifier2);
 		
-		IdentifiableObjectImpl identifiableObjectImpl3 = new IdentifiableObjectImpl(mockedSecurityStatus, 3);
+		IdentifiableObjectImpl identifiableObjectImpl3 = new IdentifiableObjectImpl(securityStatus, 3);
 		identifiableObjectImpl3.addOidIdentifier(oidIdentifier3);
 		
-		IdentifiableObjectImpl identifiableObjectImpl123 = new IdentifiableObjectImpl(mockedSecurityStatus, 123);
+		IdentifiableObjectImpl identifiableObjectImpl123 = new IdentifiableObjectImpl(securityStatus, 123);
 		identifiableObjectImpl123.addOidIdentifier(oidIdentifier1);
 		identifiableObjectImpl123.addOidIdentifier(oidIdentifier2);
 		identifiableObjectImpl123.addOidIdentifier(oidIdentifier3);
 
-		new NonStrictExpectations(SecStatus.class) {
-			{
-				mockedSecurityStatus.checkAccessConditions(Iso7816LifeCycleState.CREATION, (SecCondition) any, (SecContext) any);
-				result = true;
-			}
-		};
+		securityStatus = new SecStatus();
 		
 		// setup fresh object tree
 		masterFile = new MasterFile();
-		masterFile.setSecStatus(mockedSecurityStatus);
+		masterFile.setSecStatus(securityStatus);
 		
 		masterFile.addChild(identifiableObjectImpl1);
 		masterFile.addChild(identifiableObjectImpl2);
