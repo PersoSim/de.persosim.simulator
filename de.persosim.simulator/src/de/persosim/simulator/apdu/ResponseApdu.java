@@ -8,8 +8,8 @@ import de.persosim.simulator.utils.Utils;
 public class ResponseApdu {
 
 	/* Declares data to be sent with the response APDU */
-	protected TlvValue data;
-	protected short statusWord;
+	protected final TlvValue data;
+	protected final short statusWord;
 
 	/**
 	 * Instantiate a new ResponseAPDU without data field and the given SW
@@ -17,6 +17,7 @@ public class ResponseApdu {
 	 */
 	public ResponseApdu(short sw) {
 		this.statusWord = sw;
+		this.data = null;
 	}
 	
 	/**

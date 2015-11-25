@@ -26,12 +26,12 @@ import de.persosim.simulator.utils.Utils;
  * 
  */
 public class CommandApduImpl implements CommandApdu {
-	protected byte [] header;
-	private boolean isExtendedLength;
-	private byte isoCase;
-	private int ne;
-	private short nc;
-	private TlvValue commandData;
+	protected final byte [] header;
+	private final boolean isExtendedLength;
+	private final byte isoCase;
+	private final int ne;
+	private final short nc;
+	private final TlvValue commandData;
 
 	private CommandApdu predecessor = null;
 
@@ -155,10 +155,13 @@ public class CommandApduImpl implements CommandApdu {
 	 */
 	@Override
 	public TlvDataObjectContainer getCommandDataObjectContainer() {
+		TlvDataObjectContainer commandDataRet;
 		if (!(commandData instanceof TlvDataObjectContainer)) {
-			commandData = new TlvDataObjectContainer(commandData);
+			commandDataRet = new TlvDataObjectContainer(commandData);
+		} else {
+			commandDataRet = (TlvDataObjectContainer) commandData;
 		}
-		return (TlvDataObjectContainer) commandData;
+		return commandDataRet;
 	}
 
 	/* (non-Javadoc)
