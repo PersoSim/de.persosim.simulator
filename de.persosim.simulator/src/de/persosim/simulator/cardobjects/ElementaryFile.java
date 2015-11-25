@@ -144,6 +144,38 @@ public class ElementaryFile extends AbstractFile {
 		}
 		throw new AccessDeniedException("Updating forbidden");
 	}
+	
+	public void setReadingConditions(SecCondition readingConditions) throws AccessDeniedException {
+		if (SecStatus.checkAccessConditions(getLifeCycleState())) {
+			this.readingConditions = readingConditions;
+			return;
+		}
+		throw new AccessDeniedException("Setting reading conditions forbidden");
+	}
+
+	public void setWritingConditions(SecCondition writingConditions) throws AccessDeniedException {
+		if (SecStatus.checkAccessConditions(getLifeCycleState())) {
+			this.writingConditions = writingConditions;
+			return;
+		}
+		throw new AccessDeniedException("Setting writing conditions forbidden");
+	}
+
+	public void setErasingConditions(SecCondition erasingConditions) throws AccessDeniedException {
+		if (SecStatus.checkAccessConditions(getLifeCycleState())) {
+			this.erasingConditions = erasingConditions;
+			return;
+		}
+		throw new AccessDeniedException("Setting erasing conditions forbidden");
+	}
+
+	public void setDeletionConditions(SecCondition deletionConditions) throws AccessDeniedException {
+		if (SecStatus.checkAccessConditions(getLifeCycleState())) {
+			this.deletionConditions = deletionConditions;
+			return;
+		}
+		throw new AccessDeniedException("Setting deletion conditions forbidden");
+	}
 
 	/**
 	 * Completely replaces the files internal data.
