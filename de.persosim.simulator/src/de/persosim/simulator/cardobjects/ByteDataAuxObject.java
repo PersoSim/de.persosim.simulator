@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.protocols.auxVerification.AuxOid;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.TaOid;
@@ -74,7 +75,7 @@ public class ByteDataAuxObject extends AuxDataObject {
 				}
 			}
 			
-			if (identifier.getOid().equals(TaOid.id_CommunityID)){
+			if (identifier.getOid().equals(AuxOid.id_CommunityID)){
 				return Utils.arrayHasPrefix(data, current.getDiscretionaryData());
 			}
 			

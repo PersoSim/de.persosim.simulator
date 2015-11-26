@@ -36,14 +36,7 @@ public class TaOid extends Oid implements Tr03110, CvOid {
 	public static final TaOid id_TA_ECDSA_SHA_384    = new TaOid(Utils.appendBytes(id_TA_ECDSA.oidByteArray, (byte) 0x04), "id-TA-ECDSA-SHA-384");
 	public static final TaOid id_TA_ECDSA_SHA_512    = new TaOid(Utils.appendBytes(id_TA_ECDSA.oidByteArray, (byte) 0x05), "id-TA-ECDSA-SHA-512");
 
-	// Auxiliary data verification
-	public final static Oid id_AuxiliaryData       = new Oid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x04}));      // TODO no native TA OID, move
-	
 	public static final Oid id_PSM_MESSAGE         = new Oid(Utils.appendBytes(id_AuxiliaryData.toByteArray(), (byte) 0x04));  // TODO no native TA OID, move
-	
-	public static final Oid id_DateOfBirth         = new Oid(Utils.appendBytes(id_AuxiliaryData.toByteArray(), (byte) 0x01));  // TODO no native TA OID, move
-	public static final Oid id_DateOfExpiry        = new Oid(Utils.appendBytes(id_AuxiliaryData.toByteArray(), (byte) 0x02)); // TODO no native TA OID, move
-	public static final Oid id_CommunityID         = new Oid(Utils.appendBytes(id_AuxiliaryData.toByteArray(), (byte) 0x03));  // TODO no native TA OID, move
 	
 	// terminal types
 	public final static TaOid id_Roles               = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x02}), "id-roles");              // TODO no native TA OID, move
@@ -55,7 +48,7 @@ public class TaOid extends Oid implements Tr03110, CvOid {
 	public static final Oid id_eIDAccess           = new Oid(Utils.appendBytes(id_AT.toByteArray(), (byte) 0x01));               // TODO no native TA OID, move
 	public static final Oid id_specialFunctions    = new Oid(Utils.appendBytes(id_AT.toByteArray(), (byte) 0x02));        // TODO no native TA OID, move
 	
-	// certificate extenons
+	// certificate extensions
 
 	public final static Oid id_Extensions          = new Oid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x03}));         // TODO no native TA OID, move
 	
