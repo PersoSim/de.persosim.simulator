@@ -38,7 +38,6 @@ import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.SecInfoPublicity;
-import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.ConfinedAuthorizationMechanism;
 import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
@@ -189,16 +188,16 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			paceMechanism = (PaceMechanism) currentMechanisms.iterator().next();
 			
 			// extract the currently used terminal type
-			TaOid terminalTypeOid = paceMechanism.getTerminalType();
-			
-			if(terminalTypeOid == null) {
+			try{
+				TaOid terminalTypeOid = new TaOid(paceMechanism.getOidForTa().toByteArray());
+				terminalType = terminalTypeOid.getTerminalType();
+			} catch (IllegalArgumentException e){
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
 				this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide information about terminal type", resp);
 				return;
 			}
 			
-			terminalType = Tr03110Utils.getTerminalTypeFromTaOid(terminalTypeOid);
 		}
 
 		// reset the currently set key
@@ -411,7 +410,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					TlvDataObject objectIdentifier = ddo.getTlvDataObject(TlvConstants.TAG_06);
 					TlvDataObject discretionaryData = ddo.getTlvDataObject(TlvConstants.TAG_53);
 					try {
-						auxiliaryData.add(new AuthenticatedAuxiliaryData(new TaOid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
+						auxiliaryData.add(new AuthenticatedAuxiliaryData(new Oid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
 					} catch (IllegalArgumentException e) {
 						// create and propagate response APDU
 						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);

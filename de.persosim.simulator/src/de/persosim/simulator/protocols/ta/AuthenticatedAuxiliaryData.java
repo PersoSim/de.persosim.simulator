@@ -2,6 +2,7 @@ package de.persosim.simulator.protocols.ta;
 
 import java.util.Arrays;
 
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -14,17 +15,17 @@ import de.persosim.simulator.tlv.TlvConstants;
  * 
  */
 public class AuthenticatedAuxiliaryData {
-	private TaOid objectIdentifier;
+	private Oid objectIdentifier;
 	private byte[] discretionaryData;
 
-	public AuthenticatedAuxiliaryData(TaOid objectIdentifier,
+	public AuthenticatedAuxiliaryData(Oid objectIdentifier,
 			byte[] discretionaryData) {
 		super();
 		this.objectIdentifier = objectIdentifier;
 		this.discretionaryData = Arrays.copyOf(discretionaryData, discretionaryData.length);
 	}
 
-	public TaOid getObjectIdentifier() {
+	public Oid getObjectIdentifier() {
 		return objectIdentifier;
 	}
 

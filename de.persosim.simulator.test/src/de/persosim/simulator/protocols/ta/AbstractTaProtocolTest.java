@@ -83,19 +83,19 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		taProtocol.setCardStateAccessor(mockedCardStateAccessor);
 		taProtocol.init();
 
-		isCvcaChat = new CertificateHolderAuthorizationTemplate(TaOid.id_IS,
+		isCvcaChat = new CertificateHolderAuthorizationTemplate(TaOid.id_IS, TaOid.id_IS.getTerminalType(),
 				new RelativeAuthorization(CertificateRole.CVCA, new BitField(
 						new boolean[] {})));
 		isDvDomesticChat = new CertificateHolderAuthorizationTemplate(
-				TaOid.id_IS, new RelativeAuthorization(
+				TaOid.id_IS, TaOid.id_IS.getTerminalType(), new RelativeAuthorization(
 						CertificateRole.DV_TYPE_1, new BitField(
 								new boolean[] {})));
 		isDvForeignChat = new CertificateHolderAuthorizationTemplate(
-				TaOid.id_IS, new RelativeAuthorization(
+				TaOid.id_IS, TaOid.id_IS.getTerminalType(), new RelativeAuthorization(
 						CertificateRole.DV_TYPE_2, new BitField(
 								new boolean[] {})));
 		isTerminalChat = new CertificateHolderAuthorizationTemplate(
-				TaOid.id_IS, new RelativeAuthorization(
+				TaOid.id_IS, TaOid.id_IS.getTerminalType(), new RelativeAuthorization(
 						CertificateRole.TERMINAL,
 						new BitField(new boolean[] {})));
 

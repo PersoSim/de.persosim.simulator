@@ -281,7 +281,6 @@
                 <certificateHolderAuthorizationTemplate id="91">
                   <objectIdentifier id="92">
                     <oidByteArray id="93">04007F000703010201</oidByteArray>
-                    <idString>id-IS</idString>
                   </objectIdentifier>
                   <relativeAuthorization id="94">
                     <authorization id="95">
@@ -297,6 +296,7 @@
                       </storedBits>
                     </authorization>
                   </relativeAuthorization>
+                  <terminalType>IS</terminalType>
                 </certificateHolderAuthorizationTemplate>
                 <certificateEffectiveDate id="97">2015-11-05 00:00:00.0 UTC</certificateEffectiveDate>
                 <certificateExpirationDate id="98">2016-11-05 00:00:00.0 UTC</certificateExpirationDate>
@@ -338,7 +338,6 @@
                 <certificateHolderAuthorizationTemplate id="112">
                   <objectIdentifier id="113">
                     <oidByteArray id="114">04007F000703010202</oidByteArray>
-                    <idString>id-AT</idString>
                   </objectIdentifier>
                   <relativeAuthorization id="115">
                     <authorization id="116">
@@ -386,6 +385,7 @@
                       </storedBits>
                     </authorization>
                   </relativeAuthorization>
+                  <terminalType>AT</terminalType>
                 </certificateHolderAuthorizationTemplate>
                 <certificateEffectiveDate id="118">2015-11-05 00:00:00.0 UTC</certificateEffectiveDate>
                 <certificateExpirationDate id="119">2016-11-05 00:00:00.0 UTC</certificateExpirationDate>
@@ -427,7 +427,6 @@
                 <certificateHolderAuthorizationTemplate id="133">
                   <objectIdentifier id="134">
                     <oidByteArray id="135">04007F000703010203</oidByteArray>
-                    <idString>id-ST</idString>
                   </objectIdentifier>
                   <relativeAuthorization id="136">
                     <authorization id="137">
@@ -443,6 +442,7 @@
                       </storedBits>
                     </authorization>
                   </relativeAuthorization>
+                  <terminalType>ST</terminalType>
                 </certificateHolderAuthorizationTemplate>
                 <certificateEffectiveDate id="139">2015-11-05 00:00:00.0 UTC</certificateEffectiveDate>
                 <certificateExpirationDate id="140">2016-11-05 00:00:00.0 UTC</certificateExpirationDate>
@@ -466,9 +466,8 @@
             <children id="149"/>
             <lifeCycleState>CREATION</lifeCycleState>
             <identifier id="150">
-              <oid class="de.persosim.simulator.protocols.ta.TaOid" id="151">
+              <oid id="151">
                 <oidByteArray id="152">04007F000703010403</oidByteArray>
-                <idString>id-CommunityID</idString>
               </oid>
             </identifier>
             <data id="153">02760503150000</data>
@@ -478,9 +477,8 @@
             <children id="155"/>
             <lifeCycleState>CREATION</lifeCycleState>
             <identifier id="156">
-              <oid class="de.persosim.simulator.protocols.ta.TaOid" id="157">
+              <oid id="157">
                 <oidByteArray id="158">04007F000703010401</oidByteArray>
-                <idString>id-DateOfBirth</idString>
               </oid>
             </identifier>
             <date id="159">1964-08-11 23:00:00.0 UTC</date>
@@ -490,9 +488,8 @@
             <children id="161"/>
             <lifeCycleState>CREATION</lifeCycleState>
             <identifier id="162">
-              <oid class="de.persosim.simulator.protocols.ta.TaOid" id="163">
+              <oid id="163">
                 <oidByteArray id="164">04007F000703010402</oidByteArray>
-                <idString>id-DateOfExpiry</idString>
               </oid>
             </identifier>
             <date id="165">2020-10-30 23:00:00.0 UTC</date>

@@ -1,6 +1,6 @@
 package de.persosim.simulator.crypto.certificates;
 
-import de.persosim.simulator.protocols.ta.TaOid;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 
@@ -13,9 +13,9 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
  */
 public abstract class CertificateExtension {
 	
-	protected TaOid objectIdentifier;
+	protected Oid objectIdentifier;
 	
-	public CertificateExtension(TaOid objectIdentifier) {
+	public CertificateExtension(Oid objectIdentifier) {
 		this.objectIdentifier = objectIdentifier;
 	}
 	
@@ -24,7 +24,7 @@ public abstract class CertificateExtension {
 	 * 
 	 * @return the OID for this extension
 	 */
-	public TaOid getObjectIdentifier() {
+	public Oid getObjectIdentifier() {
 		return objectIdentifier;
 	}
 	

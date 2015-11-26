@@ -281,7 +281,6 @@
                 <certificateHolderAuthorizationTemplate id="91">
                   <objectIdentifier id="92">
                     <oidByteArray id="93">04007F000703010202</oidByteArray>
-                    <idString>id-AT</idString>
                   </objectIdentifier>
                   <relativeAuthorization id="94">
                     <authorization id="95">
@@ -329,6 +328,7 @@
                       </storedBits>
                     </authorization>
                   </relativeAuthorization>
+                  <terminalType>AT</terminalType>
                 </certificateHolderAuthorizationTemplate>
                 <certificateEffectiveDate id="97">2012-05-11 00:00:00.0 UTC</certificateEffectiveDate>
                 <certificateExpirationDate id="98">2015-05-11 00:00:00.0 UTC</certificateExpirationDate>
@@ -352,9 +352,8 @@
             <children id="107"/>
             <lifeCycleState>CREATION</lifeCycleState>
             <identifier id="108">
-              <oid class="de.persosim.simulator.protocols.ta.TaOid" id="109">
+              <oid id="109">
                 <oidByteArray id="110">04007F000703010403</oidByteArray>
-                <idString>id-CommunityID</idString>
               </oid>
             </identifier>
             <data id="111">02761100000000</data>
@@ -364,9 +363,8 @@
             <children id="113"/>
             <lifeCycleState>CREATION</lifeCycleState>
             <identifier id="114">
-              <oid class="de.persosim.simulator.protocols.ta.TaOid" id="115">
+              <oid id="115">
                 <oidByteArray id="116">04007F000703010401</oidByteArray>
-                <idString>id-DateOfBirth</idString>
               </oid>
             </identifier>
             <date id="117">1928-04-20 23:00:00.0 UTC</date>
@@ -376,9 +374,8 @@
             <children id="119"/>
             <lifeCycleState>CREATION</lifeCycleState>
             <identifier id="120">
-              <oid class="de.persosim.simulator.protocols.ta.TaOid" id="121">
+              <oid id="121">
                 <oidByteArray id="122">04007F000703010402</oidByteArray>
-                <idString>id-DateOfExpiry</idString>
               </oid>
             </identifier>
             <date id="123">2020-10-30 23:00:00.0 UTC</date>

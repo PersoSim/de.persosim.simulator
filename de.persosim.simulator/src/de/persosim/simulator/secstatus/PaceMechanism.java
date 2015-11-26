@@ -3,6 +3,7 @@ package de.persosim.simulator.secstatus;
 import java.util.Arrays;
 
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ta.TaOid;
 
 /**
@@ -17,12 +18,12 @@ public class PaceMechanism extends
 
 	private PasswordAuthObject usedPassword;
 	private byte [] compressedEphemeralPublicKey;
-	private TaOid terminalType;
+	private Oid oidForTa;
 
-	public PaceMechanism(PasswordAuthObject usedPassword, byte[] compressedPublicKey, TaOid taOid){
+	public PaceMechanism(PasswordAuthObject usedPassword, byte[] compressedPublicKey, Oid taOid){
 		this.usedPassword = usedPassword;
 		this.compressedEphemeralPublicKey = compressedPublicKey;
-		this.terminalType = taOid;
+		this.oidForTa = taOid;
 	}
 	
 	/**
@@ -42,8 +43,8 @@ public class PaceMechanism extends
 	/**
 	 * @return the {@link TaOid} identifying the terminal type
 	 */
-	public TaOid getTerminalType() {
-		return terminalType;
+	public Oid getOidForTa() {
+		return oidForTa;
 	}
 
 }

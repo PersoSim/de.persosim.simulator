@@ -6,7 +6,10 @@ import de.persosim.simulator.utils.HexString;
 
 /**
  * This abstract class implements common functionality for OIDs. All specific
- * {@link Oid} implementations are to be immutable.
+ * {@link Oid} implementations are to be immutable. Oid implementations should
+ * not add additional fields containing relevant state. The
+ * {@link #equals(Object)} implementation of all {@link Oid}s only checks for
+ * the contained bytes.
  * 
  * @author slutters
  *
@@ -39,10 +42,10 @@ public class Oid {
 	}
 	
 	@Override
-	public boolean equals(Object anotherOid) {
+	final public boolean equals(Object anotherOid) {
 		if (anotherOid == null) return false;
 		
-		if(anotherOid.getClass() == getClass()) {
+		if(anotherOid instanceof Oid) {
 			return Arrays.equals(this.oidByteArray, ((Oid) anotherOid).oidByteArray);
 		}
 		
@@ -50,7 +53,7 @@ public class Oid {
 	}
 	
 	@Override
-	public int hashCode() {
+	final public int hashCode() {
 		return Arrays.hashCode(oidByteArray);
 	}
 	

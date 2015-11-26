@@ -17,11 +17,11 @@ import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.ca.ChipAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
-import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -65,7 +65,7 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 			if (commandData.containsTlvDataObject(TlvConstants.TAG_06)){
 				try{
-					TaOid oid = new TaOid(commandData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
+					Oid oid = new Oid(commandData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
 					processOid(processingData, oid);
 					
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
@@ -103,7 +103,7 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 		}
 	}
 
-	private void processOid(ProcessingData processingData, TaOid oid) throws VerificationException, FileNotFoundException, AccessDeniedException {
+	private void processOid(ProcessingData processingData, Oid oid) throws VerificationException, FileNotFoundException, AccessDeniedException {
 		
 		//get necessary information stored in TA
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();

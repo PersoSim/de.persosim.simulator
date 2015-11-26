@@ -1,5 +1,6 @@
 package de.persosim.simulator.crypto.certificates;
 
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -19,7 +20,7 @@ public class GenericExtension extends CertificateExtension {
 	TlvDataObjectContainer dataObjects;
 
 	public GenericExtension(ConstructedTlvDataObject extensionData) {
-		super(new TaOid(extensionData.getTlvDataObject(TlvConstants.TAG_06).getValueField()));
+		super(new Oid(extensionData.getTlvDataObject(TlvConstants.TAG_06).getValueField()));
 		
 		dataObjects = new TlvDataObjectContainer();
 		boolean firstIgnored = false;

@@ -37,13 +37,13 @@ public class TaOid extends Oid implements Tr03110, CvOid {
 	public static final TaOid id_TA_ECDSA_SHA_512    = new TaOid(Utils.appendBytes(id_TA_ECDSA.oidByteArray, (byte) 0x05), "id-TA-ECDSA-SHA-512");
 
 	// Auxiliary data verification
-	public final static TaOid id_AuxiliaryData       = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x04}), "id-AuxiliaryData");      // TODO no native TA OID, move
+	public final static Oid id_AuxiliaryData       = new Oid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x04}));      // TODO no native TA OID, move
 	
-	public static final TaOid id_PSM_MESSAGE         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x04), "id-PSM-Message");  // TODO no native TA OID, move
+	public static final Oid id_PSM_MESSAGE         = new Oid(Utils.appendBytes(id_AuxiliaryData.toByteArray(), (byte) 0x04));  // TODO no native TA OID, move
 	
-	public static final TaOid id_DateOfBirth         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x01), "id-DateOfBirth");  // TODO no native TA OID, move
-	public static final TaOid id_DateOfExpiry        = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x02), "id-DateOfExpiry"); // TODO no native TA OID, move
-	public static final TaOid id_CommunityID         = new TaOid(Utils.appendBytes(id_AuxiliaryData.oidByteArray, (byte) 0x03), "id-CommunityID");  // TODO no native TA OID, move
+	public static final Oid id_DateOfBirth         = new Oid(Utils.appendBytes(id_AuxiliaryData.toByteArray(), (byte) 0x01));  // TODO no native TA OID, move
+	public static final Oid id_DateOfExpiry        = new Oid(Utils.appendBytes(id_AuxiliaryData.toByteArray(), (byte) 0x02)); // TODO no native TA OID, move
+	public static final Oid id_CommunityID         = new Oid(Utils.appendBytes(id_AuxiliaryData.toByteArray(), (byte) 0x03));  // TODO no native TA OID, move
 	
 	// terminal types
 	public final static TaOid id_Roles               = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x02}), "id-roles");              // TODO no native TA OID, move
@@ -52,22 +52,22 @@ public class TaOid extends Oid implements Tr03110, CvOid {
 	public static final TaOid id_AT                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x02), "id-AT");                   // TODO no native TA OID, move
 	public static final TaOid id_ST                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x03), "id-ST");                   // TODO no native TA OID, move
 	
-	public static final TaOid id_eIDAccess           = new TaOid(Utils.appendBytes(id_AT.oidByteArray, (byte) 0x01), "id-eIDAccess");               // TODO no native TA OID, move
-	public static final TaOid id_specialFunctions    = new TaOid(Utils.appendBytes(id_AT.oidByteArray, (byte) 0x02), "id-specialFunctions");        // TODO no native TA OID, move
+	public static final Oid id_eIDAccess           = new Oid(Utils.appendBytes(id_AT.toByteArray(), (byte) 0x01));               // TODO no native TA OID, move
+	public static final Oid id_specialFunctions    = new Oid(Utils.appendBytes(id_AT.toByteArray(), (byte) 0x02));        // TODO no native TA OID, move
 	
-	// certificate extensions
+	// certificate extenons
 
-	public final static TaOid id_Extensions          = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x03}), "id-extensions");         // TODO no native TA OID, move
+	public final static Oid id_Extensions          = new Oid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x03}));         // TODO no native TA OID, move
 	
-	public static final TaOid id_Description         = new TaOid(Utils.appendBytes(id_Extensions.oidByteArray, (byte) 0x01), "id-description");     // TODO no native TA OID, move
-	public static final TaOid id_Sector              = new TaOid(Utils.appendBytes(id_Extensions.oidByteArray, (byte) 0x02), "id-sector");          // TODO no native TA OID, move
-	public static final TaOid id_Ps_Sector           = new TaOid(Utils.appendBytes(id_Extensions.oidByteArray, (byte) 0x03), "id-PS-sector");          // TODO no native TA OID, move
+	public static final Oid id_Description         = new Oid(Utils.appendBytes(id_Extensions.toByteArray(), (byte) 0x01));     // TODO no native TA OID, move
+	public static final Oid id_Sector              = new Oid(Utils.appendBytes(id_Extensions.toByteArray(), (byte) 0x02));          // TODO no native TA OID, move
+	public static final Oid id_Ps_Sector           = new Oid(Utils.appendBytes(id_Extensions.toByteArray(), (byte) 0x03));          // TODO no native TA OID, move
 	
-//	id-CVCExtension OBJECT IDENTIFIER ::= {
-//			iso(1) member-body(2) f(250) type-org(1) anssi(223) eIDAStoken(1001) 1
+//	id-CVCExtension OBJE IDENTIFIER ::= {
+//			iso(1) membebody(2) f(250) type-org(1) anssi(223) eIDAStoken(1001) 1
 //	}
-	public final static TaOid id_CVCExtension       = new TaOid(HexString.toByteArray("01 02 FA 01 DF 03E9 01"), "id-CVCExtension");                // TODO no native TA OID, move
-	public final static TaOid id_ERAspecific        = new TaOid(Utils.appendBytes(id_CVCExtension.oidByteArray, (byte) 0x03), "id-ERAspecific");    // TODO no native TA OID, move
+	public final static Oid id_CVCExtension       = new Oid(HexString.toByteArray("01 02 FA 01 DF 03E9 01"));                // TODO no native TA OID, move
+	public final static Oid id_ERAspecific        = new Oid(Utils.appendBytes(id_CVCExtension.toByteArray(), (byte) 0x03));    // TODO no native TA OID, move
 	
 	
 	
@@ -194,5 +194,20 @@ public class TaOid extends Oid implements Tr03110, CvOid {
 		}
 		return null;
 	}
+
 	
+	/**
+	 * This method returns the terminal type
+	 * @return the terminal type extracted from this TA OID
+	 */
+	public TerminalType getTerminalType() {
+		if (this.equals(TaOid.id_IS)) {
+			return TerminalType.IS;
+		} else if (this.equals(TaOid.id_AT)) {
+			return TerminalType.AT;
+		} else if (this.equals(TaOid.id_ST)) {
+			return TerminalType.ST;
+		}
+		return null;
+	}
 }
