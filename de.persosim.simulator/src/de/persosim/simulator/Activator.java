@@ -3,6 +3,7 @@ package de.persosim.simulator;
 import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 
+import org.globaltester.cryptoprovider.Crypto;
 import org.globaltester.cryptoprovider.Cryptoprovider;
 import org.globaltester.simulator.Simulator;
 import org.osgi.framework.BundleActivator;
@@ -11,8 +12,6 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
-
-import de.persosim.simulator.crypto.Crypto;
 
 public class Activator implements BundleActivator {
 

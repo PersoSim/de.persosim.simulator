@@ -17,6 +17,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.globaltester.cryptoprovider.Crypto;
+
 import de.persosim.simulator.utils.HexString;
 
 public abstract class CryptoSupport {

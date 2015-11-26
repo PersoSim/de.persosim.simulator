@@ -5,9 +5,9 @@ import java.security.Provider;
 import java.security.Security;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.globaltester.cryptoprovider.Crypto;
 import org.junit.BeforeClass;
 
-import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.utils.InfoSource;
 

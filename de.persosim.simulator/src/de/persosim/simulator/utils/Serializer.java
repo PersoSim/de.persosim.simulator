@@ -2,11 +2,11 @@ package de.persosim.simulator.utils;
 
 import java.util.HashSet;
 
+import org.globaltester.cryptoprovider.Crypto;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.core.util.CompositeClassLoader;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-
-import de.persosim.simulator.crypto.Crypto;
 
 /**
  * This class contains methods to serialize and deserialize objects. The format

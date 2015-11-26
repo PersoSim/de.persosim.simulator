@@ -8,6 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.globaltester.cryptoprovider.Crypto;
 
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
@@ -16,7 +17,6 @@ import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
-import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.perso.DefaultPersoGt;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;

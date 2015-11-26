@@ -5,7 +5,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
-import de.persosim.simulator.crypto.Crypto;
+import org.globaltester.cryptoprovider.Crypto;
+
 import de.persosim.simulator.documents.Mrz;
 import de.persosim.simulator.documents.MrzTD1;
 

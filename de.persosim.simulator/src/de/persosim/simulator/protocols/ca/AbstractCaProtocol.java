@@ -19,6 +19,8 @@ import java.util.HashSet;
 import javax.crypto.KeyAgreement;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.globaltester.cryptoprovider.Crypto;
+
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
@@ -28,7 +30,6 @@ import de.persosim.simulator.cardobjects.KeyObject;
 import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
-import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.KeyDerivationFunction;

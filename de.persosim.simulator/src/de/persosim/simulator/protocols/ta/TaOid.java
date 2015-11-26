@@ -9,7 +9,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.persosim.simulator.crypto.Crypto;
+import org.globaltester.cryptoprovider.Crypto;
+
 import de.persosim.simulator.crypto.certificates.CvOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110;

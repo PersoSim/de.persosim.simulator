@@ -10,7 +10,8 @@ import java.util.Arrays;
 
 import javax.crypto.KeyAgreement;
 
-import de.persosim.simulator.crypto.Crypto;
+import org.globaltester.cryptoprovider.Crypto;
+
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ca.Ca;

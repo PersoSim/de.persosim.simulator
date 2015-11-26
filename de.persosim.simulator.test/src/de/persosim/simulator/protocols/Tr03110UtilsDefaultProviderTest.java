@@ -12,10 +12,10 @@ import java.security.spec.ECPoint;
 import java.security.spec.ECPublicKeySpec;
 import java.security.spec.EllipticCurve;
 
+import org.globaltester.cryptoprovider.Crypto;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.certificates.CvEcPublicKey;
 import de.persosim.simulator.protocols.ta.TaOid;

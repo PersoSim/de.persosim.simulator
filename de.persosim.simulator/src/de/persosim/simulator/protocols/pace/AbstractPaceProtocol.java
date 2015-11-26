@@ -23,6 +23,8 @@ import java.util.HashSet;
 import javax.crypto.KeyAgreement;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.globaltester.cryptoprovider.Crypto;
+
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -37,7 +39,6 @@ import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
-import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.KeyDerivationFunction;

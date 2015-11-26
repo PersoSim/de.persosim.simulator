@@ -13,6 +13,8 @@ import java.util.HashSet;
 
 import javax.crypto.KeyAgreement;
 
+import org.globaltester.cryptoprovider.Crypto;
+
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -22,7 +24,6 @@ import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
-import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.VerificationException;
 import de.persosim.simulator.platform.CardStateAccessor;

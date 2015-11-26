@@ -16,7 +16,8 @@ import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
 
-import de.persosim.simulator.crypto.Crypto;
+import org.globaltester.cryptoprovider.Crypto;
+
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.protocols.ta.TaOid;

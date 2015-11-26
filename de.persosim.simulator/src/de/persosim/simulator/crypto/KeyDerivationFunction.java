@@ -9,6 +9,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.Arrays;
 
+import org.globaltester.cryptoprovider.Crypto;
+
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 

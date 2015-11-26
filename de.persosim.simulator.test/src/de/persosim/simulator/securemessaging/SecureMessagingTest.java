@@ -15,12 +15,12 @@ import javax.crypto.spec.SecretKeySpec;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
+import org.globaltester.cryptoprovider.Crypto;
 import org.junit.Test;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.apdu.ResponseApdu;
-import de.persosim.simulator.crypto.Crypto;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.test.PersoSimTestCase;

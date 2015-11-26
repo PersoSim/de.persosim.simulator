@@ -8,7 +8,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import de.persosim.simulator.crypto.Crypto;
+import org.globaltester.cryptoprovider.Crypto;
+
 import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.SendSequenceCounter;
