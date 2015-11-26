@@ -45,11 +45,81 @@ public class ElementaryFileTest extends PersoSimTestCase {
 		file.setSecStatus(mockedSecurityStatus);
 
 		byte[] newContent = new byte[] { 5, 6, 7, 8 };
+		
+		file.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 
 		file.update(0, newContent);
 
 		assertArrayEquals("file content not as expected", newContent, file.getContent());
 	}
+	
+	@Test
+	public void testSetReadingConditions() throws Exception {
+		// create file to test
+		byte[] content = new byte[] { 1, 2, 3, 4 };
+		
+		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), content,
+				SecCondition.DENIED, SecCondition.DENIED, SecCondition.DENIED, SecCondition.DENIED);
+		file.setSecStatus(mockedSecurityStatus);
+		
+		file.setReadingConditions(SecCondition.ALLOWED);
+		
+		file.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+		
+		file.getContent();
+	}
+	
+	@Test
+	public void testSetWritingConditions() throws Exception {
+		// create file to test
+		byte[] content = new byte[] { 1, 2, 3, 4 };
+		
+		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), content,
+				SecCondition.DENIED, SecCondition.DENIED, SecCondition.DENIED, SecCondition.DENIED);
+		file.setSecStatus(mockedSecurityStatus);
+		
+		file.setWritingConditions(SecCondition.ALLOWED);
+		
+		file.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+		
+		file.update(0, content);
+	}
+	
+	@Test
+	public void testSetErasingConditions() throws Exception {
+		// create file to test
+		byte[] content = new byte[] { 1, 2, 3, 4 };
+		
+		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), content,
+				SecCondition.DENIED, SecCondition.DENIED, SecCondition.DENIED, SecCondition.DENIED);
+		file.setSecStatus(mockedSecurityStatus);
+		
+		file.setErasingConditions(SecCondition.ALLOWED);
+		
+		file.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+		
+		file.erase();
+	}
+	
+	@Test
+	public void testSetDeletionConditions() throws Exception {
+		// create file to test
+		byte[] content = new byte[] { 1, 2, 3, 4 };
+		
+		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), content,
+				SecCondition.DENIED, SecCondition.DENIED, SecCondition.DENIED, SecCondition.DENIED);
+		file.setSecStatus(mockedSecurityStatus);
+		
+		file.setDeletionConditions(SecCondition.ALLOWED);
+		
+		MasterFile mf = new MasterFile();
+		mf.addChild(file);
+		
+		file.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+		
+		file.delete();
+	}
+
 
 	/**
 	 * Positive test: delete a file from the object tree.
