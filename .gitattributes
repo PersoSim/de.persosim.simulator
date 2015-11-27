@@ -1,0 +1,14 @@
+*.a32 text eol=lf
+*.bat text eol=lf
+*.classpath text eol=lf
+*.dtd text eol=lf
+*.html text eol=lf
+*.java text eol=lf
+*.js text eol=lf
+*.md text eol=lf
+*.MF text eol=lf
+*.properties text eol=lf
+*.sh text eol=lf
+*.txt text eol=lf
+*.xml text eol=lf
+*.xsl text eol=lf
