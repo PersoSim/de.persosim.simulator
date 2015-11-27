@@ -11,6 +11,7 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.tlv.TlvValuePlain;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Serializer;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -147,7 +148,8 @@ public class CommandApduImpl implements CommandApdu {
 	 */
 	@Override
 	public TlvValue getCommandData() {
-		return commandData;
+		TlvValue retCommandData = Serializer.deepCopy(commandData);
+		return retCommandData;
 	}
 	
 	/* (non-Javadoc)
@@ -292,7 +294,8 @@ public class CommandApduImpl implements CommandApdu {
 	 */
 	@Override
 	public CommandApdu getPredecessor() {
-		return predecessor;
+		
+		return Serializer.deepCopy(predecessor);
 	}
 
 	/* (non-Javadoc)
