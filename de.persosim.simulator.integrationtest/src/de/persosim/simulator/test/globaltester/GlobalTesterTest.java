@@ -24,10 +24,10 @@ import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
+import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.MrzAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
-import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
@@ -170,7 +170,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 	
 	private void transmitEidData() {
 
-		CardFile dg18 = getEidDg(0x12);
+		CardFile dg18 = getEidDg(0x0112);
 		if(dg18 instanceof ElementaryFile) {
 			try {
 				Field f = ElementaryFile.class.getDeclaredField("content");
@@ -185,7 +185,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 			
 	}
 
-	private CardFile getEidDg(int sfid) {
+	private CardFile getEidDg(int fid) {
 		MasterFile mf = PersonalizationHelper.getUniqueCompatibleLayer(getPersonalization().getLayerList(), CommandProcessor.class).getObjectTree();
 		
 		Collection<CardObject> cardApplications = mf.findChildren(new DedicatedFileIdentifier(HexString
@@ -194,7 +194,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 		for (Iterator<CardObject> iterator = cardApplications.iterator(); iterator.hasNext();) {
 			CardObject eidApplication = iterator.next();
 		
-			Collection<CardObject> cardFiles = eidApplication.findChildren(new ShortFileIdentifier(sfid));
+			Collection<CardObject> cardFiles = eidApplication.findChildren(new FileIdentifier(fid));
 			if (!cardFiles.isEmpty()) {
 				return (CardFile) cardFiles.iterator().next();
 			}

@@ -15,6 +15,7 @@ import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
+import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.perso.DefaultPersoGt;
@@ -97,7 +98,12 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 				//get DG number
 				byte[] dgNumber = null;
 				for (CardObjectIdentifier curIdentifier : curFile.getAllIdentifiers()) {
-					if (curIdentifier instanceof ShortFileIdentifier) {
+					if (curIdentifier instanceof FileIdentifier) {
+						Integer fid = ((FileIdentifier) curIdentifier).getFileIdentifier();
+						int dg = Integer.parseInt(fid.toString().substring(fid.toString().length()-2));
+						dgNumber = Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(dg));
+						break;
+					} else if (curIdentifier instanceof ShortFileIdentifier) {
 						int sfid = ((ShortFileIdentifier) curIdentifier).getShortFileIdentifier();
 						dgNumber = Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(sfid));
 						break;
