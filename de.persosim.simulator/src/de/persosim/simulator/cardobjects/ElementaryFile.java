@@ -32,6 +32,41 @@ public class ElementaryFile extends AbstractFile {
 	private SecCondition erasingConditions;
 
 	private SecCondition deletionConditions;
+	
+	
+	/**
+	 * Creates a new {@link ElementaryFile} using both a full file identifier
+	 * and a short file identifier. Sets all access restrictions to denied.
+	 * 
+	 * @param fileIdentifier
+	 *            used for identification of the file in the object tree
+	 * @param shortFileIdentifier
+	 *            used for identification of the file in the object tree
+	 * @param content
+	 *            the initial contents of the file
+	 */
+	public ElementaryFile(FileIdentifier fileIdentifier, ShortFileIdentifier shortFileIdentifier, byte[] content) {
+		this(fileIdentifier, content);
+		this.shortFileIdentifier = shortFileIdentifier;
+	}
+
+	/**
+	 * Creates a new {@link ElementaryFile} using only a full file identifier.
+	 * Sets all access restrictions to denied.
+	 * 
+	 * @param fileIdentifier
+	 *            used for identification of the file in the object tree
+	 * @param content
+	 *            the initial contents of the file
+	 */
+	public ElementaryFile(FileIdentifier fileIdentifier, byte[] content) {
+		super(fileIdentifier);
+		this.content = content;
+		readingConditions = SecCondition.DENIED;		
+		writingConditions = SecCondition.DENIED;
+		erasingConditions = SecCondition.DENIED;
+		deletionConditions = SecCondition.DENIED;
+	}
 
 	/**
 	 * Creates a new {@link ElementaryFile} using both a full file identifier
