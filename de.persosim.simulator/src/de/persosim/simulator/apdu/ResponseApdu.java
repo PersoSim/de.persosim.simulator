@@ -3,8 +3,16 @@ package de.persosim.simulator.apdu;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Serializer;
 import de.persosim.simulator.utils.Utils;
 
+/**
+ * Container class carrying the information of the response APDU. This class
+ * provides simplified access to all the relevant information that can be
+ * extracted from the response APDU.
+ * 
+ * Response Apdus are immutable.
+ */
 public class ResponseApdu {
 
 	/* Declares data to be sent with the response APDU */
@@ -39,7 +47,7 @@ public class ResponseApdu {
 	}
 
 	public TlvValue getData() {
-		return data;
+		return Serializer.deepCopy(data);
 	}
 
 	public byte[] toByteArray() {

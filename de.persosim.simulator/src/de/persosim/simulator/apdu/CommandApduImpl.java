@@ -23,6 +23,8 @@ import de.persosim.simulator.utils.Utils;
  * APDU was SM secured and unwrapped by the SecureMessaging layer the original
  * CommandApdu is preserved in the predecessor field.
  * 
+ * All {@link #CommandApduImpl} Objects and its children are immutable.
+ * 
  * @author amay
  * 
  */
@@ -148,8 +150,7 @@ public class CommandApduImpl implements CommandApdu {
 	 */
 	@Override
 	public TlvValue getCommandData() {
-		TlvValue retCommandData = Serializer.deepCopy(commandData);
-		return retCommandData;
+		return Serializer.deepCopy(commandData);
 	}
 	
 	/* (non-Javadoc)
