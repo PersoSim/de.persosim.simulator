@@ -117,7 +117,6 @@ public class ElementaryFile extends AbstractFile {
 	public ElementaryFile(FileIdentifier fileIdentifier, ShortFileIdentifier shortFileIdentifier, byte[] content,
 			SecCondition readingConditions, SecCondition writingConditions, SecCondition erasingConditions) {
 		this(fileIdentifier, shortFileIdentifier, content, readingConditions, writingConditions, erasingConditions, SecCondition.DENIED);
-		this.shortFileIdentifier = shortFileIdentifier;
 	}
 	
 	/**
