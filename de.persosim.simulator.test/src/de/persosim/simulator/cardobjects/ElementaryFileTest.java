@@ -54,7 +54,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Negative test: Try to read when no SecConditions are set.
+	 * Negative test: Try to read when constructor without SecConditions is used.
 	 */
 	@Test (expected = AccessDeniedException.class)
 	public void testReadWithoutSecConditions() throws AccessDeniedException {
@@ -66,29 +66,6 @@ public class ElementaryFileTest extends PersoSimTestCase {
 		file.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
 		file.getContent();
-	}
-
-	/**
-	 * Positive test:  Create Elementary Files without SecConditions and add them for reading and writing later
-	 */
-	@Test
-	public void testConstructorWithoutSecConditions() throws AccessDeniedException {
-		// create file to test
-		byte[] content = new byte[] { 1, 2, 3, 4 };
-		byte[] newContent = new byte[] { 5, 6, 7, 8 };
-		
-		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), content);
-		file.setSecStatus(mockedSecurityStatus);
-		file.setReadingConditions(SecCondition.ALLOWED);
-		file.setWritingConditions(SecCondition.ALLOWED);
-		
-		file.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
-		
-		assertArrayEquals("file content not as expected", content, file.getContent());
-		
-		file.update(0, newContent);
-		
-		assertArrayEquals("file content not as expected", newContent, file.getContent());
 	}
 	
 	@Test

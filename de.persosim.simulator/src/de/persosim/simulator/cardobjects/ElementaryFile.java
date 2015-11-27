@@ -36,7 +36,7 @@ public class ElementaryFile extends AbstractFile {
 	
 	/**
 	 * Creates a new {@link ElementaryFile} using both a full file identifier
-	 * and a short file identifier.
+	 * and a short file identifier. Sets all access restrictions to denied.
 	 * 
 	 * @param fileIdentifier
 	 *            used for identification of the file in the object tree
@@ -46,21 +46,15 @@ public class ElementaryFile extends AbstractFile {
 	 *            the initial contents of the file
 	 */
 	public ElementaryFile(FileIdentifier fileIdentifier, ShortFileIdentifier shortFileIdentifier, byte[] content) {
-		super(fileIdentifier);
-		this.content = content;
+		this(fileIdentifier, content);
 		this.shortFileIdentifier = shortFileIdentifier;
-		readingConditions = SecCondition.DENIED;		
-		writingConditions = SecCondition.DENIED;
-		erasingConditions = SecCondition.DENIED;
-		deletionConditions = SecCondition.DENIED;
 	}
 
 	/**
 	 * Creates a new {@link ElementaryFile} using only a full file identifier.
+	 * Sets all access restrictions to denied.
 	 * 
 	 * @param fileIdentifier
-	 *            used for identification of the file in the object tree
-	 * @param shortFileIdentifier
 	 *            used for identification of the file in the object tree
 	 * @param content
 	 *            the initial contents of the file
