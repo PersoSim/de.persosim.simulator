@@ -1,1 +1,6 @@
-/bin/
+/bin
+/target
+/logs
+/target
+/coverage-report
+/tmp

@@ -6,8 +6,10 @@ Bundle-Version: 0.7.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit;bundle-version="4.11.0",
  org.globaltester.cryptoprovider.bc,
- de.persosim.simulator;bundle-version="0.6.0",
- org.globaltester.simulator
+ de.persosim.simulator,
+ org.globaltester.simulator,
+ org.globaltester.cryptoprovider,
+ de.persosim.simulator.adapter.socket
 Export-Package: de.persosim.simulator.test.globaltester,
  de.persosim.simulator.test.globaltester.perso
 Import-Package: org.eclipse.ui.keys,
