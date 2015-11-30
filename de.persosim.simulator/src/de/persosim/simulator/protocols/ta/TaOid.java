@@ -49,13 +49,6 @@ public class TaOid extends GenericOid implements Tr03110, CvOid {
 	public static final Oid id_Sector              = new GenericOid(Utils.appendBytes(id_Extensions.toByteArray(), (byte) 0x02));          // TODO no native TA OID, move
 	public static final Oid id_Ps_Sector           = new GenericOid(Utils.appendBytes(id_Extensions.toByteArray(), (byte) 0x03));          // TODO no native TA OID, move
 	
-//	id-CVCExtension OBJE IDENTIFIER ::= {
-//			iso(1) membebody(2) f(250) type-org(1) anssi(223) eIDAStoken(1001) 1
-//	}
-	public final static Oid id_CVCExtension       = new GenericOid(HexString.toByteArray("01 02 FA 01 DF 03E9 01"));                // TODO no native TA OID, move
-	public final static Oid id_ERAspecific        = new GenericOid(Utils.appendBytes(id_CVCExtension.toByteArray(), (byte) 0x03));    // TODO no native TA OID, move
-	
-	
 	
 	private static Set<TaOid> allKnownTaOids= new HashSet<>();
 	static {
