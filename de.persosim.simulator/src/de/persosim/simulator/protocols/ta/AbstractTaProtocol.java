@@ -30,6 +30,7 @@ import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.crypto.certificates.CertificateExtension;
+import de.persosim.simulator.crypto.certificates.ExtensionOid;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
@@ -840,7 +841,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 */
 	private void extractTerminalSector(CardVerifiableCertificate certificate) {
 		for(CertificateExtension extension : certificate.getCertificateExtensions()){
-			if (extension.getObjectIdentifier().equals(TaOid.id_Sector)){
+			if (extension.getObjectIdentifier().equals(ExtensionOid.id_Sector)){
 				if (extension.getDataObjects().containsTlvDataObject(TlvConstants.TAG_80)){
 					firstSectorPublicKeyHash = extension.getDataObjects().getTlvDataObject(TlvConstants.TAG_80).getValueField();
 				}

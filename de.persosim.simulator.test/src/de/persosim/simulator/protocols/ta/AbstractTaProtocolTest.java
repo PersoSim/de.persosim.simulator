@@ -18,6 +18,7 @@ import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
+import de.persosim.simulator.crypto.certificates.ExtensionOid;
 import de.persosim.simulator.crypto.certificates.GenericExtension;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CarParameterInvalidException;
@@ -472,7 +473,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 				certificate.getCertificateExtensions();
 				result = extensions;
 				certificateExtension.getObjectIdentifier();
-				result = TaOid.id_Sector;
+				result = ExtensionOid.id_Sector;
 				certificateExtension.getDataObjects();
 				result = dataObjects;
 			}
