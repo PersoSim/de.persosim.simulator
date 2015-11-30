@@ -279,7 +279,7 @@
                   <sequenceNumber>00001</sequenceNumber>
                 </certificateHolderReference>
                 <certificateHolderAuthorizationTemplate id="91">
-                  <objectIdentifier id="92">
+                  <objectIdentifier class="de.persosim.simulator.protocols.GenericOid" id="92">
                     <oidByteArray id="93">04007F000703010201</oidByteArray>
                   </objectIdentifier>
                   <relativeAuthorization id="94">
@@ -336,7 +336,7 @@
                   <sequenceNumber>00001</sequenceNumber>
                 </certificateHolderReference>
                 <certificateHolderAuthorizationTemplate id="112">
-                  <objectIdentifier id="113">
+                  <objectIdentifier class="de.persosim.simulator.protocols.GenericOid" id="113">
                     <oidByteArray id="114">04007F000703010202</oidByteArray>
                   </objectIdentifier>
                   <relativeAuthorization id="115">
@@ -425,7 +425,7 @@
                   <sequenceNumber>00001</sequenceNumber>
                 </certificateHolderReference>
                 <certificateHolderAuthorizationTemplate id="133">
-                  <objectIdentifier id="134">
+                  <objectIdentifier class="de.persosim.simulator.protocols.GenericOid" id="134">
                     <oidByteArray id="135">04007F000703010203</oidByteArray>
                   </objectIdentifier>
                   <relativeAuthorization id="136">
@@ -466,7 +466,7 @@
             <children id="149"/>
             <lifeCycleState>CREATION</lifeCycleState>
             <identifier id="150">
-              <oid id="151">
+              <oid class="de.persosim.simulator.protocols.GenericOid" id="151">
                 <oidByteArray id="152">04007F000703010403</oidByteArray>
               </oid>
             </identifier>
@@ -477,7 +477,7 @@
             <children id="155"/>
             <lifeCycleState>CREATION</lifeCycleState>
             <identifier id="156">
-              <oid id="157">
+              <oid class="de.persosim.simulator.protocols.GenericOid" id="157">
                 <oidByteArray id="158">04007F000703010401</oidByteArray>
               </oid>
             </identifier>
@@ -488,7 +488,7 @@
             <children id="161"/>
             <lifeCycleState>CREATION</lifeCycleState>
             <identifier id="162">
-              <oid id="163">
+              <oid class="de.persosim.simulator.protocols.GenericOid" id="163">
                 <oidByteArray id="164">04007F000703010402</oidByteArray>
               </oid>
             </identifier>
