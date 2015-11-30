@@ -1,6 +1,7 @@
 package de.persosim.simulator.protocols.ta;
 
 import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.RoleOid;
 
 /**
  * This defines the terminal types described in TR-3110 v2.10 Part 2.
@@ -9,7 +10,7 @@ import de.persosim.simulator.protocols.Oid;
  *
  */
 public enum TerminalType {
-	IS(TaOid.id_IS), AT(TaOid.id_AT), ST(TaOid.id_ST);
+	IS(RoleOid.id_IS), AT(RoleOid.id_AT), ST(RoleOid.id_ST);
 	protected Oid oid;
 
 	private TerminalType(Oid oid) {

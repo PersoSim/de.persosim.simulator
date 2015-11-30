@@ -14,6 +14,7 @@ import org.globaltester.cryptoprovider.Crypto;
 import de.persosim.simulator.crypto.certificates.CvOid;
 import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.RoleOid;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
@@ -37,15 +38,8 @@ public class TaOid extends GenericOid implements Tr03110, CvOid {
 	public static final TaOid id_TA_ECDSA_SHA_384    = new TaOid(Utils.appendBytes(id_TA_ECDSA.oidByteArray, (byte) 0x04), "id-TA-ECDSA-SHA-384");
 	public static final TaOid id_TA_ECDSA_SHA_512    = new TaOid(Utils.appendBytes(id_TA_ECDSA.oidByteArray, (byte) 0x05), "id-TA-ECDSA-SHA-512");
 
-	// terminal types
-	public final static TaOid id_Roles               = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x02}), "id-roles");              // TODO no native TA OID, move
-	
-	public static final TaOid id_IS                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x01), "id-IS");                   // TODO no native TA OID, move
-	public static final TaOid id_AT                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x02), "id-AT");                   // TODO no native TA OID, move
-	public static final TaOid id_ST                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x03), "id-ST");                   // TODO no native TA OID, move
-	
-	public static final Oid id_eIDAccess           = new GenericOid(Utils.appendBytes(id_AT.toByteArray(), (byte) 0x01));               // TODO no native TA OID, move
-	public static final Oid id_specialFunctions    = new GenericOid(Utils.appendBytes(id_AT.toByteArray(), (byte) 0x02));        // TODO no native TA OID, move
+	public static final Oid id_eIDAccess           = new GenericOid(Utils.appendBytes(RoleOid.id_AT.toByteArray(), (byte) 0x01));               // TODO no native TA OID, move
+	public static final Oid id_specialFunctions    = new GenericOid(Utils.appendBytes(RoleOid.id_AT.toByteArray(), (byte) 0x02));        // TODO no native TA OID, move
 	
 	// certificate extensions
 

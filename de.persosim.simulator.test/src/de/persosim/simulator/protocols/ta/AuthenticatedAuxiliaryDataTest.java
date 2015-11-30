@@ -1,11 +1,12 @@
 package de.persosim.simulator.protocols.ta;
 
-import static org.junit.Assert.assertArrayEquals;
-
 import java.util.Arrays;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertArrayEquals;
+
+import de.persosim.simulator.protocols.RoleOid;
 import de.persosim.simulator.test.PersoSimTestCase;
 
 public class AuthenticatedAuxiliaryDataTest extends PersoSimTestCase {
@@ -14,7 +15,7 @@ public class AuthenticatedAuxiliaryDataTest extends PersoSimTestCase {
 		byte[] data = new byte[] { 1, 2, 3, 4, 5 };
 		byte[] expected = Arrays.copyOf(data, data.length);
 
-		AuthenticatedAuxiliaryData authData = new AuthenticatedAuxiliaryData(TaOid.id_AT, data);
+		AuthenticatedAuxiliaryData authData = new AuthenticatedAuxiliaryData(RoleOid.id_AT, data);
 
 		data[0] = 2;
 

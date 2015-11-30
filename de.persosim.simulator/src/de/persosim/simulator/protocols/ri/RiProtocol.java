@@ -32,9 +32,9 @@ import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Protocol;
+import de.persosim.simulator.protocols.RoleOid;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.ta.Authorization;
-import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
@@ -316,7 +316,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 					return;
 				}
 				
-				Authorization auth = authMechanism.getAuthorization(TaOid.id_AT);
+				Authorization auth = authMechanism.getAuthorization(RoleOid.id_AT);
 				
 				if (!(taMechanism.getTerminalType().equals(TerminalType.AT))) {
 					// create and propagate response APDU
