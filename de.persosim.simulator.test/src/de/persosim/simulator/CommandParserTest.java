@@ -20,7 +20,7 @@ public class CommandParserTest {
 	
 	
 	private String DUMMY_PERSONALIZATION_FOLDER = new File("").getAbsolutePath() +  "/tmp";
-	private String DUMMY_PERSONALIZATION_FILE = DUMMY_PERSONALIZATION_FOLDER + "/dummyPerso.xml";
+	private String DUMMY_PERSONALIZATION_FILE = DUMMY_PERSONALIZATION_FOLDER + "/dummyPerso"+CommandParser.PERSO_FILE_POSTFIX;
 	
 	@Before
 	public void setUp(){
