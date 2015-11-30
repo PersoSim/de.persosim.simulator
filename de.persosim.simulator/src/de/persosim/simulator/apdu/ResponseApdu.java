@@ -3,7 +3,6 @@ package de.persosim.simulator.apdu;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.Serializer;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -47,7 +46,8 @@ public class ResponseApdu {
 	}
 
 	public TlvValue getData() {
-		return Serializer.deepCopy(data);
+		ResponseApdu ret = new ResponseApdu(data, statusWord);
+		return ret.data;
 	}
 
 	public byte[] toByteArray() {

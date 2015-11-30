@@ -11,7 +11,6 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.tlv.TlvValuePlain;
 import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.Serializer;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -79,6 +78,18 @@ public class CommandApduImpl implements CommandApdu {
 			ne = 0;
 		}
 
+	}
+	
+	protected CommandApduImpl(byte[] header, boolean isExtendedLength, byte isoCase, int ne, short nc,
+			TlvValue commandData, CommandApdu predecessor) {
+		super();
+		this.header = header;
+		this.isExtendedLength = isExtendedLength;
+		this.isoCase = isoCase;
+		this.ne = ne;
+		this.nc = nc;
+		this.commandData = commandData;
+		this.predecessor = predecessor;
 	}
 
 	/* (non-Javadoc)
@@ -150,7 +161,8 @@ public class CommandApduImpl implements CommandApdu {
 	 */
 	@Override
 	public TlvValue getCommandData() {
-		return Serializer.deepCopy(commandData);
+		CommandApduImpl ret = new CommandApduImpl(header, isExtendedLength, isoCase, ne, nc, commandData, predecessor);
+		return ret.commandData;
 	}
 	
 	/* (non-Javadoc)
@@ -295,8 +307,8 @@ public class CommandApduImpl implements CommandApdu {
 	 */
 	@Override
 	public CommandApdu getPredecessor() {
-		
-		return Serializer.deepCopy(predecessor);
+		CommandApduImpl ret = new CommandApduImpl(header, isExtendedLength, isoCase, ne, nc, commandData, predecessor);
+		return ret.predecessor;
 	}
 
 	/* (non-Javadoc)
