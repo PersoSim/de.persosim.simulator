@@ -1,40 +1,27 @@
 package de.persosim.simulator.cardobjects;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashSet;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.seccondition.SecCondition;
-import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 public class ElementaryFileTest extends PersoSimTestCase {
 
-	@Mocked
-	SecStatus mockedSecurityStatus;
+	SecStatus securityStatus;
 	
 
 	@Before
 	public void setUp() throws ReflectiveOperationException, AccessDeniedException {
-		// prepare the mock
-		new NonStrictExpectations(SecStatus.class) {
-			{
-				mockedSecurityStatus.getCurrentMechanisms(null, null);
-				result = new HashSet<Class<? extends SecMechanism>>();
-			}
-		};
-
+		securityStatus = new SecStatus();
 	}
 
 	@Test
@@ -42,7 +29,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 		// create file to test
 		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), new byte[] { 1, 2, 3, 4 },
 				SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
-		file.setSecStatus(mockedSecurityStatus);
+		file.setSecStatus(securityStatus);
 
 		byte[] newContent = new byte[] { 5, 6, 7, 8 };
 		
@@ -62,7 +49,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 		byte[] content = new byte[] { 1, 2, 3, 4 };
 		
 		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), content);
-		file.setSecStatus(mockedSecurityStatus);		
+		file.setSecStatus(securityStatus);		
 		file.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		
 		file.getContent();
@@ -74,7 +61,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 		byte[] content = new byte[] { 1, 2, 3, 4 };
 		
 		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), content);
-		file.setSecStatus(mockedSecurityStatus);
+		file.setSecStatus(securityStatus);
 		
 		file.setReadingConditions(SecCondition.ALLOWED);
 		
@@ -89,7 +76,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 		byte[] content = new byte[] { 1, 2, 3, 4 };
 		
 		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), content);
-		file.setSecStatus(mockedSecurityStatus);
+		file.setSecStatus(securityStatus);
 		
 		file.setWritingConditions(SecCondition.ALLOWED);
 		
@@ -104,7 +91,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 		byte[] content = new byte[] { 1, 2, 3, 4 };
 		
 		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), content);
-		file.setSecStatus(mockedSecurityStatus);
+		file.setSecStatus(securityStatus);
 		
 		file.setErasingConditions(SecCondition.ALLOWED);
 		
@@ -119,7 +106,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 		byte[] content = new byte[] { 1, 2, 3, 4 };
 		
 		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), content);
-		file.setSecStatus(mockedSecurityStatus);
+		file.setSecStatus(securityStatus);
 		
 		file.setDeletionConditions(SecCondition.ALLOWED);
 		
@@ -218,7 +205,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 		// create file to test
 		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), new byte[] { 1, 2, 3, 4 },
 				SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
-		file.setSecStatus(mockedSecurityStatus);
+		file.setSecStatus(securityStatus);
 		
 		ConstructedTlvDataObject fcp = file.getFileControlParameterDataObject();
 		assertTrue(fcp.containsTlvDataObject(new TlvTag((byte) 0x80)));

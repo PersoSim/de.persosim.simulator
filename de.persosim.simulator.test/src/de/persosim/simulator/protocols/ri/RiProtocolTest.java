@@ -150,7 +150,7 @@ public class RiProtocolTest extends PersoSimTestCase {
 		mechanisms.add(taMechanism);
 		mechanisms.add(authMechanism);
 		
-		new Expectations(MessageDigest.class) {
+		new Expectations() {
 			{
 			MessageDigest.getInstance((String) any, (Provider) any);
 			result = messageDigest;
