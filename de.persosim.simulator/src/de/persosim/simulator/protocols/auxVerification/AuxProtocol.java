@@ -17,6 +17,7 @@ import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.SecInfoPublicity;
@@ -65,7 +66,7 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 			if (commandData.containsTlvDataObject(TlvConstants.TAG_06)){
 				try{
-					Oid oid = new Oid(commandData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
+					Oid oid = new GenericOid(commandData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
 					processOid(processingData, oid);
 					
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
@@ -120,7 +121,7 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 			if (auxDataCandidate instanceof AuxDataObject){
 				auxDataObject = (AuxDataObject) auxDataCandidate;
 			} else {
-				throw new FileNotFoundException("The card object using the OID " + oid.getIdString() + " is not a AUX data object");
+				throw new FileNotFoundException("The card object using the OID " + oid.toString() + " is not a AUX data object");
 			}
 			
 			if (auxDataFromTa != null){

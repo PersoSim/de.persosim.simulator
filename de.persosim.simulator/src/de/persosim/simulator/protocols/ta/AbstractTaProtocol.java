@@ -36,6 +36,7 @@ import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.CertificateUpdateException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.secstatus.AuthorizationStore;
@@ -190,7 +191,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			// extract the currently used terminal type
 			try{
 				TaOid terminalTypeOid = new TaOid(paceMechanism.getOidForTa().toByteArray());
-				terminalType = terminalTypeOid.getTerminalType();
+				terminalType = TerminalType.getFromOid(terminalTypeOid);
 			} catch (IllegalArgumentException e){
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
@@ -410,7 +411,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					TlvDataObject objectIdentifier = ddo.getTlvDataObject(TlvConstants.TAG_06);
 					TlvDataObject discretionaryData = ddo.getTlvDataObject(TlvConstants.TAG_53);
 					try {
-						auxiliaryData.add(new AuthenticatedAuxiliaryData(new Oid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
+						auxiliaryData.add(new AuthenticatedAuxiliaryData(new GenericOid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
 					} catch (IllegalArgumentException e) {
 						// create and propagate response APDU
 						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);

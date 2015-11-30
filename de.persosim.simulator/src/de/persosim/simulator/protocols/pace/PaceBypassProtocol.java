@@ -183,7 +183,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			RelativeAuthorization authorization = new RelativeAuthorization(
 					CertificateRole.getFromMostSignificantBits(roleData[0]), BitField.buildFromBigEndian(
 							(roleData.length * 8) - 2, roleData));
-			usedChat = new CertificateHolderAuthorizationTemplate(chatOid, chatOid.getTerminalType(),
+			usedChat = new CertificateHolderAuthorizationTemplate(chatOid, TerminalType.getFromOid(chatOid),
 					authorization);
 			
 			TerminalType terminalType = usedChat.getTerminalType();

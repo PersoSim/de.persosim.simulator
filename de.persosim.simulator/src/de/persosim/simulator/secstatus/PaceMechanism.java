@@ -20,10 +20,10 @@ public class PaceMechanism extends
 	private byte [] compressedEphemeralPublicKey;
 	private Oid oidForTa;
 
-	public PaceMechanism(PasswordAuthObject usedPassword, byte[] compressedPublicKey, Oid taOid){
+	public PaceMechanism(PasswordAuthObject usedPassword, byte[] compressedPublicKey, Oid terminalTypeOid){
 		this.usedPassword = usedPassword;
 		this.compressedEphemeralPublicKey = compressedPublicKey;
-		this.oidForTa = taOid;
+		this.oidForTa = terminalTypeOid;
 	}
 	
 	/**

@@ -2,6 +2,7 @@ package de.persosim.simulator.protocols.ta;
 
 import de.persosim.simulator.crypto.certificates.CertificateUtils;
 import de.persosim.simulator.exception.CertificateNotParseableException;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -20,22 +21,22 @@ public class CertificateHolderAuthorizationTemplate {
 	RelativeAuthorization relativeAuthorization;
 	TerminalType terminalType;
 	
-	public CertificateHolderAuthorizationTemplate(Oid objectIdentifier, TerminalType terminalType,
+	public CertificateHolderAuthorizationTemplate(Oid terminalOid, TerminalType terminalType,
 			RelativeAuthorization relativeAuthorization) {
-		this.objectIdentifier = objectIdentifier;
+		this.objectIdentifier = terminalOid;
 		this.relativeAuthorization = relativeAuthorization;
 		this.terminalType = terminalType;
 	}
 	
 	public CertificateHolderAuthorizationTemplate(ConstructedTlvDataObject chatData) throws CertificateNotParseableException {
-		objectIdentifier = new Oid(chatData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
+		objectIdentifier = new GenericOid(chatData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
 		PrimitiveTlvDataObject relativeAuthorizationData = (PrimitiveTlvDataObject) chatData.getTlvDataObject(TlvConstants.TAG_53);
 		CertificateRole role = CertificateRole.getFromMostSignificantBits(relativeAuthorizationData.getValueField()[0]);
 		BitField authorization = BitField.buildFromBigEndian(relativeAuthorizationData.getLengthValue() * 8 - 2, relativeAuthorizationData.getValueField());
 		relativeAuthorization = new RelativeAuthorization(role, authorization);
 		
 		//check if oid and relative authorization fit together
-		terminalType = new TaOid(objectIdentifier.toByteArray()).getTerminalType();
+		terminalType = TerminalType.getFromOid(objectIdentifier);
 		int authBits = getRelativeAuthorization().getAuthorization().getNumberOfBits();
 		
 		if ((terminalType.equals(TerminalType.AT) && authBits != 40) || ((terminalType.equals(TerminalType.IS) || terminalType.equals(TerminalType.ST)) && authBits != 8)){

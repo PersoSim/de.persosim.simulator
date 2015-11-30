@@ -30,7 +30,7 @@ import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
-import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.ta.Authorization;
@@ -82,7 +82,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 
 		if ((publicity == SecInfoPublicity.AUTHENTICATED) || (publicity == SecInfoPublicity.PRIVILEGED)) {
-			OidIdentifier riOidIdentifier = new OidIdentifier(new Oid(Ri.id_RI));
+			OidIdentifier riOidIdentifier = new OidIdentifier(new GenericOid(Ri.id_RI));
 			
 			Collection<CardObject> riKeyCardObjects = mf.findChildren(
 					new KeyIdentifier(), riOidIdentifier);

@@ -20,7 +20,7 @@ public class OidTest {
 	 * @author amay
 	 * 
 	 */
-	private class TestOid extends Oid {
+	private class TestOid extends GenericOid {
 
 		public TestOid(byte[] byteArrayRepresentation) {
 			super(byteArrayRepresentation);
@@ -84,7 +84,7 @@ public class OidTest {
 	@Test
 	public void equals_equalContentAndDifferentType() {
 		Oid testOid = new TestOid(new byte[] { 1 });
-		Oid anonymousTypeOid = new Oid(new byte[] { 1 }) {
+		Oid anonymousTypeOid = new GenericOid(new byte[] { 1 }) {
 			@Override
 			public String getIdString() {
 				return "SecondTestOidType";

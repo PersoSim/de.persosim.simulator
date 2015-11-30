@@ -12,13 +12,14 @@ import java.util.Set;
 import org.globaltester.cryptoprovider.Crypto;
 
 import de.persosim.simulator.crypto.certificates.CvOid;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 //XXX MBK complete this class and extract according methods from TR03110
-public class TaOid extends Oid implements Tr03110, CvOid {
+public class TaOid extends GenericOid implements Tr03110, CvOid {
 	public final static TaOid id_TA                  = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x02, 0x02, 0x02}), "id-TA");
 	
 	public static final TaOid id_TA_RSA              = new TaOid(Utils.appendBytes(id_TA.oidByteArray,     (byte) 0x01),  "id-TA-RSA");
@@ -43,22 +44,22 @@ public class TaOid extends Oid implements Tr03110, CvOid {
 	public static final TaOid id_AT                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x02), "id-AT");                   // TODO no native TA OID, move
 	public static final TaOid id_ST                  = new TaOid(Utils.appendBytes(id_Roles.oidByteArray, (byte) 0x03), "id-ST");                   // TODO no native TA OID, move
 	
-	public static final Oid id_eIDAccess           = new Oid(Utils.appendBytes(id_AT.toByteArray(), (byte) 0x01));               // TODO no native TA OID, move
-	public static final Oid id_specialFunctions    = new Oid(Utils.appendBytes(id_AT.toByteArray(), (byte) 0x02));        // TODO no native TA OID, move
+	public static final Oid id_eIDAccess           = new GenericOid(Utils.appendBytes(id_AT.toByteArray(), (byte) 0x01));               // TODO no native TA OID, move
+	public static final Oid id_specialFunctions    = new GenericOid(Utils.appendBytes(id_AT.toByteArray(), (byte) 0x02));        // TODO no native TA OID, move
 	
 	// certificate extensions
 
-	public final static Oid id_Extensions          = new Oid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x03}));         // TODO no native TA OID, move
+	public final static Oid id_Extensions          = new GenericOid(Utils.appendBytes(id_BSI, new byte[]{0x03, 0x01, 0x03}));         // TODO no native TA OID, move
 	
-	public static final Oid id_Description         = new Oid(Utils.appendBytes(id_Extensions.toByteArray(), (byte) 0x01));     // TODO no native TA OID, move
-	public static final Oid id_Sector              = new Oid(Utils.appendBytes(id_Extensions.toByteArray(), (byte) 0x02));          // TODO no native TA OID, move
-	public static final Oid id_Ps_Sector           = new Oid(Utils.appendBytes(id_Extensions.toByteArray(), (byte) 0x03));          // TODO no native TA OID, move
+	public static final Oid id_Description         = new GenericOid(Utils.appendBytes(id_Extensions.toByteArray(), (byte) 0x01));     // TODO no native TA OID, move
+	public static final Oid id_Sector              = new GenericOid(Utils.appendBytes(id_Extensions.toByteArray(), (byte) 0x02));          // TODO no native TA OID, move
+	public static final Oid id_Ps_Sector           = new GenericOid(Utils.appendBytes(id_Extensions.toByteArray(), (byte) 0x03));          // TODO no native TA OID, move
 	
 //	id-CVCExtension OBJE IDENTIFIER ::= {
 //			iso(1) membebody(2) f(250) type-org(1) anssi(223) eIDAStoken(1001) 1
 //	}
-	public final static Oid id_CVCExtension       = new Oid(HexString.toByteArray("01 02 FA 01 DF 03E9 01"));                // TODO no native TA OID, move
-	public final static Oid id_ERAspecific        = new Oid(Utils.appendBytes(id_CVCExtension.toByteArray(), (byte) 0x03));    // TODO no native TA OID, move
+	public final static Oid id_CVCExtension       = new GenericOid(HexString.toByteArray("01 02 FA 01 DF 03E9 01"));                // TODO no native TA OID, move
+	public final static Oid id_ERAspecific        = new GenericOid(Utils.appendBytes(id_CVCExtension.toByteArray(), (byte) 0x03));    // TODO no native TA OID, move
 	
 	
 	
@@ -186,18 +187,16 @@ public class TaOid extends Oid implements Tr03110, CvOid {
 		return null;
 	}
 
-	
-	/**
-	 * This method returns the terminal type
-	 * @return the terminal type extracted from this TA OID
-	 */
-	public TerminalType getTerminalType() {
-		if (this.equals(TaOid.id_IS)) {
-			return TerminalType.IS;
-		} else if (this.equals(TaOid.id_AT)) {
-			return TerminalType.AT;
-		} else if (this.equals(TaOid.id_ST)) {
-			return TerminalType.ST;
+	@Override
+	public String getKeyType() {
+		if (equals(TaOid.id_TA_RSA_v1_5_SHA_1) || equals(TaOid.id_TA_RSA_v1_5_SHA_256)
+				|| equals(TaOid.id_TA_RSA_v1_5_SHA_512) || equals(TaOid.id_TA_RSA_PSS_SHA_1)
+				|| equals(TaOid.id_TA_RSA_PSS_SHA_256) || equals(TaOid.id_TA_RSA_PSS_SHA_512)) {
+			return "RSA";
+		} else if (equals(TaOid.id_TA_ECDSA_SHA_1) || equals(TaOid.id_TA_ECDSA_SHA_224)
+				|| equals(TaOid.id_TA_ECDSA_SHA_256) || equals(TaOid.id_TA_ECDSA_SHA_384)
+				|| equals(TaOid.id_TA_ECDSA_SHA_512)) {
+			return "EC";
 		}
 		return null;
 	}

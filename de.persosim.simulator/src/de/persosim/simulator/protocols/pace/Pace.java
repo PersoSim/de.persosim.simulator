@@ -1,6 +1,7 @@
 package de.persosim.simulator.protocols.pace;
 
 import de.persosim.simulator.cardobjects.OidIdentifier;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.Utils;
@@ -43,7 +44,7 @@ public interface Pace extends Tr03110 {
 	
 	/*--------------------------------------------------------------------------------*/
 	
-	public final static Oid OID_id_PACE          = new Oid(id_PACE);
+	public final static Oid OID_id_PACE          = new GenericOid(id_PACE);
 	
 	/* ECDH-GM */
 	public final static PaceOid OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128    = new PaceOid(id_PACE_ECDH_GM_AES_CBC_CMAC_128);
