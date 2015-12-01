@@ -2,7 +2,6 @@ package de.persosim.simulator.apdu;
 
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.tlv.TlvValue;
-import de.persosim.simulator.tlv.TlvValuePlain;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
@@ -47,8 +46,11 @@ public class ResponseApdu {
 	}
 
 	public TlvValue getData() {
-		TlvValuePlain ret = (TlvValuePlain) this.data;
-		return ret.clone();
+		TlvValue ret = this.data;
+		if(ret != null){
+			return ret.clone();
+		}
+		return null;
 	}
 
 	public byte[] toByteArray() {
