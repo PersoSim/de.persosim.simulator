@@ -26,12 +26,7 @@ public class DomainParameterSetIdentifier extends IntegerIdentifier {
 			return super.matches(obj);
 		}
 		return false;
-	}
-	
-	public void setDomainParameterId(int domainParameterId){
-		setInteger(domainParameterId);
-	}
-	public int getDomainParameterId() {
+	}public int getDomainParameterId() {
 		return getInteger();
 	}
 
