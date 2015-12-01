@@ -161,8 +161,8 @@ public class CommandApduImpl implements CommandApdu {
 	 */
 	@Override
 	public TlvValue getCommandData() {
-		CommandApduImpl ret = new CommandApduImpl(header, isExtendedLength, isoCase, ne, nc, commandData, predecessor);
-		return ret.commandData;
+		TlvValuePlain ret =  (TlvValuePlain) this.commandData;
+		return ret.clone();
 	}
 	
 	/* (non-Javadoc)
@@ -176,7 +176,7 @@ public class CommandApduImpl implements CommandApdu {
 		} else {
 			commandDataRet = (TlvDataObjectContainer) commandData;
 		}
-		return commandDataRet;
+		return commandDataRet.clone();
 	}
 
 	/* (non-Javadoc)
