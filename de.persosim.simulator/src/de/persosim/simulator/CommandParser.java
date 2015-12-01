@@ -55,10 +55,9 @@ public class CommandParser {
 	
 	private static boolean processingCommandLineArguments = false;
 	
-	public static final String persoPlugin = "platform:/plugin/de.persosim.rcp/";
-	public static final String persoPath = "personalization/profiles/";
-	public static final String persoFilePrefix = "Profile";
-	public static final String persoFilePostfix = ".xml";
+	public static final String PERSO_PATH = "personalization/profiles/";
+	public static final String PERSO_FILE_PREFIX = "Profile";
+	public static final String PERSO_FILE_POSTFIX = ".perso";
 	
 	/**
 	 * This method processes the command for starting the simulator.
@@ -249,7 +248,7 @@ public class CommandParser {
 			log(CommandParser.class, "trying to load personalization profile no: " + personalizationNumber, INFO);
 			Bundle plugin = Activator.getContext().getBundle();
 			
-			URL url = plugin.getEntry (persoPath);
+			URL url = plugin.getEntry (PERSO_PATH);
 			URL resolvedUrl;
 			File folder = null;
 			
@@ -262,7 +261,7 @@ public class CommandParser {
 			if (personalizationNumber < 10) {
 				identifier = "0" + personalizationNumber;
 			}
-			filePath = folder.getAbsolutePath() + File.separator + "Profile" + identifier + ".xml";
+			filePath = folder.getAbsolutePath() + File.separator + PERSO_FILE_PREFIX + identifier + PERSO_FILE_POSTFIX;
 		}
 		
 		//actually load perso from the identified file

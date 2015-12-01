@@ -56,7 +56,7 @@ public abstract class ArtifactPersonalizationTest extends PersonalizationTest {
 	 * @throws AccessDeniedException
 	 */
 	protected String getArtifactName() throws AccessDeniedException {
-		return getPerso().getClass().getSimpleName() + ".xml";
+		return getPerso().getClass().getSimpleName() + ".perso";
 	}
 
 	/**
