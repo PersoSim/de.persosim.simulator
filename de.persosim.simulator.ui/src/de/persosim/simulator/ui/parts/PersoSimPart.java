@@ -48,7 +48,7 @@ public class PersoSimPart {
 	
 	public static final String DE_PERSOSIM_SIMULATOR_BUNDLE = "de.persosim.simulator";
 	public static final String PERSO_PATH = "personalization/profiles/";
-	public static final String PERSO_FILE = "Profile01.xml";
+	public static final String PERSO_FILE = "Profile01.perso";
 	
 	public static final int LOG_LIMIT = 1000;
 	

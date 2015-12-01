@@ -73,7 +73,7 @@ public abstract class PersonalizationTest extends PersoSimTestCase {
 	 * @throws AccessDeniedException
 	 */
 	protected String getXmlFilename() throws AccessDeniedException {
-		return getTmpFolder().getAbsolutePath() + File.separator + getPerso().getClass().getSimpleName() + ".xml";
+		return getTmpFolder().getAbsolutePath() + File.separator + getPerso().getClass().getSimpleName() + ".perso";
 	}
 
 	/**
