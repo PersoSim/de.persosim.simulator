@@ -43,5 +43,10 @@ public class DateTimeCardObject extends AbstractCardObject {
 		// XXX MBK check update access rights here
 		currentDate = new Date(date.getTime());
 	}
+	
+	@Override
+	public String toString() {
+		return "DateTimeCardObject (" + currentDate + ")";
+	}
 
 }

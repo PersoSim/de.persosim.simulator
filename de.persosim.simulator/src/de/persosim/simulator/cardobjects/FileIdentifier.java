@@ -35,4 +35,10 @@ public class FileIdentifier extends AbstractCardObjectIdentifier {
 	public int getFileIdentifier() {
 		return identifier;
 	}
+	
+	@Override
+	public String toString() {
+		return identifier + "";
+	}
+	
 }
