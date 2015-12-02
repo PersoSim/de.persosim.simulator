@@ -205,7 +205,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 		// create file to test
 		ElementaryFile fileWithSFI = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), new byte[] { 1, 2, 3, 4 },
 				SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
-		fileWithSFI.setSecStatus(mockedSecurityStatus);
+		fileWithSFI.setSecStatus(securityStatus);
 
 		ConstructedTlvDataObject fcp = fileWithSFI.getFileControlParameterDataObject();
 		assertTrue(fcp.containsTlvDataObject(new TlvTag((byte) 0x80)));
@@ -213,7 +213,7 @@ public class ElementaryFileTest extends PersoSimTestCase {
 				
 		ElementaryFile fileWithoutSFI = new ElementaryFile(new FileIdentifier(0), new byte[] { 1, 2, 3, 4 },
 				SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
-		fileWithoutSFI.setSecStatus(mockedSecurityStatus);
+		fileWithoutSFI.setSecStatus(securityStatus);
 		
 		fcp = fileWithoutSFI.getFileControlParameterDataObject();
 		assertTrue(fcp.containsTlvDataObject(new TlvTag((byte) 0x80)));
