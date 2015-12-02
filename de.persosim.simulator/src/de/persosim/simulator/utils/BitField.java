@@ -254,14 +254,43 @@ public class BitField {
 	
 	@Override
 	public String toString() {
+		return getStringRepresentation(START_WITH_MOST_SIGNIFICANT_BIT);
+	}
+	
+	public static boolean START_WITH_MOST_SIGNIFICANT_BIT = true;
+	public static boolean START_WITH_LEAST_SIGNIFICANT_BIT = false;
+	
+	/**
+	 * This method returns a String representation of this object consisting of
+	 * {0, 1}. The String starts in reading direction either with the most or
+	 * least significant bit. Either use
+	 * {@link #START_WITH_MOST_SIGNIFICANT_BIT} or
+	 * {@link #START_WITH_LEAST_SIGNIFICANT_BIT} as parameter.
+	 * 
+	 * @param startWithMostSignificantBit
+	 *            start with most or least significant bit
+	 * @return the String representation of this object
+	 */
+	public String getStringRepresentation(boolean startWithMostSignificantBit) {
 		StringBuilder sb = new StringBuilder(getNumberOfBits());
 		int noOfRemainingBits = getNumberOfBits();
+		
+		int effectiveIndex, bitsToCount;
 		for(int i=0; i<getNumberOfBits(); i++) {
-			if((i > 0) && (noOfRemainingBits%8 == 0)) {
+			
+			if(startWithMostSignificantBit) {
+				effectiveIndex = (getNumberOfBits() - 1) - i;
+				bitsToCount = noOfRemainingBits;
+			} else{
+				effectiveIndex = i;
+				bitsToCount = i;
+			}
+			
+			if((i > 0) && ((bitsToCount % 8) == 0)) {
 				sb.append(" ");
 			}
 			
-			if(getBit(i)) {
+			if(getBit(effectiveIndex)) {
 				sb.append("1");
 			} else{
 				sb.append("0");
