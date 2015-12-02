@@ -191,8 +191,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			
 			// extract the currently used terminal type
 			try{
-				TaOid terminalTypeOid = new TaOid(paceMechanism.getOidForTa().toByteArray());
-				terminalType = TerminalType.getFromOid(terminalTypeOid);
+				terminalType = TerminalType.getFromOid(paceMechanism.getOidForTa());
 			} catch (IllegalArgumentException e){
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
