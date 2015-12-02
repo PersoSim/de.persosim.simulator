@@ -26,11 +26,28 @@ public class TypeIdentifier extends AbstractCardObjectIdentifier {
 	}
 
 	@Override
-	public boolean matches(CardObjectIdentifier obj) {
-		if (obj instanceof TypeIdentifier) {
-			return type.isAssignableFrom(((TypeIdentifier) obj).getType());
-		}
-		return false;
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TypeIdentifier other = (TypeIdentifier) obj;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
+		return true;
 	}
 
 }

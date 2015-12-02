@@ -13,10 +13,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
-import de.persosim.simulator.cardobjects.DateTimeObjectIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
+import de.persosim.simulator.cardobjects.TypeIdentifier;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.crypto.certificates.GenericExtension;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
@@ -77,7 +77,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 
 		future = calendar.getTime();
 
-		currentDate = new DateTimeCardObject(null, current);
+		currentDate = new DateTimeCardObject(current);
 
 		taProtocol = new DefaultTaProtocol();
 		taProtocol.setCardStateAccessor(mockedCardStateAccessor);
@@ -120,7 +120,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 						withInstanceOf(TrustPointIdentifier.class));
 				result = trustPoint;
 				mockedMf.findChildren(
-						withInstanceOf(DateTimeObjectIdentifier.class));
+						withInstanceOf(TypeIdentifier.class));
 				result = currentDate;
 				issuingCertificate.getEffectiveDate();
 				result = past;
@@ -163,7 +163,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 						withInstanceOf(TrustPointIdentifier.class));
 				result = trustPoint;
 				mockedMf.findChildren(
-						withInstanceOf(DateTimeObjectIdentifier.class));
+						withInstanceOf(TypeIdentifier.class));
 				result = currentDate;
 				certificate.getEffectiveDate();
 				result = current;
@@ -194,7 +194,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 				mockedMf.findChildren(
-						withInstanceOf(DateTimeObjectIdentifier.class));
+						withInstanceOf(TypeIdentifier.class));
 				result = currentDate;
 				certificate.getCertificateHolderAuthorizationTemplate();
 				result = isDvDomesticChat;
@@ -221,7 +221,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 				mockedMf.findChildren(
-						withInstanceOf(DateTimeObjectIdentifier.class));
+						withInstanceOf(TypeIdentifier.class));
 				result = currentDate;
 				certificate.getCertificateHolderAuthorizationTemplate();
 				result = isDvDomesticChat;
@@ -249,7 +249,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 				mockedMf.findChildren(
-						withInstanceOf(DateTimeObjectIdentifier.class));
+						withInstanceOf(TypeIdentifier.class));
 				result = currentDate;
 				issuingCertificate.getCertificateHolderAuthorizationTemplate();
 				result = isDvForeignChat;
@@ -275,7 +275,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 				mockedMf.findChildren(
-						withInstanceOf(DateTimeObjectIdentifier.class));
+						withInstanceOf(TypeIdentifier.class));
 				result = currentDate;
 				certificate.getCertificateHolderAuthorizationTemplate();
 				result = isCvcaChat;
@@ -303,7 +303,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 				mockedMf.findChildren(
-						withInstanceOf(DateTimeObjectIdentifier.class));
+						withInstanceOf(TypeIdentifier.class));
 				result = currentDate;
 				certificate.getCertificateHolderAuthorizationTemplate();
 				result = isCvcaChat;
@@ -331,7 +331,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getMasterFile();
 				result = mockedMf;
 				mockedMf.findChildren(
-						withInstanceOf(DateTimeObjectIdentifier.class));
+						withInstanceOf(TypeIdentifier.class));
 				result = currentDate;
 				certificate.getCertificateHolderAuthorizationTemplate();
 				result = isDvDomesticChat;

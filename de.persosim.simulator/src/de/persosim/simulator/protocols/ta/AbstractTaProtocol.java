@@ -23,10 +23,10 @@ import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectUtils;
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
-import de.persosim.simulator.cardobjects.DateTimeObjectIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
+import de.persosim.simulator.cardobjects.TypeIdentifier;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.crypto.certificates.CertificateExtension;
@@ -641,7 +641,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @return the currently stored date
 	 */
 	private DateTimeCardObject getCurrentDate(){
-		return (DateTimeCardObject) CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new DateTimeObjectIdentifier());
+		return (DateTimeCardObject) CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new TypeIdentifier(DateTimeCardObject.class));
 	}
 
 	/**

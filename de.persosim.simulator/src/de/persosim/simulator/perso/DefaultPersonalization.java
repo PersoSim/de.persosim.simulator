@@ -17,7 +17,6 @@ import de.persosim.simulator.cardobjects.ByteDataAuxObject;
 import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.DateAuxObject;
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
-import de.persosim.simulator.cardobjects.DateTimeObjectIdentifier;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.cardobjects.DomainParameterSetCardObject;
@@ -201,8 +200,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2014, 4, 5, 0, 0, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
-		DateTimeCardObject curTime = new DateTimeCardObject(
-				new DateTimeObjectIdentifier(), calendar.getTime());
+		DateTimeCardObject curTime = new DateTimeCardObject(calendar.getTime());
 		mf.addChild(curTime);
 	}
 

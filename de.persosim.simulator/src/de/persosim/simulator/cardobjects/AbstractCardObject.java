@@ -22,7 +22,6 @@ public abstract class AbstractCardObject implements CardObject {
 	private CardObject parent;
 	private List<CardObject> children = new ArrayList<>();
 	protected transient SecStatus securityStatus;
-	private TypeIdentifier identifier;
 
 	private Iso7816LifeCycleState lifeCycleState = Iso7816LifeCycleState.CREATION;
 
@@ -152,11 +151,7 @@ public abstract class AbstractCardObject implements CardObject {
 
 	@Override
 	public Collection<CardObjectIdentifier> getAllIdentifiers() {
-		if (identifier == null) {
-			identifier = new TypeIdentifier(this.getClass());
-		}
 		HashSet<CardObjectIdentifier> set = new HashSet<>();
-		set.add(identifier);
 		return set;
 	}
 
