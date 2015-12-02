@@ -1,9 +1,11 @@
 package de.persosim.simulator.protocols;
 
 /**
- * This interface describes the generic functionalities to be implemented by any OID class.
+ * This interface describes the generic functionalities to be implemented by any
+ * OID class. All specific {@link Oid} implementations muste be immutable.
+ * Implementations should not add additional fields containing relevant state.
  * 
- * @author slutters
+ * @author mboonk
  *
  */
 public interface Oid {

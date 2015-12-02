@@ -5,9 +5,7 @@ import java.util.Arrays;
 import de.persosim.simulator.utils.HexString;
 
 /**
- * This class implements common functionality for OIDs. All specific
- * {@link GenericOid} implementations are to be immutable. Oid implementations
- * should not add additional fields containing relevant state. The
+ * This class implements common functionality for OIDs. The
  * {@link #equals(Object)} implementation of all {@link GenericOid}s only checks
  * for the contained bytes.
  * 
@@ -20,14 +18,14 @@ public class GenericOid implements Oid{
 	public GenericOid(byte[] byteArrayRepresentation) {
 		if(byteArrayRepresentation == null) {throw new NullPointerException("oid byte array is null but must not be null");}
 		
-		oidByteArray = byteArrayRepresentation;
+		oidByteArray = byteArrayRepresentation.clone();
 	}
 	
 	/**
 	 * @return the oidByteArray
 	 */
 	public byte[] toByteArray() {
-		return oidByteArray;
+		return oidByteArray.clone();
 	}
 
 	/**
