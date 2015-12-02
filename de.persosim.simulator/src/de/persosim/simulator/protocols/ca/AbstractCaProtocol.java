@@ -150,7 +150,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			
 			if(cardObjectIdentifier != null) {
 				for(CardObjectIdentifier coi: cardObjectIdentifier) {
-					if(!keyObject.matchesIdentifier(coi)) {
+					if(!coi.matches(keyObject)) {
 						throw new ProcessingException(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "invalid key reference");
 					}
 				}

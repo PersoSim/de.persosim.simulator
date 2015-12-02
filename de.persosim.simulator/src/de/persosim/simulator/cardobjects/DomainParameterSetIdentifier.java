@@ -18,14 +18,6 @@ public class DomainParameterSetIdentifier extends IntegerIdentifier {
 
 	public DomainParameterSetIdentifier(byte[] idBytes) {
 		super(idBytes);
-	}
-
-	@Override
-	public boolean matches(CardObjectIdentifier obj) {
-		if (obj instanceof DomainParameterSetIdentifier) {
-			return super.matches(obj);
-		}
-		return false;
 	}public int getDomainParameterId() {
 		return getInteger();
 	}

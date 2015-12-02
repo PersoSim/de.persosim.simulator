@@ -32,11 +32,19 @@ public abstract class IntegerIdentifier extends AbstractCardObjectIdentifier {
 	}
 
 	@Override
-	public boolean matches(CardObjectIdentifier obj) {
-		if (obj instanceof IntegerIdentifier) {
-			int otherInteger = ((IntegerIdentifier) obj).getInteger();
-			if ((otherInteger == integer) || (integer == MATCHES_ALWAYS)) {
-				return true;
+	public boolean matches(CardObject obj) {
+		for (CardObjectIdentifier curIdentifier : obj.getAllIdentifiers()) {
+			if (curIdentifier == null) continue;
+			
+			if (this.getClass().isAssignableFrom(curIdentifier.getClass())) {
+				if (integer == MATCHES_ALWAYS) {
+					return true;
+				}
+				
+				int otherInteger = ((IntegerIdentifier) curIdentifier).getInteger();
+				if ((otherInteger == integer)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -45,10 +53,6 @@ public abstract class IntegerIdentifier extends AbstractCardObjectIdentifier {
 	@Override
 	public String toString() {
 		return integer + " (0x" + HexString.encode(Utils.toUnsignedByteArray(integer)) + ")";
-	}
-	
-	public void setInteger(int integer){
-		this.integer = integer;
 	}
 
 	public int getInteger() {

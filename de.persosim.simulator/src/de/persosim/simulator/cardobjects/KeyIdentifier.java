@@ -21,14 +21,6 @@ public class KeyIdentifier extends IntegerIdentifier {
 	public KeyIdentifier() {
 		super();
 	}
-
-	@Override
-	public boolean matches(CardObjectIdentifier obj) {
-		if (obj instanceof KeyIdentifier) {
-			return super.matches(obj);
-		}
-		return false;
-	}
 	
 	public int getKeyReference() {
 		return getInteger();
