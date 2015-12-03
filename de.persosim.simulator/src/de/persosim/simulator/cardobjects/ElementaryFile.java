@@ -318,4 +318,10 @@ public class ElementaryFile extends AbstractFile {
 	public void erase(int startingOffset) throws AccessDeniedException {
 		erase(startingOffset, content.length);
 	}
+	
+	@Override
+	public String toString() {
+		return "elementary file with file identifier " + fileIdentifier + " and short file identifier " + shortFileIdentifier;
+	}
+	
 }

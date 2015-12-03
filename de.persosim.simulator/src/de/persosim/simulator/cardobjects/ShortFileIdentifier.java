@@ -46,5 +46,10 @@ public class ShortFileIdentifier extends AbstractCardObjectIdentifier {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return identifier + "";
+	}
 
 }

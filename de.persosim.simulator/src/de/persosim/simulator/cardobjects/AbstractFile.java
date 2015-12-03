@@ -58,5 +58,10 @@ public abstract class AbstractFile extends AbstractCardObject implements
 		result.add(fileIdentifier);
 		return result;
 	}
+	
+	@Override
+	public String toString() {
+		return "file with file identifier: " + fileIdentifier;
+	}
 
 }
