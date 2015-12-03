@@ -10,12 +10,8 @@ import de.persosim.simulator.utils.Utils;
  * @author mboonk
  *
  */
-public class AuxOid extends GenericOid {
+public class AuxOid {
 
-	public AuxOid(byte[] byteArrayRepresentation) {
-		super(byteArrayRepresentation);
-	}
-	
 	public final static Oid id_AuxiliaryData       = new GenericOid(Utils.appendBytes(Tr03110.id_BSI, new byte[]{0x03, 0x01, 0x04}));
 	
 	public static final Oid id_DateOfBirth         = new GenericOid(Utils.appendBytes(id_AuxiliaryData.toByteArray(), (byte) 0x01));

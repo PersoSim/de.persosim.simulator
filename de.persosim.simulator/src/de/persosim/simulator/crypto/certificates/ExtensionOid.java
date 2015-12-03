@@ -11,11 +11,7 @@ import de.persosim.simulator.utils.Utils;
  * @author mboonk
  *
  */
-public class ExtensionOid extends GenericOid {
-	public ExtensionOid(byte[] byteArrayRepresentation) {
-		super(byteArrayRepresentation);
-	}
-
+public class ExtensionOid {
 	public final static Oid id_Extensions          = new GenericOid(Utils.appendBytes(Tr03110.id_BSI, new byte[]{0x03, 0x01, 0x03}));
 	
 	public static final Oid id_Description         = new GenericOid(Utils.appendBytes(id_Extensions.toByteArray(), (byte) 0x01));
