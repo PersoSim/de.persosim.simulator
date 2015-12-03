@@ -114,55 +114,57 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 				
 				//construct and add RiInfos
 				for (CardObjectIdentifier curIdentifier : identifiers) {
-					if (riOidIdentifier.matches(curIdentifier)) {
-						byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
-						genericRiOidBytes = Arrays.copyOfRange(oidBytes, 0, 9);
-						
-
-						/*
-						 * ProtocolParams ::= SEQUENCE {
-						 * 		version         INTEGER, -- MUST be 1
-						 * 		keyId           INTEGER,
-						 * 		authorizedOnly  BOOLEAN
-						 * }
-						 */
-						ConstructedTlvDataObject params = new ConstructedTlvDataObject(TAG_SEQUENCE);
-						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{1}));
-						params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
-						
-						// add "authorizedOnly"
-						if(curKey.isPrivilegedOnly()) {
-							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, DER_BOOLEAN_TRUE)); //IMPL RI handle authorizedOnly
-						} else {
-							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, DER_BOOLEAN_FALSE));
+					if (curIdentifier instanceof OidIdentifier) {
+						Oid curOid = ((OidIdentifier) curIdentifier).getOid();
+						if (curOid.startsWithPrefix(id_RI)) {
+							byte[] oidBytes = curOid.toByteArray();
+							genericRiOidBytes = Arrays.copyOfRange(oidBytes, 0, 9);
+							
+							/*
+							 * ProtocolParams ::= SEQUENCE {
+							 * 		version         INTEGER, -- MUST be 1
+							 * 		keyId           INTEGER,
+							 * 		authorizedOnly  BOOLEAN
+							 * }
+							 */
+							ConstructedTlvDataObject params = new ConstructedTlvDataObject(TAG_SEQUENCE);
+							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{1}));
+							params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
+							
+							// add "authorizedOnly"
+							if(curKey.isPrivilegedOnly()) {
+								params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, DER_BOOLEAN_TRUE)); //IMPL RI handle authorizedOnly
+							} else {
+								params.addTlvDataObject(new PrimitiveTlvDataObject(TAG_BOOLEAN, DER_BOOLEAN_FALSE));
+							}
+							
+							// define RestrictedIdentificationInfo
+							
+							/*
+							 * RestrictedIdentificationInfo ::= SEQUENCE {
+							 * 		protocol  OBJECT IDENTIFIER(
+							 *           id-RI-DH-SHA-1  |
+							 *           id-RI-DH-SHA-224  |
+							 *           id-RI-DH-SHA-256  |
+							 *           id-RI-DH-SHA-384 |
+							 *           id-RI-DH-SHA-512 |
+							 *           id-RI-ECDH-SHA-1  |
+							 *           id-RI-ECDH-SHA-224  |
+							 *           id-RI-ECDH-SHA-256 |
+							 *           id-RI-ECDH-SHA-384 |
+							 *           id-RI-ECDH-SHA-512),
+							 * 		params    ProtocolParams,
+							 * 		maxKeyLen INTEGER OPTIONAL
+							 * }
+							 */
+							ConstructedTlvDataObject riInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+							riInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
+							riInfo.addTlvDataObject(params);
+							//IMPL RI handle maxKeyLen
+	//						riInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{xxx}));
+							
+							secInfos.add(riInfo);
 						}
-						
-						// define RestrictedIdentificationInfo
-						
-						/*
-						 * RestrictedIdentificationInfo ::= SEQUENCE {
-						 * 		protocol  OBJECT IDENTIFIER(
-						 *           id-RI-DH-SHA-1  |
-						 *           id-RI-DH-SHA-224  |
-						 *           id-RI-DH-SHA-256  |
-						 *           id-RI-DH-SHA-384 |
-						 *           id-RI-DH-SHA-512 |
-						 *           id-RI-ECDH-SHA-1  |
-						 *           id-RI-ECDH-SHA-224  |
-						 *           id-RI-ECDH-SHA-256 |
-						 *           id-RI-ECDH-SHA-384 |
-						 *           id-RI-ECDH-SHA-512),
-						 * 		params    ProtocolParams,
-						 * 		maxKeyLen INTEGER OPTIONAL
-						 * }
-						 */
-						ConstructedTlvDataObject riInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-						riInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
-						riInfo.addTlvDataObject(params);
-						//IMPL RI handle maxKeyLen
-//						riInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{xxx}));
-						
-						secInfos.add(riInfo);					
 					}
 				}
 				

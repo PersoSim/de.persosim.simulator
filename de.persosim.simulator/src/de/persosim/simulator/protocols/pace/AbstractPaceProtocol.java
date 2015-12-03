@@ -939,15 +939,17 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			
 			//construct and add PaceInfos
 			for (CardObjectIdentifier curIdentifier : identifiers) {
-				if (paceOidIdentifier.matches(curIdentifier)) {
-					byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
-					
-					ConstructedTlvDataObject paceInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
-					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{2}));
-					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) parameterId}));
-					
-					secInfos.add(paceInfo);					
+				if (curIdentifier instanceof OidIdentifier) {
+					Oid curOid = ((OidIdentifier) curIdentifier).getOid();
+					if (curOid.startsWithPrefix(id_PACE)) {
+						byte[] oidBytes = curOid.toByteArray();
+						ConstructedTlvDataObject paceInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+						paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
+						paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{2}));
+						paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) parameterId}));
+						
+						secInfos.add(paceInfo);
+					}
 				}
 			}
 			

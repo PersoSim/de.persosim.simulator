@@ -11,9 +11,6 @@ public class AuthObjectIdentifier extends AbstractCardObjectIdentifier {
 
 	int identifier;
 	
-	public AuthObjectIdentifier() {
-	}
-	
 	public AuthObjectIdentifier(byte[] identifier) {
 		this(Utils.getIntFromUnsignedByteArray(identifier));
 	}
@@ -21,17 +18,31 @@ public class AuthObjectIdentifier extends AbstractCardObjectIdentifier {
 	public AuthObjectIdentifier(int identifier) {
 		this.identifier = identifier;
 	}
-	
-	@Override
-	public boolean matches(CardObjectIdentifier obj) {
-		if (obj instanceof AuthObjectIdentifier){
-			return ((AuthObjectIdentifier)obj).getIdentifier() == this.identifier;
-		}
-		return false;
-	}
 
 	public int getIdentifier() {
 		return identifier;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + identifier;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AuthObjectIdentifier other = (AuthObjectIdentifier) obj;
+		if (identifier != other.identifier)
+			return false;
+		return true;
 	}
 
 }

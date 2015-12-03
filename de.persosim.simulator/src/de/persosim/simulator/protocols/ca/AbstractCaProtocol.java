@@ -39,6 +39,7 @@ import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110;
@@ -149,7 +150,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			
 			if(cardObjectIdentifier != null) {
 				for(CardObjectIdentifier coi: cardObjectIdentifier) {
-					if(!keyObject.matchesIdentifier(coi)) {
+					if(!coi.matches(keyObject)) {
 						throw new ProcessingException(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "invalid key reference");
 					}
 				}
@@ -581,16 +582,19 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			
 			//construct and add ChipAuthenticationInfo object(s)
 			for (CardObjectIdentifier curIdentifier : identifiers) {
-				if (caOidIdentifier.matches(curIdentifier)) {
-					byte[] oidBytes = ((OidIdentifier) curIdentifier).getOid().toByteArray();
-					genericCaOidBytes = Arrays.copyOfRange(oidBytes, 0, 9);
-					
-					ConstructedTlvDataObject caInfo = constructChipAuthenticationInfoObject(oidBytes, (byte) keyId);
-					
-					if (curKey.isPrivilegedOnly()) {
-						privilegedSecInfos.add(caInfo);
-					} else {
-						secInfos.add(caInfo);
+				if (curIdentifier instanceof OidIdentifier) {
+					Oid curOid = ((OidIdentifier) curIdentifier).getOid();
+					if (curOid.startsWithPrefix(id_CA)) {
+						byte[] oidBytes = curOid.toByteArray();
+						genericCaOidBytes = Arrays.copyOfRange(oidBytes, 0, 9);
+						
+						ConstructedTlvDataObject caInfo = constructChipAuthenticationInfoObject(oidBytes, (byte) keyId);
+						
+						if (curKey.isPrivilegedOnly()) {
+							privilegedSecInfos.add(caInfo);
+						} else {
+							secInfos.add(caInfo);
+						}
 					}
 				}
 			}

@@ -1,6 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import java.util.Collection;
 import java.util.Date;
 
 
@@ -13,20 +12,9 @@ import java.util.Date;
 public class DateTimeCardObject extends AbstractCardObject {
 
 	Date currentDate;
-	DateTimeObjectIdentifier identifier;
 
-	public DateTimeCardObject(){}
-	
-	public DateTimeCardObject(DateTimeObjectIdentifier identifier, Date date) {
+	public DateTimeCardObject(Date date) {
 		currentDate = new Date(date.getTime());
-		this.identifier = identifier;
-	}
-
-	@Override
-	public Collection<CardObjectIdentifier> getAllIdentifiers() {
-		Collection<CardObjectIdentifier> result = super.getAllIdentifiers();
-		result.add(identifier);
-		return result;
 	}
 	
 	/**
