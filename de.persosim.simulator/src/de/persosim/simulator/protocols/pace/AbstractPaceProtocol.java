@@ -58,7 +58,6 @@ import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
-import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.ConfinedAuthorizationMechanism;
@@ -130,7 +129,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	
 	TrustPointCardObject trustPoint;
 	CertificateHolderAuthorizationTemplate usedChat;
-	TaOid terminalTypeOid;
+	Oid terminalTypeOid;
 	
 	/*--------------------------------------------------------------------------------*/
 	

@@ -41,6 +41,7 @@ import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.protocols.NpaProtocol;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.Tr03110;
+import de.persosim.simulator.protocols.auxVerification.AuxOid;
 import de.persosim.simulator.protocols.auxVerification.AuxProtocol;
 import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.protocols.ca.CaProtocol;
@@ -54,13 +55,12 @@ import de.persosim.simulator.protocols.ri.RiOid;
 import de.persosim.simulator.protocols.ri.RiProtocol;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
-import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TaProtocol;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.PaceSecurityCondition;
-import de.persosim.simulator.seccondition.PaceWithPasswordSecurityCondition;
 import de.persosim.simulator.seccondition.PaceWithPasswordRunningSecurityCondition;
+import de.persosim.simulator.seccondition.PaceWithPasswordSecurityCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.seccondition.TaSecurityCondition;
 import de.persosim.simulator.securemessaging.SecureMessaging;
@@ -184,10 +184,10 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		Date validityDate = calendar.getTime();
 
 		mf.addChild(new ByteDataAuxObject(new OidIdentifier(
-				TaOid.id_CommunityID), communityId));
-		mf.addChild(new DateAuxObject(new OidIdentifier(TaOid.id_DateOfBirth),
+				AuxOid.id_CommunityID), communityId));
+		mf.addChild(new DateAuxObject(new OidIdentifier(AuxOid.id_DateOfBirth),
 				dateOfBirth));
-		mf.addChild(new DateAuxObject(new OidIdentifier(TaOid.id_DateOfExpiry),
+		mf.addChild(new DateAuxObject(new OidIdentifier(AuxOid.id_DateOfExpiry),
 				validityDate));
 	}
 

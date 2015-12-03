@@ -30,15 +30,16 @@ import de.persosim.simulator.cardobjects.TypeIdentifier;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.crypto.certificates.CertificateExtension;
+import de.persosim.simulator.crypto.certificates.ExtensionOid;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.CertificateUpdateException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.SecInfoPublicity;
-import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.ConfinedAuthorizationMechanism;
 import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
@@ -189,16 +190,15 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			paceMechanism = (PaceMechanism) currentMechanisms.iterator().next();
 			
 			// extract the currently used terminal type
-			TaOid terminalTypeOid = paceMechanism.getTerminalType();
-			
-			if(terminalTypeOid == null) {
+			try{
+				terminalType = TerminalType.getFromOid(paceMechanism.getOidForTa());
+			} catch (IllegalArgumentException e){
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
 				this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide information about terminal type", resp);
 				return;
 			}
 			
-			terminalType = Tr03110Utils.getTerminalTypeFromTaOid(terminalTypeOid);
 		}
 
 		// reset the currently set key
@@ -411,7 +411,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					TlvDataObject objectIdentifier = ddo.getTlvDataObject(TlvConstants.TAG_06);
 					TlvDataObject discretionaryData = ddo.getTlvDataObject(TlvConstants.TAG_53);
 					try {
-						auxiliaryData.add(new AuthenticatedAuxiliaryData(new TaOid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
+						auxiliaryData.add(new AuthenticatedAuxiliaryData(new GenericOid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
 					} catch (IllegalArgumentException e) {
 						// create and propagate response APDU
 						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
@@ -840,7 +840,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 */
 	private void extractTerminalSector(CardVerifiableCertificate certificate) {
 		for(CertificateExtension extension : certificate.getCertificateExtensions()){
-			if (extension.getObjectIdentifier().equals(TaOid.id_Sector)){
+			if (extension.getObjectIdentifier().equals(ExtensionOid.id_Sector)){
 				if (extension.getDataObjects().containsTlvDataObject(TlvConstants.TAG_80)){
 					firstSectorPublicKeyHash = extension.getDataObjects().getTlvDataObject(TlvConstants.TAG_80).getValueField();
 				}

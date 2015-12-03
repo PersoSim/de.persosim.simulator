@@ -1,13 +1,13 @@
 package de.persosim.simulator.protocols.pin;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
@@ -20,12 +20,12 @@ import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.RoleOid;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
-import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.seccondition.OrSecCondition;
@@ -83,7 +83,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		taMechanismAt = new TerminalAuthenticationMechanism(new byte[]{1,2,3}, TerminalType.AT, new ArrayList<AuthenticatedAuxiliaryData>(), new byte[]{1,2,3}, new byte[]{1,2,3}, "test", null);
 		
 		HashMap<Oid, Authorization> authorizations = new HashMap<>();
-		authorizations.put(TaOid.id_AT, new RelativeAuthorization(new BitField(40).flipBit(5)));
+		authorizations.put(RoleOid.id_AT, new RelativeAuthorization(new BitField(40).flipBit(5)));
 		AuthorizationStore authStore = new AuthorizationStore(authorizations);
 		authMechanismAtPinMgmt = new EffectiveAuthorizationMechanism(authStore);
 

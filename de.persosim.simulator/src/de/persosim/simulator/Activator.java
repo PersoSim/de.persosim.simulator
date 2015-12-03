@@ -3,8 +3,6 @@ package de.persosim.simulator;
 import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
 import static de.persosim.simulator.utils.PersoSimLogger.log;
 
-import org.globaltester.cryptoprovider.Crypto;
-import org.globaltester.cryptoprovider.Cryptoprovider;
 import org.globaltester.simulator.Simulator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -37,11 +35,6 @@ public class Activator implements BundleActivator {
 		//get LogService
 		logServiceTracker = new ServiceTracker<LogService, LogService>(context, LogService.class.getName(), null);
         logServiceTracker.open();
-        
-        //register service listener for CryptoProvider
-        String filter = "(objectclass=" + Cryptoprovider.class.getName() + ")";
-		context.addServiceListener(Crypto.getInstance(), filter);
-		
 }
 
 	@Override

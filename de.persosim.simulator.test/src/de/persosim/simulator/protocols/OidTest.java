@@ -20,7 +20,7 @@ public class OidTest {
 	 * @author amay
 	 * 
 	 */
-	private class TestOid extends Oid {
+	private class TestOid extends GenericOid {
 
 		public TestOid(byte[] byteArrayRepresentation) {
 			super(byteArrayRepresentation);
@@ -78,21 +78,21 @@ public class OidTest {
 	}
 
 	/**
-	 * Negative test: check whether OID object that contain the samne byte[]
-	 * contents but differ in type are not equal different OID of another type.
+	 * Positive test: check whether OID object that contain the same byte[]
+	 * contents but differ in type are nevertheless equal.
 	 */
 	@Test
-	public void equals_DifferentInContentAndType() {
+	public void equals_equalContentAndDifferentType() {
 		Oid testOid = new TestOid(new byte[] { 1 });
-		Oid anonymousTypeOid = new Oid(new byte[] { 1 }) {
+		Oid anonymousTypeOid = new GenericOid(new byte[] { 1 }) {
 			@Override
 			public String getIdString() {
 				return "SecondTestOidType";
 			}
 		};
 
-		assertFalse("testOid.equals(annonymousType)", testOid.equals(anonymousTypeOid));
-		assertFalse("annonymousType.equals(testOid)", anonymousTypeOid.equals(testOid));
+		assertTrue("testOid.equals(annonymousType)", testOid.equals(anonymousTypeOid));
+		assertTrue("annonymousType.equals(testOid)", anonymousTypeOid.equals(testOid));
 	}
 
 	/**

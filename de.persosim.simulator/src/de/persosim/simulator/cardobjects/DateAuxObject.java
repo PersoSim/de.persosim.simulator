@@ -5,9 +5,10 @@ import java.util.Date;
 import java.util.HashSet;
 
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.protocols.RoleOid;
+import de.persosim.simulator.protocols.auxVerification.AuxOid;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.Authorization;
-import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
@@ -57,14 +58,14 @@ public class DateAuxObject extends AuxDataObject {
 				throw new AccessDeniedException("Age verification not allowed");
 			}
 			
-			if (identifier.getOid().equals(TaOid.id_DateOfBirth)) {
+			if (identifier.getOid().equals(AuxOid.id_DateOfBirth)) {
 				
 				if (taMechanism.getTerminalType().equals(TerminalType.ST)) {
 					throw new AccessDeniedException("Age verification not allowed");
 				}
 				
 				if (taMechanism.getTerminalType().equals(TerminalType.AT)) {
-					Authorization auth = authMechanism.getAuthorization(TaOid.id_AT);
+					Authorization auth = authMechanism.getAuthorization(RoleOid.id_AT);
 					
 					if(!auth.getAuthorization().getBit(0)) {
 							throw new AccessDeniedException("Age verification not allowed");
@@ -74,7 +75,7 @@ public class DateAuxObject extends AuxDataObject {
 				Date dateToCheck = Utils.getDate(new String(current.getDiscretionaryData()));
 				
 				return !date.after(dateToCheck);
-			} else if (identifier.getOid().equals(TaOid.id_DateOfExpiry)) {
+			} else if (identifier.getOid().equals(AuxOid.id_DateOfExpiry)) {
 				Date dateToCheck = Utils.getDate(new String (current.getDiscretionaryData()));
 				return !date.before(dateToCheck);
 			}

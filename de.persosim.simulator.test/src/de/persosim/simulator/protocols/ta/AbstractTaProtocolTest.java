@@ -1,10 +1,5 @@
 package de.persosim.simulator.protocols.ta;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,17 +7,24 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.cardobjects.TypeIdentifier;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
+import de.persosim.simulator.crypto.certificates.ExtensionOid;
 import de.persosim.simulator.crypto.certificates.GenericExtension;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.platform.CardStateAccessor;
+import de.persosim.simulator.protocols.RoleOid;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -83,19 +85,19 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		taProtocol.setCardStateAccessor(mockedCardStateAccessor);
 		taProtocol.init();
 
-		isCvcaChat = new CertificateHolderAuthorizationTemplate(TaOid.id_IS,
+		isCvcaChat = new CertificateHolderAuthorizationTemplate(RoleOid.id_IS, TerminalType.IS,
 				new RelativeAuthorization(CertificateRole.CVCA, new BitField(
 						new boolean[] {})));
 		isDvDomesticChat = new CertificateHolderAuthorizationTemplate(
-				TaOid.id_IS, new RelativeAuthorization(
+				RoleOid.id_IS, TerminalType.IS, new RelativeAuthorization(
 						CertificateRole.DV_TYPE_1, new BitField(
 								new boolean[] {})));
 		isDvForeignChat = new CertificateHolderAuthorizationTemplate(
-				TaOid.id_IS, new RelativeAuthorization(
+				RoleOid.id_IS, TerminalType.IS, new RelativeAuthorization(
 						CertificateRole.DV_TYPE_2, new BitField(
 								new boolean[] {})));
 		isTerminalChat = new CertificateHolderAuthorizationTemplate(
-				TaOid.id_IS, new RelativeAuthorization(
+				RoleOid.id_IS, TerminalType.IS, new RelativeAuthorization(
 						CertificateRole.TERMINAL,
 						new BitField(new boolean[] {})));
 
@@ -471,7 +473,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 				certificate.getCertificateExtensions();
 				result = extensions;
 				certificateExtension.getObjectIdentifier();
-				result = TaOid.id_Sector;
+				result = ExtensionOid.id_Sector;
 				certificateExtension.getDataObjects();
 				result = dataObjects;
 			}

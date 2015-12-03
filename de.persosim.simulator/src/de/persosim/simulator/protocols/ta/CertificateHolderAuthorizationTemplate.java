@@ -2,7 +2,8 @@ package de.persosim.simulator.protocols.ta;
 
 import de.persosim.simulator.crypto.certificates.CertificateUtils;
 import de.persosim.simulator.exception.CertificateNotParseableException;
-import de.persosim.simulator.protocols.Tr03110Utils;
+import de.persosim.simulator.protocols.GenericOid;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -16,37 +17,35 @@ import de.persosim.simulator.utils.BitField;
  * 
  */
 public class CertificateHolderAuthorizationTemplate {
-	TaOid objectIdentifier;
+	Oid objectIdentifier;
 	RelativeAuthorization relativeAuthorization;
-
-	public CertificateHolderAuthorizationTemplate(){
-	}
+	TerminalType terminalType;
 	
-	public CertificateHolderAuthorizationTemplate(TaOid objectIdentifier,
+	public CertificateHolderAuthorizationTemplate(Oid terminalOid, TerminalType terminalType,
 			RelativeAuthorization relativeAuthorization) {
-		this.objectIdentifier = objectIdentifier;
+		this.objectIdentifier = terminalOid;
 		this.relativeAuthorization = relativeAuthorization;
+		this.terminalType = terminalType;
 	}
 	
 	public CertificateHolderAuthorizationTemplate(ConstructedTlvDataObject chatData) throws CertificateNotParseableException {
-
-		objectIdentifier = new TaOid(chatData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
+		objectIdentifier = new GenericOid(chatData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
 		PrimitiveTlvDataObject relativeAuthorizationData = (PrimitiveTlvDataObject) chatData.getTlvDataObject(TlvConstants.TAG_53);
 		CertificateRole role = CertificateRole.getFromMostSignificantBits(relativeAuthorizationData.getValueField()[0]);
 		BitField authorization = BitField.buildFromBigEndian(relativeAuthorizationData.getLengthValue() * 8 - 2, relativeAuthorizationData.getValueField());
 		relativeAuthorization = new RelativeAuthorization(role, authorization);
 		
 		//check if oid and relative authorization fit together
-		TerminalType type = getTerminalType();
+		terminalType = TerminalType.getFromOid(objectIdentifier);
 		int authBits = getRelativeAuthorization().getAuthorization().getNumberOfBits();
 		
-		if ((type.equals(TerminalType.AT) && authBits != 40) || ((type.equals(TerminalType.IS) || type.equals(TerminalType.ST)) && authBits != 8)){
+		if ((terminalType.equals(TerminalType.AT) && authBits != 40) || ((terminalType.equals(TerminalType.IS) || terminalType.equals(TerminalType.ST)) && authBits != 8)){
 			throw new CertificateNotParseableException("invalid combination of OID and terminal type");
 		}
 		
 	}
 
-	public TaOid getObjectIdentifier() {
+	public Oid getObjectIdentifier() {
 		return objectIdentifier;
 	}
 
@@ -60,7 +59,7 @@ public class CertificateHolderAuthorizationTemplate {
 	 * @return the terminal type stored
 	 */
 	public TerminalType getTerminalType() {
-		return Tr03110Utils.getTerminalTypeFromTaOid(objectIdentifier);
+		return terminalType;
 	}
 	
 	public ConstructedTlvDataObject toTlv() {

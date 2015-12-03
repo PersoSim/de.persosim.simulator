@@ -1,13 +1,14 @@
 package de.persosim.simulator.secstatus;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
 import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.test.PersoSimTestCase;
@@ -38,9 +39,9 @@ public class AuthorizationStoreTest extends PersoSimTestCase {
 		auth2 = new Authorization(field2);
 		auth3 = new Authorization(field3);
 		
-		oid1 = new Oid(HexString.toByteArray("0011"));
-		oid2 = new Oid(HexString.toByteArray("001122"));
-		oid3 = new Oid(HexString.toByteArray("00112233"));
+		oid1 = new GenericOid(HexString.toByteArray("0011"));
+		oid2 = new GenericOid(HexString.toByteArray("001122"));
+		oid3 = new GenericOid(HexString.toByteArray("00112233"));
 	}
 	
 	/**

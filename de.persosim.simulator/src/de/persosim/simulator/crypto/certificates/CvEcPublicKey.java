@@ -45,7 +45,7 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 	public CvEcPublicKey(ConstructedTlvDataObject publicKeyEncoding) throws GeneralSecurityException {
 		super(parseOid(publicKeyEncoding), null);
 		
-		if (cvOid.getIdString().contains("EC")) {
+		if (cvOid.getKeyType().equals("EC")) {
 			ECParameterSpec paramSpec = null;
 			
 			if (publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_86)) {

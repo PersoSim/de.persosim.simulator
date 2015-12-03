@@ -6,10 +6,10 @@ import java.util.Arrays;
 import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.CryptoSupportAes;
 import de.persosim.simulator.crypto.CryptoUtil;
-import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.utils.HexString;
 
-public class PaceOid extends Oid implements Pace {
+public class PaceOid extends GenericOid implements Pace {
 	public static final int HASHCODEMULTIPLICATOR = 3;
 	
 	protected String idString;

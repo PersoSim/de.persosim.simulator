@@ -6,11 +6,11 @@ import java.util.Arrays;
 import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.CryptoSupportAes;
 import de.persosim.simulator.crypto.CryptoUtil;
-import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.utils.HexString;
 
 //XXX SLS continue extracting code shared with {@link PaceOid} to {@link Oid}
-public class CaOid extends Oid implements Ca {
+public class CaOid extends GenericOid implements Ca {
 	
 	private String idString;
 	

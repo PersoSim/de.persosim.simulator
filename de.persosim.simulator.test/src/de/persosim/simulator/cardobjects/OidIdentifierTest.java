@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.exception.AccessDeniedException;
-import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.test.PersoSimTestCase;
 
 public class OidIdentifierTest extends PersoSimTestCase {
@@ -37,7 +37,7 @@ public class OidIdentifierTest extends PersoSimTestCase {
 
 		};
 		
-		testIdentifier = new OidIdentifier(new Oid(OID_BYTES_0_TO_4));
+		testIdentifier = new OidIdentifier(new GenericOid(OID_BYTES_0_TO_4));
 	}
 
 	@Test
@@ -54,29 +54,29 @@ public class OidIdentifierTest extends PersoSimTestCase {
 
 	@Test
 	public void testMatches_similarOidIdentifier() throws Exception {
-		testObjectIdentifiers.add(new OidIdentifier(new Oid(OID_BYTES_0_TO_4)));
+		testObjectIdentifiers.add(new OidIdentifier(new GenericOid(OID_BYTES_0_TO_4)));
 		
 		assertTrue(testIdentifier.matches(testObject));
 	}
 
 	@Test
 	public void testMatches_longerOidIdentifier() throws Exception {
-		testObjectIdentifiers.add(new OidIdentifier(new Oid(OID_BYTES_0_TO_6)));
+		testObjectIdentifiers.add(new OidIdentifier(new GenericOid(OID_BYTES_0_TO_6)));
 		
 		assertTrue(testIdentifier.matches(testObject));
 	}
 
 	@Test
 	public void testMatches_shorterOidIdentifier() throws Exception {
-		testObjectIdentifiers.add(new OidIdentifier(new Oid(OID_BYTES_0_TO_2)));
+		testObjectIdentifiers.add(new OidIdentifier(new GenericOid(OID_BYTES_0_TO_2)));
 		
 		assertFalse(testIdentifier.matches(testObject));
 	}
 
 	@Test
 	public void testMatches_matchMultipleOidIdentifier() throws Exception {
-		testObjectIdentifiers.add(new OidIdentifier(new Oid(OID_BYTES_6_TO_0)));
-		testObjectIdentifiers.add(new OidIdentifier(new Oid(OID_BYTES_0_TO_6)));
+		testObjectIdentifiers.add(new OidIdentifier(new GenericOid(OID_BYTES_6_TO_0)));
+		testObjectIdentifiers.add(new OidIdentifier(new GenericOid(OID_BYTES_0_TO_6)));
 		
 		assertTrue(testIdentifier.matches(testObject));
 	}

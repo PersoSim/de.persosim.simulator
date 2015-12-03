@@ -1,6 +1,7 @@
 package de.persosim.simulator.protocols.ca;
 
 import de.persosim.simulator.cardobjects.OidIdentifier;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.Utils;
@@ -55,7 +56,7 @@ public interface Ca extends Tr03110 {
 	
 	/*--------------------------------------------------------------------------------*/
 	
-	public final static Oid OID_id_CA                            = new Oid(id_CA);
+	public final static Oid OID_id_CA                            = new GenericOid(id_CA);
 	
 	/* DH */
 	public final static CaOid OID_id_CA_DH_3DES_CBC_CBC          = new CaOid(id_CA_DH_3DES_CBC_CBC);
