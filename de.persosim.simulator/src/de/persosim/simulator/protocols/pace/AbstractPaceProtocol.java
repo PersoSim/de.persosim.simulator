@@ -151,160 +151,162 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 * This method processes the command APDU SET_AT.
 	 */
 	public void processCommandSetAT() {
-		//get commandDataContainer
-		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-		
-		/* 
-		 * Extract security parameters
-		 */
-		
-		/* PACE OID */
-		/* Check for the PACE OID for itself */
-		/* tlvObject will never be null if APDU passed check against APDU specification */
-		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_80);
 		
 		try {
-			paceOid = getOid(tlvObject.getValueField());
-		} catch (RuntimeException e) {
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-			this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
-			logException(this, e);
-			/* there is nothing more to be done here */
-			return;
-		}
-		
-		/* PACE password */
-		/* Check for the PACE password itself */
-		tlvObject = commandData.getTlvDataObject(TAG_83);
-		CardObject pwdCandidate;
-		try {
-			pwdCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new AuthObjectIdentifier(tlvObject.getValueField()));
+			//get commandDataContainer
+			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
+			
+			/* 
+			 * Extract security parameters
+			 */
+			
+			/* PACE OID */
+			/* Check for the PACE OID for itself */
+			/* tlvObject will never be null if APDU passed check against APDU specification */
+			TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_80);
+			
+			try {
+				paceOid = getOid(tlvObject.getValueField());
+			} catch (RuntimeException e) {
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
+				this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
+				logException(this, e);
+				/* there is nothing more to be done here */
+				return;
+			}
+			
+			/* PACE password */
+			/* Check for the PACE password itself */
+			tlvObject = commandData.getTlvDataObject(TAG_83);
+	
+			CardObject pwdCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new AuthObjectIdentifier(tlvObject.getValueField()));
+	
+			if (pwdCandidate instanceof PasswordAuthObject){
+				pacePassword = (PasswordAuthObject) pwdCandidate;
+				log(this, "selected password is: " + getPasswordName(), DEBUG);
+			} else {
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+				this.processingData.updateResponseAPDU(this, "no fitting authentication object found", resp);
+				/* there is nothing more to be done here */
+				return;
+			}
+			
+			PaceUsedPasswordMechanism paceUsedPasswordMechanism = new PaceUsedPasswordMechanism(pacePassword);
+			processingData.addUpdatePropagation(this, "PACE started with "+pacePassword.getPasswordName(), new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceUsedPasswordMechanism));
+			
+			/* PACE domain parameters */
+			/*
+			 * {@link #tlvObject} may only be null if the combination of OID and domain parameters
+			 * set is not ambiguous. This is the case iff among all sets of domain
+			 * parameters registered for the selected OID exactly one matches the
+			 * key agreement implicitly indicated by the OID.
+			 */
+			tlvObject = commandData.getTlvDataObject(TAG_84);
+			
+			DomainParameterSetIdentifier domainParameterSetIdentifier;
+			if(tlvObject == null) {
+				domainParameterSetIdentifier = new DomainParameterSetIdentifier();
+			} else{
+				domainParameterSetIdentifier = new DomainParameterSetIdentifier(tlvObject.getValueField());
+			}
+			
+			CardObject cardObject;
+			try {
+				cardObject = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), domainParameterSetIdentifier, new OidIdentifier(paceOid));
+			} catch (IllegalArgumentException e) {
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+				this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
+				/* there is nothing more to be done here */
+				return;
+			}
+			
+			if((cardObject instanceof DomainParameterSetCardObject)) {
+				DomainParameterSetCardObject domainParameterObject = (DomainParameterSetCardObject) cardObject;
+				paceDomainParametersUnmapped = domainParameterObject.getDomainParameterSet();
+				paceDomainParameterId = domainParameterObject.getPrimaryIdentifier().getInteger();
+			} else{
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+				this.processingData.updateResponseAPDU(this, "invalid key reference", resp);
+				/* there is nothing more to be done here */
+				return;
+			}
+			
+			/* CHAT */
+			/*
+			 * {@link #tlvObject} may be null if no terminal authentication follows PACE
+			 */
+			tlvObject = commandData.getTlvDataObject(TAG_7F4C);
+			if (tlvObject != null){
+				try {
+					usedChat = new CertificateHolderAuthorizationTemplate((ConstructedTlvDataObject) tlvObject);
+					
+					HashMap<Oid, Authorization> authorizations = getAuthorizationsFromCommandData(commandData);
+					
+					authorizationStore = new AuthorizationStore(authorizations);
+					
+					terminalTypeOid = usedChat.getObjectIdentifier();
+					TerminalType terminalType = usedChat.getTerminalType();
+	
+					trustPoint = (TrustPointCardObject) CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new TrustPointIdentifier(terminalType));
+					if (!checkPasswordAndAccessRights(usedChat, pacePassword)){
+						ResponseApdu resp = new ResponseApdu(
+								Iso7816.SW_6A80_WRONG_DATA);
+						this.processingData.updateResponseAPDU(this, "The given terminal type and password does not match the access rights", resp);
+	
+						/* there is nothing more to be done here */
+						return;
+					}
+				} catch (Exception e) {
+					//FIXME check PokemonException
+					ResponseApdu resp = new ResponseApdu(
+							Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+					this.processingData.updateResponseAPDU(this, e.getMessage(),
+							resp);
+					logException(this, e);
+					/* there is nothing more to be done here */
+					return;
+				}
+			}
+			
+			this.cryptoSupport = paceOid.getCryptoSupport();
+			
+			String logString = "new OID is " + paceOid + ", new " + pacePassword;
+			
+			log(this, logString, DEBUG);	
+	
+			/* 
+			 * Create and set crypto parameters
+			 */
+			KeyDerivationFunction kdf = new KeyDerivationFunction(paceOid.getSymmetricCipherKeyLengthInBytes());
+			byte[] commonSecret = pacePassword.getPassword();
+			
+			log(this, "common secret is: " + HexString.encode(commonSecret), TRACE);
+			
+			byte[] keyMaterialForEncryptionOfNonce = kdf.derivePI(commonSecret);
+			
+			log(this, "computed raw key material of byte length " + keyMaterialForEncryptionOfNonce.length + " is: " + HexString.encode(keyMaterialForEncryptionOfNonce), TRACE);
+			
+			this.secretKeySpecNonce = this.cryptoSupport.generateSecretKeySpecCipher(keyMaterialForEncryptionOfNonce);
+			
+			log(this, "computed " + paceOid.getSymmetricCipherAlgorithmName() + " key material: " + HexString.encode(keyMaterialForEncryptionOfNonce), DEBUG);
+			
+			// If PIN is used, check for retry counter.
+			ResponseData isPasswordUsable = isPasswordUsable(pacePassword, cardState);
+			if (isPasswordUsable != null){
+				//create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(isPasswordUsable.getStatusWord());
+				this.processingData.updateResponseAPDU(this, isPasswordUsable.getResponse(), resp);
+				return;
+			}
+			
+			//create and propagate response APDU
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
+		this.processingData.updateResponseAPDU(this, "Command SetAt successfully processed", resp);
 		} catch (ProcessingException e) {
 			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 			return;
 		}
-		if (pwdCandidate instanceof PasswordAuthObject){
-			pacePassword = (PasswordAuthObject) pwdCandidate;
-			log(this, "selected password is: " + getPasswordName(), DEBUG);
-		} else {
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-			this.processingData.updateResponseAPDU(this, "no fitting authentication object found", resp);
-			/* there is nothing more to be done here */
-			return;
-		}
-		
-		PaceUsedPasswordMechanism paceUsedPasswordMechanism = new PaceUsedPasswordMechanism(pacePassword);
-		processingData.addUpdatePropagation(this, "PACE started with "+pacePassword.getPasswordName(), new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceUsedPasswordMechanism));
-		
-		/* PACE domain parameters */
-		/*
-		 * {@link #tlvObject} may only be null if the combination of OID and domain parameters
-		 * set is not ambiguous. This is the case iff among all sets of domain
-		 * parameters registered for the selected OID exactly one matches the
-		 * key agreement implicitly indicated by the OID.
-		 */
-		tlvObject = commandData.getTlvDataObject(TAG_84);
-		
-		DomainParameterSetIdentifier domainParameterSetIdentifier;
-		if(tlvObject == null) {
-			domainParameterSetIdentifier = new DomainParameterSetIdentifier();
-		} else{
-			domainParameterSetIdentifier = new DomainParameterSetIdentifier(tlvObject.getValueField());
-		}
-		
-		CardObject cardObject;
-		try {
-			cardObject = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), domainParameterSetIdentifier, new OidIdentifier(paceOid));
-		} catch (IllegalArgumentException e) {
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-			this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
-			/* there is nothing more to be done here */
-			return;
-		}
-		
-		if((cardObject instanceof DomainParameterSetCardObject)) {
-			DomainParameterSetCardObject domainParameterObject = (DomainParameterSetCardObject) cardObject;
-			paceDomainParametersUnmapped = domainParameterObject.getDomainParameterSet();
-			paceDomainParameterId = domainParameterObject.getPrimaryIdentifier().getInteger();
-		} else{
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-			this.processingData.updateResponseAPDU(this, "invalid key reference", resp);
-			/* there is nothing more to be done here */
-			return;
-		}
-		
-		/* CHAT */
-		/*
-		 * {@link #tlvObject} may be null if no terminal authentication follows PACE
-		 */
-		tlvObject = commandData.getTlvDataObject(TAG_7F4C);
-		if (tlvObject != null){
-			try {
-				usedChat = new CertificateHolderAuthorizationTemplate((ConstructedTlvDataObject) tlvObject);
-				
-				HashMap<Oid, Authorization> authorizations = getAuthorizationsFromCommandData(commandData);
-				
-				authorizationStore = new AuthorizationStore(authorizations);
-				
-				terminalTypeOid = usedChat.getObjectIdentifier();
-				TerminalType terminalType = usedChat.getTerminalType();
-
-				trustPoint = (TrustPointCardObject) CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new TrustPointIdentifier(terminalType));
-				if (!checkPasswordAndAccessRights(usedChat, pacePassword)){
-					ResponseApdu resp = new ResponseApdu(
-							Iso7816.SW_6A80_WRONG_DATA);
-					this.processingData.updateResponseAPDU(this, "The given terminal type and password does not match the access rights", resp);
-
-					/* there is nothing more to be done here */
-					return;
-				}
-			} catch (Exception e) {
-				//FIXME check PokemonException
-				ResponseApdu resp = new ResponseApdu(
-						Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-				this.processingData.updateResponseAPDU(this, e.getMessage(),
-						resp);
-				logException(this, e);
-				/* there is nothing more to be done here */
-				return;
-			}
-		}
-		
-		this.cryptoSupport = paceOid.getCryptoSupport();
-		
-		String logString = "new OID is " + paceOid + ", new " + pacePassword;
-		
-		log(this, logString, DEBUG);	
-
-		/* 
-		 * Create and set crypto parameters
-		 */
-		KeyDerivationFunction kdf = new KeyDerivationFunction(paceOid.getSymmetricCipherKeyLengthInBytes());
-		byte[] commonSecret = pacePassword.getPassword();
-		
-		log(this, "common secret is: " + HexString.encode(commonSecret), TRACE);
-		
-		byte[] keyMaterialForEncryptionOfNonce = kdf.derivePI(commonSecret);
-		
-		log(this, "computed raw key material of byte length " + keyMaterialForEncryptionOfNonce.length + " is: " + HexString.encode(keyMaterialForEncryptionOfNonce), TRACE);
-		
-		this.secretKeySpecNonce = this.cryptoSupport.generateSecretKeySpecCipher(keyMaterialForEncryptionOfNonce);
-		
-		log(this, "computed " + paceOid.getSymmetricCipherAlgorithmName() + " key material: " + HexString.encode(keyMaterialForEncryptionOfNonce), DEBUG);
-		
-		// If PIN is used, check for retry counter.
-		ResponseData isPasswordUsable = isPasswordUsable(pacePassword, cardState);
-		if (isPasswordUsable != null){
-			//create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(isPasswordUsable.getStatusWord());
-			this.processingData.updateResponseAPDU(this, isPasswordUsable.getResponse(), resp);
-			return;
-		}
-		
-		//create and propagate response APDU
-		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-		this.processingData.updateResponseAPDU(this, "Command SetAt successfully processed", resp);
 	}
 	
 	public HashMap<Oid, Authorization> getAuthorizationsFromCommandData(TlvDataObjectContainer commandData) {
