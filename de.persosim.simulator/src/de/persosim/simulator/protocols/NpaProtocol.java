@@ -99,8 +99,9 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 				byte[] dgNumber = null;
 				for (CardObjectIdentifier curIdentifier : curFile.getAllIdentifiers()) {
 					if (curIdentifier instanceof FileIdentifier) {
-						Integer fid = ((FileIdentifier) curIdentifier).getFileIdentifier();
-						int dg = Integer.parseInt(fid.toString().substring(fid.toString().length()-2));
+						int fidInteger = ((FileIdentifier) curIdentifier).getFileIdentifier();
+						String fidHex = HexString.encode(Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(fidInteger)));
+						int dg = Integer.parseInt(fidHex.substring(fidHex.toString().length()-2), 16);
 						dgNumber = Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(dg));
 						break;
 					} else if (curIdentifier instanceof ShortFileIdentifier) {
