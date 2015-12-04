@@ -166,6 +166,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		addEpassDatagroup2(ePassAppl);
 		addEpassDatagroup3(ePassAppl);
 		addEpassDatagroup4(ePassAppl);
+		addEpassDatagroup14(ePassAppl);
 	}
 
 	/**
@@ -523,6 +524,10 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				SecCondition.DENIED,
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg13);
+	}
+	
+	protected void addEpassDatagroup14(DedicatedFile ePassAppl) throws AccessDeniedException {
+		// stub
 	}
 
 	protected void addEidDg17(DedicatedFile eIdAppl) throws AccessDeniedException {
