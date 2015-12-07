@@ -52,8 +52,6 @@ public class ShortFileIdentifier extends AbstractCardObjectIdentifier {
 	@Override
 	public String toString() {
 		return HexString.encode(Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(identifier))) + " (" + identifier + ")";
-		//int dg = Integer.parseInt(fidHex.substring(fidHex.length()-2), 16);
-		//return identifier + "";
 	}
 
 }

@@ -61,7 +61,7 @@ public class ElementaryFileWithReadWriteCounter extends ElementaryFile {
 	public void update(int offset, byte[] data) throws AccessDeniedException {
 		super.update(offset, data);
 		if(getLifeCycleState().isOperational()) {
-			readCounter++;
+			writeCounter++;
 		}
 	}
 	
