@@ -342,8 +342,8 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	}
 	
 	@Override
-	public TlvDataObjectContainer clone(){
-		return new TlvDataObjectContainer(this);
+	public TlvDataObjectContainer copy(){
+		return new TlvDataObjectContainer(this.toByteArray());
 	}
 	
 }

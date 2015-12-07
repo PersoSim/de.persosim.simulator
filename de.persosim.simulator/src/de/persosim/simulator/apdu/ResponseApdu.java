@@ -48,7 +48,7 @@ public class ResponseApdu {
 	public TlvValue getData() {
 		TlvValue ret = this.data;
 		if(ret != null){
-			return ret.clone();
+			return ret.copy();
 		}
 		return null;
 	}

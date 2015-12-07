@@ -106,7 +106,7 @@ public class TlvValuePlain extends TlvValue {
 	}
 	
 	@Override
-	public TlvValuePlain clone() {
+	public TlvValuePlain copy() {
 		return new TlvValuePlain(this.valueField);
 	}
 	

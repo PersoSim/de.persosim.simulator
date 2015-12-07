@@ -19,6 +19,6 @@ public abstract class TlvValue extends TlvElement {
 	/**
 	 * Returns a clone of the TlvValue
 	 */
-	public abstract TlvValue clone();
+	public abstract TlvValue copy();
 	
 }
