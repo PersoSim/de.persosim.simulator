@@ -1,5 +1,8 @@
 package de.persosim.simulator.cardobjects;
 
+import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
+
 /**
  * Identifies for a {@link CardFile} using the identifier stored in the file
  * itself.
@@ -50,7 +53,7 @@ public class FileIdentifier extends AbstractCardObjectIdentifier {
 	
 	@Override
 	public String toString() {
-		return identifier + "";
+		return "0x"+HexString.encode(Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(identifier)))+" ("+identifier+")";
 	}
 	
 }

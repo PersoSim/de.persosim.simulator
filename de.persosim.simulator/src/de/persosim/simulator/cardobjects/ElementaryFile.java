@@ -210,6 +210,22 @@ public class ElementaryFile extends AbstractFile {
 		}
 		throw new AccessDeniedException("Setting deletion conditions forbidden");
 	}
+	
+	public void setShortFileIdentifier(ShortFileIdentifier shortFileIdentifier) throws AccessDeniedException {
+		if (SecStatus.checkAccessConditions(getLifeCycleState())) {
+			this.shortFileIdentifier = shortFileIdentifier;
+			return;
+		}
+		throw new AccessDeniedException("Setting SFI forbidden");
+	}
+	
+	public void setContent(byte[] content) throws AccessDeniedException{
+		if (SecStatus.checkAccessConditions(getLifeCycleState())) {
+			this.content = content;
+			return;
+		}
+		throw new AccessDeniedException("Setting content forbidden");
+	}
 
 	/**
 	 * Completely replaces the files internal data.

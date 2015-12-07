@@ -1,6 +1,8 @@
 package de.persosim.simulator.cardobjects;
 
 import de.persosim.simulator.exception.FileIdentifierIncorrectValueException;
+import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 
 /**
@@ -49,7 +51,7 @@ public class ShortFileIdentifier extends AbstractCardObjectIdentifier {
 	
 	@Override
 	public String toString() {
-		return identifier + "";
+		return HexString.encode(Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(identifier))) + " (" + identifier + ")";
 	}
 
 }
