@@ -203,11 +203,19 @@ public class ElementaryFileTest extends PersoSimTestCase {
 	@Test
 	public void testGetFileControlInformation() throws AccessDeniedException {
 		// create file to test
-		ElementaryFile file = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), new byte[] { 1, 2, 3, 4 },
-				SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
-		file.setSecStatus(securityStatus);
+		ElementaryFile fileWithSFI = new ElementaryFile(new FileIdentifier(0), new ShortFileIdentifier(1), new byte[] { 1, 2, 3, 4 },
+				SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
+		fileWithSFI.setSecStatus(securityStatus);
+
+		ConstructedTlvDataObject fcp = fileWithSFI.getFileControlParameterDataObject();
+		assertTrue(fcp.containsTlvDataObject(new TlvTag((byte) 0x80)));
+		assertTrue(fcp.containsTlvDataObject(new TlvTag((byte) 0x88)));
+				
+		ElementaryFile fileWithoutSFI = new ElementaryFile(new FileIdentifier(0), new byte[] { 1, 2, 3, 4 },
+				SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED, SecCondition.ALLOWED);
+		fileWithoutSFI.setSecStatus(securityStatus);
 		
-		ConstructedTlvDataObject fcp = file.getFileControlParameterDataObject();
+		fcp = fileWithoutSFI.getFileControlParameterDataObject();
 		assertTrue(fcp.containsTlvDataObject(new TlvTag((byte) 0x80)));
 		assertTrue(fcp.containsTlvDataObject(new TlvTag((byte) 0x88)));
 	}

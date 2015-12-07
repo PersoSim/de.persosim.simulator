@@ -117,7 +117,6 @@ public class ElementaryFile extends AbstractFile {
 	public ElementaryFile(FileIdentifier fileIdentifier, ShortFileIdentifier shortFileIdentifier, byte[] content,
 			SecCondition readingConditions, SecCondition writingConditions, SecCondition erasingConditions) {
 		this(fileIdentifier, shortFileIdentifier, content, readingConditions, writingConditions, erasingConditions, SecCondition.DENIED);
-		this.shortFileIdentifier = shortFileIdentifier;
 	}
 	
 	/**
@@ -237,8 +236,14 @@ public class ElementaryFile extends AbstractFile {
 		result.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag((byte) 0x80),
 				Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(content.length))));
 
-		result.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag((byte) 0x88),
-				Utils.toUnsignedByteArray((byte) shortFileIdentifier.getShortFileIdentifier())));
+		if(shortFileIdentifier != null) {
+			result.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag((byte) 0x88),
+					Utils.toUnsignedByteArray((byte) shortFileIdentifier.getShortFileIdentifier())));
+		} else {
+			result.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag((byte) 0x88)));
+		}
+		
+		
 
 		return result;
 	}
