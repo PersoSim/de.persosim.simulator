@@ -307,6 +307,11 @@ public abstract class Utils {
 				(byte) (input & 0x00000000000000FFL)};
 	}
 	
+	public static byte[] toShortestUnsignedByteArray(int input) {
+		byte [] array = toUnsignedByteArray(input);
+		return removeLeadingZeroBytes(array);
+	}
+	
 	/**
 	 * Returns an unsigned byte array representation of an unsigned int.
 	 * Returned Array has length 4; unused bytes are padded to 0x00.

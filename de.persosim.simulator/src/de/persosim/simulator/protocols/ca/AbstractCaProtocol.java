@@ -542,7 +542,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{version}));
 		//always set keyId even if truly optional/not mandatory
 		//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
-		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, Utils.toUnsignedByteArray(keyId)));
+		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, Utils.toShortestUnsignedByteArray(keyId)));
 		return caInfo;
 	}
 
@@ -621,7 +621,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			caDomainInfo.addTlvDataObject(algIdentifier);
 			//always set keyId even if truly optional/not mandatory
 			//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
-			caDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, Utils.toUnsignedByteArray(keyId)));
+			caDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, Utils.toShortestUnsignedByteArray(keyId)));
 			if (curKey.isPrivilegedOnly()) {
 				privilegedSecInfos.add(caDomainInfo);
 			} else {
