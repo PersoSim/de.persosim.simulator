@@ -13,8 +13,7 @@ import de.persosim.simulator.protocols.ta.TaOid;
  * @author mboonk
  * 
  */
-public class PaceMechanism extends
-		EntityAuthenticationWithPasswordMechanism {
+public class PaceMechanism extends AbstractSecMechanism {
 
 	private PasswordAuthObject usedPassword;
 	private byte [] compressedEphemeralPublicKey;
