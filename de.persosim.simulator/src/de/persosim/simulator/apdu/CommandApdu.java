@@ -15,6 +15,8 @@ import de.persosim.simulator.tlv.TlvValue;
  * 
  * Implementations will usually use the methods in the {@link Iso7816Lib}.
  * 
+ * Beware that all implementations of {@link CommandApdu} are expected to be immutable.
+ * 
  * @author mboonk
  * 
  */

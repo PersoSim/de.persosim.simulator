@@ -108,6 +108,10 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 		this(tlvValue.toByteArray(), 0, tlvValue.getLength());
 	}
 	
+	public TlvDataObjectContainer(Vector<TlvDataObject> tlvObjects) {
+		this.tlvObjects = tlvObjects;
+	}
+
 	/*--------------------------------------------------------------------------------*/
 
 	
@@ -335,6 +339,11 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 		}
 		
 		return true;
+	}
+	
+	@Override
+	public TlvDataObjectContainer copy(){
+		return new TlvDataObjectContainer(this.toByteArray());
 	}
 	
 }

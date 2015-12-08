@@ -16,4 +16,9 @@ public abstract class TlvValue extends TlvElement {
 		return this.getLength() == 0;
 	}
 	
+	/**
+	 * Returns a clone of the TlvValue
+	 */
+	public abstract TlvValue copy();
+	
 }

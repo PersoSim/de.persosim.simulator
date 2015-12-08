@@ -7,7 +7,7 @@ import de.persosim.simulator.tlv.TlvValue;
 public class SmMarkerApdu implements CommandApdu,
 		IsoSecureMessagingCommandApdu {
 
-	private CommandApdu predecessor;
+	private final CommandApdu predecessor;
 
 	public SmMarkerApdu(CommandApdu previousCommandApdu) {
 		//store history
@@ -77,7 +77,7 @@ public class SmMarkerApdu implements CommandApdu,
 
 	@Override
 	public TlvDataObjectContainer getCommandDataObjectContainer() {
-		return predecessor.getCommandDataObjectContainer();
+		return getPredecessor().getCommandDataObjectContainer();
 	}
 
 	@Override
@@ -102,7 +102,8 @@ public class SmMarkerApdu implements CommandApdu,
 
 	@Override
 	public CommandApdu getPredecessor() {
-		return predecessor;
+		SmMarkerApdu ret = new SmMarkerApdu(predecessor);
+		return ret.predecessor;
 	}
 
 	@Override
