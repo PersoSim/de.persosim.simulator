@@ -111,6 +111,7 @@ public class GtConstants {
 	public static final String PROFILE_PACE_ECDH = "PACE-ECDH";
 	public static final String PROFILE_PACE_GM = "PACE-GM";
 	public static final String PROFILE_PACE_IM = "PACE-IM";
+	public static final String PROFILE_PACE_CAM = "PACE-CAM";
 	public static final String PROFILE_Plain = "Plain";
 	public static final String PROFILE_PLAINTEXT = "Plaintext";
 	public static final String PROFILE_RI = "RI";
