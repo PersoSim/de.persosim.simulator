@@ -307,6 +307,11 @@ public abstract class Utils {
 				(byte) (input & 0x00000000000000FFL)};
 	}
 	
+	/**
+	 * This method converts an integer to an unsigned byte array without leading zeros
+	 * @param input the integer to convert
+	 * @return unsigned byte array
+	 */
 	public static byte[] toShortestUnsignedByteArray(int input) {
 		byte [] array = toUnsignedByteArray(input);
 		return removeLeadingZeroBytes(array);
