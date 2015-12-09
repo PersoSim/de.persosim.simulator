@@ -8,7 +8,17 @@ import java.util.Date;
 import org.junit.Test;
 
 public class UtilsTest {
-
+	
+	/**
+	 * tests that only leading 0x00 are removed
+	 */
+	@Test
+	public void testToShortestUnsignedByteArrayBigIntegerZero() {
+		byte[] exp = new byte[]{(byte) 0x2D,(byte) 0x00};
+		byte[] recv = Utils.toShortestUnsignedByteArray(11520);
+		assertArrayEquals(exp, recv);
+	}
+	
 	@Test
 	public void testToUnsignedByteArrayBigIntegerZero() {
 		byte[] exp = new byte[]{(byte) 0x00};

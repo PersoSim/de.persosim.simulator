@@ -212,7 +212,7 @@ public class CommandParser {
 							return true;
 						}
 					} else {
-						log(CommandParser.class, "Please enable the PersoSimService befor loading a personalization", WARN);
+						log(CommandParser.class, "Please enable the PersoSimService before loading a personalization", WARN);
 					}
     			}
 			}

@@ -308,6 +308,16 @@ public abstract class Utils {
 	}
 	
 	/**
+	 * This method converts an integer to an unsigned byte array without leading zeros
+	 * @param input the integer to convert
+	 * @return unsigned byte array
+	 */
+	public static byte[] toShortestUnsignedByteArray(int input) {
+		byte [] array = toUnsignedByteArray(input);
+		return removeLeadingZeroBytes(array);
+	}
+	
+	/**
 	 * Returns an unsigned byte array representation of an unsigned int.
 	 * Returned Array has length 4; unused bytes are padded to 0x00.
 	 * @param input the int
