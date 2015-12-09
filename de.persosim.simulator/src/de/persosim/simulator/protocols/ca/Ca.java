@@ -43,13 +43,11 @@ public interface Ca extends Tr03110 {
 	/*--------------------------------------------------------------------------------*/
 	
 	/* DH */
-	public final static byte[] id_CA_DH_3DES_CBC_CBC          = Utils.appendBytes(id_CA, DH, DES3_CBC_CBC);
 	public final static byte[] id_CA_DH_AES_CBC_CMAC_128      = Utils.appendBytes(id_CA, DH, AES_CBC_CMAC_128);
 	public final static byte[] id_CA_DH_AES_CBC_CMAC_192      = Utils.appendBytes(id_CA, DH, AES_CBC_CMAC_192);
 	public final static byte[] id_CA_DH_AES_CBC_CMAC_256      = Utils.appendBytes(id_CA, DH, AES_CBC_CMAC_256);
 	
 	/* ECDH */
-	public final static byte[] id_CA_ECDH_3DES_CBC_CBC        = Utils.appendBytes(id_CA, ECDH, DES3_CBC_CBC);
 	public final static byte[] id_CA_ECDH_AES_CBC_CMAC_128    = Utils.appendBytes(id_CA, ECDH, AES_CBC_CMAC_128);
 	public final static byte[] id_CA_ECDH_AES_CBC_CMAC_192    = Utils.appendBytes(id_CA, ECDH, AES_CBC_CMAC_192);
 	public final static byte[] id_CA_ECDH_AES_CBC_CMAC_256    = Utils.appendBytes(id_CA, ECDH, AES_CBC_CMAC_256);
@@ -59,13 +57,11 @@ public interface Ca extends Tr03110 {
 	public final static Oid OID_id_CA                            = new GenericOid(id_CA);
 	
 	/* DH */
-	public final static CaOid OID_id_CA_DH_3DES_CBC_CBC          = new CaOid(id_CA_DH_3DES_CBC_CBC);
 	public final static CaOid OID_id_CA_DH_AES_CBC_CMAC_128      = new CaOid(id_CA_DH_AES_CBC_CMAC_128);
 	public final static CaOid OID_id_CA_DH_AES_CBC_CMAC_192      = new CaOid(id_CA_DH_AES_CBC_CMAC_192);
 	public final static CaOid OID_id_CA_DH_AES_CBC_CMAC_256      = new CaOid(id_CA_DH_AES_CBC_CMAC_256);
 	
 	/* ECDH */
-	public final static CaOid OID_id_CA_ECDH_3DES_CBC_CBC        = new CaOid(id_CA_ECDH_3DES_CBC_CBC);
 	public final static CaOid OID_id_CA_ECDH_AES_CBC_CMAC_128    = new CaOid(id_CA_ECDH_AES_CBC_CMAC_128);
 	public final static CaOid OID_id_CA_ECDH_AES_CBC_CMAC_192    = new CaOid(id_CA_ECDH_AES_CBC_CMAC_192);
 	public final static CaOid OID_id_CA_ECDH_AES_CBC_CMAC_256    = new CaOid(id_CA_ECDH_AES_CBC_CMAC_256);
@@ -75,13 +71,11 @@ public interface Ca extends Tr03110 {
 	// {@link OidIdentifier}
 	
 	/* DH */
-	public final static OidIdentifier OID_IDENTIFIER_id_CA_DH_3DES_CBC_CBC          = new OidIdentifier(OID_id_CA_DH_3DES_CBC_CBC);
 	public final static OidIdentifier OID_IDENTIFIER_id_CA_DH_AES_CBC_CMAC_128      = new OidIdentifier(OID_id_CA_DH_AES_CBC_CMAC_128);
 	public final static OidIdentifier OID_IDENTIFIER_id_CA_DH_AES_CBC_CMAC_192      = new OidIdentifier(OID_id_CA_DH_AES_CBC_CMAC_192);
 	public final static OidIdentifier OID_IDENTIFIER_id_CA_DH_AES_CBC_CMAC_256      = new OidIdentifier(OID_id_CA_DH_AES_CBC_CMAC_256);
 	
 	/* ECDH */
-	public final static OidIdentifier OID_IDENTIFIER_id_CA_ECDH_3DES_CBC_CBC        = new OidIdentifier(OID_id_CA_ECDH_3DES_CBC_CBC);
 	public final static OidIdentifier OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128    = new OidIdentifier(OID_id_CA_ECDH_AES_CBC_CMAC_128);
 	public final static OidIdentifier OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_192    = new OidIdentifier(OID_id_CA_ECDH_AES_CBC_CMAC_192);
 	public final static OidIdentifier OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_256    = new OidIdentifier(OID_id_CA_ECDH_AES_CBC_CMAC_256);
@@ -89,13 +83,11 @@ public interface Ca extends Tr03110 {
 	/*--------------------------------------------------------------------------------*/
 	
 	/* DH */
-	public final static String id_CA_DH_3DES_CBC_CBC_STRING          = "id-CA-DH-3DES-CBC-CBC";
 	public final static String id_CA_DH_AES_CBC_CMAC_128_STRING      = "id-CA-DH-AES-CBC-CMAC-128";
 	public final static String id_CA_DH_AES_CBC_CMAC_192_STRING      = "id-CA-DH-AES-CBC-CMAC-192";
 	public final static String id_CA_DH_AES_CBC_CMAC_256_STRING      = "id-CA-DH-AES-CBC-CMAC-256";
 	
 	/* ECDH */
-	public final static String id_CA_ECDH_3DES_CBC_CBC_STRING        = "id-CA-ECDH-3DES-CBC-CBC";
 	public final static String id_CA_ECDH_AES_CBC_CMAC_128_STRING    = "id-CA-ECDH-AES-CBC-CMAC-128";
 	public final static String id_CA_ECDH_AES_CBC_CMAC_192_STRING    = "id-CA-ECDH-AES-CBC-CMAC-192";
 	public final static String id_CA_ECDH_AES_CBC_CMAC_256_STRING    = "id-CA-ECDH-AES-CBC-CMAC-256";
