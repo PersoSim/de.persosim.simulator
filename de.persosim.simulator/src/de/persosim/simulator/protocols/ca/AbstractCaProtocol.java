@@ -103,6 +103,14 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 	}
 	
+	/**
+	 * @param bytes the OID given in the SET AT command
+	 * @return the CaOid helper class to be used by this protocol
+	 */
+	protected CaOid getOid(byte [] bytes){
+		return new CaOid(bytes);
+	}
+	
 	protected CaOid extractCaOidFromCommandData(TlvDataObjectContainer commandData) {
 		/* CA OID */
 		/* Check for the CA OID for itself */
@@ -112,7 +120,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		CaOid caOid;
 		
 		try {
-			caOid = new CaOid(tlvObject.getValueField());
+			caOid = getOid(tlvObject.getValueField());
 		} catch (RuntimeException e) {
 			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, e.getMessage());
 		}
