@@ -8,6 +8,7 @@ import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
 
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
@@ -95,8 +96,9 @@ public class ECParameterSpecConverter implements Converter {
 		}
 
 		if(point == null || curve == null || n == null) {
-			log(getClass(), "can not create ParameterSpec object, unmarshal failed", ERROR);
-			throw new NullPointerException ("can not create ParameterSpec object, unmarshal failed!");
+			String message = "can not create ParameterSpec object, unmarshal failed!";
+			log(getClass(), message, ERROR);
+			throw new XStreamException (message);
 		}
 		return new ECParameterSpec(curve, point, n, h);
 	}

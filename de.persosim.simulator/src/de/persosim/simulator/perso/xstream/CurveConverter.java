@@ -8,6 +8,7 @@ import java.security.spec.ECField;
 import java.security.spec.ECFieldFp;
 import java.security.spec.EllipticCurve;
 
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
@@ -98,8 +99,9 @@ public class CurveConverter implements Converter {
 		}
 		
 		if (p == null || a == null || b == null  || p.equals("") || a.equals("") || b.equals("")) {
-			log(getClass(), "can not create curve object, unmarshal failed", ERROR);
-			throw new NullPointerException ("can not create curve object, unmarshal failed!");
+			String message = "can not create curve object, unmarshal failed!";
+			log(getClass(),message , ERROR);
+			throw new XStreamException (message);
 		}
 		ECField field = new ECFieldFp(p);
 		EllipticCurve curve = new EllipticCurve(field, a, b);
