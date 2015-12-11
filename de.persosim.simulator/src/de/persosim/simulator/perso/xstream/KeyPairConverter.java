@@ -7,6 +7,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
@@ -75,8 +76,9 @@ public class KeyPairConverter implements Converter {
 		}
 		
 		if (pk == null || sk == null) {
-			log(getClass(), "can not create keypair object, unmarshal failed", ERROR);
-			throw new NullPointerException ("can not create keypair object, unmarshal failed!");
+			String message = "can not create keypair object, unmarshal failed!";
+			log(getClass(), message, ERROR);
+			throw new XStreamException (message);
 		}
 		return new KeyPair(pk, sk);
 	}

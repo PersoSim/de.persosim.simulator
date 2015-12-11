@@ -7,6 +7,7 @@ import static de.persosim.simulator.utils.PersoSimLogger.log;
 import java.math.BigInteger;
 import java.security.spec.ECPoint;
 
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
@@ -85,8 +86,9 @@ public class PointConverter implements Converter {
 		}
 		
 		if (x == null || y == null || x.equals("") || y.equals("")) {
-			log(getClass(), "can not create point object, unmarshal failed", ERROR);
-			throw new NullPointerException ("can not create point object, unmarshal failed!");
+			String message = "can not create point object, unmarshal failed!";
+			log(getClass(), message, ERROR);
+			throw new XStreamException (message);
 		}
 		ECPoint point = new ECPoint(x, y);
 		
