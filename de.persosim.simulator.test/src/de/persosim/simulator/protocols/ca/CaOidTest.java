@@ -13,7 +13,7 @@ public class CaOidTest {
 	 */
 	@Test
 	public void testGetStringRepresentation_nonCaOid() {
-		assertNull (CaOid.getStringRepresentation(Pace.id_PACE_ECDH_GM_AES_CBC_CMAC_128));
+		assertNull (CaOid.OID_id_CA_ECDH_AES_CBC_CMAC_128.getStringRepresentation(Pace.id_PACE_ECDH_GM_AES_CBC_CMAC_128));
 	}
 
 }

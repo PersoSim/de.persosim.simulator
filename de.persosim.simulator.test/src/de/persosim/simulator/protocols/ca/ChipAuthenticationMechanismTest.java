@@ -21,7 +21,7 @@ public class ChipAuthenticationMechanismTest extends PersoSimTestCase {
 
 		KeyPair keyPair = CryptoUtil.reconstructKeyPair(13, pubKeyBytes, privKeyBytes);
 
-		ChipAuthenticationMechanism mechanism = new ChipAuthenticationMechanism(CaOid.OID_id_CA_DH_3DES_CBC_CBC, 1,
+		ChipAuthenticationMechanism mechanism = new ChipAuthenticationMechanism(CaOid.OID_id_CA_DH_AES_CBC_CMAC_128, 1,
 				keyPair.getPublic());
 
 		PublicKey result = mechanism.getUncompressedTerminalEphemeralPublicKey();
