@@ -105,14 +105,12 @@ public class PersoSimKernel implements InfoSource {
 		Layer currentLayer;
 		for (; curLayerId < layers.size(); curLayerId++) {
 			currentLayer = layers.get(curLayerId);
-			currentLayer.setLayerId(curLayerId);
 			currentLayer.processAscending(processingData);
 		}
 		
 		//propagate the event all layers down
 		for (curLayerId--; curLayerId >= 0; curLayerId--) {
 			currentLayer = layers.get(curLayerId);
-			currentLayer.setLayerId(curLayerId);
 			currentLayer.processDescending(processingData);
 		}
 		

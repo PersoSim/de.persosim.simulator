@@ -18,9 +18,7 @@ import de.persosim.simulator.secstatus.SecStatus;
  */
 public class CommandProcessor extends CommandProcessorStateMachine {
 
-	public CommandProcessor(int id, List<Protocol> protocolList, MasterFile mf) throws AccessDeniedException {
-		layerId = id;
-		
+	public CommandProcessor(List<Protocol> protocolList, MasterFile mf) throws AccessDeniedException {
 		//initialize object tree with SecStatus
 		this.masterFile = mf;
 		this.securityStatus = new SecStatus();

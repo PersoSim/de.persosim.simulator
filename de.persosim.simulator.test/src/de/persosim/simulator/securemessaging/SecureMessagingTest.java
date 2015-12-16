@@ -58,7 +58,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 
 	@Test
 	public void processAscending_plainApduUntouched() {
-		SecureMessaging secureMessaging = new SecureMessaging(0);
+		SecureMessaging secureMessaging = new SecureMessaging();
 
 		// provide plain APDU
 		ProcessingData pData = new ProcessingData();
@@ -85,7 +85,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	@Test
 	public void processAscending_isoCase3() throws GeneralSecurityException {
 		//prepare configuration
-		SecureMessaging secureMessaging = new SecureMessaging(0);
+		SecureMessaging secureMessaging = new SecureMessaging();
 		
 		//provide the mocked SmDataProvider
 		setField(secureMessaging, "dataProvider", dataProviderMock);
@@ -126,7 +126,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	@Test
 	public void processAscending_isoCase2_AES265() throws Exception {
 		//prepare configuration
-		SecureMessaging secureMessaging = new SecureMessaging(0);
+		SecureMessaging secureMessaging = new SecureMessaging();
 				
 		//provide the mocked SmDataProvider
 		setField(secureMessaging, "dataProvider", dataProviderMock);
@@ -179,7 +179,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 		dataProvider.setMacLength(8);
 		
 		// mut, propagate SmDataProvider
-		SecureMessaging secureMessaging = new SecureMessaging(0);
+		SecureMessaging secureMessaging = new SecureMessaging();
 		ProcessingData pData = new ProcessingData();
 		pData.updateResponseAPDU(this, "test response APDU", new ResponseApdu(SW_9000_NO_ERROR));
 		pData.addUpdatePropagation(this, "testing handling of SmDataProvider", dataProvider);
@@ -205,7 +205,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	@Test
 	public void processOutgoingSmApdu_responseDataAbsent() throws Exception {
 		//prepare configuration
-		SecureMessaging secureMessaging = new SecureMessaging(0);
+		SecureMessaging secureMessaging = new SecureMessaging();
 				
 		//provide the mocked SmDataProvider
 		setField(secureMessaging, "dataProvider", dataProviderMock);
@@ -243,7 +243,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	@Test
 	public void processOutgoingSmApdu_responseDataLengthZero() throws Exception {
 		//prepare configuration
-		SecureMessaging secureMessaging = new SecureMessaging(0);
+		SecureMessaging secureMessaging = new SecureMessaging();
 				
 		//provide the mocked SmDataProvider
 		setField(secureMessaging, "dataProvider", dataProviderMock);
@@ -369,7 +369,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testpPowerOn_ObjectsecureMessaging_Calls_PowerOn_Method() {
-		SecureMessaging secureMessaging = new SecureMessaging(0);
+		SecureMessaging secureMessaging = new SecureMessaging();
 		secureMessaging.powerOn()
 		;}
 
