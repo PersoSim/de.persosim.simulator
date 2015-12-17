@@ -2,7 +2,6 @@ package de.persosim.simulator.protocols;
 
 import static de.persosim.simulator.utils.PersoSimLogger.logException;
 
-import java.lang.reflect.Field;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
@@ -18,10 +17,12 @@ import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.DefaultPersoGt;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -113,15 +114,13 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 				if (dgNumber == null) continue;
 				
 				//read fileContent (bypassing access control enforcement)
-				//XXX do not bypass access control enforcement but use the card life cycle for accessing this data during personalization
 				byte[] fileContent = null;
 				try {
-					Class<ElementaryFile>  aClass = ElementaryFile.class;
-					Field field = aClass.getDeclaredField("content");
-					field.setAccessible(true);
-					fileContent = (byte[]) field.get(curFile);
-				} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-					logException(getClass(), e);
+					ElementaryFile ef = (ElementaryFile) curObject;
+					ef.setReadingConditions(SecCondition.ALLOWED);
+					fileContent = ef.getContent();
+				} catch (AccessDeniedException e1) {
+					e1.printStackTrace();
 				}
 				if (fileContent == null) continue;
 				
