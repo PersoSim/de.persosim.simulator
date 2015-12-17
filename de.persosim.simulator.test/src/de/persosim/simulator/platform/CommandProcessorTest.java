@@ -26,8 +26,6 @@ import mockit.VerificationsInOrder;
 
 public class CommandProcessorTest extends PersoSimTestCase {
 
-	private static final int LAYER_ID = 0;
-	
 	@Mocked Protocol mockedProtocol;
 
 	CommandProcessor commandProcessor;
@@ -52,7 +50,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 	    List<Protocol> protocols = new ArrayList<>();
 	    protocols.add(mockedProtocol);
 	    
-		commandProcessor = new CommandProcessor(LAYER_ID, protocols, mf);
+		commandProcessor = new CommandProcessor(protocols, mf);
 		commandProcessor.init();
 	}
 	

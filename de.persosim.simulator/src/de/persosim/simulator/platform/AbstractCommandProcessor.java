@@ -36,10 +36,6 @@ import de.persosim.simulator.statemachine.StateMachine;
 public abstract class AbstractCommandProcessor extends Layer implements
 		CardStateAccessor, StateMachine {
 
-	public AbstractCommandProcessor() {
-		super(-1);
-	}
-
 	// -------------------------------------------------------
 	// Methods/fields to implement {@link Layer} functionality
 	// -------------------------------------------------------

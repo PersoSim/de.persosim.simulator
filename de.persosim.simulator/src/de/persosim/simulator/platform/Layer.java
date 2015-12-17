@@ -14,14 +14,8 @@ import de.persosim.simulator.utils.InfoSource;
  */
 public abstract class Layer implements Iso7816, InfoSource {
 
-	protected transient int layerId;
-	
 	protected ProcessingData processingData;
-	
-	public Layer(int id) {
-		layerId = id;
-	}
-	
+
 	/**
 	 * This method finalizes the layer so it can actually be used. It is to be
 	 * called when the layer is ready to be used.
@@ -126,15 +120,11 @@ public abstract class Layer implements Iso7816, InfoSource {
 	
 	@Override
 	public String getIDString() {
-		return "Layer " + layerId + " (" + getLayerName() + ")";
+		return "Layer " + getLayerName();
 	}
 
 	public ProcessingData getProcessingData() {
 		return processingData;
-	}
-	
-	public void setLayerId(int layerId) {
-		this.layerId = layerId;
 	}
 	
 }

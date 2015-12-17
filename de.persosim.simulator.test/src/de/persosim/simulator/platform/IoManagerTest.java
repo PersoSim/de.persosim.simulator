@@ -19,7 +19,7 @@ public class IoManagerTest extends PersoSimTestCase {
 	/**
 	 * Test instance
 	 */
-	private IoManager ioManager = new IoManager(0);
+	private IoManager ioManager = new IoManager();
 
 	/**
 	 * Provide a simple APDU via HardwareCommandApduPropagation in

@@ -700,19 +700,18 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		}
 		List<Protocol> protocols = buildProtocolList();
 		
-		int layerId = 0;
 		layers = new ArrayList<>();
 		
 		// load IO manager layer
-		layers.add(new IoManager(layerId++));
+		layers.add(new IoManager());
 		
 		// load secure messaging layer
-		layers.add(new SecureMessaging(layerId++));
+		layers.add(new SecureMessaging());
 		
 		// load command processor layer
 		CommandProcessor commandProcessor;
 		try {
-			commandProcessor = new CommandProcessor(layerId++, protocols, mf);
+			commandProcessor = new CommandProcessor(protocols, mf);
 		} catch (AccessDeniedException e) {
 			throw new RuntimeException("The creation of the CommandProcessor layer failed.", e);
 		}

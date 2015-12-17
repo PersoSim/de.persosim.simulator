@@ -51,10 +51,6 @@ public class SecureMessaging extends Layer implements TlvConstants{
 	protected SmDataProvider dataProvider = null;
 	
 	/*--------------------------------------------------------------------------------*/
-	
-	public SecureMessaging(int id) {
-		super(id);
-	}
 
 	@Override
 	public String getLayerName() {
