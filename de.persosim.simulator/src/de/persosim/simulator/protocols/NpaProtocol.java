@@ -117,11 +117,9 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 				//read fileContent (bypassing access control enforcement)
 				byte[] fileContent = null;
 				try {
-					ElementaryFile ef = (ElementaryFile) curObject;
-					ef.setReadingConditions(SecCondition.ALLOWED);
-					fileContent = ef.getContent();
+					fileContent = curFile.getContent();
 				} catch (AccessDeniedException e1) {
-					throw new ProcessingException(SW_6982_SECURITY_STATUS_NOT_SATISFIED, "access denied to "+(ElementaryFile) curObject);
+					throw new ProcessingException(SW_6982_SECURITY_STATUS_NOT_SATISFIED, "access denied to "+curFile);
 				}
 				if (fileContent == null) continue;
 				
