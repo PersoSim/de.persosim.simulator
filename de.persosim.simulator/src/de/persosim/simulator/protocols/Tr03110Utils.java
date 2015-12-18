@@ -93,6 +93,7 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 				PersoSimLogger.logException(Tr03110Utils.class, e, PersoSimLogger.WARN);
 			}
 		}
+		PersoSimLogger.log(Tr03110Utils.class, "Public Key data could not be parsed.", PersoSimLogger.INFO);
 		return null;
 	}
 	
