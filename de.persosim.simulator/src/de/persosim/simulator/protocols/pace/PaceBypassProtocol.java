@@ -27,6 +27,7 @@ import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ProtocolUpdate;
@@ -36,7 +37,6 @@ import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
-import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
@@ -179,7 +179,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			ConstructedTlvDataObject chatData = (ConstructedTlvDataObject) tlvObject;
 			TlvDataObject oidData = chatData.getTlvDataObject(TAG_06);
 			byte[] roleData = chatData.getTlvDataObject(TAG_53).getValueField();
-			TaOid chatOid = new TaOid(oidData.getValueField());
+			Oid chatOid = new GenericOid(oidData.getValueField());
 			RelativeAuthorization authorization = new RelativeAuthorization(
 					CertificateRole.getFromMostSignificantBits(roleData[0]), BitField.buildFromBigEndian(
 							(roleData.length * 8) - 2, roleData));
