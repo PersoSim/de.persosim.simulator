@@ -31,7 +31,7 @@ import de.persosim.simulator.ui.utils.FileComparator;
  * @author slutters
  *
  */
-public class dynamicPersoTemplateMenuItem {
+public class DynamicPersoTemplateMenuItem {
 	
 	public static final String DE_PERSOSIM_SIMULATOR_BUNDLE = "de.persosim.simulator";
 	public static final String SELECT_COMMAND_ID = "de.persosim.simulator.ui.command.selectPersoFromTemplateCommand";

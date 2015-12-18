@@ -6,7 +6,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BjrX4EZdEeSQKqd06nTv0g" featurename="children" parentElementId="de.persosim.rcp.mainMenue" positionInList="after:de.persosim.rcp.mainMenue.file">
     <elements xsi:type="menu:Menu" xmi:id="_JDxsQEZdEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.menu.selectPersoMenu" label="Select Personalization">
       <children xsi:type="menu:HandledMenuItem" xmi:id="_QKpL0FUEEeSxD7VZ_Y6-PA" elementId="de.persosim.simulator.ui.handledmenuitem.selectPersoFromFile" label="Select Perso from File" command="_7jTUYFUDEeSxD7VZ_Y6-PA"/>
-      <children xsi:type="menu:DynamicMenuContribution" xmi:id="_4pZ40FU0EeS9UYXjeRNGFg" elementId="de.persosim.simulator.ui.menu.dynamicallySelectFromTemplate" label="Dyn Sel From Template" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.menuitems.dynamicPersoTemplateMenuItem"/>
+      <children xsi:type="menu:DynamicMenuContribution" xmi:id="_4pZ40FU0EeS9UYXjeRNGFg" elementId="de.persosim.simulator.ui.menu.dynamicallySelectFromTemplate" label="Dyn Sel From Template" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.menuitems.DynamicPersoTemplateMenuItem"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uNj68EZgEeSQKqd06nTv0g" featurename="commands" parentElementId="de.persosim.rcp.application">

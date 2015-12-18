@@ -1,0 +1,18 @@
+Version 0.8.0 (18.12.2015)
+
+* All profiles are resigned in their respective PKI
+* Use the jMockit library provided as org.globaltester.lib.jmockit (includes upgrade to jMockit 1.20)
+* Removal of obsolete code and general cleanup
+* Further modularization to allow easy extensibility
+* Allow bigger than 1 byte CA key references in personalization
+* Additional/Improvements of code documentation
+* More consistent use of immutable objects (mainly Apdu and Mechanism implementations)
+* Unified Oid class hierarchy and use
+* Added updated personalizations
+* The file extension for personalizations is no longer .xml but .perso
+* The security context can now be persisted and restored for context switches
+* Unit tests check personalization files to prevent accidential changes
+* Support for parsing of generic certificate extensions during TA
+* Pin management now correctly checks for access rights
+* The object store was replaced by direct use of the master file as card object manager
+* Treat effective and confined authorizations separately
