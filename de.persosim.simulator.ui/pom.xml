@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.globaltester</groupId>
     <artifactId>org.globaltester.parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <relativePath>../../org.globaltester.parent/org.globaltester.parent/</relativePath>
   </parent>
   <groupId>de.persosim</groupId>
   <artifactId>de.persosim.simulator.ui</artifactId>
-  <version>0.7.0</version>
+  <version>0.8.0</version>
   <packaging>eclipse-plugin</packaging>
 </project>
