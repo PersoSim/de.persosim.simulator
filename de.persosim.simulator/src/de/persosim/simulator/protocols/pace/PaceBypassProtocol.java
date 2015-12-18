@@ -38,8 +38,8 @@ import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TerminalType;
-import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
 import de.persosim.simulator.secstatus.AuthorizationStore;
+import de.persosim.simulator.secstatus.ConfinedAuthorizationMechanism;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
@@ -288,7 +288,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 					HashMap<Oid, Authorization> authorizations = new HashMap<>();
 					authorizations.put(usedChat.getObjectIdentifier(), usedChat.getRelativeAuthorization());
 					AuthorizationStore authorizationStore = new AuthorizationStore(authorizations);
-					EffectiveAuthorizationMechanism authMechanism = new EffectiveAuthorizationMechanism(authorizationStore);
+					ConfinedAuthorizationMechanism authMechanism = new ConfinedAuthorizationMechanism(authorizationStore);
 					processingData.addUpdatePropagation(this, "Security status updated with authorization mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanism));
 				}
 				
