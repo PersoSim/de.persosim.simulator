@@ -18,6 +18,7 @@ import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.perso.DefaultPersoGt;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
@@ -120,7 +121,7 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 					ef.setReadingConditions(SecCondition.ALLOWED);
 					fileContent = ef.getContent();
 				} catch (AccessDeniedException e1) {
-					e1.printStackTrace();
+					throw new ProcessingException(SW_6982_SECURITY_STATUS_NOT_SATISFIED, "access denied to "+(ElementaryFile) curObject);
 				}
 				if (fileContent == null) continue;
 				
