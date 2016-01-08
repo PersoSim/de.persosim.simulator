@@ -6,6 +6,7 @@ import java.util.List;
 
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
+import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -138,6 +139,16 @@ public class CardVerifiableCertificate {
 				+ body.getCertificationAuthorityReference()
 				+ ", certificateHolderReference=" + body.certificateHolderReference
 				+ "]";
+	}
+	
+	/**
+	 * This method returns the role of this certificate, i.e. either CVCA, DV or
+	 * Terminal according to the enums defined by {@link CertificateRole}}
+	 * 
+	 * @return the role of this certificate
+	 */
+	public CertificateRole getCertificateRole() {
+		return body.getCertificateRole();
 	}
 	
 	/**
