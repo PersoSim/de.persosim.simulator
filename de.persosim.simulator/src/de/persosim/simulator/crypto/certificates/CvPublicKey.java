@@ -19,6 +19,12 @@ public abstract class CvPublicKey extends CvKey implements PublicKey, TlvConstan
 		super(cvOid, publicKey);
 	}
 	
+	/**
+	 * This method returns a TLV representation of this object.
+	 * Conditional objects may be included in the encoding if available or applicable
+	 * @param includeConditionalObjects include conditional objects in encoding
+	 * @return a TLV representation of this object
+	 */
 	public abstract ConstructedTlvDataObject toTlvDataObject(boolean includeConditionalObjects);
 	
 	/**
