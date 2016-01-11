@@ -29,31 +29,12 @@ public class CertificateUtils implements TlvConstants {
 			CertificateBody body,
 			byte[] signature) {
 		
-		CertificateRole terminalType = body.getCertificateRole();
-		boolean encodeFullKey;
-		
-		switch (terminalType) {
-		case CVCA:
-			encodeFullKey = true;
-			break;
-		case DV_TYPE_1:
-			encodeFullKey = false;
-			break;
-		case DV_TYPE_2:
-			encodeFullKey = false;
-			break;
-		case TERMINAL:
-			encodeFullKey = false;
-			break;
-		default:
-			encodeFullKey = true;
-			break;
-		}
+		CertificateRole certificateRole = body.getCertificateRole();
 		
 		ConstructedTlvDataObject cvCertificateTlv = encodeCertificate(
 				body.getCertificateProfileIdentifier(),
 				body.getCertificationAuthorityReference(),
-				body.getPublicKey().toTlvDataObject(encodeFullKey),
+				body.getPublicKey().toTlvDataObject(certificateRole.includeConditionalElementsInKeyEncoding()),
 				body.getCertificateHolderReference(),
 				body.getCertificateHolderAuthorizationTemplate(),
 				body.getCertificateEffectiveDate(),
