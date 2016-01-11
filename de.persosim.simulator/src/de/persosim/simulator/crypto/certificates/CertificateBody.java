@@ -243,7 +243,7 @@ public class CertificateBody {
 	 * 
 	 */
 	public byte[] getEncoded() {
-		return encodeBody(true).toByteArray();
+		return encodeBody(getCertificateRole().includeConditionalElementsInKeyEncoding()).toByteArray();
 	}
 
 	@Override
