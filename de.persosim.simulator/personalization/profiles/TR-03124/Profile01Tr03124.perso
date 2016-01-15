@@ -256,7 +256,7 @@
             <children id="83"/>
             <lifeCycleState>CREATION</lifeCycleState>
             <currentCertificate id="84">
-              <body id="85">
+              <body class="de.persosim.simulator.crypto.certificates.CertificateBody" id="85">
                 <certificateProfileIdentifier>0</certificateProfileIdentifier>
                 <certificationAuthorityReference id="86">
                   <countryCode>DE</countryCode>
@@ -278,13 +278,14 @@
                   <holderMnemonic>CVCAeIDCT</holderMnemonic>
                   <sequenceNumber>00001</sequenceNumber>
                 </certificateHolderReference>
-                <certificateHolderAuthorizationTemplate id="92">
-                  <objectIdentifier class="de.persosim.simulator.protocols.GenericOid" id="93">
-                    <oidByteArray id="94">04007F000703010202</oidByteArray>
+                <certificateExtensions id="92"/>
+                <certificateHolderAuthorizationTemplate id="93">
+                  <objectIdentifier class="de.persosim.simulator.protocols.GenericOid" id="94">
+                    <oidByteArray id="95">04007F000703010202</oidByteArray>
                   </objectIdentifier>
-                  <relativeAuthorization id="95">
-                    <authorization id="96">
-                      <storedBits id="97">
+                  <relativeAuthorization id="96">
+                    <authorization id="97">
+                      <storedBits id="98">
                         <boolean>true</boolean>
                         <boolean>true</boolean>
                         <boolean>true</boolean>
@@ -330,9 +331,8 @@
                   </relativeAuthorization>
                   <terminalType>AT</terminalType>
                 </certificateHolderAuthorizationTemplate>
-                <certificateEffectiveDate id="98">2013-04-07 00:00:00.0 UTC</certificateEffectiveDate>
-                <certificateExpirationDate id="99">2016-04-06 00:00:00.0 UTC</certificateExpirationDate>
-                <certificateExtensions id="100"/>
+                <certificateEffectiveDate id="99">2013-04-07 00:00:00.0 UTC</certificateEffectiveDate>
+                <certificateExpirationDate id="100">2016-04-06 00:00:00.0 UTC</certificateExpirationDate>
               </body>
               <signature id="101">6CB5D646D3F9AB8663946B7855CEAA589FD14BCC6917CE2FCFDD35AB3218DF16812EF181809FBFE53042424559D780618082765013F359991EE8216DF6C40E32</signature>
             </currentCertificate>
