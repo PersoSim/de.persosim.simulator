@@ -473,10 +473,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 
 			log(this, "Data to verify:\n" + HexString.dump(dataToVerify));
 			
+			log(this, "Unprocessed signature data:\n" + HexString.dump(signatureData));
+			
 			if (publicKey instanceof ECPublicKey){
 				signatureData = CryptoUtil.restoreAsn1SignatureStructure(signatureData).toByteArray();
 			}
-			log(this, "Signature data:\n" + HexString.dump(signatureData));
+			
+			log(this, "Processed signature data  :\n" + HexString.dump(signatureData));
 			
 			if(signature.verify(signatureData)){
 				log(this, "Verification OK");

@@ -3,6 +3,7 @@ package de.persosim.simulator.crypto.certificates;
 import java.util.Date;
 
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
+import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -21,16 +22,19 @@ public class CertificateUtils implements TlvConstants {
 	 * This method returns a TLV encoding for a certificate constructed from the provided parameters
 	 * @param body the certificate body
 	 * @param signature the certificate signature
+	 * @param encodeFullKey encode the key including conditional objects
 	 * @return the certificate TLV encoding
 	 */
 	public static ConstructedTlvDataObject encodeCertificate(
 			CertificateBody body,
 			byte[] signature) {
 		
+		CertificateRole certificateRole = body.getCertificateRole();
+		
 		ConstructedTlvDataObject cvCertificateTlv = encodeCertificate(
 				body.getCertificateProfileIdentifier(),
 				body.getCertificationAuthorityReference(),
-				body.getPublicKey().toTlvDataObject(true),
+				body.getPublicKey().toTlvDataObject(certificateRole.includeConditionalElementsInKeyEncoding()),
 				body.getCertificateHolderReference(),
 				body.getCertificateHolderAuthorizationTemplate(),
 				body.getCertificateEffectiveDate(),

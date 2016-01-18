@@ -10,6 +10,7 @@ import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.NotParseableException;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
+import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -242,7 +243,7 @@ public class CertificateBody {
 	 * 
 	 */
 	public byte[] getEncoded() {
-		return encodeBody(true).toByteArray();
+		return encodeBody(getCertificateRole().includeConditionalElementsInKeyEncoding()).toByteArray();
 	}
 
 	@Override
@@ -297,6 +298,16 @@ public class CertificateBody {
 	 */
 	public void setCertificateExtensions(List<CertificateExtension> certificateExtensions) {
 		this.certificateExtensions = certificateExtensions;
+	}
+	
+	/**
+	 * This method returns the role of this certificate, i.e. either CVCA, DV or
+	 * Terminal according to the enums defined by {@link CertificateRole}}
+	 * 
+	 * @return the role of this certificate
+	 */
+	public CertificateRole getCertificateRole() {
+		return certificateHolderAuthorizationTemplate.getRelativeAuthorization().getRole();
 	}
 	
 }
