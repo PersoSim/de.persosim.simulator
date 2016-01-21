@@ -9,8 +9,8 @@ import java.util.Set;
 
 public class GtConstants {
 
-	public static final String PROJECT_EPP_BAC_SAC_ICAO = "GT Scripts EPP BAC SAC ICAO";
-	public static final String PROJECT_EPA_EAC2_BSI = "GT Scripts EPA EAC2 BSI";
+	public static final String PROJECT_EPP_BAC_SAC_ICAO = "GT Scripts ICAO TR Part 3";
+	public static final String PROJECT_EPA_EAC2_BSI = "GT Scripts BSI TR03105 Part 3.3";
 	
 	//commonly used suite descriptors
 	public static final GtSuiteDescriptor SUITE_EAC2_BSI_LAYER_6 = new GtSuiteDescriptor(PROJECT_EPA_EAC2_BSI, "testsuite_complete_standard_layer6");
