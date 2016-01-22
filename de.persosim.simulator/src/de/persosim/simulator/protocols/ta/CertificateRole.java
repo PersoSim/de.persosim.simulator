@@ -31,8 +31,8 @@ import de.persosim.simulator.utils.BitField;
  */
 public enum CertificateRole {
 	CVCA(new BitField(2, new byte[] { 0b11 }), true), DV_TYPE_1(new BitField(2,
-			new byte[] { 0b01 }), false), DV_TYPE_2(new BitField(2,
-			new byte[] { 0b10 }), false), TERMINAL(
+			new byte[] { 0b10 }), false), DV_TYPE_2(new BitField(2,
+			new byte[] { 0b01 }), false), TERMINAL(
 			new BitField(2, new byte[] { 0b00 }), false);
 
 	private BitField value;
