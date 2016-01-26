@@ -18,7 +18,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 import de.persosim.driver.connector.DriverConnectorFactory;
 import de.persosim.driver.connector.features.DefaultListener;
-import de.persosim.driver.connector.service.NativeDriverConnectorInterface;
+import de.persosim.driver.connector.service.NativeDriverConnector;
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.ui.parts.PersoSimPart;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
@@ -39,7 +39,7 @@ public class Activator implements BundleActivator {
 	private static ServiceTracker<DriverConnectorFactory, DriverConnectorFactory> serviceTrackerDriverConnectorFactory;
 	public static final int DEFAULT_PORT = 5678;
 	public static final String DEFAULT_HOST = "localhost";
-	public static NativeDriverConnectorInterface connector = null;
+	public static NativeDriverConnector connector = null;
 	private static LogReaderService readerService = null;
 
 	static BundleContext getContext() {
@@ -177,7 +177,7 @@ public class Activator implements BundleActivator {
 		}
 	}
 	
-	public static NativeDriverConnectorInterface getConnector(){
+	public static NativeDriverConnector getConnector(){
 		return connector;
 	}
 }
