@@ -2,13 +2,9 @@ package de.persosim.simulator.crypto.certificates;
 
 import static org.junit.Assert.assertEquals;
 
-import java.security.PublicKey;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import de.persosim.simulator.crypto.DomainParameterSetEcdh;
-import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -17,7 +13,9 @@ import de.persosim.simulator.utils.HexString;
 public class CardVerifiableCertificateTest extends PersoSimTestCase {
 	
 	byte[] cvCertDETESTeID00004Data, cvCertDETESTeID00004DataWoDomainParams, cvCertDETESTeID00004BodyData, cvCertDETESTeID00004DataWithExtensions, signature;
+
 	ConstructedTlvDataObject cvCertDETESTeID00004Tlv, cvCertDETESTeID00004BodyTlv, cvCertDETESTeID00004WoDomainParamsTlv, cvCertDETESTeID00004WithExtensionsTlv;
+	ConstructedTlvDataObject dvCertWithoutDomainParamsTlv, dvCertWithDomainParamsTlv, atCertWithoutDomainParamsTlv, atCertWithDomainParamsTlv;
 	
 	@Before
 	public void setUp() {
@@ -32,6 +30,15 @@ public class CardVerifiableCertificateTest extends PersoSimTestCase {
 		cvCertDETESTeID00004WithExtensionsTlv  = new ConstructedTlvDataObject(cvCertDETESTeID00004DataWithExtensions);
 		
 		signature = HexString.toByteArray("8CAC3E842EB053EE10E9D57FB373FF4E9C36D1EDF966D6535978D498309B00D59C51D83965F4B1C75557FA6B6CA03D360A782B9BC172CE391623D6BB48B9B1AA");
+		
+		byte[] dvCertWithoutDomainParams	= HexString.toByteArray("7F2182011D7F4E81D65F290100420D444541544356434130303030317F494F060A04007F0007020202020386410425C4B323B3189C6EDF8A85EE9F0DCA233259D085E8CE0FB279D690221FC6E72F20026E32528D33A2B41FF49CA995252CE98E6A0C3EAB8ADCF67E74BB9B5C37965F200B44454154445630303030317F4C12060904007F00070301020253057E1FFFFFFF5F25060107000100015F2406030600020001653A7317060A04007F000703010202015309FFFFFFFFFFFFFFFFFF730F060A04007F000703010202025301FF730E06090102FA01DF03E901035301FF5F3740228103D13EA6CF6589EC7D52BA3AD7ADAD08AF2ACD3EF55457706670EE32D4580C3280E76BFCF81E74A98C137F74418199E2F2F5FAE39DA3E45CB00ECC5108A6");
+		byte[] dvCertWithDomainParams		= HexString.toByteArray("7F218201EE7F4E8201A65F290100420D444541544356434130303030317F4982011D060A04007F000702020202038120A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E537782207D5A0975FC2C3057EEF67530417AFFE7FB8055C126DC5C6CE94A4B44F330B5D9832026DC5C6CE94A4B44F330B5D9BBD77CBF958416295CF7E1CE6BCCDC18FF8C07B68441048BD2AEB9CB7E57CB2C4B482FFC81B7AFB9DE27E1E3BD23C23A4453BD9ACE3262547EF835C3DAC4FD97F8461A14611DC9C27745132DED8E545C1D54C72F0469978520A9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A78641047A44EC48F55401BE7CA7B51B8BD66E29241637EBE2E56F30CADEAFE4917D2A3D089CE4490AE3F42FDBD8E5E0268351257690CF0C915650D553C1A4F8DA2C19F48701015F200B44454154445630303030317F4C12060904007F00070301020253057E1FFFFFFF5F25060106000100015F2406030500020001653A7317060A04007F000703010202015309FFFFFFFFFFFFFFFFFF730F060A04007F000703010202025301FF730E06090102FA01DF03E901035301FF5F3740140DA49C7A9EB6BA6AA9F49A5A795511ABCF820649E980D930C8AD07C1A19C7006AF789009E00654450510D1B263143AC54ECF6EC6EC3B02D2E3A4F79F2C2BFE");
+		byte[] atCertWithoutDomainParams	= HexString.toByteArray("7F2181E37F4E819C5F290100420D444554455354445644453031377F494F060A04007F000702020202038641042150122E3A1C8330A007228FF0342F460EB95FB68C824930C4B86FF5E6600C266589DA9338656F25F211670C5EAFB038A8F85255ECBBB7BF48FAF5EAE92E22CF5F200D444554455354415444453031377F4C12060904007F000703010202530500000001105F25060105010100055F24060105010200055F37405A64AB0D102F55F5592D84EADFCCC556EA69BF902E2CC7879DEACDEE429CF3389D850A7433DDB0DDEB227036BEF8C21500822C0673E3395CE6CA06058436DF88");
+		byte[] atCertWithDomainParams		= HexString.toByteArray("7F218201EC7F4E8201A45F290100420B44454154445630303030317F4982011D060A04007F000702020202038120A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E537782207D5A0975FC2C3057EEF67530417AFFE7FB8055C126DC5C6CE94A4B44F330B5D9832026DC5C6CE94A4B44F330B5D9BBD77CBF958416295CF7E1CE6BCCDC18FF8C07B68441048BD2AEB9CB7E57CB2C4B482FFC81B7AFB9DE27E1E3BD23C23A4453BD9ACE3262547EF835C3DAC4FD97F8461A14611DC9C27745132DED8E545C1D54C72F0469978520A9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A78641047005BF68CF82BF1B82380FD0ECD9CB6A523FB3894C7EECF939DF247407CBD80572AEEB1EBDE66E9C3B4CC048F21CEB09E029B385D0AEC3D72720B33E54E023318701015F200B44454154544D30303030317F4C12060904007F00070301020253053E1FFFFFFF5F25060107000100015F2406040500020001653A7317060A04007F000703010202015309FFFFFFFFFFFFFFFFFF730F060A04007F000703010202025301FF730E06090102FA01DF03E901035301FF5F3740145D1DA9AACED2116BB9F4020FFDCDDF24F62A75CC37F389702A514D9715A3AD4B33ADC84E658F2051311323BE04D2D1B99F92F64C2C2776D63188CF4BD01327");
+		dvCertWithoutDomainParamsTlv		= new ConstructedTlvDataObject(dvCertWithoutDomainParams);
+		dvCertWithDomainParamsTlv			= new ConstructedTlvDataObject(dvCertWithDomainParams);
+		atCertWithoutDomainParamsTlv		= new ConstructedTlvDataObject(atCertWithoutDomainParams);
+		atCertWithDomainParamsTlv			= new ConstructedTlvDataObject(atCertWithDomainParams);
 	}
 	
 	/**
@@ -56,30 +63,69 @@ public class CardVerifiableCertificateTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: check constructor for for parsing certificate from full TLV encoding and updating key parameters.
-	 * @throws CertificateNotParseableException 
-	 */
-	@Test
-	public void testConstructor_ConstructedTlvDataObjectPublicKey() throws CertificateNotParseableException {
-		DomainParameterSetEcdh cvCertDETESTeID00004DomainParameters = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
-		byte[] newPublicKeyData = HexString.toByteArray("043E81230E8AE08ACBA9C550D26E89B47A0DA8399A3FA629D0E7E4B19F653F8C7E6139576D3099A4044927137C60ECFFA457D20D61ECFCC7AEB0CEC5F27FA0865B");
-		PublicKey newPublicKey = cvCertDETESTeID00004DomainParameters.reconstructPublicKey(newPublicKeyData);
-		
-		ConstructedTlvDataObject strippedCertTlv = new ConstructedTlvDataObject(cvCertDETESTeID00004DataWoDomainParams);
-		CardVerifiableCertificate reconstructedCert = new CardVerifiableCertificate(strippedCertTlv, newPublicKey);
-		
-		assertEquals(cvCertDETESTeID00004Tlv, reconstructedCert.getEncoded());
-	}
-	
-	/**
 	 * Positive test case: check constructor for parsing certificate containing certificate extensions from full TLV encoding.
 	 * @throws CertificateNotParseableException 
 	 */
 	@Test
-	public void testConstructor_ConstructedTlvDataObject_WithCertificateExtensions() throws CertificateNotParseableException {
+	public void test_CvCertWithCertificateExtensions() throws CertificateNotParseableException {
 		CardVerifiableCertificate certificate = new CardVerifiableCertificate(cvCertDETESTeID00004WithExtensionsTlv);
 		
 		assertEquals(cvCertDETESTeID00004WithExtensionsTlv, certificate.getEncoded());
+	}
+	
+	/**
+	 * Negative test case: parse CVCA root certificate without domain parameters
+	 * @throws CertificateNotParseableException 
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void test_CvcaRootWithoutDomParams() throws CertificateNotParseableException {
+		new CardVerifiableCertificate(cvCertDETESTeID00004WoDomainParamsTlv);
+	}
+	
+	/**
+	 * Positive test case: parse DV certificate without domain parameters
+	 * @throws CertificateNotParseableException
+	 */
+	@Test
+	public void test_dvCertWithoutDomParams() throws CertificateNotParseableException {
+		CardVerifiableCertificate cert = new CardVerifiableCertificate(dvCertWithoutDomainParamsTlv);
+		assertEquals(dvCertWithoutDomainParamsTlv, cert.getEncoded());
+	}
+	
+	/**
+	 * Positive test case: parse DV certificate with domain parameters
+	 * Expected result: certificate gets encoded without domain parameters
+	 * @throws CertificateNotParseableException 
+	 */
+	@Test
+	public void test_dvCertWithDomParams() throws CertificateNotParseableException {
+		CardVerifiableCertificate cert = new CardVerifiableCertificate(dvCertWithDomainParamsTlv);
+		byte[] dvCertWithDomainParamsRemovedDomainParams = HexString.toByteArray("7F2182011D7F4E81D65F290100420D444541544356434130303030317F494F060A04007F000702020202038641047A44EC48F55401BE7CA7B51B8BD66E29241637EBE2E56F30CADEAFE4917D2A3D089CE4490AE3F42FDBD8E5E0268351257690CF0C915650D553C1A4F8DA2C19F45F200B44454154445630303030317F4C12060904007F00070301020253057E1FFFFFFF5F25060106000100015F2406030500020001653A7317060A04007F000703010202015309FFFFFFFFFFFFFFFFFF730F060A04007F000703010202025301FF730E06090102FA01DF03E901035301FF5F3740140DA49C7A9EB6BA6AA9F49A5A795511ABCF820649E980D930C8AD07C1A19C7006AF789009E00654450510D1B263143AC54ECF6EC6EC3B02D2E3A4F79F2C2BFE");
+		ConstructedTlvDataObject dvCertWithDomainParamsRemovedDomainParamsTlv = new ConstructedTlvDataObject(dvCertWithDomainParamsRemovedDomainParams);
+		assertEquals(dvCertWithDomainParamsRemovedDomainParamsTlv, cert.getEncoded());
+	}
+	
+	/**
+	 * Positive test case: parse AT certificate without domain parameters
+	 * @throws CertificateNotParseableException
+	 */
+	@Test
+	public void test_atCertWithoutDomParams() throws CertificateNotParseableException {
+		CardVerifiableCertificate cert = new CardVerifiableCertificate(atCertWithoutDomainParamsTlv);
+		assertEquals(atCertWithoutDomainParamsTlv, cert.getEncoded());
+	}
+	
+	/**
+	 * Positive test case: parse AT certificate with domain parameters
+	 * Expected result: certificate gets encoded without domain parameters
+	 * @throws CertificateNotParseableException 
+	 */
+	@Test
+	public void test_atCertWithDomParams() throws CertificateNotParseableException {
+		CardVerifiableCertificate cert = new CardVerifiableCertificate(atCertWithDomainParamsTlv);
+		byte[] atCertWithDomainParamsRemovedDomainParams = HexString.toByteArray("7F2182011B7F4E81D45F290100420B44454154445630303030317F494F060A04007F000702020202038641047005BF68CF82BF1B82380FD0ECD9CB6A523FB3894C7EECF939DF247407CBD80572AEEB1EBDE66E9C3B4CC048F21CEB09E029B385D0AEC3D72720B33E54E023315F200B44454154544D30303030317F4C12060904007F00070301020253053E1FFFFFFF5F25060107000100015F2406040500020001653A7317060A04007F000703010202015309FFFFFFFFFFFFFFFFFF730F060A04007F000703010202025301FF730E06090102FA01DF03E901035301FF5F3740145D1DA9AACED2116BB9F4020FFDCDDF24F62A75CC37F389702A514D9715A3AD4B33ADC84E658F2051311323BE04D2D1B99F92F64C2C2776D63188CF4BD01327");
+		ConstructedTlvDataObject atCertWithDomainParamsRemovedDomainParamsTlv = new ConstructedTlvDataObject(atCertWithDomainParamsRemovedDomainParams);
+		assertEquals(atCertWithDomainParamsRemovedDomainParamsTlv, cert.getEncoded());
 	}
 	
 }

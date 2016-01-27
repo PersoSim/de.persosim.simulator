@@ -256,7 +256,7 @@
             <children id="83"/>
             <lifeCycleState>CREATION</lifeCycleState>
             <currentCertificate id="84">
-              <body id="85">
+              <body class="de.persosim.simulator.crypto.certificates.CertificateBody" id="85">
                 <certificateProfileIdentifier>0</certificateProfileIdentifier>
                 <certificationAuthorityReference id="86">
                   <countryCode>DE</countryCode>
@@ -278,13 +278,14 @@
                   <holderMnemonic>ISCVCA</holderMnemonic>
                   <sequenceNumber>00001</sequenceNumber>
                 </certificateHolderReference>
-                <certificateHolderAuthorizationTemplate id="92">
-                  <objectIdentifier class="de.persosim.simulator.protocols.GenericOid" id="93">
-                    <oidByteArray id="94">04007F000703010201</oidByteArray>
+                <certificateExtensions id="92"/>
+                <certificateHolderAuthorizationTemplate id="93">
+                  <objectIdentifier class="de.persosim.simulator.protocols.GenericOid" id="94">
+                    <oidByteArray id="95">04007F000703010201</oidByteArray>
                   </objectIdentifier>
-                  <relativeAuthorization id="95">
-                    <authorization id="96">
-                      <storedBits id="97">
+                  <relativeAuthorization id="96">
+                    <authorization id="97">
+                      <storedBits id="98">
                         <boolean>true</boolean>
                         <boolean>true</boolean>
                         <boolean>false</boolean>
@@ -298,9 +299,8 @@
                   </relativeAuthorization>
                   <terminalType>IS</terminalType>
                 </certificateHolderAuthorizationTemplate>
-                <certificateEffectiveDate id="98">2015-11-05 00:00:00.0 UTC</certificateEffectiveDate>
-                <certificateExpirationDate id="99">2016-11-05 00:00:00.0 UTC</certificateExpirationDate>
-                <certificateExtensions id="100"/>
+                <certificateEffectiveDate id="99">2015-11-05 00:00:00.0 UTC</certificateEffectiveDate>
+                <certificateExpirationDate id="100">2016-11-05 00:00:00.0 UTC</certificateExpirationDate>
               </body>
               <signature id="101">422307D9B16408AB73E6F268B4FDDC30685641C571480A8123B0C6D2AAA9A902325CC87D93139924185320723A5D5A035F7A603B31664752C774A22B99C38D94</signature>
             </currentCertificate>
@@ -313,7 +313,7 @@
             <children id="104"/>
             <lifeCycleState>CREATION</lifeCycleState>
             <currentCertificate id="105">
-              <body id="106">
+              <body class="de.persosim.simulator.crypto.certificates.CertificateBody" id="106">
                 <certificateProfileIdentifier>0</certificateProfileIdentifier>
                 <certificationAuthorityReference id="107">
                   <countryCode>DE</countryCode>
@@ -335,13 +335,14 @@
                   <holderMnemonic>ATCVCA</holderMnemonic>
                   <sequenceNumber>00001</sequenceNumber>
                 </certificateHolderReference>
-                <certificateHolderAuthorizationTemplate id="113">
-                  <objectIdentifier class="de.persosim.simulator.protocols.GenericOid" id="114">
-                    <oidByteArray id="115">04007F000703010202</oidByteArray>
+                <certificateExtensions id="113"/>
+                <certificateHolderAuthorizationTemplate id="114">
+                  <objectIdentifier class="de.persosim.simulator.protocols.GenericOid" id="115">
+                    <oidByteArray id="116">04007F000703010202</oidByteArray>
                   </objectIdentifier>
-                  <relativeAuthorization id="116">
-                    <authorization id="117">
-                      <storedBits id="118">
+                  <relativeAuthorization id="117">
+                    <authorization id="118">
+                      <storedBits id="119">
                         <boolean>true</boolean>
                         <boolean>true</boolean>
                         <boolean>true</boolean>
@@ -387,9 +388,8 @@
                   </relativeAuthorization>
                   <terminalType>AT</terminalType>
                 </certificateHolderAuthorizationTemplate>
-                <certificateEffectiveDate id="119">2015-11-05 00:00:00.0 UTC</certificateEffectiveDate>
-                <certificateExpirationDate id="120">2016-11-05 00:00:00.0 UTC</certificateExpirationDate>
-                <certificateExtensions id="121"/>
+                <certificateEffectiveDate id="120">2015-11-05 00:00:00.0 UTC</certificateEffectiveDate>
+                <certificateExpirationDate id="121">2016-11-05 00:00:00.0 UTC</certificateExpirationDate>
               </body>
               <signature id="122">8BD0D199516491AD5128AA65E5480412F5A55E4E40C8ED7D6173A4D5CD53B91013228A376F27B5D190A94367ACEF0C022FAE1B694AD106C443E2A0EF57A9ECCD</signature>
             </currentCertificate>
@@ -402,7 +402,7 @@
             <children id="125"/>
             <lifeCycleState>CREATION</lifeCycleState>
             <currentCertificate id="126">
-              <body id="127">
+              <body class="de.persosim.simulator.crypto.certificates.CertificateBody" id="127">
                 <certificateProfileIdentifier>0</certificateProfileIdentifier>
                 <certificationAuthorityReference id="128">
                   <countryCode>DE</countryCode>
@@ -424,13 +424,14 @@
                   <holderMnemonic>STCVCA</holderMnemonic>
                   <sequenceNumber>00001</sequenceNumber>
                 </certificateHolderReference>
-                <certificateHolderAuthorizationTemplate id="134">
-                  <objectIdentifier class="de.persosim.simulator.protocols.GenericOid" id="135">
-                    <oidByteArray id="136">04007F000703010203</oidByteArray>
+                <certificateExtensions id="134"/>
+                <certificateHolderAuthorizationTemplate id="135">
+                  <objectIdentifier class="de.persosim.simulator.protocols.GenericOid" id="136">
+                    <oidByteArray id="137">04007F000703010203</oidByteArray>
                   </objectIdentifier>
-                  <relativeAuthorization id="137">
-                    <authorization id="138">
-                      <storedBits id="139">
+                  <relativeAuthorization id="138">
+                    <authorization id="139">
+                      <storedBits id="140">
                         <boolean>true</boolean>
                         <boolean>true</boolean>
                         <boolean>false</boolean>
@@ -444,9 +445,8 @@
                   </relativeAuthorization>
                   <terminalType>ST</terminalType>
                 </certificateHolderAuthorizationTemplate>
-                <certificateEffectiveDate id="140">2015-11-05 00:00:00.0 UTC</certificateEffectiveDate>
-                <certificateExpirationDate id="141">2016-11-05 00:00:00.0 UTC</certificateExpirationDate>
-                <certificateExtensions id="142"/>
+                <certificateEffectiveDate id="141">2015-11-05 00:00:00.0 UTC</certificateEffectiveDate>
+                <certificateExpirationDate id="142">2016-11-05 00:00:00.0 UTC</certificateExpirationDate>
               </body>
               <signature id="143">2384EDBEBAEE5B0128089FF3F9ACF1897898044662F6212F24B202799603BA9A05A8A41FC306A8467AEC4582C19EDDEDF6BA1E93980649506C931A68A23B8E0E</signature>
             </currentCertificate>
