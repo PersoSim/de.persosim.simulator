@@ -1,3 +1,12 @@
+Version 0.8.1 (29.01.2016)
+
+* Added reduced CV certificate & reduced body as superclasses for old ones
+* improved log output
+* fixed encoding used for signing
+* use information about key encoding provided by CertificateRole
+* adapted encoding of certs to reflect role (incl conditional objects)
+
+
 Version 0.8.0 (18.12.2015)
 
 * All profiles are resigned in their respective PKI
@@ -16,3 +25,5 @@ Version 0.8.0 (18.12.2015)
 * Pin management now correctly checks for access rights
 * The object store was replaced by direct use of the master file as card object manager
 * Treat effective and confined authorizations separately
+
+
