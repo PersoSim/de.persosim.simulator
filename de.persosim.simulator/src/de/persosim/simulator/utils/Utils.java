@@ -596,4 +596,18 @@ public abstract class Utils {
 		return new byte[]{y1, y2, m1, m2, d1, d2};
 	}
 	
+	/**
+	 * Creates a new byte array containing the bytes of the given input in
+	 * inverted order.
+	 * 
+	 * @param input
+	 * @return an inverted order byte array
+	 */
+	public static byte[] invertByteOrder(byte[] input) {
+		byte[] result = new byte[input.length];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = input[input.length - i - 1];
+		}
+		return result;
+	}
 }

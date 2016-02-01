@@ -1211,4 +1211,12 @@ public class UtilsTest {
 
 		assertArrayEquals(expected, result);
 	}
+	
+	@Test
+	public void testInvertByteOrder(){
+		byte [] toBeInverted = new byte [] {1,2,3,4,5};
+		byte [] expected = new byte [] {5,4,3,2,1};
+
+		assertArrayEquals(expected, Utils.invertByteOrder(toBeInverted));
+	}
 }
