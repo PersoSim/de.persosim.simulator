@@ -348,13 +348,11 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	
 	@Override
 	public ECPrivateKey reconstructPrivateKey(byte[] rawKeyPlain) {
-		byte[] prime = Utils.toUnsignedByteArray(this.getPrime());
-		
-		if(rawKeyPlain.length != prime.length) {
-			throw new IllegalArgumentException("public key data length mismatches expected length of " + rawKeyPlain.length + " bytes according to domain parameters");
-		}
-		
 		BigInteger privateS = new BigInteger(1, rawKeyPlain);
+		
+		if(privateS.compareTo(this.getPrime()) >= 0) {
+			throw new IllegalArgumentException("private key is greater than or equal to prime");
+		}
 		
 		return reconstructPrivateKey(privateS);
 	}
