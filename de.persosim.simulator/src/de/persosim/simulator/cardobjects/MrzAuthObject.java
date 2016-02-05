@@ -3,7 +3,6 @@ package de.persosim.simulator.cardobjects;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 
 import org.globaltester.cryptoprovider.Crypto;
 
@@ -23,7 +22,7 @@ public class MrzAuthObject extends PasswordAuthObject {
 	protected String mrz;
 		
 	public MrzAuthObject(AuthObjectIdentifier identifier, String mrz)
-			throws NoSuchAlgorithmException, NoSuchProviderException,
+			throws NoSuchAlgorithmException,
 			IOException {
 		super(identifier, constructMrzPassword(mrz), "MRZ");
 		this.mrz = mrz;
@@ -35,11 +34,10 @@ public class MrzAuthObject extends PasswordAuthObject {
 	 * 
 	 * @return the input String used to compute the common secret from the MRZ
 	 * @throws IOException 
-	 * @throws NoSuchProviderException 
 	 * @throws NoSuchAlgorithmException 
 	 */
 	private static byte[] constructMrzPassword(String machineReadableZone)
-			throws NoSuchAlgorithmException, NoSuchProviderException, IOException {
+			throws NoSuchAlgorithmException, IOException {
 		StringBuilder sb;
 		Mrz mrz;
 
