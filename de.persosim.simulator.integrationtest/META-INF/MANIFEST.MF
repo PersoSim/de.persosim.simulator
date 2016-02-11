@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: PersoSim Simulator Integrationtest
+Bundle-Name: PersoSim Simulator Integration Test
 Bundle-SymbolicName: de.persosim.simulator.integrationtest
 Bundle-Version: 0.8.1
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
