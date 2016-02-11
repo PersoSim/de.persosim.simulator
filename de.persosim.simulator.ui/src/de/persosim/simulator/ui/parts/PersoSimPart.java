@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 
-import de.persosim.driver.connector.service.NativeDriverConnectorInterface;
+import de.persosim.driver.connector.service.NativeDriverConnector;
 import de.persosim.simulator.ui.Activator;
 import de.persosim.simulator.ui.handlers.SelectPersoFromFileHandler;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
@@ -476,7 +476,7 @@ public class PersoSimPart {
 	/**
 	 * Attach reader to simulator, i.e. connect connector
 	 */
-	public void connectReader(NativeDriverConnectorInterface connector) {
+	public void connectReader(NativeDriverConnector connector) {
 		try {
 			connector.connect("localhost", 5678);
 		} catch (IOException e) {
@@ -488,7 +488,7 @@ public class PersoSimPart {
 	/**
 	 * Separate reader from simulator, i.e. disconnect connector
 	 */
-	public void disconnectReader(NativeDriverConnectorInterface connector) {
+	public void disconnectReader(NativeDriverConnector connector) {
 		if ((connector != null) && (connector.isRunning())) {
 			try {
 				connector.disconnect();

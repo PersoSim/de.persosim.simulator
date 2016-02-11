@@ -16,8 +16,9 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.util.tracker.ServiceTracker;
 
-import de.persosim.driver.connector.NativeDriverConnector;
-import de.persosim.driver.connector.service.NativeDriverConnectorInterface;
+import de.persosim.driver.connector.DriverConnectorFactory;
+import de.persosim.driver.connector.features.DefaultListener;
+import de.persosim.driver.connector.service.NativeDriverConnector;
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.ui.parts.PersoSimPart;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
@@ -35,19 +36,11 @@ public class Activator implements BundleActivator {
 	private LinkedList<LogReaderService> readers = new LinkedList<>();
 	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(PersoSimPart.MAXIMUM_CACHED_CONSOLE_LINES);
 	private ServiceTracker<LogReaderService, LogReaderService> logReaderTracker;
-	private static ServiceTracker<NativeDriverConnectorInterface, NativeDriverConnectorInterface> serviceTrackerNativeDriverConnector;
+	private static ServiceTracker<DriverConnectorFactory, DriverConnectorFactory> serviceTrackerDriverConnectorFactory;
 	public static final int DEFAULT_PORT = 5678;
 	public static final String DEFAULT_HOST = "localhost";
 	public static NativeDriverConnector connector = null;
 	private static LogReaderService readerService = null;
-	
-
-	public static NativeDriverConnectorInterface getConnector() {
-		if (serviceTrackerNativeDriverConnector != null){
-			return serviceTrackerNativeDriverConnector.getService();
-		}
-		return null;
-	}
 
 	static BundleContext getContext() {
 		return context;
@@ -112,8 +105,8 @@ public class Activator implements BundleActivator {
 			}
 		}
 				
-		serviceTrackerNativeDriverConnector = new ServiceTracker<NativeDriverConnectorInterface, NativeDriverConnectorInterface>(context, NativeDriverConnectorInterface.class.getName(), null);
-		serviceTrackerNativeDriverConnector.open();
+		serviceTrackerDriverConnectorFactory = new ServiceTracker<DriverConnectorFactory, DriverConnectorFactory>(context, DriverConnectorFactory.class.getName(), null);
+		serviceTrackerDriverConnectorFactory.open();
 		
         String filter = "(objectclass=" + LogReaderService.class.getName() + ")";
         try {
@@ -148,7 +141,7 @@ public class Activator implements BundleActivator {
 		logReaderTracker.close();
 
 		Activator.context = null;
-		serviceTrackerNativeDriverConnector.close();
+		serviceTrackerDriverConnectorFactory.close();
 	}
 
 	private static LevelFilter logLevelFilter;
@@ -162,28 +155,29 @@ public class Activator implements BundleActivator {
 	}
 	
 	public static void connectToNativeDriver() {
-		connector = (NativeDriverConnector) getConnector();
 		try {
+			connector = serviceTrackerDriverConnectorFactory.getService().getConnector(de.persosim.driver.connector.Activator.PERSOSIM_CONNECTOR_CONTEXT_ID);
+			connector.addListener(new DefaultListener());
 			if (!connector.isRunning()) {
-			connector.connect(DEFAULT_HOST, DEFAULT_PORT);
+				connector.connect(DEFAULT_HOST, DEFAULT_PORT);
 			}
 		} catch (IOException e) {
-			log(CommandParser.class, "Exception: " + e.getMessage(), ERROR);
-			e.printStackTrace();
+			log(Activator.class, "Exception: " + e.getMessage(), ERROR);
 		}
 	}
 
 	public static void disconnectFromNativeDriver() {
 		try {
-			if (connector == null) {
-				connector = (NativeDriverConnector) getConnector();
-			}
 			if (connector != null && connector.isRunning()) {
 				connector.disconnect();
+				serviceTrackerDriverConnectorFactory.getService().returnConnector(connector);
 			}
 		} catch (IOException | InterruptedException e) {
-			log(CommandParser.class, "Exception: " + e.getMessage(), ERROR);
-			e.printStackTrace();
+			log(Activator.class, "Exception: " + e.getMessage(), ERROR);
 		}
+	}
+	
+	public static NativeDriverConnector getConnector(){
+		return connector;
 	}
 }
