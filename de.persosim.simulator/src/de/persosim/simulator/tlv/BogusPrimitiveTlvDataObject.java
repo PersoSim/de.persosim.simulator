@@ -7,7 +7,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
- * This class implements TLV data objects allowing errors.
+ * This class implements TLV data objects allowing errors. The {@link TlvTag}
+ * will not be checked for correctness. Furthermore, it is possible to omit the
+ * TLV value when encoding as a byte array.
  * 
  * @author cstroh
  * 
@@ -15,10 +17,23 @@ import java.io.IOException;
 public class BogusPrimitiveTlvDataObject extends PrimitiveTlvDataObject {
 	private boolean omitTlvValue;
 	
+	/**
+	 * Constructs an object from pre-fabricated elements. Length field is implicitly set
+	 * according to DER encoding rules by default.
+	 * @param tlvTagInput the tag to be used
+	 * @param tlvValuePlainInput the value to be used
+	 */
 	public BogusPrimitiveTlvDataObject(TlvTag tlvTagInput, byte[] tlvValuePlainInput) {
 		this(tlvTagInput, tlvValuePlainInput, false);
 	}
 
+	/**
+	 * Constructs an object from pre-fabricated elements. Length field is implicitly set
+	 * according to DER encoding rules by default.
+	 * @param tlvTagInput the tag to be used
+	 * @param tlvValuePlainInput the value to be used
+	 * @param omitTlvValue if true, the TLV value will not be written to byte array
+	 */
 	public BogusPrimitiveTlvDataObject(TlvTag tlvTagInput, byte[] tlvValuePlainInput, boolean omitTlvValue) {
 		super(tlvTagInput, tlvValuePlainInput);
 		this.omitTlvValue = omitTlvValue;
@@ -29,7 +44,6 @@ public class BogusPrimitiveTlvDataObject extends PrimitiveTlvDataObject {
 		if(tlvTagInput == null) {throw new NullPointerException("tag must not be null");}
 		
 		performValidityChecks = false;
-		
 		
 		/*
 		 * TLV tag must be cloned to eliminate outside access to this object.
