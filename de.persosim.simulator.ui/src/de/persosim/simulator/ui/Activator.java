@@ -56,6 +56,7 @@ public class Activator implements BundleActivator {
 		CommandParser.executeUserCommands(commands);
 		if(commands.length == 0) return; //just do nothing.
 		if (commands[0].equals(CommandParser.CMD_LOAD_PERSONALIZATION)) {
+			disconnectFromNativeDriver();
 			connectToNativeDriver();
 		}
 		if (commands[0].equals(CommandParser.CMD_STOP)) {
@@ -168,11 +169,12 @@ public class Activator implements BundleActivator {
 
 	public static void disconnectFromNativeDriver() {
 		try {
-			if (connector != null && connector.isRunning()) {
-				connector.disconnect();
+			connector = serviceTrackerDriverConnectorFactory.getService().getConnector(de.persosim.driver.connector.Activator.PERSOSIM_CONNECTOR_CONTEXT_ID);
+			
+			if (connector != null) {				
 				serviceTrackerDriverConnectorFactory.getService().returnConnector(connector);
 			}
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			log(Activator.class, "Exception: " + e.getMessage(), ERROR);
 		}
 	}
