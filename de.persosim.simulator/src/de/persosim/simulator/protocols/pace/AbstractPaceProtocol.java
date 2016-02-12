@@ -594,6 +594,8 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 * This method processes the command APDU MUTUAL_AUTHENTICATE.
 	 */
 	public void processCommandMutualAuthenticate() {
+		
+		try {
 		TlvDataObject tlvObject;
 		byte[] pcdTokenReceivedFromPCD, piccToken, pcdToken;
 		TlvPath path;
@@ -721,6 +723,12 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		 * In either case protocol is completed.
 		 */
 		processingData.addUpdatePropagation(this, "Command MutualAuthenticate successfully processed - Protocol PACE completed", new ProtocolUpdate(true));
+		
+		} catch (ProcessingException e ) {
+			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
+			processingData.updateResponseAPDU(this, e.getMessage(), resp);
+			return;
+		}
 	}
 	
 	protected void addCars(ConstructedTlvDataObject constructed7c){

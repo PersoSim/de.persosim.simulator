@@ -216,8 +216,9 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	 * Negative test case: reconstruct private key from byte array encoding with unexpected length.
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void testReconstructPrivateKey_illegalKeySize() throws Exception {		
-		domParamsEcdh.reconstructPrivateKey(new byte[] {(byte) 0xFF});
+	public void testReconstructPrivateKey_illegalKeySize() throws Exception {
+		BigInteger key = new BigInteger(domParamsEcdh.getPrime().toString());
+		domParamsEcdh.reconstructPrivateKey(key.toByteArray());
 	}
 	
 	/**

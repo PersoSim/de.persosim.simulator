@@ -610,7 +610,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			//extract required data from curKey
 			ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(curKey.getKeyPair().getPublic().getEncoded());
 			ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTlvDataObject(TAG_SEQUENCE);
-			TlvDataObject subjPubKey = encKey.getTlvDataObject(TAG_BIT_STRING);
+			TlvDataObject subjPubKey = computeSubjectPublicKey(encKey);
 			
 			//using standardized domain parameters if possible
 			algIdentifier = StandardizedDomainParameters.simplifyAlgorithmIdentifier(algIdentifier);
@@ -665,12 +665,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 				//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
 				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 				
-				if (curKey.isPrivilegedOnly()) {
-					privilegedPublicKeyInfos.add(caPublicKeyInfo);
-				} else {
-					// TODO is copying to privileged also needed here?
-					unprivilegedPublicKeyInfos.add(caPublicKeyInfo);
-				}
+				addChipAuthenticationPublicKeyInfo(curKey.isPrivilegedOnly(), privilegedPublicKeyInfos, unprivilegedPublicKeyInfos, caPublicKeyInfo);
 			}
 			
 		}
@@ -699,6 +694,19 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		}
 		
 		return secInfos;
+	}
+	
+	protected void addChipAuthenticationPublicKeyInfo(boolean isPrivilegedOnly, ArrayList<TlvDataObject> privilegedPublicKeyInfos, ArrayList<TlvDataObject> unprivilegedPublicKeyInfos, ConstructedTlvDataObject caPublicKeyInfo) {
+		if (isPrivilegedOnly) {
+			privilegedPublicKeyInfos.add(caPublicKeyInfo);
+		} else {
+			// TODO is copying to privileged also needed here?
+			unprivilegedPublicKeyInfos.add(caPublicKeyInfo);
+		}
+	}
+	
+	protected TlvDataObject computeSubjectPublicKey(ConstructedTlvDataObject encKey) {
+		return encKey.getTlvDataObject(TAG_BIT_STRING);
 	}
 	
 }

@@ -4,8 +4,13 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.CardObjectIdentifier;
+import de.persosim.simulator.cardobjects.ElementaryFile;
+import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
@@ -90,5 +95,38 @@ public class PersonalizationHelper {
 				}
 			}
 		}
+	}
+
+	
+	/**
+	 * Returns the file with the given file identifier under the chosen parent object of a given personalization.
+	 * @param perso The {@link Personalization}} to search in.
+	 * @param fileIdentifier The file identifier of the file to search.
+	 * @param df
+	 *            the parent object to search in or <code>null</code> if the
+	 *            root element should be searched
+	 * @return the bytes of the found file
+	 * @throws AccessDeniedException
+	 */
+	public static byte[] getFileFromPerso(Personalization perso, int fileIdentifier, CardObjectIdentifier df) throws AccessDeniedException {
+		CardObject parent;
+		
+		MasterFile mf = PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class).getMasterFile();
+		
+		if (df != null) {
+			Collection<CardObject> parentCandidates = mf.findChildren(df);
+
+			if (parentCandidates.size() != 1) {
+				throw new IllegalArgumentException("The chosen parent is ambigous");
+			}
+
+			parent = parentCandidates.iterator().next();
+		} else {
+			parent = mf;
+		}
+		
+		Collection<CardObject> file = parent.findChildren(new FileIdentifier(fileIdentifier));
+		
+		return ((ElementaryFile) file.iterator().next()).getContent();
 	}
 }
