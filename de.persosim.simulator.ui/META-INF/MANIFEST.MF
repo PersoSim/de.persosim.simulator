@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Ui
+Bundle-Name: PersoSim Simulator UI
 Bundle-SymbolicName: de.persosim.simulator.ui;singleton:=true
 Bundle-Version: 0.8.1
 Require-Bundle: org.eclipse.swt;bundle-version="3.103.0",

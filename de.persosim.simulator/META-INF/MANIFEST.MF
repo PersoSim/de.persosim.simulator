@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: PersoSim
+Bundle-Name: PersoSim Simulator
 Bundle-SymbolicName: de.persosim.simulator;singleton:=true
 Bundle-Version: 0.8.1
 Bundle-Vendor: HJP Consulting GmbH
