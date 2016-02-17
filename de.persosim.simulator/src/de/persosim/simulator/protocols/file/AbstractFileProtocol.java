@@ -3,6 +3,8 @@ package de.persosim.simulator.protocols.file;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 
+import org.globaltester.simulator.SimulatorConfiguration;
+
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardFile;
@@ -501,6 +503,12 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 		byte ins = processingData.getCommandApdu().getIns();
 
 		int ne = processingData.getCommandApdu().getNe();
+
+		int maxSize = SimulatorConfiguration.getMaxPayloadSize();
+		if (ne > maxSize){
+			ne = maxSize;
+		}
+		
 		boolean isOddInstruction = ((ins & INS_MASK_ODDINS) == INS_MASK_ODDINS);
 		boolean zeroEncoded = processingData.getCommandApdu()
 				.isNeZeroEncoded();
