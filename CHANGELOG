@@ -1,3 +1,13 @@
+Version 0.8.2 (18.02.2016)
+
+* Use a maximum payload size for read binary instructions
+* Updated Bundle-Name to match naming conventions
+* disconnect from native driver when loading perso
+* Add utility method for inversion of byte order in byte arrays
+* Adapt to upstream rename of the NativeDriverConnectorInterface
+* Byte length of private key can be shorter than length of prime
+
+
 Version 0.8.1 (29.01.2016)
 
 * Added reduced CV certificate & reduced body as superclasses for old ones
