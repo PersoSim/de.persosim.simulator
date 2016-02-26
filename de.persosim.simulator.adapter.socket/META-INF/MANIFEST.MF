@@ -5,6 +5,7 @@ Bundle-SymbolicName: de.persosim.simulator.adapter.socket
 Bundle-Version: 0.8.2
 Bundle-Activator: de.persosim.simulator.adapter.socket.Activator
 Bundle-Vendor: HJP Consulting GmbH
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.core.runtime,
  de.persosim.simulator;bundle-version="0.5.0",
  org.globaltester.simulator
