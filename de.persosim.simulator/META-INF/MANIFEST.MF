@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PersoSim Simulator
 Bundle-SymbolicName: de.persosim.simulator;singleton:=true
-Bundle-Version: 0.8.2
+Bundle-Version: 0.8.2.qualifier
 Bundle-Vendor: HJP Consulting GmbH
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: com.thoughtworks.xstream,
