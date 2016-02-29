@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.globaltester</groupId>
     <artifactId>org.globaltester.parent</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <relativePath>../../org.globaltester.parent/org.globaltester.parent</relativePath>
   </parent>
 
