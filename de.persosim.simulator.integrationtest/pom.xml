@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project>
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.globaltester</groupId>
@@ -8,54 +7,48 @@
     <version>0.1.2</version>
     <relativePath>../../org.globaltester.parent/org.globaltester.parent</relativePath>
   </parent>
-
   <groupId>de.persosim</groupId>
   <artifactId>de.persosim.simulator.integrationtest</artifactId>
   <version>0.8.1</version>
   <packaging>eclipse-test-plugin</packaging>
-
-
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-surefire-plugin</artifactId>
-				<version>${tycho.version}</version>
-				<configuration>
-					<includes>
-						<include>**/GtDebugPersoTest.class</include>
-					</includes>
-					<defaultStartLevel>
-						<level>6</level>
-						<autoStart>true</autoStart>
-					</defaultStartLevel>
-					<bundleStartLevel>
-  <bundle>
-    <id>org.globaltester.cryptoprovider</id>
-    <level>2</level>
-    <autoStart>true</autoStart>
-  </bundle>
-  <bundle>
-    <id>org.globaltester.cryptoprovider.bc</id>
-    <level>2</level>
-    <autoStart>true</autoStart>
-  </bundle>
-  <bundle>
-    <id>de.persosim.simulator</id>
-    <level>3</level>
-    <autoStart>true</autoStart>
-  </bundle>
-  <bundle>
-    <id>de.persosim.simulator.adapter.socket</id>
-    <level>3</level>
-    <autoStart>true</autoStart>
-  </bundle>
-</bundleStartLevel>
-					
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-surefire-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+          <includes>
+            <include>**/GtDebugPersoTest.class</include>
+          </includes>
+          <defaultStartLevel>
+            <level>6</level>
+            <autoStart>true</autoStart>
+          </defaultStartLevel>
+          <bundleStartLevel>
+            <bundle>
+              <id>org.globaltester.cryptoprovider</id>
+              <level>2</level>
+              <autoStart>true</autoStart>
+            </bundle>
+            <bundle>
+              <id>org.globaltester.cryptoprovider.bc</id>
+              <level>2</level>
+              <autoStart>true</autoStart>
+            </bundle>
+            <bundle>
+              <id>de.persosim.simulator</id>
+              <level>3</level>
+              <autoStart>true</autoStart>
+            </bundle>
+            <bundle>
+              <id>de.persosim.simulator.adapter.socket</id>
+              <level>3</level>
+              <autoStart>true</autoStart>
+            </bundle>
+          </bundleStartLevel>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
