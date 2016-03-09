@@ -4,8 +4,8 @@ import java.io.File;
 import java.security.Provider;
 import java.security.Security;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.globaltester.cryptoprovider.Crypto;
+import org.globaltester.cryptoprovider.bc.ProviderBc;
 import org.junit.BeforeClass;
 
 import de.persosim.simulator.platform.Iso7816;
@@ -23,7 +23,6 @@ import de.persosim.simulator.utils.InfoSource;
  */
 public class PersoSimTestCase implements InfoSource, Iso7816 {
 
-	protected static Provider bcProvider;
 	private static final String TMP_FOLDER = "tmp";
 
 	@Override
@@ -40,9 +39,7 @@ public class PersoSimTestCase implements InfoSource, Iso7816 {
 	
 	@BeforeClass
 	public static void setupClass(){
-		bcProvider = new BouncyCastleProvider();
-		Security.addProvider(bcProvider);
-		Crypto.setCryptoProvider(bcProvider);
+		Crypto.setCryptoProvider(new ProviderBc().getCryptoProviderObject());
 
 	}
 

@@ -15,6 +15,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
+import org.globaltester.cryptoprovider.Crypto;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,8 +53,8 @@ public class KeyPairConverterTest extends PersoSimTestCase {
 		X509EncodedKeySpec   ks_pk = new X509EncodedKeySpec (HexString.toByteArray(byteValueSk));
 		
 		try {
-			pk = KeyFactory.getInstance(algorithmValue, bcProvider).generatePublic(ks_pk);
-			sk = KeyFactory.getInstance(algorithmValue, bcProvider).generatePrivate(ks_sk);
+			pk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePublic(ks_pk);
+			sk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePrivate(ks_sk);
 		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
