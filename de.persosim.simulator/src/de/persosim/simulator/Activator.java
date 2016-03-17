@@ -21,20 +21,20 @@ public class Activator implements BundleActivator {
 	private static PersoSim sim = null;
 	private ServiceRegistration<Simulator> simRegistration;
 	
-	public static LogService getLogservice() {		
+	public static LogService getLogservice() {
 		if (logServiceTracker != null){
 			return logServiceTracker.getService();
 		}
 		return null;
-	}	
-
+	}
+	
 	@Override
 	public void start(BundleContext context) throws Exception {
 		Activator.context = context;
 		plugin = this;
 		//get LogService
 		logServiceTracker = new ServiceTracker<LogService, LogService>(context, LogService.class.getName(), null);
-        logServiceTracker.open();
+		logServiceTracker.open();
 }
 
 	@Override
@@ -42,7 +42,7 @@ public class Activator implements BundleActivator {
 		logServiceTracker.close();
 		Activator.context = null;
 	}
-
+	
 	public static BundleContext getContext() {
 		return context;
 	}
@@ -77,7 +77,7 @@ public class Activator implements BundleActivator {
 	}
 	
 	/**
-	 * This disables the {@link Simulator} for the PersoSim simulator. 
+	 * This disables the {@link Simulator} for the PersoSim simulator.
 	 */
 	public void disableService(){
 		if (context == null || sim == null){
