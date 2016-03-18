@@ -1,8 +1,6 @@
 package de.persosim.simulator.test;
 
 import java.io.File;
-import java.security.Provider;
-import java.security.Security;
 
 import org.globaltester.cryptoprovider.Crypto;
 import org.globaltester.cryptoprovider.bc.ProviderBc;
