@@ -16,3 +16,5 @@
 *.gt text eol=lf
 *.gtsuite text eol=lf
 *.gtspec text eol=lf
+LICENSE text eol=lf
+NOTICE text eol=lf
