@@ -511,7 +511,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
 					this.processingData.updateResponseAPDU(this,
-							"The certificate was issued by an not valid instance", resp);
+							"The certificate was issued by an invalid instance", resp);
 					return;
 				}
 				if (checkSignature((TaOid) currentCertificate.getBody().getPublicKey().getCvOid(), currentCertificate.getPublicKey(), certificateBodyData.toByteArray(), certificateSignatureData.getValueField())){
@@ -531,14 +531,14 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 						// create and propagate response APDU
 						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
 						this.processingData.updateResponseAPDU(this,
-								"The certificate has a non valid date", resp);
+								"The certificate has an invalid date", resp);
 						return;
 					}
 				} else {
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
 					this.processingData.updateResponseAPDU(this,
-							"Could not verify the certificates signature", resp);
+							"Could not verify the certificate's signature", resp);
 					return;
 				}
 			} else {

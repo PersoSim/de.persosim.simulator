@@ -36,5 +36,10 @@ public abstract class CertificateExtension {
 	 * @return the context specific data objects contained in this extension
 	 */
 	abstract public TlvDataObjectContainer getDataObjects();
+	
+	@Override
+	public String toString() {
+		return toTlv().toString();
+	}
 
 }

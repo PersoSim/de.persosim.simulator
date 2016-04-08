@@ -53,14 +53,12 @@ public class PlatformUtil {
 	/**
 	 * Convert an 6xxx SW to an equivalent internal signaling SW 4xxx.
 	 *
-	 * @param statusWord an 6xxx statusword as defined in constants of this class 
+	 * @param statusWord
 	 * @return the equivalent 4xxx representation
 	 * @throws IllegalArgumentException
 	 */
-	public static short convert6xxxTo4xxxStatusWord(short statusWord){
-		if (is6xxxStatusWord(statusWord)){
-			return (short) ((statusWord & 0x0FFF) | 0x4000);
-		} else
-			throw new IllegalArgumentException();
+	public static short convertTo4xxxStatusWord(short statusWord){
+		return (short) ((statusWord & 0x0FFF) | 0x4000);
+
 	}
 }

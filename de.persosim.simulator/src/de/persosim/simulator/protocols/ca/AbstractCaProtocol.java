@@ -122,7 +122,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		try {
 			caOid = getOid(tlvObject.getValueField());
 		} catch (RuntimeException e) {
-			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, e.getMessage());
+			throw new ProcessingException(PlatformUtil.SW_4A80_WRONG_DATA, e.getMessage());
 		}
 		
 		log(this, "new OID is " + caOid, DEBUG);
@@ -223,7 +223,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 			processingData.updateResponseAPDU(this, "Command Set AT successfully processed", resp);
 		} catch (ProcessingException e) {
-			ResponseApdu resp = new ResponseApdu(PlatformUtil.convert6xxxTo4xxxStatusWord(e.getStatusWord()));
+			ResponseApdu resp = new ResponseApdu(PlatformUtil.convertTo4xxxStatusWord(e.getStatusWord()));
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 		}
 	}
