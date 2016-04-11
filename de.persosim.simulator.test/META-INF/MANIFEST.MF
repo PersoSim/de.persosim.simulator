@@ -4,7 +4,7 @@ Bundle-Name: PersoSim Simulator Test
 Bundle-SymbolicName: de.persosim.simulator.test
 Bundle-Version: 0.8.2.qualifier
 Bundle-Vendor: HJP Consulting GmbH
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit,
  org.globaltester.cryptoprovider.bc,
  de.persosim.simulator;bundle-version="0.6.0",
