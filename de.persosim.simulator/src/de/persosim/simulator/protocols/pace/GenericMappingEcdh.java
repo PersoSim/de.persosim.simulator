@@ -1,7 +1,7 @@
 package de.persosim.simulator.protocols.pace;
 
-import static org.globaltester.logging.PersoSimLogger.TRACE;
-import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.TRACE;
+import static org.globaltester.logging.BasicLogger.log;
 
 import java.math.BigInteger;
 import java.security.PrivateKey;

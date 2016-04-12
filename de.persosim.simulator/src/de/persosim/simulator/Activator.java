@@ -1,7 +1,7 @@
 package de.persosim.simulator;
 
-import static org.globaltester.logging.PersoSimLogger.ERROR;
-import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.ERROR;
+import static org.globaltester.logging.BasicLogger.log;
 
 import org.globaltester.simulator.Simulator;
 import org.osgi.framework.BundleActivator;

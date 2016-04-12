@@ -3,7 +3,7 @@ package de.persosim.simulator.apdumatching;
 import de.persosim.simulator.apdu.CommandApduImpl;
 import de.persosim.simulator.apdu.InterindustryCommandApdu;
 
-import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.log;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;

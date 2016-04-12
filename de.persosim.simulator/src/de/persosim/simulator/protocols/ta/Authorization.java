@@ -1,7 +1,7 @@
 package de.persosim.simulator.protocols.ta;
 
-import static org.globaltester.logging.PersoSimLogger.WARN;
-import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.WARN;
+import static org.globaltester.logging.BasicLogger.log;
 
 import de.persosim.simulator.utils.BitField;
 

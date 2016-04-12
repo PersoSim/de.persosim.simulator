@@ -1,8 +1,8 @@
 package de.persosim.simulator.platform;
 
-import static org.globaltester.logging.PersoSimLogger.TRACE;
-import static org.globaltester.logging.PersoSimLogger.log;
-import static org.globaltester.logging.PersoSimLogger.logException;
+import static org.globaltester.logging.BasicLogger.TRACE;
+import static org.globaltester.logging.BasicLogger.log;
+import static org.globaltester.logging.BasicLogger.logException;
 
 import org.globaltester.logging.InfoSource;
 

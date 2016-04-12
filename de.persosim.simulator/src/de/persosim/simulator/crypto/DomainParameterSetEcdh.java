@@ -1,9 +1,9 @@
 package de.persosim.simulator.crypto;
 
-import static org.globaltester.logging.PersoSimLogger.DEBUG;
-import static org.globaltester.logging.PersoSimLogger.ERROR;
-import static org.globaltester.logging.PersoSimLogger.TRACE;
-import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.DEBUG;
+import static org.globaltester.logging.BasicLogger.ERROR;
+import static org.globaltester.logging.BasicLogger.TRACE;
+import static org.globaltester.logging.BasicLogger.log;
 
 import java.math.BigInteger;
 import java.security.KeyFactory;

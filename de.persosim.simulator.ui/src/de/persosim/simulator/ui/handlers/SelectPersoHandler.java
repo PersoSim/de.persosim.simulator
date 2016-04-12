@@ -1,11 +1,11 @@
 package de.persosim.simulator.ui.handlers;
 
-import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.log;
 
 import javax.inject.Inject;
 
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.globaltester.logging.PersoSimLogger;
+import org.globaltester.logging.BasicLogger;
 
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.ui.Activator;
@@ -39,7 +39,7 @@ public abstract class SelectPersoHandler {
 
 		Activator.executeUserCommands(persoCmdString);
 		
-		log(this.getClass(), "finished setting of personalization", PersoSimLogger.INFO);
+		log(this.getClass(), "finished setting of personalization", BasicLogger.INFO);
 	}
 	
 }

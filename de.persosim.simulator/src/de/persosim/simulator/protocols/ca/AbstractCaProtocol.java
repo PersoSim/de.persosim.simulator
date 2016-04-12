@@ -1,9 +1,9 @@
 package de.persosim.simulator.protocols.ca;
 
 import static de.persosim.simulator.protocols.Tr03110Utils.buildAuthenticationTokenInput;
-import static org.globaltester.logging.PersoSimLogger.DEBUG;
-import static org.globaltester.logging.PersoSimLogger.TRACE;
-import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.DEBUG;
+import static org.globaltester.logging.BasicLogger.TRACE;
+import static org.globaltester.logging.BasicLogger.log;
 
 import java.security.InvalidKeyException;
 import java.security.KeyPair;

@@ -1,7 +1,7 @@
 package de.persosim.simulator.protocols.pace;
 
-import static org.globaltester.logging.PersoSimLogger.DEBUG;
-import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.DEBUG;
+import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.Arrays;
 import java.util.Collection;

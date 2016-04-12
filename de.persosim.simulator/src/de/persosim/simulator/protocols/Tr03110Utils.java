@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.globaltester.logging.PersoSimLogger;
+import org.globaltester.logging.BasicLogger;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -71,7 +71,7 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 			serviceTracker.open();
 					
 		} else {
-			PersoSimLogger.log(Tr03110Utils.class, "No OSGi context is available, no additional TR03110 functionalities are supported", PersoSimLogger.INFO);
+			BasicLogger.log(Tr03110Utils.class, "No OSGi context is available, no additional TR03110 functionalities are supported", BasicLogger.INFO);
 		}
 		providers.add(new Tr03110UtilsDefaultProvider());
 
@@ -90,10 +90,10 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 					return key;
 				}
 			} catch (Exception e) {
-				PersoSimLogger.logException(Tr03110Utils.class, e, PersoSimLogger.WARN);
+				BasicLogger.logException(Tr03110Utils.class, e, BasicLogger.WARN);
 			}
 		}
-		PersoSimLogger.log(Tr03110Utils.class, "Public Key data could not be parsed.", PersoSimLogger.INFO);
+		BasicLogger.log(Tr03110Utils.class, "Public Key data could not be parsed.", BasicLogger.INFO);
 		return null;
 	}
 	

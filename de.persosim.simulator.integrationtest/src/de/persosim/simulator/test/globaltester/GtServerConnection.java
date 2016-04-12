@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.globaltester.logging.PersoSimLogger;
+import org.globaltester.logging.BasicLogger;
 
 /**
  * Encapsulate ServerMode communication with an existing GlobalTester instance
@@ -206,7 +206,7 @@ public class GtServerConnection {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			return true;
 		} catch (IOException e) {
-			PersoSimLogger.logException(this.getClass(), e);
+			BasicLogger.logException(this.getClass(), e);
 			return false;
 		}
 	}

@@ -1,8 +1,8 @@
 package de.persosim.simulator.processing;
 
-import static org.globaltester.logging.PersoSimLogger.TRACE;
-import static org.globaltester.logging.PersoSimLogger.WARN;
-import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.TRACE;
+import static org.globaltester.logging.BasicLogger.WARN;
+import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.HashMap;
 import java.util.LinkedList;

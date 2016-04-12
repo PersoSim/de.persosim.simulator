@@ -1,11 +1,11 @@
 package de.persosim.simulator.protocols.pace;
 
 import static de.persosim.simulator.protocols.Tr03110Utils.buildAuthenticationTokenInput;
-import static org.globaltester.logging.PersoSimLogger.DEBUG;
-import static org.globaltester.logging.PersoSimLogger.ERROR;
-import static org.globaltester.logging.PersoSimLogger.TRACE;
-import static org.globaltester.logging.PersoSimLogger.log;
-import static org.globaltester.logging.PersoSimLogger.logException;
+import static org.globaltester.logging.BasicLogger.DEBUG;
+import static org.globaltester.logging.BasicLogger.ERROR;
+import static org.globaltester.logging.BasicLogger.TRACE;
+import static org.globaltester.logging.BasicLogger.log;
+import static org.globaltester.logging.BasicLogger.logException;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;

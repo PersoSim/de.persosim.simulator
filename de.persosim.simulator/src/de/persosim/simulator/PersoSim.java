@@ -1,11 +1,11 @@
 package de.persosim.simulator;
 
-import static org.globaltester.logging.PersoSimLogger.INFO;
-import static org.globaltester.logging.PersoSimLogger.UI;
-import static org.globaltester.logging.PersoSimLogger.log;
-import static org.globaltester.logging.PersoSimLogger.logException;
+import static org.globaltester.logging.BasicLogger.INFO;
+import static org.globaltester.logging.BasicLogger.UI;
+import static org.globaltester.logging.BasicLogger.log;
+import static org.globaltester.logging.BasicLogger.logException;
 
-import org.globaltester.logging.PersoSimLogger;
+import org.globaltester.logging.BasicLogger;
 import org.globaltester.simulator.Simulator;
 
 import de.persosim.simulator.exception.AccessDeniedException;
@@ -70,7 +70,7 @@ public class PersoSim implements Simulator {
 		}
 		
 		running = true;
-		log(this.getClass(), "The simulator has been started", PersoSimLogger.UI);
+		log(this.getClass(), "The simulator has been started", BasicLogger.UI);
 		
 		return true;
 	}
@@ -104,7 +104,7 @@ public class PersoSim implements Simulator {
 		try {
 			kernel = new PersoSimKernel();
 		} catch (AccessDeniedException e) {
-			logException(this.getClass(), e, PersoSimLogger.ERROR);
+			logException(this.getClass(), e, BasicLogger.ERROR);
 			return false;
 		}
 		kernel.init(currentPersonalization);

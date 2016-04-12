@@ -14,7 +14,7 @@ import de.persosim.simulator.platform.Iso7816;
  * 
  * This class provides a generic implementation of InfoSource suitable during test execution.
  * 
- * The {@link #setUpClass()} method handles correct setup of PersoSimLogger for the test execution.
+ * The {@link #setUpClass()} method handles correct setup of BasicLogger for the test execution.
  * 
  * @author amay
  * 

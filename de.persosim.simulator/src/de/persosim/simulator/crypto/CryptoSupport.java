@@ -1,7 +1,7 @@
 package de.persosim.simulator.crypto;
 
-import static org.globaltester.logging.PersoSimLogger.log;
-import static org.globaltester.logging.PersoSimLogger.logException;
+import static org.globaltester.logging.BasicLogger.log;
+import static org.globaltester.logging.BasicLogger.logException;
 
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;

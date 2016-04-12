@@ -1,9 +1,9 @@
 package de.persosim.simulator;
 
-import static org.globaltester.logging.PersoSimLogger.ERROR;
-import static org.globaltester.logging.PersoSimLogger.INFO;
-import static org.globaltester.logging.PersoSimLogger.WARN;
-import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.ERROR;
+import static org.globaltester.logging.BasicLogger.INFO;
+import static org.globaltester.logging.BasicLogger.WARN;
+import static org.globaltester.logging.BasicLogger.log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
