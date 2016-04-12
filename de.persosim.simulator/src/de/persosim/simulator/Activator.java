@@ -1,45 +1,30 @@
 package de.persosim.simulator;
 
-import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static org.globaltester.logging.PersoSimLogger.ERROR;
+import static org.globaltester.logging.PersoSimLogger.log;
 
 import org.globaltester.simulator.Simulator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.log.LogService;
-import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
 
 	public static BundleContext context;
 	
-	//TODO move this service tracking to the class PersoSimLogger (similar to Crypto)
-	private static ServiceTracker<LogService, LogService> logServiceTracker;
 	private static Activator plugin;
 	private static PersoSim sim = null;
 	private ServiceRegistration<Simulator> simRegistration;
-	
-	public static LogService getLogservice() {
-		if (logServiceTracker != null){
-			return logServiceTracker.getService();
-		}
-		return null;
-	}
 	
 	@Override
 	public void start(BundleContext context) throws Exception {
 		Activator.context = context;
 		plugin = this;
-		//get LogService
-		logServiceTracker = new ServiceTracker<LogService, LogService>(context, LogService.class.getName(), null);
-		logServiceTracker.open();
 }
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		logServiceTracker.close();
 		Activator.context = null;
 	}
 	

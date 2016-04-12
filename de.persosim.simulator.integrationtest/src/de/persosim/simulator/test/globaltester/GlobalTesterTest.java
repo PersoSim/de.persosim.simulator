@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.globaltester.logging.InfoSource;
 import org.globaltester.simulator.Simulator;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -36,7 +37,6 @@ import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PersonalizationHelper;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.InfoSource;
 
 public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 	

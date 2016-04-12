@@ -1,12 +1,14 @@
 package de.persosim.simulator.platform;
 
-import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
-import static de.persosim.simulator.utils.PersoSimLogger.logException;
+import static org.globaltester.logging.PersoSimLogger.TRACE;
+import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.PersoSimLogger.logException;
+
+import org.globaltester.logging.InfoSource;
+
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.exception.GeneralException;
 import de.persosim.simulator.processing.ProcessingData;
-import de.persosim.simulator.utils.InfoSource;
 
 /**
  * @author slutters

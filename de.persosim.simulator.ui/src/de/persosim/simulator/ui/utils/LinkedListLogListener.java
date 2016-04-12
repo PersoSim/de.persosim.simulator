@@ -30,7 +30,7 @@ public class LinkedListLogListener extends AbstractLogListener {
 		LogListenerConfig lrc = new LogListenerConfig() {
 			
 			byte logLevels [] ={1,2,3,4,5,6,120};
-			String bundleList [] = {"de.persosim"};
+			String bundleList [] = {"de.persosim", "org.globaltester"};
 			
 			public LogFormat format = new LogFormat();
 			public BundleFilter bundleFilter = new BundleFilter(bundleList);

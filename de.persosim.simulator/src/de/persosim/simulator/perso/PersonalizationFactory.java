@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 
+import org.globaltester.logging.PersoSimLogger;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -76,7 +77,6 @@ import de.persosim.simulator.perso.xstream.KeyConverter;
 import de.persosim.simulator.perso.xstream.KeyPairConverter;
 import de.persosim.simulator.perso.xstream.ProtocolConverter;
 import de.persosim.simulator.perso.xstream.TlvConverter;
-import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
  * This class provides methods that serializes/deserializes personalization objects

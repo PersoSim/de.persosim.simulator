@@ -1,17 +1,19 @@
 package de.persosim.simulator.securemessaging;
 
-import static de.persosim.simulator.utils.PersoSimLogger.APDU;
-import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
-import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
-import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
-import static de.persosim.simulator.utils.PersoSimLogger.logException;
-import static de.persosim.simulator.utils.PersoSimLogger.logPlain;
+import static org.globaltester.logging.PersoSimLogger.APDU;
+import static org.globaltester.logging.PersoSimLogger.DEBUG;
+import static org.globaltester.logging.PersoSimLogger.ERROR;
+import static org.globaltester.logging.PersoSimLogger.TRACE;
+import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.PersoSimLogger.logException;
+import static org.globaltester.logging.PersoSimLogger.logPlain;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
+
+import org.globaltester.logging.PersoSimLogger;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
@@ -31,7 +33,6 @@ import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.PersoSimLogger;
 import de.persosim.simulator.utils.Utils;
 
 /**

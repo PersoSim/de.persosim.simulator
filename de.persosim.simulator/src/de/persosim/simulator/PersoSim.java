@@ -1,16 +1,16 @@
 package de.persosim.simulator;
 
-import static de.persosim.simulator.utils.PersoSimLogger.INFO;
-import static de.persosim.simulator.utils.PersoSimLogger.UI;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
-import static de.persosim.simulator.utils.PersoSimLogger.logException;
+import static org.globaltester.logging.PersoSimLogger.INFO;
+import static org.globaltester.logging.PersoSimLogger.UI;
+import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.PersoSimLogger.logException;
 
+import org.globaltester.logging.PersoSimLogger;
 import org.globaltester.simulator.Simulator;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.PersoSimKernel;
-import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
  * This class provides access to and control of the actual simulator. It can be

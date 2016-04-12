@@ -1,14 +1,14 @@
 package de.persosim.simulator.ui.handlers;
 
-import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static org.globaltester.logging.PersoSimLogger.log;
 
 import javax.inject.Inject;
 
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.globaltester.logging.PersoSimLogger;
 
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.ui.Activator;
-import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
  * This class implements an abstract super class for any handler handling the

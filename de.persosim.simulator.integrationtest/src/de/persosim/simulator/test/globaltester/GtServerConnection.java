@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.persosim.simulator.utils.PersoSimLogger;
+import org.globaltester.logging.PersoSimLogger;
 
 /**
  * Encapsulate ServerMode communication with an existing GlobalTester instance

@@ -1,7 +1,7 @@
 package de.persosim.simulator.ui;
 
-import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static org.globaltester.logging.PersoSimLogger.ERROR;
+import static org.globaltester.logging.PersoSimLogger.log;
 
 import java.io.IOException;
 import java.util.Iterator;

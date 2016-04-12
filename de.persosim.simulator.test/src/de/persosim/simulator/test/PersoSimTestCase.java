@@ -4,10 +4,10 @@ import java.io.File;
 
 import org.globaltester.cryptoprovider.Crypto;
 import org.globaltester.cryptoprovider.bc.ProviderBc;
+import org.globaltester.logging.InfoSource;
 import org.junit.BeforeClass;
 
 import de.persosim.simulator.platform.Iso7816;
-import de.persosim.simulator.utils.InfoSource;
 
 /**
  * Superclass for all test cases PersoSim.

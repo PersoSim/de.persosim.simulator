@@ -1,6 +1,6 @@
 package de.persosim.simulator.protocols.ta;
 
-import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static org.globaltester.logging.PersoSimLogger.log;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

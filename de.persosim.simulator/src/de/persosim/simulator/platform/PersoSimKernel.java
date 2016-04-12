@@ -1,20 +1,21 @@
 package de.persosim.simulator.platform;
 
-import static de.persosim.simulator.utils.PersoSimLogger.APDU;
-import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
-import static de.persosim.simulator.utils.PersoSimLogger.logPlain;
+import static org.globaltester.logging.PersoSimLogger.APDU;
+import static org.globaltester.logging.PersoSimLogger.TRACE;
+import static org.globaltester.logging.PersoSimLogger.log;
+import static org.globaltester.logging.PersoSimLogger.logPlain;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import org.globaltester.logging.InfoSource;
+import org.globaltester.logging.PersoSimLogger;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.InfoSource;
-import de.persosim.simulator.utils.PersoSimLogger;
 import de.persosim.simulator.utils.Utils;
 
 /**

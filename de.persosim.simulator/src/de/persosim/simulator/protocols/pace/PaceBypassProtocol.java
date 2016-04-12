@@ -1,12 +1,14 @@
 package de.persosim.simulator.protocols.pace;
 
-import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static org.globaltester.logging.PersoSimLogger.DEBUG;
+import static org.globaltester.logging.PersoSimLogger.log;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+
+import org.globaltester.logging.InfoSource;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.CommandApduFactory;
@@ -52,7 +54,6 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.InfoSource;
 import de.persosim.simulator.utils.Utils;
 
 /**

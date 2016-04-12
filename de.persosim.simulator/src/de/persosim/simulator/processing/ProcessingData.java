@@ -1,17 +1,18 @@
 package de.persosim.simulator.processing;
 
-import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
-import static de.persosim.simulator.utils.PersoSimLogger.WARN;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static org.globaltester.logging.PersoSimLogger.TRACE;
+import static org.globaltester.logging.PersoSimLogger.WARN;
+import static org.globaltester.logging.PersoSimLogger.log;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+
+import org.globaltester.logging.InfoSource;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
-import de.persosim.simulator.utils.InfoSource;
 
 /**
  * The primary purpose of this class is to store data about an APDU which
