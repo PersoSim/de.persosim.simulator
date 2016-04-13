@@ -14,6 +14,7 @@ import java.util.HashSet;
 import javax.crypto.KeyAgreement;
 
 import org.globaltester.cryptoprovider.Crypto;
+import org.globaltester.logging.InfoSource;
 
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
@@ -47,7 +48,6 @@ import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
-import de.persosim.simulator.utils.InfoSource;
 import de.persosim.simulator.utils.Utils;
 
 /**

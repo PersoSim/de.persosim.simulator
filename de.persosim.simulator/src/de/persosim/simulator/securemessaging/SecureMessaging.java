@@ -1,17 +1,19 @@
 package de.persosim.simulator.securemessaging;
 
-import static de.persosim.simulator.utils.PersoSimLogger.APDU;
-import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
-import static de.persosim.simulator.utils.PersoSimLogger.ERROR;
-import static de.persosim.simulator.utils.PersoSimLogger.TRACE;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
-import static de.persosim.simulator.utils.PersoSimLogger.logException;
-import static de.persosim.simulator.utils.PersoSimLogger.logPlain;
+import static org.globaltester.logging.BasicLogger.APDU;
+import static org.globaltester.logging.BasicLogger.DEBUG;
+import static org.globaltester.logging.BasicLogger.ERROR;
+import static org.globaltester.logging.BasicLogger.TRACE;
+import static org.globaltester.logging.BasicLogger.log;
+import static org.globaltester.logging.BasicLogger.logException;
+import static org.globaltester.logging.BasicLogger.logPlain;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
+
+import org.globaltester.logging.BasicLogger;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
@@ -31,7 +33,6 @@ import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.PersoSimLogger;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -76,11 +77,11 @@ public class SecureMessaging extends Layer implements TlvConstants{
 					SmDataProviderGenerator smDataProviderGenerator = dataProvider.getSmDataProviderGenerator();
 					processingData.addUpdatePropagation(this, "init SM after successful PACE", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, smDataProviderGenerator));
 					
-					logPlain(PersoSimLogger.PREFIX_IN_DEC + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
+					logPlain(BasicLogger.PREFIX_IN_DEC + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
 					log(this, "successfully processed ascending secured APDU", TRACE);
 					return;
 				} else {
-					logPlain(PersoSimLogger.PREFIX_IN_DEC + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
+					logPlain(BasicLogger.PREFIX_IN_DEC + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
 					log(this, "No SmDataProvider available", ERROR);
 					
 					//create and propagate response APDU
@@ -95,7 +96,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 			log(this, "don't process non interindustry APDU", TRACE);
 		}
 		
-		logPlain(PersoSimLogger.PREFIX_IN_DEC + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
+		logPlain(BasicLogger.PREFIX_IN_DEC + HexString.encode(processingData.getCommandApdu().toByteArray()), APDU);
 		
 		// if this line is reached the key material needs to be discarded
 		if (dataProvider != null) {
@@ -125,7 +126,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 	 */
 	@Override
 	public void processDescending() {
-		logPlain(PersoSimLogger.PREFIX_OUT_DEC + HexString.encode(getProcessingData().getResponseApdu().toByteArray()), APDU);
+		logPlain(BasicLogger.PREFIX_OUT_DEC + HexString.encode(getProcessingData().getResponseApdu().toByteArray()), APDU);
 		
 		if (isSmWrappingApplicable()){
 			processOutgoingSmApdu();

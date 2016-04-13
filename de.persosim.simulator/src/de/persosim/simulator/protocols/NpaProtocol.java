@@ -1,6 +1,6 @@
 package de.persosim.simulator.protocols;
 
-import static de.persosim.simulator.utils.PersoSimLogger.logException;
+import static org.globaltester.logging.BasicLogger.logException;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.globaltester.cryptoprovider.Crypto;
+import org.globaltester.logging.InfoSource;
 
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
@@ -28,7 +29,6 @@ import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.InfoSource;
 import de.persosim.simulator.utils.Utils;
 
 public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants {

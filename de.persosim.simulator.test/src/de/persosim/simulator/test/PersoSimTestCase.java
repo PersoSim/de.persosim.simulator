@@ -4,17 +4,17 @@ import java.io.File;
 
 import org.globaltester.cryptoprovider.Crypto;
 import org.globaltester.cryptoprovider.bc.ProviderBc;
+import org.globaltester.logging.InfoSource;
 import org.junit.BeforeClass;
 
 import de.persosim.simulator.platform.Iso7816;
-import de.persosim.simulator.utils.InfoSource;
 
 /**
  * Superclass for all test cases PersoSim.
  * 
  * This class provides a generic implementation of InfoSource suitable during test execution.
  * 
- * The {@link #setUpClass()} method handles correct setup of PersoSimLogger for the test execution.
+ * The {@link #setUpClass()} method handles correct setup of BasicLogger for the test execution.
  * 
  * @author amay
  * 

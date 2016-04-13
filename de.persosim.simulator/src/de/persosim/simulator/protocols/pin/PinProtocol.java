@@ -1,10 +1,12 @@
 package de.persosim.simulator.protocols.pin;
 
-import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.DEBUG;
+import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.Collection;
 import java.util.Collections;
+
+import org.globaltester.logging.InfoSource;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
@@ -29,7 +31,6 @@ import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.InfoSource;
 import de.persosim.simulator.utils.Utils;
 
 public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, ApduSpecificationConstants, InfoSource{

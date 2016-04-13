@@ -5,6 +5,8 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.globaltester.logging.InfoSource;
+
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
@@ -14,7 +16,6 @@ import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.securemessaging.SmDataProviderGenerator;
-import de.persosim.simulator.utils.InfoSource;
 
 /**
  * Representation of the current security status of the card.

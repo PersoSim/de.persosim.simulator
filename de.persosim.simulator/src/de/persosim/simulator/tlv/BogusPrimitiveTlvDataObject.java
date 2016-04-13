@@ -1,7 +1,7 @@
 package de.persosim.simulator.tlv;
 
-import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
-import static de.persosim.simulator.utils.PersoSimLogger.logException;
+import static org.globaltester.logging.BasicLogger.DEBUG;
+import static org.globaltester.logging.BasicLogger.logException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

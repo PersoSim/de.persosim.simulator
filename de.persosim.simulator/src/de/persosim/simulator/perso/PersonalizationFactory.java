@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 
+import org.globaltester.logging.BasicLogger;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -76,7 +77,6 @@ import de.persosim.simulator.perso.xstream.KeyConverter;
 import de.persosim.simulator.perso.xstream.KeyPairConverter;
 import de.persosim.simulator.perso.xstream.ProtocolConverter;
 import de.persosim.simulator.perso.xstream.TlvConverter;
-import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
  * This class provides methods that serializes/deserializes personalization objects
@@ -148,7 +148,7 @@ public class PersonalizationFactory {
 	public static Object unmarshal (String path) throws FileNotFoundException {	
 		File xmlFile = new File(path);
 		if (xmlFile.exists()) {
-			PersoSimLogger.log(PersonalizationFactory.class, "File at " + path + " found");
+			BasicLogger.log(PersonalizationFactory.class, "File at " + path + " found");
 		} else{
 			throw new FileNotFoundException ("File at " + path + " NOT found");
 		}
@@ -359,9 +359,9 @@ public class PersonalizationFactory {
 	        }
 	        serviceTracker.close();
 
-	        PersoSimLogger.log(PersonalizationFactory.class, availableConverters.toString());
+	        BasicLogger.log(PersonalizationFactory.class, availableConverters.toString());
 		} else {
-			PersoSimLogger.log(PersonalizationFactory.class, "Could not get the bundle context, no Converter services added to XStream");
+			BasicLogger.log(PersonalizationFactory.class, "Could not get the bundle context, no Converter services added to XStream");
 		}
 		
 		return xstream;

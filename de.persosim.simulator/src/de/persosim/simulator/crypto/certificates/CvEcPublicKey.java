@@ -1,7 +1,7 @@
 package de.persosim.simulator.crypto.certificates;
 
-import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.DEBUG;
+import static org.globaltester.logging.BasicLogger.log;
 
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;

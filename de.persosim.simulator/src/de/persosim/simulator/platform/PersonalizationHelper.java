@@ -3,6 +3,8 @@ package de.persosim.simulator.platform;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.globaltester.logging.BasicLogger;
+
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
@@ -11,7 +13,6 @@ import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
-import de.persosim.simulator.utils.PersoSimLogger;
 
 /**
  * This class provides various helper methods which may be useful when operating
@@ -90,7 +91,7 @@ public class PersonalizationHelper {
 					try {
 						cardObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 					} catch (AccessDeniedException e) {
-						PersoSimLogger.logException(PersonalizationHelper.class, e, PersoSimLogger.WARN);
+						BasicLogger.logException(PersonalizationHelper.class, e, BasicLogger.WARN);
 					}	
 				}
 			}

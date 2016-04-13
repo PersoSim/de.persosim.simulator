@@ -29,7 +29,7 @@ public class LogLevelDialog extends Dialog {
 		lblInfo.setText("Select the log levels to view:");
 
 		/*
-		 * Existing Log Levels can be found in de.persosim.simulator.utils.PersoSimLogger
+		 * Existing Log Levels can be found in org.globaltester.logging.BasicLogger
 		 * 
 		 * Reminder: TRACE = 1 DEBUG = 2 INFO = 3 WARN = 4
 		 * ERROR = 5 FATAL = 6 UI = 120

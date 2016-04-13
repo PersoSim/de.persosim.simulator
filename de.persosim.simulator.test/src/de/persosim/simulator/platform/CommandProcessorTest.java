@@ -3,6 +3,7 @@ package de.persosim.simulator.platform;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.globaltester.logging.InfoSource;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,7 +17,6 @@ import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.TlvValuePlain;
-import de.persosim.simulator.utils.InfoSource;
 import mockit.Delegate;
 import mockit.Invocation;
 import mockit.Mocked;

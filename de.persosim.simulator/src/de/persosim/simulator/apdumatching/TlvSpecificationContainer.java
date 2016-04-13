@@ -1,6 +1,6 @@
 package de.persosim.simulator.apdumatching;
 
-import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.ArrayList;
 import java.util.Iterator;

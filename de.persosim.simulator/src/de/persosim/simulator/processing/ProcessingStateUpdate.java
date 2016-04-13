@@ -1,6 +1,6 @@
 package de.persosim.simulator.processing;
 
-import de.persosim.simulator.utils.InfoSource;
+import org.globaltester.logging.InfoSource;
 
 /**
  * Container class for storing the history of {@link ProcessingData} and its state updates.

@@ -1,11 +1,13 @@
 package de.persosim.simulator.protocols;
 
-import static de.persosim.simulator.utils.PersoSimLogger.DEBUG;
-import static de.persosim.simulator.utils.PersoSimLogger.log;
+import static org.globaltester.logging.BasicLogger.DEBUG;
+import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import org.globaltester.logging.InfoSource;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
@@ -22,7 +24,6 @@ import de.persosim.simulator.statemachine.AbstractStateMachine;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvPath;
 import de.persosim.simulator.tlv.TlvTag;
-import de.persosim.simulator.utils.InfoSource;
 
 /**
  * Generic super class for {@link Protocol} implementations with state machine code.
