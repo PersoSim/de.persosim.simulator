@@ -20,7 +20,7 @@ Require-Bundle: org.eclipse.swt;bundle-version="3.103.0",
  org.eclipse.osgi,
  org.globaltester.logging,
  de.persosim.driver.connector,
- org.globaltester.logging.configui
+ org.globaltester.logging.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: de.persosim.simulator.ui.Activator
