@@ -13,7 +13,7 @@
          point="org.eclipse.ui.views">
       <e4view
             allowMultiple="false"
-            category="org.globaltester"
+            category="org.globaltester.base.ui.views.category"
             class="de.persosim.simulator.ui.parts.PersoSimPart"
             icon="persosim_small.png"
             id="de.persosim.simulator.ui.parts.PersoSimPart"
