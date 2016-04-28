@@ -48,6 +48,9 @@ import de.persosim.simulator.utils.Utils;
  * 
  */
 public class SecureMessaging extends Layer implements TlvConstants{
+	
+	public static final String SECUREMESSAGING = "SecureMessaging";
+	
 	/*--------------------------------------------------------------------------------*/
 	protected SmDataProvider dataProvider = null;
 	
@@ -55,7 +58,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 
 	@Override
 	public String getLayerName() {
-		return "SecureMessaging";
+		return SECUREMESSAGING;
 	}
 	
 	/*--------------------------------------------------------------------------------*/

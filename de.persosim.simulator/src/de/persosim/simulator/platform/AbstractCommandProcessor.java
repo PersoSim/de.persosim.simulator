@@ -35,14 +35,16 @@ import de.persosim.simulator.statemachine.StateMachine;
  */
 public abstract class AbstractCommandProcessor extends Layer implements
 		CardStateAccessor, StateMachine {
-
+	
+	public static final String COMMANDPROCESSOR = "CommandProcessor";
+	
 	// -------------------------------------------------------
 	// Methods/fields to implement {@link Layer} functionality
 	// -------------------------------------------------------
 
 	@Override
 	public String getLayerName() {
-		return "CommandProcessor";
+		return COMMANDPROCESSOR;
 	}
 
 	@Override
