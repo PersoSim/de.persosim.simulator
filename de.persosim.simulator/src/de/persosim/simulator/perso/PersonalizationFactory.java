@@ -319,7 +319,7 @@ public class PersonalizationFactory {
 
 		xstream.setMode(XStream.XPATH_RELATIVE_REFERENCES);
 		xstream.setMode(XStream.ID_REFERENCES);
-
+		
 		xstream.registerConverter(new EncodedByteArrayConverter());
 		xstream.registerConverter(new ProtocolConverter());
 		xstream.registerConverter(new KeyPairConverter());
@@ -328,6 +328,8 @@ public class PersonalizationFactory {
 		xstream.registerConverter(new TlvConverter());
 		xstream.registerConverter(new CommandProcessorConverter());
 
+		((CompositeClassLoader) xstream.getClassLoader()).add(PersonalizationFactory.class.getClassLoader());
+		
 		// get converters as services
 		if (Activator.getContext() != null) {
 			ServiceTracker<Converter, Converter> serviceTracker = new ServiceTracker<Converter, Converter>(
