@@ -1,5 +1,47 @@
-Version 0.8.2 (29.02.2016)
+Version 0.9.0 (06.05.2016)
 
+* Merge branch 'usr/amay/qa'
+* unify GlobalTester views category definition
+* Merge branch 'usr/cstroh/logLevelDialog'
+* Logfileeditor was moved into its own bundle
+* Extracted content of LogLevelDialog to be an independent widget
+* Merge branch 'usr/amay/renameConfigObject'
+* Refactor CardConfig
+* Merge branch 'usr/cstroh/extractPersoSimLogger'
+* Refactored PersoSimLogger to BasicLogger
+* PersoSimLogger moved from d.p.s to o.g.logging
+* Merge remote-tracking branch 'origin/usr/mboonk/qaSprint15'
+* Set all build relevant settings to Java 1.8
+* Merge branch 'usr/slutters/ca3Tests'
+* added toString() method
+* Merge branch 'usr/cstroh/opensourcingPlatform'
+* Add/Move LICENSE and NOTICE files for our code
+* Add LICENSE for xstream
+* fixed/optimized error messages
+* Add LICENSE and NOTICE files to gitattributes
+* Merge branch 'usr/mboonk/consolidateTestEditors'
+* Change convert6xxxTo4xxxStatusWord to convertTo4xxxStatusWord
+* Removal of org.globaltester.testeditor
+* updated CVCA CHAT to "allow everything without RFU"
+* Removes not needed imports
+* Merge branch 'usr/slutters/cryptoInfrastructure'
+* Rely on ProviderBc instead of BouncyCastle directly
+* Merge branch 'usr/amay/releaseBuild'
+* fixed whitespace
+* Update version numbers in POM
+* Remove anmespaces from POMs
+* Update version numbers
+* Merge remote-tracking branch 'origin/usr/mboonk/fixFileEndings'
+* update parent pom version
+* Updated the changelog
+* Added missing line endings at the end of text files
+* Add required execution environment to manifest
+* Merge remote-tracking branch 'origin/usr/mboonk/hotfix821'
+* Organizes imports
+* Merge remote-tracking branch 'origin/usr/cstroh/fixGitAttributes'
+* Replace gitattributes by file from o.g.dev
+* Merge branch 'usr/jgoeke/fileEnding'
+* added needed bundles to launch configs
 * Code maintenance
 
 
