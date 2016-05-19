@@ -1,15 +1,13 @@
 package de.persosim.simulator.platform;
 
-import static org.globaltester.logging.BasicLogger.APDU;
 import static org.globaltester.logging.BasicLogger.TRACE;
 import static org.globaltester.logging.BasicLogger.log;
-import static org.globaltester.logging.BasicLogger.logPlain;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import org.globaltester.logging.InfoSource;
-import org.globaltester.logging.BasicLogger;
+import org.globaltester.simulator.LogTags;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
@@ -95,7 +93,8 @@ public class PersoSimKernel implements InfoSource {
 	public byte[] process(byte[] commandApduData) {
 		
 		log(this, "processing incoming APDU", TRACE);
-		logPlain(BasicLogger.PREFIX_IN + HexString.encode(commandApduData), APDU);
+		log("Processing APDU: " + HexString.encode(commandApduData));
+		log(HexString.encode(commandApduData), LogTags.APDU_TAG_IN);
 		log(this, "incoming APDU:\n" + HexString.dump(commandApduData), TRACE);
 		
 		ProcessingData processingData = new ProcessingData();
@@ -127,8 +126,8 @@ public class PersoSimKernel implements InfoSource {
 		}
 		
 		log(this, "finished processing APDU");
-		logPlain(BasicLogger.PREFIX_OUT + HexString.encode(responseApduData), APDU);
 		log(this, "outgoing APDU:\n" + HexString.dump(responseApduData), TRACE);
+		log(HexString.encode(responseApduData), LogTags.APDU_TAG_OUT);
 		return responseApduData;
 		
 	}

@@ -19,10 +19,12 @@ import de.persosim.simulator.utils.HexString;
  * 
  */
 public class IoManager extends Layer {
-
+	
+	public static final String IOMANAGER = "IoManager";
+	
 	@Override
 	public String getLayerName() {
-		return "IoManager";
+		return IOMANAGER;
 	}
 	
 	/*--------------------------------------------------------------------------------*/
