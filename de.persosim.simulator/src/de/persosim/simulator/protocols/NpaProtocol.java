@@ -83,35 +83,46 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 		eidSecurityObject.addTlvDataObject(dgHashes);
 		
 		//add the concrete hashes
+
+		DedicatedFileIdentifier eidAppIdentifier = new DedicatedFileIdentifier(
+				HexString.toByteArray(DefaultPersoGt.AID_EID));
+		Collection<CardObject> apps = mf.findChildren(eidAppIdentifier);
+		DedicatedFile eidApp = (DedicatedFile) apps.iterator().next();
+
+		MessageDigest md;
 		try {
-			MessageDigest md = MessageDigest.getInstance(hashAlg, Crypto.getCryptoProvider());
+			md = MessageDigest.getInstance(hashAlg, Crypto.getCryptoProvider());
+			createDgHashes(md, dgHashes, eidApp, null);
+		} catch (NoSuchAlgorithmException e) {
+			logException(getClass(), e);
+		}
+		
+		return eidSecInfo;
+	}
+
+	public static void createDgHashes(MessageDigest md, ConstructedTlvDataObject dgHashes, DedicatedFile dedicatedFile, Collection<Integer> dgs) {
+		try {
 			
-			DedicatedFileIdentifier eidAppIdentifier = new DedicatedFileIdentifier(
-					HexString.toByteArray(DefaultPersoGt.AID_EID));
-			Collection<CardObject> apps = mf.findChildren(eidAppIdentifier);
-			DedicatedFile eidApp = (DedicatedFile) apps.iterator().next();
 			
-			Collection<CardObject> eidObjects = eidApp.getChildren();
+			Collection<CardObject> eidObjects = dedicatedFile.getChildren();
 			for (CardObject curObject : eidObjects) {
 				if (!(curObject instanceof ElementaryFile)) continue;
 				ElementaryFile curFile = (ElementaryFile) curObject;	
 				
 				//get DG number
-				byte[] dgNumber = null;
+				Integer dgNumber = null;
 				for (CardObjectIdentifier curIdentifier : curFile.getAllIdentifiers()) {
 					if (curIdentifier instanceof FileIdentifier) {
 						int fidInteger = ((FileIdentifier) curIdentifier).getFileIdentifier();
 						String fidHex = HexString.encode(Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(fidInteger)));
-						int dg = Integer.parseInt(fidHex.substring(fidHex.toString().length()-2), 16);
-						dgNumber = Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(dg));
+						dgNumber = Integer.parseInt(fidHex.substring(fidHex.toString().length()-2), 16);
 						break;
 					} else if (curIdentifier instanceof ShortFileIdentifier) {
-						int sfid = ((ShortFileIdentifier) curIdentifier).getShortFileIdentifier();
-						dgNumber = Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(sfid));
+						dgNumber = ((ShortFileIdentifier) curIdentifier).getShortFileIdentifier();
 						break;
 					}
 				}
-				if (dgNumber == null) continue;
+				if (dgNumber == null || (dgs != null && !dgs.contains(dgNumber))) continue;
 				
 				//read fileContent (bypassing access control enforcement)
 				byte[] fileContent = null;
@@ -127,16 +138,14 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 				byte[] digest = md.digest(fileContent);
 				
 				ConstructedTlvDataObject currentDgHash = new ConstructedTlvDataObject(TAG_SEQUENCE);
-				currentDgHash.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, dgNumber));
+				currentDgHash.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(dgNumber))));
 				currentDgHash.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OCTET_STRING, digest));
 				dgHashes.addTlvDataObject(currentDgHash);
 			}
-		} catch (NoSuchAlgorithmException | NullPointerException e) {
+		} catch (NullPointerException e) {
 			//abort adding DG hashes if not possible
-			logException(getClass(), e);
+			logException(NpaProtocol.class, e);
 		}
-		
-		return eidSecInfo;
 	}
 
 	@Override
