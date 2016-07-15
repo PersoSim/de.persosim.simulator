@@ -73,12 +73,15 @@ public abstract class AbstractCommandProcessor extends Layer implements
 			securityStatus.updateSecStatus(processingData);
 
 			log(this, "successfully processed ascending APDU", TRACE);
+		} catch(ProcessingException e) {
+			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
+			processingData.updateResponseAPDU(this, e.getMessage(), resp);
+			return;
 		} catch (Exception e) {
 			logException(this, e, TRACE);
-			ResponseApdu resp = new ResponseApdu(
-					Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
-			this.processingData.updateResponseAPDU(this,
-					"Generic error handling", resp);
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
+			this.processingData.updateResponseAPDU(this, "Generic error handling", resp);
+			return;
 		}
 	}
 
