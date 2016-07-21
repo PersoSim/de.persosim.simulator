@@ -447,11 +447,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			
 			TlvValue responseData = prepareResponseData(rPiccNonce, authenticationTokenTpicc);
 			
-			//store the new session context id provided in MSE: setAT
-			if (sessionContextIdentifier>0x00){
-				SessionContextIdMechanism scim = new SessionContextIdMechanism(sessionContextIdentifier);
-				processingData.addUpdatePropagation(this, "Security status updated with SessionContextIdMechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, scim));
-			}
+			publishSessionContextId();
 			
 			ResponseApdu resp = new ResponseApdu(responseData, Iso7816.SW_9000_NO_ERROR);
 			processingData.updateResponseAPDU(this, "Command General Authenticate successfully processed", resp);
@@ -465,6 +461,26 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		} catch (ProcessingException e) {
 			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
+		}
+	}
+	
+	/**
+	 * This method tries to store the CA session context.
+	 * The session context is stored for a session context identifier > 0.
+	 * The session context is not stored for a session context identifier < 0 indicating that no identifier has been provided.
+	 * An error is thrown for a session context identifier 0 as this MUST NOT be used to store a CA session context.
+	 */
+	protected void publishSessionContextId() {
+		//store the new session context id provided in MSE: setAT
+		if (sessionContextIdentifier >= 0){
+			if (sessionContextIdentifier == 0){
+				// TR-03110 Part 3, Draft 3, B.11.3.
+				// "The identifier 0 is reserved for the default Session Context and MUST NOT be used for storing a Chip Authentication Session Context"
+				throw new ProcessingException(SW_6A80_WRONG_DATA, "The identifier 0 is reserved for the default Session Context and MUST NOT be used for storing a Chip Authentication Session Context");
+			} else{
+				SessionContextIdMechanism scim = new SessionContextIdMechanism(sessionContextIdentifier);
+				processingData.addUpdatePropagation(this, "Security status updated with SessionContextIdMechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, scim));
+			}
 		}
 	}
 	
