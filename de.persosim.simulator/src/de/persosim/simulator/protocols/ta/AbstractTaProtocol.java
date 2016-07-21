@@ -751,8 +751,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		if (!isTaAllowed()){
 			// create and propagate response APDU
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this,
-					"TA execution is not allowed", resp);
+			this.processingData.updateResponseAPDU(this, "multiple TA execution is not allowed", resp);
 			return;
 		}
 		
