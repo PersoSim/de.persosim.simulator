@@ -618,8 +618,11 @@ public class SecureMessaging extends Layer implements TlvConstants{
 	}
 
 	private void setDataProvider(SmDataProvider newProvider) {
+		log(this, "still active SM data provider is:\n" + dataProvider, TRACE);
 		newProvider.init(dataProvider);
 		dataProvider = newProvider;
+		log(this, "updated SM data provider", TRACE);
+		log(this, "new active SM data provider is:\n" + dataProvider, TRACE);
 	}
 
 	@Override
