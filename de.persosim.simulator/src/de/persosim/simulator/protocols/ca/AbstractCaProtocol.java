@@ -438,9 +438,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			byte[] authenticationTokenTpicc = computeAuthenticationTokenTpicc(ephemeralPublicKeyPcd);
 			propagateSessionKeys();
 			
-			//Save Default Session Context
-			processingData.addUpdatePropagation(this, "Inform the SecStatus to store the session context",
-								new SecStatusStoreUpdatePropagation(SecurityEvent.STORE_SESSION_CONTEXT, getSessionContextId()));
+			storeCurrentSessionContext();
 			
 			ChipAuthenticationMechanism mechanism = new ChipAuthenticationMechanism(caOid, keyReference, ephemeralPublicKeyPcd);
 			processingData.addUpdatePropagation(this, "Updated security status with chip authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
@@ -465,22 +463,38 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	/**
-	 * This method tries to store the CA session context.
-	 * The session context is stored for a session context identifier > 0.
+	 * This method tries to store the currently active session context.
+	 * The session context is stored for a session context identifier >= 0.
 	 * The session context is not stored for a session context identifier < 0 indicating that no identifier has been provided.
+	 */
+	protected void storeCurrentSessionContext() {
+		int currentSessionContextId = getCurrentSessionContextId();
+		
+		if(currentSessionContextId >= 0) {
+			// save current session if it defines a session ID (default session always provides 0)
+			log(this, "currently active session (" + currentSessionContextId + ") will be stored", TRACE);
+			processingData.addUpdatePropagation(this, "Inform the SecStatus to store the session context",
+					new SecStatusStoreUpdatePropagation(SecurityEvent.STORE_SESSION_CONTEXT, currentSessionContextId));
+		} else{
+			log(this, "currently active session will NOT be stored", TRACE);
+		}
+	}
+	
+	/**
+	 * This method publishes the CA session context id.
+	 * The session context id is published for a session context identifier > 0.
+	 * The session context id is not published for a session context identifier < 0 indicating that no identifier has been provided.
 	 * An error is thrown for a session context identifier 0 as this MUST NOT be used to store a CA session context.
 	 */
 	protected void publishSessionContextId() {
 		//store the new session context id provided in MSE: setAT
-		if (sessionContextIdentifier >= 0){
-			if (sessionContextIdentifier == 0){
-				// TR-03110 Part 3, Draft 3, B.11.3.
-				// "The identifier 0 is reserved for the default Session Context and MUST NOT be used for storing a Chip Authentication Session Context"
-				throw new ProcessingException(SW_6A80_WRONG_DATA, "The identifier 0 is reserved for the default Session Context and MUST NOT be used for storing a Chip Authentication Session Context");
-			} else{
-				SessionContextIdMechanism scim = new SessionContextIdMechanism(sessionContextIdentifier);
-				processingData.addUpdatePropagation(this, "Security status updated with SessionContextIdMechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, scim));
-			}
+		if (sessionContextIdentifier == 0){
+			// TR-03110 Part 3, Draft 3, B.11.3.
+			// "The identifier 0 is reserved for the default Session Context and MUST NOT be used for storing a Chip Authentication Session Context"
+			throw new ProcessingException(SW_6A80_WRONG_DATA, "The identifier 0 is reserved for the default Session Context and MUST NOT be used for storing a Chip Authentication Session Context");
+		} else{
+			SessionContextIdMechanism scim = new SessionContextIdMechanism(sessionContextIdentifier);
+			processingData.addUpdatePropagation(this, "Security status updated with SessionContextIdMechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, scim));
 		}
 	}
 	
@@ -488,7 +502,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	 * Returns the current Session Context ID to use from the SecStatus 
 	 * @return the Session Context ID
 	 */
-	protected int getSessionContextId(){
+	protected int getCurrentSessionContextId(){
 		int id = -1;
 		
 		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
