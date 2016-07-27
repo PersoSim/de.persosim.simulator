@@ -503,7 +503,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	 * @return the Session Context ID
 	 */
 	protected int getCurrentSessionContextId(){
-		int id = -1;
+		int id = CONTEXT_SESSION_ID_FOR_VOLATILE_SESSINS;
 		
 		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
 		wantedMechanisms.add(SessionContextIdMechanism.class);

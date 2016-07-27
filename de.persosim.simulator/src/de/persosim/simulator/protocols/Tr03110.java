@@ -42,5 +42,12 @@ public interface Tr03110 {
 	public final static byte[] SYMMETRIC_CIPHER                    = new byte[]{DES3_CBC_CBC, AES_CBC_CMAC_128, AES_CBC_CMAC_192, AES_CBC_CMAC_256};
 	
 	/*--------------------------------------------------------------------------------*/
+	
+	/**
+	 * This constant indicates that the associated session is volatile,
+	 * i.e. does neither provide an explicit nor implicit identifier and
+	 * hence must not be stored on switching session contexts. 
+	 */
+	public final static int CONTEXT_SESSION_ID_FOR_VOLATILE_SESSINS = -1;
 
 }
