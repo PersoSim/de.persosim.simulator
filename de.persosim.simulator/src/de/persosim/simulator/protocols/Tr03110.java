@@ -48,6 +48,6 @@ public interface Tr03110 {
 	 * i.e. does neither provide an explicit nor implicit identifier and
 	 * hence must not be stored on switching session contexts. 
 	 */
-	public final static int CONTEXT_SESSION_ID_FOR_VOLATILE_SESSINS = -1;
+	public final static int CONTEXT_SESSION_ID_FOR_VOLATILE_SESSIONS = -1;
 
 }
