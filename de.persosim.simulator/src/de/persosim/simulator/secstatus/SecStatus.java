@@ -1,5 +1,8 @@
 package de.persosim.simulator.secstatus;
 
+import static org.globaltester.logging.BasicLogger.TRACE;
+import static org.globaltester.logging.BasicLogger.log;
+
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -149,7 +152,15 @@ public class SecStatus implements InfoSource{
 		}
 		for (UpdatePropagation update : processingData
 				.getUpdatePropagations(SecStatusMechanismUpdatePropagation.class)) {
-			updateMechanisms((SecStatusMechanismUpdatePropagation) update);
+			
+			SecStatusMechanismUpdatePropagation ssmup = (SecStatusMechanismUpdatePropagation) update;
+			SecMechanism sm = ssmup.getMechanism();
+			
+			if(sm instanceof SessionContextIdMechanism) {
+				sm = (SessionContextIdMechanism) sm;
+			}
+			
+			updateMechanisms(ssmup);
 		}
 	}
 
@@ -241,7 +252,7 @@ public class SecStatus implements InfoSource{
 	 * storeSecStatus or restoreSecStatus. If the SecStatus has to be restored this function also set the {@link SmDataProviderGenerator}
 	 * to restore all needed keys for the securemessaging.
 	 * 
-	 * @param processingData the processind data
+	 * @param processingData the processing data
 	 * @param update the SecStatusStoreUpdatePropagation 
 	 */
 	private void storeRestoreSession(ProcessingData processingData, SecStatusStoreUpdatePropagation ... update) {
@@ -249,7 +260,8 @@ public class SecStatus implements InfoSource{
 			for (SecStatusStoreUpdatePropagation curUpdate : update) {
 				SecStatusStoreUpdatePropagation eventPropagation = (SecStatusStoreUpdatePropagation) curUpdate;
 				if (eventPropagation.getEvent().equals(SecurityEvent.RESTORE_SESSION_CONTEXT)){
-					restoreSecStatus(eventPropagation.getSessionContextIdentifier());
+					int sessionContextIdentifier = eventPropagation.getSessionContextIdentifier();
+					restoreSecStatus(sessionContextIdentifier);
 					HashSet<Class<? extends SecMechanism>> set = new HashSet<>();
 					set.add(SmDataProviderGenerator.class);
 					Collection<SecMechanism> generators = getCurrentMechanisms(SecContext.APPLICATION, set);
@@ -257,12 +269,15 @@ public class SecStatus implements InfoSource{
 						processingData.updateResponseAPDU(this, "More than one secure messaging context found", new ResponseApdu(Iso7816.SW_6400_EXECUTION_ERROR));
 					}
 					if (generators.size() == 1){
+						log(getClass(), "Preparing to restore session context associated with session context identifier " + sessionContextIdentifier, TRACE);
 						processingData.addUpdatePropagation(this, "restore Secure Messaging", ((SmDataProviderGenerator)generators.iterator().next()).generateSmDataProvider());
 					}
 				}
 				
 				if (eventPropagation.getEvent().equals(SecurityEvent.STORE_SESSION_CONTEXT)){
-						storeSecStatus(eventPropagation.getSessionContextIdentifier());
+					int sessionContextIdentifier = eventPropagation.getSessionContextIdentifier();
+					log(getClass(), "Preparing to store session context associated with session context identifier " + sessionContextIdentifier, TRACE);
+					storeSecStatus(sessionContextIdentifier);
 				}
 			}
 		} catch(IllegalArgumentException e) {

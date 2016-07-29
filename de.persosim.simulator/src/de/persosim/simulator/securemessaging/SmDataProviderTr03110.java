@@ -15,6 +15,7 @@ import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.SendSequenceCounter;
 import de.persosim.simulator.exception.CryptoException;
 import de.persosim.simulator.processing.UpdatePropagation;
+import de.persosim.simulator.utils.HexString;
 
 public class SmDataProviderTr03110 implements SmDataProvider {
 	
@@ -200,6 +201,28 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 		} else if (!ssc.equals(other.ssc))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("SM data provider:");
+		sb.append("\n--------");
+		sb.append("\ncipher:");
+		sb.append("\nalgorithm: " + getCipher().getAlgorithm());
+		sb.append("\nIV:  " + HexString.encode(getCipherIv().getIV()));
+		sb.append("\nkey: " + HexString.encode(getKeyEnc().getEncoded()));
+		sb.append("\n--------");
+		sb.append("\nmac:");
+		sb.append("\nalgorithm: " + getMac().getAlgorithm());
+		sb.append("\nlength:   " + getMacLength());
+		sb.append("\naux data: " + HexString.encode(getMacAuxiliaryData()));
+		sb.append("\nkey:      " + HexString.encode(getKeyMac().getEncoded()));
+		sb.append("\n--------");
+		sb.append("\nSSC: " + getSsc());
+		
+		return sb.toString();
 	}
 
 }
