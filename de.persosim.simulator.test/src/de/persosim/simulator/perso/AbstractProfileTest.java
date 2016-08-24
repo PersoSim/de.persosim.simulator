@@ -12,8 +12,7 @@ import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.HexString;
 
-//FIXME rename this test class
-public class DefaultPersoTestPkiTemplateTest extends PersoSimTestCase {
+public class AbstractProfileTest extends PersoSimTestCase {
 	
 	/**
 	 * Positive test: test generation of TLV structure for data group containing ASN.1 data type CommunityID.

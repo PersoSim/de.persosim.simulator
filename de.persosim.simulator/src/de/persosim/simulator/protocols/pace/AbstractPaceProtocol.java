@@ -257,7 +257,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 						return;
 					}
 				} catch (Exception e) {
-					//FIXME check PokemonException
+					//any error that occurs in the above code indicates SW 6A88
 					ResponseApdu resp = new ResponseApdu(
 							Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
 					this.processingData.updateResponseAPDU(this, e.getMessage(),
@@ -638,7 +638,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
 			processingData.updateResponseAPDU(this, "Invalid symmetric key", resp);
 			logException(this, e);
-			//XXX shouldn't we return here? (remember to mark the protocol as finished)
+			//don't return right away as pin handling and authorization changes might be required
 		}
 		
 		/* get first 8 bytes of mac */
@@ -965,7 +965,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			createDomainParameterInfo(secInfos, parameterId, paceOidIdentifier, identifiers, domainParameterCardObjects);
 		}
 		
-		//TODO handle duplicates?
+		//handle duplicates?
 		
 		return secInfos;
 	}

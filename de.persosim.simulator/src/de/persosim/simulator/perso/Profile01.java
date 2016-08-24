@@ -8,7 +8,6 @@ import de.persosim.simulator.utils.HexString;
  *
  */
 public class Profile01 extends AbstractProfile {
-	//FIXME make this Profile the new DefaultPersonalisation and fix the inheritance hierarchy
 	
 	@Override
 	public void setPersoDataContainer() {		persoDataContainer = PersonalizationDataContainer.getDefaultContainer();
