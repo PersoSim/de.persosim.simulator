@@ -38,7 +38,7 @@ public abstract class AbstractFile extends AbstractCardObject implements
 	@Override
 	public ConstructedTlvDataObject getFileControlParameterDataObject() {
 		ConstructedTlvDataObject result = new ConstructedTlvDataObject(new TlvTag(Iso7816.TAG_FILE_CONTROL_PARAMETERS_TEMPLATE));
-		//TODO MBK implement FCP template according to ISO7816-4 Table 12
+		//IMPL implement FCP template according to ISO7816-4 Table 12
 		result.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag(
 				(byte) 0x83), Utils.toUnsignedByteArray(fileIdentifier
 				.getFileIdentifier())));

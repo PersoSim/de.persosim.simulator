@@ -160,7 +160,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 		gtServer.setSupportedProfiles(getSupportedProfiles());
 		
 		
-		//TODO configureGtServer
+		//configureGtServer
 		transmitPasswords();
 		transmitEidData();
 //		configureCertificates();

@@ -15,7 +15,6 @@ public class TestPersoTest extends GtDefaultPersoTest {
 		new ArrayList<JobDescriptor>();
 		
 		retVal.add(new GtSuiteDescriptor(GtConstants.PROJECT_EPA_EAC2_BSI, "EAC2_ISO7816_P_01"));
-		//TODO implement more testcases here
 
 		return retVal;
 	}

@@ -21,7 +21,6 @@ public class SmMarkerApdu implements CommandApdu,
 
 	@Override
 	public CommandApdu rewrapApdu(byte newSmStatus, byte[] data) {
-		// XXX Auto-generated method stub
 		return this;
 	}
 

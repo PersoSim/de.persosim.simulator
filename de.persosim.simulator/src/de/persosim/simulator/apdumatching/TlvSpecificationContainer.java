@@ -117,10 +117,6 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 	}
 
 	
-	// XXX extract a common Interface for matching, with a consistent description of the matches() method, similar to Java.util.regex.matcher, in the end we are dcefining something very similar to Regex here  
-	// This should cover *TlvSpecification*.matches, as well as Tlv*.matches and ApduSpecification.matchesFullAPDU() 
-
-	
 	/**
 	 * This method returns whether the provided TLV data object container matches the hierarchy of specifications within this object.
 	 * @param tlvContainer a TLV data object container
@@ -177,7 +173,6 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 			}
 		}
 		
-		// XXX why is a counter sufficient here? Shouldn't the algorithm iterate over the list of specifications instead of the input? Imagine a specification that should match A,B and an input A,A, this might also lead to a counter of 2 instead of a mismatch
 		diffCounter = this.getNoOfTagsMatchingRequirement(REQ_MATCH) - counter;
 		
 		if(diffCounter > 0) {

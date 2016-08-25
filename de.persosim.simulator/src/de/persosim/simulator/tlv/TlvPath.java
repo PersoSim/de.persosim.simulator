@@ -20,17 +20,6 @@ import java.util.List;
  * path is wrong or the respective object is missing, the resulting behavior
  * solely is up to the processing method.
  * 
- * TODO currently the path does not allow to differentiate between multiple
- * elements that would normally all match its description, i.e. with the same
- * tag. This insufficiency may be straightened out by wrapping the TLVTag in a
- * TLVTagIdentifier also listing the offset of occurrences of the specified tag.
- * This would allow to address one specific element out of several elements with
- * identical tags. Certain values of the occurrence index (e.g. negative values)
- * could be used to signal special matching handling like "any" or "last"
- * occurrence.
- * 
- * --> Class signature may change!
- * 
  * @author slutters
  * 
  */

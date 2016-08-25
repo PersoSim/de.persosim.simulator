@@ -76,88 +76,6 @@ public abstract class Utils {
 	}
 	
 	/**
-	 * Returns whether an array contains duplicate elements.
-	 * Array objects must implement Comparable interface.
-	 * @param c the array to be checked
-	 * @return true if at least one occurrence of duplicate elements has been found, false otherwise
-	 */
-	//XXX LSG Method isnt beeing used anywhere
-	public static <T extends Comparable<T>>boolean containsDuplicateElements(T[] c) {
-		if(c == null) {
-			throw new ClassCastException();
-		}
-		
-		if(c.length < 2) {
-			return false;
-		}
-		
-		for(int i = 0; i < (c.length - 1); i++) {
-			for(int j = i + 1; j < c.length; j++) {
-				if(c[i].compareTo(c[j]) == 0) {
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-	
-	/*
-	 * c1 master
-	 * c2 compared to master
-	 * 
-	 * -1 - c2 contains less than all of c1's elements
-	 *  0 - c2 contains all of c1's elements
-	 * +1 - c2 contains more than all of c1's elements
-	 * 
-	 */
-	//XXX LSG Method isnt beeing used anywhere
-	public static <T extends Comparable<T>>byte compareSets(T[] c1, T[] c2) {
-		boolean match;
-		
-		if((c1 == null) || (c2 == null)) {
-			throw new ClassCastException();
-		}
-		
-		if(c1.length == 0) {
-			if(c2.length == 0) {
-				return 0;
-			} else{
-				return 1;
-			}
-		} else{
-			if(c2.length == 0) {
-				return -1;
-			}
-		}
-		
-		if(c1.length > c2.length) {
-			return -1;
-		}
-		
-		for(byte i = 0; i < c1.length; i++) {
-			match = false;
-			
-			for(byte j = 0; j < c2.length; j++) {
-				if(c1[i].compareTo(c2[j]) == 0) {
-					match = true;
-					break;
-				}
-			}
-			
-			if(!match) {
-				return -1;
-			}
-		}
-		
-		if(c1.length < c2.length) {
-			return 1;
-		} else{
-			return 0;
-		}
-	}
-	
-	/**
 	 * Returns a concatenation of one or more byte arrays
 	 * @param byteArrays one or more byte arrays
 	 * @return a concatenation of one or more byte arrays
@@ -191,51 +109,6 @@ public abstract class Utils {
 		
 		 return concatByteArrays(leadingByteArray,trailingBytes);
 		 
-	}
-	
-	/**
-	 * Returns a byte array converted to a boolean array in binary representation
-	 * @param in the byte array to be converted
-	 * @return a byte array converted to a boolean array in binary representation
-	 */
-	//XXX LSG Method isnt beeing used anywhere
-	public static boolean[] binaryEncodeByteArray(byte[] in) {
-		boolean[] out;
-		byte bitMask;
-		
-		out = new boolean[8 * in.length];
-
-	    /* process every bit */
-	    for (int i = 0; i < (8 * in.length); i++) {
-	    	bitMask = BITMASK[7 - (i % 8)];
-	    	out[i] = (in[i / 8] & bitMask) == bitMask;
-	    }
-	    
-	    return out;
-	}
-	
-	//XXX LSG Method isnt beeing used anywhere
-	public static String binaryEncode(byte[] in) {
-		boolean[] out;
-		StringBuilder sb;
-		
-		out = binaryEncodeByteArray(in);
-		
-		sb = new StringBuilder(out.length + (in.length - 1));
-		for(int i = 0; i < out.length; i++) {
-			/* separate bytes by white space */
-			if((i > 0) && (i % 8 == 0)) {
-				sb.append(" ");
-			}
-			
-			if(out[i]) {
-				sb.append("1");
-			} else{
-				sb.append("0");
-			}
-		}
-		
-		return sb.toString();
 	}
 	
 	/**
@@ -286,25 +159,6 @@ public abstract class Utils {
 		}
 		
 		return resultFINAL;
-	}
-	
-	/**
-	 * Returns an unsigned byte array representation of an unsigned long.
-	 * Returned Array has length 8; unused bytes are padded to 0x00.
-	 * @param input the long
-	 * @return the unsigned byte array representation of the unsigned long
-	 */
-	//XXX LSG Method isnt beeing used anywhere
-	public static byte[] toUnsignedByteArray(long input) {
-		return new byte[]{
-				(byte) ((input & 0xFF00000000000000L) >> 56),
-				(byte) ((input & 0x00FF000000000000L) >> 48),
-				(byte) ((input & 0x0000FF0000000000L) >> 40),
-				(byte) ((input & 0x000000FF00000000L) >> 32),
-				(byte) ((input & 0x00000000FF000000L) >> 24),
-				(byte) ((input & 0x0000000000FF0000L) >> 16),
-				(byte) ((input & 0x000000000000FF00L) >> 8),
-				(byte) (input & 0x00000000000000FFL)};
 	}
 	
 	/**
@@ -436,29 +290,9 @@ public abstract class Utils {
 	 * @param toTest
 	 * @return true, iff one of the given objects is null
 	 */
-	//XXX LSG Method isnt beeing used anywhere
 	public static boolean isAnyNull(Object ...toTest) {
 		for(Object o : toTest){
 			if (o == null){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * This method compares all entries of the given array with the given
-	 * object.
-	 * 
-	 * @param array
-	 * @param object
-	 * @return true, iff one of the arrays entries {@link #equals(Object)} the
-	 *         given object.
-	 */
-	//XXX LSG Method isnt beeing used anywhere
-	public static boolean arrayContainsEqual(Object[] array, Object object) {
-		for (Object current : array) {
-			if (current.equals(object)) {
 				return true;
 			}
 		}

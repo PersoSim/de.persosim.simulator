@@ -50,7 +50,7 @@ public class PersonalizationFactory {
 		StringWriter xmlWriter = new StringWriter();
 		xstream.toXML (pers, xmlWriter);
 		
-		//TODO find a alternative to suppress the class attribute, created by xStream, if element is a type of Key
+		//IMPL find a alternative to suppress the class attribute, created by xStream, if element is a type of Key
 		String xmlRepresentation = xmlWriter.toString();
 		xmlRepresentation = xmlRepresentation.replaceAll("class=\"org.*[Kk]ey\"", "");
 		writer.append(xmlRepresentation);

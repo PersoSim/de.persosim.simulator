@@ -218,8 +218,6 @@ public class SecStatus implements InfoSource{
 		}
 	}
 
-	// TODO move this suppression into the cast as soon as compliance level 1.8
-	// is used for this code
 	/**
 	 * Creates a copy of the data structure storing the {@link SecMechanism}s.
 	 * The returned object is a duplicate using the same references to

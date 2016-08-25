@@ -69,8 +69,7 @@ public class PasswordAuthObject extends AbstractCardObject implements AuthObject
 		try {
 			sb.append(" (" + (new String(password, "UTF-8")).toString() + ")");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			sb.append(" (schei? encoding)");
 		}
 		
 		return sb.toString();

@@ -74,7 +74,6 @@ import de.persosim.simulator.utils.Utils;
  * @author amay
  * 
  */
-//XXX reduce code duplication with AbstractPaceProtocol
 public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecificationConstants,
 		InfoSource, TlvConstants {
 
@@ -329,7 +328,6 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		byte cla = commandApdu.getCla();
 		if ((cla&0x03) != 0x03) {
 			if (pseudoSmIsActive) {
-				//TODO reformulate this expression
 				if (!(commandApdu instanceof IsoSecureMessagingCommandApdu) || !((IsoSecureMessagingCommandApdu) commandApdu).wasSecureMessaging()){
 					
 

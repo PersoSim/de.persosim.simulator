@@ -244,7 +244,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 		if((supposedParent != null) && (supposedParent instanceof ConstructedTlvDataObject)) {
 			ConstructedTlvDataObject actualParent = (ConstructedTlvDataObject) supposedParent;
 			actualParent.addTlvDataObject(tlvDataObject);
-		} //XXX add consistent behavior for these failure cases, e.g. notify the caller that no action was taken at all
+		}
 	}
 	
 	@Override
@@ -268,7 +268,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 			TlvDataObject supposedParent = getTlvDataObject(path.get(0));
 			if((supposedParent != null) && (supposedParent instanceof ConstructedTlvDataObject)) {
 				((ConstructedTlvDataObject) supposedParent).removeTlvDataObject(subPath);
-			} //XXX add consistent behavior for these failure cases, e.g. notify the caller that no action was taken at all
+			}
 		}
 	}
 	

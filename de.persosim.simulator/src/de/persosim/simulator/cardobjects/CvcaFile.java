@@ -14,7 +14,6 @@ import de.persosim.simulator.seccondition.SecCondition;
 public class CvcaFile extends AbstractFile {
 	ShortFileIdentifier shortFileIdentifier;
 
-	//XXX MBK maybe instead store references to trust point objects to keep them synched
 	PublicKeyReference currentCertificateAuthorityReference;
 	PublicKeyReference previousCertificateAuthorityReference;
 

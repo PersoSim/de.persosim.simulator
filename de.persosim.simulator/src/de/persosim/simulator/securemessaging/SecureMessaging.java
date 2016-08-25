@@ -343,8 +343,6 @@ public class SecureMessaging extends Layer implements TlvConstants{
 			log(this, "decrypted cipher iv is: " + HexString.encode(dbgIv));
 			
 			paddedData = CryptoSupport.decrypt(dataProvider.getCipher(), encryptedData, dataProvider.getKeyEnc(), dataProvider.getCipherIv());
-			
-			//TODO should padding be handled differently for odd instruction/tag 85 contents?
 			log(this, "padded data is: " + HexString.encode(paddedData));
 			
 			data = this.unpadPlainTextData(paddedData);

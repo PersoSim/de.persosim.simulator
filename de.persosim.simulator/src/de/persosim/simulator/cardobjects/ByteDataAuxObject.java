@@ -34,7 +34,6 @@ public class ByteDataAuxObject extends AuxDataObject {
 	@Override
 	public boolean verify(AuthenticatedAuxiliaryData current) throws AccessDeniedException {
 		//get necessary information stored in TA
-		//XXX access conditions should be stored separately and evaluated in a more generic way
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(TerminalAuthenticationMechanism.class);
 		previousMechanisms.add(EffectiveAuthorizationMechanism.class);
