@@ -375,7 +375,7 @@ public class SecureMessagingTest extends PersoSimTestCase {
 
 	
 	
-	//TODO SMTest not yet tested functionality 
+	//IMPL SMTest not yet tested functionality 
 	// extendedLength in both directions
 	// incoming case4 short data extended le etc.
 	// check discard key on powerOn and on incoming plain APDU

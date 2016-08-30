@@ -235,7 +235,7 @@ public class TlvLengthTest {
 				lengthExtracted.isValidDerEncoding(), true);
 	}
 	
-	//TODO missing testcase tesIsValidDerEncoding_2ByteLength
+	//IMPL missing testcase tesIsValidDerEncoding_2ByteLength
 	/**
 	 * Positive test case: Check DER encoded 2-byte length for DER validity
 	 */
