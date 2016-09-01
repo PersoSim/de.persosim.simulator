@@ -47,7 +47,7 @@ public class SecStatusTest extends PersoSimTestCase{
 		
 	}
 	
-	//TODO define tests for SecStatus
+	//IMPL define tests for SecStatus
 	
 	/**
 	 * Positive test case: This test checks that a session is stored correctly

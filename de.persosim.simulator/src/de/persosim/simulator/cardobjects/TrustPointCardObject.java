@@ -60,9 +60,9 @@ public class TrustPointCardObject extends AbstractCardObject {
 	 * @throws CertificateUpdateException
 	 */
 	public void updateTrustpoint(CardVerifiableCertificate newCertificate) throws CertificateUpdateException {
-		//XXX MBK check access rights
+		// IMPL check access rights
 
-		// XXX MBK TR-03105 here should be a test for the CHR (TR-03110 v2.10 Part 2 A.6.2.1)
+		// IMPL TR-03105 here should be a test for the CHR (TR-03110 v2.10 Part 2 A.6.2.1)
 		//if (previousCertificate != null || !newCertificate.getCertificateHolderReference().equals(currentCertificate.getCertificateHolderReference())){
 		//	throw new CertificateUpdateException("The old holder reference does not fit the new one");
 		//}

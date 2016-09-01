@@ -6,7 +6,6 @@ import de.persosim.simulator.utils.HexString;
  * @author slutters
  *
  */
-//XXX SLS rename this class and document the package
 public abstract class GeneralException extends RuntimeException {
 	
 	private static final long serialVersionUID = 1L;

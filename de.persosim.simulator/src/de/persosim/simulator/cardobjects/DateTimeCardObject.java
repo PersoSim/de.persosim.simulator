@@ -28,7 +28,7 @@ public class DateTimeCardObject extends AbstractCardObject {
 	 * @param the new date to store
 	 */
 	public void update(Date date){
-		// XXX MBK check update access rights here
+		// IMPL check update access rights here
 		currentDate = new Date(date.getTime());
 	}
 	

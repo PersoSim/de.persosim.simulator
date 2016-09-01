@@ -348,7 +348,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 					"No protocol was able to process the APDU", rApdu);
 
 			/*
-			 * TODO Test cases for which the current implementation yields a sw which is
+			 * IMPL Test cases for which the current implementation yields a sw which is
 			 * suitable/acceptable for passing the test case but does not describe actual circumstances
 			 * appropriately. This list does not claim to be exhaustive and may be extended.
 			 * 

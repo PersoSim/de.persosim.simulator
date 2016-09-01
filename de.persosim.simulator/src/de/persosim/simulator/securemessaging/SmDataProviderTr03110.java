@@ -44,7 +44,6 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 		try {
 			cipher = getCipher(keyEnc.getAlgorithm());
 			
-			// XXX AMY use new Crypto wrappers here
 			// According to developer consens we want to create wrapper objects that
 			// encapsulate Cipher or Mac resp. together with the relevant key. These
 			// objects can be passed as method parameters and encapsulate all
@@ -113,7 +112,6 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 	@Override
 	public IvParameterSpec getCipherIv() {
 		byte[] cipherIvPlain;
-		//XXX AMY use new Crypto wrappers here (details see above)
 		if (CryptoUtil.getCipherNameAsString(cipher.getAlgorithm()).equals("DESede")) {
 			//3DES
 			cipherIvPlain = new byte[8];

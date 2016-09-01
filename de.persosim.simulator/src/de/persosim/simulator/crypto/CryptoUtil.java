@@ -37,8 +37,6 @@ import de.persosim.simulator.utils.Utils;
 /**
  * This class provides static methods offering support for basic operations in the field of cryptography.
  * 
- * XXX functional overlap with {@link Crypto} - merge?
- * 
  * @author slutters
  *
  */

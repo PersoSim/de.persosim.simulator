@@ -70,7 +70,7 @@ public abstract class TlvDataObject extends TlvElement implements Iso7816, Valid
 	protected TlvLength tlvLength;
 	
 	/* The value component will be set in the various sub classes */
-	//TODO define value field within this class, that reduces code duplication within subclasses (esp. constructor redundancy) and requires only a little caution when casting the valuefield within those subclasses
+	//IMPL define value field within this class, that reduces code duplication within subclasses (esp. constructor redundancy) and requires only a little caution when casting the valuefield within those subclasses
 	
 	protected boolean performValidityChecks;
 	
@@ -312,7 +312,7 @@ public abstract class TlvDataObject extends TlvElement implements Iso7816, Valid
 	public boolean isValidDerEncoding() {
 		if(!isValidBerEncoding()) {return false;}
 		
-		//TODO provide a negative testcase for this method that checks behavior for a mismatch between length encoded in getTlvLEngth() and actual length of value
+		//IMPL provide a negative testcase for this method that checks behavior for a mismatch between length encoded in getTlvLEngth() and actual length of value
 		return getTlvTag().isValidDerEncoding() && getTlvLength().isValidDerEncoding() && getTlvValue().isValidDerEncoding();
 	}
 	

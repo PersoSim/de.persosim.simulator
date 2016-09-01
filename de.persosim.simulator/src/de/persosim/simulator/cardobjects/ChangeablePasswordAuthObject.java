@@ -7,7 +7,6 @@ import de.persosim.simulator.seccondition.SecCondition;
 /**
  * This class extends a {@link PasswordAuthObject} by functionality which makes
  * it possible to change the PIN after creation.
- * XXX why not included this functionality in {@link PasswordAuthObject} (where it can be restricted by access rights)?
  * 
  * @author slutters
  * 

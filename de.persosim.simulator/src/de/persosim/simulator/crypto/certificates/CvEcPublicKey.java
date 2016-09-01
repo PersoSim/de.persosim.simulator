@@ -74,7 +74,6 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 	}
 	
 	private static CvOid parseOid(ConstructedTlvDataObject publicKeyData) {
-		// TODO replace fixed TaOid with OID factory, checking for CvOid compliance
 		return new TaOid(publicKeyData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
 	}
 

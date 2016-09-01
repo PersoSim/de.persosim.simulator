@@ -29,7 +29,6 @@ public class CurveConverter implements Converter {
 
 	@Override
 	public boolean canConvert(@SuppressWarnings("rawtypes") Class clazz) {
-		// TODO Auto-generated method stub
 		return clazz.equals(EllipticCurve.class);
 	}
 

@@ -25,7 +25,6 @@ public class PersoSimTest extends PersoSimTestCase {
 	PersoSim persoSim;
 	
 	public static final String SELECT_APDU = "00A4020C02011C";
-	public static final String SW_NO_ERROR = "9000"; //FIXME why this constant?
 	
 	static PrintStream	origOut;
 	static ByteArrayOutputStream redStdOut;

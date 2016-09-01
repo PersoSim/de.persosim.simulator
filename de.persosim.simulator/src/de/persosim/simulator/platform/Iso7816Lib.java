@@ -9,8 +9,7 @@ import de.persosim.simulator.utils.Utils;
  * @author slutters
  *
  */
-//TODO cleanup 
-//consistently  throw Exceptions for unsupported inputs
+// IMPL consistently  throw Exceptions for unsupported inputs
 public abstract class Iso7816Lib implements Iso7816 {
 	
 	public static final short MASK_BYTE_TO_SHORT = (short) 0xFF;

@@ -18,7 +18,6 @@ import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
-//XXX MBK complete this class and extract according methods from TR03110
 public class TaOid extends GenericOid implements Tr03110, CvOid {
 	public final static TaOid id_TA                  = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x02, 0x02, 0x02}), "id-TA");
 	

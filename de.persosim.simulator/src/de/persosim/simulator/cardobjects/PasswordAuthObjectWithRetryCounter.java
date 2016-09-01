@@ -6,7 +6,6 @@ import de.persosim.simulator.seccondition.SecCondition;
 
 /**
  * This class represents a {@link PasswordAuthObject} extended to provide a retry counter.
- * XXX SLS missing initialization of life cycle state
  * 
  * @author slutters
  *

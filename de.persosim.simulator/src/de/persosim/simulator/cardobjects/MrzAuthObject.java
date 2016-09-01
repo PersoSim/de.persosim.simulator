@@ -15,10 +15,9 @@ import de.persosim.simulator.documents.MrzTD1;
  * @author mboonk
  * 
  */
-//XXX MrzAuthObject, relies on TD1 format
+//IMPL MrzAuthObject, relies on TD1 format
 public class MrzAuthObject extends PasswordAuthObject {
 	
-	//XXX add serialization for this object including mrt field and unmarshaller that can reproduce password[] from mrz
 	protected String mrz;
 		
 	public MrzAuthObject(AuthObjectIdentifier identifier, String mrz)

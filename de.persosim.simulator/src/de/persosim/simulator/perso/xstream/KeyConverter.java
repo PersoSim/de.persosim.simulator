@@ -101,7 +101,6 @@ public class KeyConverter implements Converter {
 		PKCS8EncodedKeySpec  ks_priv = new PKCS8EncodedKeySpec (HexString.toByteArray(byteValue));
 		X509EncodedKeySpec  ks_pub = new X509EncodedKeySpec (HexString.toByteArray(byteValue));
 		
-		//XXX split into private and public key converters
 		try {
 			pk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePublic(ks_pub);
 		} catch (InvalidKeySpecException| NoSuchAlgorithmException e1) {

@@ -546,7 +546,7 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		
 		assertArrayEquals("array not matching", dataExpected, dataReceived);
 	}
-	//TODO missing tests getContents, with zero offset, with range larger than file, etc.
+	//IMPL missing tests getContents, with zero offset, with range larger than file, etc.
 
 	@Test
 	public void testEraseFileEvenInstructionNoCommandData() throws Exception{

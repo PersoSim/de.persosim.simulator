@@ -457,34 +457,6 @@ public class UtilsTest {
 	}
 	
 	/**
-	 * Positive Test case: method toUnsignedByteArray gets long value with leading zero bytes.
-	 * The result should be a new array object with the same content in the right order.
-	 */
-	@Test
-	public void testToUnsignedByteArrayLong_LeadingBytesZero()
-	{
-		byte[] actual = Utils.toUnsignedByteArray((long) 0x0011223344556677L);
-		byte[] expected = new byte[]{(byte) 0x00,(byte) 0x11,(byte) 0x22,(byte) 0x33,(byte) 0x44,(byte) 0x55,(byte) 0x66,(byte) 0x77};
-		
-		assertArrayEquals(expected, actual);
-		
-	}
-	
-	/**
-	 * Positive Test case: method toUnsignedByteArray gets long value with the most significant bit.
-	 * The result should be a new array object with the same content in the right order.
-	 */
-	@Test
-	public void testToUnsignedByteArrayLong_HighestBit()
-	{
-		byte[] actual = Utils.toUnsignedByteArray((long) 0x8011223344556677L);
-		byte[] expected = new byte[]{(byte) 0x80,(byte) 0x11,(byte) 0x22,(byte) 0x33,(byte) 0x44,(byte) 0x55,(byte) 0x66,(byte) 0x77};
-		
-		assertArrayEquals(expected, actual);
-		
-	}
-	
-	/**
 	 * Positive Test case: method toUnsignedByteArray gets integer value with leading zero bytes.
 	 * The result should be a new array object with the same content in the right order.
 	 */
@@ -874,24 +846,6 @@ public class UtilsTest {
 		assertEquals(expected, result);	
 		
 	}
-
-	/**
-	 * Positive Test case: method arrayContainsEqual gets an Object array and an string value as input.
-	 * The result is the boolean value, which depends on if the entries of the array are equal to the object.
-	 */
-	@Test
-	public void testArrayContainsEqualString_StringArrayAndString()
-	{
-		String[] stringarray =  new String[2];
-		stringarray[1] = "1";
-		stringarray[0] = "1";
-		String string = "1";
-		
-		boolean actual  = Utils.arrayContainsEqual(stringarray,string);
-		
-		assertTrue(actual);
-		
-	}
 	
 	/**
 	 * Positive Test case: method logarithm gets two values.
@@ -907,36 +861,6 @@ public class UtilsTest {
 		double expected = 0.5;
 		
 		assertEquals(expected, actual,DELTA);
-		
-	}
-	
-	/**
-	 * Positive Test case: method binaryEncode gets a byte array as input.
-	 * The result should be value in binary.
-	 */
-	@Test
-	public void testBinaryEncodeByteArray_LowestValue()
-	{
-		byte[] bytearray = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00};
-		String actual  = Utils.binaryEncode(bytearray);
-		String expected = "00000000 00000000 00000000";
-		
-		assertEquals(expected, actual);
-		
-	}
-	
-	/**
-	 * Positive Test case: method binaryEncode gets a byte array as input.
-	 * The result should be value in binary.
-	 */
-	@Test
-	public void testBinaryEncodeByteArray_HighestValue()
-	{
-		byte[] bytearray = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-		String actual  = Utils.binaryEncode(bytearray);
-		String expected = "11111111 11111111 11111111";
-		
-		assertEquals(expected, actual);
 		
 	}
 	

@@ -71,7 +71,6 @@ import de.persosim.simulator.utils.Utils;
  * @author slutters
  * 
  */
-//XXX SLS generalize code overlapping with {@link AbstractPaceProtocol} where possible.
 public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine implements Ca, TlvConstants {
 	protected SecureRandom secureRandom;
 	
@@ -730,7 +729,6 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		if (isPrivilegedOnly) {
 			privilegedPublicKeyInfos.add(caPublicKeyInfo);
 		} else {
-			// TODO is copying to privileged also needed here?
 			unprivilegedPublicKeyInfos.add(caPublicKeyInfo);
 		}
 	}

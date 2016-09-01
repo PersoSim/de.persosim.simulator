@@ -11,7 +11,6 @@ public class EffectiveAuthorizationMechanism extends ConfinedAuthorizationMechan
 	
 	public EffectiveAuthorizationMechanism(AuthorizationStore authorizationStore) {
 		super(authorizationStore);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
