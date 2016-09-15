@@ -36,7 +36,6 @@ public class GenericMappingEcdhTest extends PersoSimTestCase {
 	KeyPair ecdhKeyPairUnmappedExpected;
 	
 	public void performMappingSetUp() throws Exception {
-		// this setup is currently used only within testPerformMapping, maybe move it there
 		ecdhDomainParameterSetUnMappedExpected = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
 		ecdhGeneratorUnmappedExpected = ecdhDomainParameterSetUnMappedExpected.getGenerator();
 		
