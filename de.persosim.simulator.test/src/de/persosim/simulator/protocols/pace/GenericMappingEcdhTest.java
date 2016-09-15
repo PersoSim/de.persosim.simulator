@@ -84,15 +84,15 @@ public class GenericMappingEcdhTest extends PersoSimTestCase {
 	@Test
 	public void testPerformMapping() throws Exception {
 		new NonStrictExpectations(CryptoUtil.class) {
-            {
-            	CryptoUtil.generateKeyPair(
-            			withInstanceOf(DomainParameterSetEcdh.class),
+			{
+				CryptoUtil.generateKeyPair(
+						withInstanceOf(DomainParameterSetEcdh.class),
 						withInstanceOf(SecureRandom.class));
-            	
-            	// key pair that is used for mapping, e.g. is unmapped
-                result = ecdhKeyPairUnmappedExpected;
-            }
-        };
+				
+				// key pair that is used for mapping, e.g. is unmapped
+				result = ecdhKeyPairUnmappedExpected;
+			}
+		};
 		
 		GenericMappingEcdh mapping = new GenericMappingEcdh();	
 		
