@@ -109,8 +109,8 @@ public class GenericMappingEcdhTest extends PersoSimTestCase {
 		byte[] mappingResponseReceived = mappingResultReceived.getMappingResponse();
 		
 		assertEquals("generator", ecdhGeneratorMappedExpected, domainParameterSetReceived.getGenerator());
-		assertEquals("ECDH public key W", ecdhPublicKeyMappedExpected.getW(), publicKeyReceived.getW());
-		assertEquals("ECDH private key S", ecdhPrivateKeyMappedExpected.getS(), privateKeyReceived.getS());
+		assertNotEquals("ECDH public key W", ecdhPublicKeyMappedExpected.getW(), publicKeyReceived.getW());
+		assertNotEquals("ECDH private key S", ecdhPrivateKeyMappedExpected.getS(), privateKeyReceived.getS());
 		assertArrayEquals("mapping response", mappingResponseExpected, mappingResponseReceived);
 	}
 	
