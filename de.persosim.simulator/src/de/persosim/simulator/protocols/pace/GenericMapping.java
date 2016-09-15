@@ -44,7 +44,7 @@ public abstract class GenericMapping implements Mapping {
 	 * @throws InvalidAlgorithmParameterException
 	 * @throws InvalidKeySpecException
 	 */
-	MappingResult performMapping(DomainParameterSet domainParametersUnmapped, KeyPair keyPairPiccUnmapped, byte[] sNonce, byte[] publicKeyComponentPcd) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException, InvalidKeySpecException {
+	public MappingResult performMapping(DomainParameterSet domainParametersUnmapped, KeyPair keyPairPiccUnmapped, byte[] sNonce, byte[] publicKeyComponentPcd) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException, InvalidKeySpecException {
 		SecureRandom rng = new SecureRandom();
 		
 		PublicKey publicKeyPcdUnMapped = domainParametersUnmapped.reconstructPublicKey(publicKeyComponentPcd);
