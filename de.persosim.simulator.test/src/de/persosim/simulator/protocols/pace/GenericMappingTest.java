@@ -14,7 +14,6 @@ import java.security.spec.ECPrivateKeySpec;
 import java.security.spec.ECPublicKeySpec;
 
 import org.globaltester.cryptoprovider.Crypto;
-import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
@@ -32,13 +31,7 @@ public class GenericMappingTest extends PersoSimTestCase {
 	ECPublicKey ecdhPublicKeyUnmappedExpected;
 	KeyPair ecdhKeyPairUnmappedExpected;
 	
-	/**
-	 * Create the test environment containing an elementary file and the mocked
-	 * object store.
-	 * @throws ReflectiveOperationException 
-	 */
-	@Before
-	public void setUp() throws Exception {
+	public void performMappingSetUp() throws Exception {
 		// this setup is currently used only within testPerformMapping, maybe move it there
 		ecdhDomainParameterSetUnMappedExpected = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
 		ecdhGeneratorUnmappedExpected = ecdhDomainParameterSetUnMappedExpected.getGenerator();
@@ -71,6 +64,8 @@ public class GenericMappingTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testPerformMapping() throws Exception {
+		performMappingSetUp();
+		
 		GenericMappingEcdh mapping = new GenericMappingEcdh();
 		
 		byte[] nonceSPlainExpected = HexString.toByteArray("1DD01F3933B57DA8EF4F07B5FDC46DC412C9E695707E9A391D804F24E683A305");
