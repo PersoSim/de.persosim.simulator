@@ -26,7 +26,7 @@ public class GenericMappingEcdhTest extends PersoSimTestCase {
 	 * Positive test case: perform mapping of domain parameters based on values from valid PACE test run.
 	 */
 	@Test
-	public void testPerformGenericMappingOfDomainParameters() {
+	public void testPerformMappingOfDomainParameters() {
 		DomainParameterSetEcdh domainParameterSetUnMapped = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
 		GenericMappingEcdh mapping = new GenericMappingEcdh();
 		
@@ -50,7 +50,7 @@ public class GenericMappingEcdhTest extends PersoSimTestCase {
 	 * Negative test case: perform mapping of domain parameters based on values from valid PACE test run but wrong nonce S.
 	 */
 	@Test
-	public void testPerformGenericMappingOfDomainParametersWrongNonceS() {
+	public void testPerformMappingOfDomainParametersWrongNonceS() {
 		DomainParameterSetEcdh domainParameterSetUnMapped = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
 		GenericMappingEcdh mapping = new GenericMappingEcdh();
 		
@@ -74,7 +74,7 @@ public class GenericMappingEcdhTest extends PersoSimTestCase {
 	 * Negative test case: perform mapping of domain parameters based on values from valid PACE test run but with wrong secret of key agreement.
 	 */
 	@Test
-	public void testPerformGenericMappingOfDomainParametersWrongSecretOfKeyAgreement() {
+	public void testPerformMappingOfDomainParametersWrongSecretOfKeyAgreement() {
 		DomainParameterSetEcdh domainParameterSetUnMapped = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
 		GenericMappingEcdh mapping = new GenericMappingEcdh();
 		
