@@ -11,7 +11,6 @@ import java.security.spec.InvalidKeySpecException;
 
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSet;
-import de.persosim.simulator.utils.HexString;
 
 /**
  * This class performs the generic, i.e. non key agreement specific parts of generic mapping.
@@ -27,20 +26,13 @@ public abstract class GenericMapping implements Mapping {
 		
 		KeyPair keyPairPiccUnmapped = CryptoUtil.generateKeyPair(domainParametersUnmapped, rng);
 		
-		System.out.println("keyPairPiccUnmapped private: " + HexString.encode(domainParametersUnmapped.encodePrivateKey(keyPairPiccUnmapped.getPrivate())));
-		System.out.println("keyPairPiccUnmapped public : " + HexString.encode(domainParametersUnmapped.encodePublicKey(keyPairPiccUnmapped.getPublic())));
-		
 		PublicKey publicKeyPcdUnMapped = domainParametersUnmapped.reconstructPublicKey(publicKeyComponentPcd);
 		
 		byte[] secretPointOfKeyAgreementEncoding = performKeyAgreement(domainParametersUnmapped, keyPairPiccUnmapped.getPrivate(), publicKeyPcdUnMapped);
 		
 		DomainParameterSet domainParametersMapped = performMappingOfDomainParameters(domainParametersUnmapped, sNonce, secretPointOfKeyAgreementEncoding);
 		
-//		KeyPair keyPairPiccMapped = CryptoUtil.updateKeyPairToNewDomainParameters(keyPairPiccUnmapped, domainParametersMapped);
 		KeyPair keyPairPiccMapped = CryptoUtil.generateKeyPair(domainParametersMapped, rng);
-		
-		System.out.println("keyPairPiccMapped private  : " + HexString.encode(domainParametersMapped.encodePrivateKey(keyPairPiccMapped.getPrivate())));
-		System.out.println("keyPairPiccMapped public   : " + HexString.encode(domainParametersMapped.encodePublicKey(keyPairPiccMapped.getPublic())));
 		
 		return new MappingResultGm(domainParametersUnmapped, domainParametersMapped, keyPairPiccUnmapped, keyPairPiccMapped);
 	}
