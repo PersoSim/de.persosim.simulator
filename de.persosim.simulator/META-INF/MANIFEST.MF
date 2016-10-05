@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PersoSim Simulator
 Bundle-SymbolicName: de.persosim.simulator;singleton:=true
 Bundle-Version: 0.9.0.qualifier
-Bundle-Vendor: HJP Consulting GmbH
+Bundle-Vendor: secunet Security Networks AG
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: de.persosim.simulator,
  de.persosim.simulator.apdu,

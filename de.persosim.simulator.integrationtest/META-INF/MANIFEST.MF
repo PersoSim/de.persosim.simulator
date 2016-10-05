@@ -15,4 +15,4 @@ Export-Package: de.persosim.simulator.test.globaltester,
  de.persosim.simulator.test.globaltester.perso
 Import-Package: org.eclipse.ui.keys,
  org.osgi.framework;version="1.8.0"
-Bundle-Vendor: HJP Consulting GmbH
+Bundle-Vendor: secunet Security Networks AG

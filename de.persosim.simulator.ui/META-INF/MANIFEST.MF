@@ -28,4 +28,4 @@ Export-Package: de.persosim.simulator.ui,
  de.persosim.simulator.ui.parts,
  de.persosim.simulator.ui.utils
 Import-Package: de.persosim.driver.connector.service
-Bundle-Vendor: HJP Consulting GmbH
+Bundle-Vendor: secunet Security Networks AG
