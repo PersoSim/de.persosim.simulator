@@ -4,7 +4,7 @@ Bundle-Name: PersoSim Simulator Socket Adapter
 Bundle-SymbolicName: de.persosim.simulator.adapter.socket
 Bundle-Version: 0.9.0.qualifier
 Bundle-Activator: de.persosim.simulator.adapter.socket.Activator
-Bundle-Vendor: HJP Consulting GmbH
+Bundle-Vendor: secunet Security Networks AG
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
  de.persosim.simulator;bundle-version="0.5.0",
