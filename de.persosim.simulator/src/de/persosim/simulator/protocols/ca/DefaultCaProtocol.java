@@ -2,7 +2,7 @@ package de.persosim.simulator.protocols.ca;
 /*
  * AUTOMATICALLY GENERATED CODE - DO NOT EDIT!
  * 
- * (C) 2013 HJP-Consulting GmbH
+ * (C) secunet Security Networks AG
  */
  @SuppressWarnings("all")//generated code 
 
