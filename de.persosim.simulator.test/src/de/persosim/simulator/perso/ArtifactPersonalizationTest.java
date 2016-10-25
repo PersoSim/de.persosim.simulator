@@ -1,13 +1,14 @@
 package de.persosim.simulator.perso;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 
@@ -24,47 +25,63 @@ public abstract class ArtifactPersonalizationTest extends PersonalizationTest {
 	protected void marshalFile(String xmlFile) throws Exception {
 		super.marshalFile(xmlFile);
 
+		int contextSize = 128;
+		
 		// compare the result with the previous personalization file
 		File currentlyMarshalledFile = new File(xmlFile);
 		File previousFile = new File(getArtifactXmlFilename());
 
-		InputStreamReader currentlyMarshalledFileInputStreamReader = new InputStreamReader(
-				new FileInputStream(currentlyMarshalledFile));
-		InputStreamReader previousFileInputStreamReader = new InputStreamReader(new FileInputStream(previousFile));
+		LinkedList<Byte> currentContext = new LinkedList<Byte>();
+		LinkedList<Byte> previousContext = new LinkedList<Byte>();
+		
+		long positionInFile = checkFilesForDifferences(previousFile, currentlyMarshalledFile, contextSize, previousContext, currentContext);
 
-		int currentReadByte = 0;
-		int previousReadByte = 0;
-		List<Byte> currentContext = new LinkedList<>();
-		List<Byte> previousContext = new LinkedList<>();
-		int contextSize = 128;
-		long positionInFile = 0;
-		
-		do {
-			currentReadByte = currentlyMarshalledFileInputStreamReader.read();
-			previousReadByte = previousFileInputStreamReader.read();
-
-			currentContext.add((byte) currentReadByte);
-			previousContext.add((byte) previousReadByte);
-			if (currentContext.size() >= contextSize){
-				currentContext.remove(0);
-			}
-			if (previousContext.size() >= contextSize){
-				previousContext.remove(0);
-			}
-			
-			if (currentReadByte != previousReadByte){
-				break;
-			}
-			positionInFile++;
-		} while (currentReadByte != -1);
-		
-		
-		
 		assertEquals("Found difference at byte " + positionInFile + ", " + contextSize + " bytes context provided.", toString(previousContext), toString(currentContext));
+	}
+	
+	/**
+	 * Method for checking files for differences at byte level.
+	 * @param expected the {@link File} which contains the expected content
+	 * @param fileToCheck the {@link File} which should be checked for differences
+	 * @param contextSize the number of bytes to store as context before differences
+	 * @param expectedContext context buffer for the expected file
+	 * @param fileToCheckContext context buffer for the file to be checked
+	 * @return the position of the first differing byte or -1 if no differences found
+	 * @throws IOException
+	 */
+	public static long checkFilesForDifferences(File expected, File fileToCheck, int contextSize, LinkedList<Byte> expectedContext,
+			LinkedList<Byte> fileToCheckContext) throws IOException {
+		try (InputStreamReader currentlyMarshalledFileInputStreamReader = new InputStreamReader(
+				new FileInputStream(fileToCheck));
+				InputStreamReader previousFileInputStreamReader = new InputStreamReader(
+						new FileInputStream(expected));) {
 
-		currentlyMarshalledFileInputStreamReader.close();
-		previousFileInputStreamReader.close();
+			int fileToCheckReadByte = 0;
+			int expectedReadByte = 0;
+			long positionInFile = 0;
 
+			do {
+				fileToCheckReadByte = currentlyMarshalledFileInputStreamReader.read();
+				expectedReadByte = previousFileInputStreamReader.read();
+
+				fileToCheckContext.add((byte) fileToCheckReadByte);
+				expectedContext.add((byte) expectedReadByte);
+				if (fileToCheckContext.size() >= contextSize) {
+					fileToCheckContext.remove(0);
+				}
+				if (expectedContext.size() >= contextSize) {
+					expectedContext.remove(0);
+				}
+
+				if (fileToCheckReadByte != expectedReadByte) {
+					return positionInFile;
+				}
+				positionInFile++;
+			} while (fileToCheckReadByte != -1);
+
+		}
+
+		return -1;
 	}
 
 	/**
