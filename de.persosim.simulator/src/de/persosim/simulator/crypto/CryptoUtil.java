@@ -390,6 +390,10 @@ public class CryptoUtil {
 	 * @return ASN.1 formatted TLV object
 	 */
 	public static ConstructedTlvDataObject restoreAsn1SignatureStructure(byte [] signatureData){
+		if(signatureData.length % 2 > 0) {
+			throw new IllegalArgumentException("input expected to be of even length");
+		}
+		
 		int length = signatureData.length / 2;
 		
 		BigInteger r = new BigInteger(Arrays.copyOfRange(signatureData, 0, length));
