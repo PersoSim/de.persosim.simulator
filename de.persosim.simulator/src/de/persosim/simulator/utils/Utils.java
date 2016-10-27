@@ -225,7 +225,11 @@ public abstract class Utils {
 	}
 	
 	/**
-	 * Returns the given input with additional leading zeroes.
+	 * Returns the given input padded with leading zeroes.
+	 * Padding is only performed if necessary, i.e. input length < wanted length.
+	 * In this case a new object of wanted length containing input data padded with additional leading zeroes is returned.
+	 * If input length equals wanted length the input object is returned.
+	 * If input length > wanted length an IllegalArgumentException is thrown.
 	 * 
 	 * @param input
 	 *            the byte array to be padded
@@ -234,9 +238,14 @@ public abstract class Utils {
 	 * @return zero padded byte array
 	 */
 	public static byte [] padWithLeadingZeroes(byte [] input, int wantedLength){
+		if(input.length == wantedLength) {
+			return input;
+		}
+		
 		if (wantedLength < input.length){
 			throw new IllegalArgumentException("Wanted length is smaller than the input length");
 		}
+		
 		byte [] zeroes = new byte [wantedLength - input.length];
 		return Utils.concatByteArrays(zeroes, input);
 	}
