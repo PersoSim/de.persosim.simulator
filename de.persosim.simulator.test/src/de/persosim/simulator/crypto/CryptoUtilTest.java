@@ -429,6 +429,17 @@ public class CryptoUtilTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Negative test case: encode a raw representation of a valid signature into
+	 * its ASN.1 representation with uneven input byte length
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testRestoreAsn1SignatureStructure_UnevenInputLength() {
+		byte[] signature = HexString.toByteArray("AABBCC");
+
+		CryptoUtil.restoreAsn1SignatureStructure(signature);
+	}
+	
+	/**
 	 * Positive test case: recreate key pair from minimum representation of
 	 * public and private parts.
 	 */
