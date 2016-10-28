@@ -32,6 +32,7 @@ import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
+import de.persosim.simulator.tlv.TlvTagIdentifier;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -389,6 +390,10 @@ public class CryptoUtil {
 	 * @return ASN.1 formatted TLV object
 	 */
 	public static ConstructedTlvDataObject restoreAsn1SignatureStructure(byte [] signatureData){
+		if(signatureData.length % 2 > 0) {
+			throw new IllegalArgumentException("input expected to be of even length");
+		}
+		
 		int length = signatureData.length / 2;
 		
 		BigInteger r = new BigInteger(Arrays.copyOfRange(signatureData, 0, length));
@@ -404,6 +409,30 @@ public class CryptoUtil {
 		
 		ConstructedTlvDataObject signatureObject = new ConstructedTlvDataObject(new TlvTag(Asn1.SEQUENCE), integers);
 		return signatureObject;
+	}
+	
+	/**
+	 * This method compresses an ECDSA signature.
+	 * 
+	 * 
+	 * @param unprocessedSignature a byte array representation of an ECDSA signature e.g. as returned by the {@link Signature#verify(byte[])} method
+	 * @return a byte array concatenating signature components
+	 */
+	public static byte[] compressAsn1SignatureStructure(byte[] unprocessedSignature) {
+		ConstructedTlvDataObject signatureTlvUnprocessed = new ConstructedTlvDataObject(unprocessedSignature);
+		
+		PrimitiveTlvDataObject pTlv1 = (PrimitiveTlvDataObject) signatureTlvUnprocessed.getTlvDataObject(new TlvTagIdentifier(new TlvTag((byte) 0x02), 0));
+		PrimitiveTlvDataObject pTlv2 = (PrimitiveTlvDataObject) signatureTlvUnprocessed.getTlvDataObject(new TlvTagIdentifier(new TlvTag((byte) 0x02), 1));
+		
+		byte[] c1 = pTlv1.getValueField();
+		byte[] c2 = pTlv2.getValueField();
+		
+		int maxLength = Integer.max(c1.length, c2.length);
+		
+		c1 = Utils.padWithLeadingZeroes(c1, maxLength);
+		c2 = Utils.padWithLeadingZeroes(c2, maxLength);
+		
+		return Utils.concatByteArrays(c1, c2);
 	}
 
 	/**

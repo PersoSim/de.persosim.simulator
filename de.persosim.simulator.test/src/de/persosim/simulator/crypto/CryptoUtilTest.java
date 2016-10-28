@@ -352,6 +352,45 @@ public class CryptoUtilTest extends PersoSimTestCase {
 	}
 	
 	/**
+	 * Positive test case: compress a valid ASN.1 signature with components of equal length
+	 */
+	@Test
+	public void testCompressAsn1SignatureStructure_EqualComponentLength() {
+		byte[] uncompressedSignature = HexString
+				.toByteArray("300A 0203AABBCC 0203DDEEFF");
+		byte[] expectedResult = HexString
+				.toByteArray("AABBCCDDEEFF");
+
+		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature));
+	}
+	
+	/**
+	 * Positive test case: compress a valid ASN.1 signature with first component shorter
+	 */
+	@Test
+	public void testCompressAsn1SignatureStructure_FirstComponentShorter() {
+		byte[] uncompressedSignature = HexString
+				.toByteArray("3009 0202AABB 0203DDEEFF");
+		byte[] expectedResult = HexString
+				.toByteArray("00AABBDDEEFF");
+
+		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature));
+	}
+	
+	/**
+	 * Positive test case: compress a valid ASN.1 signature with second component shorter
+	 */
+	@Test
+	public void testCompressAsn1SignatureStructure_SecondComponentShorter() {
+		byte[] uncompressedSignature = HexString
+				.toByteArray("3009 0203AABBCC 0202DDEE");
+		byte[] expectedResult = HexString
+				.toByteArray("AABBCC00DDEE");
+
+		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature));
+	}
+	
+	/**
 	 * Positive test case: encode a raw representation of a valid signature into
 	 * its ASN.1 representation
 	 */
@@ -387,6 +426,17 @@ public class CryptoUtilTest extends PersoSimTestCase {
 
 		assertArrayEquals(expectedResult, CryptoUtil
 				.restoreAsn1SignatureStructure(signature).toByteArray());
+	}
+	
+	/**
+	 * Negative test case: encode a raw representation of a valid signature into
+	 * its ASN.1 representation with uneven input byte length
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testRestoreAsn1SignatureStructure_UnevenInputLength() {
+		byte[] signature = HexString.toByteArray("AABBCC");
+
+		CryptoUtil.restoreAsn1SignatureStructure(signature);
 	}
 	
 	/**

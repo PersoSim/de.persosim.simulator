@@ -632,7 +632,7 @@ public class UtilsTest {
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void testPadWithLeadingZeroes_wantedToSmall(){
+	public void testPadWithLeadingZeroes_wantedTooSmall(){
 		byte [] input = new byte [] {1,2,3};
 		Utils.padWithLeadingZeroes(input, 2);
 	}
