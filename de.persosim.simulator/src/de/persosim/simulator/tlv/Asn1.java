@@ -1,5 +1,8 @@
 package de.persosim.simulator.tlv;
 
+import java.nio.charset.Charset;
+import java.util.regex.Pattern;
+
 /**
  * This interface holds ASN1 conform constants in order to address them by name
  * instead of magic numbers. These values are defined in the ASN.1 standard.
@@ -65,5 +68,36 @@ public interface Asn1 {
 	public static final byte SEQUENCE = ENCODING_CONSTRUCTED | UNIVERSAL_SEQUENCE;
 	public static final byte SET = ENCODING_CONSTRUCTED | UNIVERSAL_SET;
 	public static final byte IA5_STRING = UNIVERSAL_IA5_STRING;
+	
+	public static final String REGEX_PRINTABLESTRING = "^([A-Za-z0-9 '()+,-./:=?])*$";
+	public static final Pattern REGEX_PATTERN_PRINTABLESTRING = Pattern.compile(REGEX_PRINTABLESTRING);
+	
+	public static final CharacterStringTypePrimitive CHARSTRINGTYPE_PRINTABLESTRING = new CharacterStringTypePrimitive(new TlvTag(UNIVERSAL_PRINTABLE_STRING), REGEX_PATTERN_PRINTABLESTRING, Charset.forName("US-ASCII"));
+	
+	public static enum Asn1StringType implements CharacterStringType {
+		PRINTABLESTRING(UNIVERSAL_PRINTABLE_STRING, REGEX_PATTERN_PRINTABLESTRING, Charset.forName("US-ASCII"));
+		
+		private byte tag;
+		private Pattern pattern;
+		private Charset charset;
+		
+		private Asn1StringType(byte tag, Pattern pattern, Charset charset) {
+			this.tag = tag;
+			this.pattern = pattern;
+			this.charset = charset;
+		}
+
+		public byte getTag() {
+			return tag;
+		}
+		
+		public Pattern getPattern() {
+			return pattern;
+		}
+		
+		public Charset getCharset() {
+			return charset;
+		}
+	}
 
 }
