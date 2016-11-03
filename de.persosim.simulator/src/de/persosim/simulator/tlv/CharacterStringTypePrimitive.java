@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 
+ * This class provides support for encoding primitive ASN.1 data structures, i.e. ASN.1 types that are not nested.
  */
 public class CharacterStringTypePrimitive {
 	
@@ -13,6 +13,12 @@ public class CharacterStringTypePrimitive {
 	protected Pattern pattern;
 	protected Charset charset;
 	
+	/**
+	 * Constructor for a primitive character string type object
+	 * @param tlvTag the tag to use (must be primitive)
+	 * @param pattern the regex pattern to match for (optional)
+	 * @param charset the character set to use for byte[] encoding
+	 */
 	public CharacterStringTypePrimitive(TlvTag tlvTag, Pattern pattern, Charset charset) {
 		if(!tlvTag.indicatesEncodingPrimitive()) {
 			throw new IllegalArgumentException("provided TLV tag must be primitive");
@@ -33,19 +39,11 @@ public class CharacterStringTypePrimitive {
 		return charset;
 	}
 	
-//	public static boolean stringMatchesPattern(String input, CharacterStringTypePrimitive characterStringTypePrimitive) {
-//		Matcher matcher = characterStringTypePrimitive.getPattern().matcher(input);
-//		return matcher.matches();
-//	}
-//	
-//	public static byte[] encode(String input, CharacterStringTypePrimitive characterStringTypePrimitive) {
-//		if(!stringMatchesPattern(input, characterStringTypePrimitive)) {
-//			throw new IllegalArgumentException("mismatching character string type");
-//		}
-//		
-//		return input.getBytes(characterStringTypePrimitive.getCharset());
-//	}
-	
+	/**
+	 * This method returns an ASN.1 byte[] encoding of the object 
+	 * @param input the value to be encoded
+	 * @return the encoded byte[] representation
+	 */
 	public PrimitiveTlvDataObject encode(String input) {
 		Matcher matcher = pattern.matcher(input);
 		
