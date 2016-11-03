@@ -4,6 +4,7 @@ import static org.globaltester.logging.BasicLogger.ERROR;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -160,7 +161,7 @@ public class Activator implements BundleActivator {
 			connector = serviceTrackerDriverConnectorFactory.getService().getConnector(de.persosim.driver.connector.Activator.PERSOSIM_CONNECTOR_CONTEXT_ID);
 			connector.addListener(new DefaultListener());
 			if (!connector.isRunning()) {
-				connector.connect(DEFAULT_HOST, DEFAULT_PORT);
+				connector.connect(new Socket(DEFAULT_HOST, DEFAULT_PORT));
 			}
 		} catch (IOException e) {
 			log(Activator.class, "Exception: " + e.getMessage(), ERROR);
