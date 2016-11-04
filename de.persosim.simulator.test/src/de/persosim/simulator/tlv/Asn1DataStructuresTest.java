@@ -20,6 +20,30 @@ public class Asn1DataStructuresTest {
 	}
 	
 	/**
+	 * Negative test: test generation of ASN.1 data structure "Date" with date to be encoded containing literals.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testAsn1DateEncode_NonNumber() {
+		Asn1Date.getInstance().encode("2020103F");
+	}
+	
+	/**
+	 * Negative test: test generation of ASN.1 data structure "Date" with date to be encoded too short.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testAsn1DateEncode_TooShort() {
+		Asn1Date.getInstance().encode("2020103");
+	}
+	
+	/**
+	 * Negative test: test generation of ASN.1 data structure "Date" with date to be encoded too long.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testAsn1DateEncode_TooLong() {
+		Asn1Date.getInstance().encode("202010310");
+	}
+	
+	/**
 	 * Positive test: test generation of wrapped ASN.1 data structure "Date".
 	 */
 	@Test
@@ -31,14 +55,49 @@ public class Asn1DataStructuresTest {
 	}
 	
 	/**
-	 * Positive test: test generation of ASN.1 data structure "ICAOCountry".
+	 * Positive test: test generation of ASN.1 data structure "ICAOCountry" with string to be encoded of length 1.
 	 */
 	@Test
-	public void testAsn1IcaoCountryEncode() {
+	public void testAsn1IcaoCountryEncode1() {
 		PrimitiveTlvDataObject received = Asn1IcaoCountry.getInstance().encode("D");
 		PrimitiveTlvDataObject expected = new PrimitiveTlvDataObject(HexString.toByteArray("130144"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
+	}
+	
+	/**
+	 * Positive test: test generation of ASN.1 data structure "ICAOCountry" with string to be encoded of length 3.
+	 */
+	@Test
+	public void testAsn1IcaoCountryEncode3() {
+		PrimitiveTlvDataObject received = Asn1IcaoCountry.getInstance().encode("DED");
+		PrimitiveTlvDataObject expected = new PrimitiveTlvDataObject(HexString.toByteArray("1303444544"));
+		
+		assertArrayEquals(expected.toByteArray(), received.toByteArray());
+	}
+	
+	/**
+	 * Negative test: test generation of ASN.1 data structure "ICAOCountry" with string to be encoded containing a number.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testAsn1IcaoCountryEncode_ContainingNumber() {
+		Asn1IcaoCountry.getInstance().encode("3");
+	}
+	
+	/**
+	 * Negative test: test generation of ASN.1 data structure "ICAOCountry" with string to be encoded of illegal length 2.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testAsn1IcaoCountryEncode_IllegalLength2() {
+		Asn1IcaoCountry.getInstance().encode("DE");
+	}
+	
+	/**
+	 * Negative test: test generation of ASN.1 data structure "ICAOCountry" with string to be encoded of illegal length 4.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testAsn1IcaoCountryEncode_IllegalLength4() {
+		Asn1IcaoCountry.getInstance().encode("DEDE");
 	}
 	
 	/**
