@@ -8,10 +8,6 @@ import java.io.UnsupportedEncodingException;
 import org.junit.Test;
 
 import de.persosim.simulator.test.PersoSimTestCase;
-import de.persosim.simulator.tlv.Asn1DateWrapper;
-import de.persosim.simulator.tlv.Asn1IcaoCountryWrapper;
-import de.persosim.simulator.tlv.Asn1IcaoStringWrapper;
-import de.persosim.simulator.tlv.Asn1Utf8StringWrapper;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.HexString;
@@ -36,17 +32,6 @@ public class AbstractProfileTest extends PersoSimTestCase {
 	public void testGetCommunityIdDgTlv_Empty() {
 		ConstructedTlvDataObject received = AbstractProfile.getCommunityIdDgTlv(new TlvTag((byte) 0x72), "");
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("72020400"));
-		
-		assertArrayEquals(expected.toByteArray(), received.toByteArray());
-	}
-	
-	/**
-	 * Positive test: test generation of TLV structure for data group containing ASN.1 data type Date.
-	 */
-	@Test
-	public void testGetDateDgTlv() {
-		ConstructedTlvDataObject received = Asn1DateWrapper.getInstance().encode(new TlvTag((byte) 0x63), "20201031");
-		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("630A12083230323031303331"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
 	}
@@ -83,39 +68,6 @@ public class AbstractProfileTest extends PersoSimTestCase {
 	public void testGetGeneralPlaceDgTlv_Simple() throws UnsupportedEncodingException {
 		ConstructedTlvDataObject received = AbstractProfile.getGeneralPlaceDgTlv(new TlvTag((byte) 0x69), null, "BERLIN", null, null, null);
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("690AA1080C064245524C494E"));
-		
-		assertArrayEquals(expected.toByteArray(), received.toByteArray());
-	}
-	
-	/**
-	 * Positive test: test generation of TLV structure for data group containing ASN.1 data type ICAOString.
-	 */
-	@Test
-	public void testGetIcaoStringDgTlv() {
-		ConstructedTlvDataObject received = Asn1IcaoStringWrapper.getInstance().encode(new TlvTag((byte) 0x61), "ID");
-		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("610413024944"));
-		
-		assertArrayEquals(expected.toByteArray(), received.toByteArray());
-	}
-	
-	/**
-	 * Positive test: test generation of TLV structure for data group containing ASN.1 data type IssuingState.
-	 */
-	@Test
-	public void testGetIssuingStateDgTlv() {
-		ConstructedTlvDataObject received = Asn1IcaoCountryWrapper.getInstance().encode(new TlvTag((byte) 0x62), "D");
-		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("6203130144"));
-		
-		assertArrayEquals(expected.toByteArray(), received.toByteArray());
-	}
-	
-	/**
-	 * Positive test: test generation of TLV structure for data group containing ASN.1 data type UTF8String.
-	 */
-	@Test
-	public void testGetUtf8StringDgTlv() {
-		ConstructedTlvDataObject received = Asn1Utf8StringWrapper.getInstance().encode(new TlvTag((byte) 0x64), "ERIKA");
-		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("64070C054552494B41"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
 	}
