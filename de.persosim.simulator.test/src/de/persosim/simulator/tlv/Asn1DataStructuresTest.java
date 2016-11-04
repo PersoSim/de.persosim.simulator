@@ -123,6 +123,30 @@ public class Asn1DataStructuresTest {
 	}
 	
 	/**
+	 * Negative test: test generation of ASN.1 data structure "ICAOString" with string to be encoded containing a number.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testAsn1IcaoStringEncode_ContainingNumber() {
+		Asn1IcaoString.getInstance().encode("I9");
+	}
+	
+	/**
+	 * Negative test: test generation of ASN.1 data structure "ICAOString" with string to be encoded containing a sign.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testAsn1IcaoStringEncode_ContainingSign() {
+		Asn1IcaoString.getInstance().encode("I?");
+	}
+	
+	/**
+	 * Negative test: test generation of ASN.1 data structure "ICAOString" with string to be encoded containing lowercase characters.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testAsn1IcaoStringEncode_ContainingLowercaseChars() {
+		Asn1IcaoString.getInstance().encode("Id");
+	}
+	
+	/**
 	 * Positive test: test generation of wrapped ASN.1 data structure "ICAOString".
 	 */
 	@Test
@@ -167,6 +191,21 @@ public class Asn1DataStructuresTest {
 	}
 	
 	/**
+	 * Negative test: test generation of wrapped ASN.1 data structure "DocumentType" with string to be encoded being too short.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testAsn1Asn1DocumentTypeEncode_TooShort() {
+		Asn1DocumentType.getInstance().encode(new TlvTag((byte) 0x61), "I");
+	}
+	/**
+	 * Negative test: test generation of wrapped ASN.1 data structure "DocumentType" with string to be encoded being too long.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testAsn1Asn1DocumentTypeEncode_TooLong() {
+		Asn1DocumentType.getInstance().encode(new TlvTag((byte) 0x61), "IDS");
+	}
+	
+	/**
 	 * Positive test: test generation of ASN.1 data structure "PrintableString".
 	 */
 	@Test
@@ -175,6 +214,14 @@ public class Asn1DataStructuresTest {
 		PrimitiveTlvDataObject expected = new PrimitiveTlvDataObject(HexString.toByteArray("13054552494B41"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
+	}
+	
+	/**
+	 * Negative test: test generation of ASN.1 data structure "PrintableString" with string to be encoded containing illegal characters.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testAsn1PrintableStringEncode_ContainingIllegalChars() {
+		Asn1PrintableString.getInstance().encode("ER$KA");
 	}
 
 }
