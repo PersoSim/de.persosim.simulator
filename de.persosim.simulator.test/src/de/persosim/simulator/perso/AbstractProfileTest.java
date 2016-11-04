@@ -8,6 +8,10 @@ import java.io.UnsupportedEncodingException;
 import org.junit.Test;
 
 import de.persosim.simulator.test.PersoSimTestCase;
+import de.persosim.simulator.tlv.Asn1DateWrapper;
+import de.persosim.simulator.tlv.Asn1IcaoCountryWrapper;
+import de.persosim.simulator.tlv.Asn1IcaoStringWrapper;
+import de.persosim.simulator.tlv.Asn1Utf8StringWrapper;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.HexString;
@@ -41,7 +45,7 @@ public class AbstractProfileTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetDateDgTlv() {
-		ConstructedTlvDataObject received = AbstractProfile.getDateDgTlv(new TlvTag((byte) 0x63), "20201031");
+		ConstructedTlvDataObject received = Asn1DateWrapper.getInstance().encode(new TlvTag((byte) 0x63), "20201031");
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("630A12083230323031303331"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
@@ -88,7 +92,7 @@ public class AbstractProfileTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetIcaoStringDgTlv() {
-		ConstructedTlvDataObject received = AbstractProfile.getIcaoStringDgTlv(new TlvTag((byte) 0x61), "ID");
+		ConstructedTlvDataObject received = Asn1IcaoStringWrapper.getInstance().encode(new TlvTag((byte) 0x61), "ID");
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("610413024944"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
@@ -99,7 +103,7 @@ public class AbstractProfileTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetIssuingStateDgTlv() {
-		ConstructedTlvDataObject received = AbstractProfile.getIssuingStateDgTlv(new TlvTag((byte) 0x62), "D");
+		ConstructedTlvDataObject received = Asn1IcaoCountryWrapper.getInstance().encode(new TlvTag((byte) 0x62), "D");
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("6203130144"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
@@ -110,7 +114,7 @@ public class AbstractProfileTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetUtf8StringDgTlv() {
-		ConstructedTlvDataObject received = AbstractProfile.getUtf8StringDgTlv(new TlvTag((byte) 0x64), "ERIKA");
+		ConstructedTlvDataObject received = Asn1Utf8StringWrapper.getInstance().encode(new TlvTag((byte) 0x64), "ERIKA");
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("64070C054552494B41"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());

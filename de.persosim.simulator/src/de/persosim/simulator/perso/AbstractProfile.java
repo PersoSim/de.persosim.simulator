@@ -39,6 +39,10 @@ import de.persosim.simulator.seccondition.PaceWithPasswordSecurityCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.seccondition.TaSecurityCondition;
 import de.persosim.simulator.tlv.Asn1;
+import de.persosim.simulator.tlv.Asn1DateWrapper;
+import de.persosim.simulator.tlv.Asn1IcaoCountryWrapper;
+import de.persosim.simulator.tlv.Asn1IcaoStringWrapper;
+import de.persosim.simulator.tlv.Asn1Utf8StringWrapper;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
@@ -213,82 +217,10 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				validityDate));
 	}
 	
-	/**
-	 * This method returns the TLV structure for a data group containing an ASN.1 type UTF8String.
-	 * @param tlvTag the tag to be used for this data group
-	 * @param content the content to be placed in the ASN.1 type UTF8String
-	 * @return the TLV structure for a data group containing an ASN.1 type UTF8String
-	 */
-	public static ConstructedTlvDataObject getUtf8StringDgTlv(TlvTag tlvTag, String content) {
-		ConstructedTlvDataObject utf8DgTlv = new ConstructedTlvDataObject(tlvTag);
-		byte[] utf8StringPlainBytes;
-		
-		try {
-			utf8StringPlainBytes = content.getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// UTF-8 is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			utf8StringPlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject utf8StringTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), utf8StringPlainBytes);
-		utf8DgTlv.addTlvDataObject(utf8StringTlv);
-		
-		return utf8DgTlv;
-	}
-	
-	/**
-	 * This method returns the TLV structure for a data group containing an ASN.1 type Date.
-	 * @param tlvTag the tag to be used for this data group
-	 * @param content the content to be placed in the ASN.1 type Date
-	 * @return the TLV structure for a data group containing an ASN.1 type Date
-	 */
-	public static ConstructedTlvDataObject getDateDgTlv(TlvTag tlvTag, String content) {
-		ConstructedTlvDataObject dateDgTlv = new ConstructedTlvDataObject(tlvTag);
-		byte[] datePlainBytes;
-		
-		try {
-			datePlainBytes = content.getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// US-ASCII is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			datePlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject dateTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_NUMERIC_STRING), datePlainBytes);
-		dateDgTlv.addTlvDataObject(dateTlv);
-		
-		return dateDgTlv;
-	}
-	
-	/**
-	 * This method returns the TLV structure for a data group containing an ASN.1 type ICAOString.
-	 * @param tlvTag the tag to be used for this data group
-	 * @param content the content to be placed in the ASN.1 type ICAOString
-	 * @return the TLV structure for a data group containing an ASN.1 type ICAOString
-	 */
-	public static ConstructedTlvDataObject getIcaoStringDgTlv(TlvTag tlvTag, String content) {
-		ConstructedTlvDataObject icaoStringDgTlv = new ConstructedTlvDataObject(tlvTag);
-		byte[] icaoStringPlainBytes;
-		
-		try {
-			icaoStringPlainBytes = content.getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// US-ASCII is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			icaoStringPlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject icaoStringTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), icaoStringPlainBytes);
-		icaoStringDgTlv.addTlvDataObject(icaoStringTlv);
-		
-		return icaoStringDgTlv;
-	}
-	
 	@Override
 	protected void addEidDg1(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
-		ConstructedTlvDataObject dg1Tlv = getIcaoStringDgTlv(new TlvTag((byte) 0x61), persoDataContainer.getDg1PlainData());
+		ConstructedTlvDataObject dg1Tlv = Asn1IcaoStringWrapper.getInstance().encode(new TlvTag((byte) 0x61), persoDataContainer.getDg1PlainData());
 		
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0101),
 				new ShortFileIdentifier(0x01),
@@ -299,34 +231,10 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		eIdAppl.addChild(eidDg1);
 	}
 	
-	/**
-	 * This method returns the TLV structure for a data group containing an ASN.1 type IssuingState.
-	 * @param tlvTag the tag to be used for this data group
-	 * @param content the content to be placed in the ASN.1 type IssuingState
-	 * @return the TLV structure for a data group containing an ASN.1 type IssuingState
-	 */
-	public static ConstructedTlvDataObject getIssuingStateDgTlv(TlvTag tlvTag, String content) {
-		ConstructedTlvDataObject issuingStateDgTlv = new ConstructedTlvDataObject(tlvTag);
-		byte[] issuingStatePlainBytes;
-		
-		try {
-			issuingStatePlainBytes = content.getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// US-ASCII is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			issuingStatePlainBytes = new byte[0];
-		}
-		
-		PrimitiveTlvDataObject issuingStateTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_PRINTABLE_STRING), issuingStatePlainBytes);
-		issuingStateDgTlv.addTlvDataObject(issuingStateTlv);
-		
-		return issuingStateDgTlv;
-	}
-	
 	@Override
 	protected void addEidDg2(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
-		ConstructedTlvDataObject dg2Tlv = getIssuingStateDgTlv(new TlvTag((byte) 0x62), persoDataContainer.getDg2PlainData());
+		ConstructedTlvDataObject dg2Tlv = Asn1IcaoCountryWrapper.getInstance().encode(new TlvTag((byte) 0x62), persoDataContainer.getDg2PlainData());
 		
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0102),
 				new ShortFileIdentifier(0x02),
@@ -340,7 +248,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	@Override
 	protected void addEidDg3(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
-		ConstructedTlvDataObject dg3Tlv = getDateDgTlv(new TlvTag((byte) 0x63), persoDataContainer.getDg3PlainData());
+		ConstructedTlvDataObject dg3Tlv = Asn1DateWrapper.getInstance().encode(new TlvTag((byte) 0x63), persoDataContainer.getDg3PlainData());
 		
 		CardFile eidDg3 = new ElementaryFile(new FileIdentifier(0x0103),
 				new ShortFileIdentifier(0x03),
@@ -354,7 +262,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	@Override
 	protected void addEidDg4(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
-		ConstructedTlvDataObject dg4Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x64), persoDataContainer.getDg4PlainData());
+		ConstructedTlvDataObject dg4Tlv = Asn1Utf8StringWrapper.getInstance().encode(new TlvTag((byte) 0x64), persoDataContainer.getDg4PlainData());
 
 		CardFile eidDg4 = new ElementaryFile(new FileIdentifier(0x0104),
 				new ShortFileIdentifier(0x04),
@@ -368,7 +276,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	@Override
 	protected void addEidDg5(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
-		ConstructedTlvDataObject dg5Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x65), persoDataContainer.getDg5PlainData());
+		ConstructedTlvDataObject dg5Tlv = Asn1Utf8StringWrapper.getInstance().encode(new TlvTag((byte) 0x65), persoDataContainer.getDg5PlainData());
 		
 		CardFile eidDg5 = new ElementaryFile(
 				new FileIdentifier(0x0105),
@@ -383,7 +291,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	@Override
 	protected void addEidDg6(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
-		ConstructedTlvDataObject dg6Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x66), persoDataContainer.getDg6PlainData());
+		ConstructedTlvDataObject dg6Tlv = Asn1Utf8StringWrapper.getInstance().encode(new TlvTag((byte) 0x66), persoDataContainer.getDg6PlainData());
 		
 		CardFile eidDg6 = new ElementaryFile(
 				new FileIdentifier(0x0106),
@@ -398,8 +306,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	@Override
 	protected void addEidDg7(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
-		
-		ConstructedTlvDataObject dg7Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x67), persoDataContainer.getDg7PlainData());
+		ConstructedTlvDataObject dg7Tlv = Asn1Utf8StringWrapper.getInstance().encode(new TlvTag((byte) 0x67), persoDataContainer.getDg7PlainData());
 		
 		CardFile eidDg7 = new ElementaryFile(new FileIdentifier(0x0107),
 				new ShortFileIdentifier(0x07),
@@ -414,7 +321,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	protected void addEidDg8(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
-		ConstructedTlvDataObject dg8Tlv = getDateDgTlv(new TlvTag((byte) 0x68), persoDataContainer.getDg8PlainData());
+		ConstructedTlvDataObject dg8Tlv = Asn1DateWrapper.getInstance().encode(new TlvTag((byte) 0x68), persoDataContainer.getDg8PlainData());
 		
 		CardFile eidDg8 = new ElementaryFile(new FileIdentifier(0x0108),
 				new ShortFileIdentifier(0x08),
@@ -463,8 +370,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	@Override
 	protected void addEidDg13(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
-		
-		ConstructedTlvDataObject dg13Tlv = getUtf8StringDgTlv(new TlvTag((byte) 0x6D), persoDataContainer.getDg13PlainData());
+		ConstructedTlvDataObject dg13Tlv = Asn1Utf8StringWrapper.getInstance().encode(new TlvTag((byte) 0x6D), persoDataContainer.getDg13PlainData());
 		
 		CardFile eidDg13 = new ElementaryFile(new FileIdentifier(0x010D),
 				new ShortFileIdentifier(0x0D),
