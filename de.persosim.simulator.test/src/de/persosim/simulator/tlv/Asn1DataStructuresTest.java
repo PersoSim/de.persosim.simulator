@@ -95,5 +95,27 @@ public class Asn1DataStructuresTest {
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
 	}
+	
+	/**
+	 * Positive test: test generation of wrapped ASN.1 data structure "DocumentType".
+	 */
+	@Test
+	public void testAsn1Asn1DocumentTypeEncode() {
+		ConstructedTlvDataObject received = Asn1DocumentType.getInstance().encode(new TlvTag((byte) 0x61), "ID");
+		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("610413024944"));
+		
+		assertArrayEquals(expected.toByteArray(), received.toByteArray());
+	}
+	
+	/**
+	 * Positive test: test generation of ASN.1 data structure "PrintableString".
+	 */
+	@Test
+	public void testAsn1PrintableStringEncode() {
+		PrimitiveTlvDataObject received = Asn1PrintableString.getInstance().encode("ERIKA");
+		PrimitiveTlvDataObject expected = new PrimitiveTlvDataObject(HexString.toByteArray("13054552494B41"));
+		
+		assertArrayEquals(expected.toByteArray(), received.toByteArray());
+	}
 
 }
