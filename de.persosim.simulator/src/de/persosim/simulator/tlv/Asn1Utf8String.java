@@ -3,7 +3,7 @@ package de.persosim.simulator.tlv;
 import java.nio.charset.Charset;
 
 /**
- * 
+ * This class provides support for encoding the ASN.1 data structure "UTF8String"
  */
 public class Asn1Utf8String extends Asn1Primitive implements Asn1 {
 	

@@ -1,7 +1,7 @@
 package de.persosim.simulator.tlv;
 
 /**
- * 
+ * This class provides support for encoding the wrapped ASN.1 data structure "ICAOCountry"
  */
 public class Asn1IcaoCountryWrapper extends Asn1ConstructedApplicationWrapper implements Asn1 {
 	

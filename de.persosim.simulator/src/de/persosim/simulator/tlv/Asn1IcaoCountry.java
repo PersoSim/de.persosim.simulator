@@ -3,7 +3,7 @@ package de.persosim.simulator.tlv;
 import java.nio.charset.Charset;
 
 /**
- * 
+ * This class provides support for encoding the ASN.1 data structure "ICAOCountry"
  */
 public class Asn1IcaoCountry extends Asn1Primitive implements Asn1 {
 	

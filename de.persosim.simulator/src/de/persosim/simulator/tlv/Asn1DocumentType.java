@@ -3,7 +3,7 @@ package de.persosim.simulator.tlv;
 import java.nio.charset.Charset;
 
 /**
- * 
+ * This class provides support for encoding the ASN.1 data structure "DocumentType"
  */
 public class Asn1DocumentType extends Asn1ConstructedApplicationWrapper implements Asn1 {
 	

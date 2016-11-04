@@ -1,7 +1,7 @@
 package de.persosim.simulator.tlv;
 
 /**
- * 
+ * This class provides support for encoding the wrapped ASN.1 data structure "UTF8String"
  */
 public class Asn1Utf8StringWrapper extends Asn1ConstructedApplicationWrapper implements Asn1 {
 	
