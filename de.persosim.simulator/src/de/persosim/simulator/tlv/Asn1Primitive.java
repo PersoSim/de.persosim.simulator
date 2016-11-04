@@ -5,9 +5,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This class provides support for encoding primitive ASN.1 data structures, i.e. ASN.1 types that are not nested.
+ * This abstract class provides support for encoding primitive ASN.1 data structures, i.e. ASN.1 types that are not nested.
  */
-public class CharacterStringTypePrimitive {
+public abstract class Asn1Primitive {
 	
 	protected TlvTag tlvTag;
 	protected Pattern pattern;
@@ -16,10 +16,10 @@ public class CharacterStringTypePrimitive {
 	/**
 	 * Constructor for a primitive character string type object
 	 * @param tlvTag the tag to use (must be primitive)
-	 * @param pattern the regex pattern to match for (optional)
+	 * @param pattern the regex pattern to match for (optional, i.e. may be null)
 	 * @param charset the character set to use for byte[] encoding
 	 */
-	public CharacterStringTypePrimitive(TlvTag tlvTag, Pattern pattern, Charset charset) {
+	public Asn1Primitive(TlvTag tlvTag, Pattern pattern, Charset charset) {
 		if(!tlvTag.indicatesEncodingPrimitive()) {
 			throw new IllegalArgumentException("provided TLV tag must be primitive");
 		}
@@ -45,10 +45,12 @@ public class CharacterStringTypePrimitive {
 	 * @return the encoded byte[] representation
 	 */
 	public PrimitiveTlvDataObject encode(String input) {
-		Matcher matcher = pattern.matcher(input);
-		
-		if(!matcher.matches()) {
-			throw new IllegalArgumentException("mismatching character string type");
+		if(pattern != null) {
+			Matcher matcher = pattern.matcher(input);
+			
+			if(!matcher.matches()) {
+				throw new IllegalArgumentException("mismatching character string type");
+			}
 		}
 		
 		byte[] value = input.getBytes(charset);
