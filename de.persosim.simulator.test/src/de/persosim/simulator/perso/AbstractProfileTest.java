@@ -37,17 +37,6 @@ public class AbstractProfileTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test: test generation of TLV structure for data group containing ASN.1 data type Date.
-	 */
-	@Test
-	public void testGetDateDgTlv() {
-		ConstructedTlvDataObject received = AbstractProfile.getDateDgTlv(new TlvTag((byte) 0x63), "20201031");
-		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("630A12083230323031303331"));
-		
-		assertArrayEquals(expected.toByteArray(), received.toByteArray());
-	}
-	
-	/**
 	 * Positive test: test generation of TLV structure for data group containing ASN.1 data type GeneralPlace.
 	 * @throws UnsupportedEncodingException 
 	 */
@@ -79,39 +68,6 @@ public class AbstractProfileTest extends PersoSimTestCase {
 	public void testGetGeneralPlaceDgTlv_Simple() throws UnsupportedEncodingException {
 		ConstructedTlvDataObject received = AbstractProfile.getGeneralPlaceDgTlv(new TlvTag((byte) 0x69), null, "BERLIN", null, null, null);
 		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("690AA1080C064245524C494E"));
-		
-		assertArrayEquals(expected.toByteArray(), received.toByteArray());
-	}
-	
-	/**
-	 * Positive test: test generation of TLV structure for data group containing ASN.1 data type ICAOString.
-	 */
-	@Test
-	public void testGetIcaoStringDgTlv() {
-		ConstructedTlvDataObject received = AbstractProfile.getIcaoStringDgTlv(new TlvTag((byte) 0x61), "ID");
-		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("610413024944"));
-		
-		assertArrayEquals(expected.toByteArray(), received.toByteArray());
-	}
-	
-	/**
-	 * Positive test: test generation of TLV structure for data group containing ASN.1 data type IssuingState.
-	 */
-	@Test
-	public void testGetIssuingStateDgTlv() {
-		ConstructedTlvDataObject received = AbstractProfile.getIssuingStateDgTlv(new TlvTag((byte) 0x62), "D");
-		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("6203130144"));
-		
-		assertArrayEquals(expected.toByteArray(), received.toByteArray());
-	}
-	
-	/**
-	 * Positive test: test generation of TLV structure for data group containing ASN.1 data type UTF8String.
-	 */
-	@Test
-	public void testGetUtf8StringDgTlv() {
-		ConstructedTlvDataObject received = AbstractProfile.getUtf8StringDgTlv(new TlvTag((byte) 0x64), "ERIKA");
-		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("64070C054552494B41"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
 	}

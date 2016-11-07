@@ -15,7 +15,7 @@ public class Profile04 extends AbstractProfile {
 		persoDataContainer.setDg3PlainData("20161031");
 		persoDataContainer.setDg4PlainData("---");
 		persoDataContainer.setDg5PlainData("ĆOSIĆ");
-		persoDataContainer.setDg8PlainData("199409__");
+		persoDataContainer.setDg8PlainData("199409  ");
 		persoDataContainer.setDg9PlainData("PRIŠTINA");
 		persoDataContainer.setDg17StreetPlainData("F4 14-15");
 		persoDataContainer.setDg17CityPlainData("MANNHEIM");
