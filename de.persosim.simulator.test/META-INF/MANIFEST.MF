@@ -12,7 +12,8 @@ Require-Bundle: org.junit,
  org.globaltester.cryptoprovider,
  org.globaltester.lib.jmockit,
  org.globaltester.logging,
- org.globaltester.lib.xstream
+ org.globaltester.lib.xstream,
+ org.globaltester.base
 Export-Package: de.persosim.simulator,
  de.persosim.simulator.perso,
  de.persosim.simulator.test
