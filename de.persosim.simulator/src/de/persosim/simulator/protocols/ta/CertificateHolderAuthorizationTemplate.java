@@ -17,19 +17,17 @@ import de.persosim.simulator.utils.BitField;
  * 
  */
 public class CertificateHolderAuthorizationTemplate {
-	Oid objectIdentifier;
 	RelativeAuthorization relativeAuthorization;
 	TerminalType terminalType;
 	
-	public CertificateHolderAuthorizationTemplate(Oid terminalOid, TerminalType terminalType,
+	public CertificateHolderAuthorizationTemplate(TerminalType terminalType,
 			RelativeAuthorization relativeAuthorization) {
-		this.objectIdentifier = terminalOid;
 		this.relativeAuthorization = relativeAuthorization;
 		this.terminalType = terminalType;
 	}
 	
 	public CertificateHolderAuthorizationTemplate(ConstructedTlvDataObject chatData) throws CertificateNotParseableException {
-		objectIdentifier = new GenericOid(chatData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
+		Oid objectIdentifier = new GenericOid(chatData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
 		PrimitiveTlvDataObject relativeAuthorizationData = (PrimitiveTlvDataObject) chatData.getTlvDataObject(TlvConstants.TAG_53);
 		CertificateRole role = CertificateRole.getFromMostSignificantBits(relativeAuthorizationData.getValueField()[0]);
 		BitField authorization = BitField.buildFromBigEndian(relativeAuthorizationData.getLengthValue() * 8 - 2, relativeAuthorizationData.getValueField());
@@ -43,10 +41,6 @@ public class CertificateHolderAuthorizationTemplate {
 			throw new CertificateNotParseableException("invalid combination of OID and terminal type");
 		}
 		
-	}
-
-	public Oid getObjectIdentifier() {
-		return objectIdentifier;
 	}
 
 	public RelativeAuthorization getRelativeAuthorization() {

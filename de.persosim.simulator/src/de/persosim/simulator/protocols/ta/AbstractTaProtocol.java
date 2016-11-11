@@ -316,7 +316,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		CertificateHolderAuthorizationTemplate chat = certificate.getCertificateHolderAuthorizationTemplate();
 		RelativeAuthorization authFromChat = chat.getRelativeAuthorization();
 		
-		authorizations.put(chat.getObjectIdentifier(), authFromChat);
+		authorizations.put(chat.getTerminalType().getAsOid(), authFromChat);
 		
 		return authorizations;
 	}
