@@ -1,16 +1,16 @@
 package de.persosim.simulator.protocols.ta;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
 import de.persosim.simulator.cardobjects.MasterFile;
@@ -24,7 +24,6 @@ import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.platform.CardStateAccessor;
-import de.persosim.simulator.protocols.RoleOid;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -85,19 +84,19 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		taProtocol.setCardStateAccessor(mockedCardStateAccessor);
 		taProtocol.init();
 
-		isCvcaChat = new CertificateHolderAuthorizationTemplate(RoleOid.id_IS, TerminalType.IS,
+		isCvcaChat = new CertificateHolderAuthorizationTemplate(TerminalType.IS,
 				new RelativeAuthorization(CertificateRole.CVCA, new BitField(
 						new boolean[] {})));
 		isDvDomesticChat = new CertificateHolderAuthorizationTemplate(
-				RoleOid.id_IS, TerminalType.IS, new RelativeAuthorization(
+				TerminalType.IS, new RelativeAuthorization(
 						CertificateRole.DV_TYPE_1, new BitField(
 								new boolean[] {})));
 		isDvForeignChat = new CertificateHolderAuthorizationTemplate(
-				RoleOid.id_IS, TerminalType.IS, new RelativeAuthorization(
+				TerminalType.IS, new RelativeAuthorization(
 						CertificateRole.DV_TYPE_2, new BitField(
 								new boolean[] {})));
 		isTerminalChat = new CertificateHolderAuthorizationTemplate(
-				RoleOid.id_IS, TerminalType.IS, new RelativeAuthorization(
+				TerminalType.IS, new RelativeAuthorization(
 						CertificateRole.TERMINAL,
 						new BitField(new boolean[] {})));
 

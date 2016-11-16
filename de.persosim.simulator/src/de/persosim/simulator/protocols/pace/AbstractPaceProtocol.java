@@ -244,7 +244,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 					
 					authorizationStore = new AuthorizationStore(authorizations);
 					
-					terminalTypeOid = usedChat.getObjectIdentifier();
+					terminalTypeOid = usedChat.getTerminalType().getAsOid();
 					TerminalType terminalType = usedChat.getTerminalType();
 	
 					trustPoint = (TrustPointCardObject) CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new TrustPointIdentifier(terminalType));
@@ -317,7 +317,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		if (tlvObject != null){
 				try {
 					chatFromCommandData  = new CertificateHolderAuthorizationTemplate((ConstructedTlvDataObject) tlvObject);
-					authorizations.put(chatFromCommandData.getObjectIdentifier(), chatFromCommandData.getRelativeAuthorization());
+					authorizations.put(chatFromCommandData.getTerminalType().getAsOid(), chatFromCommandData.getRelativeAuthorization());
 				} catch (CertificateNotParseableException e) {
 					ResponseApdu resp = new ResponseApdu(
 							Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);

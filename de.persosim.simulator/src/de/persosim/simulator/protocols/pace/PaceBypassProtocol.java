@@ -183,7 +183,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			RelativeAuthorization authorization = new RelativeAuthorization(
 					CertificateRole.getFromMostSignificantBits(roleData[0]), BitField.buildFromBigEndian(
 							(roleData.length * 8) - 2, roleData));
-			usedChat = new CertificateHolderAuthorizationTemplate(chatOid, TerminalType.getFromOid(chatOid),
+			usedChat = new CertificateHolderAuthorizationTemplate(TerminalType.getFromOid(chatOid),
 					authorization);
 			
 			TerminalType terminalType = usedChat.getTerminalType();
@@ -281,12 +281,12 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			
 			//propagate data about successfully performed SecMechanism in SecStatus
 			if (sw == Iso7816.SW_9000_NO_ERROR){
-				Oid terminalTypeOid = usedChat != null ? usedChat.getObjectIdentifier(): null;
+				Oid terminalTypeOid = usedChat != null ? usedChat.getTerminalType().getAsOid(): null;
 				PaceMechanism paceMechanism = new PaceMechanism(passwordObject, compEphermeralPublicKey, terminalTypeOid);
 				
 				if (usedChat != null){
 					HashMap<Oid, Authorization> authorizations = new HashMap<>();
-					authorizations.put(usedChat.getObjectIdentifier(), usedChat.getRelativeAuthorization());
+					authorizations.put(usedChat.getTerminalType().getAsOid(), usedChat.getRelativeAuthorization());
 					AuthorizationStore authorizationStore = new AuthorizationStore(authorizations);
 					ConfinedAuthorizationMechanism authMechanism = new ConfinedAuthorizationMechanism(authorizationStore);
 					processingData.addUpdatePropagation(this, "Security status updated with authorization mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanism));
