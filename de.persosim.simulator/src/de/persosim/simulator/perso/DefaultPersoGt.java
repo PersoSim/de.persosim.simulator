@@ -3,9 +3,7 @@ package de.persosim.simulator.perso;
 import java.io.File;
 
 import org.globaltester.PlatformHelper;
-import org.osgi.framework.BundleContext;
 
-import de.persosim.simulator.Activator;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
@@ -38,19 +36,21 @@ public class DefaultPersoGt extends Profile01 {
 	
 	@Override
 	protected void addTaTrustPoints(MasterFile mf) throws CertificateNotParseableException, AccessDeniedException {
-		BundleContext bundleContext = Activator.getContext();
-		
-		String bundleName = bundleContext.getBundle().getSymbolicName();
 		String fileNameCvcaIs = "personalization/gtCertificates/CFG.DFLT.EAC.IS/CVCA_Cert_01.cvcert";
 		String fileNameCvcaAt = "personalization/gtCertificates/CFG.DFLT.EAC.AT/CVCA_Cert_01.cvcert";
 		String fileNameCvcaSt = "personalization/gtCertificates/CFG.DFLT.EAC.ST/CVCA_Cert_01.cvcert";
-		File cvcaIs = PlatformHelper.getFileFromBundle(bundleName, fileNameCvcaIs, bundleContext);
-		File cvcaAt = PlatformHelper.getFileFromBundle(bundleName, fileNameCvcaAt, bundleContext);
-		File cvcaSt = PlatformHelper.getFileFromBundle(bundleName, fileNameCvcaSt, bundleContext);
 
-		byte[] cvcaIsData = PlatformHelper.readFromFile(cvcaIs.getAbsolutePath());
-		byte[] cvcaAtData = PlatformHelper.readFromFile(cvcaAt.getAbsolutePath());
-		byte[] cvcaStData = PlatformHelper.readFromFile(cvcaSt.getAbsolutePath());
+		File cvcaIs = new File(fileNameCvcaIs);
+		File cvcaAt = new File(fileNameCvcaAt);
+		File cvcaSt = new File(fileNameCvcaSt);
+
+		String absolutePathCvcaIs = cvcaIs.getAbsolutePath().replace(".test", "");
+		String absolutePathCvcaAt = cvcaAt.getAbsolutePath().replace(".test", "");
+		String absolutePathCvcaSt = cvcaSt.getAbsolutePath().replace(".test", "");
+
+		byte[] cvcaIsData = PlatformHelper.readFromFile(absolutePathCvcaIs);
+		byte[] cvcaAtData = PlatformHelper.readFromFile(absolutePathCvcaAt);
+		byte[] cvcaStData = PlatformHelper.readFromFile(absolutePathCvcaSt);
 
 		ConstructedTlvDataObject cvcaIsTlv = new ConstructedTlvDataObject(cvcaIsData);
 		ConstructedTlvDataObject cvcaAtTlv = new ConstructedTlvDataObject(cvcaAtData);
