@@ -1,7 +1,5 @@
 package de.persosim.simulator.perso;
 
-import java.io.File;
-
 import org.globaltester.PlatformHelper;
 
 import de.persosim.simulator.cardobjects.MasterFile;
@@ -40,13 +38,11 @@ public class DefaultPersoGt extends Profile01 {
 		String fileNameCvcaAt = "personalization/gtCertificates/CFG.DFLT.EAC.AT/CVCA_Cert_01.cvcert";
 		String fileNameCvcaSt = "personalization/gtCertificates/CFG.DFLT.EAC.ST/CVCA_Cert_01.cvcert";
 
-		File cvcaIs = new File(fileNameCvcaIs);
-		File cvcaAt = new File(fileNameCvcaAt);
-		File cvcaSt = new File(fileNameCvcaSt);
-
-		String absolutePathCvcaIs = cvcaIs.getAbsolutePath().replace(".test", "");
-		String absolutePathCvcaAt = cvcaAt.getAbsolutePath().replace(".test", "");
-		String absolutePathCvcaSt = cvcaSt.getAbsolutePath().replace(".test", "");
+		String id = "de.persosim.simulator";
+		
+		String absolutePathCvcaIs = PlatformHelper.getFileFromPseudoBundle(id, id, fileNameCvcaIs).getAbsolutePath();
+		String absolutePathCvcaAt = PlatformHelper.getFileFromPseudoBundle(id, id, fileNameCvcaAt).getAbsolutePath();
+		String absolutePathCvcaSt = PlatformHelper.getFileFromPseudoBundle(id, id, fileNameCvcaSt).getAbsolutePath();
 
 		byte[] cvcaIsData = PlatformHelper.readFromFile(absolutePathCvcaIs);
 		byte[] cvcaAtData = PlatformHelper.readFromFile(absolutePathCvcaAt);

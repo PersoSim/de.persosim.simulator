@@ -1,7 +1,5 @@
 package de.persosim.simulator.perso;
 
-import java.io.File;
-
 import org.globaltester.PlatformHelper;
 
 import de.persosim.simulator.cardobjects.MasterFile;
@@ -19,8 +17,8 @@ public class DefaultPersoTestPki extends DefaultPersonalization {
 	protected void addTaTrustPoints(MasterFile mf) throws AccessDeniedException, CertificateNotParseableException {
 		// use BSI Test-PKI CVCA root certificate
 		String fileNameCvcaAt = "personalization/gtCertificates/DETESTeID00005.cvcert";
-		File cvcaAt = new File(fileNameCvcaAt);
-		String absolutePathCvcaAt = cvcaAt.getAbsolutePath().replace(".test", "");
+		String id = "de.persosim.simulator";
+		String absolutePathCvcaAt = PlatformHelper.getFileFromPseudoBundle(id, id, fileNameCvcaAt).getAbsolutePath();
 		byte[] cvcaAtData = PlatformHelper.readFromFile(absolutePathCvcaAt);
 		
 		ConstructedTlvDataObject cvcaAtTlv = new ConstructedTlvDataObject(cvcaAtData);
