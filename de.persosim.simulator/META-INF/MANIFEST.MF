@@ -40,4 +40,5 @@ Require-Bundle: org.globaltester.cryptoprovider,
  org.eclipse.equinox.registry,
  org.globaltester.simulator,
  org.globaltester.logging,
- org.globaltester.lib.xstream
+ org.globaltester.lib.xstream,
+ org.globaltester.base
