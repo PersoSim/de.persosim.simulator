@@ -64,60 +64,68 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 		byte p1 = cmdApdu.getP1();
 		byte p2 = cmdApdu.getP2();
 		
-		CardFile file = null;
 		
-		try {
-			switch (p1) {
-			case P1_SELECT_FILE_MF_DF_EF:
-				if ((p2 & P2_SELECT_OCCURRENCE_MASK) == P2_SELECT_OCCURRENCE_FIRST) {
-					if ((cmdApdu.getCommandData().isEmpty())
-							|| ((cmdApdu.getNc() == 2 && Arrays.equals(cmdApdu.getCommandData().toByteArray(),
-									new byte[] { 0x3F, 0x00 })))) {
-						// special file identifier for the master file (absent or 3f00)
-						file = cardState.getMasterFile();
-					} else {
-						file = getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState),
-								new FileIdentifier(
-										Utils.getShortFromUnsignedByteArray(cmdApdu.getCommandData().toByteArray())));
-					}
-				} else {
-					// IMPL implement handling of other file occurrence values
-					// (ISO7816 p. 38)
-					ResponseApdu resp = new ResponseApdu(SW_6A81_FUNC_NOT_SUPPORTED);
-					this.processingData.updateResponseAPDU(this,
-							"file occurence selector not supported", resp);
-				}
-				break;
-			case P1_SELECT_FILE_EF_UNDER_CURRENT_DF:
-				file = getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState),
-						new FileIdentifier(Utils
-								.getShortFromUnsignedByteArray(cmdApdu.getCommandData().toByteArray())));
-				break;
-			case P1_SELECT_FILE_DF_BY_NAME:
-				file = getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState),
-						new DedicatedFileIdentifier(cmdApdu.getCommandData().toByteArray()));
-				// IMPL support multiple calls selecting files successively (ISO7816-4
-				// 7.1.1)
-				break;
+		if ((p2&0xF0)== 0) { //special check for testcase ISO_D_04, reject unspecified bits
 
-			}
+			CardFile file = null;
 			
-			if (file != null){
-				selectFile(file);
-				TlvDataObjectContainer fco = getFileControlInformation(file, p2);
-				ResponseApdu resp = new ResponseApdu(fco, SW_9000_NO_ERROR);
+			try {
+				switch (p1) {
+				case P1_SELECT_FILE_MF_DF_EF:
+					if ((p2 & P2_SELECT_OCCURRENCE_MASK) == P2_SELECT_OCCURRENCE_FIRST) {
+						if ((cmdApdu.getCommandData().isEmpty())
+								|| ((cmdApdu.getNc() == 2 && Arrays.equals(cmdApdu.getCommandData().toByteArray(),
+										new byte[] { 0x3F, 0x00 })))) {
+							// special file identifier for the master file (absent or 3f00)
+							file = cardState.getMasterFile();
+						} else {
+							file = getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState),
+									new FileIdentifier(
+											Utils.getShortFromUnsignedByteArray(cmdApdu.getCommandData().toByteArray())));
+						}
+					} else {
+						// IMPL implement handling of other file occurrence values
+						// (ISO7816 p. 38)
+						ResponseApdu resp = new ResponseApdu(SW_6A81_FUNC_NOT_SUPPORTED);
+						this.processingData.updateResponseAPDU(this,
+								"file occurence selector not supported", resp);
+					}
+					break;
+				case P1_SELECT_FILE_EF_UNDER_CURRENT_DF:
+					file = getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState),
+							new FileIdentifier(Utils
+									.getShortFromUnsignedByteArray(cmdApdu.getCommandData().toByteArray())));
+					break;
+				case P1_SELECT_FILE_DF_BY_NAME:
+					file = getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState),
+							new DedicatedFileIdentifier(cmdApdu.getCommandData().toByteArray()));
+					// IMPL support multiple calls selecting files successively (ISO7816-4
+					// 7.1.1)
+					break;
+	
+				}
+				
+				if (file != null){
+					selectFile(file);
+					TlvDataObjectContainer fco = getFileControlInformation(file, p2);
+					ResponseApdu resp = new ResponseApdu(fco, SW_9000_NO_ERROR);
+					this.processingData.updateResponseAPDU(this,
+							"file selected successfully", resp);
+				}
+				
+			} catch (FileNotFoundException e) {
+				ResponseApdu resp = new ResponseApdu(SW_6A82_FILE_NOT_FOUND);
 				this.processingData.updateResponseAPDU(this,
-						"file selected successfully", resp);
+						"file not selected (not found)", resp);
+			} catch (NullPointerException e) {
+				ResponseApdu resp = new ResponseApdu(SW_6700_WRONG_LENGTH);
+				this.processingData.updateResponseAPDU(this,
+						"file identifier required in command datafield", resp);
 			}
-			
-		} catch (FileNotFoundException e) {
-			ResponseApdu resp = new ResponseApdu(SW_6A82_FILE_NOT_FOUND);
+		} else {
+			ResponseApdu resp = new ResponseApdu(SW_6A81_FUNC_NOT_SUPPORTED);
 			this.processingData.updateResponseAPDU(this,
-					"file not selected (not found)", resp);
-		} catch (NullPointerException e) {
-			ResponseApdu resp = new ResponseApdu(SW_6700_WRONG_LENGTH);
-			this.processingData.updateResponseAPDU(this,
-					"file identifier required in command datafield", resp);
+					"file occurence selector not supported", resp);			
 		}
 
 		processingData.addUpdatePropagation(this,
