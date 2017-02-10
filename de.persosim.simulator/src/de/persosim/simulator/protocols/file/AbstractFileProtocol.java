@@ -572,7 +572,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 						"file too short", resp);
 			} catch (AccessDeniedException e) {
 				ResponseApdu resp = new ResponseApdu(
-						Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+						Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
 				this.processingData.updateResponseAPDU(this,
 						"binary file read access denied", resp);
 			}
