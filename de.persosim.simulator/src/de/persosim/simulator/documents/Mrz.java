@@ -880,7 +880,7 @@ public abstract class Mrz {
 	 * @throws InvalidParameterException
 	 */
 	public void setDocNumber(String newDocNumber) {
-		if (!newDocNumber.matches("^[a-zA-Z0-9 ]+$")) {
+		if (!newDocNumber.matches("^[a-zA-Z0-9 <]+$")) {
 			throw new InvalidParameterException("Document number must only consist of characters, numbers and spaces.");
 		}
 			
