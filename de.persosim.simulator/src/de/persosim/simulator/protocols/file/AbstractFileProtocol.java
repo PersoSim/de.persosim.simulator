@@ -545,9 +545,18 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 					TlvValue toSend = null;
 	
 					if (isOddInstruction) {
-						toSend = new TlvDataObjectContainer(
-								new PrimitiveTlvDataObject(new TlvTag(
-										ODDINS_RESPONSE_TAG), data));
+						
+						int includedDataLegnth = data.length;
+						
+						do {
+							toSend = new TlvDataObjectContainer(
+									new PrimitiveTlvDataObject(new TlvTag(
+											ODDINS_RESPONSE_TAG), Arrays.copyOf(data, includedDataLegnth)));
+							includedDataLegnth--;
+						} while (toSend.getLength()> ne) ;
+						
+						
+						
 					} else {
 						toSend = new TlvValuePlain(data);
 					}

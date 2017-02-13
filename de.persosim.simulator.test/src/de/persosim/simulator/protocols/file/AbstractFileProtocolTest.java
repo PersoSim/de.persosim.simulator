@@ -367,12 +367,11 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		// check results
 		TlvValue expected = new TlvDataObjectContainer(
 				new PrimitiveTlvDataObject(new TlvTag((byte) 0x53),
-						Arrays.copyOfRange(elementaryFileContent, 0, 4)));
+						Arrays.copyOfRange(elementaryFileContent, 0, 2)));
 		assertTrue("Statusword is not 9000", processingData.getResponseApdu()
 				.getStatusWord() == Iso7816.SW_9000_NO_ERROR);
-		assertArrayEquals("file content not as expected", processingData
-				.getResponseApdu().getData().toByteArray(),
-				expected.toByteArray());
+		assertArrayEquals("file content not as expected", expected.toByteArray(), processingData
+				.getResponseApdu().getData().toByteArray());
 	}
 
 	/**
@@ -396,12 +395,12 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		// check results
 		TlvValue expected = new TlvDataObjectContainer(
 				new PrimitiveTlvDataObject(new TlvTag((byte) 0x53),
-						Arrays.copyOfRange(elementaryFileContent, 0, 4)));
+						Arrays.copyOfRange(elementaryFileContent, 0, 2)));
 		assertTrue("Statusword is not 9000", processingData.getResponseApdu()
 				.getStatusWord() == Iso7816.SW_9000_NO_ERROR);
-		assertArrayEquals("file content not as expected", processingData
-				.getResponseApdu().getData().toByteArray(),
-				expected.toByteArray());
+		assertArrayEquals("file content not as expected",
+				expected.toByteArray(), processingData
+				.getResponseApdu().getData().toByteArray());
 	}
 
 	/**
