@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.test.PersoSimTestCase;
+import de.persosim.simulator.utils.HexString;
 
 public class MrzAuthObjectTest extends PersoSimTestCase {
 
@@ -26,6 +27,6 @@ public class MrzAuthObjectTest extends PersoSimTestCase {
 	
 	@Test
 	public void testGetPassword(){
-		assertArrayEquals(new byte [] {(byte) 0x89,0x4D,0x03,(byte) 0xF1,0x48,(byte) 0xC6,0x26,0x5E,(byte) 0x89,(byte) 0x84,0x5B,0x21,(byte) 0x88,0x56,(byte) 0xEA,0x34,(byte) 0xD0,0x0E,(byte) 0xF8,(byte) 0xE8}, authObject.getPassword());
+		assertArrayEquals(HexString.toByteArray("894D03F148C6265E89845B218856EA34D00EF8E8"), authObject.getPassword());
 	}
 }
