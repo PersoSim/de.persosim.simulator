@@ -76,7 +76,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 					
 					//propagate changes in SM status
 					SmDataProviderGenerator smDataProviderGenerator = dataProvider.getSmDataProviderGenerator();
-					processingData.addUpdatePropagation(this, "init SM after successful PACE", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, smDataProviderGenerator));
+					processingData.addUpdatePropagation(this, "init SM", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, smDataProviderGenerator));
 					
 					log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogTags.APDU_TAG_DEC_IN);
 					log(this, "successfully processed ascending secured APDU", TRACE);
