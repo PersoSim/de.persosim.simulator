@@ -56,6 +56,27 @@ public class BitFieldTest extends PersoSimTestCase {
 	}
 	
 	@Test
+	public void testConstructorByteArrayNoBitNumber(){
+		BitField field = new BitField(new byte [] {0b01001011, 0b00001111});
+		assertTrue(field.getBit(0));
+		assertTrue(field.getBit(1));
+		assertFalse(field.getBit(2));
+		assertTrue(field.getBit(3));
+		assertFalse(field.getBit(4));
+		assertFalse(field.getBit(5));
+		assertTrue(field.getBit(6));
+		assertFalse(field.getBit(7));
+		assertTrue(field.getBit(8));
+		assertTrue(field.getBit(9));
+		assertTrue(field.getBit(10));
+		assertTrue(field.getBit(11));
+		assertFalse(field.getBit(12));
+		assertFalse(field.getBit(13));
+		assertFalse(field.getBit(14));
+		assertFalse(field.getBit(15));
+	}
+	
+	@Test
 	public void testConstructorSetBits(){
 		BitField field = new BitField(10, 2, 5);
 		assertFalse(field.getBit(0));

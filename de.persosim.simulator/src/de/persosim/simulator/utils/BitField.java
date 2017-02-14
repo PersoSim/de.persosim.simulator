@@ -89,6 +89,17 @@ public class BitField {
 					(((bitsToStore[i / 8] & 0xFF) >>> i % 8) & 0b00000001) == 1);
 		}
 	}
+	
+	/**
+	 * This constructor takes the given byte array and parses it beginning at
+	 * element 0 and the LSB of this element up to the end of the given array.
+	 * 
+	 * @param bitsToStore
+	 *            source data
+	 */	
+	public BitField(byte [] bitsToStore){
+		this(8 * bitsToStore.length, bitsToStore);
+	}
 
 	/**
 	 * This constructor takes the given boolean array and parses it beginning at
