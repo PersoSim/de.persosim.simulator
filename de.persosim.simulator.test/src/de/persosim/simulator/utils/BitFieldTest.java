@@ -150,6 +150,28 @@ public class BitFieldTest extends PersoSimTestCase {
 	}
 	
 	@Test
+	public void testXor(){
+		//create test data
+		BitField expected = new BitField(20, HexString.toByteArray("FFFF0F"));
+		
+		//call mut
+		BitField result = field1.xor(field2);
+		
+		assertEquals(expected, result);
+	}
+	
+	@Test
+	public void testNot(){
+		//create test data
+		BitField expected = new BitField(16,  new byte []{0, (byte) 0b10101010});
+		
+		//call mut
+		BitField result = field1.not();
+		
+		assertEquals(expected, result);
+	}
+	
+	@Test
 	public void testGetNumberOfBits(){
 		assertEquals(16, field1.getNumberOfBits());
 	}

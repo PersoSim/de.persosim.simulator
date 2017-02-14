@@ -138,6 +138,22 @@ public class BitField {
 	}
 
 	/**
+	 * Calculate an bitwise xor over this and the given {@link BitField}.
+	 * 
+	 * @param field
+	 * @return a new {@link BitField} containing the result
+	 */
+	public BitField xor(BitField field) {
+		boolean[] result = new boolean[Math.max(getNumberOfBits(), field.getNumberOfBits())];
+
+		for (int i = 0; i < result.length; i++) {
+			result[i] = getZeroPaddedBit(i) ^ field.getZeroPaddedBit(i);
+		}
+
+		return new BitField(result);
+	}
+
+	/**
 	 * Calculate an bitwise and over this and the given {@link BitField}.
 	 * 
 	 * @param field
@@ -148,6 +164,21 @@ public class BitField {
 
 		for (int i = 0; i < result.length; i++) {
 			result[i] = getZeroPaddedBit(i) & field.getZeroPaddedBit(i);
+		}
+
+		return new BitField(result);
+	}
+
+	/**
+	 * Calculate an bitwise not over this {@link BitField}.
+	 * 
+	 * @return a new {@link BitField} containing the result
+	 */
+	public BitField not() {
+		boolean[] result = new boolean [this.getNumberOfBits()];
+
+		for (int i = 0; i < result.length; i++) {
+			result[i] = ! getZeroPaddedBit(i);
 		}
 
 		return new BitField(result);
