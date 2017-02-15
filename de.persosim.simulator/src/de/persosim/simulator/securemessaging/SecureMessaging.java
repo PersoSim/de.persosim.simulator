@@ -190,27 +190,28 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		if((dataObject != null) && (dataObject.getLength() > 0)) {
 			log(this, "APDU to be sent contains data", TRACE);
 			
-			byte[] data, postpaddedData, paddedData, encryptedData;
-			PrimitiveTlvDataObject primitive87;
-			
-			data = dataObject.toByteArray();
+			byte[] data = dataObject.toByteArray();
 			
 			log(this, "data to be padded is: " + HexString.encode(data), TRACE);
 			
-			paddedData = this.padData(data);
+			byte[] paddedData = this.padData(data);
 			
 			log(this, "padded data is: " + HexString.encode(paddedData), DEBUG);
 			log(this, "block size is: " + dataProvider.getCipher().getBlockSize(), DEBUG);
 			
-			encryptedData = CryptoSupport.encrypt(dataProvider.getCipher(), paddedData, dataProvider.getKeyEnc(), dataProvider.getCipherIv());
+			byte[] encryptedData = CryptoSupport.encrypt(dataProvider.getCipher(), paddedData, dataProvider.getKeyEnc(), dataProvider.getCipherIv());
 			log(this, "encrypted data is: " + HexString.encode(encryptedData), DEBUG);
 			
-			postpaddedData = new byte[paddedData.length + 1];
-			System.arraycopy(encryptedData, 0, postpaddedData, 1, encryptedData.length);
-			postpaddedData[0] = (byte) 0x01;
-			
-			primitive87 = new PrimitiveTlvDataObject(TAG_87, postpaddedData);
-			container.addTlvDataObject(primitive87);
+			// check for odd instruction byte
+			if(((byte) (processingData.getCommandApdu().getIns() & (byte) 0x01)) == (byte) 0x01) {
+				container.addTlvDataObject(new PrimitiveTlvDataObject(TAG_85, encryptedData));
+			} else {
+				byte[] postpaddedData = new byte[paddedData.length + 1];
+				System.arraycopy(encryptedData, 0, postpaddedData, 1, encryptedData.length);
+				postpaddedData[0] = (byte) 0x01;
+				
+				container.addTlvDataObject(new PrimitiveTlvDataObject(TAG_87, postpaddedData));
+			}
 		} else{
 			log(this, "APDU to be sent contains NO data", DEBUG);
 		}
