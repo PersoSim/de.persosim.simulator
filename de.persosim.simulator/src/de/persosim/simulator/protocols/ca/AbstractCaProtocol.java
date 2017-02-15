@@ -193,7 +193,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			//get commandDataContainer
 			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 			
-			//extract Session Contect ID from APDU
+			//extract Session Context ID from APDU
 			sessionContextIdentifier = extractSessionContextId();
 			
 			caOid = extractCaOidFromCommandData(commandData);
