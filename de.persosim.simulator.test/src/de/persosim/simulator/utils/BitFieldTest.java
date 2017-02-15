@@ -42,7 +42,9 @@ public class BitFieldTest extends PersoSimTestCase {
 	
 	@Test
 	public void testConstructorByteArray(){
-		BitField field = new BitField(10, new byte [] {0b01001011, 0b00001111});
+		byte [] input = new byte [] {0b01001011, 0b00001111};
+		byte [] expected = new byte [] {0b01001011, 0b00000011};
+		BitField field = new BitField(10, input);
 		assertTrue(field.getBit(0));
 		assertTrue(field.getBit(1));
 		assertFalse(field.getBit(2));
@@ -53,6 +55,7 @@ public class BitFieldTest extends PersoSimTestCase {
 		assertFalse(field.getBit(7));
 		assertTrue(field.getBit(8));
 		assertTrue(field.getBit(9));
+		assertArrayEquals(expected, field.getAsZeroPaddedByteArray());
 	}
 	
 	@Test
@@ -124,8 +127,16 @@ public class BitFieldTest extends PersoSimTestCase {
 	}
 	
 	@Test
+	public void testGetAsZeroPaddedByteArrayFullBytes(){
+		assertArrayEquals(field2Content, new BitField(field2Content).getAsZeroPaddedByteArray());
+	}
+	
+	@Test
 	public void testGetAsZeroPaddedByteArray(){
-		assertArrayEquals(field2Content, field2.getAsZeroPaddedByteArray());
+		byte [] input = new byte [] {0b01001011, 0b00001111};
+		byte [] expected = new byte [] {0b01001011, 0b00000011};
+		BitField field = new BitField(10, input);
+		assertArrayEquals(expected, field.getAsZeroPaddedByteArray());
 	}
 	
 	@Test

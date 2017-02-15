@@ -266,12 +266,13 @@ public class BitField {
 			length++;
 		}
 		byte[] result = new byte[length];
-		for (int i = 0; i < getNumberOfBits(); i++) {
-			result[i / 8] |= (byte) (getBit(i) ? 1 : 0);
+		for (int i = 0; i < length * 8; i++) {
+			result[i / 8] |= (byte) (getZeroPaddedBit(i) ? 0x80 : 0);
 
-			if (!(i == getNumberOfBits() - 1)) {
-				result[i / 8] = (byte) (result[i / 8] << 1);
-			}
+			if ((i + 1) % 8 != 0){
+				result[i / 8] = (byte) (result[i / 8] >> 1);
+				result[i / 8] &= 0x7F;	
+			} 
 
 		}
 		return result;
