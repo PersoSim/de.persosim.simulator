@@ -72,14 +72,16 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		if(processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu) {
 			if (((IsoSecureMessagingCommandApdu) processingData.getCommandApdu()).getSecureMessaging() != SM_OFF_OR_NO_INDICATION) {
 				if (dataProvider != null) {
-					processIncomingSmApdu();
-					
-					//propagate changes in SM status
-					SmDataProviderGenerator smDataProviderGenerator = dataProvider.getSmDataProviderGenerator();
-					processingData.addUpdatePropagation(this, "init SM", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, smDataProviderGenerator));
-					
-					log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogTags.APDU_TAG_DEC_IN);
-					log(this, "successfully processed ascending secured APDU", TRACE);
+					if (processIncomingSmApdu()){
+						//propagate changes in SM status
+						SmDataProviderGenerator smDataProviderGenerator = dataProvider.getSmDataProviderGenerator();
+						processingData.addUpdatePropagation(this, "init SM", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, smDataProviderGenerator));
+						
+						log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogTags.APDU_TAG_DEC_IN);
+						log(this, "successfully processed ascending secured APDU", TRACE);
+					} else {
+						discardSecureMessagingSession();
+					}
 					return;
 				} else {
 					log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogTags.APDU_TAG_DEC_IN);
@@ -234,8 +236,9 @@ public class SecureMessaging extends Layer implements TlvConstants{
 	
 	/**
 	 * This method performs the SM operations for incoming APDUs
+	 * @return if the secure messaging can be continued
 	 */
-	public void processIncomingSmApdu() {
+	public boolean processIncomingSmApdu() {
 		log(this, "start processing SM APDU", TRACE);
 		dataProvider.nextIncoming();
 		CommandApdu smApdu = processingData.getCommandApdu();
@@ -254,6 +257,8 @@ public class SecureMessaging extends Layer implements TlvConstants{
 				//propagate new CommandAPDU
 				processingData.updateCommandApdu(this, "SM APDU extracted", plainCommand);
 				
+				log(this, "completed processing SM APDU");
+				return true;
 			} else {
 				log(this, "verification of mac: failed", ERROR);
 				
@@ -269,8 +274,8 @@ public class SecureMessaging extends Layer implements TlvConstants{
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6988_INCORRECT_SM_DATA_OBJECTS);
 			processingData.updateResponseAPDU(this, "decoding sm APDU failed", resp);
 		}
-		
-		log(this, "completed processing SM APDU");
+		log(this, "completed processing SM APDU with secure messaging failure");
+		return false;
 	}
 	
 	/**
