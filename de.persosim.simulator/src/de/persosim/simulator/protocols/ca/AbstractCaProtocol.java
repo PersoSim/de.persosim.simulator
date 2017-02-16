@@ -462,7 +462,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			 * Protocol either successfully completed or failed.
 			 * In either case protocol is completed.
 			 */
-			processingData.addUpdatePropagation(this, "Command General Authenticate successfully processed - Protocol CA completed", new ProtocolUpdate(true));
+			processingData.addUpdatePropagation(this, "Command General Authenticate successfully processed - Protocol CAv" + getVersion() + " completed", new ProtocolUpdate(true));
 		} catch (ProcessingException e) {
 			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
