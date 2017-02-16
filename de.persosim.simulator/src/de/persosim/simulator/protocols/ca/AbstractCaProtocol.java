@@ -413,13 +413,21 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 		
 		//retrieve PCD's public key
-		TlvDataObject tlvObject = commandData.getTlvDataObject(new TlvPath(new TlvTag((byte) 0x7C), new TlvTag((byte) 0x80)));
+		TlvDataObject tlvObject = commandData.getTlvDataObject(getPathToPublicKeyTag());
 		byte[] pcdPublicKeyMaterial = tlvObject.getValueField();
 		
 		keyAgreementAlgorithmName = caDomainParameters.getKeyAgreementAlgorithm();
 		log(this, "PCD's ephemeral public " + keyAgreementAlgorithmName + " key material of " + pcdPublicKeyMaterial.length + " bytes length is: " + HexString.encode(pcdPublicKeyMaterial), TRACE);
 		
 		return pcdPublicKeyMaterial;
+	}
+	
+	/**
+	 * This method returns the {@link TlvPath} referencing the public key reference tag in a command data object.
+	 * @return the {@link TlvPath} referencing the public key reference tag in a command data object.
+	 */
+	public TlvPath getPathToPublicKeyTag() {
+		return new TlvPath(new TlvTag((byte) 0x7C), new TlvTag((byte) 0x80));
 	}
 	
 	/**
