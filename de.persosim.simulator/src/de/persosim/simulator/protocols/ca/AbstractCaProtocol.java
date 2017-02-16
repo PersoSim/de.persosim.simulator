@@ -217,7 +217,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			/* CA domain parameters */
 			caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());
 			
-			this.cryptoSupport = caOid.getCryptoSupport();
+			cryptoSupport = caOid.getCryptoSupport();
 			
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 			processingData.updateResponseAPDU(this, "Command Set AT successfully processed", resp);
