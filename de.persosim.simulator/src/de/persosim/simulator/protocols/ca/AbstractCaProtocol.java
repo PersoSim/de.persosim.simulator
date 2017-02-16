@@ -45,6 +45,7 @@ import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
+import de.persosim.simulator.secstatus.AbstractSecMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
@@ -172,8 +173,8 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	 * This method searches for the Session Context ID in the MSE: SetAT
 	 * @return the ID as int or -1 if no ID was attached to the Command APDU
 	 */
-	protected int extractSessionContextId(){
-		ConstructedTlvDataObject constructedTlvContextIdentifier = (ConstructedTlvDataObject) processingData.getCommandApdu().getCommandDataObjectContainer().getTlvDataObject(TlvConstants.TAG_E0);
+	protected int extractSessionContextId(TlvDataObjectContainer commandData){
+		ConstructedTlvDataObject constructedTlvContextIdentifier = (ConstructedTlvDataObject) commandData.getTlvDataObject(TlvConstants.TAG_E0);
 		TlvDataObject tlvContextIdentifier = null;
 		
 		if (constructedTlvContextIdentifier != null)	{
@@ -194,7 +195,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 			
 			//extract Session Context ID from APDU
-			sessionContextIdentifier = extractSessionContextId();
+			sessionContextIdentifier = extractSessionContextId(commandData);
 			
 			caOid = extractCaOidFromCommandData(commandData);
 			
@@ -447,7 +448,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			
 			storeCurrentSessionContext();
 			
-			ChipAuthenticationMechanism mechanism = new ChipAuthenticationMechanism(caOid, keyReference, ephemeralPublicKeyPcd);
+			AbstractSecMechanism mechanism = createSecMechanism(caOid, keyReference, ephemeralPublicKeyPcd);
 			processingData.addUpdatePropagation(this, "Updated security status with chip authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
 			
 			TlvValue responseData = prepareResponseData(rPiccNonce, authenticationTokenTpicc);
@@ -467,6 +468,17 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 		}
+	}
+	
+	/**
+	 * This method creates the {@link AbstractSecMechanism} to be set by this protocol.
+	 * @param caOid the used CA OID
+	 * @param keyReference the used PICC's public key reference
+	 * @param ephemeralPublicKeyPcd the used PCD's public key
+	 * @return the resulting container object
+	 */
+	public AbstractSecMechanism createSecMechanism(CaOid caOid, int keyReference, PublicKey ephemeralPublicKeyPcd) {
+		return new ChipAuthenticationMechanism(caOid, keyReference, ephemeralPublicKeyPcd);
 	}
 	
 	/**
