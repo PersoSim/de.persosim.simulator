@@ -1,6 +1,7 @@
 package de.persosim.simulator.perso;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,6 +34,7 @@ public abstract class ArtifactPersonalizationTest extends PersonalizationTest {
 		LinkedList<Byte> currentContext = new LinkedList<Byte>();
 		LinkedList<Byte> previousContext = new LinkedList<Byte>();
 		
+		assertTrue("File for comparison does not exist: " + previousFile.getAbsolutePath(), previousFile.exists());
 		long positionInFile = Utils.checkFilesForDifferences(new FileInputStream(previousFile), new FileInputStream(currentlyMarshalledFile), contextSize, previousContext, currentContext);
 
 		assertEquals("Found difference at byte " + positionInFile + ", " + contextSize + " bytes context provided.", Utils.toString(previousContext), Utils.toString(currentContext));
