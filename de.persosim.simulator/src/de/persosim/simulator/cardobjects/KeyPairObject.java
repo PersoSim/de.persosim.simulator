@@ -15,15 +15,29 @@ public class KeyPairObject extends KeyObject {
 	
 	public KeyPairObject() {
 	}
-	
-	public KeyPairObject(KeyPair keyPair, KeyIdentifier identifier) {
-		this(keyPair, identifier, false);
-	}
 		
 	public KeyPairObject(KeyPair keyPair, KeyIdentifier identifier, boolean privilegedOnly) {
 		this.primaryIdentifier = identifier;
 		this.keyPair = keyPair;
 		this.privilegedOnly = privilegedOnly;
+	}
+	
+	public KeyPairObject(KeyPair keyPair, KeyIdentifier identifier) {
+		this(keyPair, identifier, false);
+	}
+	
+	public KeyPairObject(KeyPair keyPair, KeyIdentifier identifier, boolean privilegedOnly, CardObjectIdentifier... furtherIdentifiers) {
+		this(keyPair, identifier, privilegedOnly);
+		
+		if(furtherIdentifiers != null) {
+			for(CardObjectIdentifier coi: furtherIdentifiers) {
+				this.furtherIdentifiers.add(coi);
+			}
+		}
+	}
+	
+	public KeyPairObject(KeyPair keyPair, KeyIdentifier identifier, CardObjectIdentifier... furtherIdentifiers) {
+		this(keyPair, identifier, false, furtherIdentifiers);
 	}
 	
 	public KeyPair getKeyPair() {
