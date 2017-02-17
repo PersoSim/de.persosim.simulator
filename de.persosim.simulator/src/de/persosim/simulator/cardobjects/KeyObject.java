@@ -3,7 +3,7 @@ package de.persosim.simulator.cardobjects;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class KeyObject extends AbstractCardObject {
+public abstract class KeyObject extends AbstractCardObject {
 	
 	protected KeyIdentifier primaryIdentifier;
 	
