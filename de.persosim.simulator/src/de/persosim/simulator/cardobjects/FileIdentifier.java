@@ -22,7 +22,19 @@ public class FileIdentifier extends AbstractCardObjectIdentifier {
 	 */
 	public FileIdentifier(int identifier) {
 		this.identifier = identifier;
-	}/**
+	}
+	
+	/**
+	 * Constructor using a byte array.
+	 * 
+	 * @param identifier
+	 *            to be matched
+	 */
+	public FileIdentifier(byte [] identifier) {
+		this.identifier = Utils.getIntFromUnsignedByteArray(identifier);
+	}
+	
+	/**
 	 * @return the file identifier
 	 */
 	public int getFileIdentifier() {
