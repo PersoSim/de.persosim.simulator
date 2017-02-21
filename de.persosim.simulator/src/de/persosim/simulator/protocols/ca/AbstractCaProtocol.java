@@ -375,13 +375,19 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	 */
 	protected TlvValue prepareResponseData(byte[] rPiccNonce, byte[] authenticationTokenTpicc) {
 		//create and prepare response APDU
-		PrimitiveTlvDataObject primitive81 = new PrimitiveTlvDataObject(TAG_81, rPiccNonce);
-		log(this, "primitive tag 81 is: " + primitive81, TRACE);
-		PrimitiveTlvDataObject primitive82 = new PrimitiveTlvDataObject(TAG_82, authenticationTokenTpicc);
-		log(this, "primitive tag 82 is: " + primitive82, TRACE);
 		ConstructedTlvDataObject constructed7C = new ConstructedTlvDataObject(TAG_7C);
-		constructed7C.addTlvDataObject(primitive81);
-		constructed7C.addTlvDataObject(primitive82);
+		
+		if(rPiccNonce != null) {
+			PrimitiveTlvDataObject primitive81 = new PrimitiveTlvDataObject(TAG_81, rPiccNonce);
+			log(this, "primitive tag 81 is: " + primitive81, TRACE);
+			constructed7C.addTlvDataObject(primitive81);
+		}
+		
+		if(authenticationTokenTpicc != null) {
+			PrimitiveTlvDataObject primitive82 = new PrimitiveTlvDataObject(TAG_82, authenticationTokenTpicc);
+			log(this, "primitive tag 82 is: " + primitive82, TRACE);
+			constructed7C.addTlvDataObject(primitive82);
+		}
 		
 		log(this, "response data to be sent is: " + constructed7C, DEBUG);
 		
