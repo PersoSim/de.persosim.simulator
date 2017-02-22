@@ -421,6 +421,11 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 		//retrieve PCD's public key
 		TlvDataObject tlvObject = commandData.getTlvDataObject(getPathToPublicKeyTag());
+		
+		if(tlvObject == null) {
+			throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, "Missing required public key data");
+		}
+		
 		byte[] pcdPublicKeyMaterial = tlvObject.getValueField();
 		
 		keyAgreementAlgorithmName = caDomainParameters.getKeyAgreementAlgorithm();
