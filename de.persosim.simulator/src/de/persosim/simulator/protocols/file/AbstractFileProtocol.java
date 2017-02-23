@@ -106,6 +106,16 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 				}
 				
 				if (file != null){
+					
+					// IMPL fix workaround for missing access rights for "SELECT"
+					// Due to missing access rights for selecting files this workaround currently
+					// applies "READ" access rights instead by transparently reading a file on its
+					// selection
+					if(file instanceof ElementaryFile) {
+						ElementaryFile binaryFile = (ElementaryFile) file;
+						binaryFile.getContent();
+					}
+					
 					selectFile(file);
 					TlvDataObjectContainer fco = getFileControlInformation(file, p2);
 					ResponseApdu resp = new ResponseApdu(fco, SW_9000_NO_ERROR);
@@ -121,6 +131,10 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 				ResponseApdu resp = new ResponseApdu(SW_6700_WRONG_LENGTH);
 				this.processingData.updateResponseAPDU(this,
 						"file identifier required in command datafield", resp);
+			} catch (AccessDeniedException e) {
+				ResponseApdu resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this,
+						"file selection denied due to unsatisfied security status", resp);
 			}
 		} else {
 			ResponseApdu resp = new ResponseApdu(SW_6A81_FUNC_NOT_SUPPORTED);
