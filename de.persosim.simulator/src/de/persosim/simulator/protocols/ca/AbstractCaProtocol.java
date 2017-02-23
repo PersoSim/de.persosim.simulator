@@ -583,7 +583,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	/**
-	 * construct and add ChipAuthenticationInfo object(s)
+	 * This method constructs a ChipAuthenticationInfo object
 	 * 
 	 * ChipAuthenticationInfo ::= SEQUENCE {
      *   protocol OBJECT IDENTIFIER(
@@ -596,21 +596,47 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
      *            id-CA-ECDH-AES-CBC-CMAC-192 | 
      *            id-CA-ECDH-AES-CBC-CMAC-256),
      *   version  INTEGER, -- MUST be 1 for CAv1 or 2 for CAv2 or 3 for CAv3
-     *   keyId    INTEGER OPTIONAL
+     *   keyId    INTEGER OPTIONAL (present)
      * }
      *
-	 * @param oidBytes
-	 * @param version
-	 * @param keyId
-	 * @return
+	 * @param oidBytes the OID to use
+	 * @param version the protocol version to use
+	 * @param keyId the key ID to use
+	 * @return the constructed ChipAuthenticationInfo object
 	 */
 	public static ConstructedTlvDataObject constructChipAuthenticationInfoObject(byte[] oidBytes, byte version, int keyId) {
-		ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
-		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{version}));
+		ConstructedTlvDataObject caInfo = constructChipAuthenticationInfoObject(oidBytes, version);
 		//always set keyId even if truly optional/not mandatory
 		//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
 		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, Utils.toShortestUnsignedByteArray(keyId)));
+		return caInfo;
+	}
+	
+	
+	/**
+	 * This method constructs a ChipAuthenticationInfo object
+	 * 
+	 * ChipAuthenticationInfo ::= SEQUENCE {
+     *   protocol OBJECT IDENTIFIER(
+     *            id-CA-DH-3DES-CBC-CBC | 
+     *            id-CA-DH-AES-CBC-CMAC-128 | 
+     *            id-CA-DH-AES-CBC-CMAC-192 | 
+     *            id-CA-DH-AES-CBC-CMAC-256 | 
+     *            id-CA-ECDH-3DES-CBC-CBC |           
+     *            id-CA-ECDH-AES-CBC-CMAC-128 | 
+     *            id-CA-ECDH-AES-CBC-CMAC-192 | 
+     *            id-CA-ECDH-AES-CBC-CMAC-256),
+     *   version  INTEGER, -- MUST be 1 for CAv1 or 2 for CAv2 or 3 for CAv3
+     *   keyId    INTEGER OPTIONAL (absent)
+     * }
+     *
+	 * @param oidBytes the OID to use
+	 * @return the constructed ChipAuthenticationInfo object
+	 */
+	public static ConstructedTlvDataObject constructChipAuthenticationInfoObject(byte[] oidBytes, byte version) {
+		ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
+		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{version}));
 		return caInfo;
 	}
 
