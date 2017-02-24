@@ -202,16 +202,17 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			KeyIdentifier keyIdentifier = extractKeyIdentifierFromCommandData(commandData);
 			OidIdentifier caOidIdentifier = new OidIdentifier(caOid);
 			KeyObject keyObject = getkeyObjectForKeyIdentifier(keyIdentifier, caOidIdentifier);
+			
 			if (keyObject instanceof KeyPairObject){
 				KeyPairObject keyPairObject = (KeyPairObject) keyObject;
-				/* CA domain parameters */
 				staticKeyPairPicc = keyPairObject.getKeyPair();
-				caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());
 			} else {
 				ResponseApdu resp = new ResponseApdu(PlatformUtil.SW_4984_REFERENCE_DATA_NOT_USABLE);
 				processingData.updateResponseAPDU(this, "The domain parameters could not be extracted from the referenced key", resp);
 				return;
 			}
+			
+			caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());
 			
 			keyReference = keyObject.getPrimaryIdentifier().getInteger();
 			
