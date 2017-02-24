@@ -382,7 +382,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		byte version = (byte) 0x01;
 		byte keyId = (byte) 0x42;
 		
-		ConstructedTlvDataObject caioReceivedTlv = AbstractCaProtocol.constructChipAuthenticationInfoObject(oidBytes, version, keyId);
+		ConstructedTlvDataObject caioReceivedTlv = CaSecInfoHelper.constructChipAuthenticationInfoObject(oidBytes, version, keyId);
 		byte[] caioReceived = caioReceivedTlv.toByteArray();
 		byte[] caioExpected = HexString.toByteArray("30110609010203040506070809020101020142");
 		
