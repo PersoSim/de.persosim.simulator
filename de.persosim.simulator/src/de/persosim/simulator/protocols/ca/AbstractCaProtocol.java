@@ -584,6 +584,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	
 	/**
 	 * This method constructs a ChipAuthenticationInfo object
+	 * _with_ optional key reference
 	 * 
 	 * ChipAuthenticationInfo ::= SEQUENCE {
      *   protocol OBJECT IDENTIFIER(
@@ -606,8 +607,6 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	 */
 	public static ConstructedTlvDataObject constructChipAuthenticationInfoObject(byte[] oidBytes, byte version, int keyId) {
 		ConstructedTlvDataObject caInfo = constructChipAuthenticationInfoObject(oidBytes, version);
-		//always set keyId even if truly optional/not mandatory
-		//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
 		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, Utils.toShortestUnsignedByteArray(keyId)));
 		return caInfo;
 	}
@@ -615,6 +614,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	
 	/**
 	 * This method constructs a ChipAuthenticationInfo object
+	 * _without_ optional key reference
 	 * 
 	 * ChipAuthenticationInfo ::= SEQUENCE {
      *   protocol OBJECT IDENTIFIER(
