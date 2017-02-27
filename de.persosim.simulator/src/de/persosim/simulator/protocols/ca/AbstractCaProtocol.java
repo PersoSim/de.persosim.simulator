@@ -718,11 +718,11 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	protected ConstructedTlvDataObject constructSubjectPublicKeyInfo(ConstructedTlvDataObject algorithmIdentifier, PrimitiveTlvDataObject subjectPublicKey) {
-		return CaSecInfoHelper.computeSubjectPublicKeyInfo(algorithmIdentifier, subjectPublicKey);
+		return CaSecInfoHelper.constructSubjectPublicKeyInfo(algorithmIdentifier, subjectPublicKey);
 	}
 	
 	protected ConstructedTlvDataObject constructChipAuthenticationPublicKeyInfo(ConstructedTlvDataObject subjectPublicKeyInfo, byte[] objectIdentifierBytes, int keyId) {
-		return CaSecInfoHelper.computeChipAuthenticationPublicKeyInfo(subjectPublicKeyInfo, objectIdentifierBytes, keyId);
+		return CaSecInfoHelper.constructChipAuthenticationPublicKeyInfo(subjectPublicKeyInfo, objectIdentifierBytes, keyId);
 	}
 	
 	protected ConstructedTlvDataObject simplifyAlgorithmIdentifier(ConstructedTlvDataObject algorithmIdentifier) {

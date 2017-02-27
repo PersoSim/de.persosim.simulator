@@ -133,7 +133,7 @@ public class CaSecInfoHelper implements Ca, TlvConstants {
 	 * @param algorithmIdentifier the AlgorithmIdentifier to use
 	 * @return the constructed ChipAuthenticationDomainParameterInfo element
 	 */
-	public static ConstructedTlvDataObject computeChipAuthenticationDomainParameterInfo(byte[] genericCaOidBytes, TlvDataObject algorithmIdentifier) {
+	public static ConstructedTlvDataObject constructChipAuthenticationDomainParameterInfo(byte[] genericCaOidBytes, TlvDataObject algorithmIdentifier) {
 		ConstructedTlvDataObject chipAuthenticationDomainParameterInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 		chipAuthenticationDomainParameterInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericCaOidBytes));
 		chipAuthenticationDomainParameterInfo.addTlvDataObject(algorithmIdentifier);
@@ -163,8 +163,8 @@ public class CaSecInfoHelper implements Ca, TlvConstants {
 	 * @param keyId the key ID to use
 	 * @return the constructed ChipAuthenticationPublicKeyInfo element
 	 */
-	public static ConstructedTlvDataObject computeChipAuthenticationPublicKeyInfo(ConstructedTlvDataObject subjectPublicKeyInfo, byte[] objectIdentifierBytes, int keyId) {
-		ConstructedTlvDataObject chipAuthenticationPublicKeyInfo = computeChipAuthenticationPublicKeyInfo(subjectPublicKeyInfo, objectIdentifierBytes);
+	public static ConstructedTlvDataObject constructChipAuthenticationPublicKeyInfo(ConstructedTlvDataObject subjectPublicKeyInfo, byte[] objectIdentifierBytes, int keyId) {
+		ConstructedTlvDataObject chipAuthenticationPublicKeyInfo = constructChipAuthenticationPublicKeyInfo(subjectPublicKeyInfo, objectIdentifierBytes);
 		
 		chipAuthenticationPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 		
@@ -193,7 +193,7 @@ public class CaSecInfoHelper implements Ca, TlvConstants {
 	 * @param keyId the key ID to use
 	 * @return the constructed ChipAuthenticationPublicKeyInfo element
 	 */
-	public static ConstructedTlvDataObject computeChipAuthenticationPublicKeyInfo(ConstructedTlvDataObject subjectPublicKeyInfo, byte[] objectIdentifierBytes) {
+	public static ConstructedTlvDataObject constructChipAuthenticationPublicKeyInfo(ConstructedTlvDataObject subjectPublicKeyInfo, byte[] objectIdentifierBytes) {
 		ConstructedTlvDataObject chipAuthenticationPublicKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 		chipAuthenticationPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, objectIdentifierBytes));
 		chipAuthenticationPublicKeyInfo.addTlvDataObject(subjectPublicKeyInfo);
@@ -213,7 +213,7 @@ public class CaSecInfoHelper implements Ca, TlvConstants {
 	 * @param subjectPublicKey the subjectPublicKey (BIT STRING) to use
 	 * @return the constructed SubjectPublicKeyInfo element
 	 */
-	public static ConstructedTlvDataObject computeSubjectPublicKeyInfo(ConstructedTlvDataObject algorithmIdentifier, PrimitiveTlvDataObject subjectPublicKey) {
+	public static ConstructedTlvDataObject constructSubjectPublicKeyInfo(ConstructedTlvDataObject algorithmIdentifier, PrimitiveTlvDataObject subjectPublicKey) {
 		ConstructedTlvDataObject subjectPublicKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 		subjectPublicKeyInfo.addTlvDataObject(algorithmIdentifier);
 		subjectPublicKeyInfo.addTlvDataObject(subjectPublicKey);
