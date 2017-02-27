@@ -114,7 +114,7 @@ public class CaSecInfoHelper implements Ca, TlvConstants {
 	 * @return the constructed ChipAuthenticationDomainParameterInfo element
 	 */
 	public static ConstructedTlvDataObject constructChipAuthenticationDomainParameterInfo(byte[] genericCaOidBytes, TlvDataObject algorithmIdentifier, int keyId) {
-		ConstructedTlvDataObject chipAuthenticationDomainParameterInfo = constructChipAuthenticationDomainParameterInfo(genericCaOidBytes, algorithmIdentifier, keyId);
+		ConstructedTlvDataObject chipAuthenticationDomainParameterInfo = constructChipAuthenticationDomainParameterInfo(genericCaOidBytes, algorithmIdentifier);
 		chipAuthenticationDomainParameterInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, Utils.toShortestUnsignedByteArray(keyId)));
 		
 		return chipAuthenticationDomainParameterInfo;
