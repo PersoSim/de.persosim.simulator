@@ -638,11 +638,11 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			
 			//extract required data from curKey
 			ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(curKey.getKeyPair().getPublic().getEncoded());
-			ConstructedTlvDataObject algIdentifier = (ConstructedTlvDataObject) encKey.getTlvDataObject(TAG_SEQUENCE);
+			ConstructedTlvDataObject algorithmIdentifier = (ConstructedTlvDataObject) encKey.getTlvDataObject(TAG_SEQUENCE);
 			TlvDataObject subjPubKey = computeSubjectPublicKey(encKey);
 			
 			//using standardized domain parameters if possible
-			algIdentifier = StandardizedDomainParameters.simplifyAlgorithmIdentifier(algIdentifier);
+			algorithmIdentifier = StandardizedDomainParameters.simplifyAlgorithmIdentifier(algorithmIdentifier);
 			
 			/*
 			 * add ChipAuthenticationDomainParameterInfo object(s)
@@ -653,22 +653,22 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
              *   keyId           INTEGER OPTIONAL
              * }
 			 */
-			ConstructedTlvDataObject caDomainInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-			caDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericCaOidBytes));
-			caDomainInfo.addTlvDataObject(algIdentifier);
+			ConstructedTlvDataObject chipAuthenticationDomainParameterInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+			chipAuthenticationDomainParameterInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericCaOidBytes));
+			chipAuthenticationDomainParameterInfo.addTlvDataObject(algorithmIdentifier);
 			//always set keyId even if truly optional/not mandatory
 			//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
-			caDomainInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, Utils.toShortestUnsignedByteArray(keyId)));
+			chipAuthenticationDomainParameterInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, Utils.toShortestUnsignedByteArray(keyId)));
 			if (curKey.isPrivilegedOnly()) {
-				privilegedSecInfos.add(caDomainInfo);
+				privilegedSecInfos.add(chipAuthenticationDomainParameterInfo);
 			} else {
-				secInfos.add(caDomainInfo);
+				secInfos.add(chipAuthenticationDomainParameterInfo);
 			}
 			
 			//build SubjectPublicKeyInfo
-			ConstructedTlvDataObject subjPubKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-			subjPubKeyInfo.addTlvDataObject(algIdentifier);
-			subjPubKeyInfo.addTlvDataObject(subjPubKey);
+			ConstructedTlvDataObject subjectPublicKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+			subjectPublicKeyInfo.addTlvDataObject(algorithmIdentifier);
+			subjectPublicKeyInfo.addTlvDataObject(subjPubKey);
 			
 			if ((publicity == SecInfoPublicity.AUTHENTICATED) || (publicity == SecInfoPublicity.PRIVILEGED)) {
 				/*
@@ -687,14 +687,14 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
                  *   keyId                       INTEGER OPTIONAL
                  * }
 				 */
-				ConstructedTlvDataObject caPublicKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Utils.concatByteArrays(Tr03110.id_PK, new byte[] {genericCaOidBytes[8]})));
-				caPublicKeyInfo.addTlvDataObject(subjPubKeyInfo);
+				ConstructedTlvDataObject chipAuthenticationPublicKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+				chipAuthenticationPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Utils.concatByteArrays(Tr03110.id_PK, new byte[] {genericCaOidBytes[8]})));
+				chipAuthenticationPublicKeyInfo.addTlvDataObject(subjectPublicKeyInfo);
 				//always set keyId even if truly optional/not mandatory
 				//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
-				caPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
+				chipAuthenticationPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
 				
-				addChipAuthenticationPublicKeyInfo(curKey.isPrivilegedOnly(), privilegedPublicKeyInfos, unprivilegedPublicKeyInfos, caPublicKeyInfo);
+				addChipAuthenticationPublicKeyInfo(curKey.isPrivilegedOnly(), privilegedPublicKeyInfos, unprivilegedPublicKeyInfos, chipAuthenticationPublicKeyInfo);
 			}
 			
 		}
