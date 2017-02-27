@@ -578,10 +578,6 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	protected byte getVersion() {
 		return 2;
 	}
-	
-	protected ConstructedTlvDataObject constructChipAuthenticationInfoObject(byte[] oidBytes, int keyId) {
-		return CaSecInfoHelper.constructChipAuthenticationInfoObject(oidBytes, getVersion(), keyId);
-	}
 
 	@Override
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
@@ -627,74 +623,46 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 						
 						ConstructedTlvDataObject caInfo = constructChipAuthenticationInfoObject(oidBytes, keyId);
 						
-						if (curKey.isPrivilegedOnly()) {
-							privilegedSecInfos.add(caInfo);
-						} else {
-							secInfos.add(caInfo);
+						if(caInfo != null) {
+							if (curKey.isPrivilegedOnly()) {
+								privilegedSecInfos.add(caInfo);
+							} else {
+								secInfos.add(caInfo);
+							}
 						}
 					}
 				}
 			}
 			
 			//extract required data from curKey
-			ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(curKey.getKeyPair().getPublic().getEncoded());
-			ConstructedTlvDataObject algorithmIdentifier = (ConstructedTlvDataObject) encKey.getTlvDataObject(TAG_SEQUENCE);
-			TlvDataObject subjPubKey = computeSubjectPublicKey(encKey);
+			PublicKey publicKey = curKey.getKeyPair().getPublic();
+			ConstructedTlvDataObject algorithmIdentifier = constructAlgorithmIdentifier(publicKey);
+			PrimitiveTlvDataObject subjectPublicKey = constructSubjectPublicKey(publicKey);
 			
 			//using standardized domain parameters if possible
-			algorithmIdentifier = StandardizedDomainParameters.simplifyAlgorithmIdentifier(algorithmIdentifier);
+			algorithmIdentifier = simplifyAlgorithmIdentifier(algorithmIdentifier);
 			
-			/*
-			 * add ChipAuthenticationDomainParameterInfo object(s)
-			 * 
-			 * ChipAuthenticationDomainParameterInfo ::= SEQUENCE {
-             *   protocol        OBJECT IDENTIFIER(id-CA-DH | id-CA-ECDH),
-             *   domainParameter AlgorithmIdentifier,
-             *   keyId           INTEGER OPTIONAL
-             * }
-			 */
-			ConstructedTlvDataObject chipAuthenticationDomainParameterInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-			chipAuthenticationDomainParameterInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, genericCaOidBytes));
-			chipAuthenticationDomainParameterInfo.addTlvDataObject(algorithmIdentifier);
 			//always set keyId even if truly optional/not mandatory
 			//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
-			chipAuthenticationDomainParameterInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, Utils.toShortestUnsignedByteArray(keyId)));
-			if (curKey.isPrivilegedOnly()) {
-				privilegedSecInfos.add(chipAuthenticationDomainParameterInfo);
-			} else {
-				secInfos.add(chipAuthenticationDomainParameterInfo);
+			ConstructedTlvDataObject chipAuthenticationDomainParameterInfo = constructChipAuthenticationDomainParameterInfo(genericCaOidBytes, algorithmIdentifier, keyId);
+			
+			if(chipAuthenticationDomainParameterInfo != null) {
+				if (curKey.isPrivilegedOnly()) {
+					privilegedSecInfos.add(chipAuthenticationDomainParameterInfo);
+				} else {
+					secInfos.add(chipAuthenticationDomainParameterInfo);
+				}
 			}
 			
-			//build SubjectPublicKeyInfo
-			ConstructedTlvDataObject subjectPublicKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-			subjectPublicKeyInfo.addTlvDataObject(algorithmIdentifier);
-			subjectPublicKeyInfo.addTlvDataObject(subjPubKey);
+			ConstructedTlvDataObject subjectPublicKeyInfo = constructSubjectPublicKeyInfo(algorithmIdentifier, subjectPublicKey);
 			
 			if ((publicity == SecInfoPublicity.AUTHENTICATED) || (publicity == SecInfoPublicity.PRIVILEGED)) {
-				/*
-				 * add ChipAuthenticationPublicKeyInfo object(s)
-				 * 
-				 * id-PK OBJECT IDENTIFIER ::= {
-                 *   bsi-de protocols(2) smartcard(2) 1
-                 * }
-                 * 
-                 * id-PK-DH                 OBJECT IDENTIFIER ::= {id-PK 1}
-                 * id-PK-ECDH               OBJECT IDENTIFIER ::= {id-PK 2}
-                 * 
-                 * ChipAuthenticationPublicKeyInfo ::= SEQUENCE {
-                 *   protocol                    OBJECT IDENTIFIER(id-PK-DH | id-PK-ECDH),
-                 *   chipAuthenticationPublicKey SubjectPublicKeyInfo,
-                 *   keyId                       INTEGER OPTIONAL
-                 * }
-				 */
-				ConstructedTlvDataObject chipAuthenticationPublicKeyInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-				chipAuthenticationPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Utils.concatByteArrays(Tr03110.id_PK, new byte[] {genericCaOidBytes[8]})));
-				chipAuthenticationPublicKeyInfo.addTlvDataObject(subjectPublicKeyInfo);
 				//always set keyId even if truly optional/not mandatory
 				//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
-				chipAuthenticationPublicKeyInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) keyId}));
-				
-				addChipAuthenticationPublicKeyInfo(curKey.isPrivilegedOnly(), privilegedPublicKeyInfos, unprivilegedPublicKeyInfos, chipAuthenticationPublicKeyInfo);
+				ConstructedTlvDataObject chipAuthenticationPublicKeyInfo = constructChipAuthenticationPublicKeyInfo(subjectPublicKeyInfo, Utils.concatByteArrays(Tr03110.id_PK, new byte[] {genericCaOidBytes[8]}), keyId);
+				if(chipAuthenticationPublicKeyInfo != null) {
+					addChipAuthenticationPublicKeyInfo(curKey.isPrivilegedOnly(), privilegedPublicKeyInfos, unprivilegedPublicKeyInfos, chipAuthenticationPublicKeyInfo);
+				}
 			}
 			
 		}
@@ -733,8 +701,32 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		}
 	}
 	
-	protected TlvDataObject computeSubjectPublicKey(ConstructedTlvDataObject encKey) {
-		return encKey.getTlvDataObject(TAG_BIT_STRING);
+	protected ConstructedTlvDataObject constructChipAuthenticationInfoObject(byte[] oidBytes, int keyId) {
+		return CaSecInfoHelper.constructChipAuthenticationInfoObject(oidBytes, getVersion(), keyId);
+	}
+	
+	protected PrimitiveTlvDataObject constructSubjectPublicKey(PublicKey publicKey) {
+		return CaSecInfoHelper.constructSubjectPublicKey(publicKey);
+	}
+	
+	protected ConstructedTlvDataObject constructAlgorithmIdentifier(PublicKey publicKey) {
+		return CaSecInfoHelper.constructAlgorithmIdentifier(publicKey);
+	}
+	
+	protected ConstructedTlvDataObject constructChipAuthenticationDomainParameterInfo(byte[] genericCaOidBytes, TlvDataObject algorithmIdentifier, int keyId) {
+		return CaSecInfoHelper.constructChipAuthenticationDomainParameterInfo(genericCaOidBytes, algorithmIdentifier, keyId);
+	}
+	
+	protected ConstructedTlvDataObject constructSubjectPublicKeyInfo(ConstructedTlvDataObject algorithmIdentifier, PrimitiveTlvDataObject subjectPublicKey) {
+		return CaSecInfoHelper.computeSubjectPublicKeyInfo(algorithmIdentifier, subjectPublicKey);
+	}
+	
+	protected ConstructedTlvDataObject constructChipAuthenticationPublicKeyInfo(ConstructedTlvDataObject subjectPublicKeyInfo, byte[] objectIdentifierBytes, int keyId) {
+		return CaSecInfoHelper.computeChipAuthenticationPublicKeyInfo(subjectPublicKeyInfo, objectIdentifierBytes, keyId);
+	}
+	
+	protected ConstructedTlvDataObject simplifyAlgorithmIdentifier(ConstructedTlvDataObject algorithmIdentifier) {
+		return StandardizedDomainParameters.simplifyAlgorithmIdentifier(algorithmIdentifier);
 	}
 	
 }
