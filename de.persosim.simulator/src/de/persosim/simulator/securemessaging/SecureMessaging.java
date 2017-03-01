@@ -401,8 +401,8 @@ public class SecureMessaging extends Layer implements TlvConstants{
 	public boolean verifyMac() {
 		TlvDataObject cryptogram, tlvObject8E, tlvObject97;
 		byte[] extractedMac, tlv97Plain, tlv87Plain;
-		byte[] header, paddingHeader, paddingMacInput, macResult;
-		int paddingLengthHeader, blockSize, lengthOfMacInputData, paddingLengthMacInput;
+		byte[] header, paddingHeader, macResult;
+		int paddingLengthHeader, blockSize;
 		ByteArrayOutputStream macInputStream;
 		int isoCaseOfPlainAPDU;
 		
@@ -468,12 +468,9 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		} catch (IOException e) {
 			logException(this, e);
 		}
-		
-		lengthOfMacInputData = header.length + paddingHeader.length;
-		
+				
 		if(isoCaseOfPlainAPDU > 2) {
 			tlv87Plain = cryptogram.toByteArray();
-			lengthOfMacInputData += tlv87Plain.length;
 			
 			try {
 				macInputStream.write(tlv87Plain);
@@ -484,7 +481,6 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		
 		if((isoCaseOfPlainAPDU == 2) || (isoCaseOfPlainAPDU == 4)) {
 			tlv97Plain = tlvObject97.toByteArray();
-			lengthOfMacInputData += tlvObject97.getLength();
 			
 			try {
 				macInputStream.write(tlv97Plain);
@@ -493,28 +489,18 @@ public class SecureMessaging extends Layer implements TlvConstants{
 			}
 		}
 		
+		byte [] macInput = macInputStream.toByteArray(); 
+		
 		if(isoCaseOfPlainAPDU > 1) {
-			/* mac input must be padded to match block size */
-			log(this, "length of mac input data is " + lengthOfMacInputData + " bytes", TRACE);
-			paddingLengthMacInput = blockSize - ((lengthOfMacInputData + 1) % blockSize) + 1;
-			log(this, "mac input data needs " + paddingLengthMacInput + " bytes padding to match multiple of blockSize " + blockSize, TRACE);
-			paddingMacInput = new byte[paddingLengthMacInput];
-			Arrays.fill(paddingMacInput, (byte) 0x00);
-			paddingMacInput[0] = (byte) 0x80;
-			log(this, "padding of mac input data is " + HexString.encode(paddingMacInput), TRACE);
-			
-			try {
-				macInputStream.write(paddingMacInput);
-			} catch (IOException e) {
-				logException(this, e);
-			}
+			macInput = padDataForMac(macInput);
+			log(this, "padding of mac input data is " + HexString.encode(macInput), TRACE);
 		}
 		
 
-		log(this, "padded mac input is " + HexString.encode(macInputStream.toByteArray()), TRACE);
+		log(this, "padded mac input is " + HexString.encode(macInput), TRACE);
 		
 		macResult = CryptoSupport.mac(dataProvider.getMac(), dataProvider.getMacAuxiliaryData(),
-				dataProvider.getCipher(), macInputStream.toByteArray(), dataProvider.getKeyMac(), dataProvider.getMacLength());
+				dataProvider.getCipher(), macInput, dataProvider.getKeyMac(), dataProvider.getMacLength());
 		
 		log(this, "expected mac is : " + HexString.encode(macResult), DEBUG);
 		extractedMac = tlvObject8E.getValueField();
