@@ -14,6 +14,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import javax.crypto.KeyAgreement;
@@ -89,6 +90,8 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	protected SecretKeySpec secretKeySpecENC;
 	
 	protected int sessionContextIdentifier = CONTEXT_SESSION_ID_FOR_VOLATILE_SESSIONS;
+
+	private int numberOfKeyObjects = 0;
 	
 	
 	
@@ -592,11 +595,13 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		ArrayList<TlvDataObject> unprivilegedPublicKeyInfos = new ArrayList<>();
 		ArrayList<TlvDataObject> privilegedPublicKeyInfos = new ArrayList<>();
 		
+		HashMap<KeyPairObject, Integer> caKeyPairObjects = new HashMap<>();
 		
-		for (CardObject curObject : caKeyCardObjects) {
+		for (CardObject curObject : caKeyCardObjects){
 			if (! (curObject instanceof KeyPairObject)) {
 				continue;
 			}
+			
 			KeyPairObject curKey = (KeyPairObject) curObject;
 			Collection<CardObjectIdentifier> identifiers = curKey.getAllIdentifiers();
 			
@@ -610,10 +615,19 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			}
 			if (keyId == -1) continue; // skip keys that dont't provide a keyId
 			
+			caKeyPairObjects.put(curKey, keyId);
+		}
+		
+		numberOfKeyObjects = caKeyPairObjects.size();
+		
+		for (KeyPairObject curKey : caKeyPairObjects.keySet()) {
+			
 			//cached values
 			byte[] genericCaOidBytes = null;
+			int keyId = caKeyPairObjects.get(curKey); 
 			
 			//construct and add ChipAuthenticationInfo object(s)
+			Collection<CardObjectIdentifier> identifiers = curKey.getAllIdentifiers();
 			for (CardObjectIdentifier curIdentifier : identifiers) {
 				if (curIdentifier instanceof OidIdentifier) {
 					Oid curOid = ((OidIdentifier) curIdentifier).getOid();
@@ -642,8 +656,6 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			//using standardized domain parameters if possible
 			algorithmIdentifier = simplifyAlgorithmIdentifier(algorithmIdentifier);
 			
-			//always set keyId even if truly optional/not mandatory
-			//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
 			ConstructedTlvDataObject chipAuthenticationDomainParameterInfo = constructChipAuthenticationDomainParameterInfo(genericCaOidBytes, algorithmIdentifier, keyId);
 			
 			if(chipAuthenticationDomainParameterInfo != null) {
@@ -702,7 +714,10 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	protected ConstructedTlvDataObject constructChipAuthenticationInfoObject(byte[] oidBytes, int keyId) {
-		return CaSecInfoHelper.constructChipAuthenticationInfoObject(oidBytes, getVersion(), keyId);
+		if (isKeyIdNeeded() == true || isKeyIdForced() == true){
+			return CaSecInfoHelper.constructChipAuthenticationInfoObject(oidBytes, getVersion(), keyId);
+		}
+		return CaSecInfoHelper.constructChipAuthenticationInfoObject(oidBytes, getVersion());
 	}
 	
 	protected PrimitiveTlvDataObject constructSubjectPublicKey(PublicKey publicKey) {
@@ -714,19 +729,43 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	protected ConstructedTlvDataObject constructChipAuthenticationDomainParameterInfo(byte[] genericCaOidBytes, TlvDataObject algorithmIdentifier, int keyId) {
-		return CaSecInfoHelper.constructChipAuthenticationDomainParameterInfo(genericCaOidBytes, algorithmIdentifier, keyId);
+		if (isKeyIdNeeded() == true || isKeyIdForced() == true){
+			return CaSecInfoHelper.constructChipAuthenticationDomainParameterInfo(genericCaOidBytes, algorithmIdentifier, keyId);
+		}
+		return CaSecInfoHelper.constructChipAuthenticationDomainParameterInfo(genericCaOidBytes, algorithmIdentifier);
 	}
-	
+
 	protected ConstructedTlvDataObject constructSubjectPublicKeyInfo(ConstructedTlvDataObject algorithmIdentifier, PrimitiveTlvDataObject subjectPublicKey) {
 		return CaSecInfoHelper.constructSubjectPublicKeyInfo(algorithmIdentifier, subjectPublicKey);
 	}
 	
 	protected ConstructedTlvDataObject constructChipAuthenticationPublicKeyInfo(ConstructedTlvDataObject subjectPublicKeyInfo, byte[] objectIdentifierBytes, int keyId) {
-		return CaSecInfoHelper.constructChipAuthenticationPublicKeyInfo(subjectPublicKeyInfo, objectIdentifierBytes, keyId);
+		if (isKeyIdNeeded() == true || isKeyIdForced() == true){
+			return CaSecInfoHelper.constructChipAuthenticationPublicKeyInfo(subjectPublicKeyInfo, objectIdentifierBytes, keyId);
+		}
+		return CaSecInfoHelper.constructChipAuthenticationPublicKeyInfo(subjectPublicKeyInfo, objectIdentifierBytes);
 	}
 	
 	protected ConstructedTlvDataObject simplifyAlgorithmIdentifier(ConstructedTlvDataObject algorithmIdentifier) {
 		return StandardizedDomainParameters.simplifyAlgorithmIdentifier(algorithmIdentifier);
+	}
+	
+	/**
+	 * Marks creation of optional key ID entries as forced.
+	 * @return
+	 */
+	protected boolean isKeyIdForced() {
+		//always set keyId even if truly optional/not mandatory
+		//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
+		return true;
+	}
+
+	/**
+	 * 
+	 * @return If key IDs are needed (for example when multiple keys are in the personalization).
+	 */
+	private boolean isKeyIdNeeded() {
+		return numberOfKeyObjects >= 2;
 	}
 	
 }
