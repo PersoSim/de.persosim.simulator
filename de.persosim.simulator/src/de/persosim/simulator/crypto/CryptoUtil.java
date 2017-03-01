@@ -504,7 +504,7 @@ public class CryptoUtil {
 	}
 	
 	/**
-	 * This method padds the given data to the given block size
+	 * This method pads the given data to the given block size
 	 * @param unpaddedData the data to be padded
 	 * @param blockSize the block size
 	 * @return the padded data
