@@ -525,7 +525,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 * @param mappingResponse
 	 * @return the response data
 	 */
-	public TlvValue buildResponseDataForMapNonce(byte [] mappingResponse){
+	protected TlvValue buildResponseDataForMapNonce(byte [] mappingResponse){
 		// Build response data
 		PrimitiveTlvDataObject primitive82 = new PrimitiveTlvDataObject(TAG_82, mappingResponse);
 		ConstructedTlvDataObject constructed7C = new ConstructedTlvDataObject(TAG_7C);
