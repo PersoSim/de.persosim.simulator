@@ -97,6 +97,28 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 	}
 	
 	/**
+	 * This method encodes a public key as described in TR03110 Part 3 Appendix D.3
+	 * @param oid the {@link Oid} to store in the encoded Key
+	 * @param pk the {@link PublicKey} to encode
+	 * @param includeConditionalObjects whether to store conditional data
+	 * @return tlv data containing the encoded key
+	 */
+	public static TlvDataObjectContainer encodePublicKey(Oid oid, PublicKey pk, boolean includeConditionalObjects) {
+		for (Tr03110UtilsProvider provider : providers) {
+			try {
+				TlvDataObjectContainer key = provider.encodePublicKey(oid, pk, includeConditionalObjects);
+				if (key != null) {
+					return key;
+				}
+			} catch (Exception e) {
+				BasicLogger.logException(Tr03110Utils.class, e, BasicLogger.WARN);
+			}
+		}
+		BasicLogger.log(Tr03110Utils.class, "Public Key data could not be encoded.", BasicLogger.INFO);
+		return null;
+	}
+	
+	/**
 	 * This method constructs the input data used to compute the authentication token needed e.g. by Pace's Mutual Authenticate or CA's General Authenticate.
 	 * @param publicKey the ephemeral public key to be inserted
 	 * @param domParamSet the domain parameters matching the provided public key

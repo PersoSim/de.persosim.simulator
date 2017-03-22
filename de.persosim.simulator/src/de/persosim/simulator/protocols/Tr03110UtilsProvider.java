@@ -1,10 +1,12 @@
 package de.persosim.simulator.protocols;
 
 import java.security.Key;
+import java.security.PublicKey;
 
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.certificates.CvPublicKey;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+import de.persosim.simulator.tlv.TlvDataObjectContainer;
 
 /**
  * Implementations of this interface are used to modularize the {@link Tr03110Utils} class.
@@ -27,5 +29,15 @@ public interface Tr03110UtilsProvider {
 	 * @return a public key object matching the provided encoding
 	 */
 	public CvPublicKey parseCvPublicKey(ConstructedTlvDataObject publicKeyData);
+
+	
+	/**
+	 * This method encodes a public key as described in TR03110 Part 3 Appendix D.3
+	 * @param oid the {@link Oid} to store in the encoded Key
+	 * @param pk the {@link PublicKey} to encode
+	 * @param includeConditionalObjects whether to store conditional data
+	 * @return tlv data containing the encoded key
+	 */
+	public TlvDataObjectContainer encodePublicKey(Oid oid, PublicKey pk, boolean includeConditionalObjects);
 
 }

@@ -3,7 +3,6 @@ package de.persosim.simulator.crypto.certificates;
 import static org.globaltester.logging.BasicLogger.DEBUG;
 import static org.globaltester.logging.BasicLogger.log;
 
-import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPairGenerator;
@@ -11,20 +10,18 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.interfaces.ECPublicKey;
-import java.security.spec.ECFieldFp;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
-import java.security.spec.EllipticCurve;
 
 import org.globaltester.cryptoprovider.Crypto;
 
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
+import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
-import de.persosim.simulator.utils.Utils;
 
 /**
  * This class represents an EC public key to be used in the context of CV certificates.
@@ -81,39 +78,11 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 	public ConstructedTlvDataObject toTlvDataObject(boolean includeConditionalObjects) {
 		ConstructedTlvDataObject publicKeyBody = new ConstructedTlvDataObject(TAG_7F49);
 		
-		PrimitiveTlvDataObject objectIdentifier    = new PrimitiveTlvDataObject(TAG_06, this.cvOid.toByteArray());
-		publicKeyBody.addTlvDataObject(objectIdentifier);
-		
 		if(isComplete()) {
-			ECParameterSpec ecParams = ((ECPublicKey) key).getParams();
-			EllipticCurve curve = ecParams.getCurve();
-			
-			int referenceLength = DomainParameterSetEcdh.getPublicPointReferenceLengthL(((ECFieldFp) curve.getField()).getP());
-			
-			PrimitiveTlvDataObject publicPoint         = new PrimitiveTlvDataObject(TAG_86, CryptoUtil.encode(((ECPublicKey) key).getW(), referenceLength, CryptoUtil.ENCODING_UNCOMPRESSED));
-			
-			if(includeConditionalObjects) {
-				PrimitiveTlvDataObject primeModulus        = new PrimitiveTlvDataObject(TAG_81, Utils.toUnsignedByteArray(((ECFieldFp) curve.getField()).getP()));
-				PrimitiveTlvDataObject firstCoefficient    = new PrimitiveTlvDataObject(TAG_82, Utils.toUnsignedByteArray(curve.getA()));
-				PrimitiveTlvDataObject secondCoefficient   = new PrimitiveTlvDataObject(TAG_83, Utils.toUnsignedByteArray(curve.getB()));
-				PrimitiveTlvDataObject basePoint           = new PrimitiveTlvDataObject(TAG_84, CryptoUtil.encode(ecParams.getGenerator(), referenceLength, CryptoUtil.ENCODING_UNCOMPRESSED));
-				PrimitiveTlvDataObject orderOfTheBasePoint = new PrimitiveTlvDataObject(TAG_85, Utils.toUnsignedByteArray(ecParams.getOrder()));
-				
-				publicKeyBody.addTlvDataObject(primeModulus);
-				publicKeyBody.addTlvDataObject(firstCoefficient);
-				publicKeyBody.addTlvDataObject(secondCoefficient);
-				publicKeyBody.addTlvDataObject(basePoint);
-				publicKeyBody.addTlvDataObject(orderOfTheBasePoint);
-			}
-			
-			publicKeyBody.addTlvDataObject(publicPoint);
-			
-			if(includeConditionalObjects) {
-				PrimitiveTlvDataObject coFactor            = new PrimitiveTlvDataObject(TAG_87, Utils.toUnsignedByteArray(new BigInteger((new Integer(ecParams.getCofactor())).toString())));
-				
-				publicKeyBody.addTlvDataObject(coFactor);
-			}
+			publicKeyBody.addAll((Tr03110Utils.encodePublicKey(cvOid, (PublicKey) key, includeConditionalObjects).getTlvObjects()));
 		} else{
+			PrimitiveTlvDataObject objectIdentifier    = new PrimitiveTlvDataObject(TAG_06, cvOid.toByteArray());
+			publicKeyBody.addTlvDataObject(objectIdentifier);
 			PrimitiveTlvDataObject publicPoint         = new PrimitiveTlvDataObject(TAG_86, publicPointEncoding);
 			publicKeyBody.addTlvDataObject(publicPoint);
 		}
