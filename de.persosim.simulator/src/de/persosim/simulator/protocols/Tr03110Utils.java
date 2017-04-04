@@ -203,5 +203,15 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 				+ formatter.format(calendar.get(Calendar.DAY_OF_MONTH) % 10);
 		return HexString.toByteArray(tempDate);
 	}
+
+	/**
+	 * Allows to register specific Tr03110UtilsProviders to by used.
+	 * <br/>
+	 * Implemented as public method to allow usage in non-OSGi tests
+	 * @param tr03110UtilsProvider
+	 */
+	public static void addTr03110UtilsProvider(Tr03110UtilsProvider tr03110UtilsProvider) {
+		providers.add(tr03110UtilsProvider);
+	}
 	
 }
