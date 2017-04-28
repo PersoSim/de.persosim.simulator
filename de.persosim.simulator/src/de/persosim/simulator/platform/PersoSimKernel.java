@@ -65,8 +65,8 @@ public class PersoSimKernel implements InfoSource {
 		}
 				
 		//maybe move atr definition to Personalization
-		String atr = "3BE800008131FE00506572736F53696D" + "AA";
-		//                            P e r s o S i m      XOR Checksum (required for T=1)
+		String atr = "3BE900008131FE00" + "FF" + "506572736F53696D" + "54";
+		//                                 Prop.  P e r s o S i m      XOR Checksum (required for T=1)
 		return HexString.toByteArray(atr);
 	}
 
