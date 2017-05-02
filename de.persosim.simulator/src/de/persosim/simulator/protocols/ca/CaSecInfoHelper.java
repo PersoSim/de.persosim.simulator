@@ -221,4 +221,22 @@ public class CaSecInfoHelper implements Ca, TlvConstants {
 		return subjectPublicKeyInfo;
 	}
 	
+	/**
+	 * This method constructs a SubjectPublicKeyInfo element by calling
+	 * {@link #constructAlgorithmIdentifier(PublicKey)} and
+	 * {@link #constructSubjectPublicKeyInfo(ConstructedTlvDataObject, PrimitiveTlvDataObject)}.
+	 * 
+	 * SubjectPublicKeyInfo ::= SEQUENCE { algorithm AlgorithmIdentifier,
+	 * subjectPublicKey BIT STRING }
+	 * 
+	 * @param publicKey
+	 *            the public key to use
+	 * @return the constructed SubjectPublicKeyInfo element
+	 */
+	public static ConstructedTlvDataObject constructSubjectPublicKeyInfo(PublicKey publicKey) {
+		ConstructedTlvDataObject algorithmIdentifier = constructAlgorithmIdentifier(publicKey);
+		PrimitiveTlvDataObject subjectPublicKey = constructSubjectPublicKey(publicKey);
+		return constructSubjectPublicKeyInfo(algorithmIdentifier, subjectPublicKey);
+	}
+	
 }
