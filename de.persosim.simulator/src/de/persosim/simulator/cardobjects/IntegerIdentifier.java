@@ -24,7 +24,7 @@ public abstract class IntegerIdentifier extends AbstractCardObjectIdentifier {
 	}
 	
 	public IntegerIdentifier() {
-		this(Integer.MIN_VALUE);
+		this(MATCHES_ALWAYS);
 	}
 	
 	public IntegerIdentifier(byte[] idBytes) {

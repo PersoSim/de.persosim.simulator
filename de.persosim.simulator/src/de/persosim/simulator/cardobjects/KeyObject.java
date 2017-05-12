@@ -1,6 +1,7 @@
 package de.persosim.simulator.cardobjects;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 public abstract class KeyObject extends AbstractCardObject {
@@ -36,5 +37,21 @@ public abstract class KeyObject extends AbstractCardObject {
 	public void addOidIdentifier(OidIdentifier oidIdentifier) {
 		furtherIdentifiers.add(oidIdentifier);
 	}
-
+	
+	/**
+	 * This method adds a {@link Collection} of additional {@linkCardObjectIdentifier} objects identifying objects implementing this interface.
+	 * @param cardObjectIdentifiers {@link Collection} of additional {@link CardObjectIdentifier} object(s) identifying objects implementing this interface
+	 */
+	public void addFurtherIdentifiers(Collection<CardObjectIdentifier> cardObjectIdentifiers) {
+		furtherIdentifiers.addAll(cardObjectIdentifiers);
+	}
+	
+	/**
+	 * This method adds additional {@linkCardObjectIdentifier} objects identifying objects implementing this interface.
+	 * @param cardObjectIdentifiers additional {@link CardObjectIdentifier} object(s) identifying objects implementing this interface
+	 */
+	public void addFurtherIdentifiers(CardObjectIdentifier... cardObjectIdentifiers) {
+		addFurtherIdentifiers(Arrays.asList(cardObjectIdentifiers));
+	}
+	
 }
