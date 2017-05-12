@@ -33,6 +33,7 @@ import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.tlv.TlvTagIdentifier;
+import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 /**
@@ -488,6 +489,18 @@ public class CryptoUtil {
 	 */
 	public static KeyPair reconstructKeyPair(int standDomParamId, byte[] publicKeyData, byte[] privateKeyData) {
 		return reconstructKeyPair(StandardizedDomainParameters.getDomainParameterSetById(standDomParamId), publicKeyData, privateKeyData);
+	}
+
+	/**
+	 * This method recreates a {@link KeyPair} based on the provided domain parameter id and HexStrings for public and private key.
+	 * @param standDomParamId the domain parameter id for standardized domain parameters
+	 * @param publicKeyData the raw public key data
+	 * @param privateKeyData the raw private key data
+	 * @return the reconstructed key pair
+	 */
+	public static KeyPair reconstructKeyPair(int domainParamId, String pubKey, String privKey) {
+		return reconstructKeyPair(domainParamId, HexString.toByteArray(pubKey), HexString.toByteArray(privKey));
+		
 	}
 	
 	/**
