@@ -352,10 +352,10 @@ public class CryptoUtilTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: compress a valid ASN.1 signature with components of equal length
+	 * Positive test case: compress a valid ASN.1 signature with components' length matching l
 	 */
 	@Test
-	public void testCompressAsn1SignatureStructure_EqualComponentLength() {
+	public void testCompressAsn1SignatureStructure_BothComponentsMatching() {
 		byte[] uncompressedSignature = HexString
 				.toByteArray("300A 0203AABBCC 0203DDEEFF");
 		byte[] expectedResult = HexString
@@ -365,7 +365,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: compress a valid ASN.1 signature with first component shorter
+	 * Positive test case: compress a valid ASN.1 signature with first component's length shorter than l
 	 */
 	@Test
 	public void testCompressAsn1SignatureStructure_FirstComponentShorter() {
@@ -378,7 +378,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 	}
 	
 	/**
-	 * Positive test case: compress a valid ASN.1 signature with second component shorter
+	 * Positive test case: compress a valid ASN.1 signature with second component's length shorter than l
 	 */
 	@Test
 	public void testCompressAsn1SignatureStructure_SecondComponentShorter() {
@@ -388,6 +388,71 @@ public class CryptoUtilTest extends PersoSimTestCase {
 				.toByteArray("AABBCC00DDEE");
 
 		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature, 3));
+	}
+	
+	/**
+	 * Positive test case: compress a valid ASN.1 signature with both component's length longer than l
+	 */
+	@Test
+	public void testCompressAsn1SignatureStructure_BothComponentsLonger() {
+		byte[] uncompressedSignature = HexString
+				.toByteArray("300A 020300AABB 020300CCDD");
+		byte[] expectedResult = HexString
+				.toByteArray("AABBCCDD");
+
+		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature, 2));
+	}
+	
+	/**
+	 * Positive test case: compress a valid ASN.1 signature with both component's length longer than l
+	 */
+	@Test
+	public void testCompressAsn1SignatureStructure_FirstComponentLonger() {
+		byte[] uncompressedSignature = HexString
+				.toByteArray("3009 020300AABB 0202CCDD");
+		byte[] expectedResult = HexString
+				.toByteArray("AABBCCDD");
+
+		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature, 2));
+	}
+	
+	/**
+	 * Positive test case: compress a valid ASN.1 signature with second component's length longer than l
+	 */
+	@Test
+	public void testCompressAsn1SignatureStructure_SecondComponentLonger() {
+		byte[] uncompressedSignature = HexString
+				.toByteArray("3009 0202AABB 020300CCDD");
+		byte[] expectedResult = HexString
+				.toByteArray("AABBCCDD");
+
+		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature, 2));
+	}
+	
+	/**
+	 * Positive test case: compress a valid ASN.1 signature with first component's length longer than l and second components's length shorter than l
+	 */
+	@Test
+	public void testCompressAsn1SignatureStructure_FirstComponentLongerSecondShorter() {
+		byte[] uncompressedSignature = HexString
+				.toByteArray("3008 020300AABB 0201CC");
+		byte[] expectedResult = HexString
+				.toByteArray("AABB00CC");
+
+		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature, 2));
+	}
+	
+	/**
+	 * Positive test case: compress a valid ASN.1 signature with second component's length longer than l and first components's length shorter than l
+	 */
+	@Test
+	public void testCompressAsn1SignatureStructure_SecondComponentLongerFirstShorter() {
+		byte[] uncompressedSignature = HexString
+				.toByteArray("3008 0201AA 020300BBCC");
+		byte[] expectedResult = HexString
+				.toByteArray("00AABBCC");
+
+		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature, 2));
 	}
 	
 	/**
