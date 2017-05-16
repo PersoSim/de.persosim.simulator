@@ -415,11 +415,11 @@ public class CryptoUtil {
 	/**
 	 * This method compresses an ECDSA signature.
 	 * 
-	 * 
 	 * @param unprocessedSignature a byte array representation of an ECDSA signature e.g. as returned by the {@link Signature#verify(byte[])} method
-	 * @return a byte array concatenating signature components
+	 * @param l the byte length of the single signature component
+	 * @return a byte array of 2l bytes length concatenating the signature components
 	 */
-	public static byte[] compressAsn1SignatureStructure(byte[] unprocessedSignature) {
+	public static byte[] compressAsn1SignatureStructure(byte[] unprocessedSignature, int l) {
 		ConstructedTlvDataObject signatureTlvUnprocessed = new ConstructedTlvDataObject(unprocessedSignature);
 		
 		PrimitiveTlvDataObject pTlv1 = (PrimitiveTlvDataObject) signatureTlvUnprocessed.getTlvDataObject(new TlvTagIdentifier(new TlvTag((byte) 0x02), 0));
@@ -428,10 +428,8 @@ public class CryptoUtil {
 		byte[] c1 = pTlv1.getValueField();
 		byte[] c2 = pTlv2.getValueField();
 		
-		int maxLength = Integer.max(c1.length, c2.length);
-		
-		c1 = Utils.padWithLeadingZeroes(c1, maxLength);
-		c2 = Utils.padWithLeadingZeroes(c2, maxLength);
+		c1 = Tr03111Utils.i2os(c1, l);
+		c2 = Tr03111Utils.i2os(c2, l);
 		
 		return Utils.concatByteArrays(c1, c2);
 	}
