@@ -361,7 +361,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 		byte[] expectedResult = HexString
 				.toByteArray("AABBCCDDEEFF");
 
-		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature));
+		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature, 3));
 	}
 	
 	/**
@@ -374,7 +374,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 		byte[] expectedResult = HexString
 				.toByteArray("00AABBDDEEFF");
 
-		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature));
+		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature, 3));
 	}
 	
 	/**
@@ -387,7 +387,7 @@ public class CryptoUtilTest extends PersoSimTestCase {
 		byte[] expectedResult = HexString
 				.toByteArray("AABBCC00DDEE");
 
-		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature));
+		assertArrayEquals(expectedResult, CryptoUtil.compressAsn1SignatureStructure(uncompressedSignature, 3));
 	}
 	
 	/**
