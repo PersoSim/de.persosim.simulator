@@ -12,6 +12,13 @@ import de.persosim.simulator.utils.Utils;
 public class Tr03111Utils {
 	
 	/**
+	 * This class is a collection of static methods so it should not be instantiated from outside.
+	 */
+	private Tr03111Utils() {}
+	
+	
+	
+	/**
 	 * This method converts field elements to octet strings.
 	 * Implementation complies with Field Element to Octet String Conversion Primitive (FE2OS)
 	 * as defined by TR-03111 v2.0 3.1.3 Conversion between Field Elements and Octet Strings
