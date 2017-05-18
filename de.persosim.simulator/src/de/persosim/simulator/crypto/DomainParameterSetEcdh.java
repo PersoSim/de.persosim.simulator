@@ -118,7 +118,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	}
 	
 	/**
-	 * Computes reference length l used for Point-to-Octet-String Conversion according to ANSI X9.62 chapter 4.3.6.
+	 * Computes reference length l in bytes used for Point-to-Octet-String Conversion according to ANSI X9.62 chapter 4.3.6.
 	 * @return reference length l
 	 */
 	public int getPublicPointReferenceLengthL() {
@@ -126,7 +126,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	}
 	
 	/**
-	 * Computes reference length l used for Point-to-Octet-String Conversion according to ANSI X9.62 chapter 4.3.6.
+	 * Computes reference length l in bytes used for Point-to-Octet-String Conversion according to ANSI X9.62 chapter 4.3.6.
 	 * @param q the prime
 	 * @return reference length l
 	 */
