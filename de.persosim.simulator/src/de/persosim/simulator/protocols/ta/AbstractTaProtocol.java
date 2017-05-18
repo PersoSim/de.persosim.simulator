@@ -35,6 +35,7 @@ import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.CertificateUpdateException;
+import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.GenericOid;
@@ -336,102 +337,105 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			return true;
 		}
 	}
-
-	void processCommandSetAt() {
-		if (!checkSecureMessagingApdu()){
-			return;
-		}
-		
-		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-		
-		TlvDataObject publicKeyReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_83);
-		if (publicKeyReferenceData != null){
-			try {
-				PublicKeyReference keyReference = new PublicKeyReference(publicKeyReferenceData);
-
-				if (!currentCertificate.getCertificateHolderReference().equals(keyReference)){
-					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-					processingData.updateResponseAPDU(this, "The referenced public key could not be found", resp);
-					return;
-				}
-			} catch (CarParameterInvalidException e) {
-				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-				processingData.updateResponseAPDU(this, "The public key reference data is invalid", resp);
-				return;
-			}
-		} else {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-			processingData.updateResponseAPDU(this, "The public key reference data is missing", resp);
-			return;
-		}
-		
+	
+	protected TaOid getCryptographicMechanismReference(TlvDataObjectContainer commandData) {
 		TlvDataObject cryptographicMechanismReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_80);
 		if (cryptographicMechanismReferenceData != null){
 			//add missing Tag and Length
 			TlvDataObject cryptographicMechanismReferenceDataReconstructed = new PrimitiveTlvDataObject(TlvConstants.TAG_06, cryptographicMechanismReferenceData.getValueField());
 			try {
-				cryptographicMechanismReference = new TaOid(cryptographicMechanismReferenceDataReconstructed.getValueField());
+				return new TaOid(cryptographicMechanismReferenceDataReconstructed.getValueField());
 			} catch (IllegalArgumentException e) {
-				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-				processingData.updateResponseAPDU(this, "The cryptographic mechanism reference encoding is invalid", resp);
-				return;
+				throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "The cryptographic mechanism reference encoding is invalid");
 			}
 		} else {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-			processingData.updateResponseAPDU(this, "The public key reference data is missing", resp);
-			return;
+			throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, "The public key reference data is missing");
 		}
-		
-		TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TlvConstants.TAG_67);
-		if (auxiliaryAuthenticatedData != null){
-			if (auxiliaryAuthenticatedData instanceof ConstructedTlvDataObject){
-				auxiliaryData = new ArrayList<>();
-				ConstructedTlvDataObject constructedAuxiliaryAuthenticatedData = (ConstructedTlvDataObject) auxiliaryAuthenticatedData;
-				for (TlvDataObject currentObject : constructedAuxiliaryAuthenticatedData.getTlvDataObjectContainer()){
-					if(!(currentObject instanceof ConstructedTlvDataObject) || !currentObject.getTlvTag().equals(TlvConstants.TAG_73)){
+	}
+
+	void processCommandSetAt() {
+		try {
+			if (!checkSecureMessagingApdu()){
+				return;
+			}
+			
+			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
+			
+			TlvDataObject publicKeyReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_83);
+			if (publicKeyReferenceData != null){
+				try {
+					PublicKeyReference keyReference = new PublicKeyReference(publicKeyReferenceData);
+
+					if (!currentCertificate.getCertificateHolderReference().equals(keyReference)){
 						// create and propagate response APDU
-						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-						processingData.updateResponseAPDU(this, "Invalid encoding of the auxiliary data", resp);
-						return;	
+						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+						processingData.updateResponseAPDU(this, "The referenced public key could not be found", resp);
+						return;
 					}
-					ConstructedTlvDataObject ddo = (ConstructedTlvDataObject) currentObject;
-					TlvDataObject objectIdentifier = ddo.getTlvDataObject(TlvConstants.TAG_06);
-					TlvDataObject discretionaryData = ddo.getTlvDataObject(TlvConstants.TAG_53);
-					try {
-						auxiliaryData.add(new AuthenticatedAuxiliaryData(new GenericOid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
-					} catch (IllegalArgumentException e) {
-						// create and propagate response APDU
-						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-						processingData.updateResponseAPDU(this, "Invalid encoding of the auxiliary data, object identifier not parseable", resp);
-						return;	
-					}
+				} catch (CarParameterInvalidException e) {
+					// create and propagate response APDU
+					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
+					processingData.updateResponseAPDU(this, "The public key reference data is invalid", resp);
+					return;
 				}
 			} else {
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-				processingData.updateResponseAPDU(this, "Invalid encoding of the auxiliary data, authentication object is not constructed TLV", resp);
-				return;	
+				processingData.updateResponseAPDU(this, "The public key reference data is missing", resp);
+				return;
 			}
-		}
-		
-		TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(TlvConstants.TAG_91);
-		if (ephemeralPublicKeyData != null){
-			compressedTerminalEphemeralPublicKey = ephemeralPublicKeyData.getValueField();
-		} else {
+			
+			cryptographicMechanismReference = getCryptographicMechanismReference(commandData);
+			
+			TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TlvConstants.TAG_67);
+			if (auxiliaryAuthenticatedData != null){
+				if (auxiliaryAuthenticatedData instanceof ConstructedTlvDataObject){
+					auxiliaryData = new ArrayList<>();
+					ConstructedTlvDataObject constructedAuxiliaryAuthenticatedData = (ConstructedTlvDataObject) auxiliaryAuthenticatedData;
+					for (TlvDataObject currentObject : constructedAuxiliaryAuthenticatedData.getTlvDataObjectContainer()){
+						if(!(currentObject instanceof ConstructedTlvDataObject) || !currentObject.getTlvTag().equals(TlvConstants.TAG_73)){
+							// create and propagate response APDU
+							ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
+							processingData.updateResponseAPDU(this, "Invalid encoding of the auxiliary data", resp);
+							return;	
+						}
+						ConstructedTlvDataObject ddo = (ConstructedTlvDataObject) currentObject;
+						TlvDataObject objectIdentifier = ddo.getTlvDataObject(TlvConstants.TAG_06);
+						TlvDataObject discretionaryData = ddo.getTlvDataObject(TlvConstants.TAG_53);
+						try {
+							auxiliaryData.add(new AuthenticatedAuxiliaryData(new GenericOid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
+						} catch (IllegalArgumentException e) {
+							// create and propagate response APDU
+							ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
+							processingData.updateResponseAPDU(this, "Invalid encoding of the auxiliary data, object identifier not parseable", resp);
+							return;	
+						}
+					}
+				} else {
+					// create and propagate response APDU
+					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
+					processingData.updateResponseAPDU(this, "Invalid encoding of the auxiliary data, authentication object is not constructed TLV", resp);
+					return;	
+				}
+			}
+			
+			TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(TlvConstants.TAG_91);
+			if (ephemeralPublicKeyData != null){
+				compressedTerminalEphemeralPublicKey = ephemeralPublicKeyData.getValueField();
+			} else {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
+				processingData.updateResponseAPDU(this, "The ephemeral public key reference data is missing", resp);
+				return;
+			}
+			
 			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-			processingData.updateResponseAPDU(this, "The ephemeral public key reference data is missing", resp);
-			return;
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
+			processingData.updateResponseAPDU(this, "Command SetAT successfully processed", resp);
+		} catch (ProcessingException e) {
+			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
+			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 		}
-		
-		// create and propagate response APDU
-		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-		processingData.updateResponseAPDU(this, "Command SetAT successfully processed", resp);
 	}
 	
 	/**
