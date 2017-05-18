@@ -436,6 +436,10 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 			throw new IllegalArgumentException("public key must be an EC public key");
 		}
 		
+		return compress(ecPublicKey);
+	}
+		
+	public static byte[] compress(ECPublicKey ecPublicKey) {
 		ECPoint publicPoint = ecPublicKey.getW();
 		
 		BigInteger publicPointX = publicPoint.getAffineX();
