@@ -112,8 +112,8 @@ public class PinManagementPaceBypassTest extends PersoSimTestCase {
 		pwdaoWithPinRc3Deactivated.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		pwdaoWithPinRc3Deactivated.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
 		
-		PaceMechanism paceMechanismWithCan = new PaceMechanism(pwdaoWithCan, null, null);
-		PaceMechanism paceMechanismWithPin = new PaceMechanism(pwdaoWithPinRc3Activated, null, null);
+		PaceMechanism paceMechanismWithCan = new PaceMechanism(Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128, pwdaoWithCan, null, null);
+		PaceMechanism paceMechanismWithPin = new PaceMechanism(Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128, pwdaoWithPinRc3Activated, null, null);
 		
 		csmWithCan = new HashSet<SecMechanism>();
 		csmWithCan.add(paceMechanismWithCan);
