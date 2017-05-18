@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.pace.PaceOid;
 import de.persosim.simulator.protocols.ta.TaOid;
 
 /**
@@ -14,15 +15,24 @@ import de.persosim.simulator.protocols.ta.TaOid;
  * 
  */
 public class PaceMechanism extends AbstractSecMechanism {
-
+	
+	private PaceOid paceOid;
 	private PasswordAuthObject usedPassword;
 	private byte [] compressedEphemeralPublicKey;
 	private Oid oidForTa;
 
-	public PaceMechanism(PasswordAuthObject usedPassword, byte[] compressedPublicKey, Oid terminalTypeOid){
+	public PaceMechanism(PaceOid paceOid, PasswordAuthObject usedPassword, byte[] compressedPublicKey, Oid terminalTypeOid){
+		this.paceOid = paceOid;
 		this.usedPassword = usedPassword;
 		this.compressedEphemeralPublicKey = compressedPublicKey;
 		this.oidForTa = terminalTypeOid;
+	}
+	
+	/**
+	 * @return the OID, that was used to execute PACE
+	 */
+	public PaceOid getPaceOid() {
+		return paceOid;
 	}
 	
 	/**
