@@ -352,22 +352,19 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				if (!currentCertificate.getCertificateHolderReference().equals(keyReference)){
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-					this.processingData.updateResponseAPDU(this,
-							"The referenced public key could not be found", resp);
+					processingData.updateResponseAPDU(this, "The referenced public key could not be found", resp);
 					return;
 				}
 			} catch (CarParameterInvalidException e) {
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-				this.processingData.updateResponseAPDU(this,
-						"The public key reference data is invalid", resp);
+				processingData.updateResponseAPDU(this, "The public key reference data is invalid", resp);
 				return;
 			}
 		} else {
 			// create and propagate response APDU
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-			this.processingData.updateResponseAPDU(this,
-					"The public key reference data is missing", resp);
+			processingData.updateResponseAPDU(this, "The public key reference data is missing", resp);
 			return;
 		}
 		
@@ -380,13 +377,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			} catch (IllegalArgumentException e) {
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-				this.processingData.updateResponseAPDU(this, "The cryptographic mechanism reference encoding is invalid", resp);
+				processingData.updateResponseAPDU(this, "The cryptographic mechanism reference encoding is invalid", resp);
 				return;
 			}
 		} else {
 			// create and propagate response APDU
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-			this.processingData.updateResponseAPDU(this, "The public key reference data is missing", resp);
+			processingData.updateResponseAPDU(this, "The public key reference data is missing", resp);
 			return;
 		}
 		
@@ -399,8 +396,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					if(!(currentObject instanceof ConstructedTlvDataObject) || !currentObject.getTlvTag().equals(TlvConstants.TAG_73)){
 						// create and propagate response APDU
 						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-						this.processingData.updateResponseAPDU(this,
-								"Invalid encoding of the auxiliary data", resp);
+						processingData.updateResponseAPDU(this, "Invalid encoding of the auxiliary data", resp);
 						return;	
 					}
 					ConstructedTlvDataObject ddo = (ConstructedTlvDataObject) currentObject;
@@ -411,16 +407,14 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					} catch (IllegalArgumentException e) {
 						// create and propagate response APDU
 						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-						this.processingData.updateResponseAPDU(this,
-								"Invalid encoding of the auxiliary data, object identifier not parseable", resp);
+						processingData.updateResponseAPDU(this, "Invalid encoding of the auxiliary data, object identifier not parseable", resp);
 						return;	
 					}
 				}
 			} else {
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-				this.processingData.updateResponseAPDU(this,
-						"Invalid encoding of the auxiliary data, authentication object is not constructed TLV", resp);
+				processingData.updateResponseAPDU(this, "Invalid encoding of the auxiliary data, authentication object is not constructed TLV", resp);
 				return;	
 			}
 		}
@@ -431,15 +425,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		} else {
 			// create and propagate response APDU
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-			this.processingData.updateResponseAPDU(this,
-					"The ephemeral public key reference data is missing", resp);
+			processingData.updateResponseAPDU(this, "The ephemeral public key reference data is missing", resp);
 			return;
 		}
 		
 		// create and propagate response APDU
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-		this.processingData.updateResponseAPDU(this,
-				"Command SetAT successfully processed", resp);
+		processingData.updateResponseAPDU(this, "Command SetAT successfully processed", resp);
 	}
 	
 	/**
