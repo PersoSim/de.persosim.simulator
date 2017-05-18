@@ -440,14 +440,11 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		
 		BigInteger publicPointX = publicPoint.getAffineX();
 		
-		
-		
-		
 		ECField field = ecPublicKey.getParams().getCurve().getField();
 		if(field instanceof ECFieldFp){
 			ECFieldFp fieldFp = (ECFieldFp) field;
-
-			int expectedLength = (int) Math.ceil(Utils.logarithm(fieldFp.getP().doubleValue(), 256));
+			
+			int expectedLength = getPublicPointReferenceLengthL(fieldFp.getP());
 			byte [] result = Utils.toUnsignedByteArray(publicPointX);
 			
 			if (result.length < expectedLength){
