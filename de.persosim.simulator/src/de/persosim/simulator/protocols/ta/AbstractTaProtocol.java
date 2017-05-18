@@ -343,11 +343,8 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		}
 		
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-		TlvDataObject cryptographicMechanismReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_80);
-		TlvDataObject publicKeyReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_83);
-		TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TlvConstants.TAG_67);
-		TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(TlvConstants.TAG_91);
 		
+		TlvDataObject publicKeyReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_83);
 		if (publicKeyReferenceData != null){
 			try {
 				PublicKeyReference keyReference = new PublicKeyReference(publicKeyReferenceData);
@@ -374,6 +371,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			return;
 		}
 		
+		TlvDataObject cryptographicMechanismReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_80);
 		if (cryptographicMechanismReferenceData != null){
 			//add missing Tag and Length
 			TlvDataObject cryptographicMechanismReferenceDataReconstructed = new PrimitiveTlvDataObject(TlvConstants.TAG_06, cryptographicMechanismReferenceData.getValueField());
@@ -382,18 +380,17 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			} catch (IllegalArgumentException e) {
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-				this.processingData.updateResponseAPDU(this,
-						"The cryptographic mechanism reference encoding is invalid", resp);
+				this.processingData.updateResponseAPDU(this, "The cryptographic mechanism reference encoding is invalid", resp);
 				return;
 			}
 		} else {
 			// create and propagate response APDU
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-			this.processingData.updateResponseAPDU(this,
-					"The public key reference data is missing", resp);
+			this.processingData.updateResponseAPDU(this, "The public key reference data is missing", resp);
 			return;
 		}
 		
+		TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TlvConstants.TAG_67);
 		if (auxiliaryAuthenticatedData != null){
 			if (auxiliaryAuthenticatedData instanceof ConstructedTlvDataObject){
 				auxiliaryData = new ArrayList<AuthenticatedAuxiliaryData>();
@@ -428,6 +425,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			}
 		}
 		
+		TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(TlvConstants.TAG_91);
 		if (ephemeralPublicKeyData != null){
 			compressedTerminalEphemeralPublicKey = ephemeralPublicKeyData.getValueField();
 		} else {
