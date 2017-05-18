@@ -132,8 +132,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	 */
 	public static int getPublicPointReferenceLengthL(BigInteger q) {
 		int log = q.bitLength();
-		int result = ((Double) Math.ceil(log/8.0)).intValue();
-		return result;
+		return ((Double) Math.ceil(log/8.0)).intValue();
 	}
 	
 	/**
