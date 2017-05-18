@@ -396,6 +396,15 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		
 		return null;
 	}
+	
+	protected byte[] extractCompressedTerminalEphemeralPublicKey(TlvDataObjectContainer commandData) {
+		TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(TlvConstants.TAG_91);
+		if (ephemeralPublicKeyData != null){
+			return ephemeralPublicKeyData.getValueField();
+		} else {
+			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "The ephemeral public key reference data is missing");
+		}
+	}
 
 	void processCommandSetAt() {
 		try {
@@ -413,15 +422,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				auxiliaryData.add(authenticatedAuxiliaryData);
 			}
 			
-			TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(TlvConstants.TAG_91);
-			if (ephemeralPublicKeyData != null){
-				compressedTerminalEphemeralPublicKey = ephemeralPublicKeyData.getValueField();
-			} else {
-				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-				processingData.updateResponseAPDU(this, "The ephemeral public key reference data is missing", resp);
-				return;
-			}
+			compressedTerminalEphemeralPublicKey = extractCompressedTerminalEphemeralPublicKey(commandData);
 			
 			// create and propagate response APDU
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
