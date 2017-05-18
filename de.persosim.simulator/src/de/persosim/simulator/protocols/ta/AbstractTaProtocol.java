@@ -352,6 +352,23 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, "The public key reference data is missing");
 		}
 	}
+	
+	protected void assertPublicKeyReferenceDataMatchesCertificate(TlvDataObjectContainer commandData, CardVerifiableCertificate cvCert) {
+		TlvDataObject publicKeyReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_83);
+		if (publicKeyReferenceData != null){
+			try {
+				PublicKeyReference keyReference = new PublicKeyReference(publicKeyReferenceData);
+
+				if (!cvCert.getCertificateHolderReference().equals(keyReference)){
+					throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, "The referenced public key could not be found");
+				}
+			} catch (CarParameterInvalidException e) {
+				throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "The public key reference data is invalid");
+			}
+		} else {
+			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "The public key reference data is missing");
+		}
+	}
 
 	void processCommandSetAt() {
 		try {
@@ -361,30 +378,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			
 			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 			
-			TlvDataObject publicKeyReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_83);
-			if (publicKeyReferenceData != null){
-				try {
-					PublicKeyReference keyReference = new PublicKeyReference(publicKeyReferenceData);
-
-					if (!currentCertificate.getCertificateHolderReference().equals(keyReference)){
-						// create and propagate response APDU
-						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-						processingData.updateResponseAPDU(this, "The referenced public key could not be found", resp);
-						return;
-					}
-				} catch (CarParameterInvalidException e) {
-					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-					processingData.updateResponseAPDU(this, "The public key reference data is invalid", resp);
-					return;
-				}
-			} else {
-				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-				processingData.updateResponseAPDU(this, "The public key reference data is missing", resp);
-				return;
-			}
-			
+			assertPublicKeyReferenceDataMatchesCertificate(commandData, currentCertificate);
 			cryptographicMechanismReference = getCryptographicMechanismReference(commandData);
 			
 			TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TlvConstants.TAG_67);
