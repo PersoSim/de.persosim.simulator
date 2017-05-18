@@ -369,6 +369,33 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "The public key reference data is missing");
 		}
 	}
+	
+	protected AuthenticatedAuxiliaryData getAuxiliarydata(TlvDataObjectContainer commandData) {
+		TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TlvConstants.TAG_67);
+		if (auxiliaryAuthenticatedData != null){
+			if (auxiliaryAuthenticatedData instanceof ConstructedTlvDataObject){
+				auxiliaryData = new ArrayList<>();
+				ConstructedTlvDataObject constructedAuxiliaryAuthenticatedData = (ConstructedTlvDataObject) auxiliaryAuthenticatedData;
+				for (TlvDataObject currentObject : constructedAuxiliaryAuthenticatedData.getTlvDataObjectContainer()){
+					if(!(currentObject instanceof ConstructedTlvDataObject) || !currentObject.getTlvTag().equals(TlvConstants.TAG_73)){
+						throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "Invalid encoding of the auxiliary data");
+					}
+					ConstructedTlvDataObject ddo = (ConstructedTlvDataObject) currentObject;
+					TlvDataObject objectIdentifier = ddo.getTlvDataObject(TlvConstants.TAG_06);
+					TlvDataObject discretionaryData = ddo.getTlvDataObject(TlvConstants.TAG_53);
+					try {
+						return new AuthenticatedAuxiliaryData(new GenericOid(objectIdentifier.getValueField()), discretionaryData.getValueField());
+					} catch (IllegalArgumentException e) {
+						throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "Invalid encoding of the auxiliary data, object identifier not parseable");
+					}
+				}
+			} else {
+				throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "Invalid encoding of the auxiliary data, authentication object is not constructed TLV");
+			}
+		}
+		
+		return null;
+	}
 
 	void processCommandSetAt() {
 		try {
@@ -381,36 +408,9 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			assertPublicKeyReferenceDataMatchesCertificate(commandData, currentCertificate);
 			cryptographicMechanismReference = getCryptographicMechanismReference(commandData);
 			
-			TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TlvConstants.TAG_67);
-			if (auxiliaryAuthenticatedData != null){
-				if (auxiliaryAuthenticatedData instanceof ConstructedTlvDataObject){
-					auxiliaryData = new ArrayList<>();
-					ConstructedTlvDataObject constructedAuxiliaryAuthenticatedData = (ConstructedTlvDataObject) auxiliaryAuthenticatedData;
-					for (TlvDataObject currentObject : constructedAuxiliaryAuthenticatedData.getTlvDataObjectContainer()){
-						if(!(currentObject instanceof ConstructedTlvDataObject) || !currentObject.getTlvTag().equals(TlvConstants.TAG_73)){
-							// create and propagate response APDU
-							ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-							processingData.updateResponseAPDU(this, "Invalid encoding of the auxiliary data", resp);
-							return;	
-						}
-						ConstructedTlvDataObject ddo = (ConstructedTlvDataObject) currentObject;
-						TlvDataObject objectIdentifier = ddo.getTlvDataObject(TlvConstants.TAG_06);
-						TlvDataObject discretionaryData = ddo.getTlvDataObject(TlvConstants.TAG_53);
-						try {
-							auxiliaryData.add(new AuthenticatedAuxiliaryData(new GenericOid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
-						} catch (IllegalArgumentException e) {
-							// create and propagate response APDU
-							ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-							processingData.updateResponseAPDU(this, "Invalid encoding of the auxiliary data, object identifier not parseable", resp);
-							return;	
-						}
-					}
-				} else {
-					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-					processingData.updateResponseAPDU(this, "Invalid encoding of the auxiliary data, authentication object is not constructed TLV", resp);
-					return;	
-				}
+			AuthenticatedAuxiliaryData authenticatedAuxiliaryData = getAuxiliarydata(commandData);
+			if(authenticatedAuxiliaryData != null) {
+				auxiliaryData.add(authenticatedAuxiliaryData);
 			}
 			
 			TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(TlvConstants.TAG_91);
