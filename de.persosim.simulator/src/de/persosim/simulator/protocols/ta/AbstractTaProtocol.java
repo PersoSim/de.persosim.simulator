@@ -327,10 +327,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @return true if TA generally can be executed
 	 */
 	protected boolean isTaAllowed(){
-		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
+		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<>();
 		wantedMechanisms.add(TerminalAuthenticationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, wantedMechanisms);
-		if (currentMechanisms.size() > 0){
+		if (!currentMechanisms.isEmpty()){
 			return false;
 		} else {
 			return true;
@@ -393,7 +393,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TlvConstants.TAG_67);
 		if (auxiliaryAuthenticatedData != null){
 			if (auxiliaryAuthenticatedData instanceof ConstructedTlvDataObject){
-				auxiliaryData = new ArrayList<AuthenticatedAuxiliaryData>();
+				auxiliaryData = new ArrayList<>();
 				ConstructedTlvDataObject constructedAuxiliaryAuthenticatedData = (ConstructedTlvDataObject) auxiliaryAuthenticatedData;
 				for (TlvDataObject currentObject : constructedAuxiliaryAuthenticatedData.getTlvDataObjectContainer()){
 					if(!(currentObject instanceof ConstructedTlvDataObject) || !currentObject.getTlvTag().equals(TlvConstants.TAG_73)){
@@ -758,13 +758,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(PaceMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
-		if (currentMechanisms.size() > 0){
+		if (!currentMechanisms.isEmpty()){
 			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
 			byte [] idPicc = paceMechanism.getCompressedEphemeralPublicKey();
 			
 			byte [] dataToVerify = Utils.concatByteArrays(idPicc, challenge, compressedTerminalEphemeralPublicKey);
 			
-			if (auxiliaryData != null && auxiliaryData.size() > 0){
+			if (auxiliaryData != null && (!auxiliaryData.isEmpty())){
 				ConstructedTlvDataObject auxiliaryDataTlv = new ConstructedTlvDataObject(TlvConstants.TAG_67);
 				for(AuthenticatedAuxiliaryData current : auxiliaryData){
 					auxiliaryDataTlv.addTlvDataObject(current.getEncoded());
