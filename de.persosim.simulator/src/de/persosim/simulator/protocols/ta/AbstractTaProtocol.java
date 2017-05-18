@@ -87,7 +87,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	public static final byte MASK_SFI_BYTE = (byte) 0x80;
 	
 	private SecureRandom secureRandom = new SecureRandom();
-	private CardVerifiableCertificate currentCertificate;
+	protected CardVerifiableCertificate currentCertificate;
 	private CardVerifiableCertificate mostRecentTemporaryCertificate;
 
 	private byte [] challenge;
@@ -116,7 +116,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @return true, iff it is a {@link IsoSecureMessagingCommandApdu} and the
 	 *         APDU was encrypted at some point in its history
 	 */
-	private boolean checkSecureMessagingApdu(){
+	protected boolean checkSecureMessagingApdu(){
 		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu){
 			if (!((IsoSecureMessagingCommandApdu) processingData
 							.getCommandApdu()).wasSecureMessaging()) {
@@ -162,7 +162,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		challenge = null;
 	}
 	
-	void processCommandSetDst() {
+	protected void processCommandSetDst() {
 		if (!checkSecureMessagingApdu()){
 			return;
 		}
@@ -406,7 +406,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		}
 	}
 
-	void processCommandSetAt() {
+	protected void processCommandSetAt() {
 		try {
 			if (!checkSecureMessagingApdu()){
 				return;
@@ -480,7 +480,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		return false;
 	}
 
-	void processCommandPsoVerifyCertificate() {
+	protected void processCommandPsoVerifyCertificate() {
 		if (!checkSecureMessagingApdu()){
 			return;
 		}
