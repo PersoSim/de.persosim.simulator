@@ -338,6 +338,16 @@ public class CryptoUtil {
 		return bytes;
 	}
 	
+	/**
+	 * Computes reference length l in bytes used for Point-to-Octet-String Conversion according to ANSI X9.62 chapter 4.3.6.
+	 * @param q the prime
+	 * @return reference length l
+	 */
+	public static int getPublicPointReferenceLengthL(BigInteger q) {
+		int log = q.bitLength();
+		return ((Double) Math.ceil(log/8.0)).intValue();
+	}
+	
 	public static KeyPair generateKeyPair(DomainParameterSet domParamSet, SecureRandom secRandom) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
 		KeyPairGenerator keyPairGenerator;
 		

@@ -122,17 +122,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	 * @return reference length l
 	 */
 	public int getPublicPointReferenceLengthL() {
-		return getPublicPointReferenceLengthL(getPrime());
-	}
-	
-	/**
-	 * Computes reference length l in bytes used for Point-to-Octet-String Conversion according to ANSI X9.62 chapter 4.3.6.
-	 * @param q the prime
-	 * @return reference length l
-	 */
-	public static int getPublicPointReferenceLengthL(BigInteger q) {
-		int log = q.bitLength();
-		return ((Double) Math.ceil(log/8.0)).intValue();
+		return CryptoUtil.getPublicPointReferenceLengthL(getPrime());
 	}
 	
 	/**
@@ -407,7 +397,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 			return null;
 		}
 		
-		int publicPointReferenceLength = getPublicPointReferenceLengthL(getPrime());
+		int publicPointReferenceLength = getPublicPointReferenceLengthL();
 		
 		return CryptoUtil.encode(ecPoint, publicPointReferenceLength, encoding);
 	}
@@ -448,7 +438,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		if(field instanceof ECFieldFp){
 			ECFieldFp fieldFp = (ECFieldFp) field;
 			
-			int expectedLength = getPublicPointReferenceLengthL(fieldFp.getP());
+			int expectedLength = CryptoUtil.getPublicPointReferenceLengthL(fieldFp.getP());
 			byte [] result = Utils.toUnsignedByteArray(publicPointX);
 			
 			if (result.length < expectedLength){
@@ -508,7 +498,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		curve.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OCTET_STRING, getCurve().getA().toByteArray()));
 		curve.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OCTET_STRING, getCurve().getB().toByteArray()));
 		
-		PrimitiveTlvDataObject base = new PrimitiveTlvDataObject(TlvConstants.TAG_OCTET_STRING, CryptoUtil.encode(getGenerator(), getPublicPointReferenceLengthL(getPrime()), CryptoUtil.ENCODING_UNCOMPRESSED));
+		PrimitiveTlvDataObject base = new PrimitiveTlvDataObject(TlvConstants.TAG_OCTET_STRING, CryptoUtil.encode(getGenerator(), getPublicPointReferenceLengthL(), CryptoUtil.ENCODING_UNCOMPRESSED));
 		PrimitiveTlvDataObject order = new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, getOrder().toByteArray());
 		PrimitiveTlvDataObject cofactor = new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, BigInteger.valueOf(getCofactor()).toByteArray());
 		
@@ -564,7 +554,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		BigInteger order = getOrder();
 		int coFactor = getCofactor();
 		ECPoint generator = getGenerator();
-		int referenceLength = DomainParameterSetEcdh.getPublicPointReferenceLengthL(p);
+		int referenceLength = CryptoUtil.getPublicPointReferenceLengthL(p);
 		
 		sb.append("************ elliptic curve domain parameters ************");
 		sb.append("\nCurve parameter A : " + HexString.encode(a));
