@@ -716,44 +716,52 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		currentCertificate = mostRecentTemporaryCertificate;
 	}
 
-	protected void processCommandExternalAuthenticate() {
-		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
-				&& !((IsoSecureMessagingCommandApdu) processingData
-						.getCommandApdu()).wasSecureMessaging()) {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this, "TA must be executed in secure messaging", resp);
-			return;
-		}
-
-		//ensure GetChallenge was called before
-		if (challenge == null) {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this,"No challenge was generated, please call GetChallenge first", resp);
-			return;
-		}
-		
-		if (!isTaAllowed()){
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this, "multiple TA execution is not allowed", resp);
-			return;
-		}
-		
-		byte [] terminalSignatureData = processingData.getCommandApdu().getCommandData().toByteArray();
-		
-		byte [] idPicc;
-		
+	protected byte[] getIdIcc() {
 		//get necessary information stored in an earlier protocol (e.g. PACE)
 		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(PaceMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 		if (!currentMechanisms.isEmpty()){
 			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
-			idPicc = paceMechanism.getCompressedEphemeralPublicKey();
+			return paceMechanism.getCompressedEphemeralPublicKey();
+		} else {
+			throw new ProcessingException(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "No protocol providing data for ID_PICC calculation was run");
+		}
+	}
+
+	protected void processCommandExternalAuthenticate() {
+		ResponseApdu resp;
+		
+		try {
+			if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
+					&& !((IsoSecureMessagingCommandApdu) processingData
+							.getCommandApdu()).wasSecureMessaging()) {
+				// create and propagate response APDU
+				resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "TA must be executed in secure messaging", resp);
+				return;
+			}
+
+			//ensure GetChallenge was called before
+			if (challenge == null) {
+				// create and propagate response APDU
+				resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this,"No challenge was generated, please call GetChallenge first", resp);
+				return;
+			}
 			
-			byte [] dataToVerify = Utils.concatByteArrays(idPicc, challenge, compressedTerminalEphemeralPublicKey);
+			if (!isTaAllowed()){
+				// create and propagate response APDU
+				resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "multiple TA execution is not allowed", resp);
+				return;
+			}
+			
+			byte [] terminalSignatureData = processingData.getCommandApdu().getCommandData().toByteArray();
+			
+			byte [] idIcc = getIdIcc();
+			
+			byte [] dataToVerify = Utils.concatByteArrays(idIcc, challenge, compressedTerminalEphemeralPublicKey);
 			
 			if (auxiliaryData != null && (!auxiliaryData.isEmpty())){
 				ConstructedTlvDataObject auxiliaryDataTlv = new ConstructedTlvDataObject(TlvConstants.TAG_67);
@@ -768,22 +776,20 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					handleSuccessfulTerminalAuthentication(currentCertificate);
 				} else {
 					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6300_AUTHENTICATION_FAILED);
+					resp = new ResponseApdu(Iso7816.SW_6300_AUTHENTICATION_FAILED);
 					this.processingData.updateResponseAPDU(this,"The signature could not be verified", resp);
 					return;
 				}
 			} catch (InvalidKeyException | NoSuchAlgorithmException
 					| SignatureException | NoSuchProviderException e) {
 				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
+				resp = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
 				this.processingData.updateResponseAPDU(this,"The signature could not be verified", resp);
 				return;
 			}
-
-		} else {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this,"No protocol providing data for ID_PICC calculation was run", resp);
+		} catch (ProcessingException e) {
+			resp = new ResponseApdu(e.getStatusWord());
+			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 		}
 	}
 	
