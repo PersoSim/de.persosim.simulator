@@ -448,8 +448,7 @@ public class CryptoUtil {
 		integers.addTlvDataObject(integerRObject);
 		integers.addTlvDataObject(integerSObject);
 		
-		ConstructedTlvDataObject signatureObject = new ConstructedTlvDataObject(new TlvTag(Asn1.SEQUENCE), integers);
-		return signatureObject;
+		return new ConstructedTlvDataObject(new TlvTag(Asn1.SEQUENCE), integers);
 	}
 	
 	/**
