@@ -348,6 +348,14 @@ public class CryptoUtil {
 		return ((Double) Math.ceil(log/8.0)).intValue();
 	}
 	
+	/**
+	 * This method implements the key compression of an ECPublicKey as described
+	 * in TR-03110 Part 3 Appendix A.2.2.3. It does NOT return a recoverable
+	 * compressed variant of the key.
+	 * 
+	 * @param publicKey
+	 * @return the compressed key
+	 */
 	public static byte[] compressEcPublicKey(ECPublicKey ecPublicKey) {
 		ECPoint publicPoint = ecPublicKey.getW();
 		
