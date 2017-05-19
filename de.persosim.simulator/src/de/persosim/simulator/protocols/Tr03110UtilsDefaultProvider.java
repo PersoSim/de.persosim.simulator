@@ -74,7 +74,7 @@ public class Tr03110UtilsDefaultProvider implements Tr03110UtilsProvider {
 		ECParameterSpec ecParams = ecKey.getParams();
 		EllipticCurve curve = ecParams.getCurve();
 
-		int referenceLength = DomainParameterSetEcdh.getPublicPointReferenceLengthL(((ECFieldFp) curve.getField()).getP());
+		int referenceLength = CryptoUtil.getPublicPointReferenceLengthL(((ECFieldFp) curve.getField()).getP());
 		PrimitiveTlvDataObject publicPoint = new PrimitiveTlvDataObject(TAG_86, CryptoUtil.encode(ecKey.getW(), referenceLength, CryptoUtil.ENCODING_UNCOMPRESSED));
 		
 		if (includeConditionalObjects) {
