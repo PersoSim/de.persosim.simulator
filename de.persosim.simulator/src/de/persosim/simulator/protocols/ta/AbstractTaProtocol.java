@@ -716,7 +716,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		currentCertificate = mostRecentTemporaryCertificate;
 	}
 
-	void processCommandExternalAuthenticate() {
+	protected void processCommandExternalAuthenticate() {
 		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
 				&& !((IsoSecureMessagingCommandApdu) processingData
 						.getCommandApdu()).wasSecureMessaging()) {
