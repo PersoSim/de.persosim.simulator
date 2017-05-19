@@ -359,20 +359,13 @@ public class CryptoUtil {
 	public static byte[] compressEcPublicKey(ECPublicKey ecPublicKey) {
 		ECPoint publicPoint = ecPublicKey.getW();
 		
-		BigInteger publicPointX = publicPoint.getAffineX();
-		
 		ECField field = ecPublicKey.getParams().getCurve().getField();
 		if(field instanceof ECFieldFp){
 			ECFieldFp fieldFp = (ECFieldFp) field;
 			
 			int expectedLength = CryptoUtil.getPublicPointReferenceLengthL(fieldFp.getP());
-			byte [] result = Utils.toUnsignedByteArray(publicPointX);
 			
-			if (result.length < expectedLength){
-				byte [] padding = new byte [expectedLength - result.length];
-				result = Utils.concatByteArrays(padding, result);
-			} 
-			return result;
+			return getProjectedRepresentation(publicPoint, expectedLength, true);
 		}
 		
 		return null;
