@@ -348,6 +348,28 @@ public class CryptoUtil {
 		return ((Double) Math.ceil(log/8.0)).intValue();
 	}
 	
+	public static byte[] compress(ECPublicKey ecPublicKey) {
+		ECPoint publicPoint = ecPublicKey.getW();
+		
+		BigInteger publicPointX = publicPoint.getAffineX();
+		
+		ECField field = ecPublicKey.getParams().getCurve().getField();
+		if(field instanceof ECFieldFp){
+			ECFieldFp fieldFp = (ECFieldFp) field;
+			
+			int expectedLength = CryptoUtil.getPublicPointReferenceLengthL(fieldFp.getP());
+			byte [] result = Utils.toUnsignedByteArray(publicPointX);
+			
+			if (result.length < expectedLength){
+				byte [] padding = new byte [expectedLength - result.length];
+				result = Utils.concatByteArrays(padding, result);
+			} 
+			return result;
+		}
+		
+		return null;
+	}
+	
 	public static KeyPair generateKeyPair(DomainParameterSet domParamSet, SecureRandom secRandom) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
 		KeyPairGenerator keyPairGenerator;
 		
