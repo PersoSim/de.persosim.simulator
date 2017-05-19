@@ -348,7 +348,7 @@ public class CryptoUtil {
 		return ((Double) Math.ceil(log/8.0)).intValue();
 	}
 	
-	public static byte[] compress(ECPublicKey ecPublicKey) {
+	public static byte[] compressEcPublicKey(ECPublicKey ecPublicKey) {
 		ECPoint publicPoint = ecPublicKey.getW();
 		
 		BigInteger publicPointX = publicPoint.getAffineX();

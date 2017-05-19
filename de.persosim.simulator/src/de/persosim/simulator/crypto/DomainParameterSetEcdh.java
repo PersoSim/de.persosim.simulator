@@ -426,7 +426,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 			throw new IllegalArgumentException("public key must be an EC public key");
 		}
 		
-		return CryptoUtil.compress(ecPublicKey);
+		return CryptoUtil.compressEcPublicKey(ecPublicKey);
 	}
 
 	@Override
