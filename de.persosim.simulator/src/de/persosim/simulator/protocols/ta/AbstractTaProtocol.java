@@ -721,10 +721,8 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				&& !((IsoSecureMessagingCommandApdu) processingData
 						.getCommandApdu()).wasSecureMessaging()) {
 			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(
-					Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this,
-					"TA must be executed in secure messaging", resp);
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+			this.processingData.updateResponseAPDU(this, "TA must be executed in secure messaging", resp);
 			return;
 		}
 
@@ -745,13 +743,15 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		
 		byte [] terminalSignatureData = processingData.getCommandApdu().getCommandData().toByteArray();
 		
+		byte [] idPicc;
+		
 		//get necessary information stored in an earlier protocol (e.g. PACE)
 		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(PaceMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 		if (!currentMechanisms.isEmpty()){
 			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
-			byte [] idPicc = paceMechanism.getCompressedEphemeralPublicKey();
+			idPicc = paceMechanism.getCompressedEphemeralPublicKey();
 			
 			byte [] dataToVerify = Utils.concatByteArrays(idPicc, challenge, compressedTerminalEphemeralPublicKey);
 			
