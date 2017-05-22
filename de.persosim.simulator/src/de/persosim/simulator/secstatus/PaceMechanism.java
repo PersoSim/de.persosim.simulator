@@ -49,7 +49,7 @@ public class PaceMechanism extends AbstractSecMechanism {
 	/**
 	 * @return the ephemeralPublicKey of the PICC generated during PACE
 	 */
-	public byte [] getCompressedEphemeralPublicKey() {
+	public byte [] getCompressedEphemeralPublicKeyChip() {
 		return Arrays.copyOf(compressedEphemeralPublicKeyChip, compressedEphemeralPublicKeyChip.length);
 	}
 	
@@ -60,7 +60,7 @@ public class PaceMechanism extends AbstractSecMechanism {
 		return oidForTa;
 	}
 	
-	public PublicKey getUncompressedTerminalEphemeralPublicKey() {
+	public PublicKey getUncompressedEphemeralPublicKeyTerminal() {
 		return Serializer.deserialize(uncompressedEphemeralPublicKeyTerminal);
 	}
 

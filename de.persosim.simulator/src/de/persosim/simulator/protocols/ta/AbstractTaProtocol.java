@@ -723,7 +723,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 		if (!currentMechanisms.isEmpty()){
 			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
-			return paceMechanism.getCompressedEphemeralPublicKey();
+			return paceMechanism.getCompressedEphemeralPublicKeyChip();
 		} else {
 			throw new ProcessingException(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "No protocol providing data for ID_PICC calculation was run");
 		}
