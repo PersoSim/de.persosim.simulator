@@ -397,7 +397,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		return null;
 	}
 	
-	protected byte[] extractCompressedTerminalEphemeralPublicKey(TlvDataObjectContainer commandData) {
+	protected byte[] extractCompressedEphemeralPublicKeyTerminal(TlvDataObjectContainer commandData) {
 		TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(TlvConstants.TAG_91);
 		if (ephemeralPublicKeyData != null){
 			return ephemeralPublicKeyData.getValueField();
@@ -422,7 +422,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				auxiliaryData.add(authenticatedAuxiliaryData);
 			}
 			
-			compressedTerminalEphemeralPublicKey = extractCompressedTerminalEphemeralPublicKey(commandData);
+			compressedTerminalEphemeralPublicKey = extractCompressedEphemeralPublicKeyTerminal(commandData);
 			
 			// create and propagate response APDU
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
