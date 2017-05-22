@@ -162,6 +162,30 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		challenge = null;
 	}
 	
+	protected TerminalType getTerminalType() {
+		//get necessary information stored in an earlier protocol (e.g. PACE)
+		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
+		previousMechanisms.add(PaceMechanism.class);
+		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+		
+		if (currentMechanisms.size() == 1){
+			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.iterator().next();
+			
+			// extract the currently used terminal type
+			try{
+				return TerminalType.getFromOid(paceMechanism.getOidForTa());
+			} catch (IllegalArgumentException e){
+				throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED, "Previous Pace protocol did not provide information about terminal type");
+			}
+		}
+		
+		if(currentMechanisms.isEmpty()) {
+			throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED, "Missing previous execution of PACE protocol");
+		}
+		
+		throw new ProcessingException(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR, "Previous execution of PACE protocol is ambiguous");
+	}
+	
 	protected void processCommandSetDst() {
 		try {
 			if (!checkSecureMessagingApdu()){
@@ -180,28 +204,8 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			
 			byte[] nameOfPublicKeyEncoded = publicKeyReference.getValueField();
 			
-			//get necessary information stored in an earlier protocol (e.g. PACE)
-			HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
-			previousMechanisms.add(PaceMechanism.class);
-			Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+			terminalType = getTerminalType();
 			
-			PaceMechanism paceMechanism = null;
-			
-			if (currentMechanisms.size() == 1){
-				paceMechanism = (PaceMechanism) currentMechanisms.iterator().next();
-				
-				// extract the currently used terminal type
-				try{
-					terminalType = TerminalType.getFromOid(paceMechanism.getOidForTa());
-				} catch (IllegalArgumentException e){
-					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-					this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide information about terminal type", resp);
-					return;
-				}
-				
-			}
-
 			// reset the currently set key
 			currentCertificate = null;
 			
