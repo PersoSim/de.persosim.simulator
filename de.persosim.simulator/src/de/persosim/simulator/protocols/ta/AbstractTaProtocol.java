@@ -163,118 +163,123 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	protected void processCommandSetDst() {
-		if (!checkSecureMessagingApdu()){
-			return;
-		}
-		
-		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-		TlvDataObject publicKeyReference = commandData.getTlvDataObject(TlvConstants.TAG_83);
-		
-		if(publicKeyReference == null) {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-			this.processingData.updateResponseAPDU(this,"no public key reference found", resp);
-			return;
-		}
-		
-		byte[] nameOfPublicKeyEncoded = publicKeyReference.getValueField();
-		
-		//get necessary information stored in an earlier protocol (e.g. PACE)
-		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
-		previousMechanisms.add(PaceMechanism.class);
-		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
-		
-		PaceMechanism paceMechanism = null;
-		
-		if (currentMechanisms.size() == 1){
-			paceMechanism = (PaceMechanism) currentMechanisms.iterator().next();
-			
-			// extract the currently used terminal type
-			try{
-				terminalType = TerminalType.getFromOid(paceMechanism.getOidForTa());
-			} catch (IllegalArgumentException e){
-				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-				this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide information about terminal type", resp);
+		try {
+			if (!checkSecureMessagingApdu()){
 				return;
 			}
 			
-		}
-
-		// reset the currently set key
-		currentCertificate = null;
-		
-		// get the next certificate to verify against
-		if (mostRecentTemporaryCertificate != null && mostRecentTemporaryCertificate.getCertificateHolderReference() != null) {
-			// the temporary imported key is to be used
-			if (Arrays.equals(nameOfPublicKeyEncoded,
-					mostRecentTemporaryCertificate.getCertificateHolderReference().getBytes())) {
-				currentCertificate = mostRecentTemporaryCertificate;
+			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
+			TlvDataObject publicKeyReference = commandData.getTlvDataObject(TlvConstants.TAG_83);
+			
+			if(publicKeyReference == null) {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+				this.processingData.updateResponseAPDU(this,"no public key reference found", resp);
+				return;
 			}
-		}
-		
-		if (currentCertificate != null){
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-			this.processingData.updateResponseAPDU(this,
-					"Command SetDST successfully processed, public key found in temporary imported certificate", resp);
-			return;
-		}
 			
-		String anchor = "";
-		
-		// get the stored trust points
-		CardObject trustPointCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new TrustPointIdentifier(terminalType));
-		
-		if (trustPointCandidate instanceof TrustPointCardObject) {
-			trustPoint = (TrustPointCardObject) trustPointCandidate;
+			byte[] nameOfPublicKeyEncoded = publicKeyReference.getValueField();
 			
+			//get necessary information stored in an earlier protocol (e.g. PACE)
+			HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
+			previousMechanisms.add(PaceMechanism.class);
+			Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 			
-			if (trustPoint.getCurrentCertificate().getCertificateHolderReference() != null
-					&& Arrays.equals(trustPoint.getCurrentCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
+			PaceMechanism paceMechanism = null;
+			
+			if (currentMechanisms.size() == 1){
+				paceMechanism = (PaceMechanism) currentMechanisms.iterator().next();
 				
-				currentCertificate = trustPoint.getCurrentCertificate();
-				anchor = "first";
-			} else{
-				if (trustPoint.getPreviousCertificate().getCertificateHolderReference() != null
-						&& Arrays.equals(trustPoint.getPreviousCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
-					
-					currentCertificate = trustPoint.getPreviousCertificate();
-					anchor = "second";
+				// extract the currently used terminal type
+				try{
+					terminalType = TerminalType.getFromOid(paceMechanism.getOidForTa());
+				} catch (IllegalArgumentException e){
+					// create and propagate response APDU
+					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+					this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide information about terminal type", resp);
+					return;
+				}
+				
+			}
+
+			// reset the currently set key
+			currentCertificate = null;
+			
+			// get the next certificate to verify against
+			if (mostRecentTemporaryCertificate != null && mostRecentTemporaryCertificate.getCertificateHolderReference() != null) {
+				// the temporary imported key is to be used
+				if (Arrays.equals(nameOfPublicKeyEncoded,
+						mostRecentTemporaryCertificate.getCertificateHolderReference().getBytes())) {
+					currentCertificate = mostRecentTemporaryCertificate;
 				}
 			}
 			
 			if (currentCertificate != null){
-				// a new root certificate was selected
-				authorizationStore = getInitialAuthorizations(currentCertificate);
-				Authorization auth = null;
-				if (authorizationStore != null){
-					auth = authorizationStore.getAuthorization(terminalType.getAsOid());
-				}
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
+				this.processingData.updateResponseAPDU(this,
+						"Command SetDST successfully processed, public key found in temporary imported certificate", resp);
+				return;
+			}
+				
+			String anchor = "";
+			
+			// get the stored trust points
+			CardObject trustPointCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new TrustPointIdentifier(terminalType));
+			
+			if (trustPointCandidate instanceof TrustPointCardObject) {
+				trustPoint = (TrustPointCardObject) trustPointCandidate;
+				
+				
+				if (trustPoint.getCurrentCertificate().getCertificateHolderReference() != null
+						&& Arrays.equals(trustPoint.getCurrentCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
 					
-				if(auth == null) {
-					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-					this.processingData.updateResponseAPDU(this, "Previous protocol did not provide authorization information from chat", resp);
-					return;
+					currentCertificate = trustPoint.getCurrentCertificate();
+					anchor = "first";
+				} else{
+					if (trustPoint.getPreviousCertificate().getCertificateHolderReference() != null
+							&& Arrays.equals(trustPoint.getPreviousCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
+						
+						currentCertificate = trustPoint.getPreviousCertificate();
+						anchor = "second";
+					}
+				}
+				
+				if (currentCertificate != null){
+					// a new root certificate was selected
+					authorizationStore = getInitialAuthorizations(currentCertificate);
+					Authorization auth = null;
+					if (authorizationStore != null){
+						auth = authorizationStore.getAuthorization(terminalType.getAsOid());
+					}
+						
+					if(auth == null) {
+						// create and propagate response APDU
+						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+						this.processingData.updateResponseAPDU(this, "Previous protocol did not provide authorization information from chat", resp);
+						return;
+					}
 				}
 			}
-		}
-			
-		if (currentCertificate != null){
-			updateAuthorizations(currentCertificate);
-			
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-			this.processingData.updateResponseAPDU(this, "Command SetDST successfully processed, public key found in " + anchor + " trust anchor", resp);
-			return;
-		}
+				
+			if (currentCertificate != null){
+				updateAuthorizations(currentCertificate);
+				
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
+				this.processingData.updateResponseAPDU(this, "Command SetDST successfully processed, public key found in " + anchor + " trust anchor", resp);
+				return;
+			}
 
-		// create and propagate response APDU
-		ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-		this.processingData.updateResponseAPDU(this,
-				"The identified public key could not be found in a trust point or temporarily imported certificate", resp);
-		return;
+			// create and propagate response APDU
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+			this.processingData.updateResponseAPDU(this,
+					"The identified public key could not be found in a trust point or temporarily imported certificate", resp);
+			return;
+		} catch (ProcessingException e) {
+			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
+			processingData.updateResponseAPDU(this, e.getMessage(), resp);
+		}
 	}
 	
 	/**
