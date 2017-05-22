@@ -282,7 +282,8 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 			//propagate data about successfully performed SecMechanism in SecStatus
 			if (sw == Iso7816.SW_9000_NO_ERROR){
 				Oid terminalTypeOid = usedChat != null ? usedChat.getTerminalType().getAsOid(): null;
-				PaceMechanism paceMechanism = new PaceMechanism(Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128, passwordObject, compEphermeralPublicKey, terminalTypeOid);
+				byte[] compressedEphemeralPublicKeyTerminal = HexString.toByteArray("0102030405060708090A0B0C0D0E0F1011121314"); //arbitrary selected value
+				PaceMechanism paceMechanism = new PaceMechanism(Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128, passwordObject, compEphermeralPublicKey, compressedEphemeralPublicKeyTerminal, terminalTypeOid);
 				
 				if (usedChat != null){
 					HashMap<Oid, Authorization> authorizations = new HashMap<>();

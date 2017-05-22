@@ -114,8 +114,8 @@ public class PinManagementTest extends PersoSimTestCase {
 		oid0 = Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128;
 		oidIdentifier0 = new OidIdentifier(oid0);
 		
-		PaceMechanism paceMechanismWithCan = new PaceMechanism(oid0, pwdaoWithCan, null, null);
-		PaceMechanism paceMechanismWithPin = new PaceMechanism(oid0, pwdaoWithPinRc3Activated, null, null);
+		PaceMechanism paceMechanismWithCan = new PaceMechanism(oid0, pwdaoWithCan, null, null, null);
+		PaceMechanism paceMechanismWithPin = new PaceMechanism(oid0, pwdaoWithPinRc3Activated, null, null, null);
 		
 		csmWithCan = new HashSet<SecMechanism>();
 		csmWithCan.add(paceMechanismWithCan);

@@ -688,7 +688,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		if(paceSuccessful) {
 			ConstructedTlvDataObject responseContent = buildMutualAuthenticateResponse(piccToken);
 			if (setSmDataProvider()){
-				PaceMechanism paceMechanism = new PaceMechanism(paceOid, pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), terminalTypeOid);
+				PaceMechanism paceMechanism = new PaceMechanism(paceOid, pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), paceDomainParametersMapped.comp(ephemeralPublicKeyPcd), terminalTypeOid);
 				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
 				
 				ConfinedAuthorizationMechanism newAuthMechanism;

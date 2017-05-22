@@ -1,14 +1,11 @@
 package de.persosim.simulator.secstatus;
 
-import java.security.PublicKey;
 import java.util.Arrays;
 
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.pace.PaceOid;
 import de.persosim.simulator.protocols.ta.TaOid;
-import de.persosim.simulator.utils.Serialized;
-import de.persosim.simulator.utils.Serializer;
 
 /**
  * This {@link SecMechanism} implements the information store for security state
@@ -22,13 +19,14 @@ public class PaceMechanism extends AbstractSecMechanism {
 	private PaceOid paceOid;
 	private PasswordAuthObject usedPassword;
 	private byte [] compressedEphemeralPublicKeyChip;
-	private Serialized<PublicKey> uncompressedEphemeralPublicKeyTerminal;
+	private byte [] compressedEphemeralPublicKeyTerminal;
 	private Oid oidForTa;
 
-	public PaceMechanism(PaceOid paceOid, PasswordAuthObject usedPassword, byte[] compressedEphemeralPublicKeyPicc, Oid terminalTypeOid){
+	public PaceMechanism(PaceOid paceOid, PasswordAuthObject usedPassword, byte[] compressedEphemeralPublicKeyChip, byte[] compressedEphemeralPublicKeyTerminal, Oid terminalTypeOid){
 		this.paceOid = paceOid;
 		this.usedPassword = usedPassword;
-		this.compressedEphemeralPublicKeyChip = compressedEphemeralPublicKeyPicc;
+		this.compressedEphemeralPublicKeyChip = compressedEphemeralPublicKeyChip;
+		this.compressedEphemeralPublicKeyTerminal = compressedEphemeralPublicKeyTerminal;
 		this.oidForTa = terminalTypeOid;
 	}
 	
@@ -47,7 +45,7 @@ public class PaceMechanism extends AbstractSecMechanism {
 	}
 
 	/**
-	 * @return the ephemeralPublicKey of the PICC generated during PACE
+	 * @return the compressed ephemeral public key of the chip generated while performing PACE
 	 */
 	public byte [] getCompressedEphemeralPublicKeyChip() {
 		return Arrays.copyOf(compressedEphemeralPublicKeyChip, compressedEphemeralPublicKeyChip.length);
@@ -60,8 +58,11 @@ public class PaceMechanism extends AbstractSecMechanism {
 		return oidForTa;
 	}
 	
-	public PublicKey getUncompressedEphemeralPublicKeyTerminal() {
-		return Serializer.deserialize(uncompressedEphemeralPublicKeyTerminal);
+	/**
+	 * @return the compressed ephemeral public Key of the terminal conveyed while performing PACE
+	 */
+	public byte[] getCompressedEphemeralPublicKeyTerminal() {
+		return compressedEphemeralPublicKeyTerminal;
 	}
 
 }
