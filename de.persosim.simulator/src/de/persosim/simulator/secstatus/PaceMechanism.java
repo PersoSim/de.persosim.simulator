@@ -1,11 +1,14 @@
 package de.persosim.simulator.secstatus;
 
+import java.security.PublicKey;
 import java.util.Arrays;
 
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.pace.PaceOid;
 import de.persosim.simulator.protocols.ta.TaOid;
+import de.persosim.simulator.utils.Serialized;
+import de.persosim.simulator.utils.Serializer;
 
 /**
  * This {@link SecMechanism} implements the information store for security state
@@ -18,13 +21,14 @@ public class PaceMechanism extends AbstractSecMechanism {
 	
 	private PaceOid paceOid;
 	private PasswordAuthObject usedPassword;
-	private byte [] compressedEphemeralPublicKey;
+	private byte [] compressedEphemeralPublicKeyChip;
+	private Serialized<PublicKey> uncompressedEphemeralPublicKeyTerminal;
 	private Oid oidForTa;
 
-	public PaceMechanism(PaceOid paceOid, PasswordAuthObject usedPassword, byte[] compressedPublicKey, Oid terminalTypeOid){
+	public PaceMechanism(PaceOid paceOid, PasswordAuthObject usedPassword, byte[] compressedEphemeralPublicKeyPicc, Oid terminalTypeOid){
 		this.paceOid = paceOid;
 		this.usedPassword = usedPassword;
-		this.compressedEphemeralPublicKey = compressedPublicKey;
+		this.compressedEphemeralPublicKeyChip = compressedEphemeralPublicKeyPicc;
 		this.oidForTa = terminalTypeOid;
 	}
 	
@@ -46,7 +50,7 @@ public class PaceMechanism extends AbstractSecMechanism {
 	 * @return the ephemeralPublicKey of the PICC generated during PACE
 	 */
 	public byte [] getCompressedEphemeralPublicKey() {
-		return Arrays.copyOf(compressedEphemeralPublicKey, compressedEphemeralPublicKey.length);
+		return Arrays.copyOf(compressedEphemeralPublicKeyChip, compressedEphemeralPublicKeyChip.length);
 	}
 	
 	/**
@@ -54,6 +58,10 @@ public class PaceMechanism extends AbstractSecMechanism {
 	 */
 	public Oid getOidForTa() {
 		return oidForTa;
+	}
+	
+	public PublicKey getUncompressedTerminalEphemeralPublicKey() {
+		return Serializer.deserialize(uncompressedEphemeralPublicKeyTerminal);
 	}
 
 }
