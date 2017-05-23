@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.globaltester.logging.InfoSource;
+import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.simulator.LogTags;
 
 import de.persosim.simulator.exception.AccessDeniedException;
@@ -93,8 +94,8 @@ public class PersoSimKernel implements InfoSource {
 	public byte[] process(byte[] commandApduData) {
 		
 		log(this, "processing incoming APDU", TRACE);
-		log("Processing APDU: " + HexString.encode(commandApduData));
-		log(HexString.encode(commandApduData), LogTags.APDU_TAG_IN);
+		log(this, "Processing APDU: " + HexString.encode(commandApduData));
+		log(HexString.encode(commandApduData), LogLevel.TRACE, LogTags.APDU_TAG_IN);
 		log(this, "incoming APDU:\n" + HexString.dump(commandApduData), TRACE);
 		
 		ProcessingData processingData = new ProcessingData();
@@ -127,7 +128,7 @@ public class PersoSimKernel implements InfoSource {
 		
 		log(this, "finished processing APDU");
 		log(this, "outgoing APDU:\n" + HexString.dump(responseApduData), TRACE);
-		log(HexString.encode(responseApduData), LogTags.APDU_TAG_OUT);
+		log(HexString.encode(responseApduData), LogLevel.TRACE, LogTags.APDU_TAG_OUT);
 		return responseApduData;
 		
 	}

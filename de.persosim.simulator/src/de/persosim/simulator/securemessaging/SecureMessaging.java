@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 
+import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.simulator.LogTags;
 
 import de.persosim.simulator.apdu.CommandApdu;
@@ -77,14 +78,14 @@ public class SecureMessaging extends Layer implements TlvConstants{
 						SmDataProviderGenerator smDataProviderGenerator = dataProvider.getSmDataProviderGenerator();
 						processingData.addUpdatePropagation(this, "init SM", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, smDataProviderGenerator));
 						
-						log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogTags.APDU_TAG_DEC_IN);
+						log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogLevel.TRACE, LogTags.APDU_TAG_DEC_IN);
 						log(this, "successfully processed ascending secured APDU", TRACE);
 					} else {
 						discardSecureMessagingSession();
 					}
 					return;
 				} else {
-					log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogTags.APDU_TAG_DEC_IN);
+					log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogLevel.TRACE, LogTags.APDU_TAG_DEC_IN);
 					log(this, "No SmDataProvider available", ERROR);
 					
 					//create and propagate response APDU
@@ -99,7 +100,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 			log(this, "don't process non interindustry APDU", TRACE);
 		}
 		
-		log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogTags.APDU_TAG_DEC_IN);
+		log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogLevel.TRACE, LogTags.APDU_TAG_DEC_IN);
 		
 		// if this line is reached the key material needs to be discarded
 		if (dataProvider != null) {
@@ -129,7 +130,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 	 */
 	@Override
 	public void processDescending() {
-		log(HexString.encode(getProcessingData().getResponseApdu().toByteArray()), LogTags.APDU_TAG_DEC_OUT);
+		log(HexString.encode(getProcessingData().getResponseApdu().toByteArray()), LogLevel.TRACE, LogTags.APDU_TAG_DEC_OUT);
 		
 		if (isSmWrappingApplicable()){
 			processOutgoingSmApdu();

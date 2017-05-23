@@ -1,11 +1,12 @@
 package de.persosim.simulator;
 
 import static org.globaltester.logging.BasicLogger.INFO;
-import static org.globaltester.logging.BasicLogger.UI;
 import static org.globaltester.logging.BasicLogger.log;
 import static org.globaltester.logging.BasicLogger.logException;
 
 import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
 import org.globaltester.simulator.Simulator;
 
 import de.persosim.simulator.exception.AccessDeniedException;
@@ -65,12 +66,12 @@ public class PersoSim implements Simulator {
 	@Override
 	public boolean startSimulator() {
 		if (running) {
-			log(this.getClass(), "Simulator already running", UI);
+			log("Simulator already running", LogLevel.TRACE, new LogTag(BasicLogger.UI_TAG_ID));
 			return true;
 		}
 		
 		running = true;
-		log(this.getClass(), "The simulator has been started", BasicLogger.UI);
+		log("The simulator has been started", LogLevel.TRACE, new LogTag(BasicLogger.UI_TAG_ID));
 		
 		return true;
 	}
@@ -79,10 +80,10 @@ public class PersoSim implements Simulator {
 	public boolean stopSimulator() {		
 		if (running) {
 			running = false;
-			log(this.getClass(), "The simulator has been stopped and will no longer respond to incoming APDUs until it is (re-) started", UI);
+			log("The simulator has been stopped and will no longer respond to incoming APDUs until it is (re-) started", LogLevel.TRACE, new LogTag(BasicLogger.UI_TAG_ID));
 			return true;
 		}
-		log(this.getClass(), "The simulator is already stopped", UI);
+		log("The simulator is already stopped", LogLevel.TRACE, new LogTag(BasicLogger.UI_TAG_ID));
 		return false;
 	}
 	
