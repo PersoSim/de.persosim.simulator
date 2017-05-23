@@ -90,7 +90,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	protected CardVerifiableCertificate currentCertificate;
 	private CardVerifiableCertificate mostRecentTemporaryCertificate;
 
-	private byte [] challenge;
+	protected byte [] challenge;
 	private List<AuthenticatedAuxiliaryData> auxiliaryData;
 	private TaOid cryptographicMechanismReference;
 	private byte [] compressedTerminalEphemeralPublicKey;
