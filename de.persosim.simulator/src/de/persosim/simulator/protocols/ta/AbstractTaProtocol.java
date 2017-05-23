@@ -866,17 +866,20 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 
 		PrimitiveTlvDataObject protocol = new PrimitiveTlvDataObject(
 				new TlvTag(Asn1.OBJECT_IDENTIFIER),
-				new TlvValuePlain(HexString
-						.toByteArray("04 00 7F 00 07 02 02 02")));
+				new TlvValuePlain(TaOid.id_TA.toByteArray()));
 
 		PrimitiveTlvDataObject version = new PrimitiveTlvDataObject(new TlvTag(Asn1.INTEGER),
-				new TlvValuePlain(new byte[] { 2 }));
+				new TlvValuePlain(new byte[] {getProtocolVersion()}));
 		taInfo.addTlvDataObject(protocol);
 		taInfo.addTlvDataObject(version);
 		
 		Collection<TlvDataObject> result = new HashSet<>();
 		result.add(taInfo);
 		return result;
+	}
+	
+	protected byte getProtocolVersion() {
+		return 2;
 	}
 
 }
