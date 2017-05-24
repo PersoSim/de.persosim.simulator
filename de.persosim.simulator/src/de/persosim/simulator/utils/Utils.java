@@ -30,6 +30,9 @@ public abstract class Utils {
 	
 	/*--------------------------------------------------------------------------------*/
 	
+	// This is a static utils class and should not be inherited or instantiated
+	private Utils() {}
+	
 	/**
 	 * Returns an unsigned byte masked to short
 	 * @param byteValue the byte to be masked to short
@@ -313,7 +316,7 @@ public abstract class Utils {
 		
 		bigInt = new BigInteger(1, value);
 		
-		if (bigInt.compareTo(new BigInteger("" +maxValue)) > 0){
+		if (bigInt.compareTo(new BigInteger(Long.toString(maxValue))) > 0){
 			throw new IllegalArgumentException("value too big for signed data type");
 		}
 		
@@ -407,7 +410,8 @@ public abstract class Utils {
 
 		calendar.set(Calendar.YEAR, year);
 
-		int month, day;
+		int month;
+		int day;
 
 		try {
 			month = Integer.parseInt(dateString.substring(4, 6));
