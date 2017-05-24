@@ -53,7 +53,7 @@ public class LinkedListLogListener extends AbstractLogListener {
 			}
 		};
 		this.maxLines = maxLines;
-		setLrc(lrc);
+		setConfig(lrc);
 	}
 	
 	/**
