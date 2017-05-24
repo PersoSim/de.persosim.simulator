@@ -8,7 +8,8 @@ import org.globaltester.logging.filter.AndFilter;
 import org.globaltester.logging.filter.BundleFilter;
 import org.globaltester.logging.filter.LevelFilter;
 import org.globaltester.logging.filter.LogFilter;
-import org.globaltester.logging.format.LogFormat;
+import org.globaltester.logging.format.GtFileLogFormatter;
+import org.globaltester.logging.format.LogFormatService;
 import org.osgi.service.log.LogListener;
 
 import de.persosim.simulator.ui.Activator;
@@ -32,7 +33,7 @@ public class LinkedListLogListener extends AbstractLogListener {
 			byte logLevels [] ={1,2,3,4,5,6,120};
 			String bundleList [] = {"org.globaltester"};
 			
-			public LogFormat format = new LogFormat();
+			public LogFormatService format = new GtFileLogFormatter(GtFileLogFormatter.DATE_FORMAT_GT);
 			public BundleFilter bundleFilter = new BundleFilter(bundleList);
 			public LevelFilter levelFilter = new LevelFilter(logLevels);
 			public LogFilter [] filters = {bundleFilter, levelFilter};	
@@ -48,7 +49,7 @@ public class LinkedListLogListener extends AbstractLogListener {
 			}
 
 			@Override
-			public LogFormat getFormat() {
+			public LogFormatService getFormat() {
 				return format;
 			}
 		};
