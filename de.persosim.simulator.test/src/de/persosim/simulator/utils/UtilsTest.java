@@ -616,25 +616,47 @@ public class UtilsTest {
 	}
 	
 	@Test
-	public void testPadWithLeadingZeroes(){
+	public void testPadWithZeroes_LeadingInputLengthSmallerThanWantedLength(){
 		byte [] input = new byte [] {1,2,3};
-		byte [] result = Utils.padWithLeadingZeroes(input, 10);
+		byte [] result = Utils.padWithZeroes(input, 10, true);
 		byte [] expected = new byte [] {0,0,0,0,0,0,0,1,2,3};
 		assertArrayEquals(expected, result);
 	}
 	
 	@Test
-	public void testPadWithLeadingZeroes_inputLengthEqualToWantedLength(){
+	public void testPadWithLeadingZeroes_LeadingInputLengthEqualToWantedLength(){
 		byte [] input = new byte [] {1,2,3};
-		byte [] result = Utils.padWithLeadingZeroes(input, 3);
+		byte [] result = Utils.padWithZeroes(input, 3, true);
 		byte [] expected = new byte [] {1,2,3};
 		assertArrayEquals(expected, result);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void testPadWithLeadingZeroes_wantedTooSmall(){
+	public void testPadWithZeroes_LeadingWantedTooSmall(){
 		byte [] input = new byte [] {1,2,3};
-		Utils.padWithLeadingZeroes(input, 2);
+		Utils.padWithZeroes(input, 2, true);
+	}
+	
+	@Test
+	public void testPadWithZeroes_TrailingInputLengthSmallerThanWantedLength(){
+		byte [] input = new byte [] {1,2,3};
+		byte [] result = Utils.padWithZeroes(input, 10, false);
+		byte [] expected = new byte [] {1,2,3, 0,0,0,0,0,0,0};
+		assertArrayEquals(expected, result);
+	}
+	
+	@Test
+	public void testPadWithLeadingZeroes_TrailingInputLengthEqualToWantedLength(){
+		byte [] input = new byte [] {1,2,3};
+		byte [] result = Utils.padWithZeroes(input, 3, false);
+		byte [] expected = new byte [] {1,2,3};
+		assertArrayEquals(expected, result);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testPadWithZeroes_TrailingWantedTooSmall(){
+		byte [] input = new byte [] {1,2,3};
+		Utils.padWithZeroes(input, 2, false);
 	}
 	
 	/**
