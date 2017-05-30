@@ -2,6 +2,7 @@ package de.persosim.simulator.secstatus;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ta.Authorization;
@@ -22,7 +23,7 @@ private HashMap<Oid, Authorization> authorizations;
 		authorizations = new HashMap<>();
 	}
 	
-	public AuthorizationStore(HashMap<Oid, Authorization> authorizations) {
+	public AuthorizationStore(Map<Oid, Authorization> authorizations) {
 		this();
 		
 		for(Oid currentOid:authorizations.keySet()) {
@@ -75,7 +76,7 @@ private HashMap<Oid, Authorization> authorizations;
 	 * 
 	 * @param authorizations the authorization information to be used for the update
 	 */
-	public void updateAuthorization(HashMap<Oid, Authorization> authorizations) {
+	public void updateAuthorization(Map<Oid, Authorization> authorizations) {
 		for(Oid currentOid:authorizations.keySet()) {
 			updateAuthorization(currentOid, authorizations.get(currentOid));
 		}
@@ -115,7 +116,8 @@ private HashMap<Oid, Authorization> authorizations;
 			return false;
 		AuthorizationStore other = (AuthorizationStore) obj;
 		
-		Authorization currentAuthThis, currentAuthOther;
+		Authorization currentAuthThis;
+		Authorization currentAuthOther;
 		
 		for(Oid currentOid:authorizations.keySet()) {
 			currentAuthThis = getAuthorization(currentOid);
