@@ -155,16 +155,20 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 		}
 		throw new IllegalArgumentException("unexpected key format");
 	}
-
+	
 	/**
 	 * Reads the a date encoded in 6 bytes as described in TR-03110 v2.10 D.2.1.3.
 	 * @param dateData as described in TR-03110 V2.10 part 3, D
+	 * @param lenient use lenient option for parsing dates via java.util.Calendar.
 	 * @return a {@link Date} object containing the encoded date
 	 * @throws CertificateNotParseableException
 	 */
 	// IMPL check possible code duplication/overlap with Utils.getDate method
-	public static Date parseDate(byte [] dateData) throws NotParseableException {
+	public static Date parseDate(byte [] dateData, boolean lenient) throws NotParseableException {
 		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setLenient(lenient);
+		
 		calendar.set(Calendar.MILLISECOND, 0);
 		calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
 		
@@ -179,6 +183,17 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 			throw new NotParseableException("The date could not be parsed, its length was incorrect");
 		}
 		return calendar.getTime();
+	}
+
+	/**
+	 * Reads the a date encoded in 6 bytes as described in TR-03110 v2.10 D.2.1.3.
+	 * @param dateData as described in TR-03110 V2.10 part 3, D
+	 * @return a {@link Date} object containing the encoded date
+	 * @throws CertificateNotParseableException
+	 */
+	// IMPL check possible code duplication/overlap with Utils.getDate method
+	public static Date parseDate(byte [] dateData) throws NotParseableException {
+		return parseDate(dateData, true);
 	}
 	
 	/**
