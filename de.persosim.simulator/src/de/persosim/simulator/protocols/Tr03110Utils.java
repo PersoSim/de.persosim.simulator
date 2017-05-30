@@ -35,7 +35,7 @@ import de.persosim.simulator.utils.HexString;
 public class Tr03110Utils implements TlvConstants {
 	public static final int ACCESS_RIGHTS_AT_CAN_ALLOWED_BIT = 4;
 	
-static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
+	static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 	
 	static private ServiceTracker<Tr03110UtilsProvider, Tr03110UtilsProvider> serviceTracker;
 	
@@ -66,7 +66,7 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 				}
 			};
 			
-			serviceTracker = new ServiceTracker<Tr03110UtilsProvider, Tr03110UtilsProvider>(Activator.getContext(), Tr03110UtilsProvider.class, customizer);
+			serviceTracker = new ServiceTracker<>(Activator.getContext(), Tr03110UtilsProvider.class, customizer);
 			serviceTracker.open();
 					
 		} else {
@@ -74,7 +74,14 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 		}
 		providers.add(new Tr03110UtilsDefaultProvider());
 
-    }
+	}
+	
+	/*
+	 * This is a utils class only and does not need to be instantiated
+	 */
+	private Tr03110Utils() {}
+	
+	
 	
 	/**
 	 * This method parses a public key encoded within a CV certificate
