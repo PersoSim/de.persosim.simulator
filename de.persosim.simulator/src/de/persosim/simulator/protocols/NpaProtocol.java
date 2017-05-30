@@ -44,7 +44,7 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 
 	@Override
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
-		HashSet<TlvDataObject> secInfos = new HashSet<TlvDataObject>();
+		HashSet<TlvDataObject> secInfos = new HashSet<>();
 		
 		//add CardInfoLocator
 		ConstructedTlvDataObject cardInfoLocator = new ConstructedTlvDataObject(TAG_SEQUENCE);
@@ -115,7 +115,7 @@ public class NpaProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 					if (curIdentifier instanceof FileIdentifier) {
 						int fidInteger = ((FileIdentifier) curIdentifier).getFileIdentifier();
 						String fidHex = HexString.encode(Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(fidInteger)));
-						dgNumber = Integer.parseInt(fidHex.substring(fidHex.toString().length()-2), 16);
+						dgNumber = Integer.parseInt(fidHex.substring(fidHex.length()-2), 16);
 						break;
 					} else if (curIdentifier instanceof ShortFileIdentifier) {
 						dgNumber = ((ShortFileIdentifier) curIdentifier).getShortFileIdentifier();
