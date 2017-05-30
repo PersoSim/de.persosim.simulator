@@ -87,11 +87,9 @@ public class CardVerifiableCertificate extends ReducedCardVerifiableCertificate{
 	
 	@Override
 	public ConstructedTlvDataObject getEncoded() {
-		ConstructedTlvDataObject encoding = CertificateUtils.encodeCertificate(
+		return CertificateUtils.encodeCertificate(
 				((CertificateBody) body),
 				signature);
-		
-		return encoding;
 	}
 	
 	@Override

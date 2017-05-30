@@ -172,14 +172,12 @@ public class ReducedCertificateBody implements Body {
 	
 	@Override
 	public ConstructedTlvDataObject getTlvEncoding(boolean withParams) {
-		ConstructedTlvDataObject encoding = CertificateUtils.encodeReducedCertificateBody(
+		return CertificateUtils.encodeReducedCertificateBody(
 				certificateProfileIdentifier,
 				certificationAuthorityReference,
 				publicKey.toTlvDataObject(withParams),
 				certificateHolderReference,
 				getExtensionRepresentation());
-		
-		return encoding;
 	}
 	
 	@Override
