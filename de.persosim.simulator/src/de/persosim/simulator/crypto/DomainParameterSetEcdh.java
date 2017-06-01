@@ -53,13 +53,28 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	
 	/**
 	 * Constructor for constructing a {@link DomainParameterSetEcdh} object
+	 * 
+	 * @param p prime p specifying the base field
+	 * @param a coefficient A defining the curve
+	 * @param b coefficient B defining the curve
+	 * @param x the affine x-coordinate of the group generator
+	 * @param y the affine y-coordinate of the group generator
+	 * @param n the group order
+	 * @param h the co-factor
+	 */
+	public DomainParameterSetEcdh(BigInteger p, BigInteger a, BigInteger b, BigInteger x, BigInteger y, BigInteger n, int h) {
+		this(new EllipticCurve(new ECFieldFp(p), a, b), new ECPoint(x, y), n, h);
+	}
+	
+	/**
+	 * Constructor for constructing a {@link DomainParameterSetEcdh} object
 	 * @param curve the elliptic curve
 	 * @param g the group generator
 	 * @param n the group order
 	 * @param h the co-factor
 	 */
 	public DomainParameterSetEcdh(EllipticCurve curve, ECPoint g, BigInteger n, int h) {
-		ecParameterSpec = new ECParameterSpec(curve, g,n, h);
+		this(new ECParameterSpec(curve, g,n, h));
 	}
 	
 	/**

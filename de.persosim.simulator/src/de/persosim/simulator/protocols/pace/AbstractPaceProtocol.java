@@ -961,9 +961,9 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 					}
 				}
 			}
-			
-			createDomainParameterInfo(secInfos, parameterId, paceOidIdentifier, identifiers, domainParameterCardObjects);
 		}
+			
+		createDomainParameterInfo(secInfos, paceOidIdentifier, domainParameterCardObjects);
 		
 		//handle duplicates?
 		
@@ -974,13 +974,10 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 * This method creates security infos for proprietary domain parameter
 	 * 
 	 * @param secInfos HashSet with all security infos
-	 * @param parameterId the identifier for domain parameter
 	 * @param paceOidIdentifier the pace oid identifier
-	 * @param identifiers list of all identifier of the current domain parameter
 	 * @param domainParameterCardObjects collection of card objects which matches the paceOidIdentifier
 	 */
-	public void createDomainParameterInfo(HashSet<TlvDataObject> secInfos, int parameterId,
-			OidIdentifier paceOidIdentifier, Collection<CardObjectIdentifier> identifiers,
+	public void createDomainParameterInfo(HashSet<TlvDataObject> secInfos, OidIdentifier paceOidIdentifier,
 			Collection<CardObject> domainParameterCardObjects) {
 		
 		//IMPL add required domainParameterInfo elemtens here
