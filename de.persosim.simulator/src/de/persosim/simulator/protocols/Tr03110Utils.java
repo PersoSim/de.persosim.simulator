@@ -35,7 +35,7 @@ import de.persosim.simulator.utils.HexString;
 public class Tr03110Utils implements TlvConstants {
 	public static final int ACCESS_RIGHTS_AT_CAN_ALLOWED_BIT = 4;
 	
-static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
+	static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 	
 	static private ServiceTracker<Tr03110UtilsProvider, Tr03110UtilsProvider> serviceTracker;
 	
@@ -66,7 +66,7 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 				}
 			};
 			
-			serviceTracker = new ServiceTracker<Tr03110UtilsProvider, Tr03110UtilsProvider>(Activator.getContext(), Tr03110UtilsProvider.class, customizer);
+			serviceTracker = new ServiceTracker<>(Activator.getContext(), Tr03110UtilsProvider.class, customizer);
 			serviceTracker.open();
 					
 		} else {
@@ -74,7 +74,14 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 		}
 		providers.add(new Tr03110UtilsDefaultProvider());
 
-    }
+	}
+	
+	/*
+	 * This is a utils class only and does not need to be instantiated
+	 */
+	private Tr03110Utils() {}
+	
+	
 	
 	/**
 	 * This method parses a public key encoded within a CV certificate
@@ -155,16 +162,20 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 		}
 		throw new IllegalArgumentException("unexpected key format");
 	}
-
+	
 	/**
 	 * Reads the a date encoded in 6 bytes as described in TR-03110 v2.10 D.2.1.3.
 	 * @param dateData as described in TR-03110 V2.10 part 3, D
+	 * @param lenient use lenient option for parsing dates via java.util.Calendar.
 	 * @return a {@link Date} object containing the encoded date
 	 * @throws CertificateNotParseableException
 	 */
 	// IMPL check possible code duplication/overlap with Utils.getDate method
-	public static Date parseDate(byte [] dateData) throws NotParseableException {
+	public static Date parseDate(byte [] dateData, boolean lenient) throws NotParseableException {
 		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setLenient(lenient);
+		
 		calendar.set(Calendar.MILLISECOND, 0);
 		calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
 		
@@ -179,6 +190,17 @@ static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
 			throw new NotParseableException("The date could not be parsed, its length was incorrect");
 		}
 		return calendar.getTime();
+	}
+
+	/**
+	 * Reads the a date encoded in 6 bytes as described in TR-03110 v2.10 D.2.1.3.
+	 * @param dateData as described in TR-03110 V2.10 part 3, D
+	 * @return a {@link Date} object containing the encoded date
+	 * @throws CertificateNotParseableException
+	 */
+	// IMPL check possible code duplication/overlap with Utils.getDate method
+	public static Date parseDate(byte [] dateData) throws NotParseableException {
+		return parseDate(dateData, true);
 	}
 	
 	/**

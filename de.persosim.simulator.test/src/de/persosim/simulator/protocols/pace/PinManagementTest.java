@@ -111,8 +111,11 @@ public class PinManagementTest extends PersoSimTestCase {
 		pwdaoWithPinRc3Deactivated.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		pwdaoWithPinRc3Deactivated.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
 		
-		PaceMechanism paceMechanismWithCan = new PaceMechanism(pwdaoWithCan, null, null);
-		PaceMechanism paceMechanismWithPin = new PaceMechanism(pwdaoWithPinRc3Activated, null, null);
+		oid0 = Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128;
+		oidIdentifier0 = new OidIdentifier(oid0);
+		
+		PaceMechanism paceMechanismWithCan = new PaceMechanism(oid0, pwdaoWithCan, null, null, null);
+		PaceMechanism paceMechanismWithPin = new PaceMechanism(oid0, pwdaoWithPinRc3Activated, null, null, null);
 		
 		csmWithCan = new HashSet<SecMechanism>();
 		csmWithCan.add(paceMechanismWithCan);
@@ -126,9 +129,6 @@ public class PinManagementTest extends PersoSimTestCase {
 		paceProtocol = new DefaultPaceProtocol();
 		paceProtocol.setCardStateAccessor(mockedCardStateAccessor);
 		paceProtocol.init();
-
-		oid0 = Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128;
-		oidIdentifier0 = new OidIdentifier(oid0);
 		
 		domainParameters0 = new DomainParameterSetCardObject(domainParameterSet0, new DomainParameterSetIdentifier(0));
 		domainParameters0.addOidIdentifier(oidIdentifier0);

@@ -338,6 +338,39 @@ public class CryptoUtil {
 		return bytes;
 	}
 	
+	/**
+	 * Computes reference length l in bytes used for Point-to-Octet-String Conversion according to ANSI X9.62 chapter 4.3.6.
+	 * @param q the prime
+	 * @return reference length l
+	 */
+	public static int getPublicPointReferenceLengthL(BigInteger q) {
+		int log = q.bitLength();
+		return ((Double) Math.ceil(log/8.0)).intValue();
+	}
+	
+	/**
+	 * This method implements the key compression of an ECPublicKey as described
+	 * in TR-03110 Part 3 Appendix A.2.2.3. It does NOT return a recoverable
+	 * compressed variant of the key.
+	 * 
+	 * @param publicKey
+	 * @return the compressed key
+	 */
+	public static byte[] compressEcPublicKey(ECPublicKey ecPublicKey) {
+		ECPoint publicPoint = ecPublicKey.getW();
+		
+		ECField field = ecPublicKey.getParams().getCurve().getField();
+		if(field instanceof ECFieldFp){
+			ECFieldFp fieldFp = (ECFieldFp) field;
+			
+			int expectedLength = CryptoUtil.getPublicPointReferenceLengthL(fieldFp.getP());
+			
+			return getProjectedRepresentation(publicPoint, expectedLength, true);
+		}
+		
+		return null;
+	}
+	
 	public static KeyPair generateKeyPair(DomainParameterSet domParamSet, SecureRandom secRandom) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
 		KeyPairGenerator keyPairGenerator;
 		
@@ -408,8 +441,7 @@ public class CryptoUtil {
 		integers.addTlvDataObject(integerRObject);
 		integers.addTlvDataObject(integerSObject);
 		
-		ConstructedTlvDataObject signatureObject = new ConstructedTlvDataObject(new TlvTag(Asn1.SEQUENCE), integers);
-		return signatureObject;
+		return new ConstructedTlvDataObject(new TlvTag(Asn1.SEQUENCE), integers);
 	}
 	
 	/**

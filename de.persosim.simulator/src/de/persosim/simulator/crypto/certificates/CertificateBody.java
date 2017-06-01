@@ -70,10 +70,10 @@ public class CertificateBody extends ReducedCertificateBody {
 		//Certificate Expiration Date
 		//Certificate Effective Date
 		try {
-			certificateExpirationDate = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F24)).getValueField());
-			certificateEffectiveDate = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F25)).getValueField());
-		} catch (NotParseableException e) {
-			throw new CertificateNotParseableException("The date could not be parsed");
+			certificateExpirationDate = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F24)).getValueField(), false);
+			certificateEffectiveDate = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F25)).getValueField(), false);
+		} catch (NotParseableException | IllegalArgumentException e) {
+			throw new CertificateNotParseableException("The date could not be parsed: " + e.getMessage());
 		}
 		
 		if (certificateExpirationDate.before(certificateEffectiveDate)){

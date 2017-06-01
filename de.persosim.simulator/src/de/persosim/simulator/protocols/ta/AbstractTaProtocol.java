@@ -35,6 +35,7 @@ import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.CertificateUpdateException;
+import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.GenericOid;
@@ -86,10 +87,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	public static final byte MASK_SFI_BYTE = (byte) 0x80;
 	
 	private SecureRandom secureRandom = new SecureRandom();
-	private CardVerifiableCertificate currentCertificate;
+	protected CardVerifiableCertificate currentCertificate;
 	private CardVerifiableCertificate mostRecentTemporaryCertificate;
 
-	private byte [] challenge;
+	protected byte [] challenge;
 	private List<AuthenticatedAuxiliaryData> auxiliaryData;
 	private TaOid cryptographicMechanismReference;
 	private byte [] compressedTerminalEphemeralPublicKey;
@@ -115,7 +116,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @return true, iff it is a {@link IsoSecureMessagingCommandApdu} and the
 	 *         APDU was encrypted at some point in its history
 	 */
-	private boolean checkSecureMessagingApdu(){
+	protected boolean checkSecureMessagingApdu(){
 		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu){
 			if (!((IsoSecureMessagingCommandApdu) processingData
 							.getCommandApdu()).wasSecureMessaging()) {
@@ -161,119 +162,128 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		challenge = null;
 	}
 	
-	void processCommandSetDst() {
-		if (!checkSecureMessagingApdu()){
-			return;
-		}
-		
-		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-		TlvDataObject publicKeyReference = commandData.getTlvDataObject(TlvConstants.TAG_83);
-		
-		if(publicKeyReference == null) {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-			this.processingData.updateResponseAPDU(this,"no public key reference found", resp);
-			return;
-		}
-		
-		byte[] nameOfPublicKeyEncoded = publicKeyReference.getValueField();
-		
+	protected TerminalType getTerminalType() {
 		//get necessary information stored in an earlier protocol (e.g. PACE)
 		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(PaceMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 		
-		PaceMechanism paceMechanism = null;
-		
 		if (currentMechanisms.size() == 1){
-			paceMechanism = (PaceMechanism) currentMechanisms.iterator().next();
+			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.iterator().next();
 			
 			// extract the currently used terminal type
 			try{
-				terminalType = TerminalType.getFromOid(paceMechanism.getOidForTa());
+				return TerminalType.getFromOid(paceMechanism.getOidForTa());
 			} catch (IllegalArgumentException e){
-				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-				this.processingData.updateResponseAPDU(this, "Previous Pace protocol did not provide information about terminal type", resp);
+				throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED, "Previous Pace protocol did not provide information about terminal type");
+			}
+		}
+		
+		if(currentMechanisms.isEmpty()) {
+			throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED, "Missing previous execution of PACE protocol");
+		}
+		
+		throw new ProcessingException(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR, "Previous execution of PACE protocol is ambiguous");
+	}
+	
+	protected void processCommandSetDst() {
+		try {
+			if (!checkSecureMessagingApdu()){
 				return;
 			}
 			
-		}
-
-		// reset the currently set key
-		currentCertificate = null;
-		
-		// get the next certificate to verify against
-		if (mostRecentTemporaryCertificate != null && mostRecentTemporaryCertificate.getCertificateHolderReference() != null) {
-			// the temporary imported key is to be used
-			if (Arrays.equals(nameOfPublicKeyEncoded,
-					mostRecentTemporaryCertificate.getCertificateHolderReference().getBytes())) {
-				currentCertificate = mostRecentTemporaryCertificate;
+			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
+			TlvDataObject publicKeyReference = commandData.getTlvDataObject(TlvConstants.TAG_83);
+			
+			if(publicKeyReference == null) {
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+				this.processingData.updateResponseAPDU(this,"no public key reference found", resp);
+				return;
 			}
-		}
-		
-		if (currentCertificate != null){
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-			this.processingData.updateResponseAPDU(this,
-					"Command SetDST successfully processed, public key found in temporary imported certificate", resp);
-			return;
-		}
 			
-		String anchor = "";
-		
-		// get the stored trust points
-		CardObject trustPointCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new TrustPointIdentifier(terminalType));
-		
-		if (trustPointCandidate instanceof TrustPointCardObject) {
-			trustPoint = (TrustPointCardObject) trustPointCandidate;
+			byte[] nameOfPublicKeyEncoded = publicKeyReference.getValueField();
 			
+			terminalType = getTerminalType();
 			
-			if (trustPoint.getCurrentCertificate().getCertificateHolderReference() != null
-					&& Arrays.equals(trustPoint.getCurrentCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
-				
-				currentCertificate = trustPoint.getCurrentCertificate();
-				anchor = "first";
-			} else{
-				if (trustPoint.getPreviousCertificate().getCertificateHolderReference() != null
-						&& Arrays.equals(trustPoint.getPreviousCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
-					
-					currentCertificate = trustPoint.getPreviousCertificate();
-					anchor = "second";
+			// reset the currently set key
+			currentCertificate = null;
+			
+			// get the next certificate to verify against
+			if (mostRecentTemporaryCertificate != null && mostRecentTemporaryCertificate.getCertificateHolderReference() != null) {
+				// the temporary imported key is to be used
+				if (Arrays.equals(nameOfPublicKeyEncoded,
+						mostRecentTemporaryCertificate.getCertificateHolderReference().getBytes())) {
+					currentCertificate = mostRecentTemporaryCertificate;
 				}
 			}
 			
 			if (currentCertificate != null){
-				// a new root certificate was selected
-				authorizationStore = getInitialAuthorizations(currentCertificate);
-				Authorization auth = null;
-				if (authorizationStore != null){
-					auth = authorizationStore.getAuthorization(terminalType.getAsOid());
-				}
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
+				this.processingData.updateResponseAPDU(this,
+						"Command SetDST successfully processed, public key found in temporary imported certificate", resp);
+				return;
+			}
+				
+			String anchor = "";
+			
+			// get the stored trust points
+			CardObject trustPointCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new TrustPointIdentifier(terminalType));
+			
+			if (trustPointCandidate instanceof TrustPointCardObject) {
+				trustPoint = (TrustPointCardObject) trustPointCandidate;
+				
+				
+				if (trustPoint.getCurrentCertificate().getCertificateHolderReference() != null
+						&& Arrays.equals(trustPoint.getCurrentCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
 					
-				if(auth == null) {
-					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-					this.processingData.updateResponseAPDU(this, "Previous protocol did not provide authorization information from chat", resp);
-					return;
+					currentCertificate = trustPoint.getCurrentCertificate();
+					anchor = "first";
+				} else{
+					if (trustPoint.getPreviousCertificate().getCertificateHolderReference() != null
+							&& Arrays.equals(trustPoint.getPreviousCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
+						
+						currentCertificate = trustPoint.getPreviousCertificate();
+						anchor = "second";
+					}
+				}
+				
+				if (currentCertificate != null){
+					// a new root certificate was selected
+					authorizationStore = getInitialAuthorizations(currentCertificate);
+					Authorization auth = null;
+					if (authorizationStore != null){
+						auth = authorizationStore.getAuthorization(terminalType.getAsOid());
+					}
+						
+					if(auth == null) {
+						// create and propagate response APDU
+						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+						this.processingData.updateResponseAPDU(this, "Previous protocol did not provide authorization information from chat", resp);
+						return;
+					}
 				}
 			}
-		}
-			
-		if (currentCertificate != null){
-			updateAuthorizations(currentCertificate);
-			
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-			this.processingData.updateResponseAPDU(this, "Command SetDST successfully processed, public key found in " + anchor + " trust anchor", resp);
-			return;
-		}
+				
+			if (currentCertificate != null){
+				updateAuthorizations(currentCertificate);
+				
+				// create and propagate response APDU
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
+				this.processingData.updateResponseAPDU(this, "Command SetDST successfully processed, public key found in " + anchor + " trust anchor", resp);
+				return;
+			}
 
-		// create and propagate response APDU
-		ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-		this.processingData.updateResponseAPDU(this,
-				"The identified public key could not be found in a trust point or temporarily imported certificate", resp);
-		return;
+			// create and propagate response APDU
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
+			this.processingData.updateResponseAPDU(this,
+					"The identified public key could not be found in a trust point or temporarily imported certificate", resp);
+			return;
+		} catch (ProcessingException e) {
+			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
+			processingData.updateResponseAPDU(this, e.getMessage(), resp);
+		}
 	}
 	
 	/**
@@ -327,121 +337,109 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @return true if TA generally can be executed
 	 */
 	protected boolean isTaAllowed(){
-		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
+		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<>();
 		wantedMechanisms.add(TerminalAuthenticationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, wantedMechanisms);
-		if (currentMechanisms.size() > 0){
+		if (!currentMechanisms.isEmpty()){
 			return false;
 		} else {
 			return true;
 		}
 	}
-
-	void processCommandSetAt() {
-		if (!checkSecureMessagingApdu()){
-			return;
-		}
-		
-		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
+	
+	protected TaOid getCryptographicMechanismReference(TlvDataObjectContainer commandData) {
 		TlvDataObject cryptographicMechanismReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_80);
-		TlvDataObject publicKeyReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_83);
-		TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TlvConstants.TAG_67);
-		TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(TlvConstants.TAG_91);
-		
-		if (publicKeyReferenceData != null){
-			try {
-				PublicKeyReference keyReference = new PublicKeyReference(publicKeyReferenceData);
-
-				if (!currentCertificate.getCertificateHolderReference().equals(keyReference)){
-					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-					this.processingData.updateResponseAPDU(this,
-							"The referenced public key could not be found", resp);
-					return;
-				}
-			} catch (CarParameterInvalidException e) {
-				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-				this.processingData.updateResponseAPDU(this,
-						"The public key reference data is invalid", resp);
-				return;
-			}
-		} else {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-			this.processingData.updateResponseAPDU(this,
-					"The public key reference data is missing", resp);
-			return;
-		}
-		
 		if (cryptographicMechanismReferenceData != null){
 			//add missing Tag and Length
 			TlvDataObject cryptographicMechanismReferenceDataReconstructed = new PrimitiveTlvDataObject(TlvConstants.TAG_06, cryptographicMechanismReferenceData.getValueField());
 			try {
-				cryptographicMechanismReference = new TaOid(cryptographicMechanismReferenceDataReconstructed.getValueField());
+				return new TaOid(cryptographicMechanismReferenceDataReconstructed.getValueField());
 			} catch (IllegalArgumentException e) {
-				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-				this.processingData.updateResponseAPDU(this,
-						"The cryptographic mechanism reference encoding is invalid", resp);
-				return;
+				throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "The cryptographic mechanism reference encoding is invalid");
 			}
 		} else {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
-			this.processingData.updateResponseAPDU(this,
-					"The public key reference data is missing", resp);
-			return;
+			throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, "The public key reference data is missing");
 		}
-		
+	}
+	
+	protected void assertPublicKeyReferenceDataMatchesCertificate(TlvDataObjectContainer commandData, CardVerifiableCertificate cvCert) {
+		TlvDataObject publicKeyReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_83);
+		if (publicKeyReferenceData != null){
+			try {
+				PublicKeyReference keyReference = new PublicKeyReference(publicKeyReferenceData);
+
+				if (!cvCert.getCertificateHolderReference().equals(keyReference)){
+					throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, "The referenced public key could not be found");
+				}
+			} catch (CarParameterInvalidException e) {
+				throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "The public key reference data is invalid");
+			}
+		} else {
+			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "The public key reference data is missing");
+		}
+	}
+	
+	protected AuthenticatedAuxiliaryData getAuxiliarydata(TlvDataObjectContainer commandData) {
+		TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TlvConstants.TAG_67);
 		if (auxiliaryAuthenticatedData != null){
 			if (auxiliaryAuthenticatedData instanceof ConstructedTlvDataObject){
-				auxiliaryData = new ArrayList<AuthenticatedAuxiliaryData>();
+				auxiliaryData = new ArrayList<>();
 				ConstructedTlvDataObject constructedAuxiliaryAuthenticatedData = (ConstructedTlvDataObject) auxiliaryAuthenticatedData;
 				for (TlvDataObject currentObject : constructedAuxiliaryAuthenticatedData.getTlvDataObjectContainer()){
 					if(!(currentObject instanceof ConstructedTlvDataObject) || !currentObject.getTlvTag().equals(TlvConstants.TAG_73)){
-						// create and propagate response APDU
-						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-						this.processingData.updateResponseAPDU(this,
-								"Invalid encoding of the auxiliary data", resp);
-						return;	
+						throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "Invalid encoding of the auxiliary data");
 					}
 					ConstructedTlvDataObject ddo = (ConstructedTlvDataObject) currentObject;
 					TlvDataObject objectIdentifier = ddo.getTlvDataObject(TlvConstants.TAG_06);
 					TlvDataObject discretionaryData = ddo.getTlvDataObject(TlvConstants.TAG_53);
 					try {
-						auxiliaryData.add(new AuthenticatedAuxiliaryData(new GenericOid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
+						return new AuthenticatedAuxiliaryData(new GenericOid(objectIdentifier.getValueField()), discretionaryData.getValueField());
 					} catch (IllegalArgumentException e) {
-						// create and propagate response APDU
-						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-						this.processingData.updateResponseAPDU(this,
-								"Invalid encoding of the auxiliary data, object identifier not parseable", resp);
-						return;	
+						throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "Invalid encoding of the auxiliary data, object identifier not parseable");
 					}
 				}
 			} else {
-				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-				this.processingData.updateResponseAPDU(this,
-						"Invalid encoding of the auxiliary data, authentication object is not constructed TLV", resp);
-				return;	
+				throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "Invalid encoding of the auxiliary data, authentication object is not constructed TLV");
 			}
 		}
 		
+		return null;
+	}
+	
+	protected byte[] extractCompressedEphemeralPublicKeyTerminal(TlvDataObjectContainer commandData) {
+		TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(TlvConstants.TAG_91);
 		if (ephemeralPublicKeyData != null){
-			compressedTerminalEphemeralPublicKey = ephemeralPublicKeyData.getValueField();
+			return ephemeralPublicKeyData.getValueField();
 		} else {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
-			this.processingData.updateResponseAPDU(this,
-					"The ephemeral public key reference data is missing", resp);
-			return;
+			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "The ephemeral public key reference data is missing");
 		}
-		
-		// create and propagate response APDU
-		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-		this.processingData.updateResponseAPDU(this,
-				"Command SetAT successfully processed", resp);
+	}
+
+	protected void processCommandSetAt() {
+		try {
+			if (!checkSecureMessagingApdu()){
+				return;
+			}
+			
+			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
+			
+			assertPublicKeyReferenceDataMatchesCertificate(commandData, currentCertificate);
+			cryptographicMechanismReference = getCryptographicMechanismReference(commandData);
+			
+			AuthenticatedAuxiliaryData authenticatedAuxiliaryData = getAuxiliarydata(commandData);
+			if(authenticatedAuxiliaryData != null) {
+				auxiliaryData.add(authenticatedAuxiliaryData);
+			}
+			
+			compressedTerminalEphemeralPublicKey = extractCompressedEphemeralPublicKeyTerminal(commandData);
+			
+			// create and propagate response APDU
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
+			processingData.updateResponseAPDU(this, "Command SetAT successfully processed", resp);
+		} catch (ProcessingException e) {
+			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
+			processingData.updateResponseAPDU(this, e.getMessage(), resp);
+		}
 	}
 	
 	/**
@@ -491,7 +489,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		return false;
 	}
 
-	void processCommandPsoVerifyCertificate() {
+	protected void processCommandPsoVerifyCertificate() {
 		if (!checkSecureMessagingApdu()){
 			return;
 		}
@@ -727,46 +725,54 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		currentCertificate = mostRecentTemporaryCertificate;
 	}
 
-	void processCommandExternalAuthenticate() {
-		if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
-				&& !((IsoSecureMessagingCommandApdu) processingData
-						.getCommandApdu()).wasSecureMessaging()) {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(
-					Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this,
-					"TA must be executed in secure messaging", resp);
-			return;
-		}
-
-		//ensure GetChallenge was called before
-		if (challenge == null) {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this,"No challenge was generated, please call GetChallenge first", resp);
-			return;
-		}
-		
-		if (!isTaAllowed()){
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this, "multiple TA execution is not allowed", resp);
-			return;
-		}
-		
-		byte [] terminalSignatureData = processingData.getCommandApdu().getCommandData().toByteArray();
-		
+	protected byte[] getIdIcc() {
 		//get necessary information stored in an earlier protocol (e.g. PACE)
 		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(PaceMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
-		if (currentMechanisms.size() > 0){
+		if (!currentMechanisms.isEmpty()){
 			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
-			byte [] idPicc = paceMechanism.getCompressedEphemeralPublicKey();
+			return paceMechanism.getCompressedEphemeralPublicKeyChip();
+		} else {
+			throw new ProcessingException(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "No protocol providing data for ID_PICC calculation was run");
+		}
+	}
+
+	protected void processCommandExternalAuthenticate() {
+		ResponseApdu resp;
+		
+		try {
+			if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
+					&& !((IsoSecureMessagingCommandApdu) processingData
+							.getCommandApdu()).wasSecureMessaging()) {
+				// create and propagate response APDU
+				resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "TA must be executed in secure messaging", resp);
+				return;
+			}
+
+			//ensure GetChallenge was called before
+			if (challenge == null) {
+				// create and propagate response APDU
+				resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this,"No challenge was generated, please call GetChallenge first", resp);
+				return;
+			}
 			
-			byte [] dataToVerify = Utils.concatByteArrays(idPicc, challenge, compressedTerminalEphemeralPublicKey);
+			if (!isTaAllowed()){
+				// create and propagate response APDU
+				resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "execution of terminal authentication is not allowed", resp);
+				return;
+			}
 			
-			if (auxiliaryData != null && auxiliaryData.size() > 0){
+			byte [] terminalSignatureData = processingData.getCommandApdu().getCommandData().toByteArray();
+			
+			byte [] idIcc = getIdIcc();
+			
+			byte [] dataToVerify = Utils.concatByteArrays(idIcc, challenge, compressedTerminalEphemeralPublicKey);
+			
+			if (auxiliaryData != null && (!auxiliaryData.isEmpty())){
 				ConstructedTlvDataObject auxiliaryDataTlv = new ConstructedTlvDataObject(TlvConstants.TAG_67);
 				for(AuthenticatedAuxiliaryData current : auxiliaryData){
 					auxiliaryDataTlv.addTlvDataObject(current.getEncoded());
@@ -779,22 +785,20 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					handleSuccessfulTerminalAuthentication(currentCertificate);
 				} else {
 					// create and propagate response APDU
-					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6300_AUTHENTICATION_FAILED);
+					resp = new ResponseApdu(Iso7816.SW_6300_AUTHENTICATION_FAILED);
 					this.processingData.updateResponseAPDU(this,"The signature could not be verified", resp);
 					return;
 				}
 			} catch (InvalidKeyException | NoSuchAlgorithmException
 					| SignatureException | NoSuchProviderException e) {
 				// create and propagate response APDU
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
+				resp = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
 				this.processingData.updateResponseAPDU(this,"The signature could not be verified", resp);
 				return;
 			}
-
-		} else {
-			// create and propagate response APDU
-			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-			this.processingData.updateResponseAPDU(this,"No protocol providing data for ID_PICC calculation was run", resp);
+		} catch (ProcessingException e) {
+			resp = new ResponseApdu(e.getStatusWord());
+			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 		}
 	}
 	
@@ -862,17 +866,20 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 
 		PrimitiveTlvDataObject protocol = new PrimitiveTlvDataObject(
 				new TlvTag(Asn1.OBJECT_IDENTIFIER),
-				new TlvValuePlain(HexString
-						.toByteArray("04 00 7F 00 07 02 02 02")));
+				new TlvValuePlain(TaOid.id_TA.toByteArray()));
 
 		PrimitiveTlvDataObject version = new PrimitiveTlvDataObject(new TlvTag(Asn1.INTEGER),
-				new TlvValuePlain(new byte[] { 2 }));
+				new TlvValuePlain(new byte[] {getProtocolVersion()}));
 		taInfo.addTlvDataObject(protocol);
 		taInfo.addTlvDataObject(version);
 		
 		Collection<TlvDataObject> result = new HashSet<>();
 		result.add(taInfo);
 		return result;
+	}
+	
+	protected byte getProtocolVersion() {
+		return 2;
 	}
 
 }

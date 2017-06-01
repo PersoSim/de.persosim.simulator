@@ -5,8 +5,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
+import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECPoint;
+import java.security.spec.ECPublicKeySpec;
+import java.security.spec.KeySpec;
 
 import org.junit.Test;
 
@@ -569,6 +573,56 @@ public class CryptoUtilTest extends PersoSimTestCase {
 		String received = CryptoUtil.getCipherNameAsString(input);
 		
 		assertEquals(expected, received);
+	}
+	
+	/**
+	 * Positive test case: get byte array compressed (TR-03110) encoding of public key.
+	 */
+	@Test
+	public void testComp() throws Exception {
+		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		byte[] xArray = HexString.toByteArray("4DD4D9CCB21EA76850E96699DF3EED2FA65CE0CBB3BF7604E1C458CF71B47F59");
+		byte[] yArray = HexString.toByteArray("5AF8C1A214A81761DAA6D134DE0E5EA52D54C3BE3F05944F4460F81158D89DEA");
+				
+		// point coordinates originate from successful PACE test run, i.e. have been verified to be on the curve
+		BigInteger publicPointX = new BigInteger(1, xArray);
+		BigInteger publicPointY = new BigInteger(1, yArray);
+		
+		ECPoint point = new ECPoint(publicPointX, publicPointY);
+		
+		KeySpec publicKeySpec = new ECPublicKeySpec(point, domParamsEcdh.getKeySpec());
+		
+		KeyFactory keyFactory = KeyFactory.getInstance("ECDH");
+		ECPublicKey ecdhPublicKeyExpected = (ECPublicKey) keyFactory.generatePublic(publicKeySpec);
+		
+		byte[] publicKeyEncodingPlain = CryptoUtil.compressEcPublicKey(ecdhPublicKeyExpected);
+		
+		assertArrayEquals("reconstructed encoding", xArray, publicKeyEncodingPlain);
+	}
+	
+	/**
+	 * Positive test case: get byte array compressed (TR-03110) encoding of public ECDH key, key is padded with 0-bytes.
+	 */
+	@Test
+	public void testCompShortEcdhKey() throws Exception {
+		DomainParameterSetEcdh domParamsEcdh = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		byte[] xArray = HexString.toByteArray("0015A12C49DC3F2985AE44E5EF75AA0A1862527CD9D5B03D17CD1E2FC0290DB7");
+		byte[] yArray = HexString.toByteArray("0AF39509F439220E7EEA61D15668BB5D63DD256BD7F4E9E1F9753866C4A6BD59");
+				
+		// point coordinates originate from successful PACE test run, i.e. have been verified to be on the curve
+		BigInteger publicPointX = new BigInteger(1, xArray);
+		BigInteger publicPointY = new BigInteger(1, yArray);
+		
+		ECPoint point = new ECPoint(publicPointX, publicPointY);
+		
+		KeySpec publicKeySpec = new ECPublicKeySpec(point, domParamsEcdh.getKeySpec());
+		
+		KeyFactory keyFactory = KeyFactory.getInstance("ECDH");
+		ECPublicKey ecdhPublicKeyExpected = (ECPublicKey) keyFactory.generatePublic(publicKeySpec);
+		
+		byte[] publicKeyEncodingPlain = CryptoUtil.compressEcPublicKey(ecdhPublicKeyExpected);
+		
+		assertArrayEquals("reconstructed encoding", xArray, publicKeyEncodingPlain);
 	}
 	
 }

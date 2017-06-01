@@ -310,7 +310,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	}
 	
 	public HashMap<Oid, Authorization> getAuthorizationsFromCommandData(TlvDataObjectContainer commandData) {
-		HashMap<Oid, Authorization> authorizations = new HashMap<Oid, Authorization>();
+		HashMap<Oid, Authorization> authorizations = new HashMap<>();
 		
 		TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_7F4C);
 		CertificateHolderAuthorizationTemplate chatFromCommandData = null;
@@ -532,8 +532,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		constructed7C.addTlvDataObject(primitive82);
 		
 		// Create and propagate response APDU
-		TlvValue responseData = new TlvDataObjectContainer(constructed7C);
-		return responseData;
+		return new TlvDataObjectContainer(constructed7C);
 	}
 	
 	/**
@@ -586,8 +585,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		PrimitiveTlvDataObject primitive84 = new PrimitiveTlvDataObject(TAG_84, ephemeralPublicKeyComponentPicc);
 		ConstructedTlvDataObject constructed7C = new ConstructedTlvDataObject(TAG_7C);
 		constructed7C.addTlvDataObject(primitive84);
-		TlvValue responseData = new TlvDataObjectContainer(constructed7C);
-		return responseData;
+		return new TlvDataObjectContainer(constructed7C);
 	}
 	
 	/**
@@ -690,7 +688,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		if(paceSuccessful) {
 			ConstructedTlvDataObject responseContent = buildMutualAuthenticateResponse(piccToken);
 			if (setSmDataProvider()){
-				PaceMechanism paceMechanism = new PaceMechanism(pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), terminalTypeOid);
+				PaceMechanism paceMechanism = new PaceMechanism(paceOid, pacePassword, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), paceDomainParametersMapped.comp(ephemeralPublicKeyPcd), terminalTypeOid);
 				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
 				
 				ConfinedAuthorizationMechanism newAuthMechanism;

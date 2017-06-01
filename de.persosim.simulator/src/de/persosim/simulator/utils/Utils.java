@@ -30,6 +30,9 @@ public abstract class Utils {
 	
 	/*--------------------------------------------------------------------------------*/
 	
+	// This is a static utils class and should not be inherited or instantiated
+	private Utils() {}
+	
 	/**
 	 * Returns an unsigned byte masked to short
 	 * @param byteValue the byte to be masked to short
@@ -225,6 +228,40 @@ public abstract class Utils {
 	}
 	
 	/**
+	 * Returns the given input padded with either leading or trailing zeroes.
+	 * Padding is only performed if necessary, i.e. input length < wanted
+	 * length. In this case a new object of wanted length containing input data
+	 * padded with additional leading or trailing zeroes is returned. If input
+	 * length equals wanted length a clone of the input object is returned.
+	 * 
+	 * @param input
+	 *            the byte array to be padded
+	 * @param wantedLength
+	 *            the result array length
+	 * @return zero padded byte array
+	 * @throws IllegalArgumentException
+	 *             when input length > wanted length
+	 */
+	public static byte [] padWithZeroes(byte [] input, int wantedLength, boolean padWithLeadingZeros){
+		if(input.length == wantedLength) {
+			return input.clone();
+		}
+		
+		if (wantedLength < input.length){
+			throw new IllegalArgumentException("Wanted length is smaller than the input length");
+		}
+		
+		byte[] zeroes = new byte [wantedLength - input.length];
+		
+		if(padWithLeadingZeros) {
+			return Utils.concatByteArrays(zeroes, input);
+		} else{
+			return Utils.concatByteArrays(input, zeroes);
+		}
+		
+	}
+	
+	/**
 	 * Returns the given input padded with leading zeroes. Padding is only
 	 * performed if necessary, i.e. input length < wanted length. In this case a
 	 * new object of wanted length containing input data padded with additional
@@ -240,16 +277,26 @@ public abstract class Utils {
 	 *             when input length > wanted length
 	 */
 	public static byte [] padWithLeadingZeroes(byte [] input, int wantedLength){
-		if(input.length == wantedLength) {
-			return input.clone();
-		}
-		
-		if (wantedLength < input.length){
-			throw new IllegalArgumentException("Wanted length is smaller than the input length");
-		}
-		
-		byte [] zeroes = new byte [wantedLength - input.length];
-		return Utils.concatByteArrays(zeroes, input);
+		return padWithZeroes(input, wantedLength, true);
+	}
+	
+	/**
+	 * Returns the given input padded with trailing zeroes. Padding is only
+	 * performed if necessary, i.e. input length < wanted length. In this case a
+	 * new object of wanted length containing input data padded with additional
+	 * trailing zeroes is returned. If input length equals wanted length a clone
+	 * of the input object is returned.
+	 * 
+	 * @param input
+	 *            the byte array to be padded
+	 * @param wantedLength
+	 *            the result array length
+	 * @return zero padded byte array
+	 * @throws IllegalArgumentException
+	 *             when input length > wanted length
+	 */
+	public static byte [] padWithTrailingZeroes(byte [] input, int wantedLength){
+		return padWithZeroes(input, wantedLength, false);
 	}
 	
 	/**
@@ -269,7 +316,7 @@ public abstract class Utils {
 		
 		bigInt = new BigInteger(1, value);
 		
-		if (bigInt.compareTo(new BigInteger("" +maxValue)) > 0){
+		if (bigInt.compareTo(new BigInteger(Long.toString(maxValue))) > 0){
 			throw new IllegalArgumentException("value too big for signed data type");
 		}
 		
@@ -363,7 +410,8 @@ public abstract class Utils {
 
 		calendar.set(Calendar.YEAR, year);
 
-		int month, day;
+		int month;
+		int day;
 
 		try {
 			month = Integer.parseInt(dateString.substring(4, 6));

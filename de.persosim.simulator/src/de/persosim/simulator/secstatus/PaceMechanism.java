@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.pace.PaceOid;
 import de.persosim.simulator.protocols.ta.TaOid;
 
 /**
@@ -14,15 +15,26 @@ import de.persosim.simulator.protocols.ta.TaOid;
  * 
  */
 public class PaceMechanism extends AbstractSecMechanism {
-
+	
+	private PaceOid paceOid;
 	private PasswordAuthObject usedPassword;
-	private byte [] compressedEphemeralPublicKey;
+	private byte [] compressedEphemeralPublicKeyChip;
+	private byte [] compressedEphemeralPublicKeyTerminal;
 	private Oid oidForTa;
 
-	public PaceMechanism(PasswordAuthObject usedPassword, byte[] compressedPublicKey, Oid terminalTypeOid){
+	public PaceMechanism(PaceOid paceOid, PasswordAuthObject usedPassword, byte[] compressedEphemeralPublicKeyChip, byte[] compressedEphemeralPublicKeyTerminal, Oid terminalTypeOid){
+		this.paceOid = paceOid;
 		this.usedPassword = usedPassword;
-		this.compressedEphemeralPublicKey = compressedPublicKey;
+		this.compressedEphemeralPublicKeyChip = compressedEphemeralPublicKeyChip;
+		this.compressedEphemeralPublicKeyTerminal = compressedEphemeralPublicKeyTerminal;
 		this.oidForTa = terminalTypeOid;
+	}
+	
+	/**
+	 * @return the OID, that was used to execute PACE
+	 */
+	public PaceOid getPaceOid() {
+		return paceOid;
 	}
 	
 	/**
@@ -33,10 +45,10 @@ public class PaceMechanism extends AbstractSecMechanism {
 	}
 
 	/**
-	 * @return the ephemeralPublicKey of the PICC generated during PACE
+	 * @return the compressed ephemeral public key of the chip generated while performing PACE
 	 */
-	public byte [] getCompressedEphemeralPublicKey() {
-		return Arrays.copyOf(compressedEphemeralPublicKey, compressedEphemeralPublicKey.length);
+	public byte [] getCompressedEphemeralPublicKeyChip() {
+		return Arrays.copyOf(compressedEphemeralPublicKeyChip, compressedEphemeralPublicKeyChip.length);
 	}
 	
 	/**
@@ -44,6 +56,13 @@ public class PaceMechanism extends AbstractSecMechanism {
 	 */
 	public Oid getOidForTa() {
 		return oidForTa;
+	}
+	
+	/**
+	 * @return the compressed ephemeral public Key of the terminal conveyed while performing PACE
+	 */
+	public byte[] getCompressedEphemeralPublicKeyTerminal() {
+		return compressedEphemeralPublicKeyTerminal;
 	}
 
 }
