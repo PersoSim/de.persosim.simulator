@@ -88,7 +88,7 @@ public class RiProtocol implements Protocol, Iso7816, ApduSpecificationConstants
 			Collection<CardObject> riKeyCardObjects = mf.findChildren(
 					new KeyIdentifier(), riOidIdentifier);
 			
-			HashSet<TlvDataObject> secInfos = new HashSet<TlvDataObject>();
+			HashSet<TlvDataObject> secInfos = new HashSet<>();
 			
 			for (CardObject curCardObject : riKeyCardObjects) {
 				if (! (curCardObject instanceof KeyPairObject)) {

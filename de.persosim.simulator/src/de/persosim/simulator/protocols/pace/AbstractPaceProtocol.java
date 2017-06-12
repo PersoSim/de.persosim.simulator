@@ -593,17 +593,13 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	public void processCommandMutualAuthenticate() {
 		
 		try {
-		TlvDataObject tlvObject;
-		byte[] pcdTokenReceivedFromPCD, piccToken, pcdToken;
-		TlvPath path;
-		
-		path = new TlvPath(new TlvTag[]{TAG_7C, TAG_85});
+		TlvPath path = new TlvPath(new TlvTag[]{TAG_7C, TAG_85});
 		
 		/* get commandDataContainer */
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 		
-		tlvObject = commandData.getTlvDataObject(path);
-		pcdTokenReceivedFromPCD = tlvObject.getValueField();
+		TlvDataObject tlvObject = commandData.getTlvDataObject(path);
+		byte[] pcdTokenReceivedFromPCD = tlvObject.getValueField();
 		
 		/* construct authentication token input based on PACE OID and ephemeral keys */
 		TlvDataObjectContainer piccTokenInput = buildAuthenticationTokenInput(ephemeralPublicKeyPcd, paceDomainParametersMapped, paceOid);
@@ -639,10 +635,10 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		}
 		
 		/* get first 8 bytes of mac */
-		piccToken = Arrays.copyOf(this.cryptoSupport.macAuthenticationToken(piccTokenInput.toByteArray(), this.secretKeySpecMAC), 8);
+		byte[] piccToken = Arrays.copyOf(this.cryptoSupport.macAuthenticationToken(piccTokenInput.toByteArray(), this.secretKeySpecMAC), 8);
 		log(this, "picc token data is: " + HexString.encode(piccToken), DEBUG);
 		
-		pcdToken = Arrays.copyOf(this.cryptoSupport.macAuthenticationToken(pcdTokenInput.toByteArray(), this.secretKeySpecMAC), 8);
+		byte[] pcdToken = Arrays.copyOf(this.cryptoSupport.macAuthenticationToken(pcdTokenInput.toByteArray(), this.secretKeySpecMAC), 8);
 		log(this, "pcd  token data is: " + HexString.encode(pcdToken), DEBUG);
 		
 		log(this, "expected pcd token data is: " + HexString.encode(pcdToken), DEBUG);

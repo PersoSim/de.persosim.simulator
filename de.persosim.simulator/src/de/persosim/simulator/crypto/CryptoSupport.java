@@ -55,7 +55,8 @@ public abstract class CryptoSupport {
 	}
 
 	public void setCipherAlgorithmNameModePadding(String cipherAlgorithmNameModePadding) {
-		String cipherAlgorithmExpected, cipherAlgorithmReceived;
+		String cipherAlgorithmExpected;
+		String cipherAlgorithmReceived;
 		
 		cipherAlgorithmExpected = this.getCipherAlgorithm();
 		cipherAlgorithmReceived = CryptoUtil.getCipherNameAsString(cipherAlgorithmNameModePadding);
