@@ -538,7 +538,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		
 		EllipticCurve curve = getCurve();
 		BigInteger a = curve.getA();
@@ -559,10 +559,10 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		sb.append("\nGenerator G.x     : " + "  " + HexString.encode(generator.getAffineX()));
 		
 		char[] array = new char[(2*referenceLength) + 2];
-	    Arrays.fill(array, ' ');
-	    String padding = new String(array);
+		Arrays.fill(array, ' ');
+		String padding = new String(array);
 		
-	    sb.append("\nGenerator G.y     : " + padding + HexString.encode(generator.getAffineY()));
+		sb.append("\nGenerator G.y     : " + padding + HexString.encode(generator.getAffineY()));
 		sb.append("\n**********************************************************");
 		
 		return sb.toString();

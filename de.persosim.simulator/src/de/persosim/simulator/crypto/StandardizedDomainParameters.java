@@ -53,28 +53,28 @@ public class StandardizedDomainParameters{
 				@Override
 				public StandardizedDomainParameterProvider addingService(
 						ServiceReference<StandardizedDomainParameterProvider> reference) {
-					StandardizedDomainParameterProvider provider = Activator.getContext().getService(reference); 
+					StandardizedDomainParameterProvider provider = Activator.getContext().getService(reference);
 					providers.add(provider);
 					return provider;
 				}
 			};
 			
-			serviceTracker = new ServiceTracker<StandardizedDomainParameterProvider, StandardizedDomainParameterProvider>(Activator.getContext(), StandardizedDomainParameterProvider.class.getName(), customizer);
+			serviceTracker = new ServiceTracker<>(Activator.getContext(), StandardizedDomainParameterProvider.class.getName(), customizer);
 			serviceTracker.open();
 			
-			ServiceReference<StandardizedDomainParameterProvider> references [] = serviceTracker.getServiceReferences();
+			ServiceReference<StandardizedDomainParameterProvider>[] references = serviceTracker.getServiceReferences();
 			
 			if (references != null){
 				for(ServiceReference<StandardizedDomainParameterProvider> providerReference : references){
-					providers.add(Activator.getContext().getService(providerReference));	
-				}	
+					providers.add(Activator.getContext().getService(providerReference));
+				}
 			}
-					
+			
 		} else {
 			BasicLogger.log(StandardizedDomainParameters.class, "No OSGi context is available, no additional domain parameters are supported", BasicLogger.INFO);
 		}
 		providers.add(new StandardizedDomainParameterDefaultProvider());
-    }
+	}
 		
 	static private HashMap<Integer, StandardizedDomainParameterProvider> getCurrentlySupportedParameters(){
 		HashMap<Integer, StandardizedDomainParameterProvider> supported = new HashMap<>();
@@ -143,8 +143,7 @@ public class StandardizedDomainParameters{
 	public static Integer getDomainParameterSetId(ConstructedTlvDataObject algIdentifier){
 		for (StandardizedDomainParameterProvider provider : providers){
 			String algIdHexString = HexString.encode(algIdentifier.toByteArray());
-			Integer current = provider.getSimplifiedAlgorithm(algIdHexString);
-			return current;
+			return provider.getSimplifiedAlgorithm(algIdHexString);
 		}
 		return null;
 	}

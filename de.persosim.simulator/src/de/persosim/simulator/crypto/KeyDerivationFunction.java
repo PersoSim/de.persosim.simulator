@@ -76,7 +76,8 @@ public class KeyDerivationFunction {
 	 */
 	public byte[] deriveKey(byte[] secret, byte[] nonce, byte[] counter) {
 		int inputLength;
-		byte[] input, digest;
+		byte[] input;
+		byte[] digest;
 		
 		if(secret == null) {throw new NullPointerException();}
 		if(counter == null) {throw new NullPointerException();}
@@ -93,8 +94,6 @@ public class KeyDerivationFunction {
 		if(inputLength <= 0) {
 			throw new IllegalArgumentException("KDF input length must be > 0");
 		}
-		
-		input = new byte[inputLength];
 		
 		if(nonce == null) {
 			input = Utils.concatByteArrays(secret, counter);

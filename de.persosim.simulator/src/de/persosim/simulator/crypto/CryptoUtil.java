@@ -168,9 +168,7 @@ public class CryptoUtil {
 		BigInteger xr = computeXr(p, lambda, xp, xq);
 		BigInteger yr = computeYr(p, lambda, xp, yp, xr);
 
-		ECPoint ecPointR = new ECPoint(xr, yr);
-
-		return ecPointR;
+		return new ECPoint(xr, yr);
 	}
 	
 	/**
@@ -192,9 +190,7 @@ public class CryptoUtil {
 		BigInteger xr = computeXr(p, lambda, xp);
 		BigInteger yr = computeYr(p, lambda, xp, yp, xr);
 
-		ECPoint ecPointR = new ECPoint(xr, yr);
-		
-		return ecPointR;
+		return new ECPoint(xr, yr);
 	}
 	
 	/**
