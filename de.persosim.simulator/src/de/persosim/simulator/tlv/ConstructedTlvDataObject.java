@@ -291,7 +291,7 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	 */
 	public void setValue(TlvDataObjectContainer tlvDataObjectContainerInput) {
 		if(tlvDataObjectContainerInput == null) {throw new NullPointerException("value must not be null");}
-		tlvDataObjectContainer = (TlvDataObjectContainer) tlvDataObjectContainerInput;
+		tlvDataObjectContainer = tlvDataObjectContainerInput;
 	}
 
 	@Override

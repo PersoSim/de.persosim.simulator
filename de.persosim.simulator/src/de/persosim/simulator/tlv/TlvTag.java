@@ -259,7 +259,8 @@ public final class TlvTag extends TlvElement implements Asn1 {
 	 * @return the tag number encoded within the tag field
 	 */
 	public int getIndicatedTagNo() {
-		int tagNo, currentOffset;
+		int tagNo;
+		int currentOffset;
 		
 		currentOffset = 0;
 		tagNo = 0;

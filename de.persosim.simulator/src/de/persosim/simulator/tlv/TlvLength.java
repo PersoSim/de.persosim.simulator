@@ -269,7 +269,8 @@ public class TlvLength extends TlvElement {
 	public static byte[] getLengthEncoding(int indicatedLength) {
 		if(indicatedLength < 0) {throw new NullPointerException("length must not be smaller than 0");}
 		
-		byte[] temporaryLengthEncoding, finalLengthEncoding;
+		byte[] temporaryLengthEncoding;
+		byte[] finalLengthEncoding;
 		byte byteLength;
 		
 		temporaryLengthEncoding = Utils.removeLeadingZeroBytes(Utils.toUnsignedByteArray(indicatedLength));

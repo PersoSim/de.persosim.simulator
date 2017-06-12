@@ -21,7 +21,8 @@ public class TlvDataObjectComparatorDer implements Comparator<TlvDataObject> {
 	
 	@Override
 	public int compare(TlvDataObject tlvdo1, TlvDataObject tlvdo2) {
-		TlvTag tlvTag1, tlvTag2;
+		TlvTag tlvTag1;
+		TlvTag tlvTag2;
 		
 		tlvTag1 = tlvdo1.getTlvTag();
 		tlvTag2 = tlvdo2.getTlvTag();

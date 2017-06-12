@@ -112,11 +112,7 @@ public class TlvValuePlain extends TlvValue {
 	
 	@Override
 	public boolean isValidBerEncoding() {
-		if(valueField == null) {
-			return false;
-		} else{
-			return true;
-		}
+		return valueField != null;
 	}
 	
 	@Override

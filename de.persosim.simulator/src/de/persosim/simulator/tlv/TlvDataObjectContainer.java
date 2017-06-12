@@ -40,7 +40,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	 * this TLV structure although the structure is empty.
 	 */
 	public TlvDataObjectContainer() {
-		this.tlvObjects = new Vector<TlvDataObject>();
+		this.tlvObjects = new Vector<>();
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 		if(maxOffset < minOffset) {throw new IllegalArgumentException("max offset must not be smaller than min offset");}
 		if(maxOffset > dataField.length) {throw new IllegalArgumentException("selected array area must not lie outside of data array");}
 		
-		this.tlvObjects = new Vector<TlvDataObject>();
+		this.tlvObjects = new Vector<>();
 		
 		if(minOffset == maxOffset) {
 			/* The TLV data object container is empty */
@@ -117,7 +117,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	
 	@Override
 	public TlvDataObject getTlvDataObject(TlvPath path, int index) {
-		if((path == null) || (path.size() == 0)) {throw new NullPointerException();}
+		if((path == null) || path.isEmpty()) {throw new NullPointerException();}
 		if((index < 0) || (index >= path.size())) {throw new IllegalArgumentException("index must not be outside of path");}
 		
 		
@@ -257,7 +257,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	@Override
 	public void removeTlvDataObject(TlvPath path) {
 		if(path == null) {throw new NullPointerException("path must not be null");};
-		if(path.size() < 1) {throw new IllegalArgumentException("path must not be empty");};
+		if(path.isEmpty()) {throw new IllegalArgumentException("path must not be empty");};
 		
 		if(path.size() == 1) {
 			removeTlvDataObject(path.get(0));

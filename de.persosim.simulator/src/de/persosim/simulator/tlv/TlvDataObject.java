@@ -303,9 +303,7 @@ public abstract class TlvDataObject extends TlvElement implements Iso7816, Valid
 		if(!(getTlvTag().isValidBerEncoding() && getTlvLength().isValidBerEncoding() && getTlvValue().isValidBerEncoding())) {return false;}
 		
 		/* then encoded length must match actual length */
-		if(getTlvLength().getIndicatedLength() != getTlvValue().getLength()) {return false;}
-		
-		return true;
+		return getTlvLength().getIndicatedLength() == getTlvValue().getLength();
 	}
 	
 	@Override
