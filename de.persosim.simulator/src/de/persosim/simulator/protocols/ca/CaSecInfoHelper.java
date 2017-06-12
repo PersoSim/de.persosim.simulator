@@ -10,6 +10,10 @@ import de.persosim.simulator.utils.Utils;
 
 public class CaSecInfoHelper implements Ca, TlvConstants {
 	
+	private CaSecInfoHelper() {
+		// this static class is not to be instantiated
+	}
+	
 	/**
 	 * This method constructs a ChipAuthenticationInfo element
 	 * _with_ optional key reference
@@ -20,7 +24,7 @@ public class CaSecInfoHelper implements Ca, TlvConstants {
      *            id-CA-DH-AES-CBC-CMAC-128 | 
      *            id-CA-DH-AES-CBC-CMAC-192 | 
      *            id-CA-DH-AES-CBC-CMAC-256 | 
-     *            id-CA-ECDH-3DES-CBC-CBC |           
+     *            id-CA-ECDH-3DES-CBC-CBC | 
      *            id-CA-ECDH-AES-CBC-CMAC-128 | 
      *            id-CA-ECDH-AES-CBC-CMAC-192 | 
      *            id-CA-ECDH-AES-CBC-CMAC-256),
@@ -81,8 +85,7 @@ public class CaSecInfoHelper implements Ca, TlvConstants {
 	 */
 	public static ConstructedTlvDataObject constructAlgorithmIdentifier(PublicKey publicKey) {
 		ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(publicKey.getEncoded());
-		ConstructedTlvDataObject algorithmIdentifier = (ConstructedTlvDataObject) encKey.getTlvDataObject(TAG_SEQUENCE);
-		return algorithmIdentifier;
+		return (ConstructedTlvDataObject) encKey.getTlvDataObject(TAG_SEQUENCE);
 	}
 	
 	/**
@@ -95,8 +98,7 @@ public class CaSecInfoHelper implements Ca, TlvConstants {
 	 */
 	public static PrimitiveTlvDataObject constructSubjectPublicKey(PublicKey publicKey) {
 		ConstructedTlvDataObject encKey = new ConstructedTlvDataObject(publicKey.getEncoded());
-		PrimitiveTlvDataObject subjectPublicKey = (PrimitiveTlvDataObject) encKey.getTlvDataObject(TAG_BIT_STRING);
-		return subjectPublicKey;
+		return (PrimitiveTlvDataObject) encKey.getTlvDataObject(TAG_BIT_STRING);
 	}
 	
 	/**

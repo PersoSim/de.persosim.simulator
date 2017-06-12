@@ -55,9 +55,7 @@ public class GenericMappingEcdh extends GenericMapping {
 		
 		ECPoint  gMapped = CryptoUtil.addPoint(curve, gspm, h);
 		
-		DomainParameterSetEcdh domainParametersMapped = domainParameterSetEcdhUnMapped.getUpdatedDomainParameterSet(gMapped);
-		
-		return domainParametersMapped;
+		return domainParameterSetEcdhUnMapped.getUpdatedDomainParameterSet(gMapped);
 	}
 	
 	@Override

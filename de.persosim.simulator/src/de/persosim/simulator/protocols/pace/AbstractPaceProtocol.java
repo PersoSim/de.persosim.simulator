@@ -425,15 +425,14 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 */
 	public void processCommandGetNonce() {
 		byte[] encryptedNonce;
-		int blockSizeInBytes, keySizeInBytes, nonceSizeInBytes, multiplicationFactor;
 		PrimitiveTlvDataObject primitive80;
 		ConstructedTlvDataObject constructed7C;
 		
-		keySizeInBytes = paceOid.getSymmetricCipherKeyLengthInBytes();
-		blockSizeInBytes = this.cryptoSupport.getBlockSize();
+		int keySizeInBytes = paceOid.getSymmetricCipherKeyLengthInBytes();
+		int blockSizeInBytes = this.cryptoSupport.getBlockSize();
 		
-		multiplicationFactor = (int) Math.ceil(keySizeInBytes/(double) blockSizeInBytes);
-		nonceSizeInBytes = multiplicationFactor * blockSizeInBytes;
+		int multiplicationFactor = (int) Math.ceil(keySizeInBytes/(double) blockSizeInBytes);
+		int nonceSizeInBytes = multiplicationFactor * blockSizeInBytes;
 		
 		log(this, "key length k in Bytes is " + keySizeInBytes + ", block size in Bytes is " + blockSizeInBytes + " --> nonce s must be of smallest length l in Bytes, l being a multiple of the block size, such that l<=k", TRACE);
 		
@@ -903,7 +902,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		paceMechanisms.add(PaceMechanism.class);
 		
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, paceMechanisms);
-		if (currentMechanisms.size() > 0){
+		if (!currentMechanisms.isEmpty()){
 			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
 			PasswordAuthObject previouslyUsedPwd = paceMechanism.getUsedPassword();
 			int previouslyUsedPasswordIdentifier = previouslyUsedPwd.getPasswordIdentifier();

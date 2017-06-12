@@ -183,8 +183,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		if (constructedTlvContextIdentifier != null)	{
 			tlvContextIdentifier = constructedTlvContextIdentifier.getTlvDataObject(TlvConstants.TAG_81);
 			String hex = HexString.encode(tlvContextIdentifier.getTlvValue().toByteArray());
-			int sessionContextIdentifier = Integer.decode("0x" + hex);
-			return sessionContextIdentifier;
+			return Integer.decode("0x" + hex);
 		}
 		return -1; // no ID found 
 	}
@@ -396,9 +395,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		log(this, "response data to be sent is: " + constructed7C, DEBUG);
 		
 		//create and propagate response APDU
-		TlvValue responseData = new TlvDataObjectContainer(constructed7C);
-		
-		return responseData;
+		return new TlvDataObjectContainer(constructed7C);
 	}
 	
 	/**
@@ -539,7 +536,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	protected int getCurrentSessionContextId(){
 		int id = CONTEXT_SESSION_ID_FOR_VOLATILE_SESSIONS;
 		
-		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
+		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<>();
 		wantedMechanisms.add(SessionContextIdMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, wantedMechanisms);
 		
@@ -560,7 +557,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	protected byte[] getEphemeralPublicKeyPcdFromTa() {
 		byte[] ephemeralPublicKeyPcdCompressedReceived = null;
 		
-		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
+		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<>();
 		wantedMechanisms.add(TerminalAuthenticationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, wantedMechanisms);
 		
@@ -714,7 +711,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	protected ConstructedTlvDataObject constructChipAuthenticationInfoObject(byte[] oidBytes, int keyId) {
-		if (isKeyIdNeeded() == true || isKeyIdForced() == true){
+		if (isKeyIdNeeded() || isKeyIdForced()){
 			return CaSecInfoHelper.constructChipAuthenticationInfoObject(oidBytes, getVersion(), keyId);
 		}
 		return CaSecInfoHelper.constructChipAuthenticationInfoObject(oidBytes, getVersion());
@@ -729,7 +726,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	protected ConstructedTlvDataObject constructChipAuthenticationDomainParameterInfo(byte[] genericCaOidBytes, TlvDataObject algorithmIdentifier, int keyId) {
-		if (isKeyIdNeeded() == true || isKeyIdForced() == true){
+		if (isKeyIdNeeded() || isKeyIdForced()){
 			return CaSecInfoHelper.constructChipAuthenticationDomainParameterInfo(genericCaOidBytes, algorithmIdentifier, keyId);
 		}
 		return CaSecInfoHelper.constructChipAuthenticationDomainParameterInfo(genericCaOidBytes, algorithmIdentifier);
@@ -740,7 +737,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	protected ConstructedTlvDataObject constructChipAuthenticationPublicKeyInfo(ConstructedTlvDataObject subjectPublicKeyInfo, byte[] objectIdentifierBytes, int keyId) {
-		if (isKeyIdNeeded() == true || isKeyIdForced() == true){
+		if (isKeyIdNeeded() || isKeyIdForced()){
 			return CaSecInfoHelper.constructChipAuthenticationPublicKeyInfo(subjectPublicKeyInfo, objectIdentifierBytes, keyId);
 		}
 		return CaSecInfoHelper.constructChipAuthenticationPublicKeyInfo(subjectPublicKeyInfo, objectIdentifierBytes);
