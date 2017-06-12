@@ -18,6 +18,10 @@ import de.persosim.simulator.utils.Utils;
  */
 public class CertificateUtils implements TlvConstants {
 	
+	private CertificateUtils() {
+		// this is a static class not to be instantiated
+	}
+	
 	/**
 	 * This method returns a TLV encoding for a certificate constructed from the provided parameters
 	 * @param body the certificate body
@@ -31,7 +35,7 @@ public class CertificateUtils implements TlvConstants {
 		
 		CertificateRole certificateRole = body.getCertificateRole();
 		
-		ConstructedTlvDataObject cvCertificateTlv = encodeCertificate(
+		return encodeCertificate(
 				body.getCertificateProfileIdentifier(),
 				body.getCertificationAuthorityReference(),
 				body.getPublicKey().toTlvDataObject(certificateRole.includeConditionalElementsInKeyEncoding()),
@@ -41,8 +45,6 @@ public class CertificateUtils implements TlvConstants {
 				body.getCertificateExpirationDate(),
 				body.getExtensionRepresentation(),
 				signature);
-		
-		return cvCertificateTlv;
 	}
 	
 	/**
@@ -55,15 +57,13 @@ public class CertificateUtils implements TlvConstants {
 			ReducedCertificateBody body,
 			byte[] signature) {
 		
-		ConstructedTlvDataObject cvCertificateTlv = encodeReducedCertificate(
+		return encodeReducedCertificate(
 				body.getCertificateProfileIdentifier(),
 				body.getCertificationAuthorityReference(),
 				body.getPublicKey().toTlvDataObject(true),
 				body.getCertificateHolderReference(),
 				body.getExtensionRepresentation(),
 				signature);
-		
-		return cvCertificateTlv;
 	}
 	
 	/**

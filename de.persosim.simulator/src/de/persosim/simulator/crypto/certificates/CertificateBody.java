@@ -112,7 +112,7 @@ public class CertificateBody extends ReducedCertificateBody {
 
 	@Override
 	public ConstructedTlvDataObject getTlvEncoding(boolean withParams) {
-		ConstructedTlvDataObject encoding = CertificateUtils.encodeCertificateBody(
+		return CertificateUtils.encodeCertificateBody(
 				certificateProfileIdentifier,
 				certificationAuthorityReference,
 				publicKey.toTlvDataObject(withParams),
@@ -121,8 +121,6 @@ public class CertificateBody extends ReducedCertificateBody {
 				certificateEffectiveDate,
 				certificateExpirationDate,
 				getExtensionRepresentation());
-		
-		return encoding;
 	}
 	/**
 	 * This method returns the role of this certificate, i.e. either CVCA, DV or

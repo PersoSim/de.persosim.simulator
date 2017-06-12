@@ -107,11 +107,9 @@ public class ReducedCardVerifiableCertificate {
 	 * 
 	 */
 	public ConstructedTlvDataObject getEncoded() {
-		ConstructedTlvDataObject encoding = CertificateUtils.encodeReducedCertificate(
+		return CertificateUtils.encodeReducedCertificate(
 				((ReducedCertificateBody) body),
 				signature);
-		
-		return encoding;
 	}
 	
 	/**

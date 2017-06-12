@@ -43,8 +43,7 @@ public class GenericExtension extends CertificateExtension {
 
 	@Override
 	public TlvDataObjectContainer getDataObjects() {
-		TlvDataObjectContainer result = new TlvDataObjectContainer(dataObjects.toByteArray());
-		return result;
+		return new TlvDataObjectContainer(dataObjects.toByteArray());
 	}
 	
 	@Override
