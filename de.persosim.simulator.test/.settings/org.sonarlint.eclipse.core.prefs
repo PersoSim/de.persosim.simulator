@@ -1,0 +1,5 @@
+autoEnabled=true
+eclipse.preferences.version=1
+extraProperties=
+moduleKey=de.persosim\:de.persosim.simulator.test
+serverId=sonarqube.lab.e.secunet.de
