@@ -91,7 +91,7 @@ public abstract class TlvDataObject extends TlvElement implements Iso7816, Valid
 	 * @param maxOffset the first offset not to be part of the range to contain the TLV data object (exclusive).
 	 */
 	public TlvDataObject(byte[] dataField, int minOffset, int maxOffset) {
-		if(dataField == null) {throw new NullPointerException();}
+		if(dataField == null) {throw new IllegalArgumentException();}
 		if(minOffset < 0) {throw new IllegalArgumentException("min offset must not be less than 0");}
 		if(maxOffset < minOffset) {throw new IllegalArgumentException("max offset must not be smaller than min offset");}
 		if(maxOffset > dataField.length) {throw new IllegalArgumentException("selected array area must not lie outside of data array");}
@@ -109,7 +109,7 @@ public abstract class TlvDataObject extends TlvElement implements Iso7816, Valid
 		/*
 		 * Determine Length
 		 */
-		currentOffset += getNoOfTagBytes();
+		currentOffset += tlvTag.getLength();
 		tlvLength = new TlvLength(dataField, currentOffset, maxOffset);
 		
 		int indicatedLength = tlvLength.getIndicatedLength();
@@ -153,7 +153,7 @@ public abstract class TlvDataObject extends TlvElement implements Iso7816, Valid
 	 * @param performValidityChecksInput true: perform validity checks, false: do not perform validity checks
 	 */
 	public void setLength(TlvLength tlvLengthInput, boolean performValidityChecksInput) {
-		if(tlvLengthInput == null) {throw new NullPointerException("length must not be null");}
+		if(tlvLengthInput == null) {throw new IllegalArgumentException("length must not be null");}
 		
 		performValidityChecks = performValidityChecksInput;
 		
@@ -357,7 +357,7 @@ public abstract class TlvDataObject extends TlvElement implements Iso7816, Valid
 	public boolean equals(Object anotherTlvDataObject) {
 		if(anotherTlvDataObject == null) {return false;}
 		
-		if (!(anotherTlvDataObject instanceof TlvDataObject)) {
+		if (getClass() != anotherTlvDataObject.getClass()) {
 			return false;
 		}
 		

@@ -73,27 +73,12 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((tlvDataObjectContainer == null) ? 0 : tlvDataObjectContainer.hashCode());
-		return result;
+		return super.hashCode(); //super implementation already covers tlvDataObjectContainer implicitly through getValue()
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ConstructedTlvDataObject other = (ConstructedTlvDataObject) obj;
-		if (tlvDataObjectContainer == null) {
-			if (other.tlvDataObjectContainer != null)
-				return false;
-		} else if (!tlvDataObjectContainer.equals(other.tlvDataObjectContainer))
-			return false;
-		return true;
+		return super.equals(obj); //super implementation already covers tlvDataObjectContainer implicitly through getValue()
 	}
 
 	/**

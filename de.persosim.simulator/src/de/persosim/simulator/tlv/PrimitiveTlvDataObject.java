@@ -142,6 +142,16 @@ public class PrimitiveTlvDataObject extends TlvDataObject {
 		this(tlvTagInput, new TlvValuePlain());
 	}
 	
+	@Override
+	public int hashCode() {
+		return super.hashCode(); //super implementation already covers tlvValuePlain implicitly through getValue()
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj); //super implementation already covers tlvValuePlain implicitly through getValue()
+	}
+	
 	/*--------------------------------------------------------------------------------*/
 	
 	@Override
