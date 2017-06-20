@@ -10,7 +10,11 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  org.globaltester.simulator,
  org.globaltester.cryptoprovider,
  de.persosim.simulator.adapter.socket,
- org.globaltester.logging
+ org.globaltester.logging,
+ com.secunet.globaltester.crossover,
+ org.eclipse.core.resources,
+ com.secunet.globaltester.testcontrol,
+ com.secunet.globaltester.testcontrol.soap.consumer
 Export-Package: de.persosim.simulator.test.globaltester,
  de.persosim.simulator.test.globaltester.perso
 Import-Package: org.eclipse.ui.keys,
