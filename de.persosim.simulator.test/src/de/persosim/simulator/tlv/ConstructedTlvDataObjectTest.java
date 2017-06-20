@@ -1008,7 +1008,7 @@ public class ConstructedTlvDataObjectTest {
 	/**
 	 * Negative test case: the method setValue is getting the tlvDataObjectContainerInput, which is null.
 	 */
-	@Test(expected=NullPointerException.class)
+	@Test(expected=IllegalArgumentException.class)
 	public void testSetValue_tlvDataObject_ContainerInput_Is_Null()
 	{
 		ConstructedTlvDataObject tlvObject = (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("21080102FFFF0202EEEE");
@@ -1018,7 +1018,7 @@ public class ConstructedTlvDataObjectTest {
 	/**
 	 * Negative test case: the method setTag is getting the tlvTagInput, which is null.
 	 */
-	@Test(expected=NullPointerException.class)
+	@Test(expected=IllegalArgumentException.class)
 	public void testSetTag_TlvTag_Input_Is_Null()
 	{
 		ConstructedTlvDataObject tlvObject = (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("21080102FFFF0202EEEE");

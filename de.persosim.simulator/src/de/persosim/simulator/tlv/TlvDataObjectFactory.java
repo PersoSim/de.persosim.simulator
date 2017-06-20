@@ -13,7 +13,7 @@ import de.persosim.simulator.utils.HexString;
  * @author slutters
  * 
  */
-public class TlvDataObjectFactory {
+public final class TlvDataObjectFactory {
 	/**
 	 * Should never be instantiated
 	 */
@@ -27,7 +27,7 @@ public class TlvDataObjectFactory {
 	 * @param maxOffset the last offset to be used (exclusive)
 	 */
 	public static TlvDataObject createTLVDataObject(byte[] byteArray, int minOffset, int maxOffset) {
-		if(byteArray == null) {throw new NullPointerException();}
+		if(byteArray == null) {throw new IllegalArgumentException("byteArray must not be null");}
 		if(minOffset < 0) {throw new IllegalArgumentException("min offset must not be less than 0");}
 		if(maxOffset < minOffset) {throw new IllegalArgumentException("max offset must not be smaller than min offset");}
 		if(maxOffset > byteArray.length) {throw new IllegalArgumentException("selected array area must not lie outside of data array");}

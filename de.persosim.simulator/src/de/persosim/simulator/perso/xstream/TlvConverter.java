@@ -7,9 +7,8 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
-import de.persosim.simulator.tlv.ConstructedTlvDataObject;
-import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
+import de.persosim.simulator.tlv.TlvDataObjectFactory;
 import de.persosim.simulator.utils.HexString;
 
 /**
@@ -33,20 +32,11 @@ public class TlvConverter implements Converter {
 	public Object unmarshal(HierarchicalStreamReader reader,
 			UnmarshallingContext context) {	
 		byte [] data = HexString.toByteArray(reader.getValue());
-		String currentError = null;
 		
 		try {
-			return new ConstructedTlvDataObject(data);
-		} catch (Exception e) {
-			currentError = "Object could not be unmarshalled as constructed tlv data.";
+			return TlvDataObjectFactory.createTLVDataObject(data);
+		} catch (RuntimeException e) {
+			throw new XStreamException ("Object could not be unmarshalled as TlvDataObject.", e);
 		}
-		
-		try {
-			return new PrimitiveTlvDataObject(data);
-		} catch (Exception e) {
-			currentError = "Object could not be unmarshalled as primitive or constructed tlv data.";
-		}
-		
-		throw new XStreamException (currentError);
 	}
 }

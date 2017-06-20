@@ -71,6 +71,31 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 		tlvDataObjectContainer = new TlvDataObjectContainer(byteArray, minOffsetSub, maxOffsetSub);
 	}
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((tlvDataObjectContainer == null) ? 0 : tlvDataObjectContainer.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ConstructedTlvDataObject other = (ConstructedTlvDataObject) obj;
+		if (tlvDataObjectContainer == null) {
+			if (other.tlvDataObjectContainer != null)
+				return false;
+		} else if (!tlvDataObjectContainer.equals(other.tlvDataObjectContainer))
+			return false;
+		return true;
+	}
+
 	/**
 	 * Constructor for a TLV data object with constructed encoding based on a fixed array of raw bytes.
 	 * The defined byte array must contain exactly the whole TLV data object.
@@ -162,15 +187,11 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 
 	@Override
 	public void setTag(TlvTag tlvTagInput, boolean performValidityChecksInput) {
-		if(tlvTagInput == null) {throw new NullPointerException("tag must not be null");}
-		
+		if(tlvTagInput == null) {throw new IllegalArgumentException("tag must not be null");}
 		if(!tlvTagInput.indicatesEncodingConstructed()) {throw new IllegalArgumentException("tag must be constructed");}
 		
 		performValidityChecks = performValidityChecksInput;
-		
-		if(performValidityChecks) {
-			if(!tlvTagInput.isValidBerEncoding()) {throw new IllegalArgumentException("tag must be valid BER encoding");};
-		}
+		if(performValidityChecks && (!tlvTagInput.isValidBerEncoding())) {throw new IllegalArgumentException("tag must be valid BER encoding");}
 		
 		/*
 		 * TLV tag must be cloned to eliminate outside access to this object.
@@ -290,7 +311,7 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	 * @param tlvDataObjectContainerInput the value to be set
 	 */
 	public void setValue(TlvDataObjectContainer tlvDataObjectContainerInput) {
-		if(tlvDataObjectContainerInput == null) {throw new NullPointerException("value must not be null");}
+		if(tlvDataObjectContainerInput == null) {throw new IllegalArgumentException("value must not be null");}
 		tlvDataObjectContainer = tlvDataObjectContainerInput;
 	}
 
