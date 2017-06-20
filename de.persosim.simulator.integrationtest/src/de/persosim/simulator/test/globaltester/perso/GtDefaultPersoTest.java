@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.persosim.simulator.perso.DefaultPersoGt;
@@ -116,6 +117,7 @@ public class GtDefaultPersoTest extends GlobalTesterTest {
 		return retVal;
 	}
 	
+	@Ignore
 	@Test
 	public void testAllApplicableTests() throws Exception {
 		String suiteName;

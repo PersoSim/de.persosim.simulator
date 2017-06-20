@@ -14,6 +14,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -107,6 +108,7 @@ public abstract class GlobalTesterTest implements InfoSource, Iso7816, Tr03110 {
 		getSimulator().loadPersonalization(getPersonalization());
 	}
 	
+	@Ignore
 	@Test
 	public void testAllApplicableTests() throws Exception {
 		gtServer.clearCollectedResults();

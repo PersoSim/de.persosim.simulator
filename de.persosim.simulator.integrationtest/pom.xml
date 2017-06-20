@@ -11,6 +11,7 @@
   <artifactId>de.persosim.simulator.integrationtest</artifactId>
   <version>0.10.2-SNAPSHOT</version>
   <packaging>eclipse-test-plugin</packaging>
+
   <build>
     <plugins>
       <plugin>
@@ -19,34 +20,10 @@
         <version>${tycho.version}</version>
         <configuration>
           <includes>
-            <include>**/GtDebugPersoTest.class</include>
+            <include>**/*Crossover.class</include>
           </includes>
-          <defaultStartLevel>
-            <level>6</level>
-            <autoStart>true</autoStart>
-          </defaultStartLevel>
-          <bundleStartLevel>
-            <bundle>
-              <id>org.globaltester.cryptoprovider</id>
-              <level>2</level>
-              <autoStart>true</autoStart>
-            </bundle>
-            <bundle>
-              <id>org.globaltester.cryptoprovider.bc</id>
-              <level>2</level>
-              <autoStart>true</autoStart>
-            </bundle>
-            <bundle>
-              <id>de.persosim.simulator</id>
-              <level>3</level>
-              <autoStart>true</autoStart>
-            </bundle>
-            <bundle>
-              <id>de.persosim.simulator.adapter.socket</id>
-              <level>3</level>
-              <autoStart>true</autoStart>
-            </bundle>
-          </bundleStartLevel>
+	  <useUIHarness>true</useUIHarness>
+	  <product>org.globaltester.platform.product</product>
         </configuration>
       </plugin>
     </plugins>

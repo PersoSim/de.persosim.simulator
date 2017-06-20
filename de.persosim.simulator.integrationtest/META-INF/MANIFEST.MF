@@ -11,12 +11,18 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  org.globaltester.cryptoprovider,
  de.persosim.simulator.adapter.socket,
  org.globaltester.logging,
- com.secunet.globaltester.crossover,
  org.eclipse.core.resources,
- com.secunet.globaltester.testcontrol,
- com.secunet.globaltester.testcontrol.soap.consumer
+ com.secunet.globaltester.crossover,
+ com.secunet.globaltester.testcontrol.integrationtest,
+ org.globaltester.base,
+ com.secunet.globaltester.testcontrol.callback.soap.provider,
+ com.secunet.globaltester.testscripts.icao.tr_rf_protocol_testing_part3.crossover,
+ org.globaltester.logging.legacy,
+ com.secunet.globaltester.testscripts.bsi.tr03105_part3_3,
+ com.secunet.globaltester.testscripts.basics
 Export-Package: de.persosim.simulator.test.globaltester,
  de.persosim.simulator.test.globaltester.perso
 Import-Package: org.eclipse.ui.keys,
  org.osgi.framework;version="1.8.0"
 Bundle-Vendor: secunet Security Networks AG
+Bundle-ActivationPolicy: lazy
