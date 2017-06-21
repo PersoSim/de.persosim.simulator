@@ -8,7 +8,7 @@ import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.utils.Utils;
 
-public class CaSecInfoHelper implements Ca, TlvConstants {
+public final class CaSecInfoHelper implements Ca, TlvConstants {
 	
 	private CaSecInfoHelper() {
 		// this static class is not to be instantiated

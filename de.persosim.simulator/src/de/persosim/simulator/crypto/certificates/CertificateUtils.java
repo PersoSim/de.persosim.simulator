@@ -16,7 +16,7 @@ import de.persosim.simulator.utils.Utils;
  * @author slutters
  * 
  */
-public class CertificateUtils implements TlvConstants {
+public final class CertificateUtils implements TlvConstants {
 	
 	private CertificateUtils() {
 		// this is a static class not to be instantiated
