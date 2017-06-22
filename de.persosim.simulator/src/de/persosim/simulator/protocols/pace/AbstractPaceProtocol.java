@@ -1,9 +1,6 @@
 package de.persosim.simulator.protocols.pace;
 
 import static de.persosim.simulator.protocols.Tr03110Utils.buildAuthenticationTokenInput;
-import static org.globaltester.logging.BasicLogger.DEBUG;
-import static org.globaltester.logging.BasicLogger.ERROR;
-import static org.globaltester.logging.BasicLogger.TRACE;
 import static org.globaltester.logging.BasicLogger.log;
 import static org.globaltester.logging.BasicLogger.logException;
 
@@ -24,7 +21,7 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.globaltester.cryptoprovider.Crypto;
-
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -183,7 +180,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	
 			if (pwdCandidate instanceof PasswordAuthObject){
 				pacePassword = (PasswordAuthObject) pwdCandidate;
-				log(this, "selected password is: " + getPasswordName(), DEBUG);
+				log(this, "selected password is: " + getPasswordName(), LogLevel.DEBUG);
 			} else {
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
 				this.processingData.updateResponseAPDU(this, "no fitting authentication object found", resp);
@@ -272,7 +269,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			
 			String logString = "new OID is " + paceOid + ", new " + pacePassword;
 			
-			log(this, logString, DEBUG);	
+			log(this, logString, LogLevel.DEBUG);	
 	
 			/* 
 			 * Create and set crypto parameters
@@ -280,15 +277,15 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			KeyDerivationFunction kdf = new KeyDerivationFunction(paceOid.getSymmetricCipherKeyLengthInBytes());
 			byte[] commonSecret = pacePassword.getPassword();
 			
-			log(this, "common secret is: " + HexString.encode(commonSecret), TRACE);
+			log(this, "common secret is: " + HexString.encode(commonSecret), LogLevel.TRACE);
 			
 			byte[] keyMaterialForEncryptionOfNonce = kdf.derivePI(commonSecret);
 			
-			log(this, "computed raw key material of byte length " + keyMaterialForEncryptionOfNonce.length + " is: " + HexString.encode(keyMaterialForEncryptionOfNonce), TRACE);
+			log(this, "computed raw key material of byte length " + keyMaterialForEncryptionOfNonce.length + " is: " + HexString.encode(keyMaterialForEncryptionOfNonce), LogLevel.TRACE);
 			
 			this.secretKeySpecNonce = this.cryptoSupport.generateSecretKeySpecCipher(keyMaterialForEncryptionOfNonce);
 			
-			log(this, "computed " + paceOid.getSymmetricCipherAlgorithmName() + " key material: " + HexString.encode(keyMaterialForEncryptionOfNonce), DEBUG);
+			log(this, "computed " + paceOid.getSymmetricCipherAlgorithmName() + " key material: " + HexString.encode(keyMaterialForEncryptionOfNonce), LogLevel.DEBUG);
 			
 			// If PIN is used, check for retry counter.
 			ResponseData isPasswordUsable = isPasswordUsable(pacePassword, cardState);
@@ -434,19 +431,19 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		int multiplicationFactor = (int) Math.ceil(keySizeInBytes/(double) blockSizeInBytes);
 		int nonceSizeInBytes = multiplicationFactor * blockSizeInBytes;
 		
-		log(this, "key length k in Bytes is " + keySizeInBytes + ", block size in Bytes is " + blockSizeInBytes + " --> nonce s must be of smallest length l in Bytes, l being a multiple of the block size, such that l<=k", TRACE);
+		log(this, "key length k in Bytes is " + keySizeInBytes + ", block size in Bytes is " + blockSizeInBytes + " --> nonce s must be of smallest length l in Bytes, l being a multiple of the block size, such that l<=k", LogLevel.TRACE);
 		
 		this.piccsPlainNonceS = new byte[nonceSizeInBytes];
 		this.secureRandom.nextBytes(this.piccsPlainNonceS);
 		
-		log(this, "new (plain) nonce s of byte length " + this.piccsPlainNonceS.length + " is " + HexString.encode(this.piccsPlainNonceS), TRACE);
+		log(this, "new (plain) nonce s of byte length " + this.piccsPlainNonceS.length + " is " + HexString.encode(this.piccsPlainNonceS), LogLevel.TRACE);
 		
 		encryptedNonce = this.cryptoSupport.encryptWithIvZero(this.piccsPlainNonceS, this.secretKeySpecNonce);
 		
-		log(this, "(encryted) nonce z = E_KPi(s) is " + HexString.encode(encryptedNonce), TRACE);
+		log(this, "(encryted) nonce z = E_KPi(s) is " + HexString.encode(encryptedNonce), LogLevel.TRACE);
 		
 		primitive80 = new PrimitiveTlvDataObject(TAG_80, encryptedNonce);
-		log(this, "primitive tag 80 is: " + primitive80, TRACE);
+		log(this, "primitive tag 80 is: " + primitive80, LogLevel.TRACE);
 		constructed7C = new ConstructedTlvDataObject(TAG_7C);
 		constructed7C.addTlvDataObject(primitive80);
 		
@@ -480,14 +477,14 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		 */
 		byte[] mappingDataFromPcd = tlvObject.getValueField();
 		
-		log(this, "mapping data received from PCD is expected to contain " + mapping.getMeaningOfMappingData(), DEBUG);
-		log(this, "unchecked mapping data content of " + mappingDataFromPcd.length + " bytes length is: " + HexString.encode(mappingDataFromPcd), DEBUG);
-		log(this, "nonce s generated by PICC during processing of GetNonce command is " + HexString.encode(piccsPlainNonceS), TRACE);
+		log(this, "mapping data received from PCD is expected to contain " + mapping.getMeaningOfMappingData(), LogLevel.DEBUG);
+		log(this, "unchecked mapping data content of " + mappingDataFromPcd.length + " bytes length is: " + HexString.encode(mappingDataFromPcd), LogLevel.DEBUG);
+		log(this, "nonce s generated by PICC during processing of GetNonce command is " + HexString.encode(piccsPlainNonceS), LogLevel.TRACE);
 		
 		byte[] mappingResponse;
 		
 		try {
-			log(this, "about to perform " + mapping.getMappingName(), DEBUG);
+			log(this, "about to perform " + mapping.getMappingName(), LogLevel.DEBUG);
 			mappingResult = mapping.performMapping(paceDomainParametersUnmapped, piccsPlainNonceS, mappingDataFromPcd);
 			
 			ephemeralKeyPairPicc = mappingResult.getKeyPairPiccMapped();
@@ -508,8 +505,8 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		}
 
 		
-		log(this, "PICC's ephemeral public  mapped " + keyAgreementName + " key is " + new TlvDataObjectContainer(ephemeralKeyPairPicc.getPublic().getEncoded()), TRACE);
-		log(this, "PICC's ephemeral private mapped " + keyAgreementName + " key is " + new TlvDataObjectContainer(ephemeralKeyPairPicc.getPrivate().getEncoded()), TRACE);
+		log(this, "PICC's ephemeral public  mapped " + keyAgreementName + " key is " + new TlvDataObjectContainer(ephemeralKeyPairPicc.getPublic().getEncoded()), LogLevel.TRACE);
+		log(this, "PICC's ephemeral private mapped " + keyAgreementName + " key is " + new TlvDataObjectContainer(ephemeralKeyPairPicc.getPrivate().getEncoded()), LogLevel.TRACE);
 		
 		// Build response data
 		TlvValue responseData = buildResponseDataForMapNonce(mappingResponse);
@@ -546,25 +543,25 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		TlvDataObject tlvObject = commandData.getTlvDataObject(new TlvPath(new TlvTag((byte) 0x7C), new TlvTag((byte) 0x83)));
 		byte[] rawKeyPlain = tlvObject.getValueField();
 		
-		log(this, "PCD's public raw key of " + rawKeyPlain.length + " bytes length is: " + HexString.encode(rawKeyPlain), TRACE);
+		log(this, "PCD's public raw key of " + rawKeyPlain.length + " bytes length is: " + HexString.encode(rawKeyPlain), LogLevel.TRACE);
 		
 		try {
 			ephemeralPublicKeyPcd = paceDomainParametersMapped.reconstructPublicKey(rawKeyPlain);
 			ephemeralPublicKeyComponentPicc = paceDomainParametersMapped.encodePublicKey(ephemeralKeyPairPicc.getPublic());
-			log(this, "PCD's  ephemeral public  mapped " + paceDomainParametersMapped.getKeyAgreementAlgorithm() + " key is " + new TlvDataObjectContainer(ephemeralPublicKeyPcd.getEncoded()), TRACE);
+			log(this, "PCD's  ephemeral public  mapped " + paceDomainParametersMapped.getKeyAgreementAlgorithm() + " key is " + new TlvDataObjectContainer(ephemeralPublicKeyPcd.getEncoded()), LogLevel.TRACE);
 		} catch (IllegalArgumentException e) {
-			logException(this, e, ERROR);
+			logException(this, e, LogLevel.ERROR);
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 			return;
 		} catch (Exception e) {
-			logException(this, e, ERROR);
+			logException(this, e, LogLevel.ERROR);
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 			return;
 		}
 		
-		log(this, "bare response data of byte length " + ephemeralPublicKeyComponentPicc.length + " is " + HexString.encode(ephemeralPublicKeyComponentPicc), DEBUG);
+		log(this, "bare response data of byte length " + ephemeralPublicKeyComponentPicc.length + " is " + HexString.encode(ephemeralPublicKeyComponentPicc), LogLevel.DEBUG);
 		
 		/* create and propagate response APDU */
 		TlvValue responseData = buildResponseDataForKeyAgreement(paceDomainParametersMapped, ephemeralPublicKeyComponentPicc);
@@ -605,8 +602,8 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		TlvDataObjectContainer piccTokenInput = buildAuthenticationTokenInput(ephemeralPublicKeyPcd, paceDomainParametersMapped, paceOid);
 		TlvDataObjectContainer pcdTokenInput = buildAuthenticationTokenInput(ephemeralKeyPairPicc.getPublic(), paceDomainParametersMapped, paceOid);
 		
-		log(this, "picc token raw data " + piccTokenInput, DEBUG);
-		log(this, "pcd  token raw data " + pcdTokenInput, DEBUG);
+		log(this, "picc token raw data " + piccTokenInput, LogLevel.DEBUG);
+		log(this, "pcd  token raw data " + pcdTokenInput, LogLevel.DEBUG);
 		
 		try {
 			KeyAgreement keyAgreement = KeyAgreement.getInstance(paceOid.getKeyAgreementName(), Crypto.getCryptoProvider());
@@ -615,7 +612,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			
 			byte[] sharedSecret = keyAgreement.generateSecret();
 			
-			log(this, "shared secret of byte length " + sharedSecret.length + " resulting from " + paceOid.getKeyAgreementName() + " key agreement is " + HexString.encode(sharedSecret), DEBUG);
+			log(this, "shared secret of byte length " + sharedSecret.length + " resulting from " + paceOid.getKeyAgreementName() + " key agreement is " + HexString.encode(sharedSecret), LogLevel.DEBUG);
 			
 			KeyDerivationFunction kdf = new KeyDerivationFunction(paceOid.getSymmetricCipherKeyLengthInBytes());
 			
@@ -625,8 +622,8 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			this.secretKeySpecMAC = this.cryptoSupport.generateSecretKeySpecMac(keyMaterialMAC);
 			this.secretKeySpecENC = this.cryptoSupport.generateSecretKeySpecCipher(keyMaterialENC);
 			
-			log(this, "final " + secretKeySpecENC.getAlgorithm() + " symmetric key material ENC is " + HexString.encode(secretKeySpecENC.getEncoded()), DEBUG);
-			log(this, "final " + secretKeySpecMAC.getAlgorithm() + " symmetric key material MAC is " + HexString.encode(secretKeySpecMAC.getEncoded()), DEBUG);
+			log(this, "final " + secretKeySpecENC.getAlgorithm() + " symmetric key material ENC is " + HexString.encode(secretKeySpecENC.getEncoded()), LogLevel.DEBUG);
+			log(this, "final " + secretKeySpecMAC.getAlgorithm() + " symmetric key material MAC is " + HexString.encode(secretKeySpecMAC.getEncoded()), LogLevel.DEBUG);
 		} catch (InvalidKeyException | IllegalStateException | NoSuchAlgorithmException e) {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
 			processingData.updateResponseAPDU(this, "Invalid symmetric key", resp);
@@ -636,20 +633,20 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		
 		/* get first 8 bytes of mac */
 		byte[] piccToken = Arrays.copyOf(this.cryptoSupport.macAuthenticationToken(piccTokenInput.toByteArray(), this.secretKeySpecMAC), 8);
-		log(this, "picc token data is: " + HexString.encode(piccToken), DEBUG);
+		log(this, "picc token data is: " + HexString.encode(piccToken), LogLevel.DEBUG);
 		
 		byte[] pcdToken = Arrays.copyOf(this.cryptoSupport.macAuthenticationToken(pcdTokenInput.toByteArray(), this.secretKeySpecMAC), 8);
-		log(this, "pcd  token data is: " + HexString.encode(pcdToken), DEBUG);
+		log(this, "pcd  token data is: " + HexString.encode(pcdToken), LogLevel.DEBUG);
 		
-		log(this, "expected pcd token data is: " + HexString.encode(pcdToken), DEBUG);
-		log(this, "received pcd token data is: " + HexString.encode(pcdTokenReceivedFromPCD), DEBUG);
+		log(this, "expected pcd token data is: " + HexString.encode(pcdToken), LogLevel.DEBUG);
+		log(this, "received pcd token data is: " + HexString.encode(pcdTokenReceivedFromPCD), LogLevel.DEBUG);
 		
 		boolean paceSuccessful;
 		short sw;
 		String note;
 		
 		if(Arrays.equals(pcdToken, pcdTokenReceivedFromPCD)) {
-			log(this, "Token received from PCD matches expected one", DEBUG);
+			log(this, "Token received from PCD matches expected one", LogLevel.DEBUG);
 			
 			if(pacePassword instanceof PasswordAuthObjectWithRetryCounter) {
 				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceSuccessful(pacePassword, cardState);
@@ -665,7 +662,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			}
 		} else{
 			//PACE failed
-			log(this, "Token received from PCD does NOT match expected one", DEBUG);
+			log(this, "Token received from PCD does NOT match expected one", LogLevel.DEBUG);
 			paceSuccessful = false;
 			
 			if(pacePassword.getPasswordIdentifier() == Pace.ID_PIN) {
@@ -784,10 +781,10 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 */
 	public static ResponseData getMutualAuthenticatePinManagementResponsePaceFailed(PasswordAuthObjectWithRetryCounter pacePasswordPin) {
 		int pinRetryCounter = pacePasswordPin.getRetryCounterCurrentValue();
-		log(AbstractPaceProtocol.class, "PACE with PIN has failed - PIN retry counter will be decremented, current value is: " + pinRetryCounter, DEBUG);
+		log(AbstractPaceProtocol.class, "PACE with PIN has failed - PIN retry counter will be decremented, current value is: " + pinRetryCounter, LogLevel.DEBUG);
 		pacePasswordPin.decrementRetryCounter();
 		pinRetryCounter = pacePasswordPin.getRetryCounterCurrentValue();
-		log(AbstractPaceProtocol.class, "PACE with PIN has failed - PIN retry counter has been decremented, current value is: " + pinRetryCounter, DEBUG);
+		log(AbstractPaceProtocol.class, "PACE with PIN has failed - PIN retry counter has been decremented, current value is: " + pinRetryCounter, LogLevel.DEBUG);
 		
 		short sw = (short) 0x63C0;
 		sw |= ((short) (pinRetryCounter & (short) 0x000F)); 
@@ -902,7 +899,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
 			PasswordAuthObject previouslyUsedPwd = paceMechanism.getUsedPassword();
 			int previouslyUsedPasswordIdentifier = previouslyUsedPwd.getPasswordIdentifier();
-			log(AbstractPaceProtocol.class, "last successfull PACE run used " + getPasswordName(previouslyUsedPasswordIdentifier) + " as password with value " + HexString.encode(previouslyUsedPwd.getPassword()), DEBUG);
+			log(AbstractPaceProtocol.class, "last successfull PACE run used " + getPasswordName(previouslyUsedPasswordIdentifier) + " as password with value " + HexString.encode(previouslyUsedPwd.getPassword()), LogLevel.DEBUG);
 			return previouslyUsedPasswordIdentifier == Pace.ID_CAN;
 		} else{
 			return false;

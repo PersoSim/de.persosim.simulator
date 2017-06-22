@@ -1,11 +1,11 @@
 package de.persosim.simulator.perso.xstream;
 
-import static org.globaltester.logging.BasicLogger.ERROR;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.globaltester.logging.tags.LogLevel;
 import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -82,14 +82,14 @@ public class CommandProcessorConverter implements Converter {
 
 		if (masterFile == null || protocols == null) {
 			String message = "can not create CommandProcessor object, unmarshal failed!";
-			log(getClass(), message, ERROR);
+			log(getClass(), message, LogLevel.ERROR);
 			throw new XStreamException(message);
 		}
 		try {
 			return new CommandProcessor(protocols, masterFile);
 		} catch (AccessDeniedException e) {
 			String message = "can not create CommandProcessor object, unmarshal failed!";
-			log(getClass(), message, ERROR);
+			log(getClass(), message, LogLevel.ERROR);
 			throw new XStreamException(message);
 		}
 	}

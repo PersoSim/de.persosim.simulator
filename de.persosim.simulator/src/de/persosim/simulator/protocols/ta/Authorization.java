@@ -1,8 +1,8 @@
 package de.persosim.simulator.protocols.ta;
 
-import static org.globaltester.logging.BasicLogger.WARN;
 import static org.globaltester.logging.BasicLogger.log;
 
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.utils.BitField;
 
 /**
@@ -39,7 +39,7 @@ public class Authorization {
 		BitField effectiveAuth = newAuthorization.and(this.authorization);
 		
 		if(this.authorization.getNumberOfBits() != newAuthorization.getNumberOfBits()) {
-			log(this.getClass(), "updating authorizations of different length", WARN);
+			log(this.getClass(), "updating authorizations of different length", LogLevel.WARN);
 		}
 		
 		return new Authorization(effectiveAuth);

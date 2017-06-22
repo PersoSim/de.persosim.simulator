@@ -1,8 +1,5 @@
 package de.persosim.simulator;
 
-import static org.globaltester.logging.BasicLogger.ERROR;
-import static org.globaltester.logging.BasicLogger.INFO;
-import static org.globaltester.logging.BasicLogger.WARN;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.io.File;
@@ -18,6 +15,7 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.simulator.Simulator;
 import org.osgi.framework.Bundle;
 
@@ -72,7 +70,7 @@ public class CommandParser {
 				args.remove(0);
 				de.persosim.simulator.Activator.getDefault().enableService();
 				if (getPersoSim() == null) {
-					log(CommandParser.class, "Enabling the PersoSimService failed", ERROR);
+					log(CommandParser.class, "Enabling the PersoSimService failed", LogLevel.ERROR);
 				}
 					
 				return getPersoSim().startSimulator();
@@ -98,7 +96,7 @@ public class CommandParser {
 					return true;
 				}
 				else {
-					log(CommandParser.class, "No running PersoSimService found", WARN);
+					log(CommandParser.class, "No running PersoSimService found", LogLevel.WARN);
 				}
 			}
 		}
@@ -121,7 +119,7 @@ public class CommandParser {
 				if(getPersoSim() != null)
 					return getPersoSim().restartSimulator();
 				else
-					log(CommandParser.class, "No running PersoSimService found", WARN);
+					log(CommandParser.class, "No running PersoSimService found", LogLevel.WARN);
 			}
 		}
 		
@@ -153,7 +151,7 @@ public class CommandParser {
 		    			return result;
 		    		}
 				} else {
-					log(CommandParser.class, "Please enable the PersoSimService before sending apdus", WARN);
+					log(CommandParser.class, "Please enable the PersoSimService before sending apdus", LogLevel.WARN);
 					return "";
 				}
 			} else{
@@ -168,23 +166,23 @@ public class CommandParser {
 	 * This method prints the help menu to the command line.
 	 */
 	private static void printHelpArgs() {
-		log(CommandParser.class, "Available commands:", INFO);
-		log(CommandParser.class, ARG_LOAD_PERSONALIZATION + " <file name>", INFO);
-		log(CommandParser.class, ARG_SET_PORT + " <port number>", INFO);
-		log(CommandParser.class, ARG_HELP, INFO);
+		log(CommandParser.class, "Available commands:", LogLevel.INFO);
+		log(CommandParser.class, ARG_LOAD_PERSONALIZATION + " <file name>", LogLevel.INFO);
+		log(CommandParser.class, ARG_SET_PORT + " <port number>", LogLevel.INFO);
+		log(CommandParser.class, ARG_HELP, LogLevel.INFO);
 	}
 	
 	/**
 	 * This method prints the help menu to the user command line.
 	 */
 	private static void printHelpCmd() {
-		log(CommandParser.class, "Available commands:", INFO);
-		log(CommandParser.class, CMD_SEND_APDU + " <hexstring>", INFO);
-		log(CommandParser.class, CMD_LOAD_PERSONALIZATION + " <file name>", INFO);
-		log(CommandParser.class, CMD_START, INFO);
-		log(CommandParser.class, CMD_RESTART, INFO);
-		log(CommandParser.class, CMD_STOP, INFO);
-		log(CommandParser.class, CMD_HELP, INFO);
+		log(CommandParser.class, "Available commands:", LogLevel.INFO);
+		log(CommandParser.class, CMD_SEND_APDU + " <hexstring>", LogLevel.INFO);
+		log(CommandParser.class, CMD_LOAD_PERSONALIZATION + " <file name>", LogLevel.INFO);
+		log(CommandParser.class, CMD_START, LogLevel.INFO);
+		log(CommandParser.class, CMD_RESTART, LogLevel.INFO);
+		log(CommandParser.class, CMD_STOP, LogLevel.INFO);
+		log(CommandParser.class, CMD_HELP, LogLevel.INFO);
 	}
 	
 	/**
@@ -212,7 +210,7 @@ public class CommandParser {
 							return true;
 						}
 					} else {
-						log(CommandParser.class, "Please enable the PersoSimService before loading a personalization", WARN);
+						log(CommandParser.class, "Please enable the PersoSimService before loading a personalization", LogLevel.WARN);
 					}
     			}
 			}
@@ -238,14 +236,14 @@ public class CommandParser {
 			try {
 			personalizationNumber = Integer.parseInt(identifier);
 			} catch (NumberFormatException e) {
-				log(CommandParser.class, "identifier is no valid path or profile number!", ERROR);
+				log(CommandParser.class, "identifier is no valid path or profile number!", LogLevel.ERROR);
 				return null;
 			}
 			if(personalizationNumber > 10) {
-				log(CommandParser.class, "personalization profile no: " + personalizationNumber + " does not exist", INFO);
+				log(CommandParser.class, "personalization profile no: " + personalizationNumber + " does not exist", LogLevel.INFO);
 				return null;
 			}
-			log(CommandParser.class, "trying to load personalization profile no: " + personalizationNumber, INFO);
+			log(CommandParser.class, "trying to load personalization profile no: " + personalizationNumber, LogLevel.INFO);
 			Bundle plugin = Activator.getContext().getBundle();
 			
 			URL url = plugin.getEntry (PERSO_PATH);
@@ -256,7 +254,7 @@ public class CommandParser {
 				resolvedUrl = FileLocator.resolve(url);
 				folder = new File(resolvedUrl.getFile());
 			} catch (IOException e) {
-				log(CommandParser.class, e.getMessage(), ERROR);
+				log(CommandParser.class, e.getMessage(), LogLevel.ERROR);
 			}
 			if (personalizationNumber < 10) {
 				identifier = "0" + personalizationNumber;
@@ -268,8 +266,8 @@ public class CommandParser {
 		try{
 			return parsePersonalization(filePath);
 		} catch(FileNotFoundException e) {
-			log(CommandParser.class, "unable to set personalization, reason is: " + e.getMessage(), ERROR);
-			log(CommandParser.class, "simulation is stopped", ERROR);
+			log(CommandParser.class, "unable to set personalization, reason is: " + e.getMessage(), LogLevel.ERROR);
+			log(CommandParser.class, "simulation is stopped", LogLevel.ERROR);
 			return null;
 		}
 	} 
@@ -282,12 +280,12 @@ public class CommandParser {
 	 * @throws JAXBException if parsing of personalization not successful
 	 */
 	public static Personalization parsePersonalization(String persoFileName) throws FileNotFoundException {
-		log(CommandParser.class, "Parsing personalization from file " + persoFileName, INFO);
+		log(CommandParser.class, "Parsing personalization from file " + persoFileName, LogLevel.INFO);
 		return (Personalization) PersonalizationFactory.unmarshal(persoFileName);
 	}
 	
 	public static void executeUserCommands(String... args) {
-		if((args == null) || (args.length == 0)) {log(CommandParser.class, LOG_NO_OPERATION, INFO); return;}
+		if((args == null) || (args.length == 0)) {log(CommandParser.class, LOG_NO_OPERATION, LogLevel.INFO); return;}
 		
 		ArrayList<String> currentArgs = new ArrayList<String>(Arrays.asList(args)); // plain return value of Arrays.asList() does not support required remove operation
 		
@@ -297,7 +295,7 @@ public class CommandParser {
 			}
 		}
 		
-		if(currentArgs.size() == 0) {log(CommandParser.class, LOG_NO_OPERATION, INFO); return;}
+		if(currentArgs.size() == 0) {log(CommandParser.class, LOG_NO_OPERATION, LogLevel.INFO); return;}
 		
 		int noOfArgsWhenCheckedLast;
 		while(currentArgs.size() > 0) {
@@ -314,7 +312,7 @@ public class CommandParser {
 			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
 				//first command in queue has not been processed
 				String currentArgument = currentArgs.get(0);
-				log(CommandParser.class, LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped", WARN);
+				log(CommandParser.class, LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped", LogLevel.WARN);
 				currentArgs.remove(0);
 				printHelpCmd();
 				break;
@@ -328,7 +326,7 @@ public class CommandParser {
 	 * @param args the parsed commands and arguments
 	 */
 	public  static void handleArgs(Simulator sim, String... args) {
-		if((args == null) || (args.length == 0)) {log(CommandParser.class, LOG_NO_OPERATION, INFO); return;}
+		if((args == null) || (args.length == 0)) {log(CommandParser.class, LOG_NO_OPERATION, LogLevel.INFO); return;}
 		
 		processingCommandLineArguments = true;
 		
@@ -342,7 +340,7 @@ public class CommandParser {
 			}
 		}
 		
-		if(currentArgs.size() == 0) {log(CommandParser.class, LOG_NO_OPERATION, INFO); return;}
+		if(currentArgs.size() == 0) {log(CommandParser.class, LOG_NO_OPERATION, LogLevel.INFO); return;}
 		
 		int noOfArgsWhenCheckedLast;
 		while(currentArgs.size() > 0) {
@@ -362,7 +360,7 @@ public class CommandParser {
 			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
 				//first command in queue has not been processed
 				String currentArgument = currentArgs.get(0);
-				log(CommandParser.class, LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped", ERROR);
+				log(CommandParser.class, LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped", LogLevel.ERROR);
 				currentArgs.remove(0);
 				printHelpCmd();
 				break;
@@ -424,8 +422,8 @@ public class CommandParser {
 	private static String exchangeApdu(Simulator sim, String cmdApdu) {
 		cmdApdu = cmdApdu.replaceAll("\\s", ""); // remove any whitespace
 		String respApdu =  HexString.dump(sim.processCommand(HexString.toByteArray(cmdApdu)));
-		log(CommandParser.class, "> " + cmdApdu, INFO);
-		log(CommandParser.class, "< " + respApdu, INFO);
+		log(CommandParser.class, "> " + cmdApdu, LogLevel.INFO);
+		log(CommandParser.class, "< " + respApdu, LogLevel.INFO);
 		return respApdu;
 	}
 
@@ -474,7 +472,7 @@ public class CommandParser {
 	}
 	
 	public static void showExceptionToUser(Exception e) {
-		log(CommandParser.class, "Exception: " + e.getMessage(), INFO);
+		log(CommandParser.class, "Exception: " + e.getMessage(), LogLevel.INFO);
 		e.printStackTrace();
 	}
 	

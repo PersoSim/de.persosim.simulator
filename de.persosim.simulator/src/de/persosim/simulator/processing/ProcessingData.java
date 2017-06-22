@@ -1,14 +1,12 @@
 package de.persosim.simulator.processing;
 
-import static org.globaltester.logging.BasicLogger.TRACE;
-import static org.globaltester.logging.BasicLogger.WARN;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.globaltester.logging.InfoSource;
-
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.platform.Iso7816;
@@ -68,15 +66,15 @@ public class ProcessingData implements Iso7816, InfoSource {
 	 */
 	public void updateProcessingState(InfoSource source, String message, ProcessingStateDelta... update) {
 		//log modifications accordingly
-		log(source, "Update processing state with " + update.length + " deltas.", TRACE);
-		log(source, "Update message\n" + message, TRACE);
+		log(source, "Update processing state with " + update.length + " deltas.", LogLevel.TRACE);
+		log(source, "Update message\n" + message, LogLevel.TRACE);
 		for (ProcessingStateDelta curStateDelta : update) {
 			if (curStateDelta != null && curStateDelta.getNrOfModifications() > 0) {
 				// add to state history
 				processingHistory.add(new ProcessingStateUpdate(source, message, curStateDelta));
 
 				//log modifications accordingly
-				log(source, curStateDelta.toString(), TRACE);
+				log(source, curStateDelta.toString(), LogLevel.TRACE);
 				
 				// update command APDU if present
 				if (curStateDelta.getCommandApdu() != null) {
@@ -95,13 +93,13 @@ public class ProcessingData implements Iso7816, InfoSource {
 					
 					
 					this.commandApdu = curStateDelta.getCommandApdu();
-					log(source, "Command APDU updated\n" + commandApdu, TRACE);
+					log(source, "Command APDU updated\n" + commandApdu, LogLevel.TRACE);
 				}
 
 				// update response APDU if present
 				if (curStateDelta.getResponseApdu() != null) {
 					this.responseApdu = curStateDelta.getResponseApdu();
-					log(source, "Response APDU updated\n" + responseApdu + "\nreason is: " + message, TRACE);
+					log(source, "Response APDU updated\n" + responseApdu + "\nreason is: " + message, LogLevel.TRACE);
 				}
 				
 				// update updatePropagations if present
@@ -122,7 +120,7 @@ public class ProcessingData implements Iso7816, InfoSource {
 							// add current new propagation to the list 
 							curPropagations.add(curNewProp);
 						} else {
-							log(this, "Skipping one UpdatePropagation, as type does not match key", WARN);
+							log(this, "Skipping one UpdatePropagation, as type does not match key", LogLevel.WARN);
 						}
 					}
 				}

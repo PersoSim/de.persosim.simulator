@@ -1,6 +1,5 @@
 package de.persosim.simulator.secstatus;
 
-import static org.globaltester.logging.BasicLogger.TRACE;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.Collection;
@@ -9,7 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.globaltester.logging.InfoSource;
-
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
@@ -267,14 +266,14 @@ public class SecStatus implements InfoSource{
 						processingData.updateResponseAPDU(this, "More than one secure messaging context found", new ResponseApdu(Iso7816.SW_6400_EXECUTION_ERROR));
 					}
 					if (generators.size() == 1){
-						log(getClass(), "Preparing to restore session context associated with session context identifier " + sessionContextIdentifier, TRACE);
+						log(getClass(), "Preparing to restore session context associated with session context identifier " + sessionContextIdentifier, LogLevel.TRACE);
 						processingData.addUpdatePropagation(this, "restore Secure Messaging", ((SmDataProviderGenerator)generators.iterator().next()).generateSmDataProvider());
 					}
 				}
 				
 				if (eventPropagation.getEvent().equals(SecurityEvent.STORE_SESSION_CONTEXT)){
 					int sessionContextIdentifier = eventPropagation.getSessionContextIdentifier();
-					log(getClass(), "Preparing to store session context associated with session context identifier " + sessionContextIdentifier, TRACE);
+					log(getClass(), "Preparing to store session context associated with session context identifier " + sessionContextIdentifier, LogLevel.TRACE);
 					storeSecStatus(sessionContextIdentifier);
 				}
 			}

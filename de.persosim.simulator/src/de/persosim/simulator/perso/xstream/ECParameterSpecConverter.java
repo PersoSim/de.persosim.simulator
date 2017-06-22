@@ -1,6 +1,5 @@
 package de.persosim.simulator.perso.xstream;
 
-import static org.globaltester.logging.BasicLogger.ERROR;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.math.BigInteger;
@@ -8,6 +7,7 @@ import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
 
+import org.globaltester.logging.tags.LogLevel;
 import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -97,7 +97,7 @@ public class ECParameterSpecConverter implements Converter {
 
 		if(point == null || curve == null || n == null) {
 			String message = "can not create ParameterSpec object, unmarshal failed!";
-			log(getClass(), message, ERROR);
+			log(getClass(), message, LogLevel.ERROR);
 			throw new XStreamException (message);
 		}
 		return new ECParameterSpec(curve, point, n, h);

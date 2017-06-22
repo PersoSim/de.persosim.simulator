@@ -1,6 +1,5 @@
 package de.persosim.simulator.platform;
 
-import static org.globaltester.logging.BasicLogger.TRACE;
 import static org.globaltester.logging.BasicLogger.log;
 import static org.globaltester.logging.BasicLogger.logException;
 
@@ -10,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.exception.AccessDeniedException;
@@ -49,7 +49,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 
 	@Override
 	public void processAscending() {
-		log(this, "will now begin processing of ascending APDU", TRACE);
+		log(this, "will now begin processing of ascending APDU", LogLevel.TRACE);
 
 		try {
 			securityStatus.updateSecStatus(processingData);
@@ -72,13 +72,13 @@ public abstract class AbstractCommandProcessor extends Layer implements
 
 			securityStatus.updateSecStatus(processingData);
 
-			log(this, "successfully processed ascending APDU", TRACE);
+			log(this, "successfully processed ascending APDU", LogLevel.TRACE);
 		} catch(ProcessingException e) {
 			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 			return;
 		} catch (Exception e) {
-			logException(this, e, TRACE);
+			logException(this, e, LogLevel.TRACE);
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
 			this.processingData.updateResponseAPDU(this, "Generic error handling", resp);
 			return;
@@ -89,12 +89,12 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	public void powerOn() {
 		super.powerOn();
 
-		log(this, "powerOn, remove all protocols from stack", TRACE);
+		log(this, "powerOn, remove all protocols from stack", LogLevel.TRACE);
 		setStackPointerToBottom();
 		removeCurrentProtocolAndAboveFromStack();
 		reset();
 		
-		log(this, "powerOn, reset SecStatus", TRACE);
+		log(this, "powerOn, reset SecStatus", LogLevel.TRACE);
 		securityStatus.reset();
 
 	}
@@ -243,14 +243,14 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	}
 
 	public void removeCurrentProtocolAndAboveFromStack() {
-		log(this, "started cleaning up stack - will commence top down", TRACE);
+		log(this, "started cleaning up stack - will commence top down", LogLevel.TRACE);
 		for (int i = this.protocolStack.size() - 1; i >= this.stackPointer; i--) {
 			log(this, "removing protocol "
 					+ this.protocolStack.get(i).getProtocolName() + " from stack",
-					TRACE);
+					LogLevel.TRACE);
 			this.protocolStack.remove(i);
 		}
-		log(this, "finished cleaning up stack", TRACE);
+		log(this, "finished cleaning up stack", LogLevel.TRACE);
 	}
 
 	/**

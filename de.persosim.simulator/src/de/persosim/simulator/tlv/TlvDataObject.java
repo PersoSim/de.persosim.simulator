@@ -1,12 +1,12 @@
 package de.persosim.simulator.tlv;
 
-import static org.globaltester.logging.BasicLogger.DEBUG;
 import static org.globaltester.logging.BasicLogger.logException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.exception.ISO7816Exception;
 import de.persosim.simulator.platform.Iso7816;
 
@@ -215,7 +215,7 @@ public abstract class TlvDataObject extends TlvElement implements Iso7816, Valid
 			/* value must be accessed by getter as values are only specified by sub classes */
 			outputStream.write(getTlvValue().toByteArray());
 		} catch (IOException e) {
-			logException(this.getClass(), e, DEBUG);
+			logException(this.getClass(), e, LogLevel.DEBUG);
 		}
 
 		return outputStream.toByteArray();

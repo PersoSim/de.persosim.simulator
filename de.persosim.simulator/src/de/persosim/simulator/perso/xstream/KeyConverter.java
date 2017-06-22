@@ -1,7 +1,5 @@
 package de.persosim.simulator.perso.xstream;
 
-import static org.globaltester.logging.BasicLogger.DEBUG;
-import static org.globaltester.logging.BasicLogger.ERROR;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.security.Key;
@@ -14,7 +12,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import org.globaltester.cryptoprovider.Crypto;
-
+import org.globaltester.logging.tags.LogLevel;
 import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -94,7 +92,7 @@ public class KeyConverter implements Converter {
 		getValuesFromXML (reader, context);
 		
 		if (byteValue == null || algorithmValue == null || algorithmValue.equals("") || byteValue.equals("")) {
-			log(getClass(), "can not create "+ keyType +" object, unmarshal failed", ERROR);
+			log(getClass(), "can not create "+ keyType +" object, unmarshal failed", LogLevel.ERROR);
 			throw new XStreamException("can not create "+ keyType +" object, unmarshal failed!");
 		}
 		
@@ -104,12 +102,12 @@ public class KeyConverter implements Converter {
 		try {
 			pk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePublic(ks_pub);
 		} catch (InvalidKeySpecException| NoSuchAlgorithmException e1) {
-			log(getClass(), "this is not a valid public key", DEBUG);
+			log(getClass(), "this is not a valid public key", LogLevel.DEBUG);
 			
 			try {
 				sk = KeyFactory.getInstance(algorithmValue, Crypto.getCryptoProvider()).generatePrivate(ks_priv);
 			} catch (InvalidKeySpecException| NoSuchAlgorithmException e2) {
-				log(getClass(), "this is also not a valid private key", DEBUG);
+				log(getClass(), "this is also not a valid private key", LogLevel.DEBUG);
 				throw new XStreamException("Neither a valid private nor public key could be extracted", e2);
 			}
 		}

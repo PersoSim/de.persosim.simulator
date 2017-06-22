@@ -1,11 +1,10 @@
 package de.persosim.simulator.platform;
 
-import static org.globaltester.logging.BasicLogger.TRACE;
 import static org.globaltester.logging.BasicLogger.log;
 import static org.globaltester.logging.BasicLogger.logException;
 
 import org.globaltester.logging.InfoSource;
-
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.exception.GeneralException;
 import de.persosim.simulator.processing.ProcessingData;
@@ -33,7 +32,7 @@ public abstract class Layer implements Iso7816, InfoSource {
 	 * to override this behavior if needed.
 	 */
 	public void powerOn() {
-		log(this, "powerOn, nothing needs to be done for this layer", TRACE);
+		log(this, "powerOn, nothing needs to be done for this layer", LogLevel.TRACE);
 	}
 
 	/**
@@ -45,7 +44,7 @@ public abstract class Layer implements Iso7816, InfoSource {
 	 * to override this behavior if needed.
 	 */
 	public void powerOff() {
-		log(this, "powerOff, nothing needs to be done for this layer", TRACE);
+		log(this, "powerOff, nothing needs to be done for this layer", LogLevel.TRACE);
 	}
 	
 	/**
@@ -57,7 +56,7 @@ public abstract class Layer implements Iso7816, InfoSource {
 		try{
 			this.processingData = pData;
 			processAscending();
-			log(this, "successfully processed ascending APDU", TRACE);
+			log(this, "successfully processed ascending APDU", LogLevel.TRACE);
 		} catch(GeneralException e) {
 			logException(this, e);
 
@@ -77,7 +76,7 @@ public abstract class Layer implements Iso7816, InfoSource {
 	 * 
 	 */
 	public void processAscending() {
-		log(this, "skipped processing of ascending APDU", TRACE);
+		log(this, "skipped processing of ascending APDU", LogLevel.TRACE);
 	}
 	
 	/**
@@ -108,7 +107,7 @@ public abstract class Layer implements Iso7816, InfoSource {
 	 * 
 	 */
 	public void processDescending() {
-		log(this, "skipped processing of descending APDU", TRACE);
+		log(this, "skipped processing of descending APDU", LogLevel.TRACE);
 	}
 	
 	/**

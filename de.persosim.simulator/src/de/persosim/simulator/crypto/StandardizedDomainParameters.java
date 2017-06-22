@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -71,7 +72,7 @@ public class StandardizedDomainParameters{
 			}
 			
 		} else {
-			BasicLogger.log(StandardizedDomainParameters.class, "No OSGi context is available, no additional domain parameters are supported", BasicLogger.INFO);
+			BasicLogger.log(StandardizedDomainParameters.class, "No OSGi context is available, no additional domain parameters are supported", LogLevel.INFO);
 		}
 		providers.add(new StandardizedDomainParameterDefaultProvider());
 	}

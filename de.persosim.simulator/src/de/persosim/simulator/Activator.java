@@ -1,8 +1,8 @@
 package de.persosim.simulator;
 
-import static org.globaltester.logging.BasicLogger.ERROR;
 import static org.globaltester.logging.BasicLogger.log;
 
+import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.simulator.Simulator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -38,7 +38,7 @@ public class Activator implements BundleActivator {
 	 */
 	public void enableService() {
 		if (isSimulatorRunning()) {
-			log(this.getClass(), "There is already a simulator running, please stop it before starting another one!", ERROR);
+			log(this.getClass(), "There is already a simulator running, please stop it before starting another one!", LogLevel.ERROR);
 			throw new RuntimeException("There is already a simulator running, please stop it before starting another one!");
 		}
 		if (sim == null) {

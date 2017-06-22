@@ -1,13 +1,12 @@
 package de.persosim.simulator.protocols.pin;
 
-import static org.globaltester.logging.BasicLogger.DEBUG;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.Collection;
 import java.util.Collections;
 
 import org.globaltester.logging.InfoSource;
-
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
@@ -84,7 +83,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 					break;
 				}
 				else {
-					log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
+					log(this, "APDU can not be processed, this protocol is not applicable.", LogLevel.DEBUG);
 					break;
 				}
 			case 0x44:
@@ -92,7 +91,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 					processCommandActivatePassword();
 					break;
 				} else {
-					log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
+					log(this, "APDU can not be processed, this protocol is not applicable.", LogLevel.DEBUG);
 					break;
 				}
 			case 0x04:
@@ -100,17 +99,17 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 					processCommandDeactivatePassword();
 					break;
 				} else {
-					log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
+					log(this, "APDU can not be processed, this protocol is not applicable.", LogLevel.DEBUG);
 					break;
 				}
 			default:
-				log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
+				log(this, "APDU can not be processed, this protocol is not applicable.", LogLevel.DEBUG);
 				break;
 			}
 		}
 		}
 		else {
-			log(this, "APDU can not be processed, this protocol is not applicable.", DEBUG);
+			log(this, "APDU can not be processed, this protocol is not applicable.", LogLevel.DEBUG);
 		}
 	}
 	
@@ -162,7 +161,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		String passwordName = ((PasswordAuthObjectWithRetryCounter) object).getPasswordName();
 		this.processingData.updateResponseAPDU(this, passwordName + " successfully activated", resp);
 		
-		log(this, "processed COMMAND_ACTIVATE_PASSWORD", DEBUG);
+		log(this, "processed COMMAND_ACTIVATE_PASSWORD", LogLevel.DEBUG);
 	}
 	
 	private void processCommandChangePassword() {
@@ -191,9 +190,9 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		
 		byte[] newPasswordPlain = tlvData.toByteArray();
 		
-		log(this, "received data of " + newPasswordPlain.length + " bytes length for new " + passwordName + " is: " + HexString.dump(newPasswordPlain), DEBUG);
+		log(this, "received data of " + newPasswordPlain.length + " bytes length for new " + passwordName + " is: " + HexString.dump(newPasswordPlain), LogLevel.DEBUG);
 		
-		log(this, "old " + passwordName + " is: " + HexString.dump(passwordObject.getPassword()), DEBUG);
+		log(this, "old " + passwordName + " is: " + HexString.dump(passwordObject.getPassword()), LogLevel.DEBUG);
 		
 		try {
 			passwordObject.setPassword(newPasswordPlain);
@@ -215,12 +214,12 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			/* there is nothing more to be done here */
 			return;
 		}
-		log(this, "new " + passwordName + " is: " + HexString.dump(newPasswordPlain), DEBUG);
+		log(this, "new " + passwordName + " is: " + HexString.dump(newPasswordPlain), LogLevel.DEBUG);
 		
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, passwordName + " successfully changed", resp);
 		
-		log(this, "processed COMMAND_CHANGE_PASSWORD", DEBUG);
+		log(this, "processed COMMAND_CHANGE_PASSWORD", LogLevel.DEBUG);
 	}
 	
 	private void processCommandDeactivatePassword() {
@@ -257,7 +256,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		String passwordName = ((PasswordAuthObjectWithRetryCounter) object).getPasswordName();
 		this.processingData.updateResponseAPDU(this, passwordName + " successfully deactivated", resp);
 		
-		log(this, "processed COMMAND_DEACTIVATE_PASSWORD" , DEBUG);
+		log(this, "processed COMMAND_DEACTIVATE_PASSWORD" , LogLevel.DEBUG);
 	}
 	
 	private void processCommandUnblockPassword() {
@@ -276,7 +275,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		PasswordAuthObjectWithRetryCounter pinObject = (PasswordAuthObjectWithRetryCounter) object;
 		String passwordName =  pinObject.getPasswordName();
 		
-		log(this, "old " + passwordName +" retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
+		log(this, "old " + passwordName +" retry counter is: " + pinObject.getRetryCounterCurrentValue(), LogLevel.DEBUG);
 		
 		try {
 			pinObject.resetRetryCounterToDefault();
@@ -299,12 +298,12 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 			return;
 		}
 		
-		log(this, "new " + passwordName + " retry counter is: " + pinObject.getRetryCounterCurrentValue(), DEBUG);
+		log(this, "new " + passwordName + " retry counter is: " + pinObject.getRetryCounterCurrentValue(), LogLevel.DEBUG);
 		
 		ResponseApdu resp = new ResponseApdu(SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this, passwordName +" successfully unblocked", resp);
 		
-		log(this, "processed COMMAND_UNBLOCK_PASSWORD", DEBUG);
+		log(this, "processed COMMAND_UNBLOCK_PASSWORD", LogLevel.DEBUG);
 	}
 	
 	private void processCommandVerifyPassword() {
@@ -324,6 +323,6 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		ResponseApdu resp = new ResponseApdu((short) (SW_63C0_COUNTER_IS_0 + (pinObject.getRetryCounterCurrentValue())));
 		this.processingData.updateResponseAPDU(this, passwordName + " retry counter is: " + pinObject.getRetryCounterCurrentValue(), resp);
 		
-		log(this, "processed COMMAND_VERIFY_PASSWORD", DEBUG);
+		log(this, "processed COMMAND_VERIFY_PASSWORD", LogLevel.DEBUG);
 	}
 }

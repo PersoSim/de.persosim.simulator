@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
@@ -91,7 +92,7 @@ public class PersonalizationHelper {
 					try {
 						cardObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 					} catch (AccessDeniedException e) {
-						BasicLogger.logException(PersonalizationHelper.class, e, BasicLogger.WARN);
+						BasicLogger.logException(PersonalizationHelper.class, e, LogLevel.WARN);
 					}	
 				}
 			}

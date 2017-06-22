@@ -1,6 +1,5 @@
 package de.persosim.simulator.platform;
 
-import static org.globaltester.logging.BasicLogger.TRACE;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.LinkedList;
@@ -42,12 +41,12 @@ public class PersoSimKernel implements InfoSource {
 	 * @param perso 
 	 */
 	public void init(Personalization perso) {
-		log(this, "init called", TRACE);
+		log(this, "init called", LogLevel.TRACE);
 		
 		perso.initialize();
 		layers = perso.getLayerList();
 		
-		log(this, "init finished", TRACE);
+		log(this, "init finished", LogLevel.TRACE);
 	}
 
 	public byte[] powerOff() {
@@ -93,10 +92,10 @@ public class PersoSimKernel implements InfoSource {
 	 */
 	public byte[] process(byte[] commandApduData) {
 		
-		log(this, "processing incoming APDU", TRACE);
+		log(this, "processing incoming APDU", LogLevel.TRACE);
 		log(this, "Processing APDU: " + HexString.encode(commandApduData));
 		log(HexString.encode(commandApduData), LogLevel.TRACE, LogTags.APDU_TAG_IN);
-		log(this, "incoming APDU:\n" + HexString.dump(commandApduData), TRACE);
+		log(this, "incoming APDU:\n" + HexString.dump(commandApduData), LogLevel.TRACE);
 		
 		ProcessingData processingData = new ProcessingData();
 		processingData.addUpdatePropagation(this, "initial hardware info", new HardwareCommandApduPropagation(commandApduData));
@@ -127,7 +126,7 @@ public class PersoSimKernel implements InfoSource {
 		}
 		
 		log(this, "finished processing APDU");
-		log(this, "outgoing APDU:\n" + HexString.dump(responseApduData), TRACE);
+		log(this, "outgoing APDU:\n" + HexString.dump(responseApduData), LogLevel.TRACE);
 		log(HexString.encode(responseApduData), LogLevel.TRACE, LogTags.APDU_TAG_OUT);
 		return responseApduData;
 		

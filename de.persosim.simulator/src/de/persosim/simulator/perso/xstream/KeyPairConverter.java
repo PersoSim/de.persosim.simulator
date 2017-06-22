@@ -1,12 +1,12 @@
 package de.persosim.simulator.perso.xstream;
 
-import static org.globaltester.logging.BasicLogger.ERROR;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import org.globaltester.logging.tags.LogLevel;
 import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -77,7 +77,7 @@ public class KeyPairConverter implements Converter {
 		
 		if (pk == null || sk == null) {
 			String message = "can not create keypair object, unmarshal failed!";
-			log(getClass(), message, ERROR);
+			log(getClass(), message, LogLevel.ERROR);
 			throw new XStreamException (message);
 		}
 		return new KeyPair(pk, sk);

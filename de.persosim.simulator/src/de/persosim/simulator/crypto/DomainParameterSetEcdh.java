@@ -1,8 +1,5 @@
 package de.persosim.simulator.crypto;
 
-import static org.globaltester.logging.BasicLogger.DEBUG;
-import static org.globaltester.logging.BasicLogger.ERROR;
-import static org.globaltester.logging.BasicLogger.TRACE;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.math.BigInteger;
@@ -27,7 +24,7 @@ import java.security.spec.KeySpec;
 import java.util.Arrays;
 
 import org.globaltester.cryptoprovider.Crypto;
-
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -119,14 +116,14 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		boolean result = leftSide.compareTo(rightSide) == 0;
 		
 		if(!result) {
-			log(getClass(), "point not on curve - x: " + HexString.encode(x), DEBUG);
-			log(getClass(), "point not on curve - y: " + HexString.encode(y), DEBUG);
-			log(getClass(), "point not on curve - p: " + HexString.encode(p), DEBUG);
-			log(getClass(), "point not on curve - " + HexString.encode(leftSide) + " != " + HexString.encode(rightSide), DEBUG);
-			log(getClass(), "point not on curve - x: " + x, DEBUG);
-			log(getClass(), "point not on curve - y: " + y, DEBUG);
-			log(getClass(), "point not on curve - p: " + p, DEBUG);
-			log(getClass(), "point not on curve - " + leftSide + " != " + rightSide, DEBUG);
+			log(getClass(), "point not on curve - x: " + HexString.encode(x), LogLevel.DEBUG);
+			log(getClass(), "point not on curve - y: " + HexString.encode(y), LogLevel.DEBUG);
+			log(getClass(), "point not on curve - p: " + HexString.encode(p), LogLevel.DEBUG);
+			log(getClass(), "point not on curve - " + HexString.encode(leftSide) + " != " + HexString.encode(rightSide), LogLevel.DEBUG);
+			log(getClass(), "point not on curve - x: " + x, LogLevel.DEBUG);
+			log(getClass(), "point not on curve - y: " + y, LogLevel.DEBUG);
+			log(getClass(), "point not on curve - p: " + p, LogLevel.DEBUG);
+			log(getClass(), "point not on curve - " + leftSide + " != " + rightSide, LogLevel.DEBUG);
 		}
 		
 		return result;
@@ -200,20 +197,20 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		BigInteger publicPointWmappedX = publicPointWmapped.getAffineX();
 		BigInteger publicPointWmappedY = publicPointWmapped.getAffineY();
 		
-		log(getClass(), "ECDH ephemeral private key d is                    : " + HexString.encode(piccPrivateKeyD), DEBUG);
-		log(getClass(), "ECDH ephemeral public point w.x under unmapped g is: " + HexString.encode(publicPointWx), DEBUG);
-		log(getClass(), "ECDH ephemeral public point w.y under unmapped g is: " + HexString.encode(publicPointWy), DEBUG);
-		log(getClass(), "ECDH ephemeral public point w.x under mapped g is  : " + HexString.encode(publicPointWmappedX), DEBUG);
-		log(getClass(), "ECDH ephemeral public point w.y under mapped g is  : " + HexString.encode(publicPointWmappedY), DEBUG);
-		log(getClass(), "ECDH curve's first coefficient A is                : " + HexString.encode(ecFirstCoefficientA), DEBUG);
-		log(getClass(), "ECDH curve's second coefficient B is               : " + HexString.encode(ecSecondCoefficientB), DEBUG);
-		log(getClass(), "ECDH original generator g.x of group G is          : " + HexString.encode(gUnmappedX), DEBUG);
-		log(getClass(), "ECDH original generator g.y of group G is          : " + HexString.encode(gUnmappedY), DEBUG);
-		log(getClass(), "ECDH mapped generator g.x of group G is            : " + HexString.encode(gMappedX), DEBUG);
-		log(getClass(), "ECDH mapped generator g.y of group G is            : " + HexString.encode(gMappedY), DEBUG);
-		log(getClass(), "ECDH prime modulus p of group G is                 : " + HexString.encode(ecFp), DEBUG);
-		log(getClass(), "ECDH order of group G is                           : " + HexString.encode(order), DEBUG);
-		log(getClass(), "ECDH cofactor is                                   : " + coFactor, DEBUG);
+		log(getClass(), "ECDH ephemeral private key d is                    : " + HexString.encode(piccPrivateKeyD), LogLevel.DEBUG);
+		log(getClass(), "ECDH ephemeral public point w.x under unmapped g is: " + HexString.encode(publicPointWx), LogLevel.DEBUG);
+		log(getClass(), "ECDH ephemeral public point w.y under unmapped g is: " + HexString.encode(publicPointWy), LogLevel.DEBUG);
+		log(getClass(), "ECDH ephemeral public point w.x under mapped g is  : " + HexString.encode(publicPointWmappedX), LogLevel.DEBUG);
+		log(getClass(), "ECDH ephemeral public point w.y under mapped g is  : " + HexString.encode(publicPointWmappedY), LogLevel.DEBUG);
+		log(getClass(), "ECDH curve's first coefficient A is                : " + HexString.encode(ecFirstCoefficientA), LogLevel.DEBUG);
+		log(getClass(), "ECDH curve's second coefficient B is               : " + HexString.encode(ecSecondCoefficientB), LogLevel.DEBUG);
+		log(getClass(), "ECDH original generator g.x of group G is          : " + HexString.encode(gUnmappedX), LogLevel.DEBUG);
+		log(getClass(), "ECDH original generator g.y of group G is          : " + HexString.encode(gUnmappedY), LogLevel.DEBUG);
+		log(getClass(), "ECDH mapped generator g.x of group G is            : " + HexString.encode(gMappedX), LogLevel.DEBUG);
+		log(getClass(), "ECDH mapped generator g.y of group G is            : " + HexString.encode(gMappedY), LogLevel.DEBUG);
+		log(getClass(), "ECDH prime modulus p of group G is                 : " + HexString.encode(ecFp), LogLevel.DEBUG);
+		log(getClass(), "ECDH order of group G is                           : " + HexString.encode(order), LogLevel.DEBUG);
+		log(getClass(), "ECDH cofactor is                                   : " + coFactor, LogLevel.DEBUG);
 		
 		KeySpec mappedPrivateKeySpec = getPrivateKeySpec(piccPrivateKeyD);
 		KeySpec mappedPublicKeySpec = getPublicKeySpec(publicPointWmapped);
@@ -235,7 +232,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	public static ECPoint reconstructPoint(byte[] rawKeyPlain) {
 		if(rawKeyPlain == null) {throw new NullPointerException("raw key material must not be null");};
 		
-		log(DomainParameterSetEcdh.class, "raw public key EC point byte array is: " + HexString.encode(rawKeyPlain), TRACE);
+		log(DomainParameterSetEcdh.class, "raw public key EC point byte array is: " + HexString.encode(rawKeyPlain), LogLevel.TRACE);
 		
 		if(rawKeyPlain.length % 2 != 1) {throw new IllegalArgumentException("encoded public key EC point must be of uneven byte length");};
 		
@@ -249,7 +246,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		case (byte) 0x03:
 			throw new IllegalArgumentException("encoding 0x03 of public key point is currently not supported"); //IMPL ECPoint encoding
 		case (byte) 0x04:
-			log(DomainParameterSetEcdh.class, "leading byte 0x04 of public key point indicates uncompressed encoding", TRACE);
+			log(DomainParameterSetEcdh.class, "leading byte 0x04 of public key point indicates uncompressed encoding", LogLevel.TRACE);
 			break;
 		default:
 			throw new IllegalArgumentException("encoding indication of public key point is unknown (must be 0x01..04)");
@@ -261,14 +258,14 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		byte[] pointXplain = Arrays.copyOfRange(rawKeyPlain, 1, 1 + lengthOfCoordinates);
 		byte[] pointYplain = Arrays.copyOfRange(rawKeyPlain, 1 + lengthOfCoordinates, rawKeyPlain.length);
 		
-		log(DomainParameterSetEcdh.class, "byte array x coordinate of public key EC point is: " + HexString.encode(pointXplain), TRACE);
-		log(DomainParameterSetEcdh.class, "byte array y coordinate of public key EC point is: " + HexString.encode(pointYplain), TRACE);
+		log(DomainParameterSetEcdh.class, "byte array x coordinate of public key EC point is: " + HexString.encode(pointXplain), LogLevel.TRACE);
+		log(DomainParameterSetEcdh.class, "byte array y coordinate of public key EC point is: " + HexString.encode(pointYplain), LogLevel.TRACE);
 		
 		BigInteger publicPointX = new BigInteger(1, pointXplain);
 		BigInteger publicPointY = new BigInteger(1, pointYplain);
 		
-		log(DomainParameterSetEcdh.class, "x coordinate of public key EC point is: " + publicPointX, TRACE);
-		log(DomainParameterSetEcdh.class, "y coordinate of public key EC point is: " + publicPointY, TRACE);
+		log(DomainParameterSetEcdh.class, "x coordinate of public key EC point is: " + publicPointX, LogLevel.TRACE);
+		log(DomainParameterSetEcdh.class, "y coordinate of public key EC point is: " + publicPointY, LogLevel.TRACE);
 		
 		return new ECPoint(publicPointX, publicPointY);
 	}
@@ -291,7 +288,7 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	 */
 	public ECPublicKey reconstructPublicKey(byte[] rawKeyPlain, Provider cryptoProvider) {
 		int l = getPublicPointReferenceLengthL();
-		log(getClass(), "reference length l is: " + l + " bytes", TRACE);
+		log(getClass(), "reference length l is: " + l + " bytes", LogLevel.TRACE);
 		
 		int expectedRawKeyLength = (2*l) + 1;
 		if(rawKeyPlain.length != expectedRawKeyLength) {
@@ -313,9 +310,9 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 		boolean pointOnCurve = isOnCurve(point);
 		
 		if(pointOnCurve) {
-			log(this.getClass(), "EC point is on curve", TRACE);
+			log(this.getClass(), "EC point is on curve", LogLevel.TRACE);
 		} else{
-			log(this.getClass(), "EC point is NOT on curve", ERROR);
+			log(this.getClass(), "EC point is NOT on curve", LogLevel.ERROR);
 			throw new IllegalArgumentException("public key data does not represent a point on the used curve");
 		}
 		
@@ -586,9 +583,9 @@ public class DomainParameterSetEcdh implements DomainParameterSet, TlvConstants 
 	public ECPoint performEcdhKeyAgreement(ECPublicKey ecPublicKey, ECPrivateKey ecPrivateKey) {
 		ECPoint secretPoint = CryptoUtil.scalarPointMultiplication(getCurve(), getOrder(), ecPublicKey.getW(), ecPrivateKey.getS());
 		
-		log(CryptoUtil.class, "result H of ECDH key agreement is", TRACE);
-		log(CryptoUtil.class, "H.x: " + HexString.encode(secretPoint.getAffineX()), TRACE);
-		log(CryptoUtil.class, "H.y: " + HexString.encode(secretPoint.getAffineY()), TRACE);
+		log(CryptoUtil.class, "result H of ECDH key agreement is", LogLevel.TRACE);
+		log(CryptoUtil.class, "H.x: " + HexString.encode(secretPoint.getAffineX()), LogLevel.TRACE);
+		log(CryptoUtil.class, "H.y: " + HexString.encode(secretPoint.getAffineY()), LogLevel.TRACE);
 		
 		return secretPoint;
 	}

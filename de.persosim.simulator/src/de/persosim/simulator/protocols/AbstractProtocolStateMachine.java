@@ -1,6 +1,5 @@
 package de.persosim.simulator.protocols;
 
-import static org.globaltester.logging.BasicLogger.DEBUG;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.Collection;
@@ -8,7 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.globaltester.logging.InfoSource;
-
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
@@ -105,7 +104,7 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 	
 	@Override
 	public void logs(String state) {
-		log(this, "State changed to " + state, DEBUG);
+		log(this, "State changed to " + state, LogLevel.DEBUG);
 	}
 
 	@Override
@@ -161,19 +160,19 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 		ApduSpecification apduSpec = apdus.get(apduId);
 		
 		if(apduSpec == null) {
-			log(this, "APDU matching failed due to command \"" + apduId + "\" being unknown", DEBUG);
+			log(this, "APDU matching failed due to command \"" + apduId + "\" being unknown", LogLevel.DEBUG);
 			return false;
 		}
 		
 		if(processingData == null) {
-			log(this, "APDU matching failed due to missing processing data", DEBUG);
+			log(this, "APDU matching failed due to missing processing data", LogLevel.DEBUG);
 			return false;
 		}
 		apdu = processingData.getCommandApdu();
 		boolean match = apduSpec.matchesFullApdu(apdu);
 		
 		if(match) {
-			log(this, "received APDU matches definition of command \"" + apduId + "\"", DEBUG);
+			log(this, "received APDU matches definition of command \"" + apduId + "\"", LogLevel.DEBUG);
 		}
 		
 		return match;

@@ -1,6 +1,5 @@
 package de.persosim.simulator.protocols.pace;
 
-import static org.globaltester.logging.BasicLogger.TRACE;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.math.BigInteger;
@@ -11,6 +10,7 @@ import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
 
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
@@ -71,12 +71,12 @@ public class GenericMappingEcdh extends GenericMapping {
 		
 		ECPoint secretPoint = domainParameterSetEcdh.performEcdhKeyAgreement(ecPublicKeyPcd, ecPrivateKeyPicc);
 		
-		log(GenericMappingEcdh.class, "result H of ECDH key agreement is", TRACE);
-		log(GenericMappingEcdh.class, "H.x: " + HexString.encode(secretPoint.getAffineX()), TRACE);
-		log(GenericMappingEcdh.class, "H.y: " + HexString.encode(secretPoint.getAffineY()), TRACE);
+		log(GenericMappingEcdh.class, "result H of ECDH key agreement is", LogLevel.TRACE);
+		log(GenericMappingEcdh.class, "H.x: " + HexString.encode(secretPoint.getAffineX()), LogLevel.TRACE);
+		log(GenericMappingEcdh.class, "H.y: " + HexString.encode(secretPoint.getAffineY()), LogLevel.TRACE);
 		
 		byte[] encodedPoint = CryptoUtil.encode(secretPoint, domainParameterSetEcdh.getPublicPointReferenceLengthL(), CryptoUtil.ENCODING_UNCOMPRESSED);
-		log(GenericMappingEcdh.class, "H uncompressed encoding: " + HexString.encode(encodedPoint), TRACE);
+		log(GenericMappingEcdh.class, "H uncompressed encoding: " + HexString.encode(encodedPoint), LogLevel.TRACE);
 		
 		return encodedPoint;
 	}

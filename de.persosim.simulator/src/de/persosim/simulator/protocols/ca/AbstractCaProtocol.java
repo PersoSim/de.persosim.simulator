@@ -1,8 +1,6 @@
 package de.persosim.simulator.protocols.ca;
 
 import static de.persosim.simulator.protocols.Tr03110Utils.buildAuthenticationTokenInput;
-import static org.globaltester.logging.BasicLogger.DEBUG;
-import static org.globaltester.logging.BasicLogger.TRACE;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.security.InvalidKeyException;
@@ -21,7 +19,7 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.globaltester.cryptoprovider.Crypto;
-
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
@@ -128,7 +126,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			throw new ProcessingException(PlatformUtil.SW_4A80_WRONG_DATA, e.getMessage());
 		}
 		
-		log(this, "new OID is " + caOid, DEBUG);
+		log(this, "new OID is " + caOid, LogLevel.DEBUG);
 		return caOid;
 	}
 	
@@ -241,7 +239,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 		try {
 			ephemeralPublicKeyPcd = caDomainParameters.reconstructPublicKey(publicKeyMaterialPcd);
-			log(this, "PCD's  ephemeral public " + keyAgreementAlgorithmName + " key is " + new TlvDataObjectContainer(ephemeralPublicKeyPcd.getEncoded()), TRACE);
+			log(this, "PCD's  ephemeral public " + keyAgreementAlgorithmName + " key is " + new TlvDataObjectContainer(ephemeralPublicKeyPcd.getEncoded()), LogLevel.TRACE);
 		} catch (IllegalArgumentException e) {
 			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, e.getMessage());
 		} catch (Exception e) {
@@ -267,11 +265,11 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED, "PICC's compressed ephemeral public key from TA is missing. Maybe TA was not performed.");
 		}
 		
-		log(this, "expected compressed PCD's ephemeral public " + keyAgreementAlgorithmName + " key of " + ephemeralPublicKeyPcdCompressedExpected.length + " bytes length is: " + HexString.encode(ephemeralPublicKeyPcdCompressedExpected), DEBUG);
-		log(this, "received compressed PCD's ephemeral public " + keyAgreementAlgorithmName + " key of " + ephemeralPublicKeyPcdCompressedReceived.length + " bytes length is: " + HexString.encode(ephemeralPublicKeyPcdCompressedReceived), DEBUG);
+		log(this, "expected compressed PCD's ephemeral public " + keyAgreementAlgorithmName + " key of " + ephemeralPublicKeyPcdCompressedExpected.length + " bytes length is: " + HexString.encode(ephemeralPublicKeyPcdCompressedExpected), LogLevel.DEBUG);
+		log(this, "received compressed PCD's ephemeral public " + keyAgreementAlgorithmName + " key of " + ephemeralPublicKeyPcdCompressedReceived.length + " bytes length is: " + HexString.encode(ephemeralPublicKeyPcdCompressedReceived), LogLevel.DEBUG);
 		
 		if(Arrays.equals(ephemeralPublicKeyPcdCompressedExpected, ephemeralPublicKeyPcdCompressedReceived)) {
-			log(this, "compressed representation of PCD's ephemeral public " + caDomainParameters.getKeyAgreementAlgorithm() + " key matches the one received during previous TA", DEBUG);
+			log(this, "compressed representation of PCD's ephemeral public " + caDomainParameters.getKeyAgreementAlgorithm() + " key matches the one received during previous TA", LogLevel.DEBUG);
 		} else{
 			throw new ProcessingException(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE, "compressed representation of PCD's public " + keyAgreementAlgorithmName + " key does NOT match the one received during previous TA");
 		}
@@ -299,7 +297,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			throw new ProcessingException(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR, e.getMessage());
 		}
 		
-		log(this, "shared secret K of " + sharedSecret.length + " bytes length is: " + HexString.encode(sharedSecret), DEBUG);
+		log(this, "shared secret K of " + sharedSecret.length + " bytes length is: " + HexString.encode(sharedSecret), LogLevel.DEBUG);
 		
 		return sharedSecret;
 	}
@@ -314,16 +312,16 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		int keyLengthInBytes = caOid.getSymmetricCipherKeyLengthInBytes();
 		KeyDerivationFunction kdf = new KeyDerivationFunction(keyLengthInBytes);
 		
-		log(this, "computing " + getIDString() + " session keys", DEBUG);
-		log(this, "shared secret is: " + HexString.encode(sharedSecret), DEBUG);
-		log(this, "nonce is        : " + HexString.encode(rPiccNonce), DEBUG);
-		log(this, "key length specified by " + getIDString() + " OID " + caOid + " is: " + keyLengthInBytes, DEBUG);
+		log(this, "computing " + getIDString() + " session keys", LogLevel.DEBUG);
+		log(this, "shared secret is: " + HexString.encode(sharedSecret), LogLevel.DEBUG);
+		log(this, "nonce is        : " + HexString.encode(rPiccNonce), LogLevel.DEBUG);
+		log(this, "key length specified by " + getIDString() + " OID " + caOid + " is: " + keyLengthInBytes, LogLevel.DEBUG);
 		
 		byte[] keyMaterialMac = kdf.deriveMAC(sharedSecret, rPiccNonce);
 		byte[] keyMaterialEnc = kdf.deriveENC(sharedSecret, rPiccNonce);
 		
-		log(this, "chip's session key for MAC of " + keyMaterialMac.length + " bytes length is: " + HexString.encode(keyMaterialMac), DEBUG);
-		log(this, "chip's session key for ENC of " + keyMaterialMac.length + " bytes length is: " + HexString.encode(keyMaterialEnc), DEBUG);
+		log(this, "chip's session key for MAC of " + keyMaterialMac.length + " bytes length is: " + HexString.encode(keyMaterialMac), LogLevel.DEBUG);
+		log(this, "chip's session key for ENC of " + keyMaterialMac.length + " bytes length is: " + HexString.encode(keyMaterialEnc), LogLevel.DEBUG);
 		
 		secretKeySpecMAC = cryptoSupport.generateSecretKeySpecMac(keyMaterialMac);
 		secretKeySpecENC = cryptoSupport.generateSecretKeySpecCipher(keyMaterialEnc);
@@ -338,7 +336,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		int nonceSizeInBytes = 8;
 		byte[] rPiccNonce = new byte[nonceSizeInBytes];
 		this.secureRandom.nextBytes(rPiccNonce);
-		log(this, "nonce r_PICC of " + nonceSizeInBytes + " bytes length is: " + HexString.encode(rPiccNonce), DEBUG);
+		log(this, "nonce r_PICC of " + nonceSizeInBytes + " bytes length is: " + HexString.encode(rPiccNonce), LogLevel.DEBUG);
 		return rPiccNonce;
 	}
 	
@@ -354,9 +352,9 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	protected static byte[] computeAuthenticationTokenTpicc(DomainParameterSet caDomainParameters, CaOid caOid, PublicKey ephemeralPublicKeyPcd, CryptoSupport cryptoSupport, SecretKeySpec secretKeySpecMAC) {
 		//compute authentication token T_PICC
 		TlvDataObjectContainer authenticationTokenInput = buildAuthenticationTokenInput(ephemeralPublicKeyPcd, caDomainParameters, caOid);
-		log(AbstractCaProtocol.class, "authentication token raw data " + authenticationTokenInput, DEBUG);
+		log(AbstractCaProtocol.class, "authentication token raw data " + authenticationTokenInput, LogLevel.DEBUG);
 		byte[] authenticationTokenTpicc = Arrays.copyOf(cryptoSupport.macAuthenticationToken(authenticationTokenInput.toByteArray(), secretKeySpecMAC), 8);
-		log(AbstractCaProtocol.class, "PICC's authentication token T_PICC of " + authenticationTokenTpicc.length + " bytes length is: " + HexString.encode(authenticationTokenTpicc), DEBUG);
+		log(AbstractCaProtocol.class, "PICC's authentication token T_PICC of " + authenticationTokenTpicc.length + " bytes length is: " + HexString.encode(authenticationTokenTpicc), LogLevel.DEBUG);
 		
 		return authenticationTokenTpicc;
 	}
@@ -382,17 +380,17 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 		if(rPiccNonce != null) {
 			PrimitiveTlvDataObject primitive81 = new PrimitiveTlvDataObject(TAG_81, rPiccNonce);
-			log(this, "primitive tag 81 is: " + primitive81, TRACE);
+			log(this, "primitive tag 81 is: " + primitive81, LogLevel.TRACE);
 			constructed7C.addTlvDataObject(primitive81);
 		}
 		
 		if(authenticationTokenTpicc != null) {
 			PrimitiveTlvDataObject primitive82 = new PrimitiveTlvDataObject(TAG_82, authenticationTokenTpicc);
-			log(this, "primitive tag 82 is: " + primitive82, TRACE);
+			log(this, "primitive tag 82 is: " + primitive82, LogLevel.TRACE);
 			constructed7C.addTlvDataObject(primitive82);
 		}
 		
-		log(this, "response data to be sent is: " + constructed7C, DEBUG);
+		log(this, "response data to be sent is: " + constructed7C, LogLevel.DEBUG);
 		
 		//create and propagate response APDU
 		return new TlvDataObjectContainer(constructed7C);
@@ -430,7 +428,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		byte[] pcdPublicKeyMaterial = tlvObject.getValueField();
 		
 		keyAgreementAlgorithmName = caDomainParameters.getKeyAgreementAlgorithm();
-		log(this, "PCD's ephemeral public " + keyAgreementAlgorithmName + " key material of " + pcdPublicKeyMaterial.length + " bytes length is: " + HexString.encode(pcdPublicKeyMaterial), TRACE);
+		log(this, "PCD's ephemeral public " + keyAgreementAlgorithmName + " key material of " + pcdPublicKeyMaterial.length + " bytes length is: " + HexString.encode(pcdPublicKeyMaterial), LogLevel.TRACE);
 		
 		return pcdPublicKeyMaterial;
 	}
@@ -503,11 +501,11 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		
 		if(currentSessionContextId >= 0) {
 			// save current session if it defines a session ID (default session always provides 0)
-			log(this, "currently active session (" + currentSessionContextId + ") will be stored", TRACE);
+			log(this, "currently active session (" + currentSessionContextId + ") will be stored", LogLevel.TRACE);
 			processingData.addUpdatePropagation(this, "Inform the SecStatus to store the session context",
 					new SecStatusStoreUpdatePropagation(SecurityEvent.STORE_SESSION_CONTEXT, currentSessionContextId));
 		} else{
-			log(this, "currently active session will NOT be stored", TRACE);
+			log(this, "currently active session will NOT be stored", LogLevel.TRACE);
 		}
 	}
 	

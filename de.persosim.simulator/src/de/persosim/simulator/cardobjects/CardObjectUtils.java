@@ -1,11 +1,11 @@
 package de.persosim.simulator.cardobjects;
 
-import static org.globaltester.logging.BasicLogger.DEBUG;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.Iso7816;
 
@@ -71,7 +71,7 @@ public class CardObjectUtils {
 			
 		case 1:
 			CardObject matchingCardObject = cardObjects.iterator().next();
-			log(CardObjectUtils.class, "selected " + matchingCardObject, DEBUG);
+			log(CardObjectUtils.class, "selected " + matchingCardObject, LogLevel.DEBUG);
 			return matchingCardObject;
 
 		default:

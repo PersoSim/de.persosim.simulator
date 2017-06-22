@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -70,7 +71,7 @@ public class Tr03110Utils implements TlvConstants {
 			serviceTracker.open();
 					
 		} else {
-			BasicLogger.log(Tr03110Utils.class, "No OSGi context is available, no additional TR03110 functionalities are supported", BasicLogger.INFO);
+			BasicLogger.log(Tr03110Utils.class, "No OSGi context is available, no additional TR03110 functionalities are supported", LogLevel.INFO);
 		}
 		providers.add(new Tr03110UtilsDefaultProvider());
 
@@ -96,10 +97,10 @@ public class Tr03110Utils implements TlvConstants {
 					return key;
 				}
 			} catch (Exception e) {
-				BasicLogger.logException(Tr03110Utils.class, e, BasicLogger.WARN);
+				BasicLogger.logException(Tr03110Utils.class, e, LogLevel.WARN);
 			}
 		}
-		BasicLogger.log(Tr03110Utils.class, "Public Key data could not be parsed.", BasicLogger.INFO);
+		BasicLogger.log(Tr03110Utils.class, "Public Key data could not be parsed.", LogLevel.INFO);
 		return null;
 	}
 	
@@ -118,10 +119,10 @@ public class Tr03110Utils implements TlvConstants {
 					return key;
 				}
 			} catch (Exception e) {
-				BasicLogger.logException(Tr03110Utils.class, e, BasicLogger.WARN);
+				BasicLogger.logException(Tr03110Utils.class, e, LogLevel.WARN);
 			}
 		}
-		BasicLogger.log(Tr03110Utils.class, "Public Key data could not be encoded.", BasicLogger.INFO);
+		BasicLogger.log(Tr03110Utils.class, "Public Key data could not be encoded.", LogLevel.INFO);
 		return null;
 	}
 	

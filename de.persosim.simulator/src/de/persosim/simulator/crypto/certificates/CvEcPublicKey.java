@@ -1,6 +1,5 @@
 package de.persosim.simulator.crypto.certificates;
 
-import static org.globaltester.logging.BasicLogger.DEBUG;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.security.GeneralSecurityException;
@@ -14,7 +13,7 @@ import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
 
 import org.globaltester.cryptoprovider.Crypto;
-
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.protocols.Tr03110Utils;
@@ -132,7 +131,7 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 				ECParameterSpec ecParams = ecPublicKey.getParams();
 				
 				if(ecParams == null) {
-					log(CvEcPublicKey.class, "updating key must provide domain parameters", DEBUG);
+					log(CvEcPublicKey.class, "updating key must provide domain parameters", LogLevel.DEBUG);
 					return false;
 				}
 				
@@ -141,18 +140,18 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 				key = domParamsEcdh.reconstructPublicKey(publicPoint, Crypto.getCryptoProvider());
 
 				if(key == null) {
-					log(CvEcPublicKey.class, "key update failed", DEBUG);
+					log(CvEcPublicKey.class, "key update failed", LogLevel.DEBUG);
 					return false;
 				} else{
 					publicPointEncoding = null;
-					log(CvEcPublicKey.class, "key update successfull", DEBUG);
+					log(CvEcPublicKey.class, "key update successfull", LogLevel.DEBUG);
 					return true;
 				}
 			} else{
 				throw new IllegalArgumentException("updating key must be of type ECPublicKey");
 			}
 		} else{
-			log(CvEcPublicKey.class, "key update unnecessary", DEBUG);
+			log(CvEcPublicKey.class, "key update unnecessary", LogLevel.DEBUG);
 			return false; // key already complete and fully usable
 		}
 	}

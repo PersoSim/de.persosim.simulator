@@ -1,8 +1,5 @@
 package de.persosim.simulator.securemessaging;
 
-import static org.globaltester.logging.BasicLogger.DEBUG;
-import static org.globaltester.logging.BasicLogger.ERROR;
-import static org.globaltester.logging.BasicLogger.TRACE;
 import static org.globaltester.logging.BasicLogger.log;
 import static org.globaltester.logging.BasicLogger.logException;
 
@@ -79,14 +76,14 @@ public class SecureMessaging extends Layer implements TlvConstants{
 						processingData.addUpdatePropagation(this, "init SM", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, smDataProviderGenerator));
 						
 						log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogLevel.TRACE, LogTags.APDU_TAG_DEC_IN);
-						log(this, "successfully processed ascending secured APDU", TRACE);
+						log(this, "successfully processed ascending secured APDU", LogLevel.TRACE);
 					} else {
 						discardSecureMessagingSession();
 					}
 					return;
 				} else {
 					log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogLevel.TRACE, LogTags.APDU_TAG_DEC_IN);
-					log(this, "No SmDataProvider available", ERROR);
+					log(this, "No SmDataProvider available", LogLevel.ERROR);
 					
 					//create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
@@ -94,27 +91,27 @@ public class SecureMessaging extends Layer implements TlvConstants{
 					return;
 				}
 			} else {
-				log(this, "don't process ascending unsecured APDU", TRACE);
+				log(this, "don't process ascending unsecured APDU", LogLevel.TRACE);
 			}
 		} else{
-			log(this, "don't process non interindustry APDU", TRACE);
+			log(this, "don't process non interindustry APDU", LogLevel.TRACE);
 		}
 		
 		log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogLevel.TRACE, LogTags.APDU_TAG_DEC_IN);
 		
 		// if this line is reached the key material needs to be discarded
 		if (dataProvider != null) {
-			log(this, "discard key material", DEBUG);
+			log(this, "discard key material", LogLevel.DEBUG);
 			discardSecureMessagingSession();
 		}
 	}
 	
 	private void discardSecureMessagingSession() {
 		if (dataProvider != null) {
-			log(this, "discard key material", DEBUG);
+			log(this, "discard key material", LogLevel.DEBUG);
 			dataProvider = null;
 		} else {
-			log(this, "no data provider present, nothing to discard", TRACE);
+			log(this, "no data provider present, nothing to discard", LogLevel.TRACE);
 		}
 		if (processingData != null) {
 			processingData.addUpdatePropagation(this, "Inform the SecStatus about the ended secure messaging session",
@@ -136,7 +133,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 			processOutgoingSmApdu();
 		}
 		
-		log(this, "successfully processed descending APDU", TRACE);
+		log(this, "successfully processed descending APDU", LogLevel.TRACE);
 		
 		handleUpdatePropagations();
 	}
@@ -146,7 +143,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 
 		if (!(cApdu instanceof IsoSecureMessagingCommandApdu)) {
 			log(this, "descending APDU is does not support iso secure messaging",
-					TRACE);
+					LogLevel.TRACE);
 			return false;
 		}
 
@@ -154,14 +151,14 @@ public class SecureMessaging extends Layer implements TlvConstants{
 				&& ((IsoSecureMessagingCommandApdu) cApdu).getSecureMessaging() != SM_OFF_OR_NO_INDICATION) {
 			log(this,
 					"descending APDU was sm secured but not unwrapped properly",
-					TRACE);
+					LogLevel.TRACE);
 			return false;
 		}
 		
 		if (dataProvider == null){
 			log(this,
 					"no secure messaging session is established (no secure messaging data provider is set)",
-					TRACE);
+					LogLevel.TRACE);
 			return false;
 		}
 		
@@ -189,19 +186,19 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		
 		TlvValue dataObject = this.processingData.getResponseApdu().getData();
 		if((dataObject != null) && (dataObject.getLength() > 0)) {
-			log(this, "APDU to be sent contains data", TRACE);
+			log(this, "APDU to be sent contains data", LogLevel.TRACE);
 			
 			byte[] data = dataObject.toByteArray();
 			
-			log(this, "data to be padded is: " + HexString.encode(data), TRACE);
+			log(this, "data to be padded is: " + HexString.encode(data), LogLevel.TRACE);
 			
 			byte[] paddedData = this.padData(data);
 			
-			log(this, "padded data is: " + HexString.encode(paddedData), DEBUG);
-			log(this, "block size is: " + dataProvider.getCipher().getBlockSize(), DEBUG);
+			log(this, "padded data is: " + HexString.encode(paddedData), LogLevel.DEBUG);
+			log(this, "block size is: " + dataProvider.getCipher().getBlockSize(), LogLevel.DEBUG);
 			
 			byte[] encryptedData = CryptoSupport.encrypt(dataProvider.getCipher(), paddedData, dataProvider.getKeyEnc(), dataProvider.getCipherIv());
-			log(this, "encrypted data is: " + HexString.encode(encryptedData), DEBUG);
+			log(this, "encrypted data is: " + HexString.encode(encryptedData), LogLevel.DEBUG);
 			
 			// check for odd instruction byte
 			if(((byte) (processingData.getCommandApdu().getIns() & (byte) 0x01)) == (byte) 0x01) {
@@ -214,7 +211,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 				container.addTlvDataObject(new PrimitiveTlvDataObject(TAG_87, postpaddedData));
 			}
 		} else{
-			log(this, "APDU to be sent contains NO data", DEBUG);
+			log(this, "APDU to be sent contains NO data", LogLevel.DEBUG);
 		}
 		
 		//add status word
@@ -241,20 +238,20 @@ public class SecureMessaging extends Layer implements TlvConstants{
 	 * @return if the secure messaging can be continued
 	 */
 	public boolean processIncomingSmApdu() {
-		log(this, "start processing SM APDU", TRACE);
+		log(this, "start processing SM APDU", LogLevel.TRACE);
 		dataProvider.nextIncoming();
 		CommandApdu smApdu = processingData.getCommandApdu();
 		
-		log(this, "Incoming SM APDU is: " + smApdu.toString(), DEBUG);
-		log(this, "Incoming SM APDU is ISO case: " + smApdu.getIsoCase(), DEBUG);
+		log(this, "Incoming SM APDU is: " + smApdu.toString(), LogLevel.DEBUG);
+		log(this, "Incoming SM APDU is ISO case: " + smApdu.getIsoCase(), LogLevel.DEBUG);
 		
 		try {
 			//create new CommandAPDU
 			CommandApdu plainCommand = extractPlainTextAPDU();
-			log(this, "plain text APDU is " + plainCommand, DEBUG);
+			log(this, "plain text APDU is " + plainCommand, LogLevel.DEBUG);
 			
 			if (verifyMac()) {
-				log(this, "verification of mac: correct", DEBUG);
+				log(this, "verification of mac: correct", LogLevel.DEBUG);
 				
 				//propagate new CommandAPDU
 				processingData.updateCommandApdu(this, "SM APDU extracted", plainCommand);
@@ -262,15 +259,15 @@ public class SecureMessaging extends Layer implements TlvConstants{
 				log(this, "completed processing SM APDU");
 				return true;
 			} else {
-				log(this, "verification of mac: failed", ERROR);
+				log(this, "verification of mac: failed", LogLevel.ERROR);
 				
 				//create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6988_INCORRECT_SM_DATA_OBJECTS);
 				processingData.updateResponseAPDU(this, "MAC verification failed", resp);
 			}
 		} catch (RuntimeException e) {
-			log(this, "failure while processing incoming APDU", ERROR);
-			logException(this, e, ERROR);
+			log(this, "failure while processing incoming APDU", LogLevel.ERROR);
+			logException(this, e, LogLevel.ERROR);
 			
 			//create and propagate response APDU
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6988_INCORRECT_SM_DATA_OBJECTS);
@@ -290,7 +287,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		int isoCaseOfPlainAPDU;
 		ByteArrayOutputStream apduStream;
 		
-		log(this, "started extracting SM APDU", TRACE);
+		log(this, "started extracting SM APDU", LogLevel.TRACE);
 		
 		if(processingData.getCommandApdu().getIsoCase() != ISO_CASE_4) {
 			throw new IllegalArgumentException("SM APDU is expected to be ISO case 4");
@@ -302,7 +299,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		
 		TlvDataObjectContainer constructedCommandDataField = processingData.getCommandApdu().getCommandDataObjectContainer();
 		tlvObject8E = constructedCommandDataField .getTlvDataObject(TAG_8E);
-		log(this, "TLV object 8E is: " + tlvObject8E, TRACE);
+		log(this, "TLV object 8E is: " + tlvObject8E, LogLevel.TRACE);
 		
 		if(tlvObject8E == null) {
 			//create and propagate response APDU
@@ -371,7 +368,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		
 		// append le if present
 		if((isoCaseOfPlainAPDU == 2) || (isoCaseOfPlainAPDU == 4)) {
-			log(this, "TLV object 97 is: " + tlvObject97, TRACE);
+			log(this, "TLV object 97 is: " + tlvObject97, LogLevel.TRACE);
 			le = tlvObject97.getValueField();
 			
 			//ensure correct length of le field
@@ -391,7 +388,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		
 		plainApduCommandData = apduStream.toByteArray();
 		CommandApdu result = ((IsoSecureMessagingCommandApdu)this.processingData.getCommandApdu()).rewrapApdu(Iso7816.SM_OFF_OR_NO_INDICATION, plainApduCommandData);
-		log(this, "completed extracting SM APDU", TRACE);
+		log(this, "completed extracting SM APDU", LogLevel.TRACE);
 		return result;
 	}
 	
@@ -407,7 +404,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		ByteArrayOutputStream macInputStream;
 		int isoCaseOfPlainAPDU;
 		
-		log(this, "started verifying SM APDU", TRACE);
+		log(this, "started verifying SM APDU", LogLevel.TRACE);
 		
 		header = this.processingData.getCommandApdu().getHeader();
 		
@@ -417,7 +414,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		
 		TlvDataObjectContainer constructedCommandDataField = processingData.getCommandApdu().getCommandDataObjectContainer();
 		tlvObject8E = constructedCommandDataField.getTlvDataObject(TAG_8E);
-		log(this, "TLV object 8E is: " + tlvObject8E, TRACE);
+		log(this, "TLV object 8E is: " + tlvObject8E, LogLevel.TRACE);
 		
 		if(tlvObject8E == null) {
 			throw new IllegalArgumentException("SM APDU is expected to contain tag 8E (mac)");
@@ -445,11 +442,11 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		}
 		
 		if((isoCaseOfPlainAPDU == 2) || (isoCaseOfPlainAPDU == 4)) {
-			log(this, "TLV object 97 is: " + tlvObject97, TRACE);
+			log(this, "TLV object 97 is: " + tlvObject97, LogLevel.TRACE);
 		}
 		
 		if(isoCaseOfPlainAPDU > 2) {
-			log(this, "Cryptogram is: " + cryptogram, TRACE);
+			log(this, "Cryptogram is: " + cryptogram, LogLevel.TRACE);
 		}
 		
 		/* verify mac */
@@ -494,24 +491,24 @@ public class SecureMessaging extends Layer implements TlvConstants{
 		
 		if(isoCaseOfPlainAPDU > 1) {
 			macInput = padDataForMac(macInput);
-			log(this, "padding of mac input data is " + HexString.encode(macInput), TRACE);
+			log(this, "padding of mac input data is " + HexString.encode(macInput), LogLevel.TRACE);
 		}
 		
 
-		log(this, "padded mac input is " + HexString.encode(macInput), TRACE);
+		log(this, "padded mac input is " + HexString.encode(macInput), LogLevel.TRACE);
 		
 		macResult = CryptoSupport.mac(dataProvider.getMac(), dataProvider.getMacAuxiliaryData(),
 				dataProvider.getCipher(), macInput, dataProvider.getKeyMac(), dataProvider.getMacLength());
 		
-		log(this, "expected mac is : " + HexString.encode(macResult), DEBUG);
+		log(this, "expected mac is : " + HexString.encode(macResult), LogLevel.DEBUG);
 		extractedMac = tlvObject8E.getValueField();
-		log(this, "extracted mac is: " + HexString.encode(extractedMac), DEBUG);
+		log(this, "extracted mac is: " + HexString.encode(extractedMac), LogLevel.DEBUG);
 		
 		if(Arrays.equals(macResult, extractedMac)) {
-			log(this, "mac match", DEBUG);
+			log(this, "mac match", LogLevel.DEBUG);
 			return true;
 		} else {
-			log(this, "mac mismatch", ERROR);
+			log(this, "mac mismatch", LogLevel.ERROR);
 			return false;
 		}
 		
@@ -609,11 +606,11 @@ public class SecureMessaging extends Layer implements TlvConstants{
 	}
 
 	private void setDataProvider(SmDataProvider newProvider) {
-		log(this, "still active SM data provider is:\n" + dataProvider, TRACE);
+		log(this, "still active SM data provider is:\n" + dataProvider, LogLevel.TRACE);
 		newProvider.init(dataProvider);
 		dataProvider = newProvider;
-		log(this, "updated SM data provider", TRACE);
-		log(this, "new active SM data provider is:\n" + dataProvider, TRACE);
+		log(this, "updated SM data provider", LogLevel.TRACE);
+		log(this, "new active SM data provider is:\n" + dataProvider, LogLevel.TRACE);
 	}
 
 	@Override

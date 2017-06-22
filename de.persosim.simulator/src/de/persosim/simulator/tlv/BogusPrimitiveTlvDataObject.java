@@ -1,10 +1,11 @@
 package de.persosim.simulator.tlv;
 
-import static org.globaltester.logging.BasicLogger.DEBUG;
 import static org.globaltester.logging.BasicLogger.logException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import org.globaltester.logging.tags.LogLevel;
 
 /**
  * This class implements TLV data objects allowing errors. The {@link TlvTag}
@@ -69,7 +70,7 @@ public class BogusPrimitiveTlvDataObject extends PrimitiveTlvDataObject {
 				outputStream.write(getTlvValue().toByteArray());
 			}
 		} catch (IOException e) {
-			logException(this.getClass(), e, DEBUG);
+			logException(this.getClass(), e, LogLevel.DEBUG);
 		}
 
 		return outputStream.toByteArray();

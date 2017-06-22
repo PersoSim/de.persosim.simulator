@@ -1,6 +1,5 @@
 package de.persosim.simulator.protocols.pace;
 
-import static org.globaltester.logging.BasicLogger.DEBUG;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.Arrays;
@@ -9,7 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import org.globaltester.logging.InfoSource;
-
+import org.globaltester.logging.tags.LogLevel;
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
@@ -152,7 +151,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		CardObject pwdCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new AuthObjectIdentifier(tlvObject.getValueField()));
 		if (pwdCandidate instanceof PasswordAuthObject){
 			passwordObject = (PasswordAuthObject) pwdCandidate;
-			log(this, "selected password is: " + AbstractPaceProtocol.getPasswordName(passwordObject.getPasswordIdentifier()), DEBUG);
+			log(this, "selected password is: " + AbstractPaceProtocol.getPasswordName(passwordObject.getPasswordIdentifier()), LogLevel.DEBUG);
 		} else {
 			sw = Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND;
 			note = "no fitting authentication object found";
@@ -215,7 +214,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		
 		if (sw == Iso7816.SW_9000_NO_ERROR){
 			if((passwordObject != null) && (providedPassword != null) && Arrays.equals(providedPassword, passwordObject.getPassword())) {
-				log(this, "Provided password matches expected one", DEBUG);
+				log(this, "Provided password matches expected one", LogLevel.DEBUG);
 				
 				if(passwordObject instanceof PasswordAuthObjectWithRetryCounter) {
 					ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(passwordObject, cardState);
@@ -233,7 +232,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 
 			} else{
 				//PACE failed
-				log(this, "Provided password does NOT match expected one", DEBUG);
+				log(this, "Provided password does NOT match expected one", LogLevel.DEBUG);
 				paceSuccessful = false;
 				
 				if(passwordObject instanceof PasswordAuthObjectWithRetryCounter) {

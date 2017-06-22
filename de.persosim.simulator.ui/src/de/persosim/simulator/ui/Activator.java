@@ -1,6 +1,5 @@
 package de.persosim.simulator.ui;
 
-import static org.globaltester.logging.BasicLogger.ERROR;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.io.IOException;
@@ -9,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.globaltester.logging.filter.LevelFilter;
+import org.globaltester.logging.tags.LogLevel;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -164,7 +164,7 @@ public class Activator implements BundleActivator {
 				connector.connect(new Socket(DEFAULT_HOST, DEFAULT_PORT));
 			}
 		} catch (IOException e) {
-			log(Activator.class, "Exception: " + e.getMessage(), ERROR);
+			log(Activator.class, "Exception: " + e.getMessage(), LogLevel.ERROR);
 		}
 	}
 
@@ -176,7 +176,7 @@ public class Activator implements BundleActivator {
 				serviceTrackerDriverConnectorFactory.getService().returnConnector(connector);
 			}
 		} catch (IOException e) {
-			log(Activator.class, "Exception: " + e.getMessage(), ERROR);
+			log(Activator.class, "Exception: " + e.getMessage(), LogLevel.ERROR);
 		}
 	}
 	
