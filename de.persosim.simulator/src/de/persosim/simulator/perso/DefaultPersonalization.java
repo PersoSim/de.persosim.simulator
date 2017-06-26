@@ -2,6 +2,7 @@ package de.persosim.simulator.perso;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import org.globaltester.logging.BasicLogger;
 
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ByteDataAuxObject;
@@ -111,10 +114,9 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 			addEidApplication(mf);
 			addEpassApplication(mf);
 
-		} catch (CertificateNotParseableException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
+		} catch (CertificateNotParseableException | NoSuchAlgorithmException | IOException e) {
 			// don't care for the moment
-			e.printStackTrace();
+			BasicLogger.logException(this.getClass(), e);
 		}
 		
 		return mf;
@@ -531,7 +533,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		// stub
 	}
 
-	private void addEpassDatagroupSOD(DedicatedFile ePassAppl) throws AccessDeniedException {
+	protected void addEpassDatagroupSOD(DedicatedFile ePassAppl) throws AccessDeniedException {
 		CardFile efSod = new ElementaryFile(new FileIdentifier(0x011D),
 				new ShortFileIdentifier(0x1D),
 				HexString.toByteArray("778204C9308204C506092A864886F70D010702A08204B6308204B2020103310F300D060960864801650304020105003081B20606678108010101A081A70481A43081A1020100300D0609608648016503040201050030818C3021020101041CB738EE3245C53D1B5688526A10F6AA1E08BAB0C28A83FA961E3D2F453021020102041C90EC6C0D3F5B19B7E0EA105644850FE6CBD473DCCDEBC7CCB68697953021020103041C21170270CA807DCC334BF1A69E2DF86D46BFF6391873921A2B135CF63021020104041CECC60EDE128729BA5CD7EAA9D2D35DA51486128471A63D3C3CB9F198A08202CD308202C93082026FA00302010202060150D6FD2430300A06082A8648CE3D0403023053310B300906035504061302444531173015060355040A0C0E484A5020436F6E73756C74696E6731173015060355040B0C0E436F756E747279205369676E65723112301006035504030C09484A50205042204353301E170D3135313130353039333230355A170D3136313033303039333230355A3054310B300906035504061302444531173015060355040A0C0E484A5020436F6E73756C74696E6731183016060355040B0C0F446F63756D656E74205369676E65723112301006035504030C09484A50205042204453308201333081EC06072A8648CE3D02013081E0020101302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377304404207D5A0975FC2C3057EEF67530417AFFE7FB8055C126DC5C6CE94A4B44F330B5D9042026DC5C6CE94A4B44F330B5D9BBD77CBF958416295CF7E1CE6BCCDC18FF8C07B60441048BD2AEB9CB7E57CB2C4B482FFC81B7AFB9DE27E1E3BD23C23A4453BD9ACE3262547EF835C3DAC4FD97F8461A14611DC9C27745132DED8E545C1D54C72F046997022100A9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A702010103420004299EBEC4299E9844F70C087C48B26F3F31D7C90FA478915E4EE436D809E3B4CF2976E1559E5B1B596135EF9C4F96BBEB7AF7DBA3C1BCF93807B755B0A0D916E6A3523050301F0603551D23041830168014C2D24E3A2577D36DCC87DD07F1CDCB9F5DDD8A00301D0603551D0E04160414C8110DC4DD3D1EFE58E9B0EF27C2EA55587C072A300E0603551D0F0101FF040403020780300A06082A8648CE3D0403020348003045022100A1463611CDC023569532948418CF071DE111A6DB16F24A6E65AA97590BA5BFB4022028A40F454A78EECBDDC79BE14C7B2FE7CE2CAC1ED4C3A28809C8421F56750E103182011430820110020101305D3053310B300906035504061302444531173015060355040A0C0E484A5020436F6E73756C74696E6731173015060355040B0C0E436F756E747279205369676E65723112301006035504030C09484A5020504220435302060150D6FD2430300D06096086480165030402010500A048301506092A864886F70D01090331080606678108010101302F06092A864886F70D010904312204209B536FF5F20749B0DCD3B177810D5254607234496B2E935F2B49A87E5C053C57300A06082A8648CE3D040302044730450220481E8A6CF45FD12241BF4F6935B1ED14AE6E328FA318E04CFF715A19FA1FA00D022100A0337A63AB1F9BCB00359D4CFEE0CCECCC0098E26D38D9E8A25634CDFBE6EC63"),
@@ -604,19 +606,18 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @throws UnsupportedEncodingException
 	 * @throws AccessDeniedException 
 	 */
-	protected void addAuthObjects(MasterFile mf) throws NoSuchAlgorithmException,
-			NoSuchProviderException, IOException, UnsupportedEncodingException, AccessDeniedException {
+	protected void addAuthObjects(MasterFile mf) throws NoSuchAlgorithmException, IOException, AccessDeniedException {
 		MrzAuthObject mrz = new MrzAuthObject(
 				new AuthObjectIdentifier(ID_MRZ),
 				"P<D<<C11T002JM4<<<<<<<<<<<<<<<9608122F2310314D<<<<<<<<<<<<<4MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
 		mf.addChild(mrz);
 		
 		PasswordAuthObject can = new PasswordAuthObject(new AuthObjectIdentifier(ID_CAN),
-				"500540".getBytes("UTF-8"), "CAN");
+				"500540".getBytes(StandardCharsets.UTF_8), "CAN");
 		mf.addChild(can);
 
 		PasswordAuthObjectWithRetryCounter pin = new PasswordAuthObjectWithRetryCounter(
-				new AuthObjectIdentifier(ID_PIN), "123456".getBytes("UTF-8"), "PIN", 6, 6, 3,
+				new AuthObjectIdentifier(ID_PIN), "123456".getBytes(StandardCharsets.UTF_8), "PIN", 6, 6, 3,
 				new TaSecurityCondition(TerminalType.AT,
 						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))),
 				new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")),
@@ -625,7 +626,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		mf.addChild(pin);
 
 		PasswordAuthObject puk = new PasswordAuthObject(
-				new AuthObjectIdentifier(ID_PUK), "9876543210".getBytes("UTF-8"),
+				new AuthObjectIdentifier(ID_PUK), "9876543210".getBytes(StandardCharsets.UTF_8),
 				"PUK");
 		mf.addChild(puk);
 	}
@@ -638,10 +639,9 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @return
 	 */
 	protected SecCondition getAccessRightReadEidDg(int dgNr) {
-		OrSecCondition retVal = new OrSecCondition(new TaSecurityCondition(TerminalType.IS, null),
+		return new OrSecCondition(new TaSecurityCondition(TerminalType.IS, null),
 				new TaSecurityCondition(TerminalType.AT, 
 						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(dgNr + 7))));
-		return retVal;
 	}
 
 	/**
@@ -652,9 +652,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	 * @return
 	 */
 	protected static SecCondition getAccessRightUpdateEidDg(int dgNr) {
-		SecCondition retVal = new TaSecurityCondition(TerminalType.AT,
+		return new TaSecurityCondition(TerminalType.AT,
 				new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(54 - dgNr)));
-		return retVal;
 	}
 
 	protected List<Protocol> buildProtocolList() {
@@ -707,7 +706,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		try {
 			mf = buildObjectTree();
 		} catch (AccessDeniedException e) {
-			throw new RuntimeException("Couldn't create objectTree", e);
+			throw new IllegalStateException("Couldn't create objectTree", e);
 		}
 		List<Protocol> protocols = buildProtocolList();
 		
@@ -724,7 +723,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		try {
 			commandProcessor = new CommandProcessor(protocols, mf);
 		} catch (AccessDeniedException e) {
-			throw new RuntimeException("The creation of the CommandProcessor layer failed.", e);
+			throw new IllegalStateException("The creation of the CommandProcessor layer failed.", e);
 		}
 		commandProcessor.init();
 		layers.add(commandProcessor);

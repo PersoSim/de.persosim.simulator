@@ -1,10 +1,9 @@
 package de.persosim.simulator.perso;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -54,6 +53,9 @@ import de.persosim.simulator.utils.Utils;
 
 public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn1 {
 
+	private static final String DEFAULT_PUK = "9876543210";
+	private static final String DEFAULT_CAN = "500540";
+	private static final String DEFAULT_PIN = "123456";
 	protected PersonalizationDataContainer persoDataContainer;
 	
 	public abstract void setPersoDataContainer();
@@ -65,22 +67,21 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	public String getPin() {
-		return "123456";
+		return DEFAULT_PIN;
 	}
 	
 	public String getCan() {
-		return "500540";
+		return DEFAULT_CAN;
 	}
 	
 	public String getPuk() {
-		return "9876543210";
+		return DEFAULT_PUK;
 	}
 	
 	public static String getMrzLine1of3(String documentType, String issuingCountry, String documentNumber) {
 		String line1;
 		
-		if(documentType == null) {throw new NullPointerException("document type must not be null");}
-		if((documentType.length() <= 0) || (documentType.length() > 2)) {throw new IllegalArgumentException("document type must be 1 or 2 characters long");}
+		if(documentType == null || (documentType.length() <= 0) || (documentType.length() > 2)) {throw new IllegalArgumentException("document type must be 1 or 2 characters long");}
 		
 		line1 = documentType;
 		
@@ -88,8 +89,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 			line1 += Mrz.Filler;
 		}
 		
-		if(issuingCountry == null) {throw new NullPointerException("issuing country must not be null");}
-		if((issuingCountry.length() <= 0) || (documentType.length() > 3)) {throw new IllegalArgumentException("issuing country must be between 1 or 3 characters long");}
+		if(issuingCountry == null || (issuingCountry.length() <= 0) || (documentType.length() > 3)) {throw new IllegalArgumentException("issuing country must be between 1 or 3 characters long");}
 		
 		line1 += issuingCountry;
 		
@@ -97,8 +97,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 			line1 += Mrz.Filler;
 		}
 		
-		if(documentNumber == null) {throw new NullPointerException("document number must not be null");}
-		if(documentNumber.length() != 9) {throw new IllegalArgumentException("document number must be exactly 9 characters long");}
+		if(documentNumber == null || documentNumber.length() != 9) {throw new IllegalArgumentException("document number must be exactly 9 characters long");}
 		
 		line1 += documentNumber;
 		line1 += String.valueOf((char) Mrz.computeChecksum(documentNumber.getBytes(), 0, documentNumber.length()));
@@ -149,13 +148,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		String mrz = persoDataContainer.getEpassDg1PlainData();
 		byte[] mrzPlainBytes;
 		
-		try {
-			mrzPlainBytes = mrz.getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// US-ASCII is a valid encoding so this is never going to happen
-			e.printStackTrace();
-			mrzPlainBytes = new byte[0];
-		}
+		mrzPlainBytes = mrz.getBytes(StandardCharsets.US_ASCII);
 		
 		ConstructedTlvDataObject ePassDg1 = new ConstructedTlvDataObject(new TlvTag((byte) 0x61));
 		PrimitiveTlvDataObject ePassDg1Sub = new PrimitiveTlvDataObject(new TlvTag(new byte[]{(byte) 0x5F, (byte) 0x1F}), mrzPlainBytes);
@@ -174,18 +167,18 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	
 	@Override
 	protected void addAuthObjects(MasterFile mf) throws NoSuchAlgorithmException,
-			NoSuchProviderException, IOException, UnsupportedEncodingException, AccessDeniedException {
+			IOException, AccessDeniedException {
 		MrzAuthObject mrz = new MrzAuthObject(
 				new AuthObjectIdentifier(1),
 				persoDataContainer.getMrz());
 		mf.addChild(mrz);
 
 		PasswordAuthObject can = new PasswordAuthObject(new AuthObjectIdentifier(2),
-				getCan().getBytes("UTF-8"), "CAN");
+				getCan().getBytes(StandardCharsets.UTF_8), "CAN");
 		mf.addChild(can);
 
 		PasswordAuthObjectWithRetryCounter pin = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(3),
-				getPin().getBytes("UTF-8"), "PIN", 6, 6, 3,
+				getPin().getBytes(StandardCharsets.UTF_8), "PIN", 6, 6, 3,
 				new TaSecurityCondition(TerminalType.AT,
 						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5))),
 				new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")),
@@ -194,7 +187,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		mf.addChild(pin);
 
 		PasswordAuthObject puk = new PasswordAuthObject(
-				new AuthObjectIdentifier(4), getPuk().getBytes("UTF-8"),
+				new AuthObjectIdentifier(4), getPuk().getBytes(StandardCharsets.UTF_8),
 				"PUK");
 		mf.addChild(puk);
 	}
@@ -335,21 +328,17 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	@Override
 	protected void addEidDg9(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
+	
+		ConstructedTlvDataObject dg9Tlv = getGeneralPlaceDgTlv(new TlvTag((byte) 0x69), null, persoDataContainer.getDg9PlainData(), null, null, null);
 		
-		try {
-			ConstructedTlvDataObject dg9Tlv = getGeneralPlaceDgTlv(new TlvTag((byte) 0x69), null, persoDataContainer.getDg9PlainData(), null, null, null);
-			
-			CardFile eidDg9 = new ElementaryFile(
-					new FileIdentifier(0x0109),
-					new ShortFileIdentifier(0x09),
-					dg9Tlv.toByteArray(),
-					getAccessRightReadEidDg(9),
-					SecCondition.DENIED,
-					SecCondition.DENIED);
-			eIdAppl.addChild(eidDg9);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+		CardFile eidDg9 = new ElementaryFile(
+				new FileIdentifier(0x0109),
+				new ShortFileIdentifier(0x09),
+				dg9Tlv.toByteArray(),
+				getAccessRightReadEidDg(9),
+				SecCondition.DENIED,
+				SecCondition.DENIED);
+		eIdAppl.addChild(eidDg9);
 	}
 	
 	@Override
@@ -381,6 +370,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		eIdAppl.addChild(eidDg13);
 	}
 	
+	@Override
 	protected void addEfCardAccess(MasterFile mf) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
@@ -395,6 +385,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		mf.addChild(eidDgCardAccess);
 	}
 	
+	@Override
 	protected void addEfCardSecurity(MasterFile mf) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
@@ -409,6 +400,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		mf.addChild(eidDgCardSecurity);
 	}
 	
+	@Override
 	protected void addEfChipSecurity(MasterFile mf) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
@@ -436,26 +428,26 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	 * @param content the content to be placed in the ASN.1 type GeneralPlace
 	 * @return the TLV structure for a data group containing an ASN.1 type GeneralPlace
 	 */
-	public static ConstructedTlvDataObject getGeneralPlaceDgTlv(TlvTag tlvTag, String streetString, String cityString, String stateString, String countryString, String zipString) throws UnsupportedEncodingException {
+	public static ConstructedTlvDataObject getGeneralPlaceDgTlv(TlvTag tlvTag, String streetString, String cityString, String stateString, String countryString, String zipString) {
 		ConstructedTlvDataObject generalPlaceDgTlv = new ConstructedTlvDataObject(tlvTag);
 		ConstructedTlvDataObject generalPlace;
 		
 		int nullCounter = 0;
 		String place = "";
-		if (streetString == null) {nullCounter++;} else {place = streetString;};
-		if(cityString == null) {nullCounter++;} else {place = cityString;};
-		if(stateString == null) {nullCounter++;} else {place = stateString;};
-		if(countryString == null) {nullCounter++;} else {place = countryString;};
-		if(zipString == null) {nullCounter++;} else {place = zipString;};
+		if (streetString == null) {nullCounter++;} else {place = streetString;}
+		if(cityString == null) {nullCounter++;} else {place = cityString;}
+		if(stateString == null) {nullCounter++;} else {place = stateString;}
+		if(countryString == null) {nullCounter++;} else {place = countryString;}
+		if(zipString == null) {nullCounter++;} else {place = zipString;}
 		
 		if(nullCounter == 5) {
 			generalPlace = new ConstructedTlvDataObject(new TlvTag((byte) 0xA2));
-			PrimitiveTlvDataObject noPlace = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), (new String("keine Hauptwohnung in Deutschland")).getBytes("UTF-8"));
+			PrimitiveTlvDataObject noPlace = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), ("keine Hauptwohnung in Deutschland").getBytes(StandardCharsets.UTF_8));
 			generalPlace.addTlvDataObject(noPlace);
 		} else{
 			if(nullCounter == 4) {
 				generalPlace = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
-				PrimitiveTlvDataObject freeText = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), place.getBytes("UTF-8"));
+				PrimitiveTlvDataObject freeText = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), place.getBytes(StandardCharsets.UTF_8));
 				generalPlace.addTlvDataObject(freeText);
 			} else{
 				generalPlace = new ConstructedTlvDataObject(new TlvTag((byte) 0x30));
@@ -466,35 +458,35 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				if(streetString != null) {
 					sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAA));
 					generalPlace.addTlvDataObject(sequenceElement);
-					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), streetString.getBytes("UTF-8"));
+					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), streetString.getBytes(StandardCharsets.UTF_8));
 					sequenceElement.addTlvDataObject(content);
 				}
 				
 				if(cityString != null) {
 					sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAB));
 					generalPlace.addTlvDataObject(sequenceElement);
-					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), cityString.getBytes("UTF-8"));
+					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), cityString.getBytes(StandardCharsets.UTF_8));
 					sequenceElement.addTlvDataObject(content);
 				}
 				
 				if(stateString != null) {
 					sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAC));
 					generalPlace.addTlvDataObject(sequenceElement);
-					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), stateString.getBytes("UTF-8"));
+					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), stateString.getBytes(StandardCharsets.UTF_8));
 					sequenceElement.addTlvDataObject(content);
 				}
 				
 				if(countryString != null) {
 					sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAD));
 					generalPlace.addTlvDataObject(sequenceElement);
-					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), countryString.getBytes("US-ASCII"));
+					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), countryString.getBytes(StandardCharsets.US_ASCII));
 					sequenceElement.addTlvDataObject(content);
 				}
 				
 				if(zipString != null) {
 					sequenceElement = new ConstructedTlvDataObject(new TlvTag((byte) 0xAE));
 					generalPlace.addTlvDataObject(sequenceElement);
-					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), zipString.getBytes("US-ASCII"));
+					content = new PrimitiveTlvDataObject(new TlvTag((byte) 0x13), zipString.getBytes(StandardCharsets.US_ASCII));
 					sequenceElement.addTlvDataObject(content);
 				}
 			}
@@ -509,26 +501,22 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	protected void addEidDg17(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
-		try {
-			ConstructedTlvDataObject dg17Tlv = getGeneralPlaceDgTlv(
-					new TlvTag((byte) 0x71),
-					persoDataContainer.getDg17StreetPlainData(),
-					persoDataContainer.getDg17CityPlainData(),
-					persoDataContainer.getDg17StatePlainData(),
-					persoDataContainer.getDg17CountryPlainData(),
-					persoDataContainer.getDg17ZipPlainData());
-			
-			CardFile eidDg17 = new ElementaryFile(
-					new FileIdentifier(0x0111),
-					new ShortFileIdentifier(0x11),
-					dg17Tlv.toByteArray(),
-					getAccessRightReadEidDg(17),
-					getAccessRightUpdateEidDg(17),
-					SecCondition.DENIED);
-			eIdAppl.addChild(eidDg17);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+		ConstructedTlvDataObject dg17Tlv = getGeneralPlaceDgTlv(
+				new TlvTag((byte) 0x71),
+				persoDataContainer.getDg17StreetPlainData(),
+				persoDataContainer.getDg17CityPlainData(),
+				persoDataContainer.getDg17StatePlainData(),
+				persoDataContainer.getDg17CountryPlainData(),
+				persoDataContainer.getDg17ZipPlainData());
+		
+		CardFile eidDg17 = new ElementaryFile(
+				new FileIdentifier(0x0111),
+				new ShortFileIdentifier(0x11),
+				dg17Tlv.toByteArray(),
+				getAccessRightReadEidDg(17),
+				getAccessRightUpdateEidDg(17),
+				SecCondition.DENIED);
+		eIdAppl.addChild(eidDg17);
 	}
 	
 	/**
