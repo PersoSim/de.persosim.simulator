@@ -9,7 +9,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import org.globaltester.logging.tags.LogLevel;
-import org.globaltester.simulator.LogTags;
+import org.globaltester.simulator.event.DecodedCommandApduEvent;
+import org.globaltester.simulator.event.DecodedResponseApduEvent;
 
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
@@ -75,15 +76,16 @@ public class SecureMessaging extends Layer implements TlvConstants{
 						SmDataProviderGenerator smDataProviderGenerator = dataProvider.getSmDataProviderGenerator();
 						processingData.addUpdatePropagation(this, "init SM", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, smDataProviderGenerator));
 						
-						log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogLevel.TRACE, LogTags.APDU_TAG_DEC_IN);
+						processingData.notifySimulatorEventListeners(new DecodedCommandApduEvent(processingData.getCommandApdu().toByteArray()));
 						log(this, "successfully processed ascending secured APDU", LogLevel.TRACE);
 					} else {
 						discardSecureMessagingSession();
 					}
 					return;
 				} else {
-					log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogLevel.TRACE, LogTags.APDU_TAG_DEC_IN);
 					log(this, "No SmDataProvider available", LogLevel.ERROR);
+					processingData.notifySimulatorEventListeners(new DecodedCommandApduEvent(processingData.getCommandApdu().toByteArray()));
+
 					
 					//create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
@@ -97,7 +99,8 @@ public class SecureMessaging extends Layer implements TlvConstants{
 			log(this, "don't process non interindustry APDU", LogLevel.TRACE);
 		}
 		
-		log(HexString.encode(processingData.getCommandApdu().toByteArray()), LogLevel.TRACE, LogTags.APDU_TAG_DEC_IN);
+		processingData.notifySimulatorEventListeners(new DecodedCommandApduEvent(processingData.getCommandApdu().toByteArray()));
+
 		
 		// if this line is reached the key material needs to be discarded
 		if (dataProvider != null) {
@@ -127,7 +130,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 	 */
 	@Override
 	public void processDescending() {
-		log(HexString.encode(getProcessingData().getResponseApdu().toByteArray()), LogLevel.TRACE, LogTags.APDU_TAG_DEC_OUT);
+		processingData.notifySimulatorEventListeners(new DecodedResponseApduEvent(processingData.getResponseApdu().toByteArray()));
 		
 		if (isSmWrappingApplicable()){
 			processOutgoingSmApdu();

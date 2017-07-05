@@ -2,12 +2,17 @@ package de.persosim.simulator.platform;
 
 import static org.globaltester.logging.BasicLogger.log;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.globaltester.logging.InfoSource;
 import org.globaltester.logging.tags.LogLevel;
-import org.globaltester.simulator.LogTags;
+import org.globaltester.simulator.Simulator;
+import org.globaltester.simulator.SimulatorEventListener;
+import org.globaltester.simulator.event.CommandApduEvent;
+import org.globaltester.simulator.event.ResponseApduEvent;
+import org.globaltester.simulator.event.SimulatorEvent;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
@@ -27,6 +32,8 @@ import de.persosim.simulator.utils.Utils;
 public class PersoSimKernel implements InfoSource {
 
 	private List<Layer> layers;
+	
+	private LinkedList<SimulatorEventListener> simEventListeners = new LinkedList<>();
 	
 	/**
 	 * Constructor that provides the inital {@link Personalization}
@@ -92,12 +99,12 @@ public class PersoSimKernel implements InfoSource {
 	 */
 	public byte[] process(byte[] commandApduData) {
 		
-		log(this, "processing incoming APDU", LogLevel.TRACE);
-		log(this, "Processing APDU: " + HexString.encode(commandApduData));
-		log(HexString.encode(commandApduData), LogLevel.TRACE, LogTags.APDU_TAG_IN);
-		log(this, "incoming APDU:\n" + HexString.dump(commandApduData), LogLevel.TRACE);
+		log(this, "Processing incoming APDU");
+		log(this, "Processing APDU:\n" + HexString.dump(commandApduData), LogLevel.TRACE);
+		notifyListeners(new CommandApduEvent(commandApduData));
 		
 		ProcessingData processingData = new ProcessingData();
+		processingData.addAllEventListener(simEventListeners);
 		processingData.addUpdatePropagation(this, "initial hardware info", new HardwareCommandApduPropagation(commandApduData));
 		
 		//propagate the event all layers up
@@ -125,10 +132,30 @@ public class PersoSimKernel implements InfoSource {
 			responseApduData = Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN+0x45);
 		}
 		
-		log(this, "finished processing APDU");
-		log(this, "outgoing APDU:\n" + HexString.dump(responseApduData), LogLevel.TRACE);
-		log(HexString.encode(responseApduData), LogLevel.TRACE, LogTags.APDU_TAG_OUT);
+		log(this, "APDU processing finished");
+		log(this, "Response APDU:\n" + HexString.dump(responseApduData), LogLevel.TRACE);
+		notifyListeners(new ResponseApduEvent(responseApduData));
 		return responseApduData;
 		
+	}
+
+	private void notifyListeners(SimulatorEvent simEvent) {
+		for (SimulatorEventListener curListener : simEventListeners) {
+			curListener.notifySimulatorEvent(simEvent);
+		}
+	}
+
+	/**
+	 * @see Simulator#addEventListener(SimulatorEventListener...)
+	 */
+	public void addEventListener(SimulatorEventListener... newListeners) {
+		simEventListeners.addAll(Arrays.asList(newListeners));
+	}
+
+	/**
+	 * @see Simulator#removeEventListener(SimulatorEventListener)
+	 */
+	public void removeEventListener(SimulatorEventListener oldListener) {
+		simEventListeners.remove(oldListener);
 	}
 }

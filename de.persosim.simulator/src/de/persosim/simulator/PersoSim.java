@@ -3,10 +3,14 @@ package de.persosim.simulator;
 import static org.globaltester.logging.BasicLogger.log;
 import static org.globaltester.logging.BasicLogger.logException;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.logging.tags.LogTag;
 import org.globaltester.simulator.Simulator;
+import org.globaltester.simulator.SimulatorEventListener;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
@@ -38,6 +42,8 @@ public class PersoSim implements Simulator {
 	
 	private PersoSimKernel kernel;
 	private boolean running = false;
+
+	private LinkedList<SimulatorEventListener> simEventListeners = new LinkedList<>();
 	
 	/**
 	 * This constructor is used by the OSGi-service instantiation
@@ -169,5 +175,23 @@ public class PersoSim implements Simulator {
 			return new byte[]{0x6f, (byte)0x84};
 		}
 		return kernel.reset();
+	}
+
+	@Override
+	public void addEventListener(SimulatorEventListener... newListeners) {
+		simEventListeners.addAll(Arrays.asList(newListeners));
+		
+		if (kernel != null) {
+			kernel.addEventListener(newListeners);
+		}
+	}
+
+	@Override
+	public void removeEventListener(SimulatorEventListener oldListener) {
+		simEventListeners.remove(oldListener);
+		
+		if (kernel != null) {
+			kernel.removeEventListener(oldListener);
+		}
 	}
 }

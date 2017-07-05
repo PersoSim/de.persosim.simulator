@@ -2,11 +2,15 @@ package de.persosim.simulator.processing;
 
 import static org.globaltester.logging.BasicLogger.log;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.globaltester.logging.InfoSource;
 import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.simulator.SimulatorEventListener;
+import org.globaltester.simulator.event.SimulatorEvent;
+
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.platform.Iso7816;
@@ -30,6 +34,8 @@ public class ProcessingData implements Iso7816, InfoSource {
 	protected HashMap<Class<? extends UpdatePropagation>, LinkedList<UpdatePropagation>> updatePropagations = new HashMap<>();
 	
 	protected LinkedList<ProcessingStateUpdate> processingHistory = new LinkedList<>();
+	
+	private LinkedList<SimulatorEventListener> simEventListeners = new LinkedList<>();
 	
 	/*--------------------------------------------------------------------------------*/
 	/* Variables concerning APDU processing status */
@@ -193,6 +199,22 @@ public class ProcessingData implements Iso7816, InfoSource {
 	public void addUpdatePropagation(InfoSource source, String message,
 			UpdatePropagation updatePropagation) {
 		updateProcessingState(source, message, new ProcessingStateDelta(updatePropagation));
+	}
+
+	public void addAllEventListener(Collection<? extends SimulatorEventListener> newSimEventListeners) {
+		simEventListeners.addAll(newSimEventListeners);
+	}
+
+	/**
+	 * Notify all currently registered {@link SimulatorEventListener} of the
+	 * given {@link SimulatorEvent}
+	 * 
+	 * @param simEvent
+	 */
+	public void notifySimulatorEventListeners(SimulatorEvent simEvent) {
+		for (SimulatorEventListener curListener : simEventListeners) {
+			curListener.notifySimulatorEvent(simEvent);
+		}
 	}
 
 }
