@@ -704,6 +704,18 @@ public class ConstructedTlvDataObjectTest {
 	}
 	
 	/**
+	 * Positive test case: Remove second occurrence of existing, equal children
+	 */
+	@Test
+	public void testRemoveTlvDataObjectTlvTagIdentifierEqualChildren() {
+		ConstructedTlvDataObject tlvObject = (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("3009 020101 020102 020101");
+		ConstructedTlvDataObject expectedResult = (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("3006 020101 020102");
+
+		tlvObject.removeTlvDataObject(new TlvTagIdentifier(TlvConstants.TAG_INTEGER, 2));
+		assertEquals(expectedResult, tlvObject);
+	}
+	
+	/**
 	 * Positive test case: Sorts a constructed TLV data object according to DER
 	 * encoding rules
 	 */
