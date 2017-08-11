@@ -9,9 +9,6 @@ import de.persosim.simulator.secstatus.SecStatus;
  * This interface represents the highest level of abstraction for objects on the
  * card. See inheritance hierarchy for available object types.
  * 
- * Classes implementing this interface MUST have EXACTLY one constructor.
- * This constructor MUST accept a {@link SecStatus} as first parameter.
- * 
  * @author amay
  * 
  */
