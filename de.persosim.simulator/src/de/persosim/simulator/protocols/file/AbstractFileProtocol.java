@@ -2,6 +2,7 @@ package de.persosim.simulator.protocols.file;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.globaltester.simulator.SimulatorConfiguration;
 
@@ -92,9 +93,14 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 					}
 					break;
 				case P1_SELECT_FILE_EF_UNDER_CURRENT_DF:
-					file = getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState),
-							new FileIdentifier(Utils
+					Collection<CardObject> x = CurrentFileHandler.getCurrentDedicatedFile(cardState).findChildren(new FileIdentifier(Utils
 									.getShortFromUnsignedByteArray(cmdApdu.getCommandData().toByteArray())));
+					if (x.size() != 1) {
+						// No fitting child found
+						throw new FileNotFoundException();
+					}
+					file = (CardFile) x.iterator().next();
+					
 					break;
 				case P1_SELECT_FILE_DF_BY_NAME:
 					file = getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState),
