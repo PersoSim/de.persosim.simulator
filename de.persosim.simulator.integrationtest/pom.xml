@@ -3,29 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.globaltester</groupId>
-    <artifactId>org.globaltester.parent</artifactId>
+    <artifactId>org.globaltester.parent.crossover</artifactId>
     <version>3.2.3-SNAPSHOT</version>
-    <relativePath>../../org.globaltester.parent/org.globaltester.parent</relativePath>
+    <relativePath>../../org.globaltester.parent/org.globaltester.parent.crossover</relativePath>
   </parent>
   <groupId>de.persosim</groupId>
   <artifactId>de.persosim.simulator.integrationtest</artifactId>
   <version>0.10.3-SNAPSHOT</version>
   <packaging>eclipse-test-plugin</packaging>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-surefire-plugin</artifactId>
-        <version>${tycho.version}</version>
-        <configuration>
-          <includes>
-            <include>**/*Crossover.class</include>
-          </includes>
-	  <useUIHarness>true</useUIHarness>
-	  <product>org.globaltester.platform.product</product>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
