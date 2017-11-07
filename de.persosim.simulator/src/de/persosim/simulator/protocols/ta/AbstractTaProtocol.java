@@ -379,11 +379,12 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		}
 	}
 	
-	protected AuthenticatedAuxiliaryData getAuxiliarydata(TlvDataObjectContainer commandData) {
+	protected List<AuthenticatedAuxiliaryData> parseAuxiliaryData(TlvDataObjectContainer commandData) {
+		List<AuthenticatedAuxiliaryData> foundAuxData = new ArrayList<>();
+		
 		TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TlvConstants.TAG_67);
 		if (auxiliaryAuthenticatedData != null){
 			if (auxiliaryAuthenticatedData instanceof ConstructedTlvDataObject){
-				auxiliaryData = new ArrayList<>();
 				ConstructedTlvDataObject constructedAuxiliaryAuthenticatedData = (ConstructedTlvDataObject) auxiliaryAuthenticatedData;
 				for (TlvDataObject currentObject : constructedAuxiliaryAuthenticatedData.getTlvDataObjectContainer()){
 					if(!(currentObject instanceof ConstructedTlvDataObject) || !currentObject.getTlvTag().equals(TlvConstants.TAG_73)){
@@ -393,7 +394,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					TlvDataObject objectIdentifier = ddo.getTlvDataObject(TlvConstants.TAG_06);
 					TlvDataObject discretionaryData = ddo.getTlvDataObject(TlvConstants.TAG_53);
 					try {
-						return new AuthenticatedAuxiliaryData(new GenericOid(objectIdentifier.getValueField()), discretionaryData.getValueField());
+						foundAuxData.add(new AuthenticatedAuxiliaryData(new GenericOid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
 					} catch (IllegalArgumentException e) {
 						throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "Invalid encoding of the auxiliary data, object identifier not parseable");
 					}
@@ -402,8 +403,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "Invalid encoding of the auxiliary data, authentication object is not constructed TLV");
 			}
 		}
-		
-		return null;
+		return foundAuxData;
 	}
 	
 	protected byte[] extractCompressedEphemeralPublicKeyTerminal(TlvDataObjectContainer commandData) {
@@ -426,10 +426,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			assertPublicKeyReferenceDataMatchesCertificate(commandData, currentCertificate);
 			cryptographicMechanismReference = getCryptographicMechanismReference(commandData);
 			
-			AuthenticatedAuxiliaryData authenticatedAuxiliaryData = getAuxiliarydata(commandData);
-			if(authenticatedAuxiliaryData != null) {
-				auxiliaryData.add(authenticatedAuxiliaryData);
-			}
+			auxiliaryData = parseAuxiliaryData(commandData);
 			
 			compressedTerminalEphemeralPublicKey = extractCompressedEphemeralPublicKeyTerminal(commandData);
 			
