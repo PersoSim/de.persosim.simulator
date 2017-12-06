@@ -670,7 +670,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				sw = pinResponse.getStatusWord();
 				note = pinResponse.getResponse();
 			} else{
-				sw = Iso7816.SW_6A80_WRONG_DATA;
+				sw = Iso7816.SW_6300_AUTHENTICATION_FAILED;
 				note = "authentication token received from PCD does NOT match expected one";
 			}
 		}
