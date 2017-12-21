@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 
+import de.persosim.driver.connector.VirtualDriverComm;
 import de.persosim.driver.connector.service.NativeDriverConnector;
 import de.persosim.simulator.ui.Activator;
 import de.persosim.simulator.ui.handlers.SelectPersoFromFileHandler;
@@ -479,7 +480,7 @@ public class PersoSimPart {
 	 */
 	public void connectReader(NativeDriverConnector connector) {
 		try {
-			connector.connect(new Socket("localhost", 5678));
+			connector.connect(new VirtualDriverComm(new Socket("localhost", 5678)));
 		} catch (IOException e) {
 			MessageDialog.openError(parent.getShell(), "Error",
 					"Failed to connect to virtual card reader driver!\nTry to restart driver, then re-connect by selecting\ndesired reader type from menu \"Reader Type\".");

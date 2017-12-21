@@ -18,6 +18,7 @@ import org.osgi.service.log.LogReaderService;
 import org.osgi.util.tracker.ServiceTracker;
 
 import de.persosim.driver.connector.DriverConnectorFactory;
+import de.persosim.driver.connector.VirtualDriverComm;
 import de.persosim.driver.connector.features.DefaultListener;
 import de.persosim.driver.connector.service.NativeDriverConnector;
 import de.persosim.simulator.CommandParser;
@@ -161,7 +162,8 @@ public class Activator implements BundleActivator {
 			connector = serviceTrackerDriverConnectorFactory.getService().getConnector(de.persosim.driver.connector.Activator.PERSOSIM_CONNECTOR_CONTEXT_ID);
 			connector.addListener(new DefaultListener());
 			if (!connector.isRunning()) {
-				connector.connect(new Socket(DEFAULT_HOST, DEFAULT_PORT));
+				
+				connector.connect(new VirtualDriverComm(new Socket(DEFAULT_HOST, DEFAULT_PORT)));
 			}
 		} catch (IOException e) {
 			log(Activator.class, "Exception: " + e.getMessage(), LogLevel.ERROR);
