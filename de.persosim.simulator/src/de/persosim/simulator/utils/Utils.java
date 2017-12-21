@@ -19,8 +19,9 @@ public abstract class Utils {
 		
 	public static final byte[] BITMASK            = new byte[]{(byte) 0x01, (byte) 0x02, (byte) 0x04, (byte) 0x08, (byte) 0x10, (byte) 0x20, (byte) 0x40, (byte) 0x80};
 	public static final byte[] BITMASK_COMPLEMENT = new byte[]{(byte) 0xFE, (byte) 0xFD, (byte) 0xFB, (byte) 0xF7, (byte) 0xEF, (byte) 0xDF, (byte) 0xBF, (byte) 0x7F};
-	
+
 	public static final short MASK_BYTE_TO_SHORT = (short) 0x00FF;
+	public static final short MASK_FIRST_BYTE_OF_SHORT = (short) 0xFF00;
 	public static final int MASK_BYTE_TO_INT = (short) 0x000000FF;
 	public static final int MASK_SHORT_TO_INT = 0x0000FFFF;
 	
@@ -32,6 +33,10 @@ public abstract class Utils {
 	
 	// This is a static utils class and should not be inherited or instantiated
 	private Utils() {}
+	
+	public static byte getFirstByteOfShort(short shortValue) {
+		return (byte)(MASK_FIRST_BYTE_OF_SHORT >>> 8);
+	}
 	
 	/**
 	 * Returns an unsigned byte masked to short
