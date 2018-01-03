@@ -480,7 +480,7 @@ public class PersoSimPart {
 	 */
 	public void connectReader(NativeDriverConnector connector) {
 		try {
-			connector.connect(new VirtualDriverComm(new Socket("localhost", 5678)));
+			connector.connect(new VirtualDriverComm(VirtualDriverComm.DEFAULT_HOST, VirtualDriverComm.DEFAULT_PORT));
 		} catch (IOException e) {
 			MessageDialog.openError(parent.getShell(), "Error",
 					"Failed to connect to virtual card reader driver!\nTry to restart driver, then re-connect by selecting\ndesired reader type from menu \"Reader Type\".");

@@ -30,6 +30,12 @@ public interface TlvConstants {
 	public static final TlvTag TAG_97 = new TlvTag((byte) 0x97);
 	public static final TlvTag TAG_99 = new TlvTag((byte) 0x99);
 	public static final TlvTag TAG_A0 = new TlvTag((byte) 0xA0);
+	public static final TlvTag TAG_A1 = new TlvTag((byte) 0xA1);
+	public static final TlvTag TAG_A2 = new TlvTag((byte) 0xA2);
+	public static final TlvTag TAG_A3 = new TlvTag((byte) 0xA3);
+	public static final TlvTag TAG_A4 = new TlvTag((byte) 0xA4);
+	public static final TlvTag TAG_A5 = new TlvTag((byte) 0xA5);
+	public static final TlvTag TAG_A6 = new TlvTag((byte) 0xA6);
 	public static final TlvTag TAG_E1 = new TlvTag((byte) 0xE1);
 	public static final TlvTag TAG_E0 = new TlvTag((byte) 0xE0);
 	public static final TlvTag TAG_5F20 = new TlvTag(new byte []{0x5F, 0x20});
@@ -45,6 +51,7 @@ public interface TlvConstants {
 	public static final TlvTag TAG_NULL = new TlvTag(Asn1.UNIVERSAL_NULL);
 	public static final TlvTag TAG_BOOLEAN = new TlvTag(Asn1.BOOLEAN);
 	public static final TlvTag TAG_INTEGER = new TlvTag(Asn1.INTEGER);
+	public static final TlvTag TAG_NUMERIC_STRING = new TlvTag(Asn1.UNIVERSAL_NUMERIC_STRING);
 	public static final TlvTag TAG_BIT_STRING = new TlvTag(Asn1.BIT_STRING);
 	public static final TlvTag TAG_OCTET_STRING = new TlvTag(Asn1.OCTET_STRING);
 	public static final TlvTag TAG_OID = new TlvTag(Asn1.OBJECT_IDENTIFIER);

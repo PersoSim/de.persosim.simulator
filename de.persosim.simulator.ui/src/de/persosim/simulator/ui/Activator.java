@@ -163,7 +163,7 @@ public class Activator implements BundleActivator {
 			connector.addListener(new DefaultListener());
 			if (!connector.isRunning()) {
 				
-				connector.connect(new VirtualDriverComm(new Socket(DEFAULT_HOST, DEFAULT_PORT)));
+				connector.connect(new VirtualDriverComm(DEFAULT_HOST, DEFAULT_PORT));
 			}
 		} catch (IOException e) {
 			log(Activator.class, "Exception: " + e.getMessage(), LogLevel.ERROR);
