@@ -3,7 +3,6 @@ package de.persosim.simulator.ui;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.util.Iterator;
 import java.util.LinkedList;
 
