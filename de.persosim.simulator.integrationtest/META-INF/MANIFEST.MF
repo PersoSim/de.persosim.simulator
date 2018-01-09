@@ -20,7 +20,8 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  org.globaltester.logging.legacy,
  com.secunet.globaltester.testscripts.bsi.tr03105_part3_3,
  com.secunet.globaltester.testscripts.basics,
- com.secunet.globaltester.testscripts.integration
+ com.secunet.globaltester.testscripts.integration,
+ de.persosim.simulator.test
 Export-Package: de.persosim.simulator.test.globaltester,
  de.persosim.simulator.test.globaltester.perso
 Import-Package: org.eclipse.ui.keys,

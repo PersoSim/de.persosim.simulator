@@ -4,16 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.thoughtworks.xstream.io.StreamException;
-
-import de.persosim.simulator.perso.PersonalizationImpl;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
+import de.persosim.simulator.perso.PersonalizationImpl;
 
 public class CommandParserTest {
 
@@ -76,15 +73,24 @@ public class CommandParserTest {
 	}
 	
 	/**
+	 * Negative test case: parse personalization from a perso identifier without OSGi-Context
+	 * @throws Exception
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetPerso_ValidIdentifier() throws Exception {
+		CommandParser.getPerso("01");
+	}
+	
+	/**
 	 * Positive test case: parse personalization from a valid file.
 	 * @throws Exception
 	 */
 	@Test
-	public void testParsePersonalization_ValidFile() throws Exception {
+	public void testGetPerso_ValidFile() throws Exception {
 		Personalization perso1 = new PersonalizationImpl();
 		PersonalizationFactory.marshal(perso1, DUMMY_PERSONALIZATION_FILE);
 		
-		Personalization perso = CommandParser.parsePersonalization(DUMMY_PERSONALIZATION_FILE);
+		Personalization perso = CommandParser.getPerso(DUMMY_PERSONALIZATION_FILE);
 		
 		assertNotNull(perso);
 	}
@@ -93,17 +99,17 @@ public class CommandParserTest {
 	 * Negative test case: parse personalization from a non-existing file.
 	 * @throws Exception
 	 */
-	@Test(expected = FileNotFoundException.class)
-	public void testParsePersonalization_FileNotFound() throws Exception {
-		CommandParser.parsePersonalization("file not found");
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetPerso_FileNotFound() throws Exception {
+		CommandParser.getPerso("file not found");
 	}
 	
 	/**
 	 * Negative test case: parse personalization from an invalid existing file.
 	 * @throws Exception
 	 */
-	@Test(expected = StreamException.class)
-	public void testParsePersonalization_InvalidFile() throws Exception {
-		CommandParser.parsePersonalization("src/de/persosim/simulator/PersoSimTest.java");
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetPerso_InvalidFile() throws Exception {
+		CommandParser.getPerso("src/de/persosim/simulator/PersoSimTest.java");
 	}
 }

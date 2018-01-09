@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 
@@ -92,6 +94,10 @@ public class PersonalizationFactory {
 		}
 		XStream xstream = getXStream();
 		return xstream.fromXML (reader);
+	}
+	
+	public static Object unmarshal(InputStream stream) {
+		return unmarshal(new InputStreamReader(stream));
 	}
 	
 	public static Object unmarshal (String path) throws FileNotFoundException {	

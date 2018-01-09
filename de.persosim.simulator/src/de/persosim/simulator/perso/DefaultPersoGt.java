@@ -1,7 +1,5 @@
 package de.persosim.simulator.perso;
 
-import org.globaltester.PlatformHelper;
-
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
@@ -40,13 +38,13 @@ public class DefaultPersoGt extends Profile01 {
 
 		String id = "de.persosim.simulator";
 		
-		String absolutePathCvcaIs = PlatformHelper.getFileFromPseudoBundle(id, id, fileNameCvcaIs).getAbsolutePath();
-		String absolutePathCvcaAt = PlatformHelper.getFileFromPseudoBundle(id, id, fileNameCvcaAt).getAbsolutePath();
-		String absolutePathCvcaSt = PlatformHelper.getFileFromPseudoBundle(id, id, fileNameCvcaSt).getAbsolutePath();
+		String absolutePathCvcaIs = PersonalizationFileHelper.getFileFromPseudoBundle(id, id, fileNameCvcaIs).getAbsolutePath();
+		String absolutePathCvcaAt = PersonalizationFileHelper.getFileFromPseudoBundle(id, id, fileNameCvcaAt).getAbsolutePath();
+		String absolutePathCvcaSt = PersonalizationFileHelper.getFileFromPseudoBundle(id, id, fileNameCvcaSt).getAbsolutePath();
 
-		byte[] cvcaIsData = PlatformHelper.readFromFile(absolutePathCvcaIs);
-		byte[] cvcaAtData = PlatformHelper.readFromFile(absolutePathCvcaAt);
-		byte[] cvcaStData = PlatformHelper.readFromFile(absolutePathCvcaSt);
+		byte[] cvcaIsData = PersonalizationFileHelper.readFromFile(absolutePathCvcaIs);
+		byte[] cvcaAtData = PersonalizationFileHelper.readFromFile(absolutePathCvcaAt);
+		byte[] cvcaStData = PersonalizationFileHelper.readFromFile(absolutePathCvcaSt);
 
 		ConstructedTlvDataObject cvcaIsTlv = new ConstructedTlvDataObject(cvcaIsData);
 		ConstructedTlvDataObject cvcaAtTlv = new ConstructedTlvDataObject(cvcaAtData);
