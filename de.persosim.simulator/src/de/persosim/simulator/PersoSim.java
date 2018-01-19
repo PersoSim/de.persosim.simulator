@@ -32,7 +32,7 @@ public class PersoSim implements Simulator {
 	public static final String LOG_NO_OPERATION = "nothing to process";
 	public static final String LOG_SIM_EXIT     = "simulator exit";
 	
-	private PersoSimKernel kernel;
+	private PersoSimKernel kernel = null;
 
 	private HashSet<SimulatorEventListener> simEventListeners = new HashSet<>();
 	
