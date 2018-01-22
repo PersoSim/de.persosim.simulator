@@ -17,9 +17,7 @@ import org.osgi.service.log.LogReaderService;
 import org.osgi.util.tracker.ServiceTracker;
 
 import de.persosim.driver.connector.DriverConnectorFactory;
-import de.persosim.driver.connector.VirtualDriverComm;
-import de.persosim.driver.connector.features.DefaultListener;
-import de.persosim.driver.connector.service.NativeDriverConnector;
+import de.persosim.driver.connector.service.IfdConnector;
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.ui.parts.PersoSimPart;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
@@ -40,7 +38,7 @@ public class Activator implements BundleActivator {
 	private static ServiceTracker<DriverConnectorFactory, DriverConnectorFactory> serviceTrackerDriverConnectorFactory;
 	public static final int DEFAULT_PORT = 5678;
 	public static final String DEFAULT_HOST = "localhost";
-	public static NativeDriverConnector connector = null;
+	public static IfdConnector connector = null;
 	private static LogReaderService readerService = null;
 
 	static BundleContext getContext() {
@@ -57,8 +55,7 @@ public class Activator implements BundleActivator {
 		CommandParser.executeUserCommands(commands);
 		if(commands.length == 0) return; //just do nothing.
 		if (commands[0].equals(CommandParser.CMD_LOAD_PERSONALIZATION)) {
-			disconnectFromNativeDriver();
-			connectToNativeDriver();
+			resetNativeDriver();
 		}
 		if (commands[0].equals(CommandParser.CMD_STOP)) {
 			disconnectFromNativeDriver();
@@ -156,14 +153,10 @@ public class Activator implements BundleActivator {
 		Activator.logLevelFilter = levelFilter;
 	}
 	
-	public static void connectToNativeDriver() {
+	public static void resetNativeDriver() {
 		try {
 			connector = serviceTrackerDriverConnectorFactory.getService().getConnector(de.persosim.driver.connector.Activator.PERSOSIM_CONNECTOR_CONTEXT_ID);
-			connector.addListener(new DefaultListener());
-			if (!connector.isRunning()) {
-				
-				connector.connect(new VirtualDriverComm(DEFAULT_HOST, DEFAULT_PORT));
-			}
+			connector.reconnect();
 		} catch (IOException e) {
 			log(Activator.class, "Exception: " + e.getMessage(), LogLevel.ERROR);
 		}
@@ -181,7 +174,7 @@ public class Activator implements BundleActivator {
 		}
 	}
 	
-	public static NativeDriverConnector getConnector(){
+	public static IfdConnector getConnector(){
 		return connector;
 	}
 }
