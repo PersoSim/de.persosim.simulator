@@ -103,7 +103,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 					
 					break;
 				case P1_SELECT_FILE_DF_BY_NAME:
-					file = getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState),
+					file = getFileForName(cardState.getMasterFile(),
 							new DedicatedFileIdentifier(cmdApdu.getCommandData().toByteArray()));
 					// IMPL support multiple calls selecting files successively (ISO7816-4
 					// 7.1.1)
@@ -153,6 +153,36 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 				new ProtocolUpdate(true));
 	}
 	
+	/**
+	 * (Recursively) search DF (identifed by DF name)
+	 * 
+	 * @param df
+	 * @param dfIdentifier
+	 * @return
+	 * @throws FileNotFoundException 
+	 */
+	private CardFile getFileForName(DedicatedFile df, DedicatedFileIdentifier dfIdentifier)
+			throws FileNotFoundException {
+		
+		if (dfIdentifier.matches(df)) {
+			return df;
+		}
+		
+		for (CardObject curChild : df.getChildren()) {
+			if (curChild instanceof DedicatedFile) {
+				try {
+					return getFileForName((DedicatedFile) curChild, dfIdentifier);
+				} catch (FileNotFoundException e) {
+					//no matching DF found here, continue search with next element 
+					continue;
+				}
+			}
+		}
+
+		// No matching DF found
+		throw new FileNotFoundException();
+	}
+
 	/**
 	 * @param file {@link CardFile} to get the FCI from
 	 * @param p2 the P2 byte of the {@link CommandApdu}
