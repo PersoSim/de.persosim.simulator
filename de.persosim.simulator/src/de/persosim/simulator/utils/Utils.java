@@ -19,8 +19,9 @@ public abstract class Utils {
 		
 	public static final byte[] BITMASK            = new byte[]{(byte) 0x01, (byte) 0x02, (byte) 0x04, (byte) 0x08, (byte) 0x10, (byte) 0x20, (byte) 0x40, (byte) 0x80};
 	public static final byte[] BITMASK_COMPLEMENT = new byte[]{(byte) 0xFE, (byte) 0xFD, (byte) 0xFB, (byte) 0xF7, (byte) 0xEF, (byte) 0xDF, (byte) 0xBF, (byte) 0x7F};
-	
+
 	public static final short MASK_BYTE_TO_SHORT = (short) 0x00FF;
+	public static final short MASK_FIRST_BYTE_OF_SHORT = (short) 0xFF00;
 	public static final int MASK_BYTE_TO_INT = (short) 0x000000FF;
 	public static final int MASK_SHORT_TO_INT = 0x0000FFFF;
 	
@@ -32,6 +33,10 @@ public abstract class Utils {
 	
 	// This is a static utils class and should not be inherited or instantiated
 	private Utils() {}
+	
+	public static byte getFirstByteOfShort(short shortValue) {
+		return (byte)(MASK_FIRST_BYTE_OF_SHORT >>> 8);
+	}
 	
 	/**
 	 * Returns an unsigned byte masked to short
@@ -502,5 +507,77 @@ public abstract class Utils {
 			result[i] = input[input.length - i - 1];
 		}
 		return result;
+	}
+	
+	/**
+	 * Extracts the value field from an arbitrary structure containing a length
+	 * field
+	 * 
+	 * @param data
+	 * @param offsetLengthField
+	 *            the offset to the length field
+	 * @param lengthFieldLength
+	 *            the length in bytes of the length field
+	 * @return the value part as byte array
+	 */
+	public static byte[] getValue(byte[] data, int offsetLengthField,
+			int lengthFieldLength) {
+		int length = Utils.getIntFromUnsignedByteArray(Arrays.copyOfRange(data,
+				offsetLengthField, offsetLengthField + lengthFieldLength));
+		return Arrays.copyOfRange(data, offsetLengthField + lengthFieldLength,
+				offsetLengthField + lengthFieldLength + length);
+	}
+	
+	/**
+	 * Extracts the value field from an arbitrary structure containing a flipped byte order length
+	 * field
+	 * 
+	 * @param data
+	 * @param offsetLengthField
+	 *            the offset to the length field
+	 * @param lengthFieldLength
+	 *            the length in bytes of the length field
+	 * @return the value part as byte array
+	 */
+	public static byte[] getValueFlippedByteOrder(byte[] data, int offsetLengthField,
+			int lengthFieldLength) {
+		int length = Utils.getIntFromUnsignedByteArray(Utils.invertByteOrder(Arrays.copyOfRange(data,
+				offsetLengthField, offsetLengthField + lengthFieldLength)));
+		return Arrays.copyOfRange(data, offsetLengthField + lengthFieldLength,
+				offsetLengthField + lengthFieldLength + length);
+	}
+	
+	/**
+	 * Create a simple structure with length field from an arbitrary structure containing a length
+	 * field
+	 * 
+	 * @see #getValue(byte[], int, int)
+	 * 
+	 * @param data
+	 * @param offsetLengthField
+	 *            the offset to the length field
+	 * @param lengthFieldLength
+	 *            the length in bytes of the length field
+	 * @return the value part as byte array
+	 */
+	public static byte[] createLengthValue(byte[] data, int lengthFieldLength) {
+		return Utils.concatByteArrays(padWithLeadingZeroes(Utils.toShortestUnsignedByteArray(data.length), lengthFieldLength), data);
+	}
+	
+	/**
+	 * Create a simple structure with length field from an arbitrary structure containing a length
+	 * field with flipped byte order
+	 * 
+	 * @see #getValue(byte[], int, int)
+	 * 
+	 * @param data
+	 * @param offsetLengthField
+	 *            the offset to the length field
+	 * @param lengthFieldLength
+	 *            the length in bytes of the length field
+	 * @return the value part as byte array
+	 */
+	public static byte[] createLengthValueFlippedByteOrder(byte[] data, int lengthFieldLength) {
+		return Utils.concatByteArrays(invertByteOrder(padWithLeadingZeroes(Utils.toShortestUnsignedByteArray(data.length), lengthFieldLength)), data);
 	}
 }

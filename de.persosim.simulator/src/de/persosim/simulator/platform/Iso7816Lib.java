@@ -752,6 +752,14 @@ public abstract class Iso7816Lib implements Iso7816 {
 		}
 	}
 	
+	public static short getStatusWord(byte [] responseApdu) {
+		if (responseApdu.length < 2) {
+			throw new IllegalArgumentException("APDU too short for status word");
+		}
+		
+		return Utils.concatenate(responseApdu[responseApdu.length - 2], responseApdu[responseApdu.length - 1]);
+	}
+	
 	/*--------------------------------------------------------------------------------*/
 	
 	/**

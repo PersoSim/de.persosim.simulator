@@ -3,7 +3,6 @@ package de.persosim.simulator.ui.parts;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -36,7 +35,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 
-import de.persosim.driver.connector.service.NativeDriverConnector;
 import de.persosim.simulator.ui.Activator;
 import de.persosim.simulator.ui.handlers.SelectPersoFromFileHandler;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
@@ -47,7 +45,6 @@ import de.persosim.simulator.ui.utils.LinkedListLogListener;
  */
 public class PersoSimPart {
 	
-	public static final String DE_PERSOSIM_SIMULATOR_BUNDLE = "de.persosim.simulator";
 	public static final String PERSO_PATH = "personalization/profiles/";
 	public static final String PERSO_FILE = "Profile01.perso";
 	
@@ -472,32 +469,6 @@ public class PersoSimPart {
 	@Override
 	public String toString() {
 		return "OutputHandler here!";
-	}
-	
-	/**
-	 * Attach reader to simulator, i.e. connect connector
-	 */
-	public void connectReader(NativeDriverConnector connector) {
-		try {
-			connector.connect(new Socket("localhost", 5678));
-		} catch (IOException e) {
-			MessageDialog.openError(parent.getShell(), "Error",
-					"Failed to connect to virtual card reader driver!\nTry to restart driver, then re-connect by selecting\ndesired reader type from menu \"Reader Type\".");
-		}
-	}
-	
-	/**
-	 * Separate reader from simulator, i.e. disconnect connector
-	 */
-	public void disconnectReader(NativeDriverConnector connector) {
-		if ((connector != null) && (connector.isRunning())) {
-			try {
-				connector.disconnect();
-			} catch (IOException | InterruptedException e) {
-				e.printStackTrace();
-				MessageDialog.openError(parent.getShell(), "Error", "Failed to disconnect reader");
-			}
-		}
 	}
 	
 }

@@ -97,7 +97,7 @@ public class CurveConverter implements Converter {
 			getValuesFromXML (reader, context);
 		}
 		
-		if (p == null || a == null || b == null  || p.equals("") || a.equals("") || b.equals("")) {
+		if (p == null || a == null || b == null) {
 			String message = "can not create curve object, unmarshal failed!";
 			log(getClass(),message , LogLevel.ERROR);
 			throw new XStreamException (message);
