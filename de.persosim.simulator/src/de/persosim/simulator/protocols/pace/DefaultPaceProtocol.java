@@ -741,6 +741,9 @@ public class DefaultPaceProtocol extends AbstractPaceProtocol
 
 									/* adjust state variables  */
 									stateVarPACE_IN_PROGRESS =  PACE_GET_NONCE_RECEIVED;
+								}else if (isAPDU("Set AT")) {
+									logs("SET_AT_RECEIVED");
+									processCommandSetAT();
 								}else{
 									/* Intentionally left blank */
 								} /*end of event selection */
