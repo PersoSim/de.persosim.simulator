@@ -3,16 +3,17 @@ package de.persosim.simulator.ui.utils;
 import java.util.LinkedList;
 
 import org.globaltester.logging.AbstractLogListener;
+import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.LogListenerConfig;
 import org.globaltester.logging.filter.AndFilter;
 import org.globaltester.logging.filter.BundleFilter;
-import org.globaltester.logging.filter.LevelFilter;
 import org.globaltester.logging.filter.LogFilter;
+import org.globaltester.logging.filter.TagFilter;
 import org.globaltester.logging.format.GtFileLogFormatter;
 import org.globaltester.logging.format.LogFormatService;
 import org.osgi.service.log.LogListener;
 
-import de.persosim.simulator.ui.Activator;
+import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 
 /**
  * This {@link LogListener} implementation is used to write log entries by line
@@ -28,23 +29,38 @@ public class LinkedListLogListener extends AbstractLogListener {
 	private boolean needsUpdate;
 	
 	public LinkedListLogListener(int maxLines) {
+		updateConfig();
+		this.maxLines = maxLines;
+	}
+	
+	public void updateConfig() {
 		LogListenerConfig lrc = new LogListenerConfig() {
-			
-			byte logLevels [] ={1,2,3,4,5,6,120};
-			String bundleList [] = {"org.globaltester"};
+			String bundleList [] = {"org.globaltester", "de.persosim"};
 			
 			public LogFormatService format = new GtFileLogFormatter(GtFileLogFormatter.DATE_FORMAT_GT);
-			public BundleFilter bundleFilter = new BundleFilter(bundleList);
-			public LevelFilter levelFilter = new LevelFilter(logLevels);
-			public LogFilter [] filters = {bundleFilter, levelFilter};	
-			public AndFilter filter = new AndFilter(filters);
-			
-			{
-				Activator.setLogLevelFilter(levelFilter);
-			}
-			
+			private LogFilter filter;
+						
 			@Override
 			public LogFilter getFilter() {
+				if (filter == null) {
+					String levelsPreference = PersoSimPreferenceManager.getPreference("LOG_LEVELS");
+					
+					String [] levels = null;
+					TagFilter tagFilter = null;
+					if (levelsPreference != null) {
+						levels = levelsPreference.split(":");
+						tagFilter = new TagFilter(BasicLogger.LOG_LEVEL_TAG_ID, levels);
+					}
+					
+					BundleFilter bundleFilter = new BundleFilter(bundleList);
+					if (tagFilter != null) {
+						LogFilter [] filters = {bundleFilter, tagFilter};	
+						filter = new AndFilter(filters);	
+					} else {
+						filter = bundleFilter;
+					}
+				}
+				
 				return filter;
 			}
 
@@ -53,7 +69,6 @@ public class LinkedListLogListener extends AbstractLogListener {
 				return format;
 			}
 		};
-		this.maxLines = maxLines;
 		setConfig(lrc);
 	}
 	
