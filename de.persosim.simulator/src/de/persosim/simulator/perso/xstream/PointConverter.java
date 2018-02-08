@@ -85,7 +85,7 @@ public class PointConverter implements Converter {
 			getValuesFromXML (reader, context);
 		}
 		
-		if (x == null || y == null || x.equals("") || y.equals("")) {
+		if (x == null || y == null) {
 			String message = "can not create point object, unmarshal failed!";
 			log(getClass(), message, LogLevel.ERROR);
 			throw new XStreamException (message);

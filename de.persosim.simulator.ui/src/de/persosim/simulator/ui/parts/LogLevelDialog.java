@@ -39,7 +39,7 @@ public class LogLevelDialog extends Dialog {
 			btnLogLevels[i] = new Button(llcomposite, SWT.CHECK);
 			LogLevel logLevel = LogLevel.values()[i];
 			btnLogLevels[i].setText(logLevel.toString());
-			if (levels != null && levels.contains(logLevel.name())) {
+			if (levels != null && levels.contains(logLevel.name()) || levels == null) {
 				btnLogLevels[i].setSelection(true);
 			}
 		}
