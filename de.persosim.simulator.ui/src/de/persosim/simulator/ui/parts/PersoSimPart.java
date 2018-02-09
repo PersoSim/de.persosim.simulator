@@ -57,7 +57,7 @@ public class PersoSimPart {
 	private Thread uiThread = null;
 	private Thread updateThread = null;
 	//maximum amount of strings saved in the buffer
-	public static final int MAXIMUM_CACHED_CONSOLE_LINES = 2000;
+	public static final int MAXIMUM_CACHED_CONSOLE_LINES = 20000;
 	
 	//maximum of lines the text field can show
 	int maxLineCount=0;
