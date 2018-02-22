@@ -58,6 +58,8 @@ public interface TlvConstants {
 	public static final TlvTag TAG_SEQUENCE = new TlvTag(Asn1.SEQUENCE);
 	public static final TlvTag TAG_SET = new TlvTag(Asn1.SET);
 	public static final TlvTag TAG_IA5_STRING = new TlvTag(Asn1.IA5_STRING);
+	public static final TlvTag TAG_PRINTABLE_STRING = new TlvTag(Asn1.UNIVERSAL_PRINTABLE_STRING);
+	public static final TlvTag TAG_UTF8_STRING = new TlvTag(Asn1.UNIVERSAL_UTF8String);
 	
 	
 	public static final TlvValuePlain DER_BOOLEAN_TRUE = new TlvValuePlain(new byte [] {(byte) 0xFF});
