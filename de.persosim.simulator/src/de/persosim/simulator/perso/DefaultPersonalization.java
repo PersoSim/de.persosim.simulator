@@ -85,15 +85,16 @@ import de.persosim.simulator.utils.HexString;
  */
 public abstract class DefaultPersonalization extends PersonalizationImpl implements Tr03110 {
 
+	public static final String AID_EPA = "A0000002471001";
 	public static final String AID_EID = "E80704007F00070302";
+	public static final String AID_MF = "A0000002471003";
 
 	public MasterFile buildObjectTree() throws AccessDeniedException {
 		MasterFile mf = null;
 		
 		try {
 			mf = new MasterFile(new FileIdentifier(0x3F00),
-					new DedicatedFileIdentifier(new byte[] { (byte) 0xA0, 0x0,
-							0x0, 0x2, 0x47, 0x10, 0x03 }));
+					new DedicatedFileIdentifier(HexString.toByteArray(AID_MF)));
 
 			addAuthObjects(mf);
 
@@ -162,7 +163,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		// ePass application
 		DedicatedFile ePassAppl = new DedicatedFile(null,
 				new DedicatedFileIdentifier(
-						HexString.toByteArray("A0000002471001")));
+						HexString.toByteArray(AID_EPA)));
 		mf.addChild(ePassAppl);
 		addEpassDatagroup1(ePassAppl);
 		addEpassDatagroup2(ePassAppl);
