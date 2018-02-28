@@ -90,6 +90,17 @@ public interface TlvDataStructure extends Iterable<TlvDataObject> {
 	 * @param tlvTag the tag used for identification
 	 */
 	public void removeTlvDataObject(TlvTag tlvTag);
+
+	/**
+	 * Removes all objects from this data structure if present.
+	 */
+	public void removeAllTlvDataObjects();
+	
+	/**
+	 * Removes the specified object from this data structure if present.
+	 * @param tlvObject the object to be removed
+	 */
+	public void remove(TlvDataObject tlvObject);
 	
 	/**
 	 * Sort the elements within this data structure according to the provided comparator

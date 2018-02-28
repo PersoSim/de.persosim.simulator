@@ -240,6 +240,11 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	}
 
 	@Override
+	public void removeAllTlvDataObjects() {
+		tlvDataObjectContainer.removeAllTlvDataObjects();
+	}
+
+	@Override
 	public void removeTlvDataObject(TlvTagIdentifier tagIdentifier) {
 		tlvDataObjectContainer.removeTlvDataObject(tagIdentifier);
 	}
@@ -320,6 +325,11 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 		for (TlvDataObject curTlvDataObject : newTlvDataObjects) {
 			addTlvDataObject(curTlvDataObject);
 		}
+	}
+	
+	@Override
+	public void remove(TlvDataObject object){
+		tlvDataObjectContainer.remove(object);
 	}
 	
 }
