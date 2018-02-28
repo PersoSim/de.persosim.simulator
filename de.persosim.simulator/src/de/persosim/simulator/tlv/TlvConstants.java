@@ -36,6 +36,11 @@ public interface TlvConstants {
 	public static final TlvTag TAG_A4 = new TlvTag((byte) 0xA4);
 	public static final TlvTag TAG_A5 = new TlvTag((byte) 0xA5);
 	public static final TlvTag TAG_A6 = new TlvTag((byte) 0xA6);
+	public static final TlvTag TAG_AA = new TlvTag((byte) 0xAA);
+	public static final TlvTag TAG_AB = new TlvTag((byte) 0xAB);
+	public static final TlvTag TAG_AC = new TlvTag((byte) 0xAC);
+	public static final TlvTag TAG_AD = new TlvTag((byte) 0xAD);
+	public static final TlvTag TAG_AE = new TlvTag((byte) 0xAE);
 	public static final TlvTag TAG_E1 = new TlvTag((byte) 0xE1);
 	public static final TlvTag TAG_E0 = new TlvTag((byte) 0xE0);
 	public static final TlvTag TAG_5F20 = new TlvTag(new byte []{0x5F, 0x20});
