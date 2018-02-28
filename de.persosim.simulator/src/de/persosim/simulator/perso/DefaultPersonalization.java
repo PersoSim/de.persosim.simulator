@@ -396,7 +396,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	protected void addEidDg1(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0101),
 				new ShortFileIdentifier(0x01),
-				HexString.toByteArray("61 04 13 02 49 44"),
+				HexString.toByteArray("610413024944"),
 				getAccessRightReadEidDg(1),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
@@ -426,7 +426,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	protected void addEidDg4(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg4 = new ElementaryFile(new FileIdentifier(0x0104),
 				new ShortFileIdentifier(0x04),
-				HexString.toByteArray("64 07 0C 05 45 52 49 4B 41"),
+				HexString.toByteArray("64070C054552494B41"),
 				getAccessRightReadEidDg(4),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
@@ -438,7 +438,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0105),
 				new ShortFileIdentifier(0x05),
 				HexString
-						.toByteArray("65 0C 0C 0A 4D 55 53 54 45 52 4D 41 4E 4E"),
+						.toByteArray("650C0C0A4D55535445524D414E4E"),
 				getAccessRightReadEidDg(5), 
 				SecCondition.DENIED,
 				SecCondition.DENIED);
@@ -450,8 +450,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0106),
 				new ShortFileIdentifier(0x06),
 				HexString
-						.toByteArray("66 11 0C 0F 4C 41 44 59 20 43 4F 4E 46 4F 52 4D 49 54 59"),
-				getAccessRightReadEidDg(6), 
+						.toByteArray("66110C0F4C41445920434F4E464F524D495459"),
+				getAccessRightReadEidDg(6),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg6);
@@ -460,7 +460,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	protected void addEidDg7(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg7 = new ElementaryFile(new FileIdentifier(0x0107),
 				new ShortFileIdentifier(0x07),
-				HexString.toByteArray("67 05 0C 03 44 52 2E"),
+				HexString.toByteArray("67050C0344522E"),
 				getAccessRightReadEidDg(7),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
@@ -482,8 +482,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0109),
 				new ShortFileIdentifier(0x09),
 				HexString
-						.toByteArray("69 1B 30 19 AB 08 0C 06 42 45 52 4C 49 4E AC 08 0C 06 42 45 52 4C 49 4E AD 03 13 01 44"),
-				getAccessRightReadEidDg(9), 
+						.toByteArray("691B3019AB080C064245524C494EAC080C064245524C494EAD03130144"),
+				getAccessRightReadEidDg(9),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg9);
@@ -514,8 +514,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x010C),
 				new ShortFileIdentifier(0x0C),
 				HexString
-						.toByteArray("6C 30 31 2E 30 2C 06 07 2A 86 48 CE 3D 01 01 02 21 00 A9 FB 57 DB A1 EE A9 BC 3E 66 0A 90 9D 83 8D 72 6E 3B F6 23 D5 26 20 28 20 13 48 1D 1F 6E  53 77"),
-				getAccessRightReadEidDg(12), 
+						.toByteArray("6C30312E302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377"),
+				getAccessRightReadEidDg(12),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg12);
@@ -524,7 +524,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	protected void addEidDg13(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg13 = new ElementaryFile(new FileIdentifier(0x010D),
 				new ShortFileIdentifier(0x0D),
-				HexString.toByteArray("6D 09 0C 07 4D 55 45 4C 4C 45 52"),
+				HexString.toByteArray("6D090C074D55454C4C4552"),
 				getAccessRightReadEidDg(13),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
@@ -550,8 +550,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0111),
 				new ShortFileIdentifier(0x11),
 				HexString
-						.toByteArray("71 2E 30 2C AA 11 0C 0F 48 45 49 44 45 53 54 52 41 C3 9F 45 20 31 37 AB 08 0C 06 42 45 52 4C 49 4E AC 08 0C 06 42 45 52 4C 49 4E AD 03 13 01 44"),
-				getAccessRightReadEidDg(17), getAccessRightUpdateEidDg(17),
+						.toByteArray("712E302CAA110C0F484549444553545241C39F45203137AB080C064245524C494EAC080C064245524C494EAD03130144"),
+				getAccessRightReadEidDg(17),getAccessRightUpdateEidDg(17),
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg17);
 	}
@@ -570,7 +570,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0113),
 				new ShortFileIdentifier(0x13),
 				HexString
-						.toByteArray("73 16 A1 14 0C 12 52 45 53 49 44 45 4E 43 45 20 50 45 52 4D 49 54 20 31"),
+						.toByteArray("7316A1140C125245534944454E4345205045524D49542031"),
 				getAccessRightReadEidDg(19), getAccessRightUpdateEidDg(19),
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg19);
@@ -581,8 +581,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0114),
 				new ShortFileIdentifier(0x14),
 				HexString
-						.toByteArray("74 16 A1 14 0C 12 52 45 53 49 44 45 4E 43 45 20 50 45 52 4D 49 54 20 31"),
-				getAccessRightReadEidDg(20), getAccessRightUpdateEidDg(20),
+						.toByteArray("7416A1140C125245534944454E4345205045524D49542031"),
+				getAccessRightReadEidDg(20),getAccessRightUpdateEidDg(20),
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg20);
 	}
@@ -592,7 +592,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0115),
 				new ShortFileIdentifier(0x15),
 				HexString
-						.toByteArray("75 15 13 13 74 65 6C 3A 2B 34 39 2D 30 33 30 2D 31 32 33 34 35 36 37"),
+						.toByteArray("7515131374656C3A2B34392D3033302D31323334353637"),
 				getAccessRightReadEidDg(21), getAccessRightUpdateEidDg(21),
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg21);
@@ -603,8 +603,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0116),
 				new ShortFileIdentifier(0x16),
 				HexString
-						.toByteArray("76 15 16 13 65 72 69 6B 61 40 6D 75 73 74 65 72 6D 61 6E 6E 2E 64 65"),
-				getAccessRightReadEidDg(22), getAccessRightUpdateEidDg(22),
+						.toByteArray("761516136572696B61406D75737465726D616E6E2E6465"),
+				getAccessRightReadEidDg(22),getAccessRightUpdateEidDg(22),
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg22);
 	}
