@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.globaltester.logging.tags.LogLevel;
 
+import de.persosim.driver.connector.SimulatorManager;
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.ui.Activator;
 
@@ -37,6 +38,10 @@ public abstract class SelectPersoHandler {
 		
 		log(this.getClass(), "executing command: " + persoCmdString);
 
+		if (!SimulatorManager.getSim().isRunning()){
+			SimulatorManager.getSim().startSimulator();
+		}
+		
 		Activator.executeUserCommands(persoCmdString);
 		
 		log(this.getClass(), "finished setting of personalization", LogLevel.INFO);
