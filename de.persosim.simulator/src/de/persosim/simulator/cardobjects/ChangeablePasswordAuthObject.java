@@ -39,10 +39,14 @@ public class ChangeablePasswordAuthObject extends PasswordAuthObject {
 	}
 	
 	public void setPassword(byte[] newPassword) throws AccessDeniedException {
-		if(!getLifeCycleState().equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)) {throw new IllegalStateException(passwordName + " must be in state operational activated");}
 		if(newPassword == null) {throw new IllegalArgumentException("new " + passwordName + " must not be null");}
-		if(newPassword.length < minLengthOfPasswordInBytes) {throw new IllegalArgumentException("new " + passwordName + " must be at least " + minLengthOfPasswordInBytes + " bytes long but is only " + newPassword.length + " bytes long");}
-		if(newPassword.length > maxLengthOfPasswordInBytes) {throw new IllegalArgumentException("new " + passwordName + " must be at most " + maxLengthOfPasswordInBytes + " bytes long but is " + newPassword.length + " bytes long");}
+		if(!getLifeCycleState().equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED) && !getLifeCycleState().isPersonalizationPhase()) {throw new IllegalStateException(passwordName + " must be in state operational activated");}
+		
+		if (!getLifeCycleState().isPersonalizationPhase()){
+			if(newPassword.length < minLengthOfPasswordInBytes) {throw new IllegalArgumentException("new " + passwordName + " must be at least " + minLengthOfPasswordInBytes + " bytes long but is only " + newPassword.length + " bytes long");}
+			if(newPassword.length > maxLengthOfPasswordInBytes) {throw new IllegalArgumentException("new " + passwordName + " must be at most " + maxLengthOfPasswordInBytes + " bytes long but is " + newPassword.length + " bytes long");}
+				
+		}
 		
 		if (securityStatus == null
 				|| securityStatus.checkAccessConditions(getLifeCycleState(), new OrSecCondition(changePinCondition,getPinManagementCondition()))) {
@@ -65,6 +69,14 @@ public class ChangeablePasswordAuthObject extends PasswordAuthObject {
 
 	public SecCondition getPinManagementCondition() {
 		return pinManagementCondition;
+	}
+	
+	public int getMaxLength(){
+		return maxLengthOfPasswordInBytes;
+	}
+	
+	public int getMinLength(){
+		return minLengthOfPasswordInBytes;
 	}
 	
 }
