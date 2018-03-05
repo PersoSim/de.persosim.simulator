@@ -329,7 +329,7 @@ public class SecStatus implements InfoSource{
 	 * @return true, if the {@link Iso7816LifeCycleState} grants access
 	 */
 	public static boolean checkAccessConditions(Iso7816LifeCycleState state){
-		if (state.equals(Iso7816LifeCycleState.CREATION)){
+		if (state.isPersonalizationPhase()){
 			return true;
 		}
 		return false;

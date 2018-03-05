@@ -90,7 +90,14 @@ public class PersonalizationHelper {
 				setLifeCycleStates(cardObject);
 				if (cardObject.getLifeCycleState().isPersonalizationPhase()){
 					try {
-						cardObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+						switch (cardObject.getLifeCycleState()){
+						case CREATION_OPERATIONAL_DEACTIVATED:
+							cardObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
+							break;
+						default:
+							cardObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
+							break;
+						}
 					} catch (AccessDeniedException e) {
 						BasicLogger.logException(PersonalizationHelper.class, e, LogLevel.WARN);
 					}	

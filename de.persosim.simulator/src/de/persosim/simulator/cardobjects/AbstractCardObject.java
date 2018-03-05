@@ -93,8 +93,7 @@ public abstract class AbstractCardObject implements CardObject {
 
 	@Override
 	public void updateLifeCycleState(Iso7816LifeCycleState state) throws AccessDeniedException {
-		if (lifeCycleState.isPersonalizationPhase() && 
-				state.equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)){
+		if (lifeCycleState.isCreation() && state.isCreation()){
 			lifeCycleState = state;
 			return;
 		}

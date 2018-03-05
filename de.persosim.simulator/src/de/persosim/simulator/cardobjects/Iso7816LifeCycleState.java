@@ -8,7 +8,7 @@ package de.persosim.simulator.cardobjects;
  * 
  */
 public enum Iso7816LifeCycleState {
-	CREATION, INITIALISATION, OPERATIONAL_ACTIVATED, OPERATIONAL_DEACTIVATED, TERMINATION, UNDEFINED;
+	CREATION, CREATION_OPERATIONAL_ACTIVATED, CREATION_OPERATIONAL_DEACTIVATED, INITIALISATION, OPERATIONAL_ACTIVATED, OPERATIONAL_DEACTIVATED, TERMINATION, UNDEFINED;
 
 	/**
 	 * This returns if this state is one of the operational states.
@@ -27,6 +27,10 @@ public enum Iso7816LifeCycleState {
 	 * @return true iff the the state is in the personalization phase
 	 */
 	public boolean isPersonalizationPhase() {
-		return this.equals(CREATION) || this.equals(INITIALISATION);
+		return this.equals(CREATION) || this.equals(INITIALISATION) || this.equals(CREATION_OPERATIONAL_ACTIVATED) || this.equals(CREATION_OPERATIONAL_DEACTIVATED);
+	}
+
+	public boolean isCreation() {
+		return this.equals(CREATION) || this.equals(CREATION_OPERATIONAL_ACTIVATED) || this.equals(CREATION_OPERATIONAL_DEACTIVATED);
 	}
 }
