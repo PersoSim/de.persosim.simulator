@@ -1,10 +1,12 @@
 package de.persosim.simulator.protocols;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import de.persosim.simulator.crypto.SignatureOids;
 import de.persosim.simulator.utils.HexString;
 
 /**
@@ -163,5 +165,11 @@ public class OidTest {
 		byte[] prefix = null;
 
 		oid.startsWithPrefix(prefix);
+	}
+	
+	@Test
+	public void testToDotString() {
+		Oid oid = new TestOid(SignatureOids.id_Pkcs1.toByteArray());
+		assertEquals("1.2.840.113549.1.1", oid.toDotString());
 	}
 }

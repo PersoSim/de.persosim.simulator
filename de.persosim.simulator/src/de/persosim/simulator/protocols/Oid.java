@@ -22,5 +22,10 @@ public interface Oid {
 	 * @return true iff matching, false otherwise
 	 */
 	public boolean startsWithPrefix(byte[] oidPrefix);
+
+	/**
+	 * @return the {@link Oid} encoded using the a.b.c.d format
+	 */
+	public String toDotString();
 	
 }

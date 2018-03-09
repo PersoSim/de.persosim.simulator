@@ -85,15 +85,16 @@ import de.persosim.simulator.utils.HexString;
  */
 public abstract class DefaultPersonalization extends PersonalizationImpl implements Tr03110 {
 
+	public static final String AID_EPA = "A0000002471001";
 	public static final String AID_EID = "E80704007F00070302";
+	public static final String AID_MF = "A0000002471003";
 
 	public MasterFile buildObjectTree() throws AccessDeniedException {
 		MasterFile mf = null;
 		
 		try {
 			mf = new MasterFile(new FileIdentifier(0x3F00),
-					new DedicatedFileIdentifier(new byte[] { (byte) 0xA0, 0x0,
-							0x0, 0x2, 0x47, 0x10, 0x03 }));
+					new DedicatedFileIdentifier(HexString.toByteArray(AID_MF)));
 
 			addAuthObjects(mf);
 
@@ -151,6 +152,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		addEidDg19(eIdAppl);
 		addEidDg20(eIdAppl);
 		addEidDg21(eIdAppl);
+		addEidDg22(eIdAppl);
 	}
 
 	/**
@@ -162,7 +164,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		// ePass application
 		DedicatedFile ePassAppl = new DedicatedFile(null,
 				new DedicatedFileIdentifier(
-						HexString.toByteArray("A0000002471001")));
+						HexString.toByteArray(AID_EPA)));
 		mf.addChild(ePassAppl);
 		addEpassDatagroup1(ePassAppl);
 		addEpassDatagroup2(ePassAppl);
@@ -394,7 +396,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	protected void addEidDg1(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg1 = new ElementaryFile(new FileIdentifier(0x0101),
 				new ShortFileIdentifier(0x01),
-				HexString.toByteArray("610413025450"),
+				HexString.toByteArray("610413024944"),
 				getAccessRightReadEidDg(1),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
@@ -424,7 +426,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	protected void addEidDg4(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg4 = new ElementaryFile(new FileIdentifier(0x0104),
 				new ShortFileIdentifier(0x04),
-				HexString.toByteArray("64070C054572696B61"),
+				HexString.toByteArray("64070C054552494B41"),
 				getAccessRightReadEidDg(4),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
@@ -436,7 +438,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0105),
 				new ShortFileIdentifier(0x05),
 				HexString
-						.toByteArray("650C0C0A4D75737465726D616E6E"),
+						.toByteArray("650C0C0A4D55535445524D414E4E"),
 				getAccessRightReadEidDg(5), 
 				SecCondition.DENIED,
 				SecCondition.DENIED);
@@ -448,8 +450,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0106),
 				new ShortFileIdentifier(0x06),
 				HexString
-						.toByteArray("66110C0F4C61647920436F6E666F726D697479"),
-				getAccessRightReadEidDg(6), 
+						.toByteArray("66110C0F4C41445920434F4E464F524D495459"),
+				getAccessRightReadEidDg(6),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg6);
@@ -458,7 +460,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	protected void addEidDg7(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg7 = new ElementaryFile(new FileIdentifier(0x0107),
 				new ShortFileIdentifier(0x07),
-				HexString.toByteArray("67020C00"),
+				HexString.toByteArray("67050C0344522E"),
 				getAccessRightReadEidDg(7),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
@@ -480,8 +482,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0109),
 				new ShortFileIdentifier(0x09),
 				HexString
-						.toByteArray("691B3019AB080C064265726C696EAC080C064265726C696EAD03130144"),
-				getAccessRightReadEidDg(9), 
+						.toByteArray("691B3019AB080C064245524C494EAC080C064245524C494EAD03130144"),
+				getAccessRightReadEidDg(9),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg9);
@@ -512,8 +514,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x010C),
 				new ShortFileIdentifier(0x0C),
 				HexString
-						.toByteArray("6C5E315C302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377"),
-				getAccessRightReadEidDg(12), 
+						.toByteArray("6C30312E302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377"),
+				getAccessRightReadEidDg(12),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg12);
@@ -522,7 +524,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	protected void addEidDg13(DedicatedFile eIdAppl) throws AccessDeniedException {
 		CardFile eidDg13 = new ElementaryFile(new FileIdentifier(0x010D),
 				new ShortFileIdentifier(0x0D),
-				HexString.toByteArray("6D090C074D75656C6C6572"),
+				HexString.toByteArray("6D090C074D55454C4C4552"),
 				getAccessRightReadEidDg(13),
 				SecCondition.DENIED,
 				SecCondition.DENIED);
@@ -548,8 +550,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0111),
 				new ShortFileIdentifier(0x11),
 				HexString
-						.toByteArray("712E302CAA110C0F486569646573747261737365203137AB080C064265726C696EAC080C064265726C696EAD03130144"),
-				getAccessRightReadEidDg(17), getAccessRightUpdateEidDg(17),
+						.toByteArray("712E302CAA110C0F484549444553545241C39F45203137AB080C064245524C494EAC080C064245524C494EAD03130144"),
+				getAccessRightReadEidDg(17),getAccessRightUpdateEidDg(17),
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg17);
 	}
@@ -568,7 +570,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0113),
 				new ShortFileIdentifier(0x13),
 				HexString
-						.toByteArray("730EA10C0C0A5265735065726D697431"),
+						.toByteArray("7316A1140C125245534944454E4345205045524D49542031"),
 				getAccessRightReadEidDg(19), getAccessRightUpdateEidDg(19),
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg19);
@@ -579,8 +581,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0114),
 				new ShortFileIdentifier(0x14),
 				HexString
-						.toByteArray("740EA10C0C0A5265735065726D697432"),
-				getAccessRightReadEidDg(20), getAccessRightUpdateEidDg(20),
+						.toByteArray("7416A1140C125245534944454E4345205045524D49542031"),
+				getAccessRightReadEidDg(20),getAccessRightUpdateEidDg(20),
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg20);
 	}
@@ -590,10 +592,21 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new FileIdentifier(0x0115),
 				new ShortFileIdentifier(0x15),
 				HexString
-						.toByteArray("755E315C302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377"),
+						.toByteArray("7515131374656C3A2B34392D3033302D31323334353637"),
 				getAccessRightReadEidDg(21), getAccessRightUpdateEidDg(21),
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg21);
+	}
+
+	protected void addEidDg22(DedicatedFile eIdAppl) throws AccessDeniedException {
+		CardFile eidDg22 = new ElementaryFile(
+				new FileIdentifier(0x0116),
+				new ShortFileIdentifier(0x16),
+				HexString
+						.toByteArray("761516136572696B61406D75737465726D616E6E2E6465"),
+				getAccessRightReadEidDg(22),getAccessRightUpdateEidDg(22),
+				SecCondition.DENIED);
+		eIdAppl.addChild(eidDg22);
 	}
 
 	/**

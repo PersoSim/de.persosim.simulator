@@ -1,6 +1,9 @@
 package de.persosim.simulator.protocols;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.StringJoiner;
 
 import de.persosim.simulator.utils.HexString;
 
@@ -57,9 +60,47 @@ public class GenericOid implements Oid{
 	
 	@Override
 	public String toString() {
-		return getIdString() + " (0x" + HexString.encode(oidByteArray) + ")";
+		return getIdString() + " (0x" + HexString.encode(oidByteArray) + ") [" + toDotString() + "]";
 	}
 	
+	@Override
+	public String toDotString() {
+		List<Integer> oids = new LinkedList<Integer>();
+
+		oids.add(oidByteArray[0] / 40);
+		oids.add(oidByteArray[0] % 40);
+		
+		for (int i = 1; i < oidByteArray.length; i++) {
+			if ((oidByteArray [i] & 0x80) == 0) {
+				oids.add((int) oidByteArray[i]);
+			} else {
+				int oid = 0;
+				boolean done = false;
+				do {
+					oid <<= 7;
+					byte b = oidByteArray[i];
+					if ((b & 0x80) == 0) {
+						done = true;
+					} else {
+						b = (byte)(b & ~0x80);
+						i++;
+					}
+					oid |= b;
+					
+				} while (!done);
+				//oids.add(Utils.getIntFromUnsignedByteArray(Utils.invertByteOrder(Utils.toShortestUnsignedByteArray(oid))));
+				oids.add(oid);
+			}
+		}
+		
+		StringJoiner builder = new StringJoiner(".");
+		for (Integer i : oids) {
+			builder.add(i.toString());
+		}
+		
+		return builder.toString();
+	}
+
 	/**
 	 * This method checks whether the byte array representation of this object starts with the the provided OID prefix. 
 	 * @param oidPrefix the provided OID prefix

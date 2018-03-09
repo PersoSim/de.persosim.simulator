@@ -564,6 +564,11 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
+	protected void addEidDg22(DedicatedFile eIdAppl) {
+		// do not create DG
+	}
+	
+	@Override
 	protected void addCaKeys(MasterFile mf) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
