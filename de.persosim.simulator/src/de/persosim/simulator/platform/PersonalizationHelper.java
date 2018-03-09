@@ -100,7 +100,7 @@ public class PersonalizationHelper {
 						}
 					} catch (AccessDeniedException e) {
 						BasicLogger.logException(PersonalizationHelper.class, e, LogLevel.WARN);
-					}	
+					}
 				}
 			}
 		}

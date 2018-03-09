@@ -105,12 +105,14 @@ public abstract class AbstractCardObject implements CardObject {
 				return;
 			}
 			break;
+		case CREATION_OPERATIONAL_ACTIVATED:
 		case CREATION:
 			if(state.equals(Iso7816LifeCycleState.INITIALISATION) || state.equals(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED)){
 				lifeCycleState = state;
 				return;
 			}
 			break;
+		case CREATION_OPERATIONAL_DEACTIVATED:
 		case OPERATIONAL_ACTIVATED:
 			if(state.equals(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED) || state.equals(Iso7816LifeCycleState.TERMINATION)){
 				lifeCycleState = state;
