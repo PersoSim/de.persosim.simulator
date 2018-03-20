@@ -4,7 +4,7 @@ import static org.globaltester.logging.BasicLogger.log;
 import static org.globaltester.logging.BasicLogger.logException;
 
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.HashSet;
 
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
@@ -42,7 +42,7 @@ public class PersoSim implements Simulator {
 	
 	private PersoSimKernel kernel;
 
-	private LinkedList<SimulatorEventListener> simEventListeners = new LinkedList<>();
+	private HashSet<SimulatorEventListener> simEventListeners = new HashSet<>();
 	
 	/**
 	 * This constructor is used by the OSGi-service instantiation

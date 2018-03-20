@@ -3,6 +3,7 @@ package de.persosim.simulator.platform;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class PersoSimKernel implements InfoSource {
 
 	private List<Layer> layers;
 	
-	private LinkedList<SimulatorEventListener> simEventListeners = new LinkedList<>();
+	private HashSet<SimulatorEventListener> simEventListeners = new HashSet<>();
 	
 	/**
 	 * Constructor that provides the inital {@link Personalization}
