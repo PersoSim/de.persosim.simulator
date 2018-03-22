@@ -561,7 +561,6 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 				if (offset < binaryFile.getContent().length) {
 					
 					byte [] data = getFileContents(offset, ne, binaryFile.getContent());
-					boolean shortRead = !zeroEncoded && data.length < ne;
 					TlvValue toSend = null;
 	
 					if (isOddInstruction) {
@@ -578,7 +577,6 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 							toSend = new TlvDataObjectContainer(
 									new PrimitiveTlvDataObject(new TlvTag(
 											ODDINS_RESPONSE_TAG), Arrays.copyOf(data, includedDataLegnth)));
-							shortRead = false;
 						}
 						
 						
@@ -587,13 +585,16 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 						toSend = new TlvValuePlain(data);
 					}
 					
-						selectFile((CardFile)file);
-						ResponseApdu resp = new ResponseApdu(toSend,
-								shortRead
-										? Iso7816.SW_6282_END_OF_FILE_REACHED_BEFORE_READING_NE_BYTES
-										: Iso7816.SW_9000_NO_ERROR);
-						this.processingData.updateResponseAPDU(this,
-								"binary file read successfully", resp);
+					boolean shortRead = !zeroEncoded && toSend.getLength() < ne;
+
+					
+					selectFile((CardFile)file);
+					ResponseApdu resp = new ResponseApdu(toSend,
+							shortRead
+									? Iso7816.SW_6282_END_OF_FILE_REACHED_BEFORE_READING_NE_BYTES
+									: Iso7816.SW_9000_NO_ERROR);
+					this.processingData.updateResponseAPDU(this,
+							"binary file read successfully", resp);
 				} else {
 					ResponseApdu resp = new ResponseApdu(
 							Iso7816.SW_6B00_WRONG_P1P2);
