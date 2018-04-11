@@ -65,15 +65,15 @@ public class Activator implements BundleActivator {
 	 * This disables the {@link Simulator} for the PersoSim simulator.
 	 */
 	public void disableService(){
-		if (context == null || sim == null){
-			return;
-		}
 		
-		if (sim.isRunning()){
+		if (sim != null && sim.isRunning()){
 			sim.stopSimulator();
 		}
 		sim = null;
-		simRegistration.unregister();
+		if (simRegistration != null) {
+			simRegistration.unregister();
+			simRegistration = null;
+		}
 	}
 	
 	public static Activator getDefault() {
