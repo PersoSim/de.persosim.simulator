@@ -19,14 +19,6 @@ import de.persosim.simulator.perso.Profile01BetaPki;
 public class Profile01BetaPkiCrossover extends DefaultScriptIntegrationTest{
 
 	@Override
-	public List<String> getBundleSymbolicNamesForTestSpecificationsChip() {
-		List<String> testSpecificationsChip = super.getBundleSymbolicNamesForTestSpecificationsChip();
-		testSpecificationsChip.add("com.secunet.globaltester.testscripts.basics");
-		testSpecificationsChip.add("com.secunet.globaltester.testscripts.bsi.tr03105_part3_3");
-		return testSpecificationsChip;
-	}
-	
-	@Override
 	public IProject getSampleConfigChip() throws IOException {
 		return importSampleConfig("de.persosim.simulator.integrationtest", "Configs/CFG.DFLT.BETAPKI");
 	}

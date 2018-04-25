@@ -19,15 +19,6 @@ import de.persosim.simulator.perso.Personalization;
 public class PersoSimCrossover extends DefaultScriptIntegrationTest{
 
 	@Override
-	public List<String> getBundleSymbolicNamesForTestSpecificationsChip() {
-		List<String> testSpecificationsChip = super.getBundleSymbolicNamesForTestSpecificationsChip();
-		testSpecificationsChip.add("com.secunet.globaltester.testscripts.basics");
-		testSpecificationsChip.add("com.secunet.globaltester.testscripts.bsi.tr03105_part3_3");
-		testSpecificationsChip.add("com.secunet.globaltester.testscripts.integration");
-		return testSpecificationsChip;
-	}
-	
-	@Override
 	public IProject getSampleConfigChip() throws IOException {
 		return importSampleConfig("de.persosim.simulator.integrationtest", "Configs/CFG.DFLT.BETAPKI");
 	}
