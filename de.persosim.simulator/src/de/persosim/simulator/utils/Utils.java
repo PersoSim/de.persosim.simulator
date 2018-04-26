@@ -5,9 +5,11 @@ import static org.globaltester.logging.BasicLogger.logException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 
@@ -104,6 +106,26 @@ public abstract class Utils {
 		}
 
 		return outputStream.toByteArray();
+	}
+	
+	/**
+	 * Returns a concatenation of an array and multiple additional object of fitting type
+	 * @param arrays one or more arrays
+	 * @return the concatenation as new array
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T[] append(T[] array, T ...toConcat) {
+
+		List <T> content = new ArrayList<>();
+		if (array != null) {
+			content.addAll(Arrays.asList(array));
+		}
+		
+		for (T current : toConcat) {
+			content.add(current);
+		}		
+		
+		return (T[]) content.toArray();
 	}
 	
 	

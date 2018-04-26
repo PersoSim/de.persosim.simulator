@@ -1165,4 +1165,32 @@ public class UtilsTest {
 
 		assertArrayEquals(expected, Utils.invertByteOrder(toBeInverted));
 	}
+	
+	@Test
+	public void testAppendArrays() {
+		String [] first = new String []{"asdf"};
+		String [] second = new String []{"qwer"};
+		
+		assertArrayEquals(new String [] {"asdf", "qwer"}, Utils.append(first, second));
+	}
+	
+	@Test
+	public void testAppendWithValue() {
+		String [] first = new String []{"asdf"};
+		String second = "qwer";
+		
+		assertArrayEquals(new String [] {"asdf", "qwer"}, Utils.append(first, second));
+	}
+	
+	@Test
+	public void testAppendNoInput() {
+		assertArrayEquals(new String [] {}, Utils.append(null));
+	}
+	
+	@Test
+	public void testAppendOneInput() {
+		String [] first = new String []{"asdf"};
+		
+		assertArrayEquals(new String [] {"asdf"}, Utils.append(first));
+	}
 }
