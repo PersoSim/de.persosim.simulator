@@ -1171,7 +1171,7 @@ public class UtilsTest {
 		String [] first = new String []{"asdf"};
 		String [] second = new String []{"qwer"};
 		
-		assertArrayEquals(new String [] {"asdf", "qwer"}, Utils.append(first, second));
+		assertArrayEquals(new String [] {"asdf", "qwer"}, Utils.append(String.class, first, second));
 	}
 	
 	@Test
@@ -1179,18 +1179,43 @@ public class UtilsTest {
 		String [] first = new String []{"asdf"};
 		String second = "qwer";
 		
-		assertArrayEquals(new String [] {"asdf", "qwer"}, Utils.append(first, second));
+		assertArrayEquals(new String [] {"asdf", "qwer"}, Utils.append(String.class, first, second));
 	}
 	
 	@Test
 	public void testAppendNoInput() {
-		assertArrayEquals(new String [] {}, Utils.append(null));
+		assertArrayEquals(new String [] {}, Utils.append(String.class, null));
+	}
+	
+	@Test
+	public void testAppendNoInputWithAppendedEmptyArray() {
+		assertArrayEquals(new String [] {}, Utils.append(String.class, null, new String [0]));
+	}
+	
+	@Test
+	public void testAppendNoInputWithAppendedArray() {
+		assertArrayEquals(new String [] { "asdf" }, Utils.append(String.class, null, new String [] { "asdf" }));
+	}
+	
+	@Test
+	public void testAppendNoInputWithAppendedString() {
+		assertArrayEquals(new String [] { "asdf" }, Utils.append(String.class, null, "asdf" ));
+	}
+	
+	@Test
+	public void testAppendNoInputWithAppendedNull() {
+		assertArrayEquals(new String [] { null }, Utils.append(String.class, null, (String)null));
 	}
 	
 	@Test
 	public void testAppendOneInput() {
 		String [] first = new String []{"asdf"};
 		
-		assertArrayEquals(new String [] {"asdf"}, Utils.append(first));
+		assertArrayEquals(new String [] {"asdf"}, Utils.append(String.class, first));
+	}
+	
+	@Test
+	public void testAppendCorrectType() {
+		assertTrue(Utils.append(String.class, null, "asdf") instanceof String []);
 	}
 }

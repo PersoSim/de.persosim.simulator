@@ -4,6 +4,7 @@ import static org.globaltester.logging.BasicLogger.logException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,25 +108,33 @@ public abstract class Utils {
 
 		return outputStream.toByteArray();
 	}
-	
+
 	/**
-	 * Returns a concatenation of an array and multiple additional object of fitting type
-	 * @param arrays one or more arrays
-	 * @return the concatenation as new array
+	 * Returns a concatenation of an array and multiple additional object of fitting
+	 * type
+	 * 
+	 * @param clazz
+	 *            the element type of the array to create
+	 * @param array
+	 *            the starting array
+	 * @param toConcat
+	 *            single elements to append to the starting array, can be multiple
+	 *            single elements or one array of fitting type
+	 * @return a new array containing all given elements
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T[] append(T[] array, T ...toConcat) {
+	public static <T> T[] append(Class<T> clazz, T[] array, T... toConcat) {
 
-		List <T> content = new ArrayList<>();
+		List<T> content = new ArrayList<>();
 		if (array != null) {
 			content.addAll(Arrays.asList(array));
 		}
-		
+
 		for (T current : toConcat) {
 			content.add(current);
-		}		
-		
-		return (T[]) content.toArray();
+		}
+
+		return content.toArray((T[]) Array.newInstance(clazz, content.size()));
 	}
 	
 	
