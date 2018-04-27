@@ -89,4 +89,15 @@ public class Activator implements BundleActivator {
 		return sim;
 	}
 	
+	public Runnable getCleanupHook() {
+		return new Runnable() {
+			
+			@Override
+			public void run() {
+				if (plugin != null) {
+					plugin.disableService();
+				}
+			}
+		};
+	}
 }
