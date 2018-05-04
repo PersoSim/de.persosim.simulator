@@ -29,14 +29,6 @@ import de.persosim.simulator.platform.PersoSimKernel;
  */
 public class PersoSim implements Simulator {
 	
-	/*
-	 * This variable holds the currently used personalization.
-	 * It may explicitly be null and should not be read directly from here.
-	 * As there exist several ways of providing a personalization of which none at all may be used the variable may remain null/unset.
-	 * Due to this possibility access to this variable should be performed by calling the getPersonalization() method. 
-	 */
-	private Personalization currentPersonalization;
-	
 	public static final String LOG_NO_OPERATION = "nothing to process";
 	public static final String LOG_SIM_EXIT     = "simulator exit";
 	
@@ -55,14 +47,13 @@ public class PersoSim implements Simulator {
 		try {
 			CommandParser.handleArgs(this, args);
 		} catch (IllegalArgumentException e) {
-			log(this.getClass(),
-					"simulation aborted, reason is: " + e.getMessage());
+			logException(this.getClass(), "simulation aborted", e);
 		}
 		
 	}
 	
 	public void startPersoSim(){
-		System.out.println("Welcome to PersoSim");
+		log("Welcome to PersoSim", LogLevel.INFO, new LogTag(BasicLogger.UI_TAG_ID));
 
 		startSimulator();
 	}
@@ -71,11 +62,10 @@ public class PersoSim implements Simulator {
 	public boolean startSimulator() {
 		if (kernel != null) {
 			log("Simulator already running", LogLevel.TRACE, new LogTag(BasicLogger.UI_TAG_ID));
-			return true;
+		} else {
+			log("The simulator has been started", LogLevel.TRACE, new LogTag(BasicLogger.UI_TAG_ID));
 		}
-		
-		log("The simulator has been started", LogLevel.TRACE, new LogTag(BasicLogger.UI_TAG_ID));
-		
+		//actual starting is lazily done when a perso is loaded, thus always return true here
 		return true;
 	}
 	
@@ -103,15 +93,13 @@ public class PersoSim implements Simulator {
 	 * @return true, if the profile loading was successful, otherwise false
 	 */
 	public boolean loadPersonalization(Personalization personalization) {
-		currentPersonalization = personalization;
-		
 		try {
 			kernel = new PersoSimKernel();
 		} catch (AccessDeniedException e) {
 			logException(this.getClass(), e, LogLevel.ERROR);
 			return false;
 		}
-		kernel.init(currentPersonalization);
+		kernel.init(personalization);
 		
 		return true;
 	}
@@ -143,7 +131,7 @@ public class PersoSim implements Simulator {
 	@Override
 	public byte[] cardPowerDown() {
 		if (kernel == null){
-			log(this.getClass(), "The simulator is not initialized, attempt to power up ignored", LogLevel.INFO);
+			log(this.getClass(), "The simulator is not initialized, attempt to power down ignored", LogLevel.INFO);
 			return new byte[]{0x6f, (byte)0x83};
 		}
 		return kernel.powerOff();
@@ -152,7 +140,7 @@ public class PersoSim implements Simulator {
 	@Override
 	public byte[] cardReset() {
 		if (kernel == null){
-			log(this.getClass(), "The simulator is not initialized, attempt to power up ignored", LogLevel.INFO);
+			log(this.getClass(), "The simulator is not initialized, reset attempt ignored", LogLevel.INFO);
 			return new byte[]{0x6f, (byte)0x84};
 		}
 		return kernel.reset();
