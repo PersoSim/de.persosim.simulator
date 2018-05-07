@@ -289,7 +289,7 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	@Override
 	public void removeTlvDataObject(TlvTagIdentifier tagIdentifier) {
 		TlvDataObject objToRemove = getTlvDataObject(tagIdentifier);
-		tlvObjects.removeIf(arg -> arg == objToRemove);		
+		tlvObjects.remove(objToRemove);		
 	}
 	
 	@Override

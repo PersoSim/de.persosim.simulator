@@ -1,9 +1,6 @@
 package de.persosim.simulator.protocols;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.StringJoiner;
 
 import de.persosim.simulator.utils.HexString;
 
@@ -65,19 +62,21 @@ public class GenericOid implements Oid{
 	
 	@Override
 	public String toDotString() {
-		List<Integer> oids = new LinkedList<Integer>();
-
-		oids.add(oidByteArray[0] / 40);
-		oids.add(oidByteArray[0] % 40);
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append(Integer.toString(oidByteArray[0] / 40));
+		builder.append(".");
+		builder.append(Integer.toString(oidByteArray[0] % 40));
 		
 		for (int i = 1; i < oidByteArray.length; i++) {
+			int current; 
 			if ((oidByteArray [i] & 0x80) == 0) {
-				oids.add((int) oidByteArray[i]);
+				current = (int) oidByteArray[i];
 			} else {
-				int oid = 0;
+				current = 0;
 				boolean done = false;
 				do {
-					oid <<= 7;
+					current <<= 7;
 					byte b = oidByteArray[i];
 					if ((b & 0x80) == 0) {
 						done = true;
@@ -85,17 +84,13 @@ public class GenericOid implements Oid{
 						b = (byte)(b & ~0x80);
 						i++;
 					}
-					oid |= b;
+					current |= b;
 					
 				} while (!done);
-				//oids.add(Utils.getIntFromUnsignedByteArray(Utils.invertByteOrder(Utils.toShortestUnsignedByteArray(oid))));
-				oids.add(oid);
 			}
-		}
-		
-		StringJoiner builder = new StringJoiner(".");
-		for (Integer i : oids) {
-			builder.add(i.toString());
+			
+			builder.append(".");
+			builder.append(Integer.toString(current));
 		}
 		
 		return builder.toString();
