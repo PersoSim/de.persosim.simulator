@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 
 import de.persosim.simulator.platform.Iso7816;
 
@@ -289,7 +290,15 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 	@Override
 	public void removeTlvDataObject(TlvTagIdentifier tagIdentifier) {
 		TlvDataObject objToRemove = getTlvDataObject(tagIdentifier);
-		tlvObjects.remove(objToRemove);		
+		
+		tlvObjects.removeIf(new Predicate<TlvDataObject>() {
+
+			@Override
+			public boolean test(TlvDataObject t) {
+				return t == objToRemove;
+			}
+		});
+		
 	}
 	
 	@Override
