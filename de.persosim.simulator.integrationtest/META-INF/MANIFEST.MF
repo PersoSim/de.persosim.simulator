@@ -22,8 +22,7 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  com.secunet.globaltester.testscripts.basics,
  com.secunet.globaltester.testscripts.integration,
  de.persosim.simulator.test
-Export-Package: de.persosim.simulator.test.globaltester,
- de.persosim.simulator.test.globaltester.perso
+Export-Package: de.persosim.simulator.test.globaltester.perso
 Import-Package: org.eclipse.ui.keys,
  org.osgi.framework;version="1.8.0"
 Bundle-Vendor: secunet Security Networks AG
