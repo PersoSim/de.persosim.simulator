@@ -170,17 +170,17 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 		
 		for (CardObject curChild : df.getChildren()) {
 			if (curChild instanceof DedicatedFile) {
-				try {
-					return getFileForName((DedicatedFile) curChild, dfIdentifier);
-				} catch (FileNotFoundException e) {
-					//no matching DF found here, continue search with next element 
+				CardFile candidate = getFileForName((DedicatedFile) curChild, dfIdentifier);
+				if (candidate == null) {
+					//no matching DF found here, continue search with next element
 					continue;
+				} else {
+					return candidate;
 				}
 			}
 		}
 
-		// No matching DF found
-		throw new FileNotFoundException();
+		throw new FileNotFoundException("No matching DF found for " + dfIdentifier.toString());
 	}
 
 	/**

@@ -1,9 +1,11 @@
 package de.persosim.simulator.perso;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import org.globaltester.logging.BasicLogger;
 
 /**
  * This class provides methods that simplify acces to files stored on disk and required to generate default personalization objects
@@ -40,38 +42,11 @@ public class PersonalizationFileHelper {
 	 * @return the contents of the file to be read
 	 */
 	public static byte[] readFromFile(String fileName) {
-		RandomAccessFile raf = null;
-		
 		try {
-			raf = new RandomAccessFile(fileName, "r");
-			int length;
-			long lengthLong = raf.length();
-			if (lengthLong > Integer.MAX_VALUE) {
-				raf.close();
-				return null;
-			} else{
-				length = (int) lengthLong;
-			}
-			
-			byte[] file = new byte[length];
-			
-			raf.readFully(file);
-			raf.close();
-			
-			return file;
-		} catch (FileNotFoundException e) {
-			System.out.println(e.getMessage());
+			return Files.readAllBytes(Paths.get(fileName));
+		} catch (IOException e) {
+			BasicLogger.logException(PersonalizationFileHelper.class, e);
 			return null;
-		}catch (IOException e) {
-			return null;
-		} finally{
-			if(raf != null) {
-				try {
-					raf.close();
-				} catch (IOException e) {
-					// do nothing
-				}
-			}
 		}
 	}
 }
