@@ -19,7 +19,6 @@ import de.persosim.simulator.cardobjects.NullCardObject;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.FileIdentifierIncorrectValueException;
-import de.persosim.simulator.exception.FileToShortException;
 import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.exception.TagNotFoundException;
 import de.persosim.simulator.platform.CardStateAccessor;
@@ -534,29 +533,6 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 		}
 	}
 	
-	/**
-	 * Utility method to read a part of a file.
-	 * 
-	 * @param offset
-	 *            the offset in the file contents
-	 * @param ne
-	 *            the NE fields value
-	 * @param rawFileContents
-	 *            the file contents
-	 * @return the file contents starting with the offset and containing up to
-	 *         NE value bytes of the file
-	 * @throws FileToShortException
-	 */
-	private static byte [] getFileContents(int offset, int ne, byte [] rawFileContents) throws FileToShortException{
-		int bytesToBeRead = Math.min(ne, rawFileContents.length - offset);
-		
-		if (bytesToBeRead < 0) {
-			throw new FileToShortException();
-		}
-
-		return Arrays.copyOfRange(rawFileContents, offset, offset + bytesToBeRead);
-	}
-	
 	protected void processCommandReadBinary() {
 		byte ins = processingData.getCommandApdu().getIns();
 
@@ -585,12 +561,16 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 		
 
 		if (file instanceof ElementaryFile) {
-			ElementaryFile binaryFile = (ElementaryFile) file;
 			
 			try {
-				if (offset < binaryFile.getContent().length) {
+				ElementaryFile binaryFile = (ElementaryFile) file;
+				byte [] rawFileContents = binaryFile.getContent();
+				
+				if (offset < rawFileContents.length) {
 					
-					byte [] data = getFileContents(offset, ne, binaryFile.getContent());
+					int bytesToBeRead = Math.min(ne, rawFileContents.length - offset);
+					
+					byte [] data = Arrays.copyOfRange(rawFileContents, offset, offset + bytesToBeRead);
 					TlvValue toSend = null;
 	
 					if (isOddInstruction) {
@@ -631,11 +611,6 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 					this.processingData.updateResponseAPDU(this,
 							"offset behind end of file", resp);
 				}
-			} catch (FileToShortException e) {
-				ResponseApdu resp = new ResponseApdu(
-						Iso7816.SW_6282_END_OF_FILE_REACHED_BEFORE_READING_NE_BYTES);
-				this.processingData.updateResponseAPDU(this,
-						"file too short", resp);
 			} catch (AccessDeniedException e) {
 				ResponseApdu resp = new ResponseApdu(
 						Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
