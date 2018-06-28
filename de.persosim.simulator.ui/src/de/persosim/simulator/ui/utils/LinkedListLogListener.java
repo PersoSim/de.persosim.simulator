@@ -1,5 +1,6 @@
 package de.persosim.simulator.ui.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 
 import org.globaltester.logging.AbstractLogListener;
@@ -37,7 +38,7 @@ public class LinkedListLogListener extends AbstractLogListener {
 		LogListenerConfig lrc = new LogListenerConfig() {
 			String bundleList [] = {"org.globaltester", "de.persosim"};
 			
-			public LogFormatService format = new GtFileLogFormatter(GtFileLogFormatter.DATE_FORMAT_GT);
+			public LogFormatService format = new GtFileLogFormatter(new SimpleDateFormat(GtFileLogFormatter.DATE_FORMAT_GT_STRING));
 			private LogFilter filter;
 						
 			@Override
