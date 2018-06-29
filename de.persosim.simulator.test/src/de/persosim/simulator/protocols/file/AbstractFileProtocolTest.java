@@ -40,7 +40,6 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.HexString;
-import mockit.Deencapsulation;
 
 /**
  * Unit tests for the file management protocol.
@@ -531,21 +530,6 @@ public class AbstractFileProtocolTest extends PersoSimTestCase {
 		assertEquals("No ProtocolUpdate available", 1, updatePropagations.size());
 		assertTrue("Protocol shall not be removed", ((ProtocolUpdate) updatePropagations.get(0)).isFinished());
 	}
-	
-	/**
-	 * Positive test case: perform getFileContents requesting only a small part of the file.
-	 */
-	@Test
-	public void testGetFileContents() {
-		byte[] testDataSource = HexString.toByteArray("00 01 02 03 04 05 06 07 08 09");
-		
-		byte[] dataReceived = Deencapsulation.invoke(AbstractFileProtocol.class, "getFileContents", 2, 2, testDataSource);
-		
-		byte[] dataExpected = HexString.toByteArray("02 03");
-		
-		assertArrayEquals("array not matching", dataExpected, dataReceived);
-	}
-	//IMPL missing tests getContents, with zero offset, with range larger than file, etc.
 
 	@Test
 	public void testEraseFileEvenInstructionNoCommandData() throws Exception{
