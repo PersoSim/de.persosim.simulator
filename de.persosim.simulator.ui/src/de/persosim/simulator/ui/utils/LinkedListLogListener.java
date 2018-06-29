@@ -38,7 +38,7 @@ public class LinkedListLogListener extends AbstractLogListener {
 		LogListenerConfig lrc = new LogListenerConfig() {
 			String bundleList [] = {"org.globaltester", "de.persosim"};
 			
-			public LogFormatService format = new GtFileLogFormatter(new SimpleDateFormat(GtFileLogFormatter.DATE_FORMAT_GT_STRING));
+			private LogFormatService format = new GtFileLogFormatter(new SimpleDateFormat(GtFileLogFormatter.DATE_FORMAT_GT_STRING));
 			private LogFilter filter;
 						
 			@Override
