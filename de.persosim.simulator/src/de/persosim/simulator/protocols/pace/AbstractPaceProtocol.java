@@ -22,6 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.globaltester.cryptoprovider.Crypto;
 import org.globaltester.logging.tags.LogLevel;
+
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -924,32 +925,9 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		HashSet<TlvDataObject> secInfos = new HashSet<TlvDataObject>();
 		
 		for (CardObject curDomainParam : domainParameterCardObjects) {
-			Collection<CardObjectIdentifier> identifiers = curDomainParam.getAllIdentifiers();
-			
-			//extract domainParameterId
-			int parameterId = -1;
-			for (CardObjectIdentifier curIdentifier : identifiers) {
-				if (curIdentifier instanceof DomainParameterSetIdentifier) {
-					parameterId = ((DomainParameterSetIdentifier) curIdentifier).getDomainParameterId();
-					break;
-				}
-			}
-			if (parameterId == -1) continue;
-			
-			//construct and add PaceInfos
-			for (CardObjectIdentifier curIdentifier : identifiers) {
-				if (curIdentifier instanceof OidIdentifier) {
-					Oid curOid = ((OidIdentifier) curIdentifier).getOid();
-					if (curOid.startsWithPrefix(id_PACE)) {
-						byte[] oidBytes = curOid.toByteArray();
-						ConstructedTlvDataObject paceInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-						paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
-						paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{2}));
-						paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) parameterId}));
-						
-						secInfos.add(paceInfo);
-					}
-				}
+			TlvDataObject paceInfo = domainParameterCardObjectToPaceInfo(curDomainParam);
+			if (paceInfo != null) {
+				secInfos.add(paceInfo);
 			}
 		}
 			
@@ -958,6 +936,52 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		//handle duplicates?
 		
 		return secInfos;
+	}
+
+	
+	/**
+	 * This method converts the given {@link CardObject} containing domain parameters to a PACEInfo TLV structure.
+	 * @param curDomainParam
+	 * @return
+	 */
+	protected TlvDataObject domainParameterCardObjectToPaceInfo(CardObject curDomainParam) {
+		Collection<CardObjectIdentifier> identifiers = curDomainParam.getAllIdentifiers();
+		
+		//extract domainParameterId
+		int parameterId = -1;
+		for (CardObjectIdentifier curIdentifier : identifiers) {
+			if (curIdentifier instanceof DomainParameterSetIdentifier) {
+				parameterId = ((DomainParameterSetIdentifier) curIdentifier).getDomainParameterId();
+				break;
+			}
+		}
+		if (parameterId == -1) return null;
+		
+		//construct and add PaceInfos
+		for (CardObjectIdentifier curIdentifier : identifiers) {
+			if (curIdentifier instanceof OidIdentifier) {
+				Oid curOid = ((OidIdentifier) curIdentifier).getOid();
+				if (curOid.startsWithPrefix(id_PACE)) {
+					ConstructedTlvDataObject paceInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
+					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, getOidBytesForPaceInfo(curOid)));
+					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{2}));
+					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{(byte) parameterId}));
+					
+					return (paceInfo);
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	/**
+	 * This converts the OID found in a domain parameter set for use in a PACEInfo.
+	 * @param curOid
+	 * @return
+	 */
+	protected byte[] getOidBytesForPaceInfo(Oid curOid) {
+		return curOid.toByteArray();
 	}
 
 	/**

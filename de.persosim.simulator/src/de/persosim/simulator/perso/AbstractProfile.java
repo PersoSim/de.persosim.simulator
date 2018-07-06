@@ -342,17 +342,17 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg10(DedicatedFile eIdAppl) {
+	protected void addEidDg10(DedicatedFile eIdAppl) throws AccessDeniedException {
 		// do not create DG
 	}
 	
 	@Override
-	protected void addEidDg11(DedicatedFile eIdAppl) {
+	protected void addEidDg11(DedicatedFile eIdAppl) throws AccessDeniedException {
 		// do not create DG
 	}
 	
 	@Override
-	protected void addEidDg12(DedicatedFile eIdAppl) {
+	protected void addEidDg12(DedicatedFile eIdAppl) throws AccessDeniedException {
 		// do not create DG
 	}
 	
@@ -549,22 +549,22 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected void addEidDg19(DedicatedFile eIdAppl) {
+	protected void addEidDg19(DedicatedFile eIdAppl) throws AccessDeniedException {
 		// do not create DG
 	}
 	
 	@Override
-	protected void addEidDg20(DedicatedFile eIdAppl) {
+	protected void addEidDg20(DedicatedFile eIdAppl) throws AccessDeniedException {
 		// do not create DG
 	}
 	
 	@Override
-	protected void addEidDg21(DedicatedFile eIdAppl) {
+	protected void addEidDg21(DedicatedFile eIdAppl) throws AccessDeniedException {
 		// do not create DG
 	}
 	
 	@Override
-	protected void addEidDg22(DedicatedFile eIdAppl) {
+	protected void addEidDg22(DedicatedFile eIdAppl) throws AccessDeniedException {
 		// do not create DG
 	}
 	
