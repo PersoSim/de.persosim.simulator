@@ -7,11 +7,11 @@ import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.CryptoSupportAes;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.protocols.GenericOid;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 public class CaOid extends GenericOid implements Ca {
-	
-	private String idString;
 	
 	/**
 	 * This constructor constructs a {@link CaOid} based on a byte array representation of a CA OID.
@@ -21,10 +21,13 @@ public class CaOid extends GenericOid implements Ca {
 		super(oidByteArray);
 		
 		//check if provided OID is indeed CaOID
-		idString =getStringRepresentation (oidByteArray);
-		if(idString == null) {
+		if(!startsWithPrefix(id_CA)) {
 			throw new IllegalArgumentException("CA OID " + HexString.encode(oidByteArray) + " is invalid or unknown (not supported)");
 		}
+	}
+	
+	public CaOid(Oid prefix, byte... suffix) {
+		this(Utils.concatByteArrays(prefix.toByteArray(), suffix));
 	}
 	
 	
@@ -168,20 +171,30 @@ public class CaOid extends GenericOid implements Ca {
 	 * @return common name of OID or null if parameter does not encode a CaOid
 	 */
 	public String getStringRepresentation(byte[] oidByteArray) {
-		if (Arrays.equals(oidByteArray, id_CA_DH_AES_CBC_CMAC_128)) return id_CA_DH_AES_CBC_CMAC_128_STRING;
-		if (Arrays.equals(oidByteArray, id_CA_DH_AES_CBC_CMAC_192)) return id_CA_DH_AES_CBC_CMAC_192_STRING;
-		if (Arrays.equals(oidByteArray, id_CA_DH_AES_CBC_CMAC_256)) return id_CA_DH_AES_CBC_CMAC_256_STRING;
+		if (Arrays.equals(oidByteArray, id_CA_DH_AES_CBC_CMAC_128.toByteArray())) return id_CA_DH_AES_CBC_CMAC_128_STRING;
+		if (Arrays.equals(oidByteArray, id_CA_DH_AES_CBC_CMAC_192.toByteArray())) return id_CA_DH_AES_CBC_CMAC_192_STRING;
+		if (Arrays.equals(oidByteArray, id_CA_DH_AES_CBC_CMAC_256.toByteArray())) return id_CA_DH_AES_CBC_CMAC_256_STRING;
 		 
-		if (Arrays.equals(oidByteArray, id_CA_ECDH_AES_CBC_CMAC_128)) return id_CA_ECDH_AES_CBC_CMAC_128_STRING;
-		if (Arrays.equals(oidByteArray, id_CA_ECDH_AES_CBC_CMAC_192)) return id_CA_ECDH_AES_CBC_CMAC_192_STRING;
-		if (Arrays.equals(oidByteArray, id_CA_ECDH_AES_CBC_CMAC_256)) return id_CA_ECDH_AES_CBC_CMAC_256_STRING;
+		if (Arrays.equals(oidByteArray, id_CA_ECDH_AES_CBC_CMAC_128.toByteArray())) return id_CA_ECDH_AES_CBC_CMAC_128_STRING;
+		if (Arrays.equals(oidByteArray, id_CA_ECDH_AES_CBC_CMAC_192.toByteArray())) return id_CA_ECDH_AES_CBC_CMAC_192_STRING;
+		if (Arrays.equals(oidByteArray, id_CA_ECDH_AES_CBC_CMAC_256.toByteArray())) return id_CA_ECDH_AES_CBC_CMAC_256_STRING;
 		
 		return null;
 	}
 	
 	@Override
 	public String getIdString() {
-		return idString;
+		return getStringRepresentation(oidByteArray);
+	}
+
+	public static Oid getKeyAgreementOid(Oid oid) {
+		if (oid.startsWithPrefix(id_CA_DH)) {
+			return id_CA_DH;
+		} if (oid.startsWithPrefix(id_CA_ECDH)) {
+			return id_CA_ECDH;
+		} else {
+			throw new InvalidParameterException("no valid CA Oid supplied");
+		}
 	}
 	
 }

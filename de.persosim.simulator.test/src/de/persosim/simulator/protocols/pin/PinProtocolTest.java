@@ -155,7 +155,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	@Test
 	public void testProcessCommandChangePassword() throws Exception {
 		// prepare the mock
-		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, new PaceMechanism(Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128, pinObject, null, null, null)));
+		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, new PaceMechanism(Pace.id_PACE_ECDH_GM_AES_CBC_CMAC_128, pinObject, null, null, null)));
 		new Expectations() {
 			{
 				mockedCardStateAccessor.getMasterFile();

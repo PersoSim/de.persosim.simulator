@@ -9,6 +9,7 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
+
 import javax.crypto.spec.SecretKeySpec;
 
 import org.junit.Before;
@@ -31,6 +32,8 @@ import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.protocols.GenericOid;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.secstatus.SecStatus;
@@ -116,7 +119,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		
 		ecdhKeys = new ArrayList<CardObject>();
 		KeyIdentifier KeyIdentifier = new KeyIdentifier(2);
-		OidIdentifier oidIdentifier = new OidIdentifier(Ca.OID_id_CA_ECDH_AES_CBC_CMAC_128);
+		OidIdentifier oidIdentifier = Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128;
 		ecdhKeyObject = new KeyPairObject(ecdhKeyPairPicc, KeyIdentifier);
 		ecdhKeyObject.addOidIdentifier(oidIdentifier);
 		ecdhKeys.add(ecdhKeyObject);
@@ -172,7 +175,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	public void testExtractCaOidFromCommandData_illegalCaOid(){
 		CaProtocol caProtocol = new CaProtocol();
 		
-		byte[] commandDataBytes = HexString.toByteArray("80 0A 04 00 7F 00 07 02 02 03 FF FF");
+		byte[] commandDataBytes = HexString.toByteArray("80 0A 04 00 7F 00 07 02 02 04 FF FF");
 		TlvDataObjectContainer commandData = new TlvDataObjectContainer(commandDataBytes); 
 		
 		caProtocol.extractCaOidFromCommandData(commandData);
@@ -343,7 +346,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 			}
 		};
 		
-		caProtocol.caOid = Ca.OID_id_CA_ECDH_AES_CBC_CMAC_128;
+		caProtocol.caOid = Ca.id_CA_ECDH_AES_CBC_CMAC_128;
 		Deencapsulation.setField(caProtocol, "staticKeyPairPicc", ecdhKeyPairPicc);
 		caProtocol.caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(caProtocol.staticKeyPairPicc.getPublic());
 		caProtocol.cryptoSupport = caProtocol.caOid.getCryptoSupport();
@@ -378,11 +381,11 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testConstructChipAuthenticationInfoObject(){
-		byte[] oidBytes = HexString.toByteArray("010203040506070809");
+		Oid oid = new GenericOid(HexString.toByteArray("010203040506070809"));
 		byte version = (byte) 0x01;
 		byte keyId = (byte) 0x42;
 		
-		ConstructedTlvDataObject caioReceivedTlv = CaSecInfoHelper.constructChipAuthenticationInfoObject(oidBytes, version, keyId);
+		ConstructedTlvDataObject caioReceivedTlv = CaSecInfoHelper.constructChipAuthenticationInfoObject(oid, version, keyId);
 		byte[] caioReceived = caioReceivedTlv.toByteArray();
 		byte[] caioExpected = HexString.toByteArray("30110609010203040506070809020101020142");
 		

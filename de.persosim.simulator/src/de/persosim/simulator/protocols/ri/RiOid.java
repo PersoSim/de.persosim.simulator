@@ -14,10 +14,12 @@ import org.globaltester.cryptoprovider.Crypto;
 
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.protocols.GenericOid;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 /**
  * This class implements functionalities for OIDs used in the {@link RiProtocol}.
@@ -27,53 +29,54 @@ import de.persosim.simulator.utils.HexString;
  */
 public class RiOid extends GenericOid implements Ri, TlvConstants {
 
-	private String idString;
-
 	public RiOid(byte[] byteArrayRepresentation) {
 		super(byteArrayRepresentation);
 
 		// check if provided OID is indeed RiOID
-		idString = getStringRepresentation(oidByteArray);
-		if (idString == null) {
+		if (!startsWithPrefix(id_RI)) {
 			throw new IllegalArgumentException("RI OID "
 					+ HexString.encode(oidByteArray)
 					+ " is invalid or unknown (not supported)");
 		}
 	}
 
+	public RiOid(Oid prefix, byte... suffix) {
+		this(Utils.concatByteArrays(prefix.toByteArray(), suffix));
+	}
+
 	public String getStringRepresentation(byte[] oidByteArray) {
-		if (Arrays.equals(oidByteArray, id_RI_DH))
+		if (Arrays.equals(oidByteArray, id_RI_DH.toByteArray()))
 			return id_RI_DH_STRING;
-		if (Arrays.equals(oidByteArray, id_RI_ECDH))
+		if (Arrays.equals(oidByteArray, id_RI_ECDH.toByteArray()))
 			return id_RI_ECDH_STRING;
 
-		if (Arrays.equals(oidByteArray, id_RI_DH_SHA_1))
+		if (Arrays.equals(oidByteArray, id_RI_DH_SHA_1.toByteArray()))
 			return id_RI_DH_SHA_1_STRING;
-		if (Arrays.equals(oidByteArray, id_RI_DH_SHA_224))
+		if (Arrays.equals(oidByteArray, id_RI_DH_SHA_224.toByteArray()))
 			return id_RI_DH_SHA_224_STRING;
-		if (Arrays.equals(oidByteArray, id_RI_DH_SHA_256))
+		if (Arrays.equals(oidByteArray, id_RI_DH_SHA_256.toByteArray()))
 			return id_RI_DH_SHA_256_STRING;
-		if (Arrays.equals(oidByteArray, id_RI_DH_SHA_384))
+		if (Arrays.equals(oidByteArray, id_RI_DH_SHA_384.toByteArray()))
 			return id_RI_DH_SHA_384_STRING;
-		if (Arrays.equals(oidByteArray, id_RI_DH_SHA_512))
+		if (Arrays.equals(oidByteArray, id_RI_DH_SHA_512.toByteArray()))
 			return id_RI_DH_SHA_512_STRING;
 
-		if (Arrays.equals(oidByteArray, id_RI_ECDH_SHA_1))
+		if (Arrays.equals(oidByteArray, id_RI_ECDH_SHA_1.toByteArray()))
 			return id_RI_ECDH_SHA_1_STRING;
-		if (Arrays.equals(oidByteArray, id_RI_ECDH_SHA_224))
+		if (Arrays.equals(oidByteArray, id_RI_ECDH_SHA_224.toByteArray()))
 			return id_RI_ECDH_SHA_224_STRING;
-		if (Arrays.equals(oidByteArray, id_RI_ECDH_SHA_256))
+		if (Arrays.equals(oidByteArray, id_RI_ECDH_SHA_256.toByteArray()))
 			return id_RI_ECDH_SHA_256_STRING;
-		if (Arrays.equals(oidByteArray, id_RI_ECDH_SHA_384))
+		if (Arrays.equals(oidByteArray, id_RI_ECDH_SHA_384.toByteArray()))
 			return id_RI_ECDH_SHA_384_STRING;
-		if (Arrays.equals(oidByteArray, id_RI_ECDH_SHA_512))
+		if (Arrays.equals(oidByteArray, id_RI_ECDH_SHA_512.toByteArray()))
 			return id_RI_ECDH_SHA_512_STRING;
 		return null;
 	}
 
 	@Override
 	public String getIdString() {
-		return idString;
+		return getStringRepresentation(oidByteArray);
 	}
 
 	/**

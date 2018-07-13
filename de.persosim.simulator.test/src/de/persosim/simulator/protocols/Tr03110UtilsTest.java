@@ -49,9 +49,9 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 	@Before
 	public void setUp() throws Exception{
 		// define domain parameters
-		oid1 = Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_256;
+		oid1 = Pace.id_PACE_ECDH_GM_AES_CBC_CMAC_256;
 		oidIdentifier1 = new OidIdentifier(oid1);
-		oid2 = Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_128;
+		oid2 = Pace.id_PACE_ECDH_GM_AES_CBC_CMAC_128;
 		oidIdentifier2 = new OidIdentifier(oid2);
 		
 		domainparameterSetIdentifier12 = new DomainParameterSetIdentifier(12);

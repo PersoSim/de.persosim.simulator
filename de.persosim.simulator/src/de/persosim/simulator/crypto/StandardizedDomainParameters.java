@@ -11,12 +11,13 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import de.persosim.simulator.Activator;
+import de.persosim.simulator.protocols.GenericOid;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.Utils;
 
 /**
  * This class provides static access to PACE standardized domain parameters.
@@ -25,7 +26,7 @@ import de.persosim.simulator.utils.Utils;
  *
  */
 public class StandardizedDomainParameters{
-	public static final byte[] OID = Utils.appendBytes(Tr03110.id_BSI, (byte) 0x01, (byte) 0x02);
+	public static final Oid OID = new GenericOid(Tr03110.id_BSI, (byte) 0x01, (byte) 0x02);
 	
 	public static final int NO_OF_STANDARDIZED_DOMAIN_PARAMETERS = 32;
 	
@@ -124,7 +125,7 @@ public class StandardizedDomainParameters{
 			Integer current = provider.getSimplifiedAlgorithm(algIdHexString);
 			if (current != null){
 				ConstructedTlvDataObject newAlgIdentifier = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
-				newAlgIdentifier.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OID, OID));
+				newAlgIdentifier.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OID, OID.toByteArray()));
 				newAlgIdentifier.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, new byte[] {(byte) current.intValue()}));
 				return newAlgIdentifier;
 			}

@@ -580,7 +580,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	@Override
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
 		
-		OidIdentifier caOidIdentifier = new OidIdentifier(OID_id_CA);
+		OidIdentifier caOidIdentifier = new OidIdentifier(id_CA);
 		
 		Collection<CardObject> caKeyCardObjects = mf.findChildren(
 				new KeyIdentifier(), caOidIdentifier);
@@ -630,7 +630,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 						byte[] oidBytes = curOid.toByteArray();
 						genericCaOidBytes = Arrays.copyOfRange(oidBytes, 0, 9);
 						
-						ConstructedTlvDataObject caInfo = constructChipAuthenticationInfoObject(oidBytes, keyId);
+						ConstructedTlvDataObject caInfo = constructChipAuthenticationInfoObject(curOid, keyId);
 						
 						if(caInfo != null) {
 							if (curKey.isPrivilegedOnly()) {
@@ -666,7 +666,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 			if ((publicity == SecInfoPublicity.AUTHENTICATED) || (publicity == SecInfoPublicity.PRIVILEGED)) {
 				//always set keyId even if truly optional/not mandatory
 				//another version of CA may be present so keys are no longer unique and the keyId field becomes mandatory
-				ConstructedTlvDataObject chipAuthenticationPublicKeyInfo = constructChipAuthenticationPublicKeyInfo(subjectPublicKeyInfo, Utils.concatByteArrays(Tr03110.id_PK, new byte[] {genericCaOidBytes[8]}), keyId);
+				ConstructedTlvDataObject chipAuthenticationPublicKeyInfo = constructChipAuthenticationPublicKeyInfo(subjectPublicKeyInfo, Utils.concatByteArrays(Tr03110.id_PK.toByteArray(), new byte[] {genericCaOidBytes[8]}), keyId);
 				if(chipAuthenticationPublicKeyInfo != null) {
 					addChipAuthenticationPublicKeyInfo(curKey.isPrivilegedOnly(), privilegedPublicKeyInfos, unprivilegedPublicKeyInfos, chipAuthenticationPublicKeyInfo);
 				}
@@ -682,7 +682,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		//add PrivilegedTerminalInfo if privileged keys are available
 		if (privilegedSecInfos.size() + privilegedPublicKeyInfos.size() > 0) {
 			ConstructedTlvDataObject privilegedTerminalInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-			privilegedTerminalInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Tr03110.id_PT));
+			privilegedTerminalInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, Tr03110.id_PT.toByteArray()));
 			ConstructedTlvDataObject privilegedTerminaInfoSet = new ConstructedTlvDataObject(TAG_SET);
 			privilegedTerminalInfo.addTlvDataObject(privilegedTerminaInfoSet);
 			
@@ -708,11 +708,11 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		}
 	}
 	
-	protected ConstructedTlvDataObject constructChipAuthenticationInfoObject(byte[] oidBytes, int keyId) {
+	protected ConstructedTlvDataObject constructChipAuthenticationInfoObject(Oid oid, int keyId) {
 		if (isKeyIdNeeded() || isKeyIdForced()){
-			return CaSecInfoHelper.constructChipAuthenticationInfoObject(oidBytes, getVersion(), keyId);
+			return CaSecInfoHelper.constructChipAuthenticationInfoObject(oid, getVersion(), keyId);
 		}
-		return CaSecInfoHelper.constructChipAuthenticationInfoObject(oidBytes, getVersion());
+		return CaSecInfoHelper.constructChipAuthenticationInfoObject(oid, getVersion());
 	}
 	
 	protected PrimitiveTlvDataObject constructSubjectPublicKey(PublicKey publicKey) {

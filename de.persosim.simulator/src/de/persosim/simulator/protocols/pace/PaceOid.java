@@ -7,12 +7,12 @@ import de.persosim.simulator.crypto.CryptoSupport;
 import de.persosim.simulator.crypto.CryptoSupportAes;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.protocols.GenericOid;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 public class PaceOid extends GenericOid implements Pace {
 	public static final int HASHCODEMULTIPLICATOR = 3;
-	
-	protected String idString;
 	
 	/*----------------------------------------------------------------*/
 	
@@ -23,17 +23,18 @@ public class PaceOid extends GenericOid implements Pace {
 	public PaceOid(byte[] oidByteArray) {
 		super(oidByteArray);
 		
-		//check if provided OID is indeed PaceOid
-		idString = getStringRepresentation(oidByteArray);
-		if(idString == null) {
+		if(!startsWithPrefix(id_PACE)) {
 			throw new IllegalArgumentException("PACE OID " + HexString.encode(oidByteArray) + " is invalid or unknown (not supported)");
 		}
 	}
 	
-	
+	public PaceOid(Oid prefix, byte... suffix) {
+		this(Utils.concatByteArrays(prefix.toByteArray(), suffix));
+	}
 	
 	/*----------------------------------------------------------------*/
 	
+
 	/**
 	 * This method returns the OID's byte indicating the key agreement and mapping
 	 * @return the OID's byte indicating the key agreement and mapping
@@ -213,15 +214,15 @@ public class PaceOid extends GenericOid implements Pace {
 	/*----------------------------------------------------------------*/
 	
 	public String getStringRepresentation(byte[] oidByteArray) {		
-		if (Arrays.equals(oidByteArray, id_PACE_ECDH_GM_AES_CBC_CMAC_128)) return id_PACE_ECDH_GM_AES_CBC_CMAC_128_STRING;
-		if (Arrays.equals(oidByteArray, id_PACE_ECDH_GM_AES_CBC_CMAC_192)) return id_PACE_ECDH_GM_AES_CBC_CMAC_192_STRING;
-		if (Arrays.equals(oidByteArray, id_PACE_ECDH_GM_AES_CBC_CMAC_256)) return id_PACE_ECDH_GM_AES_CBC_CMAC_256_STRING;
+		if (Arrays.equals(oidByteArray, id_PACE_ECDH_GM_AES_CBC_CMAC_128.toByteArray())) return id_PACE_ECDH_GM_AES_CBC_CMAC_128_STRING;
+		if (Arrays.equals(oidByteArray, id_PACE_ECDH_GM_AES_CBC_CMAC_192.toByteArray())) return id_PACE_ECDH_GM_AES_CBC_CMAC_192_STRING;
+		if (Arrays.equals(oidByteArray, id_PACE_ECDH_GM_AES_CBC_CMAC_256.toByteArray())) return id_PACE_ECDH_GM_AES_CBC_CMAC_256_STRING;
 		
 		return null;
 	}
 
 	@Override
 	public String getIdString() {
-		return idString;
+		return getStringRepresentation(oidByteArray);
 	}
 }

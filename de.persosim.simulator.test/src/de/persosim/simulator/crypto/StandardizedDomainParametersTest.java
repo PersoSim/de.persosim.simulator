@@ -24,7 +24,7 @@ public class StandardizedDomainParametersTest extends PersoSimTestCase {
 			if (domParams == null) continue;
 			
 			ConstructedTlvDataObject expectedAlgIdentifier = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
-			expectedAlgIdentifier.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OID, StandardizedDomainParameters.OID));
+			expectedAlgIdentifier.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_OID, StandardizedDomainParameters.OID.toByteArray()));
 			expectedAlgIdentifier.addTlvDataObject(new PrimitiveTlvDataObject(TlvConstants.TAG_INTEGER, new byte[]{i}));
 			
 			assertEquals("Standardized domainparameters " + i + " are not returned correctly" , expectedAlgIdentifier, StandardizedDomainParameters.simplifyAlgorithmIdentifier(domParams.getAlgorithmIdentifier()));

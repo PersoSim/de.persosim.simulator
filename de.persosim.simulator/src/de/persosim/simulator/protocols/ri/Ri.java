@@ -1,8 +1,9 @@
 package de.persosim.simulator.protocols.ri;
 
+import de.persosim.simulator.protocols.GenericOid;
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.tlv.TlvTag;
-import de.persosim.simulator.utils.Utils;
 
 /**
  * This interface provides constants used in the context of the Restricted
@@ -12,16 +13,15 @@ import de.persosim.simulator.utils.Utils;
  * 
  */
 public interface Ri extends Tr03110 {
-	public final static byte[] id_RI = Utils.appendBytes(id_BSI, new byte[] {
-			0x02, 0x02, 0x05 });
+	public final static Oid id_RI = new GenericOid(id_BSI, new byte[] {0x02, 0x02, 0x05 });
 
 	public final static String id_RI_STRING = "id-RI";
 
 	public final static byte DH = 1;
 	public final static byte ECDH = 2;
 
-	public final static byte[] id_RI_DH = Utils.appendBytes(id_RI, DH);
-	public final static byte[] id_RI_ECDH = Utils.appendBytes(id_RI, ECDH);
+	public final static Oid id_RI_DH = new GenericOid(id_RI, DH);
+	public final static Oid id_RI_ECDH = new GenericOid(id_RI, ECDH);
 
 	public final static String id_RI_DH_STRING = "id-RI-DH";
 	public final static String id_RI_ECDH_STRING = "id-RI-ECDH";
@@ -41,27 +41,17 @@ public interface Ri extends Tr03110 {
 	public final static String SHA_384_STRING = "SHA-384";
 	public final static String SHA_512_STRING = "SHA-512";
 
-	public final static byte[] id_RI_DH_SHA_1 = Utils.appendBytes(id_RI_DH,
-			SHA_1);
-	public final static byte[] id_RI_DH_SHA_224 = Utils.appendBytes(id_RI_DH,
-			SHA_224);
-	public final static byte[] id_RI_DH_SHA_256 = Utils.appendBytes(id_RI_DH,
-			SHA_256);
-	public final static byte[] id_RI_DH_SHA_384 = Utils.appendBytes(id_RI_DH,
-			SHA_384);
-	public final static byte[] id_RI_DH_SHA_512 = Utils.appendBytes(id_RI_DH,
-			SHA_512);
+	public final static RiOid id_RI_DH_SHA_1 = new RiOid(id_RI_DH, SHA_1);
+	public final static RiOid id_RI_DH_SHA_224 = new RiOid(id_RI_DH, SHA_224);
+	public final static RiOid id_RI_DH_SHA_256 = new RiOid(id_RI_DH, SHA_256);
+	public final static RiOid id_RI_DH_SHA_384 = new RiOid(id_RI_DH, SHA_384);
+	public final static RiOid id_RI_DH_SHA_512 = new RiOid(id_RI_DH, SHA_512);
 
-	public final static byte[] id_RI_ECDH_SHA_1 = Utils.appendBytes(id_RI_ECDH,
-			SHA_1);
-	public final static byte[] id_RI_ECDH_SHA_224 = Utils.appendBytes(
-			id_RI_ECDH, SHA_224);
-	public final static byte[] id_RI_ECDH_SHA_256 = Utils.appendBytes(
-			id_RI_ECDH, SHA_256);
-	public final static byte[] id_RI_ECDH_SHA_384 = Utils.appendBytes(
-			id_RI_ECDH, SHA_384);
-	public final static byte[] id_RI_ECDH_SHA_512 = Utils.appendBytes(
-			id_RI_ECDH, SHA_512);
+	public final static RiOid id_RI_ECDH_SHA_1 = new RiOid(id_RI_ECDH, SHA_1);
+	public final static RiOid id_RI_ECDH_SHA_224 = new RiOid(id_RI_ECDH, SHA_224);
+	public final static RiOid id_RI_ECDH_SHA_256 = new RiOid(id_RI_ECDH, SHA_256);
+	public final static RiOid id_RI_ECDH_SHA_384 = new RiOid(id_RI_ECDH, SHA_384);
+	public final static RiOid id_RI_ECDH_SHA_512 = new RiOid(id_RI_ECDH, SHA_512);
 
 	public final static String id_RI_DH_SHA_1_STRING = "id-RI-DH-SHA-1";
 	public final static String id_RI_DH_SHA_224_STRING = "id-RI-DH-SHA-224";

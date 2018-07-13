@@ -75,7 +75,7 @@ public class AbstractPaceProtocolTest extends PersoSimTestCase {
 		paceProtocol.setCardStateAccessor(mockedCardStateAccessor);
 		paceProtocol.init();
 		
-		oidIdentifier = new OidIdentifier(Pace.OID_id_PACE_ECDH_GM_AES_CBC_CMAC_192);
+		oidIdentifier = new OidIdentifier(Pace.id_PACE_ECDH_GM_AES_CBC_CMAC_192);
 		
 		domainParameterSet13 = StandardizedDomainParameters.getDomainParameterSetById(13);
 		domainParameters13 = new DomainParameterSetCardObject(domainParameterSet13, new DomainParameterSetIdentifier(13));

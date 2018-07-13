@@ -3,6 +3,7 @@ package de.persosim.simulator.protocols;
 import java.util.Arrays;
 
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 /**
  * This class implements common functionality for OIDs. The
@@ -21,6 +22,10 @@ public class GenericOid implements Oid{
 		oidByteArray = byteArrayRepresentation.clone();
 	}
 	
+	public GenericOid(Oid prefix, byte... suffix) {
+		this(Utils.concatByteArrays(prefix.toByteArray(), suffix));
+	}
+
 	/**
 	 * @return the oidByteArray
 	 */
@@ -96,11 +101,7 @@ public class GenericOid implements Oid{
 		return builder.toString();
 	}
 
-	/**
-	 * This method checks whether the byte array representation of this object starts with the the provided OID prefix. 
-	 * @param oidPrefix the provided OID prefix
-	 * @return whether the byte array representation of this object starts with the the provided OID prefix
-	 */
+	@Override
 	public boolean startsWithPrefix(byte[] oidPrefix) {
 		if(oidPrefix == null) {throw new NullPointerException("OID must not be null");}
 		
@@ -115,10 +116,12 @@ public class GenericOid implements Oid{
 		return true;
 	}
 	
-	/**
-	 * This method returns the length of this OID in bytes
-	 * @return this OID's length in bytes
-	 */
+	@Override
+	public boolean startsWithPrefix(Oid oidPrefix) {
+		return startsWithPrefix(oidPrefix.toByteArray());
+	}
+	
+	@Override
 	public int getLength() {
 		return oidByteArray.length;
 	}

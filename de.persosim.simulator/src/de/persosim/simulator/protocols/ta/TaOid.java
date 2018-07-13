@@ -1,13 +1,9 @@
 package de.persosim.simulator.protocols.ta;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Signature;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.globaltester.cryptoprovider.Crypto;
 
@@ -19,52 +15,40 @@ import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
 public class TaOid extends GenericOid implements Tr03110, CvOid {
-	public final static TaOid id_TA                  = new TaOid(Utils.appendBytes(id_BSI, new byte[]{0x02, 0x02, 0x02}), "id-TA");
+	public static final Oid id_TA                  = new GenericOid(id_BSI, new byte[]{0x02, 0x02, 0x02});
+	public static final String ID_TA_STRING = "id-TA";
 	
-	public static final TaOid id_TA_RSA              = new TaOid(Utils.appendBytes(id_TA.oidByteArray,     (byte) 0x01),  "id-TA-RSA");
-	public static final TaOid id_TA_RSA_v1_5_SHA_1   = new TaOid(Utils.appendBytes(id_TA_RSA.oidByteArray, (byte) 0x01),  "id-TA-RSA-v1-5-SHA-1");
-	public static final TaOid id_TA_RSA_v1_5_SHA_256 = new TaOid(Utils.appendBytes(id_TA_RSA.oidByteArray, (byte) 0x02),  "id-TA-RSA-v1-5-SHA-256");
-	public static final TaOid id_TA_RSA_PSS_SHA_1    = new TaOid(Utils.appendBytes(id_TA_RSA.oidByteArray, (byte) 0x03),  "id-TA-RSA-PSS-SHA-1");
-	public static final TaOid id_TA_RSA_PSS_SHA_256  = new TaOid(Utils.appendBytes(id_TA_RSA.oidByteArray, (byte) 0x04),  "id-TA-RSA-PSS-SHA-256");
-	public static final TaOid id_TA_RSA_v1_5_SHA_512 = new TaOid(Utils.appendBytes(id_TA_RSA.oidByteArray, (byte) 0x05),  "id-TA-RSA-v1-5-SHA-512");
-	public static final TaOid id_TA_RSA_PSS_SHA_512  = new TaOid(Utils.appendBytes(id_TA_RSA.oidByteArray, (byte) 0x06),  "id-TA-RSA-PSS-SHA-512");
+	public static final TaOid id_TA_RSA              = new TaOid(id_TA,     (byte) 0x01);
+	public static final TaOid id_TA_RSA_v1_5_SHA_1   = new TaOid(id_TA_RSA, (byte) 0x01);
+	public static final TaOid id_TA_RSA_v1_5_SHA_256 = new TaOid(id_TA_RSA, (byte) 0x02);
+	public static final TaOid id_TA_RSA_PSS_SHA_1    = new TaOid(id_TA_RSA, (byte) 0x03);
+	public static final TaOid id_TA_RSA_PSS_SHA_256  = new TaOid(id_TA_RSA, (byte) 0x04);
+	public static final TaOid id_TA_RSA_v1_5_SHA_512 = new TaOid(id_TA_RSA, (byte) 0x05);
+	public static final TaOid id_TA_RSA_PSS_SHA_512  = new TaOid(id_TA_RSA, (byte) 0x06);
+	
+	public static final String id_TA_RSA_STRING              = "id-TA-RSA";
+	public static final String id_TA_RSA_v1_5_SHA_1_STRING   = "id-TA-RSA-v1-5-SHA-1";
+	public static final String id_TA_RSA_v1_5_SHA_256_STRING = "id-TA-RSA-v1-5-SHA-256";
+	public static final String id_TA_RSA_PSS_SHA_1_STRING    = "id-TA-RSA-PSS-SHA-1";
+	public static final String id_TA_RSA_PSS_SHA_256_STRING  = "id-TA-RSA-PSS-SHA-256";
+	public static final String id_TA_RSA_v1_5_SHA_512_STRING = "id-TA-RSA-v1-5-SHA-512";
+	public static final String id_TA_RSA_PSS_SHA_512_STING   = "id-TA-RSA-PSS-SHA-512";
 
-	public static final TaOid id_TA_ECDSA            = new TaOid(Utils.appendBytes(id_TA.oidByteArray,       (byte) 0x02), "id-TA-ECDSA");
-	public static final TaOid id_TA_ECDSA_SHA_1      = new TaOid(Utils.appendBytes(id_TA_ECDSA.oidByteArray, (byte) 0x01), "id-TA-ECDSA-SHA-1");
-	public static final TaOid id_TA_ECDSA_SHA_224    = new TaOid(Utils.appendBytes(id_TA_ECDSA.oidByteArray, (byte) 0x02), "id-TA-ECDSA-SHA-224");
-	public static final TaOid id_TA_ECDSA_SHA_256    = new TaOid(Utils.appendBytes(id_TA_ECDSA.oidByteArray, (byte) 0x03), "id-TA-ECDSA-SHA-256");
-	public static final TaOid id_TA_ECDSA_SHA_384    = new TaOid(Utils.appendBytes(id_TA_ECDSA.oidByteArray, (byte) 0x04), "id-TA-ECDSA-SHA-384");
-	public static final TaOid id_TA_ECDSA_SHA_512    = new TaOid(Utils.appendBytes(id_TA_ECDSA.oidByteArray, (byte) 0x05), "id-TA-ECDSA-SHA-512");
+	public static final TaOid id_TA_ECDSA            = new TaOid(id_TA,       (byte) 0x02);
+	public static final TaOid id_TA_ECDSA_SHA_1      = new TaOid(id_TA_ECDSA, (byte) 0x01);
+	public static final TaOid id_TA_ECDSA_SHA_224    = new TaOid(id_TA_ECDSA, (byte) 0x02);
+	public static final TaOid id_TA_ECDSA_SHA_256    = new TaOid(id_TA_ECDSA, (byte) 0x03);
+	public static final TaOid id_TA_ECDSA_SHA_384    = new TaOid(id_TA_ECDSA, (byte) 0x04);
+	public static final TaOid id_TA_ECDSA_SHA_512    = new TaOid(id_TA_ECDSA, (byte) 0x05);
+	
+	public static final String id_TA_ECDSA_STRING            = "id-TA-ECDSA";
+	public static final String id_TA_ECDSA_SHA_1_STRING      = "id-TA-ECDSA-SHA-1";
+	public static final String id_TA_ECDSA_SHA_224_STRING    = "id-TA-ECDSA-SHA-224";
+	public static final String id_TA_ECDSA_SHA_256_STRING    = "id-TA-ECDSA-SHA-256";
+	public static final String id_TA_ECDSA_SHA_384_STRING    = "id-TA-ECDSA-SHA-384";
+	public static final String id_TA_ECDSA_SHA_512_STRING    = "id-TA-ECDSA-SHA-512";
 	
 	
-	private static Set<TaOid> allKnownTaOids= new HashSet<>();
-	static {
-		//add all static fields with name id_* to allKnownTaOids
-		Field[] fields = TaOid.class.getDeclaredFields();
-		for (Field f : fields) {
-			f.setAccessible(true);
-
-			if ((f.getName().startsWith("id_"))
-					&& Modifier.isStatic(f.getModifiers())
-					&& Modifier.isFinal(f.getModifiers())
-					&& f.getType().equals(TaOid.class)) {
-				try {
-					allKnownTaOids.add((TaOid) f.get(null));
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					// ignore the current field
-				}
-			}
-		}
-
-	}
-	
-	private String idString;
-
-	private TaOid(byte[] oidByteArray, String idString) {
-		super(oidByteArray);
-		this.idString = idString;
-	}
-
 	/**
 	 * This constructor constructs a {@link TaOid} based on a byte array representation.
 	 * @param oidByteArray the byte array representation
@@ -72,10 +56,13 @@ public class TaOid extends GenericOid implements Tr03110, CvOid {
 	public TaOid(byte[] oidByteArray) {
 		super(oidByteArray);
 		
-		idString = getStringRepresentation (oidByteArray);
-		if(idString == null) {
+		if(!startsWithPrefix(id_TA)) {
 			throw new IllegalArgumentException("TA OID " + HexString.encode(oidByteArray) + " is invalid or unknown (not supported)");
 		}
+	}
+	
+	public TaOid(Oid prefix, byte... suffix) {
+		this(Utils.appendBytes(prefix.toByteArray(), suffix));
 	}
 	
 	/**
@@ -83,17 +70,28 @@ public class TaOid extends GenericOid implements Tr03110, CvOid {
 	 * @return common name of OID or null if parameter does not encode a TaOid
 	 */
 	public static String getStringRepresentation(byte[] oidByteArray) {
-		for (TaOid curTaOid : allKnownTaOids) {
-			if (Arrays.equals(curTaOid.oidByteArray, oidByteArray)) {
-				return curTaOid.idString;
-			}
-		}
+		if (Arrays.equals(oidByteArray, id_TA_RSA              .toByteArray())) return id_TA_RSA_STRING             ;
+		if (Arrays.equals(oidByteArray, id_TA_RSA_v1_5_SHA_1   .toByteArray())) return id_TA_RSA_v1_5_SHA_1_STRING  ;
+		if (Arrays.equals(oidByteArray, id_TA_RSA_v1_5_SHA_256 .toByteArray())) return id_TA_RSA_v1_5_SHA_256_STRING;
+		if (Arrays.equals(oidByteArray, id_TA_RSA_PSS_SHA_1    .toByteArray())) return id_TA_RSA_PSS_SHA_1_STRING   ;
+		if (Arrays.equals(oidByteArray, id_TA_RSA_PSS_SHA_256  .toByteArray())) return id_TA_RSA_PSS_SHA_256_STRING ;
+		if (Arrays.equals(oidByteArray, id_TA_RSA_v1_5_SHA_512 .toByteArray())) return id_TA_RSA_v1_5_SHA_512_STRING;
+		if (Arrays.equals(oidByteArray, id_TA_RSA_PSS_SHA_512  .toByteArray())) return id_TA_RSA_PSS_SHA_512_STING  ;
+
+		if (Arrays.equals(oidByteArray, id_TA_ECDSA            .toByteArray())) return id_TA_ECDSA_STRING        ; 
+		if (Arrays.equals(oidByteArray, id_TA_ECDSA_SHA_1      .toByteArray())) return id_TA_ECDSA_SHA_1_STRING  ; 
+		if (Arrays.equals(oidByteArray, id_TA_ECDSA_SHA_224    .toByteArray())) return id_TA_ECDSA_SHA_224_STRING; 
+		if (Arrays.equals(oidByteArray, id_TA_ECDSA_SHA_256    .toByteArray())) return id_TA_ECDSA_SHA_256_STRING; 
+		if (Arrays.equals(oidByteArray, id_TA_ECDSA_SHA_384    .toByteArray())) return id_TA_ECDSA_SHA_384_STRING; 
+		if (Arrays.equals(oidByteArray, id_TA_ECDSA_SHA_512    .toByteArray())) return id_TA_ECDSA_SHA_512_STRING; 
+		
+		
 		return null;
 	}
 	
 	@Override
 	public String getIdString() {
-		return idString;
+		return getStringRepresentation(oidByteArray);
 	}
 	
 	public String getHashAlgorithmName() {

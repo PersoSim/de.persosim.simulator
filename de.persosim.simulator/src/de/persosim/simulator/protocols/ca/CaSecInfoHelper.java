@@ -2,6 +2,7 @@ package de.persosim.simulator.protocols.ca;
 
 import java.security.PublicKey;
 
+import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -32,13 +33,13 @@ public final class CaSecInfoHelper implements Ca, TlvConstants {
      *   keyId    INTEGER OPTIONAL (present)
      * }
      *
-	 * @param oidBytes the OID to use
+	 * @param oid the OID to use
 	 * @param version the protocol version to use
 	 * @param keyId the key ID to use
 	 * @return the constructed ChipAuthenticationInfo element
 	 */
-	public static ConstructedTlvDataObject constructChipAuthenticationInfoObject(byte[] oidBytes, byte version, int keyId) {
-		ConstructedTlvDataObject caInfo = constructChipAuthenticationInfoObject(oidBytes, version);
+	public static ConstructedTlvDataObject constructChipAuthenticationInfoObject(Oid oid, byte version, int keyId) {
+		ConstructedTlvDataObject caInfo = constructChipAuthenticationInfoObject(oid, version);
 		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, Utils.toShortestUnsignedByteArray(keyId)));
 		return caInfo;
 	}
@@ -62,12 +63,12 @@ public final class CaSecInfoHelper implements Ca, TlvConstants {
      *   keyId    INTEGER OPTIONAL (absent)
      * }
      *
-	 * @param oidBytes the OID to use
+	 * @param oid the OID to use
 	 * @return the constructed ChipAuthenticationInfo element
 	 */
-	public static ConstructedTlvDataObject constructChipAuthenticationInfoObject(byte[] oidBytes, byte version) {
+	public static ConstructedTlvDataObject constructChipAuthenticationInfoObject(Oid oid, byte version) {
 		ConstructedTlvDataObject caInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
-		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oidBytes));
+		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, oid.toByteArray()));
 		caInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{version}));
 		return caInfo;
 	}

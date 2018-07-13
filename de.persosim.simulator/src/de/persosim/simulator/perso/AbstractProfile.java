@@ -27,7 +27,6 @@ import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.protocols.auxVerification.AuxOid;
 import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.protocols.ri.Ri;
-import de.persosim.simulator.protocols.ri.RiOid;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TerminalType;
@@ -600,7 +599,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 			authorizedOnly = riKeyAuthorizedOnly.get(i);
 			
 			riKey = new KeyPairObject(riKeys.get(i), new KeyIdentifier(riKeyIds.get(i)), authorizedOnly);
-			riKey.addOidIdentifier(new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)));
+			riKey.addOidIdentifier(new OidIdentifier(Ri.id_RI_ECDH_SHA_256));
 			
 			mf.addChild(riKey);
 		}
