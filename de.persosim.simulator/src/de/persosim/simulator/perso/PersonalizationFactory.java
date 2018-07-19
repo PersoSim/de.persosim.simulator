@@ -119,6 +119,8 @@ public class PersonalizationFactory {
 		DomDriver domDriver = new DomDriver("UTF-8");
 		ShouldSerializeMemberImpl ssm = new ShouldSerializeMemberImpl();
 		XStream xstream = XstreamFactory.get(domDriver, ssm, PersonalizationFactory.class.getClassLoader());
+		
+		xstream.ignoreUnknownElements();
 
 		xstream.setMode(XStream.XPATH_RELATIVE_REFERENCES);
 		xstream.setMode(XStream.ID_REFERENCES);
