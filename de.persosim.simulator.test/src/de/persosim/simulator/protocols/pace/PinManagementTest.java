@@ -335,6 +335,7 @@ public class PinManagementTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getCurrentMechanisms(
 						withInstanceOf(SecContext.class),
 						null);
+				result = csmEmpty;
 				result = csmWithCan;
 
 				mockedCardStateAccessor.getMasterFile();
@@ -381,6 +382,7 @@ public class PinManagementTest extends PersoSimTestCase {
 				mockedCardStateAccessor.getCurrentMechanisms(
 						withInstanceOf(SecContext.class),
 						null);
+				result = csmEmpty;
 				result = csmWithCan;
 				
 				mockedCardStateAccessor.getMasterFile();

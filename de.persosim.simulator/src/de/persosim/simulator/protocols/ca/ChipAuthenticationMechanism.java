@@ -44,4 +44,9 @@ public class ChipAuthenticationMechanism extends AbstractSecMechanism {
 		return true;
 	}
 
+	@Override
+	public Class<? extends SecMechanism> getKey() {
+		return ChipAuthenticationMechanism.class;
+	}
+
 }

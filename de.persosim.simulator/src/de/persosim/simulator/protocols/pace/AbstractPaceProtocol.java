@@ -54,6 +54,7 @@ import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.ResponseData;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110Utils;
+import de.persosim.simulator.protocols.ca.ChipAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.CertificateHolderAuthorizationTemplate;
 import de.persosim.simulator.protocols.ta.TerminalType;
@@ -151,6 +152,18 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	public void processCommandSetAT() {
 		
 		try {
+			//check if PACE is allowed at all
+			HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
+			previousMechanisms.add(ChipAuthenticationMechanism.class);
+			Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+			if (!currentMechanisms.isEmpty()){
+				// PACE not allowed after successful CA
+				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+				this.processingData.updateResponseAPDU(this, "no fitting authentication object found", resp);
+				/* there is nothing more to be done here */
+				return;
+			}
+			
 			//get commandDataContainer
 			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 			
