@@ -103,21 +103,34 @@ public class PublicKeyReference {
 		if (getClass() != obj.getClass())
 			return false;
 		PublicKeyReference other = (PublicKeyReference) obj;
+		
 		if (countryCode == null) {
 			if (other.countryCode != null)
 				return false;
-		} else if (!countryCode.equals(other.countryCode))
+		} else if (!countryCode.equals(other.countryCode)) {
 			return false;
+		} else {
+			//countryCode fields are equal
+		}
+		
 		if (holderMnemonic == null) {
 			if (other.holderMnemonic != null)
 				return false;
-		} else if (!holderMnemonic.equals(other.holderMnemonic))
+		} else if (!holderMnemonic.equals(other.holderMnemonic)) {
 			return false;
+		} else {
+			//holderMnemonic fields are equal
+		}
+		
 		if (sequenceNumber == null) {
 			if (other.sequenceNumber != null)
 				return false;
-		} else if (!sequenceNumber.equals(other.sequenceNumber))
+		} else if (!sequenceNumber.equals(other.sequenceNumber)) {
 			return false;
+		} else {
+			//sequenceNumber fields are equal
+		}
+		
 		return true;
 	}
 

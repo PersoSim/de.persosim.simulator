@@ -126,11 +126,16 @@ public class TlvDataObjectContainer extends TlvValue implements Iso7816, TlvData
 		if (getClass() != obj.getClass())
 			return false;
 		TlvDataObjectContainer other = (TlvDataObjectContainer) obj;
+		
 		if (tlvObjects == null) {
 			if (other.tlvObjects != null)
 				return false;
-		} else if (!tlvObjects.equals(other.tlvObjects))
+		} else if (!tlvObjects.equals(other.tlvObjects)) {
 			return false;
+		} else {
+			//tlvObjects fields are equal
+		}
+		
 		return true;
 	}
 

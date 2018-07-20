@@ -175,16 +175,25 @@ public class TlvSpecification implements ApduSpecificationConstants {
 		TlvSpecification other = (TlvSpecification) obj;
 		if (required != other.required)
 			return false;
+		
 		if (subTags == null) {
 			if (other.subTags != null)
 				return false;
-		} else if (!subTags.equals(other.subTags))
+		} else if (!subTags.equals(other.subTags)) {
 			return false;
+		} else {
+			//subTags fields are equal
+		}
+		
 		if (tlvTag == null) {
 			if (other.tlvTag != null)
 				return false;
-		} else if (!tlvTag.equals(other.tlvTag))
+		} else if (!tlvTag.equals(other.tlvTag)) {
 			return false;
+		} else {
+			//tlvTag fields are equeal
+		}
+		
 		return true;
 	}
 	

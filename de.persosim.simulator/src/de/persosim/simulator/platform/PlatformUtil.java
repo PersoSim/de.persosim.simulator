@@ -46,8 +46,9 @@ public class PlatformUtil {
 	public static short convert4xxxTo6xxxStatusWord(short statusWord){
 		if (is4xxxStatusWord(statusWord)){
 			return (short) (statusWord | MASK_STATUS_WORD_6XXX);
-		} else
+		} else {
 			throw new IllegalArgumentException();
+		}
 	}
 	
 	/**

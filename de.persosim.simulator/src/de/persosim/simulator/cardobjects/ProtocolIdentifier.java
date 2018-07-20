@@ -39,11 +39,16 @@ public class ProtocolIdentifier extends AbstractCardObjectIdentifier {
 		if (getClass() != obj.getClass())
 			return false;
 		ProtocolIdentifier other = (ProtocolIdentifier) obj;
+		
 		if (protocolType == null) {
 			if (other.protocolType != null)
 				return false;
-		} else if (!protocolType.equals(other.protocolType))
+		} else if (!protocolType.equals(other.protocolType)) {
 			return false;
+		} else {
+			//protocolType fields are equal
+		}
+		
 		return true;
 	}
 

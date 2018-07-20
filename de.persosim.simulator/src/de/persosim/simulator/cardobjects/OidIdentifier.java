@@ -40,11 +40,16 @@ public class OidIdentifier extends AbstractCardObjectIdentifier {
 		if (getClass() != obj.getClass())
 			return false;
 		OidIdentifier other = (OidIdentifier) obj;
+		
 		if (oid == null) {
 			if (other.oid != null)
 				return false;
-		} else if (!oid.equals(other.oid))
+		} else if (!oid.equals(other.oid)) {
 			return false;
+		} else {
+			//oid fields are equal
+		}
+		
 		return true;
 	}
 

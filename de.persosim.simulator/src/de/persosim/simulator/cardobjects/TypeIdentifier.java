@@ -42,11 +42,16 @@ public class TypeIdentifier extends AbstractCardObjectIdentifier {
 		if (getClass() != obj.getClass())
 			return false;
 		TypeIdentifier other = (TypeIdentifier) obj;
+		
 		if (type == null) {
 			if (other.type != null)
 				return false;
-		} else if (!type.equals(other.type))
+		} else if (!type.equals(other.type)) {
 			return false;
+		} else {
+			//type fields are equal
+		}			
+			
 		return true;
 	}
 

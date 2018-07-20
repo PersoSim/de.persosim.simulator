@@ -181,23 +181,37 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 		if (getClass() != obj.getClass())
 			return false;
 		SmDataProviderTr03110 other = (SmDataProviderTr03110) obj;
+		
 		if (keyEnc == null) {
 			if (other.keyEnc != null)
 				return false;
-		} else if (!keyEnc.equals(other.keyEnc))
+		} else if (!keyEnc.equals(other.keyEnc)) {
 			return false;
+		} else {
+			//keyEnc fields are equal
+		}
+		
 		if (keyMac == null) {
 			if (other.keyMac != null)
 				return false;
-		} else if (!keyMac.equals(other.keyMac))
+		} else if (!keyMac.equals(other.keyMac)) {
 			return false;
+		} else {
+			//keyMac fields are equal
+		}
+		
 		if (pendingCommandApdu != other.pendingCommandApdu)
 			return false;
+		
 		if (ssc == null) {
 			if (other.ssc != null)
 				return false;
-		} else if (!ssc.equals(other.ssc))
+		} else if (!ssc.equals(other.ssc)) {
 			return false;
+		} else {
+			//ssc fields are equal
+		}
+		
 		return true;
 	}
 	

@@ -111,11 +111,16 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 			return false;
 		if (channel != other.channel)
 			return false;
+		
 		if (id == null) {
 			if (other.id != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!id.equals(other.id)) {
 			return false;
+		} else {
+			//id fields are equal
+		}
+		
 		if (ins != other.ins)
 			return false;
 		if (isExtendedLengthLCLE != other.isExtendedLengthLCLE)
@@ -150,11 +155,16 @@ public class ApduSpecification implements Iso7816, ApduSpecificationConstants {
 			return false;
 		if (secureMessaging != other.secureMessaging)
 			return false;
+		
 		if (tags == null) {
 			if (other.tags != null)
 				return false;
-		} else if (!tags.equals(other.tags))
+		} else if (!tags.equals(other.tags)) {
 			return false;
+		} else {
+			//tags fields are equal
+		}
+		
 		return true;
 	}
 	

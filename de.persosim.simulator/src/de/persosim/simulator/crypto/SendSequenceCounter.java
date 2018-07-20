@@ -141,16 +141,25 @@ public class SendSequenceCounter {
 		if (getClass() != obj.getClass())
 			return false;
 		SendSequenceCounter other = (SendSequenceCounter) obj;
+		
 		if (maxValue == null) {
 			if (other.maxValue != null)
 				return false;
-		} else if (!maxValue.equals(other.maxValue))
+		} else if (!maxValue.equals(other.maxValue)) {
 			return false;
+		} else {
+			//maxValue fields are equal
+		}
+		
 		if (value == null) {
 			if (other.value != null)
 				return false;
-		} else if (!value.equals(other.value))
+		} else if (!value.equals(other.value)) {
 			return false;
+		} else {
+			//value fields are equal
+		}
+		
 		return true;
 	}
 	
