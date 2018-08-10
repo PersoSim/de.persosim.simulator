@@ -139,7 +139,6 @@ public class PersoSimPart {
 				}
 			}
 		});
-		Activator.addLogListener();
 		updateThread = createUpdateThread();
 		updateThread.setDaemon(true);
 		updateThread.start();
@@ -458,7 +457,6 @@ public class PersoSimPart {
 		if(updateThread.isAlive()) {
 			updateThread.interrupt();
 		}
-		Activator.removeLogListener();
 	}
 	
 	@Focus
