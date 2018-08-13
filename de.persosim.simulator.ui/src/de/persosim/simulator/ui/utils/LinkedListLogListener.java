@@ -6,9 +6,8 @@ import java.util.LinkedList;
 import org.globaltester.logging.AbstractLogListener;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.LogListenerConfig;
-import org.globaltester.logging.filter.AndFilter;
-import org.globaltester.logging.filter.BundleFilter;
 import org.globaltester.logging.filter.LogFilter;
+import org.globaltester.logging.filter.NullFilter;
 import org.globaltester.logging.filter.TagFilter;
 import org.globaltester.logging.format.GtFileLogFormatter;
 import org.globaltester.logging.format.LogFormatService;
@@ -24,7 +23,6 @@ import de.persosim.simulator.preferences.PersoSimPreferenceManager;
  *
  */
 public class LinkedListLogListener extends AbstractLogListener {
-
 	private LinkedList<String> list = new LinkedList<String>();
 	private int maxLines;
 	private boolean needsUpdate;
@@ -36,7 +34,6 @@ public class LinkedListLogListener extends AbstractLogListener {
 	
 	public void updateConfig() {
 		LogListenerConfig lrc = new LogListenerConfig() {
-			String bundleList [] = {"org.globaltester", "de.persosim"};
 			
 			private LogFormatService format = new GtFileLogFormatter(new SimpleDateFormat(GtFileLogFormatter.DATE_FORMAT_GT_STRING));
 			private LogFilter filter;
@@ -46,19 +43,11 @@ public class LinkedListLogListener extends AbstractLogListener {
 				if (filter == null) {
 					String levelsPreference = PersoSimPreferenceManager.getPreference("LOG_LEVELS");
 					
-					String [] levels = null;
-					TagFilter tagFilter = null;
 					if (levelsPreference != null) {
-						levels = levelsPreference.split(":");
-						tagFilter = new TagFilter(BasicLogger.LOG_LEVEL_TAG_ID, levels);
-					}
-					
-					BundleFilter bundleFilter = new BundleFilter(bundleList);
-					if (tagFilter != null) {
-						LogFilter [] filters = {bundleFilter, tagFilter};	
-						filter = new AndFilter(filters);	
+						String [] levels = levelsPreference.split(":");
+						filter = new TagFilter(BasicLogger.LOG_LEVEL_TAG_ID, levels);
 					} else {
-						filter = bundleFilter;
+						filter = new NullFilter();
 					}
 				}
 				
