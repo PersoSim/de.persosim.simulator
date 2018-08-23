@@ -53,4 +53,9 @@ public class DedicatedFile extends AbstractFile {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		return "DedicatedFile [dedicatedFileName=" + dedicatedFileName + ", createFiles=" + createFiles + "]";
+	}
+	
 }

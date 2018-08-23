@@ -2,6 +2,8 @@ package de.persosim.simulator.cardobjects;
 
 import java.util.Arrays;
 
+import de.persosim.simulator.utils.HexString;
+
 /**
  * Identifier using the name of a dedicated file for matching.
  * 
@@ -49,6 +51,11 @@ public class DedicatedFileIdentifier extends AbstractCardObjectIdentifier {
 		if (!Arrays.equals(fileName, other.fileName))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "DedicatedFileIdentifier [fileName=0x" + HexString.encode(fileName) + "]";
 	}
 
 }
