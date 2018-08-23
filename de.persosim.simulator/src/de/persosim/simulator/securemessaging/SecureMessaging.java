@@ -108,10 +108,9 @@ public class SecureMessaging extends Layer implements TlvConstants{
 			log(this, "discard key material", LogLevel.DEBUG);
 			discardSecureMessagingSession();
 		}
-		
 		return true;
 	}
-
+	
 	private void discardSecureMessagingSession() {
 		if (dataProvider != null) {
 			log(this, "discard key material", LogLevel.DEBUG);

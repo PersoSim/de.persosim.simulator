@@ -1,7 +1,6 @@
 package de.persosim.simulator.platform;
 
 import static org.globaltester.logging.BasicLogger.logException;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -36,7 +35,6 @@ public class IoManager extends Layer {
 	@Override
 	public boolean processAscending() {
 		LinkedList<UpdatePropagation> hardwareCommandUpdates = processingData.getUpdatePropagations(HardwareCommandApduPropagation.class);
-		
 		boolean retVal = false;
 		
 		//update processingData for every HardwareCommandApduUpdate with a newCommandApdu
@@ -46,9 +44,9 @@ public class IoManager extends Layer {
 					.next();
 			if (updatePropagation != null && updatePropagation instanceof HardwareCommandApduPropagation) {
 				try {
-					CommandApdu commandApdu = CommandApduFactory.createCommandApdu(((HardwareCommandApduPropagation)updatePropagation).getCommandApdu());
-					
-					processingData.updateCommandApdu(this, "CommandApduFactory.createCommandApdu from hardware : "+ commandApdu , commandApdu);
+				CommandApdu commandApdu = CommandApduFactory.createCommandApdu(((HardwareCommandApduPropagation)updatePropagation).getCommandApdu());
+				
+				processingData.updateCommandApdu(this, "CommandApduFactory.createCommandApdu from hardware : "+ commandApdu , commandApdu);
 					retVal = true;
 				} catch(GeneralException e) {
 					logException(this, e);
@@ -56,8 +54,9 @@ public class IoManager extends Layer {
 					//create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(e.getStatusWord());
 					processingData.updateResponseAPDU(this, "Unable to handle this HardwareCommandApdu", resp);
-				}
 			}
+		}
+		
 		}
 		return retVal;
 	}
