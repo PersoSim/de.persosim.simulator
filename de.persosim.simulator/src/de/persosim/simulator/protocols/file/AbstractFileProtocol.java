@@ -158,10 +158,8 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 	 * @param df
 	 * @param dfIdentifier
 	 * @return
-	 * @throws FileNotFoundException 
 	 */
-	private CardFile getFileForName(DedicatedFile df, DedicatedFileIdentifier dfIdentifier)
-			throws FileNotFoundException {
+	private CardFile getFileForName(DedicatedFile df, DedicatedFileIdentifier dfIdentifier) {
 		
 		if (dfIdentifier.matches(df)) {
 			return df;
@@ -178,8 +176,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 				}
 			}
 		}
-
-		throw new FileNotFoundException("No matching DF found for " + dfIdentifier.toString());
+		return null;
 	}
 
 	/**
