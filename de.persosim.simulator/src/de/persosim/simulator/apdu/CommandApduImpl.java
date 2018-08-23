@@ -271,7 +271,7 @@ public class CommandApduImpl implements CommandApdu {
 	 * 
 	 * @return byte encoding of Le field
 	 */
-	private byte[] getLe() {
+	public byte[] getLe() {
 		if (ne > 0) {  
 			if(isExtendedLength) {
 				if (isoCase > 2) {

@@ -110,4 +110,9 @@ public class SmMarkerApdu implements CommandApdu,
 		return predecessor.isNeZeroEncoded();
 	}
 
+	@Override
+	public byte[] getLe() {
+		return predecessor.getLe();
+	}
+
 }

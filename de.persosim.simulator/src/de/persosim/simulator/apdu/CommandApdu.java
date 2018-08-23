@@ -78,9 +78,14 @@ public interface CommandApdu {
 	public abstract TlvDataObjectContainer getCommandDataObjectContainer();
 
 	/**
-	 * @return the number encoding in the L_e field of the APDU
+	 * @return the number encoded in the L_e field of the APDU
 	 */
 	public abstract int getNe();
+
+	/**
+	 * @return the L_e field of the APDU
+	 */
+	public abstract byte [] getLe();
 
 	/**
 	 * @return both parameter bytes concatenated into one {@link short} value
