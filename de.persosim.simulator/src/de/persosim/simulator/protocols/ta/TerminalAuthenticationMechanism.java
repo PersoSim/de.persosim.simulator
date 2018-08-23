@@ -1,7 +1,6 @@
 package de.persosim.simulator.protocols.ta;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import de.persosim.simulator.crypto.certificates.CertificateExtension;
@@ -18,7 +17,7 @@ import de.persosim.simulator.secstatus.SecurityEvent;
  */
 public class TerminalAuthenticationMechanism extends AbstractSecMechanism {
 
-	private Collection<AuthenticatedAuxiliaryData> auxiliaryData;
+	private List<AuthenticatedAuxiliaryData> auxiliaryData;
 	private TerminalType terminalType;
 	private byte [] compressedTerminalEphemeralPublicKey;
 	private byte [] firstSectorPublicKeyHash;
@@ -27,7 +26,7 @@ public class TerminalAuthenticationMechanism extends AbstractSecMechanism {
 	private List<CertificateExtension> certificateExtensions;
 
 	public TerminalAuthenticationMechanism(byte [] compressedEphemeralTerminalPublicKey, TerminalType terminalType,
-			Collection<AuthenticatedAuxiliaryData> auxiliaryData, byte [] firstSectorPublicKeyHash, byte [] secondSectorPublicKeyHash, String sectorPublicKeyHashAlgorithm, List<CertificateExtension> certificateExtensions) {
+			List<AuthenticatedAuxiliaryData> auxiliaryData, byte [] firstSectorPublicKeyHash, byte [] secondSectorPublicKeyHash, String sectorPublicKeyHashAlgorithm, List<CertificateExtension> certificateExtensions) {
 		this.auxiliaryData = auxiliaryData;
 		this.terminalType = terminalType;
 		this.compressedTerminalEphemeralPublicKey = Arrays.copyOf(compressedEphemeralTerminalPublicKey, compressedEphemeralTerminalPublicKey.length);
@@ -78,7 +77,7 @@ public class TerminalAuthenticationMechanism extends AbstractSecMechanism {
 	/**
 	 * @return the auxiliaryData
 	 */
-	public Collection<AuthenticatedAuxiliaryData> getAuxiliaryData() {
+	public List<AuthenticatedAuxiliaryData> getAuxiliaryData() {
 		return auxiliaryData;
 	}
 

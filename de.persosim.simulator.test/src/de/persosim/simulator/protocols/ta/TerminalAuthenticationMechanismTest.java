@@ -2,8 +2,8 @@ package de.persosim.simulator.protocols.ta;
 
 import static org.junit.Assert.assertArrayEquals;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ public class TerminalAuthenticationMechanismTest extends PersoSimTestCase {
 		byte [] data = new byte [] {1,2,3,4,5};
 		byte [] expected = Arrays.copyOf(data, data.length);
 		
-		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(data, TerminalType.AT, new HashSet<AuthenticatedAuxiliaryData>(), new byte [] {}, new byte [] {}, "test", null);
+		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(data, TerminalType.AT, new ArrayList<AuthenticatedAuxiliaryData>(), new byte [] {}, new byte [] {}, "test", null);
 		
 		data[0] = 2;
 		
@@ -34,7 +34,7 @@ public class TerminalAuthenticationMechanismTest extends PersoSimTestCase {
 		byte[] expected = Arrays.copyOf(data, data.length);
 
 		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(new byte[] {}, TerminalType.AT,
-				new HashSet<AuthenticatedAuxiliaryData>(), data, new byte[] {}, "test", null);
+				new ArrayList<AuthenticatedAuxiliaryData>(), data, new byte[] {}, "test", null);
 
 		data[0] = 2;
 
@@ -52,7 +52,7 @@ public class TerminalAuthenticationMechanismTest extends PersoSimTestCase {
 		byte [] data = new byte [] {1,2,3,4,5};
 		byte [] expected = Arrays.copyOf(data, data.length);
 		
-		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(new byte [] {}, TerminalType.AT, new HashSet<AuthenticatedAuxiliaryData>(), new byte [] {}, data, "test", null);
+		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(new byte [] {}, TerminalType.AT, new ArrayList<AuthenticatedAuxiliaryData>(), new byte [] {}, data, "test", null);
 		
 		data[0] = 2;
 		

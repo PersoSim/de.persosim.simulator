@@ -6,7 +6,6 @@ import java.util.HashSet;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.protocols.RoleOid;
-import de.persosim.simulator.protocols.auxVerification.AuxOid;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
@@ -54,30 +53,21 @@ public class ByteDataAuxObject extends AuxDataObject {
 				}
 			}
 			
-			if((taMechanism == null) || (authMechanism == null)) {
-				throw new AccessDeniedException("Community ID verification not allowed");
-			}
-			
-			if (taMechanism.getTerminalType().equals(TerminalType.ST)) {
-				throw new AccessDeniedException("Community ID verification not allowed");
+			if((taMechanism == null) || (authMechanism == null) || taMechanism.getTerminalType().equals(TerminalType.ST)) {
+				throw new AccessDeniedException("Verification for OID " + identifier.getOid().toDotString() + " not allowed");
 			}
 			
 			if(taMechanism.getTerminalType().equals(TerminalType.AT)) {
 				Authorization auth = authMechanism.getAuthorization(RoleOid.id_AT);
 				
-				if(auth == null) {
-					throw new AccessDeniedException("Community ID verification not allowed");
-				}
-				
-				if(!auth.getAuthorization().getBit(1)) {
-					throw new AccessDeniedException("Community ID verification not allowed");
+				if(auth == null || !auth.getAuthorization().getBit(1)) {
+					throw new AccessDeniedException("Verification for OID " + identifier.getOid().toDotString() + " not allowed");
 				}
 			}
 			
-			if (identifier.getOid().equals(AuxOid.id_CommunityID)){
+			if (identifier.getOid().equals(current.getObjectIdentifier())){
 				return Utils.arrayHasPrefix(data, current.getDiscretionaryData());
 			}
-			
 		}
 		return false;
 	}

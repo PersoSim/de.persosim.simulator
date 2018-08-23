@@ -4,13 +4,13 @@ import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import org.globaltester.logging.InfoSource;
 
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.AuxDataObject;
 import de.persosim.simulator.cardobjects.CardObject;
-import de.persosim.simulator.cardobjects.CardObjectUtils;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
@@ -52,7 +52,7 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 	
 	@Override
 	public void process(ProcessingData processingData) {
-		if ((processingData.getCommandApdu().getCla() == (byte) 0x80) && (processingData.getCommandApdu().getIns() == INS_20_VERIFY)){
+		if (((processingData.getCommandApdu().getCla() == (byte) 0x80) && (processingData.getCommandApdu().getIns() == INS_20_VERIFY)) || (processingData.getCommandApdu().getIns() == INS_33_COMPARE)){
 			//check for ca
 			HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 			previousMechanisms.add(ChipAuthenticationMechanism.class);
@@ -86,7 +86,12 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 					/* there is nothing more to be done here */
 					return;
 				} catch (VerificationException e) {
-					ResponseApdu resp = new ResponseApdu(SW_6300_AUTHENTICATION_FAILED);
+					ResponseApdu resp = new ResponseApdu(SW_6FFF_IMPLEMENTATION_ERROR);
+					if (processingData.getCommandApdu().getIns() == INS_20_VERIFY) {
+						resp = new ResponseApdu(SW_6300_AUTHENTICATION_FAILED);
+					} else if (processingData.getCommandApdu().getIns() == INS_33_COMPARE) {
+						resp = new ResponseApdu(SW_6340_COMPARISON_FAILED);
+					}
 					processingData.updateResponseAPDU(this, "Auxiliary data verification failed", resp);
 					/* there is nothing more to be done here */
 					return;
@@ -114,39 +119,44 @@ public class AuxProtocol implements Protocol, Iso7816, InfoSource, TlvConstants 
 		TerminalAuthenticationMechanism taMechanism = null;
 		if (currentMechanisms.size() > 0){
 			taMechanism = (TerminalAuthenticationMechanism) currentMechanisms.toArray()[0];
-			Collection<AuthenticatedAuxiliaryData> auxDataFromTa = taMechanism.getAuxiliaryData();
+			List<AuthenticatedAuxiliaryData> auxDataFromTa = taMechanism.getAuxiliaryData();
 	
-			CardObject auxDataCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new OidIdentifier(oid));
-			AuxDataObject auxDataObject = null;
+			Collection<CardObject> candidates = cardState.getMasterFile().findChildren(new OidIdentifier(oid));
 			
-			if (auxDataCandidate instanceof AuxDataObject){
-				auxDataObject = (AuxDataObject) auxDataCandidate;
-			} else {
-				throw new FileNotFoundException("The card object using the OID " + oid.toString() + " is not a AUX data object");
-			}
-			
-			if (auxDataFromTa != null){
-				AuthenticatedAuxiliaryData expectedAuxData = null;
+			for (CardObject auxDataCandidate : candidates) {
+				AuxDataObject auxDataObject = null;
 				
-				for (AuthenticatedAuxiliaryData current : auxDataFromTa){
-					if(oid.equals(current.getObjectIdentifier())) {
-						expectedAuxData = current;
-						break;
+				if (auxDataCandidate instanceof AuxDataObject){
+					auxDataObject = (AuxDataObject) auxDataCandidate;
+				} else {
+					throw new FileNotFoundException("The card object using the OID " + oid.toString() + " is not a AUX data object");
+				}
+				
+				if (auxDataFromTa != null){
+					AuthenticatedAuxiliaryData expectedAuxData = null;
+					for (int i = auxDataFromTa.size() - 1; i >= 0; i--) {
+						AuthenticatedAuxiliaryData current = auxDataFromTa.get(i);
+						if(oid.equals(current.getObjectIdentifier())) {
+							expectedAuxData = current;
+							break;
+						}
+						
 					}
 					
-				}
-				
-				if(expectedAuxData == null) {
-					throw new FileNotFoundException("No auxiliary data was stored during TA matching the provided OID");
-				} else {
-					if (auxDataObject.verify(expectedAuxData)){
-						return;
+					if(expectedAuxData == null) {
+						throw new FileNotFoundException("No auxiliary data was stored during TA matching the provided OID");
+					} else {
+						if (auxDataObject.verify(expectedAuxData)){
+							return;
+						}
 					}
+				} else {
+					throw new FileNotFoundException("No auxiliary data was stored during TA");
 				}
-			} else {
-				throw new FileNotFoundException("No auxiliary data was stored during TA");
 			}
-			throw new VerificationException("no auxiliary data verified successfully");
+			
+			
+			throw new VerificationException("No auxiliary data verified successfully");
 		}
 	}
 
