@@ -95,6 +95,8 @@ public interface Iso7816 {
 	public static final byte INS_2A_PERFORM_SECURITY_OPERATION       = (byte) 0x2A;
 	public static final byte INS_2C_RESET_RETRY_COUNTER              = (byte) 0x2C;
 	/*--------------------------------------------------------------------------------*/
+	public static final byte INS_33_COMPARE			     		     = (byte) 0x33;
+	/*--------------------------------------------------------------------------------*/
 	public static final byte INS_44_ACTIVATE_FILE                    = (byte) 0x44;
 	public static final byte INS_46_GENERATE_ASYMMETRIC_KEY_PAIR     = (byte) 0x46;
 	/*--------------------------------------------------------------------------------*/
@@ -210,6 +212,7 @@ public interface Iso7816 {
 	public static final short SW_6285_SELECTED_FILE_TERMINATED           = (short) 0x6285;
 	/*--------------------------------------------------------------------------------*/
 	public static final short SW_6300_AUTHENTICATION_FAILED              = (short) 0x6300;
+	public static final short SW_6340_COMPARISON_FAILED           		 = (short) 0x6340;
 	public static final short SW_63C0_COUNTER_IS_0                       = (short) 0x63C0;
 	public static final short SW_63C1_COUNTER_IS_1                       = (short) 0x63C1;
 	public static final short SW_63C2_COUNTER_IS_2                       = (short) 0x63C2;
