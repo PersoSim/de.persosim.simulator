@@ -48,7 +48,7 @@ public abstract class AbstractCommandProcessor extends Layer implements
 	}
 
 	@Override
-	public void processAscending() {
+	public boolean processAscending() {
 		log(this, "will now begin processing of ascending APDU", LogLevel.TRACE);
 
 		try {
@@ -76,13 +76,14 @@ public abstract class AbstractCommandProcessor extends Layer implements
 		} catch(ProcessingException e) {
 			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
-			return;
+			return false;
 		} catch (Exception e) {
 			logException(this, e, LogLevel.TRACE);
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR);
 			this.processingData.updateResponseAPDU(this, "Generic error handling", resp);
-			return;
+			return false;
 		}
+		return true;
 	}
 
 	@Override

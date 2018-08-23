@@ -67,7 +67,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 	}
 	
 	@Override
-	public void processAscending() {
+	public boolean processAscending() {
 		if(processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu) {
 			if (((IsoSecureMessagingCommandApdu) processingData.getCommandApdu()).getSecureMessaging() != SM_OFF_OR_NO_INDICATION) {
 				if (dataProvider != null) {
@@ -78,10 +78,11 @@ public class SecureMessaging extends Layer implements TlvConstants{
 						
 						processingData.notifySimulatorEventListeners(new DecodedCommandApduEvent(processingData.getCommandApdu().toByteArray()));
 						log(this, "successfully processed ascending secured APDU", LogLevel.TRACE);
+						return true;
 					} else {
 						discardSecureMessagingSession();
+						return false;
 					}
-					return;
 				} else {
 					log(this, "No SmDataProvider available", LogLevel.ERROR);
 					processingData.notifySimulatorEventListeners(new DecodedCommandApduEvent(processingData.getCommandApdu().toByteArray()));
@@ -90,7 +91,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 					//create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
 					processingData.updateResponseAPDU(this, "SecureMessaging not properly initialized", resp);
-					return;
+					return false;
 				}
 			} else {
 				log(this, "don't process ascending unsecured APDU", LogLevel.TRACE);
@@ -107,8 +108,10 @@ public class SecureMessaging extends Layer implements TlvConstants{
 			log(this, "discard key material", LogLevel.DEBUG);
 			discardSecureMessagingSession();
 		}
+		
+		return true;
 	}
-	
+
 	private void discardSecureMessagingSession() {
 		if (dataProvider != null) {
 			log(this, "discard key material", LogLevel.DEBUG);

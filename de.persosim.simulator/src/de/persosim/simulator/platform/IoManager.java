@@ -30,7 +30,7 @@ public class IoManager extends Layer {
 	/*--------------------------------------------------------------------------------*/
 	
 	@Override
-	public void processAscending() {
+	public boolean processAscending() {
 		LinkedList<UpdatePropagation> hardwareCommandUpdates = processingData.getUpdatePropagations(HardwareCommandApduPropagation.class);
 		
 		//update processingData for every HardwareCommandApduUpdate with a newCommandApdu
@@ -44,7 +44,7 @@ public class IoManager extends Layer {
 				processingData.updateCommandApdu(this, "CommandApduFactory.createCommandApdu from hardware : "+ commandApdu , commandApdu);
 			}
 		}
-		
+		return true;
 	}
 	
 	@Override

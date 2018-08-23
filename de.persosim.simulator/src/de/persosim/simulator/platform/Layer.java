@@ -52,11 +52,12 @@ public abstract class Layer implements Iso7816, InfoSource {
 	 * Actual layer specific processing is done in {@link #processAscending()}
 	 * @param pData processingData collected during processing of the APDU
 	 */
-	public final void processAscending(ProcessingData pData) {
+	public final boolean processAscending(ProcessingData pData) {
 		try{
 			this.processingData = pData;
-			processAscending();
+			boolean processFurther = processAscending();
 			log(this, "successfully processed ascending APDU", LogLevel.TRACE);
+			return processFurther;
 		} catch(GeneralException e) {
 			logException(this, e);
 
@@ -64,6 +65,7 @@ public abstract class Layer implements Iso7816, InfoSource {
 			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
 			pData.updateResponseAPDU(this, "Generic error handling", resp);
 		}
+		return false;
 	}
 	
 	/**
@@ -75,8 +77,9 @@ public abstract class Layer implements Iso7816, InfoSource {
 	 * guaranteed to be set during execution of this method.
 	 * 
 	 */
-	public void processAscending() {
+	public boolean processAscending() {
 		log(this, "skipped processing of ascending APDU", LogLevel.TRACE);
+		return true;
 	}
 	
 	/**
