@@ -146,6 +146,9 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		addEidDg11(eIdAppl);
 		addEidDg12(eIdAppl);
 		addEidDg13(eIdAppl);
+		addEidDg14(eIdAppl);
+		addEidDg15(eIdAppl);
+		addEidDg16(eIdAppl);
 		addEidDg17(eIdAppl);
 		addEidDg18(eIdAppl);
 		addEidDg19(eIdAppl);
@@ -528,6 +531,18 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				SecCondition.DENIED,
 				SecCondition.DENIED);
 		eIdAppl.addChild(eidDg13);
+	}
+
+	protected void addEidDg14(DedicatedFile eIdAppl) throws AccessDeniedException {
+		// not personalized
+	}
+
+	protected void addEidDg15(DedicatedFile eIdAppl) throws AccessDeniedException {
+		// not personalized
+	}
+
+	protected void addEidDg16(DedicatedFile eIdAppl) throws AccessDeniedException {
+		// not personalized
 	}
 	
 	protected void addEpassDatagroup14(DedicatedFile ePassAppl) throws AccessDeniedException {
