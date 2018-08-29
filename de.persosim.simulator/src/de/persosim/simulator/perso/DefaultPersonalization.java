@@ -40,7 +40,6 @@ import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.platform.CommandProcessor;
 import de.persosim.simulator.platform.IoManager;
-import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.protocols.NpaProtocol;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.Tr03110;
@@ -740,13 +739,6 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		}
 		commandProcessor.init();
 		layers.add(commandProcessor);
-	}
-	
-	@Override
-	public void initialize() {
-		for(Layer layer:layers) {
-			layer.initializeForUse();
-		}
 	}
 
 }
