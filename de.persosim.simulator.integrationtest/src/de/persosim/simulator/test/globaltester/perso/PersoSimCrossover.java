@@ -38,11 +38,6 @@ public class PersoSimCrossover extends DefaultScriptIntegrationTest{
 		return Arrays.asList("GT Scripts Integrationtests/TestSuites/Layer 6/PACE/PACE_multipleSetAt.gt");
 	}
 
-	@Override
-	protected int getExpectedNumberOfChipTestCases() {
-		return 1;
-	}
-	
 	@Ignore
 	@Test
 	public void defaultTest() throws Exception {
@@ -69,7 +64,6 @@ public class PersoSimCrossover extends DefaultScriptIntegrationTest{
 		
 		disableSimulator();
 		
-		assertEquals("Number of chip tests", getExpectedNumberOfChipTestCases(), chipResults.testCases);
 		assertEquals("Chip test result", 0, chipResults.overallResult);
 		
 		cleanupChipTest();

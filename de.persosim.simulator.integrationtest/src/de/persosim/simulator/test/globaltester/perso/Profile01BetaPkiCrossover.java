@@ -39,11 +39,6 @@ public class Profile01BetaPkiCrossover extends DefaultScriptIntegrationTest{
 				"GT Scripts BSI TR03105 Part 3.3" + "/TestSuites/Layer6/ISO7816_Q/EAC2_ISO7816_Q_01.gt"); // TA and age verification
 	}
 
-	@Override
-	protected int getExpectedNumberOfChipTestCases() {
-		return 2;
-	}
-	
 	@Ignore
 	@Test
 	public void defaultTest() throws Exception {
@@ -70,7 +65,6 @@ public class Profile01BetaPkiCrossover extends DefaultScriptIntegrationTest{
 		
 		disableSimulator();
 		
-		assertEquals("Number of chip tests", getExpectedNumberOfChipTestCases(), chipResults.testCases);
 		assertEquals("Chip test result", 0, chipResults.overallResult);
 		
 		cleanupChipTest();
