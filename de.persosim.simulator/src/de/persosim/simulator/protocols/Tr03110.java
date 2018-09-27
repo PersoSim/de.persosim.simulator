@@ -1,5 +1,7 @@
 package de.persosim.simulator.protocols;
 
+import de.persosim.simulator.utils.HexString;
+
 /**
  * This interface defines constants unique to the TR-03110 specification.
  * 
@@ -14,14 +16,14 @@ public interface Tr03110 {
 //                                                                                0x7F reserved(127)
 //                                                                                      0x00 etsi-identified-organization(0)
 //                                                                                            0x07 7
-	public static final Oid id_BSI                              = new GenericOid(new byte[]{0x04, 0x00, 0x7F, 0x00, 0x07});
+	public static final Oid id_BSI                              = new GenericOid(HexString.toByteArray("04 00 7F 00 07"));
 	
-	public static final Oid id_PK                               = new GenericOid(id_BSI, new byte[]{0x02, 0x02, 0x01});
+	public static final Oid id_PK                               = new GenericOid(id_BSI, HexString.toByteArray("020201"));
 
 	
-	public static final Oid id_CI                               = new GenericOid(id_BSI, new byte[]{0x02, 0x02, 0x06});
-	public static final Oid id_eIDSecurity                      = new GenericOid(id_BSI, new byte[]{0x02, 0x02, 0x07});
-	public static final Oid id_PT                               = new GenericOid(id_BSI, new byte[]{0x02, 0x02, 0x08});
+	public static final Oid id_CI                               = new GenericOid(id_BSI, HexString.toByteArray("020206"));
+	public static final Oid id_eIDSecurity                      = new GenericOid(id_BSI, HexString.toByteArray("020207"));
+	public static final Oid id_PT                               = new GenericOid(id_BSI, HexString.toByteArray("020208"));
 	
 	public static final byte ID_MRZ = 1;
 	public static final byte ID_CAN = 2;
@@ -37,7 +39,6 @@ public interface Tr03110 {
 	public static final byte AES_CBC_CMAC_192                      = (byte) 0x03;
 	public static final byte AES_CBC_CMAC_256                      = (byte) 0x04;
 	
-	public static final byte[] SYMMETRIC_CIPHER                    = new byte[]{DES3_CBC_CBC, AES_CBC_CMAC_128, AES_CBC_CMAC_192, AES_CBC_CMAC_256};
 	
 	/*--------------------------------------------------------------------------------*/
 	
