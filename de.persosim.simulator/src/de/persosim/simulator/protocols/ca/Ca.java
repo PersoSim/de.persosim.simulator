@@ -4,6 +4,7 @@ import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110;
+import de.persosim.simulator.utils.HexString;
 
 /**
  * This interface provides constants used in the context of the Chip Authentication protocol according to TR-03110.
@@ -17,7 +18,7 @@ public interface Ca extends Tr03110 {
 //	                                                                                                   0x02 bsi-de protocols(2)
 //	                                                                                                         0x02 smartcard(2)
 //	                                                                                                               0x03 ca protocol(3)
-	public static final Oid id_CA                                  = new GenericOid(id_BSI, new byte[]{0x02, 0x02, 0x03});
+	public static final Oid id_CA                                  = new GenericOid(id_BSI, HexString.toByteArray("020203"));
 	public static final String id_CA_STRING                        = "id-CA";
 	
 	/*--------------------------------------------------------------------------------*/
@@ -29,8 +30,6 @@ public interface Ca extends Tr03110 {
 	
 	public static final CaOid id_CA_DH                             = new CaOid(id_CA, DH);
 	public static final CaOid id_CA_ECDH                           = new CaOid(id_CA, ECDH);
-	
-	public static final byte[] KEY_AGREEMENT_AND_MAPPING           = new byte[]{DH, ECDH};
 	
 	/*--------------------------------------------------------------------------------*/
 	

@@ -4,6 +4,7 @@ import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110;
+import de.persosim.simulator.utils.HexString;
 
 /**
  * This interface provides constants used in the context of the PACE protocol according to TR-03110.
@@ -19,15 +20,13 @@ public interface Pace extends Tr03110 {
 //	                                                                                                            0x02 smartcard(2)
 //	                                                                                                                  0x04 4 pace protocol(4)
 	
-	public static final Oid id_PACE                             = new GenericOid(id_BSI, new byte[]{0x02, 0x02, 0x04});
+	public static final Oid id_PACE                             = new GenericOid(id_BSI, HexString.toByteArray("020204"));
 	public static final String id_PACE_STRING                      = "id-PACE";
 	
 	/*--------------------------------------------------------------------------------*/
 	
 	/* Key agreement & mapping */
 	public static final byte ECDH_GM                               = (byte) 0x02;
-	
-	public static final byte[] KEY_AGREEMENT_AND_MAPPING           = new byte[]{ECDH_GM};
 	
 	/*--------------------------------------------------------------------------------*/
 	
@@ -69,14 +68,9 @@ public interface Pace extends Tr03110 {
 	/*--------------------------------------------------------------------------------*/
 	
 	/* Password */
-	public static final String PWD_MRZ_STRING = "MRZ";
-	public static final String PWD_CAN_STRING = "CAN";
-	public static final String PWD_PIN_STRING = "PIN";
-	public static final String PWD_PUK_STRING = "PUK";
-	
-	/*--------------------------------------------------------------------------------*/
-	
-	/* Password */
-	public static final String[] PASSWORD                                 = new String[]{PWD_MRZ_STRING, PWD_CAN_STRING, PWD_PIN_STRING, PWD_PUK_STRING};
+	public static final String PWD_MRZ_STRING = "MRZ"; //NOSONAR this is an identifier only, no credential leaked
+	public static final String PWD_CAN_STRING = "CAN"; //NOSONAR this is an identifier only, no credential leaked
+	public static final String PWD_PIN_STRING = "PIN"; //NOSONAR this is an identifier only, no credential leaked
+	public static final String PWD_PUK_STRING = "PUK"; //NOSONAR this is an identifier only, no credential leaked
 	
 }
