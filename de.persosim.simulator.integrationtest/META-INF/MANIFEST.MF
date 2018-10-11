@@ -21,7 +21,10 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  com.secunet.globaltester.testscripts.bsi.tr03105_part3_3,
  com.secunet.globaltester.testscripts.basics,
  com.secunet.globaltester.testscripts.integration,
- de.persosim.simulator.test
+ de.persosim.simulator.test,
+ org.globaltester.sampleconfiguration,
+ com.secunet.globaltester.protocols.eac2.certificates,
+ org.eclipse.core.runtime
 Export-Package: de.persosim.simulator.test.globaltester.perso
 Import-Package: org.eclipse.ui.keys,
  org.osgi.framework;version="1.8.0"
