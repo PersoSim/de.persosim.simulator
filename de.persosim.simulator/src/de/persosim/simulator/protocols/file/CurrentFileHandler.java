@@ -27,7 +27,7 @@ import de.persosim.simulator.secstatus.SecStatus.SecContext;
  * @author amay
  *
  */
-public class CurrentFileHandler {
+public final class CurrentFileHandler {
 
 	private CurrentFileHandler() {
 		// not to be instantiated
@@ -40,7 +40,7 @@ public class CurrentFileHandler {
 	 * @return
 	 */
 	public static CardFile getCurrentFile(CardStateAccessor cardStateAccessor) {
-		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<Class<? extends SecMechanism>>();
+		Collection<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<>();
 		wantedMechanisms.add(CurrentFileSecMechanism.class);
 		
 		Collection<SecMechanism> currentMechanisms = cardStateAccessor.getCurrentMechanisms(SecContext.GLOBAL, wantedMechanisms);
@@ -68,7 +68,7 @@ public class CurrentFileHandler {
 			currentFile = currentFile.getParent();
 		}
 		
-		return (DedicatedFile) (currentFile != null ? currentFile : cardStateAccessor.getMasterFile());
+		return (DedicatedFile) currentFile;
 	}
 
 }

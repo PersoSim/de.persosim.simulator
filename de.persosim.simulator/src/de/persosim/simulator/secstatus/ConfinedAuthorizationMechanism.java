@@ -17,7 +17,7 @@ public class ConfinedAuthorizationMechanism extends AbstractSecMechanism {
 	}
 	
 	public ConfinedAuthorizationMechanism(AuthorizationStore authorizationStore) {
-		this.authorizationStore = authorizationStore.clone();
+		this.authorizationStore = new AuthorizationStore(authorizationStore);
 	}
 	
 	@Override
@@ -34,7 +34,7 @@ public class ConfinedAuthorizationMechanism extends AbstractSecMechanism {
 	}
 	
 	public AuthorizationStore getAuthorizationStore() {
-		return authorizationStore.clone();
+		return new AuthorizationStore(authorizationStore);
 	}
 	
 	@Override

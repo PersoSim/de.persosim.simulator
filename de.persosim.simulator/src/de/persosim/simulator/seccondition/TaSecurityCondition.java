@@ -55,22 +55,31 @@ public class TaSecurityCondition implements SecCondition {
 			}
 		}
 		
-		if(terminalAuthenticationMechanism != null) {
-			if (terminalType == null || terminalAuthenticationMechanism.getTerminalType().equals(terminalType)) {
-				if (authorization == null) {
+		return checkTaPerformed(terminalAuthenticationMechanism) && checkTerminalType(terminalAuthenticationMechanism)
+				&& checkAuthorization(authorizationMechanism);
+
+	}
+
+	private boolean checkTaPerformed(TerminalAuthenticationMechanism terminalAuthenticationMechanism) {
+		return terminalAuthenticationMechanism != null;
+	}
+
+	private boolean checkTerminalType(TerminalAuthenticationMechanism terminalAuthenticationMechanism) {
+		return terminalType == null || terminalAuthenticationMechanism.getTerminalType().equals(terminalType);
+	}
+
+	private boolean checkAuthorization(EffectiveAuthorizationMechanism authorizationMechanism) {
+		if (authorization == null) {
+			return true;
+		} else {
+			if(authorizationMechanism != null) {
+				Authorization auth = authorizationMechanism.getAuthorization(terminalType.getAsOid());
+				BitField tempField = authorization.getAuthorization().or(auth.getAuthorization());
+				if (tempField.equals(auth.getAuthorization())) {
 					return true;
-				} else {
-					if(authorizationMechanism != null) {
-						Authorization auth = authorizationMechanism.getAuthorization(terminalType.getAsOid());
-						BitField tempField = authorization.getAuthorization().or(auth.getAuthorization());
-						if (tempField.equals(auth.getAuthorization())) {
-							return true;
-						}
-					}
 				}
 			}
 		}
-		
 		return false;
 	}
 

@@ -3,6 +3,7 @@ package de.persosim.simulator.secstatus;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.ta.Authorization;
@@ -26,8 +27,8 @@ private HashMap<Oid, Authorization> authorizations;
 	public AuthorizationStore(Map<Oid, Authorization> authorizations) {
 		this();
 		
-		for(Oid currentOid:authorizations.keySet()) {
-			this.authorizations.put(currentOid, authorizations.get(currentOid));
+		for(Entry<Oid, Authorization> currentEntry:authorizations.entrySet()) {
+			this.authorizations.put(currentEntry.getKey(), currentEntry.getValue());
 		}
 	}
 	
@@ -77,8 +78,8 @@ private HashMap<Oid, Authorization> authorizations;
 	 * @param authorizations the authorization information to be used for the update
 	 */
 	public void updateAuthorization(Map<Oid, Authorization> authorizations) {
-		for(Oid currentOid:authorizations.keySet()) {
-			updateAuthorization(currentOid, authorizations.get(currentOid));
+		for(Entry<Oid, Authorization> currentEntry:authorizations.entrySet()) {
+			updateAuthorization(currentEntry.getKey(), currentEntry.getValue());
 		}
 		
 		Iterator<Oid> iter = this.authorizations.keySet().iterator();
@@ -102,10 +103,13 @@ private HashMap<Oid, Authorization> authorizations;
 	}
 	
 	@Override
-	public AuthorizationStore clone() {
-		return new AuthorizationStore(this);
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((authorizations == null) ? 0 : authorizations.hashCode());
+		return result;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -123,10 +127,8 @@ private HashMap<Oid, Authorization> authorizations;
 			currentAuthThis = getAuthorization(currentOid);
 			currentAuthOther = other.getAuthorization(currentOid);
 			
-			if(currentAuthThis != currentAuthOther) {
-				if(!currentAuthThis.equals(currentAuthOther)) {
-					return false;
-				}
+			if(!currentAuthThis.equals(currentAuthOther)) {
+				return false;
 			}
 		}
 		
@@ -134,15 +136,13 @@ private HashMap<Oid, Authorization> authorizations;
 			currentAuthThis = getAuthorization(currentOid);
 			currentAuthOther = other.getAuthorization(currentOid);
 			
-			if(currentAuthOther != currentAuthThis) {
-				if(!currentAuthOther.equals(currentAuthThis)) {
-					return false;
-				}
+			if(!currentAuthOther.equals(currentAuthThis)) {
+				return false;
 			}
 		}
-		
+	
 		return true;
-		
+	
 	}
 	
 	@Override
@@ -150,13 +150,13 @@ private HashMap<Oid, Authorization> authorizations;
 		StringBuilder sb = new StringBuilder();
 		
 		boolean first = true;
-		for(Oid oid:authorizations.keySet()) {
+		for(Entry<Oid, Authorization> currentEntry:authorizations.entrySet()) {
 			if(first) {
 				first = false;
 			} else{
 				sb.append("\n");
 			}
-			sb.append(oid + " --> " + authorizations.get(oid));
+			sb.append(currentEntry.getKey() + " --> " + currentEntry.getValue());
 		}
 		
 		return sb.toString();

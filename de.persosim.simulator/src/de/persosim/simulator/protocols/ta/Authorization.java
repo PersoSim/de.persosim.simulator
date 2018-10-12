@@ -13,7 +13,7 @@ import de.persosim.simulator.utils.BitField;
  */
 public class Authorization {
 	
-	protected BitField authorization;
+	protected BitField authorization; //NOSONAR renaming this field (or class) would invlaidate existing personalisation files 
 
 	public Authorization() {
 	}
@@ -55,6 +55,14 @@ public class Authorization {
 			return false;
 		
 		return authorization.equals(((Authorization) obj).authorization);
+	}
+	
+	@Override
+	public int hashCode() {
+		if (authorization!= null) {
+			return authorization.hashCode();
+		}
+		return super.hashCode();
 	}
 	
 	@Override

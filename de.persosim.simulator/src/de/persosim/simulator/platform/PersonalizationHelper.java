@@ -22,7 +22,11 @@ import de.persosim.simulator.perso.Personalization;
  * @author slutters
  *
  */
-public class PersonalizationHelper {
+public final class PersonalizationHelper {
+	
+	private PersonalizationHelper() {
+		// not intended to be instantiated
+	}
 	
 	/**
 	 * This method accepts a {@link Collection} of type {@link Layer} and a
@@ -69,7 +73,7 @@ public class PersonalizationHelper {
 			if(compatibleLayers.size() == 1) {
 				return compatibleLayers.iterator().next();
 			} else{
-				return null;
+				throw new IllegalArgumentException("no matching layers found");
 			}
 		} else{
 			throw new IllegalArgumentException("more than 1 matching layers found");
@@ -85,22 +89,17 @@ public class PersonalizationHelper {
 	 */
 	public static void setLifeCycleStates(CardObject objectTree) {
 		Collection<CardObject> children = objectTree.getChildren();
-		if (children.size() > 0){
-			for (CardObject cardObject : children) {
-				setLifeCycleStates(cardObject);
-				if (cardObject.getLifeCycleState().isPersonalizationPhase()){
-					try {
-						switch (cardObject.getLifeCycleState()){
-						case CREATION_OPERATIONAL_DEACTIVATED:
-							cardObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
-							break;
-						default:
-							cardObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
-							break;
-						}
-					} catch (AccessDeniedException e) {
-						BasicLogger.logException(PersonalizationHelper.class, e, LogLevel.WARN);
+		for (CardObject cardObject : children) {
+			setLifeCycleStates(cardObject);
+			if (cardObject.getLifeCycleState().isPersonalizationPhase()){
+				try {
+					if (cardObject.getLifeCycleState() == Iso7816LifeCycleState.CREATION_OPERATIONAL_DEACTIVATED){
+						cardObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
+					} else {
+						cardObject.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 					}
+				} catch (AccessDeniedException e) {
+					BasicLogger.logException(PersonalizationHelper.class, e, LogLevel.WARN);
 				}
 			}
 		}
