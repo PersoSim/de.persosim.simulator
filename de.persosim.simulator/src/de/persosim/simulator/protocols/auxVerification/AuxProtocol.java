@@ -83,52 +83,46 @@ public class AuxProtocol extends AbstractProtocol implements Iso7816, TlvConstan
 
 	private void processOid(Oid oid) throws VerificationException, FileNotFoundException, AccessDeniedException {
 		
-		//get necessary information stored in TA
+		AuthenticatedAuxiliaryData expectedAuxData = getExpectedAuxDataFromTa(oid);
+		AuxDataObject auxDataObject = getAuxDataObjectForOid(oid);
+
+		if (auxDataObject.verify(expectedAuxData)){
+			return;
+		} else {
+			throw new VerificationException("Verification of auxiliary data failed!");				
+		}
+		
+	}
+
+	private AuthenticatedAuxiliaryData getExpectedAuxDataFromTa(Oid oid) throws FileNotFoundException {
 		Collection<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(TerminalAuthenticationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
-		TerminalAuthenticationMechanism taMechanism = null;
-		if (!currentMechanisms.isEmpty()){
-			taMechanism = (TerminalAuthenticationMechanism) currentMechanisms.toArray()[0];
-			List<AuthenticatedAuxiliaryData> auxDataFromTa = taMechanism.getAuxiliaryData();
-	
-			Collection<CardObject> candidates = cardState.getMasterFile().findChildren(new OidIdentifier(oid));
-			
-			for (CardObject auxDataCandidate : candidates) {
-				AuxDataObject auxDataObject = null;
-				
-				if (auxDataCandidate instanceof AuxDataObject){
-					auxDataObject = (AuxDataObject) auxDataCandidate;
-				} else {
-					throw new FileNotFoundException("The card object using the OID " + oid.toString() + " is not a AUX data object");
-				}
-				
-				if (auxDataFromTa != null){
-					AuthenticatedAuxiliaryData expectedAuxData = null;
-					for (int i = auxDataFromTa.size() - 1; i >= 0; i--) {
-						AuthenticatedAuxiliaryData current = auxDataFromTa.get(i);
-						if(oid.equals(current.getObjectIdentifier())) {
-							expectedAuxData = current;
-							break;
-						}
-						
-					}
-					
-					if(expectedAuxData == null) {
-						throw new FileNotFoundException("No auxiliary data was stored during TA matching the provided OID");
-					} else {
-						if (auxDataObject.verify(expectedAuxData)){
-							return;
-						}
-					}
-				} else {
-					throw new FileNotFoundException("No auxiliary data was stored during TA");
-				}
-			}
-			
-			
-			throw new VerificationException("No auxiliary data verified successfully");
+		if (currentMechanisms.isEmpty()) throw new FileNotFoundException("No TA mechanism available");
+		
+		TerminalAuthenticationMechanism taMechanism = (TerminalAuthenticationMechanism) currentMechanisms.toArray()[0];
+		List<AuthenticatedAuxiliaryData> auxDataFromTa = taMechanism.getAuxiliaryData();
+		if ((auxDataFromTa == null)||(auxDataFromTa.isEmpty())) throw new FileNotFoundException("No auxiliary data was stored during TA");
+		
+		for (AuthenticatedAuxiliaryData curAuthAuxData : auxDataFromTa) {
+			if(oid.equals(curAuthAuxData.getObjectIdentifier())) {
+				return curAuthAuxData;
+			}			
 		}
+		
+		throw new FileNotFoundException("No auxiliary data was stored during TA matching the provided OID");
+	}
+
+	private AuxDataObject getAuxDataObjectForOid(Oid oid) throws FileNotFoundException {
+		Collection<CardObject> candidates = cardState.getMasterFile().findChildren(new OidIdentifier(oid));
+		
+		for (CardObject auxDataCandidate : candidates) {
+			if (auxDataCandidate instanceof AuxDataObject){
+				return (AuxDataObject) auxDataCandidate;
+			}
+		}
+		
+		throw new FileNotFoundException("The card object using the OID " + oid.toString() + " is not a AUX data object");
 	}
 
 }
