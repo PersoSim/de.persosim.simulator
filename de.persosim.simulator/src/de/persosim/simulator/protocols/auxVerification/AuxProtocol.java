@@ -86,9 +86,7 @@ public class AuxProtocol extends AbstractProtocol implements Iso7816, TlvConstan
 		AuthenticatedAuxiliaryData expectedAuxData = getExpectedAuxDataFromTa(oid);
 		AuxDataObject auxDataObject = getAuxDataObjectForOid(oid);
 
-		if (auxDataObject.verify(expectedAuxData)){
-			return;
-		} else {
+		if (!auxDataObject.verify(expectedAuxData)){
 			throw new VerificationException("Verification of auxiliary data failed!");				
 		}
 		

@@ -60,12 +60,14 @@ public class TaSecurityCondition implements SecCondition {
 
 	}
 
-	private boolean checkTaPerformed(TerminalAuthenticationMechanism terminalAuthenticationMechanism) {
+	private static boolean checkTaPerformed(TerminalAuthenticationMechanism terminalAuthenticationMechanism) {
 		return terminalAuthenticationMechanism != null;
 	}
 
 	private boolean checkTerminalType(TerminalAuthenticationMechanism terminalAuthenticationMechanism) {
-		return terminalType == null || terminalAuthenticationMechanism.getTerminalType().equals(terminalType);
+		if (terminalType == null) return true;
+		
+		return terminalAuthenticationMechanism != null && terminalType.equals(terminalAuthenticationMechanism.getTerminalType());
 	}
 
 	private boolean checkAuthorization(EffectiveAuthorizationMechanism authorizationMechanism) {
