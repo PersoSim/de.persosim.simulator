@@ -24,7 +24,8 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  de.persosim.simulator.test,
  org.globaltester.sampleconfiguration,
  com.secunet.globaltester.protocols.eac2.certificates,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ com.secunet.globaltester.prove.epa
 Export-Package: de.persosim.simulator.test.globaltester.perso
 Import-Package: org.eclipse.ui.keys,
  org.osgi.framework;version="1.8.0"
