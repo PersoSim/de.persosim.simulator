@@ -331,5 +331,9 @@ public class ConstructedTlvDataObject extends TlvDataObject implements TlvDataSt
 	public void remove(TlvDataObject object){
 		tlvDataObjectContainer.remove(object);
 	}
+
+	public TlvDataObject getChild(int index) {
+		return tlvDataObjectContainer.getTlvObjects().get(index);
+	}
 	
 }
