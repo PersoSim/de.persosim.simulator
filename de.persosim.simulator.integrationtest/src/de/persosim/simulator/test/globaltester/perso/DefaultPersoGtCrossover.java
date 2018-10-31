@@ -41,10 +41,12 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	    sampleConfig.put("eID", "DG12", "false");
 	    sampleConfig.put("eID", "DG11", "false");
 	    sampleConfig.put("eID", "DG21", "false");
+	    sampleConfig.put("eID", "DG22", "false");
 	    sampleConfig.put("eID", "DG10", "false");
 	    sampleConfig.put("eID", "DG20", "false");
-	    
+
 	    sampleConfig.put("TAv2", "RSA", "false");
+	    sampleConfig.put("TAv2", "AUTH_EXT", "false");
 	    
 	    sampleConfig.put("eSIGN", "eSIGN", "false");
         
@@ -54,8 +56,10 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	    sampleConfig.put("RI", "KEY_ID", "0x02");
 	    sampleConfig.put("RI", "KEY_ID_AUTH", "true");
 		
-		
-		
+
+	    sampleConfig.put("ISO7816", "EFATR", "false");
+	    sampleConfig.put("ISO7816", "ENV", "false");
+	    sampleConfig.put("AuxData", "CMP", "false");
 		
 		sampleConfig.put("CAv2", "DH", "false");
 		sampleConfig.put("PACE", "CAM", "false");

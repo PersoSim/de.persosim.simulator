@@ -231,6 +231,10 @@ MUSTERMANN<<ERIKA<<<<<<<<<<<<<]]></Parameter>
     <Parameter paramName="PASSWORDS_PUK">9876543210</Parameter>
     <Parameter paramName="PASSWORDS_CNG_PIN_PUK">false</Parameter>
     <Parameter paramName="PASSWORDS_CNG_PIN_AR">false</Parameter>
+    <Parameter paramName="eID_DG22">false</Parameter>
+    <Parameter paramName="TAv2_AUTH_EXT">false</Parameter>
+    <Parameter paramName="AuxData_CMP">false</Parameter>
+    <Parameter paramName="ISO7816_ENV">false</Parameter>
   </ConfigurationParams>
 </SampleConfig>
 
