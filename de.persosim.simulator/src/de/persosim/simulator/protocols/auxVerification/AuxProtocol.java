@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.globaltester.logging.BasicLogger;
 
@@ -102,7 +103,10 @@ public class AuxProtocol extends AbstractProtocol implements Iso7816, TlvConstan
 		List<AuthenticatedAuxiliaryData> auxDataFromTa = taMechanism.getAuxiliaryData();
 		if ((auxDataFromTa == null)||(auxDataFromTa.isEmpty())) throw new FileNotFoundException("No auxiliary data was stored during TA");
 		
-		for (AuthenticatedAuxiliaryData curAuthAuxData : auxDataFromTa) {
+		ListIterator<AuthenticatedAuxiliaryData> auxDataIterator = auxDataFromTa.listIterator(auxDataFromTa.size());
+		
+		while(auxDataIterator.hasPrevious()) {
+			AuthenticatedAuxiliaryData curAuthAuxData = auxDataIterator.previous();
 			if(oid.equals(curAuthAuxData.getObjectIdentifier())) {
 				return curAuthAuxData;
 			}			
