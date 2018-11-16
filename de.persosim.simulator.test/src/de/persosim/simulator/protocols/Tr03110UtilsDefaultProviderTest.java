@@ -91,7 +91,7 @@ public class Tr03110UtilsDefaultProviderTest extends PersoSimTestCase {
 	public void testParsePublicKeyEcUsingTrustPointKey() throws Exception {
 		//call mut
 		CvEcPublicKey parseCvPublicKey = (CvEcPublicKey) new Tr03110UtilsDefaultProvider().parseCvPublicKey(publicKeyDataEcNoDomainParameters);
-		parseCvPublicKey.updateKey(publicKeyEc);
+		parseCvPublicKey.addKeyParameters(publicKeyEc);
 		byte[] pubKey = parseCvPublicKey.getEncoded();
 		assertArrayEquals(publicKeyEc.getEncoded(), pubKey);
 	}

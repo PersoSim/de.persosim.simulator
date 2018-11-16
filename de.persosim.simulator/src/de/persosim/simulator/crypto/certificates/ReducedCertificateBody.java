@@ -1,5 +1,6 @@
 package de.persosim.simulator.crypto.certificates;
 
+import java.security.InvalidKeyException;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,7 @@ public class ReducedCertificateBody implements Body {
 		try {
 			certificationAuthorityReference = new PublicKeyReference(certificateBodyData.getTlvDataObject(TlvConstants.TAG_42));
 		} catch (CarParameterInvalidException e) {
-			throw new CertificateNotParseableException("The certificate authority reference could not be parsed");
+			throw new CertificateNotParseableException("The certificate authority reference could not be parsed", e);
 		}
 		
 		//Public Key (PK)
@@ -85,14 +86,18 @@ public class ReducedCertificateBody implements Body {
 		
 		publicKey = Tr03110Utils.parseCvPublicKey(publicKeyData);
 		if(currentPublicKey != null) {
-			publicKey.updateKey(currentPublicKey);
+			try {
+				publicKey.addKeyParameters(currentPublicKey);
+			} catch (InvalidKeyException e) {
+				throw new CertificateNotParseableException("Domain parameters could not be added to the public key", e);
+			}
 		}
 		
 		//Certificate Holder Reference (CHR)
 		try {
 			certificateHolderReference = new PublicKeyReference(certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F20));
 		} catch (CarParameterInvalidException e) {
-			throw new CertificateNotParseableException("The certificate holder reference could not be parsed");
+			throw new CertificateNotParseableException("The certificate holder reference could not be parsed", e);
 		}
 		
 		//Certificate Extensions (CE)

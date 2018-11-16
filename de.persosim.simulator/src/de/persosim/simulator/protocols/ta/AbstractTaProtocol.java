@@ -499,7 +499,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			ConstructedTlvDataObject certificateData = new ConstructedTlvDataObject(TlvConstants.TAG_7F21);
 			certificateData.addTlvDataObject(certificateBodyData, certificateSignatureData);
 			CardVerifiableCertificate certificate = new CardVerifiableCertificate(certificateData);
-			certificate.getPublicKey().updateKey(currentCertificate.getPublicKey());
+			certificate.getPublicKey().addKeyParameters(currentCertificate.getPublicKey());
 			if (certificate.getCertificationAuthorityReference().equals(currentCertificate.getCertificateHolderReference())){
 				if (!isCertificateIssuerValid(certificate, currentCertificate)){
 					// create and propagate response APDU

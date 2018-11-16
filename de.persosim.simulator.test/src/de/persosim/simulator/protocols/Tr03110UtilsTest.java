@@ -196,7 +196,7 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 			public boolean isComplete() {return false;}
 
 			@Override
-			public boolean updateKey(PublicKey publicKey) {return false;}
+			public void addKeyParameters(PublicKey publicKey) {}
 
 			@Override
 			public KeyPairGenerator getKeyPairGenerator(SecureRandom secRandom)

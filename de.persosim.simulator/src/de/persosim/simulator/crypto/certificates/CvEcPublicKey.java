@@ -123,7 +123,7 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 	}
 
 	@Override
-	public boolean updateKey(PublicKey publicKey) {
+	public void addKeyParameters(PublicKey publicKey) {
 		if(key == null) {
 			if(publicKey instanceof ECPublicKey) {
 				ECPublicKey ecPublicKey = (ECPublicKey) publicKey;
@@ -132,7 +132,7 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 				
 				if(ecParams == null) {
 					log(CvEcPublicKey.class, "updating key must provide domain parameters", LogLevel.DEBUG);
-					return false;
+					return;
 				}
 				
 				DomainParameterSetEcdh domParamsEcdh = new DomainParameterSetEcdh(ecParams);
@@ -141,18 +141,18 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 
 				if(key == null) {
 					log(CvEcPublicKey.class, "key update failed", LogLevel.DEBUG);
-					return false;
+					return;
 				} else{
 					publicPointEncoding = null;
 					log(CvEcPublicKey.class, "key update successfull", LogLevel.DEBUG);
-					return true;
+					return;
 				}
 			} else{
 				throw new IllegalArgumentException("updating key must be of type ECPublicKey");
 			}
 		} else{
 			log(CvEcPublicKey.class, "key update unnecessary", LogLevel.DEBUG);
-			return false; // key already complete and fully usable
+			return; // key already complete and fully usable
 		}
 	}
 

@@ -17,4 +17,8 @@ public class CertificateNotParseableException extends Exception {
 		super(message);
 	}
 
+	public CertificateNotParseableException(String message, Exception e) {
+		super(message, e);
+	}
+
 }

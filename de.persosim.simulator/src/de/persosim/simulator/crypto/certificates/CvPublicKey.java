@@ -1,5 +1,6 @@
 package de.persosim.simulator.crypto.certificates;
 
+import java.security.InvalidKeyException;
 import java.security.PublicKey;
 
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -34,11 +35,10 @@ public abstract class CvPublicKey extends CvKey implements PublicKey, TlvConstan
 	public abstract boolean isComplete();
 	
 	/**
-	 * This method updates this object to the parameters of the provided key.
+	 * This method updates this object to the parameters of the provided key iff no parameters are contained.
 	 * @param publicKey the reference key providing the parameters
-	 * @return true if key was incomplete AND has been successfully updated, false otherwise
 	 */
-	public abstract boolean updateKey(PublicKey publicKey);
+	public abstract void addKeyParameters(PublicKey publicKey) throws InvalidKeyException;
 	
 	/**
 	 * Matches this key to the given parameters core values. This check is done
