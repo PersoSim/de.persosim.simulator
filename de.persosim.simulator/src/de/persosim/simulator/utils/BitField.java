@@ -63,6 +63,10 @@ public class BitField {
 		
 		return result;
 	}
+
+	public static BitField buildFromBigEndian(byte[] bitsToStore) {
+		return buildFromBigEndian(bitsToStore.length*8, bitsToStore);
+	}
 	
 	/**
 	 * This constructor takes the given byte array and parses it beginning at
