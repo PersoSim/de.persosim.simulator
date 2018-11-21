@@ -240,12 +240,14 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 		performChipTest(beforeMigSampleConfigProject, migrationTestcasesChip);	
 		TestResult chipResults = getChipTestResult();
 		assertEquals("Chip test result", 0, chipResults.overallResult);
+		
+		beforeMigSampleConfig = new SampleConfig(beforeMigSampleConfigProject);
 
 		IProject afterMigSampleConfigProject = importSampleConfig("com.secunet.globaltester.crossover", "configs/Sample_PokeConfig", getNameOfSampleConfigChip() + "_migrated");
 		SampleConfig afterMigSampleConfig = new SampleConfig(afterMigSampleConfigProject);
 
-		Path certIs = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "EAC2_CERTS")).resolve("cvcaLink_cert_13.cvcert");
-		Path keyIs = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "EAC2_CERTS")).resolve("CVCA_KEY_13.pkcs8");	
+		Path certIs = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "LINK_CERT_13"));
+		Path keyIs = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "CVCA_KEY_13_PRIV"));	
 		Path certAt = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "EAC2_CERTS")).resolve("SEC4INF002.cvcert");
 		Path keyAt = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "EAC2_CERTS")).resolve("SEC4INF002.pkcs8");	
 		Path certSt = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "EAC2_CERTS")).resolve("cvca_root_st.cvcert");
