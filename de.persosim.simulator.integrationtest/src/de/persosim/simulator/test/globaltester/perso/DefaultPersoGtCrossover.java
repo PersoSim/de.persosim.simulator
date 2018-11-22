@@ -232,6 +232,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 		
 		ArrayList<String> migrationTestcasesChip = new ArrayList<>();
 		migrationTestcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/generate_data/testsuite_Gen_ALL_Certificate_Sets.gtsuite");
+//		migrationTestcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_K.gtsuite");
 		migrationTestcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_M.gtsuite");
 		migrationTestcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_N.gtsuite");
 
@@ -241,15 +242,13 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 		TestResult chipResults = getChipTestResult();
 		assertEquals("Chip test result", 0, chipResults.overallResult);
 		
-		beforeMigSampleConfig = new SampleConfig(beforeMigSampleConfigProject);
-
 		IProject afterMigSampleConfigProject = importSampleConfig("com.secunet.globaltester.crossover", "configs/Sample_PokeConfig", getNameOfSampleConfigChip() + "_migrated");
 		SampleConfig afterMigSampleConfig = new SampleConfig(afterMigSampleConfigProject);
 
 		Path certIs = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "LINK_CERT_13"));
 		Path keyIs = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "CVCA_KEY_13_PRIV"));	
-		Path certAt = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "EAC2_CERTS")).resolve("SEC4INF002.cvcert");
-		Path keyAt = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "EAC2_CERTS")).resolve("SEC4INF002.pkcs8");	
+		Path certAt = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "SEC4INF002"));
+		Path keyAt = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "SEC4INF002_KEY_PRIV"));
 		Path certSt = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "EAC2_CERTS")).resolve("cvca_root_st.cvcert");
 		Path keySt = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "EAC2_CERTS")).resolve("CVCA_KEY_ST_00.pkcs8");	
 				
