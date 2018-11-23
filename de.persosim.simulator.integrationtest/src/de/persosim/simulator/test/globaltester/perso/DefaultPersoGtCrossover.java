@@ -28,7 +28,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	@Override
 	public IProject getSampleConfigChip() throws Exception {
 		IProject sampleConfigProject = super.createSampleConfigChip();
-		SampleConfig sampleConfig = new SampleConfig(sampleConfigProject);
+		SampleConfig sampleConfig = SampleConfig.getSampleConfigForProject(sampleConfigProject);
 		
 		//remove unsupported profiles
         
@@ -237,13 +237,13 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 		migrationTestcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_N.gtsuite");
 
 		IProject beforeMigSampleConfigProject = getSampleConfigChip();
-		SampleConfig beforeMigSampleConfig = new SampleConfig(beforeMigSampleConfigProject);
+		SampleConfig beforeMigSampleConfig = SampleConfig.getSampleConfigForProject(beforeMigSampleConfigProject);
 		performChipTest(beforeMigSampleConfigProject, migrationTestcasesChip);	
 		TestResult chipResults = getChipTestResult();
 		assertEquals("Chip test result", 0, chipResults.overallResult);
 		
 		IProject afterMigSampleConfigProject = importSampleConfig("com.secunet.globaltester.crossover", "configs/Sample_PokeConfig", getNameOfSampleConfigChip() + "_migrated");
-		SampleConfig afterMigSampleConfig = new SampleConfig(afterMigSampleConfigProject);
+		SampleConfig afterMigSampleConfig = SampleConfig.getSampleConfigForProject(afterMigSampleConfigProject);
 
 		Path certIs = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "LINK_CERT_13"));
 		Path keyIs = Paths.get(beforeMigSampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "CVCA_KEY_13_PRIV"));	
