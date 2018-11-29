@@ -66,6 +66,8 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	    
 	    sampleConfig.put("RI", "KEY_ID", "0x02");
 	    sampleConfig.put("RI", "KEY_ID_AUTH", "true");
+	    
+	    sampleConfig.put("TR03110", "PSAInfo", "false");
 		
 
 	    sampleConfig.put("ISO7816", "EFATR", "false");
