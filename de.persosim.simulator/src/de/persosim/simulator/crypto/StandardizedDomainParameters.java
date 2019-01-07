@@ -143,11 +143,15 @@ public class StandardizedDomainParameters{
 	 *         supported
 	 */
 	public static Integer getDomainParameterSetId(ConstructedTlvDataObject algIdentifier){
+		Integer candidate = null;
 		for (StandardizedDomainParameterProvider provider : providers){
 			String algIdHexString = HexString.encode(algIdentifier.toByteArray());
-			return provider.getSimplifiedAlgorithm(algIdHexString);
+			candidate = provider.getSimplifiedAlgorithm(algIdHexString);
+			if (candidate != null) {
+				return candidate;
+			}
 		}
-		return null;
+		return candidate;
 	}
 	
 }
