@@ -1,6 +1,7 @@
 package de.persosim.simulator.tlv;
 
 import de.persosim.simulator.utils.HexString;
+import de.persosim.simulator.utils.Utils;
 
 /**
  * This class is used to generate TLV data objects from byte[] and automatically
@@ -62,5 +63,25 @@ public final class TlvDataObjectFactory {
 	 */
 	public static TlvDataObject createTLVDataObject(byte[] bytes) {
 		return createTLVDataObject(bytes, 0, bytes.length);
+	}
+	
+	/**
+	 * Creates a correctly encoded ASN.1 BITSTRING from the given data
+	 * @param bytes contents of the bit string
+	 * @param unusedBits number of the leading bits that are not used
+	 * @return
+	 */
+	public static PrimitiveTlvDataObject createBitString(byte [] bytes, byte unusedBits) {
+		return new PrimitiveTlvDataObject(TlvConstants.TAG_BIT_STRING, Utils.concatByteArrays(new byte [] {unusedBits}, bytes));
+	}
+	
+	/**
+	 * Creates a correctly encoded ASN.1 BITSTRING from the given data without unused bytes
+	 * @see #createBitString(byte[], byte)
+	 * @param bytes
+	 * @return
+	 */
+	public static PrimitiveTlvDataObject createBitString(byte [] bytes) {
+		return createBitString(bytes, (byte)0);
 	}
 }
