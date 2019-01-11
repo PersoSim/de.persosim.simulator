@@ -1,5 +1,6 @@
 package de.persosim.simulator.secstatus;
 
+import java.security.KeyPair;
 import java.util.Arrays;
 
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
@@ -21,11 +22,13 @@ public class PaceMechanism extends AbstractSecMechanism {
 	private byte [] compressedEphemeralPublicKeyChip;
 	private byte [] compressedEphemeralPublicKeyTerminal;
 	private Oid oidForTa;
+	private KeyPair ephemeralKeyPairChip;
 
-	public PaceMechanism(PaceOid paceOid, PasswordAuthObject usedPassword, byte[] compressedEphemeralPublicKeyChip, byte[] compressedEphemeralPublicKeyTerminal, Oid terminalTypeOid){
+	public PaceMechanism(PaceOid paceOid, PasswordAuthObject usedPassword, KeyPair ephemeralKeyPairChip, byte[] compressedEphemeralPublicKeyChip, byte[] compressedEphemeralPublicKeyTerminal, Oid terminalTypeOid){
 		this.paceOid = paceOid;
 		this.usedPassword = usedPassword;
 		this.compressedEphemeralPublicKeyChip = compressedEphemeralPublicKeyChip;
+		this.ephemeralKeyPairChip = ephemeralKeyPairChip;
 		this.compressedEphemeralPublicKeyTerminal = compressedEphemeralPublicKeyTerminal;
 		this.oidForTa = terminalTypeOid;
 	}
@@ -49,6 +52,13 @@ public class PaceMechanism extends AbstractSecMechanism {
 	 */
 	public byte [] getCompressedEphemeralPublicKeyChip() {
 		return Arrays.copyOf(compressedEphemeralPublicKeyChip, compressedEphemeralPublicKeyChip.length);
+	}
+
+	/**
+	 * @return the ephemeral key pair of the chip generated while performing PACE
+	 */
+	public KeyPair getEphemeralPublicKeyPairChip() {
+		return ephemeralKeyPairChip;
 	}
 	
 	/**
