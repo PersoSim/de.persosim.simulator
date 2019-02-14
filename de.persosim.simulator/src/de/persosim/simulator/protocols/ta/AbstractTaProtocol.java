@@ -571,6 +571,12 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @return true, iff the certificate is valid as defined in TR-03110 v2.10
 	 */
 	protected static boolean checkValidity(CardVerifiableCertificate certificate, CardVerifiableCertificate issuingCertificate, Date currentDate) {
+		//verify that issuingCertificate was valid, when certificate was issued
+		if (certificate.getEffectiveDate().after(issuingCertificate.getExpirationDate())) return false;
+		if (issuingCertificate.getEffectiveDate().after(certificate.getEffectiveDate())) return false; 
+		
+		
+		//check validity on current date
 		if (isCvcaCertificate(issuingCertificate)){
 			if (isCvcaCertificate(certificate)){
 				// the issuing certificate is allowed to be expired to allow import of a link certificate
