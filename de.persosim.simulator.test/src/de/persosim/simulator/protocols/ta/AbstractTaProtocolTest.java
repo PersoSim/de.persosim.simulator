@@ -232,6 +232,10 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 				result = past;
 				issuingCertificate.getCertificateHolderAuthorizationTemplate();
 				result = isDvDomesticChat;
+				issuingCertificate.getEffectiveDate();
+				result = past;
+				issuingCertificate.getExpirationDate();
+				result = future;
 			}
 		};
 
