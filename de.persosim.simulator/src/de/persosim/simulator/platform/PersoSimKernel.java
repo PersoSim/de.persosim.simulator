@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.InfoSource;
 import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.simulator.Simulator;
@@ -108,28 +109,30 @@ public class PersoSimKernel implements InfoSource {
 		processingData.addAllEventListener(simEventListeners);
 		processingData.addUpdatePropagation(this, "initial hardware info", new HardwareCommandApduPropagation(commandApduData));
 		
-		//propagate the event all layers up
-		LinkedList<Layer> layersProcessedAscending = new LinkedList<>();
-		for (Layer currentLayer : layers) {
-			layersProcessedAscending.addFirst(currentLayer);
-			
-			if (!currentLayer.processAscending(processingData)) {
-				break;
+		try {
+			//propagate the event all layers up
+			LinkedList<Layer> layersProcessedAscending = new LinkedList<>();
+			for (Layer currentLayer : layers) {
+				layersProcessedAscending.addFirst(currentLayer);
+				
+				if (!currentLayer.processAscending(processingData)) {
+					break;
+				}
 			}
-		}
-		
-		//propagate the event all layers down
-		for (Layer currentLayer : layersProcessedAscending) {
-			currentLayer.processDescending(processingData);
+			
+			//propagate the event all layers down
+			for (Layer currentLayer : layersProcessedAscending) {
+				currentLayer.processDescending(processingData);
+			}
+		} catch (Exception e) {
+			BasicLogger.logException(getClass(), e);
 		}
 		
 		//extract prepared response
 		byte[] responseApduData;
 		LinkedList<UpdatePropagation> hardwareResponses = processingData.getUpdatePropagations(HardwareResponseApduPropagation.class);
-		UpdatePropagation lastHardwareResponseUpdate = hardwareResponses.getLast();
-		
-		if (lastHardwareResponseUpdate != null && lastHardwareResponseUpdate instanceof HardwareResponseApduPropagation) {
-			responseApduData =  ((HardwareResponseApduPropagation)lastHardwareResponseUpdate).getResponseApdu();
+		if (!hardwareResponses.isEmpty()) {
+			responseApduData =  ((HardwareResponseApduPropagation)hardwareResponses.getLast()).getResponseApdu();
 		} else {
 			responseApduData = Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN+0x45);
 		}
