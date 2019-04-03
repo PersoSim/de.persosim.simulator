@@ -223,7 +223,7 @@ public class SmDataProviderTr03110 implements SmDataProvider {
 		sb.append("\n--------");
 		sb.append("\ncipher:");
 		sb.append("\nalgorithm: " + getCipher().getAlgorithm());
-		sb.append("\nIV:  " + HexString.encode(getCipherIv().getIV()));
+//		sb.append("\nIV:  " + HexString.encode(getCipherIv().getIV()));
 		sb.append("\nkey: " + HexString.encode(getKeyEnc().getEncoded()));
 		sb.append("\n--------");
 		sb.append("\nmac:");
