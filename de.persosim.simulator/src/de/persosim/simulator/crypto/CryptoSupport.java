@@ -191,7 +191,7 @@ public abstract class CryptoSupport {
 		byte[] processedMacInput = new byte[auxiliaryBlock.length + macInput.length];
 		System.arraycopy(auxiliaryBlock, 0, processedMacInput, 0, auxiliaryBlock.length);
 		System.arraycopy(macInput, 0, processedMacInput, auxiliaryBlock.length, macInput.length);
-		log(CryptoSupport.class, "processed mac input is: " + HexString.encode(macInput));
+		log(CryptoSupport.class, "processed mac input is: " + HexString.encode(processedMacInput));
 		
 		byte [] macResult = CryptoSupport.macPlain(mac, processedMacInput, macKey);
 		log(CryptoSupport.class, "raw mac is: " + HexString.encode(macResult));
@@ -251,6 +251,11 @@ public abstract class CryptoSupport {
 	
 	public String getMacName() {
 		return this.macName;
+	}
+
+	public byte[] adjustParity(byte[] key) {
+		//nothing to do here, behavior needs to be changed in some subclasses
+		return key;
 	}
 	
 }
