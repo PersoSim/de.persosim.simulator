@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.globaltester</groupId>
     <artifactId>org.globaltester.parent.crossover</artifactId>
-    <version>3.5.0-SNAPSHOT</version>
+    <version>3.5.1-SNAPSHOT</version>
     <relativePath>../../org.globaltester.parent/org.globaltester.parent.crossover</relativePath>
   </parent>
   <groupId>de.persosim</groupId>
   <artifactId>de.persosim.simulator.integrationtest</artifactId>
-  <version>0.13.0-SNAPSHOT</version>
+  <version>0.13.1-SNAPSHOT</version>
   <packaging>eclipse-test-plugin</packaging>
 
 </project>
