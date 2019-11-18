@@ -1,9 +1,11 @@
 package de.persosim.simulator.platform;
 
+import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.globaltester.logging.InfoSource;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,16 +19,10 @@ import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.TlvValuePlain;
-import mockit.Delegate;
-import mockit.Invocation;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
-import mockit.Verifications;
-import mockit.VerificationsInOrder;
 
 public class CommandProcessorTest extends PersoSimTestCase {
 
-	@Mocked Protocol mockedProtocol;
+	TestProtocol testProtocol;
 
 	CommandProcessor commandProcessor;
 
@@ -46,9 +42,10 @@ public class CommandProcessorTest extends PersoSimTestCase {
 	 */
 	@Before
 	public void setUp() throws AccessDeniedException {
+		testProtocol = new TestProtocol();
 		MasterFile mf = new MasterFile();
 	    List<Protocol> protocols = new ArrayList<>();
-	    protocols.add(mockedProtocol);
+	    protocols.add(testProtocol);
 	    
 		commandProcessor = new CommandProcessor(protocols, mf);
 		commandProcessor.init();
@@ -71,11 +68,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 		commandProcessor.processAscending(pData);
 
 		// make sure reset has been called
-		new Verifications() {
-			{
-				mockedProtocol.reset();
-			}
-		};
+		assertThat(testProtocol.methodCalls, Matchers.);
 	}
 
 	/**
@@ -88,7 +81,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 	public void testProcessProcessingData_NoResetForActiveProtocol() {
 		// prepare the mocked protocol
 		new NonStrictExpectations() {{
-				mockedProtocol.process(withInstanceOf(ProcessingData.class));
+				testProtocol.process(withInstanceOf(ProcessingData.class));
 				result = new Delegate<AbstractProtocolStateMachine>() {
 
 					@SuppressWarnings("unused") // JMockit
@@ -99,7 +92,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 					}
 				};
 				
-				mockedProtocol.getProtocolName();
+				testProtocol.getProtocolName();
 				result = "MockedProtocol";
 		}};
 		
@@ -119,9 +112,9 @@ public class CommandProcessorTest extends PersoSimTestCase {
 		
 		// make sure reset has been called only once (implicitly known to be before the first APDU)
 		new Verifications() {{
-				mockedProtocol.reset(); times = 1;
-				mockedProtocol.process(pData1);
-				mockedProtocol.process(pData2);
+				testProtocol.reset(); times = 1;
+				testProtocol.process(pData1);
+				testProtocol.process(pData2);
 		}};
 	}
 
@@ -133,7 +126,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 	public void testProcessProcessingData_ResetFormerlyActiveProtocol() {
 		// prepare the mocked protocol
 		new NonStrictExpectations() {{
-				mockedProtocol.process(withInstanceOf(ProcessingData.class));
+				testProtocol.process(withInstanceOf(ProcessingData.class));
 				result = new Delegate<AbstractProtocolStateMachine>() {
 
 					@SuppressWarnings("unused") // JMockit
@@ -146,7 +139,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 					}
 				};
 				
-				mockedProtocol.getProtocolName();
+				testProtocol.getProtocolName();
 				result = "MockedProtocol";
 		}};
 		
@@ -166,10 +159,10 @@ public class CommandProcessorTest extends PersoSimTestCase {
 		
 		// make sure reset has been called twice (once before every APDU)
 		new VerificationsInOrder() {{
-				mockedProtocol.reset();
-				mockedProtocol.process(pData1);
-				mockedProtocol.reset();
-				mockedProtocol.process(pData2);
+				testProtocol.reset();
+				testProtocol.process(pData1);
+				testProtocol.reset();
+				testProtocol.process(pData2);
 		}};
 	}
 
@@ -183,7 +176,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 	public void testPowerOn_ResetForActiveProtocols() {
 		// prepare the mocked protocol
 		new NonStrictExpectations() {{
-				mockedProtocol.process(withInstanceOf(ProcessingData.class));
+				testProtocol.process(withInstanceOf(ProcessingData.class));
 				result = new Delegate<AbstractProtocolStateMachine>() {
 
 					@SuppressWarnings("unused") // JMockit
@@ -194,7 +187,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 					}
 				};
 				
-				mockedProtocol.getProtocolName();
+				testProtocol.getProtocolName();
 				result = "MockedProtocol";
 		}};
 		
@@ -217,10 +210,10 @@ public class CommandProcessorTest extends PersoSimTestCase {
 		
 		// make sure reset has been called once (implicitly known to be before the first APDU)
 		new VerificationsInOrder() {{
-				mockedProtocol.reset();
-				mockedProtocol.process(pData1);
-				mockedProtocol.reset();
-				mockedProtocol.process(pData2);
+				testProtocol.reset();
+				testProtocol.process(pData1);
+				testProtocol.reset();
+				testProtocol.process(pData2);
 		}};
 	}
 

@@ -1,7 +1,5 @@
 package de.persosim.simulator.cardobjects;
 
-import mockit.Mocked;
-
 import org.junit.Test;
 
 import de.persosim.simulator.exception.AccessDeniedException;
@@ -17,8 +15,7 @@ import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 
 public class ChangeablePasswordAuthObjectTest {
-	@Mocked
-	AuthObjectIdentifier mockedAuthObjectIdentifier;
+	AuthObjectIdentifier mockedAuthObjectIdentifier = new AuthObjectIdentifier(42);
 	
 	/**
 	 * Positive test case: create new {@link ChangeablePasswordAuthObject} object using only non-default constructor.

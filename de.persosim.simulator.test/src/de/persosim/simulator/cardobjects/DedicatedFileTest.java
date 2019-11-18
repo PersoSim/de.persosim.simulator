@@ -1,6 +1,7 @@
 package de.persosim.simulator.cardobjects;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -12,15 +13,12 @@ import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvTag;
-import mockit.Mocked;
 
 public class DedicatedFileTest extends PersoSimTestCase {
 
 	byte [] dfName;
 	DedicatedFileIdentifier dfIdentifier;
 	FileIdentifier fileIdentifier;
-	@Mocked
-	SecStatus mockedSecurityStatus;
 	
 	@Before
 	public void setUp(){
@@ -40,19 +38,20 @@ public class DedicatedFileTest extends PersoSimTestCase {
 	
 	@Test(expected = AccessDeniedException.class)
 	public void testAddChildNoAccessRights() throws Exception{
-		DedicatedFile df = new DedicatedFile(fileIdentifier, dfIdentifier);
-		df.setSecStatus(mockedSecurityStatus);
+		DedicatedFile df = new DedicatedFile(fileIdentifier, dfIdentifier, SecCondition.DENIED);
+		df.setSecStatus(new SecStatus());
 		df.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
-		assertTrue(df.getChildren().size() == 0);
+		assertEquals(0, df.getChildren().size());
 		df.addChild(new NullCardObject());
 	}
 	
-	@Test(expected = AccessDeniedException.class)
+	@Test
 	public void testAddChildAccessRightsValid() throws Exception{
-		DedicatedFile df = new DedicatedFile(fileIdentifier, dfIdentifier, SecCondition.DENIED);
-		df.setSecStatus(mockedSecurityStatus);
+		DedicatedFile df = new DedicatedFile(fileIdentifier, dfIdentifier);
+		df.setSecStatus(new SecStatus());
 		df.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
-		assertTrue(df.getChildren().size() == 0);
+		assertEquals(0, df.getChildren().size());
 		df.addChild(new NullCardObject());
+		assertEquals(1, df.getChildren().size());
 	}
 }
