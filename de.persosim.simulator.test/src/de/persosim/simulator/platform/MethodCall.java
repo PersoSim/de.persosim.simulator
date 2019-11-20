@@ -2,10 +2,10 @@ package de.persosim.simulator.platform;
 
 public class MethodCall {
 
-	private String methodName;
-	private String[] params;
+	public String methodName;
+	private Object[] params;
 
-	public MethodCall(String methodName, String... params) {
+	public MethodCall(String methodName, Object... params) {
 		this.methodName = methodName;
 		this.params = params;
 	}

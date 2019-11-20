@@ -1,24 +1,21 @@
 package de.persosim.simulator.platform;
 
+import static de.persosim.simulator.platform.TestProtocol.methodsWhereCalledInSequence;
+import static de.persosim.simulator.platform.TestProtocol.wasMethodCalled;
 import static org.junit.Assert.assertThat;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.globaltester.logging.InfoSource;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.apdu.CommandApduFactory;
-import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.processing.ProcessingData;
-import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.Protocol;
-import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.test.PersoSimTestCase;
-import de.persosim.simulator.tlv.TlvValuePlain;
 
 public class CommandProcessorTest extends PersoSimTestCase {
 
@@ -26,13 +23,6 @@ public class CommandProcessorTest extends PersoSimTestCase {
 
 	CommandProcessor commandProcessor;
 
-	InfoSource source = new InfoSource() {
-		
-		@Override
-		public String getIDString() {
-			return "TestSource";
-		}
-	};
 
 	/**
 	 * Instantiate and initialize the object under test
@@ -68,7 +58,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 		commandProcessor.processAscending(pData);
 
 		// make sure reset has been called
-		assertThat(testProtocol.methodCalls, Matchers.);
+		assertThat(testProtocol, wasMethodCalled("reset"));
 	}
 
 	/**
@@ -79,24 +69,6 @@ public class CommandProcessorTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testProcessProcessingData_NoResetForActiveProtocol() {
-		// prepare the mocked protocol
-		new NonStrictExpectations() {{
-				testProtocol.process(withInstanceOf(ProcessingData.class));
-				result = new Delegate<AbstractProtocolStateMachine>() {
-
-					@SuppressWarnings("unused") // JMockit
-					public void process(Invocation inv,	ProcessingData processingData) {
-						TlvValuePlain responseData = new TlvValuePlain(new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 });
-						ResponseApdu resp = new ResponseApdu(responseData, Iso7816.SW_9000_NO_ERROR);
-						processingData.updateResponseAPDU(source, "GetNonce processed successfully", resp);
-					}
-				};
-				
-				testProtocol.getProtocolName();
-				result = "MockedProtocol";
-		}};
-		
-		
 		// transmit first APDU
 		final ProcessingData pData1 = new ProcessingData();
 		byte[] apduBytes = new byte[] { 0x00, (byte) 0x84, 0x00, 0x00, 0x08 };
@@ -110,12 +82,9 @@ public class CommandProcessorTest extends PersoSimTestCase {
 				apduBytes));
 		commandProcessor.processAscending(pData2);
 		
-		// make sure reset has been called only once (implicitly known to be before the first APDU)
-		new Verifications() {{
-				testProtocol.reset(); times = 1;
-				testProtocol.process(pData1);
-				testProtocol.process(pData2);
-		}};
+		// make sure needed methods have been called
+		assertThat(testProtocol, methodsWhereCalledInSequence(true, "reset", "process", "process"));
+
 	}
 
 	/**
@@ -124,24 +93,8 @@ public class CommandProcessorTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testProcessProcessingData_ResetFormerlyActiveProtocol() {
-		// prepare the mocked protocol
-		new NonStrictExpectations() {{
-				testProtocol.process(withInstanceOf(ProcessingData.class));
-				result = new Delegate<AbstractProtocolStateMachine>() {
-
-					@SuppressWarnings("unused") // JMockit
-					public void process(Invocation inv,	ProcessingData processingData) {
-						TlvValuePlain responseData = new TlvValuePlain(new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 });
-						ResponseApdu resp = new ResponseApdu(responseData, Iso7816.SW_9000_NO_ERROR);
-						processingData.updateResponseAPDU(source, "GetNonce processed successfully", resp);
-
-						processingData.addUpdatePropagation(source, "mocked protocol completed", new ProtocolUpdate(true));
-					}
-				};
-				
-				testProtocol.getProtocolName();
-				result = "MockedProtocol";
-		}};
+		// prepare TestProtocol
+		testProtocol.setFinishProtocol(true);
 		
 		
 		// transmit first APDU
@@ -157,13 +110,8 @@ public class CommandProcessorTest extends PersoSimTestCase {
 				apduBytes));
 		commandProcessor.processAscending(pData2);
 		
-		// make sure reset has been called twice (once before every APDU)
-		new VerificationsInOrder() {{
-				testProtocol.reset();
-				testProtocol.process(pData1);
-				testProtocol.reset();
-				testProtocol.process(pData2);
-		}};
+		// make sure needed methods have been called
+		assertThat(testProtocol, methodsWhereCalledInSequence(true, "reset", "process", "reset", "process"));
 	}
 
 	/**
@@ -174,23 +122,6 @@ public class CommandProcessorTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testPowerOn_ResetForActiveProtocols() {
-		// prepare the mocked protocol
-		new NonStrictExpectations() {{
-				testProtocol.process(withInstanceOf(ProcessingData.class));
-				result = new Delegate<AbstractProtocolStateMachine>() {
-
-					@SuppressWarnings("unused") // JMockit
-					public void process(Invocation inv,	ProcessingData processingData) {
-						TlvValuePlain responseData = new TlvValuePlain(new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 });
-						ResponseApdu resp = new ResponseApdu(responseData, Iso7816.SW_9000_NO_ERROR);
-						processingData.updateResponseAPDU(source, "GetNonce processed successfully", resp);
-					}
-				};
-				
-				testProtocol.getProtocolName();
-				result = "MockedProtocol";
-		}};
-		
 		
 		// transmit first APDU
 		final ProcessingData pData1 = new ProcessingData();
@@ -208,13 +139,8 @@ public class CommandProcessorTest extends PersoSimTestCase {
 				apduBytes));
 		commandProcessor.processAscending(pData2);
 		
-		// make sure reset has been called once (implicitly known to be before the first APDU)
-		new VerificationsInOrder() {{
-				testProtocol.reset();
-				testProtocol.process(pData1);
-				testProtocol.reset();
-				testProtocol.process(pData2);
-		}};
+		// make sure needed methods have been called
+		assertThat(testProtocol, methodsWhereCalledInSequence(true, "reset", "process", "reset", "process"));
 	}
 
 }
