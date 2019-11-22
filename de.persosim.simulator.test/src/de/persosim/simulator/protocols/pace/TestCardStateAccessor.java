@@ -40,4 +40,8 @@ public class TestCardStateAccessor implements CardStateAccessor {
 		this.mechanisms.put(clazz, newMechanism);
 	}
 
+	public void setMf(MasterFile newMasterFile) {
+		this.mf = newMasterFile;
+	}
+
 }

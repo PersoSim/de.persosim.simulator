@@ -212,8 +212,6 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 				return;
 			}
 			
-			caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());
-			
 			keyReference = keyObject.getPrimaryIdentifier().getInteger();
 			
 			/* CA domain parameters */
