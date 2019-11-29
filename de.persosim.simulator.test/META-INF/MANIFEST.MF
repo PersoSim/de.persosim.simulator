@@ -14,7 +14,8 @@ Require-Bundle: org.junit,
  org.globaltester.logging,
  org.globaltester.lib.xstream,
  org.globaltester.base,
- org.hamcrest.library
+ org.hamcrest.library,
+ org.globaltester.junit
 Export-Package: de.persosim.simulator,
  de.persosim.simulator.perso,
  de.persosim.simulator.test

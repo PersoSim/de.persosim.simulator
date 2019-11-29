@@ -12,6 +12,8 @@ import java.util.Collection;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import org.globaltester.cryptoprovider.Crypto;
+import org.globaltester.junit.ReflectionHelper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,12 +34,14 @@ import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.pace.TestCardStateAccessor;
 import de.persosim.simulator.protocols.pace.TestMasterFile;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
+import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
@@ -46,11 +50,7 @@ import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
-import mockit.Deencapsulation;
-import mockit.Delegate;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
+
 
 /**
  * @author slutters
@@ -63,11 +63,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	protected static TlvDataObjectContainer TLV_COMMAND_DATA_EXPL_KEY_SELECTION = new TlvDataObjectContainer(COMMAND_DATA_EXPL_KEY_SELECTION);
 	
 	private DefaultCaProtocol caProtocol;
-	TestCardStateAccessor testCardStateAccessor;
-//	@Mocked
-//	SecStatus mockedSecurityStatus;
-//	@Mocked
-	SecureRandom secRandom;
+	TestCardStateAccessor testCardState;
 	TestMasterFile testMf;
 	PasswordAuthObject passwordAuthObject;
 	ConstructedTlvDataObject cvcaIsTlv;
@@ -80,7 +76,6 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	KeyPair ecdhKeyPairPicc;
 	Collection<CardObject> ecdhKeys, emptyKeySet;
 	KeyPairObject ecdhKeyObject;
-	@Mocked
 	TerminalAuthenticationMechanism taMechanism;
 	Collection<TerminalAuthenticationMechanism> taMechanismCollection;
 	byte[] ecdhPublicKeyPcdCompressed;
@@ -95,11 +90,11 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		
 		//create environment
 		testMf = new TestMasterFile();
-		testCardStateAccessor = new TestCardStateAccessor(testMf);
+		testCardState = new TestCardStateAccessor(testMf);
 		
 		// create and init the object under test
 		caProtocol = new DefaultCaProtocol();
-		caProtocol.setCardStateAccessor(testCardStateAccessor);
+		caProtocol.setCardStateAccessor(testCardState);
 		caProtocol.init();
 		
 		// --> ECDH <--
@@ -130,9 +125,10 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		ecdhKeys.add(ecdhKeyObject);
 		
 		emptyKeySet = new ArrayList<CardObject>();
-		
-		taMechanismCollection = new ArrayList<TerminalAuthenticationMechanism>();
-		taMechanismCollection.add(taMechanism);
+
+		//FIXME
+//		taMechanismCollection = new ArrayList<TerminalAuthenticationMechanism>();
+//		taMechanismCollection.add(taMechanism);
 	}
 	
 	/**
@@ -225,26 +221,14 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	
 	/**
 	 * Positive test case: perform Set AT command with data from valid CA test run, implicit key reference (Tag 84 is missing).
+	 * @throws Exception 
 	 */
 	@Test
-	public void testSetAt_ImplicitKeyReference(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				testCardStateAccessor.getMasterFile();
-				result = testMf;
-
-				testMf.findChildren(
-						withInstanceOf(KeyIdentifier.class));
-				result = ecdhKeys;
-
-//				mockedCardStateAccessor.getObject(
-//						withInstanceOf(KeyIdentifier.class),
-//						withInstanceOf(Scope.class));
-//				result = ecdhKeyObject;
-			}
-		};
+	public void testSetAt_ImplicitKeyReference() throws Exception{
 		
+		// prepare the MasterFile
+        testMf.addChild(ecdhKeyObject);
+        
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 0C 80 0A 04 00 7F 00 07 02 02 03 02 02");
 		processingData.updateCommandApdu(this, "setAT APDU", CommandApduFactory.createCommandApdu(apduBytes));
@@ -255,223 +239,161 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		// check results
 		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
 	}
-//	
-//	/**
-//	 * Negative test case: perform Set AT command with data from valid CA test run, implicit key reference (Tag 84 is missing) fails (no key found).
-//	 */
-//	@Test
-//	public void testSetAt_ImplicitKeyReferenceFail(){
-//		// prepare the mock
-//		new Expectations() {
-//			{
-//				testCardStateAccessor.getMasterFile();
-//				result = testMf;
-//			}
-//		};
-//		
-//		new Expectations() {
-//			{
-//				testMf.findChildren(
-//						withInstanceOf(KeyIdentifier.class));
-//				result = emptyKeySet;
-//			}
-//		};
-//		
-//		ProcessingData processingData = new ProcessingData();
-//		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 0C 80 0A 04 00 7F 00 07 02 02 03 02 02");
-//		processingData.updateCommandApdu(this, "setAT APDU", CommandApduFactory.createCommandApdu(apduBytes));
-//
-//		// call mut
-//		caProtocol.process(processingData);
-//
-//		// check results
-//		assertEquals("Statusword is not 4A88", PlatformUtil.SW_4A88_REFERENCE_DATA_NOT_FOUND, processingData.getResponseApdu().getStatusWord());
-//	}
-//	
-//	/**
-//	 * Positive test case: perform General Authenticate command for EC keys with data from valid CA test run.
-//	 */
-//	@SuppressWarnings("unchecked")  //jmockit
-//	@Test
-//	public void testGeneralAuthenticateEcdh(){
-//		new NonStrictExpectations(CryptoUtil.class) {
-//            {
-//            	secRandom.nextBytes(
-//            			withInstanceOf(byte[].class));
-//            	
-//            	// eliminate true randomness by providing fixed "random" values
-//                result = new Delegate<Object>() {
-//                    @SuppressWarnings("unused") // JMockit
-//					void nextBytes(byte[] bytes) {
-//                        System.arraycopy(ecdhRPiccNonce, 0, bytes, 0, ecdhRPiccNonce.length);
-//                        return;
-//                     }
-//                };
-//            }
-//        };
-//        
-//        new NonStrictExpectations() {
-//			{
-//				testCardStateAccessor.getCurrentMechanisms(
-//						SecContext.APPLICATION,
-//						withInstanceOf(Collection.class));
-//				result = taMechanismCollection;
-//			}
-//		};
-//		
-//		new NonStrictExpectations() {
-//			{
-//				taMechanism.getCompressedTerminalEphemeralPublicKey();
-//				result = ecdhPublicKeyPcdCompressed;
-//			}
-//		};
-//		
-//		caProtocol.caOid = Ca.id_CA_ECDH_AES_CBC_CMAC_128;
-//		Deencapsulation.setField(caProtocol, "staticKeyPairPicc", ecdhKeyPairPicc);
-//		caProtocol.caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(caProtocol.staticKeyPairPicc.getPublic());
-//		caProtocol.cryptoSupport = caProtocol.caOid.getCryptoSupport();
-//		
-//		ProcessingData processingData = new ProcessingData();
-//		byte[] apduFront = HexString.toByteArray("00 86 00 00 45 7C 43 80 41");
-//		byte[] apduBack = HexString.toByteArray("00");
-//		byte[] apduBytes = Utils.concatByteArrays(apduFront, ecdhPublicKeyDataPcd, apduBack);
-//		CommandApdu cApdu = CommandApduFactory.createCommandApdu(apduBytes);
-//		processingData.updateCommandApdu(this, "General Authenticate APDU", cApdu);
-//		Deencapsulation.setField(caProtocol, processingData);
-//		
-//		// call mut
-//		caProtocol.processCommandGeneralAuthenticate();
-//		
-//		SecretKeySpec secretKeySpecMAC = Deencapsulation.getField(caProtocol, "secretKeySpecMAC");
-//		SecretKeySpec secretKeySpecENC = Deencapsulation.getField(caProtocol, "secretKeySpecENC");
-//		byte[] secretKeySpecMacKeyMaterial = secretKeySpecMAC.getEncoded();
-//		byte[] secretKeySpecEncKeyMaterial = secretKeySpecENC.getEncoded();
-//		
-//		System.out.println("key spec mac: " + HexString.encode(secretKeySpecMacKeyMaterial));
-//		System.out.println("key spec enc: " + HexString.encode(secretKeySpecEncKeyMaterial));
-//		
-//		// check results
-//		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
-//		assertArrayEquals("key spec ENC mismatch", ecdhKeySpecEnc, secretKeySpecEncKeyMaterial);
-//		assertArrayEquals("key spec MAC mismatch", ecdhKeySpecMac, secretKeySpecMacKeyMaterial);
-//	}
-//	
-//	/**
-//	 * Positive test case: construct a ChipAuthenticationInfo object
-//	 */
-//	@Test
-//	public void testConstructChipAuthenticationInfoObject(){
-//		Oid oid = new GenericOid(HexString.toByteArray("010203040506070809"));
-//		byte version = (byte) 0x01;
-//		byte keyId = (byte) 0x42;
-//		
-//		ConstructedTlvDataObject caioReceivedTlv = CaSecInfoHelper.constructChipAuthenticationInfoObject(oid, version, keyId);
-//		byte[] caioReceived = caioReceivedTlv.toByteArray();
-//		byte[] caioExpected = HexString.toByteArray("30110609010203040506070809020101020142");
-//		
-//		assertArrayEquals(caioExpected, caioReceived);
-//	}
-//	
-//	/**
-//	 * Positive test case: perform Set AT command with attached Tag for storing session context
-//	 */
-//	@Test
-//	public void testSetAt_ExplicitStoreSession(){
-//		// prepare the mock
-//		new NonStrictExpectations() {
-//			{
-//				testCardStateAccessor.getMasterFile();
-//				result = testMf;
-//				
-//				testMf.findChildren(
-//						withInstanceOf(KeyIdentifier.class));
-//				result = ecdhKeys;
-//			}
-//		};
-//		
-//		ProcessingData processingData = new ProcessingData();
-//		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 14 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02 E0 03 81 01 01");
-//		processingData.updateCommandApdu(this, "setAT APDU", CommandApduFactory.createCommandApdu(apduBytes));
-//
-//		// call mut
-//		caProtocol.process(processingData);
-//		
-//		assertEquals(caProtocol.sessionContextIdentifier, 1);
-//		
-//		// check results
-//		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
-//	}
-//	
-//	/**
-//	 * Positive test case: perform Set AT command without attached Tag for storing session context
-//	 */
-//	@Test
-//	public void testSetAt_WihtoutStore(){
-//		// prepare the mock
-//		new NonStrictExpectations() {
-//			{
-//				testCardStateAccessor.getMasterFile();
-//				result = testMf;
-//				
-//				testMf.findChildren(
-//						withInstanceOf(KeyIdentifier.class));
-//				result = ecdhKeys;
-//			}
-//		};
-//		
-//		ProcessingData processingData = new ProcessingData();
-//		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 0F 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02");
-//		processingData.updateCommandApdu(this, "setAT APDU", CommandApduFactory.createCommandApdu(apduBytes));
-//
-//		// call mut
-//		caProtocol.process(processingData);
-//		
-//		assertEquals(caProtocol.sessionContextIdentifier, -1);
-//		
-//		// check results
-//		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
-//	}
-//	
-//	/**
-//	 * Positive test case: perform 2 Set AT commands. The first with attached Tag for storing session context and the second without.
-//	 */
-//	@Test
-//	public void testSetAt_ExplicitStore_WithoutStore(){
-//		// prepare the mock
-//		new NonStrictExpectations() {
-//			{
-//				testCardStateAccessor.getMasterFile();
-//				result = testMf;
-//				
-//				testMf.findChildren(
-//						withInstanceOf(KeyIdentifier.class));
-//				result = ecdhKeys;
-//			}
-//		};
-//		
-//		ProcessingData processingData = new ProcessingData();
-//		
-//		byte[] apduBytesStore = HexString.toByteArray("00 22 41 A4 14 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02 E0 03 81 01 01");
-//		InterindustryCommandApduImpl cApduStore = (InterindustryCommandApduImpl) CommandApduFactory.createCommandApdu(apduBytesStore);
-//		processingData.updateCommandApdu(this, "setAT APDU", cApduStore);
-//		
-//		caProtocol.process(processingData);
-//		assertEquals(caProtocol.sessionContextIdentifier, 1);
-//				
-//		caProtocol = new DefaultCaProtocol();
-//		caProtocol.setCardStateAccessor(testCardStateAccessor);
-//		caProtocol.init();
-//		
-//		byte[] apduBytesNoStore = HexString.toByteArray("00 22 41 A4 0F 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02");
-//		InterindustryCommandApduImpl cApduNoStore = (InterindustryCommandApduImpl) CommandApduFactory.createCommandApdu(apduBytesNoStore, cApduStore);
-//		processingData.updateCommandApdu(this, "setAT APDU", cApduNoStore);
-//
-//		// call mut
-//		caProtocol.process(processingData);
-//		assertEquals(-1, caProtocol.sessionContextIdentifier);
-//		
-//		// check results
-//		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
-//	}
+	
+	/**
+	 * Negative test case: perform Set AT command with data from valid CA test run, implicit key reference (Tag 84 is missing) fails (no key found).
+	 */
+	@Test
+	public void testSetAt_ImplicitKeyReferenceFail(){
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 0C 80 0A 04 00 7F 00 07 02 02 03 02 02");
+		processingData.updateCommandApdu(this, "setAT APDU", CommandApduFactory.createCommandApdu(apduBytes));
+
+		// call mut
+		caProtocol.process(processingData);
+
+		// check results
+		assertEquals("Statusword is not 4A88", PlatformUtil.SW_4A88_REFERENCE_DATA_NOT_FOUND, processingData.getResponseApdu().getStatusWord());
+	}
+	
+	/**
+	 * Positive test case: perform General Authenticate command for EC keys with data from valid CA test run.
+	 */
+	@SuppressWarnings("unchecked")  //jmockit
+	@Test
+	public void testGeneralAuthenticateEcdh() throws Exception{
+		//setup RNG with known value
+		Crypto.setSecureRandom(new SecureRandom() {
+			@Override
+			public void nextBytes(byte[] bytes) {
+				System.arraycopy(ecdhRPiccNonce, 0, bytes, 0, ecdhRPiccNonce.length);
+                return;
+			}
+		});
+		
+		TerminalType tTrminalType;
+		testCardState.putSecMechanism(TerminalAuthenticationMechanism.class, new TerminalAuthenticationMechanism(ecdhPublicKeyPcdCompressed, TerminalType.IS, null, null, null, null, null));
+        
+		
+		caProtocol.caOid = Ca.id_CA_ECDH_AES_CBC_CMAC_128;
+		ReflectionHelper.setField(AbstractCaProtocol.class, caProtocol, "staticKeyPairPicc", ecdhKeyPairPicc);
+		caProtocol.caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(caProtocol.staticKeyPairPicc.getPublic());
+		caProtocol.cryptoSupport = caProtocol.caOid.getCryptoSupport();
+		
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduFront = HexString.toByteArray("00 86 00 00 45 7C 43 80 41");
+		byte[] apduBack = HexString.toByteArray("00");
+		byte[] apduBytes = Utils.concatByteArrays(apduFront, ecdhPublicKeyDataPcd, apduBack);
+		CommandApdu cApdu = CommandApduFactory.createCommandApdu(apduBytes);
+		processingData.updateCommandApdu(this, "General Authenticate APDU", cApdu);
+		ReflectionHelper.setField(AbstractProtocolStateMachine.class, caProtocol, "processingData", processingData);
+		
+		// call mut
+		caProtocol.processCommandGeneralAuthenticate();
+		
+		SecretKeySpec secretKeySpecMAC = (SecretKeySpec) ReflectionHelper.getFieldValue(AbstractCaProtocol.class, caProtocol, "secretKeySpecMAC");
+		SecretKeySpec secretKeySpecENC = (SecretKeySpec) ReflectionHelper.getFieldValue(AbstractCaProtocol.class, caProtocol, "secretKeySpecENC");
+		byte[] secretKeySpecMacKeyMaterial = secretKeySpecMAC.getEncoded();
+		byte[] secretKeySpecEncKeyMaterial = secretKeySpecENC.getEncoded();
+		
+		System.out.println("key spec mac: " + HexString.encode(secretKeySpecMacKeyMaterial));
+		System.out.println("key spec enc: " + HexString.encode(secretKeySpecEncKeyMaterial));
+		
+		// check results
+		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
+		assertArrayEquals("key spec ENC mismatch", ecdhKeySpecEnc, secretKeySpecEncKeyMaterial);
+		assertArrayEquals("key spec MAC mismatch", ecdhKeySpecMac, secretKeySpecMacKeyMaterial);
+	}
+	
+	/**
+	 * Positive test case: construct a ChipAuthenticationInfo object
+	 */
+	@Test
+	public void testConstructChipAuthenticationInfoObject(){
+		Oid oid = new GenericOid(HexString.toByteArray("010203040506070809"));
+		byte version = (byte) 0x01;
+		byte keyId = (byte) 0x42;
+		
+		ConstructedTlvDataObject caioReceivedTlv = CaSecInfoHelper.constructChipAuthenticationInfoObject(oid, version, keyId);
+		byte[] caioReceived = caioReceivedTlv.toByteArray();
+		byte[] caioExpected = HexString.toByteArray("30110609010203040506070809020101020142");
+		
+		assertArrayEquals(caioExpected, caioReceived);
+	}
+	
+	/**
+	 * Positive test case: perform Set AT command with attached Tag for storing session context
+	 */
+	@Test
+	public void testSetAt_ExplicitStoreSession() throws Exception {
+		// prepare the MasterFile
+        testMf.addChild(ecdhKeyObject);
+		
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 14 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02 E0 03 81 01 01");
+		processingData.updateCommandApdu(this, "setAT APDU", CommandApduFactory.createCommandApdu(apduBytes));
+
+		// call mut
+		caProtocol.process(processingData);
+		
+		assertEquals(caProtocol.sessionContextIdentifier, 1);
+		
+		// check results
+		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
+	}
+	
+	/**
+	 * Positive test case: perform Set AT command without attached Tag for storing session context
+	 */
+	@Test
+	public void testSetAt_WihtoutStore()throws Exception {
+		// prepare the MasterFile
+        testMf.addChild(ecdhKeyObject);
+		
+		ProcessingData processingData = new ProcessingData();
+		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 0F 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02");
+		processingData.updateCommandApdu(this, "setAT APDU", CommandApduFactory.createCommandApdu(apduBytes));
+
+		// call mut
+		caProtocol.process(processingData);
+		
+		assertEquals(caProtocol.sessionContextIdentifier, -1);
+		
+		// check results
+		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
+	}
+	
+	/**
+	 * Positive test case: perform 2 Set AT commands. The first with attached Tag for storing session context and the second without.
+	 */
+	@Test
+	public void testSetAt_ExplicitStore_WithoutStore()throws Exception {
+		// prepare the MasterFile
+        testMf.addChild(ecdhKeyObject);
+		
+		ProcessingData processingData = new ProcessingData();
+		
+		byte[] apduBytesStore = HexString.toByteArray("00 22 41 A4 14 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02 E0 03 81 01 01");
+		InterindustryCommandApduImpl cApduStore = (InterindustryCommandApduImpl) CommandApduFactory.createCommandApdu(apduBytesStore);
+		processingData.updateCommandApdu(this, "setAT APDU", cApduStore);
+		
+		caProtocol.process(processingData);
+		assertEquals(caProtocol.sessionContextIdentifier, 1);
+				
+		caProtocol = new DefaultCaProtocol();
+		caProtocol.setCardStateAccessor(testCardState);
+		caProtocol.init();
+		
+		byte[] apduBytesNoStore = HexString.toByteArray("00 22 41 A4 0F 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02");
+		InterindustryCommandApduImpl cApduNoStore = (InterindustryCommandApduImpl) CommandApduFactory.createCommandApdu(apduBytesNoStore, cApduStore);
+		processingData.updateCommandApdu(this, "setAT APDU", cApduNoStore);
+
+		// call mut
+		caProtocol.process(processingData);
+		assertEquals(-1, caProtocol.sessionContextIdentifier);
+		
+		// check results
+		assertEquals("Statusword is not 9000", Iso7816.SW_9000_NO_ERROR, processingData.getResponseApdu().getStatusWord());
+	}
 	
 }

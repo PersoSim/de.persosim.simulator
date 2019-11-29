@@ -72,8 +72,6 @@ import de.persosim.simulator.utils.Utils;
  * 
  */
 public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine implements Ca, TlvConstants {
-	protected SecureRandom secureRandom;
-	
 	protected CaOid caOid;
 	
 	protected DomainParameterSet caDomainParameters;
@@ -95,8 +93,6 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	
 	public AbstractCaProtocol() {
 		super("CA");
-		
-		secureRandom = new SecureRandom();
 	}
 	
 	@Override
@@ -333,7 +329,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		//get nonce r_PICC
 		int nonceSizeInBytes = 8;
 		byte[] rPiccNonce = new byte[nonceSizeInBytes];
-		this.secureRandom.nextBytes(rPiccNonce);
+		Crypto.getSecureRandom().nextBytes(rPiccNonce);
 		log(this, "nonce r_PICC of " + nonceSizeInBytes + " bytes length is: " + HexString.encode(rPiccNonce), LogLevel.DEBUG);
 		return rPiccNonce;
 	}
