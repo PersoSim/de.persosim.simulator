@@ -10,12 +10,11 @@ Require-Bundle: org.junit,
  de.persosim.simulator;bundle-version="0.6.0",
  org.globaltester.simulator,
  org.globaltester.cryptoprovider,
- org.globaltester.lib.jmockit,
  org.globaltester.logging,
  org.globaltester.lib.xstream,
  org.globaltester.base,
  org.hamcrest.library,
- org.globaltester.junit
+ org.globaltester.base.test
 Export-Package: de.persosim.simulator,
  de.persosim.simulator.perso,
  de.persosim.simulator.test

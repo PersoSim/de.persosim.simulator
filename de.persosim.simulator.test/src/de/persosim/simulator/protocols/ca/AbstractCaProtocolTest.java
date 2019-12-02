@@ -12,8 +12,8 @@ import java.util.Collection;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import org.globaltester.base.util.ReflectionHelper;
 import org.globaltester.cryptoprovider.Crypto;
-import org.globaltester.junit.ReflectionHelper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,13 +23,10 @@ import de.persosim.simulator.apdu.InterindustryCommandApduImpl;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyPairObject;
-import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
-import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
-import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.ProcessingException;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
@@ -42,8 +39,6 @@ import de.persosim.simulator.protocols.pace.TestCardStateAccessor;
 import de.persosim.simulator.protocols.pace.TestMasterFile;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
-import de.persosim.simulator.secstatus.SecStatus;
-import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
@@ -76,8 +71,6 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	KeyPair ecdhKeyPairPicc;
 	Collection<CardObject> ecdhKeys, emptyKeySet;
 	KeyPairObject ecdhKeyObject;
-	TerminalAuthenticationMechanism taMechanism;
-	Collection<TerminalAuthenticationMechanism> taMechanismCollection;
 	byte[] ecdhPublicKeyPcdCompressed;
 	
 	/**
@@ -259,11 +252,12 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	/**
 	 * Positive test case: perform General Authenticate command for EC keys with data from valid CA test run.
 	 */
-	@SuppressWarnings("unchecked")  //jmockit
 	@Test
 	public void testGeneralAuthenticateEcdh() throws Exception{
 		//setup RNG with known value
 		Crypto.setSecureRandom(new SecureRandom() {
+			private static final long serialVersionUID = -635674537533907790L;
+
 			@Override
 			public void nextBytes(byte[] bytes) {
 				System.arraycopy(ecdhRPiccNonce, 0, bytes, 0, ecdhRPiccNonce.length);
@@ -271,7 +265,6 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 			}
 		});
 		
-		TerminalType tTrminalType;
 		testCardState.putSecMechanism(TerminalAuthenticationMechanism.class, new TerminalAuthenticationMechanism(ecdhPublicKeyPcdCompressed, TerminalType.IS, null, null, null, null, null));
         
 		

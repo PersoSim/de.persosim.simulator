@@ -53,8 +53,8 @@ public class PinManagementTest extends PersoSimTestCase {
 	DomainParameterSetCardObject domainParameters0;
 	PaceOid oid0;
 	OidIdentifier oidIdentifier0;
-	private PaceMechanism paceMechanismWithCan;
-	private PaceMechanism paceMechanismWithPin;
+	PaceMechanism paceMechanismWithCan;
+	PaceMechanism paceMechanismWithPin;
 	
 	/**
 	 * Create the test environment.

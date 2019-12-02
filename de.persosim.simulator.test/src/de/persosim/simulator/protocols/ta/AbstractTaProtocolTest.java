@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.globaltester.junit.ReflectionHelper;
+import org.globaltester.base.util.ReflectionHelper;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -4,8 +4,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
-import mockit.Deencapsulation;
 
+import org.globaltester.base.util.ReflectionHelper;
 import org.junit.Test;
 
 import de.persosim.simulator.exception.ISO7816Exception;
@@ -250,7 +250,7 @@ public class PrimitiveTlvDataObjectTest {
 	 * the parameter T should NOT be reflected by the TlvDataObject
 	 */
 	@Test
-	public void testConstructorTagLengthValue_TagImmutableFromOutside() {
+	public void testConstructorTagLengthValue_TagImmutableFromOutside() throws Exception {
 		/* set arbitrary but valid primitive tag */
 		byte[] tagExpected = new byte[] { (byte) 0x80 };
 		/* set arbitrary but valid length matching actual length of value */
@@ -273,7 +273,7 @@ public class PrimitiveTlvDataObjectTest {
 		 */
 		byte[] tagExpectedNew = new byte[] { (byte) 0x08 };
 
-		Deencapsulation.setField(tag, "tagField", tagExpectedNew);
+		ReflectionHelper.setField(TlvTag.class, tag, "tagField", tagExpectedNew);
 
 		assertNotEquals(tag, tlvObject.getTlvTag());
 	}
@@ -284,7 +284,7 @@ public class PrimitiveTlvDataObjectTest {
 	 * the parameter should NOT be reflected by the TlvDataObject
 	 */
 	@Test
-	public void testSetTag_TagImmutableFromOutside() {
+	public void testSetTag_TagImmutableFromOutside() throws Exception {
 		/* set arbitrary but valid primitive tag */
 		byte[] tagExpected = new byte[] { (byte) 0x80 };
 		/* set arbitrary but valid length matching actual length of value */
@@ -309,7 +309,7 @@ public class PrimitiveTlvDataObjectTest {
 		 * above
 		 */
 		byte[] tagExpectedNew = new byte[] { (byte) 0x05 };
-		Deencapsulation.setField(newTag, "tagField", tagExpectedNew);
+		ReflectionHelper.setField(TlvTag.class, newTag, "tagField", tagExpectedNew);
 
 		assertNotEquals(newTag, tlvObject.getTlvTag());
 	}
