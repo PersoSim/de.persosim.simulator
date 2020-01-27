@@ -18,7 +18,7 @@ public class ProfileUB04 extends AbstractProfile {
 		persoDataContainer.setDg5PlainData("Ó RUDAÍ");
 		persoDataContainer.setDg6PlainData("MISTER BARISTA");
 		persoDataContainer.setDg7PlainData("DR. HC.");
-		persoDataContainer.setDg8PlainData("195309<<");
+		persoDataContainer.setDg8PlainData("195309  ");
 		persoDataContainer.setDg9PlainData("BALLYCLOUGH");
 		persoDataContainer.setDg10PlainData("IRL");
 		persoDataContainer.setDg17StreetPlainData("R3 3-5");
