@@ -25,6 +25,8 @@ public class ExtAuthCrossover extends DefaultPersoGtCrossover {
 
 	    sampleConfig.put("TAv2", "AUTH_EXT", "true");
 	    
+	    sampleConfig.put("AuxData", "CMP", "true");
+	    
 	}
 
 	@Override
@@ -97,9 +99,9 @@ public class ExtAuthCrossover extends DefaultPersoGtCrossover {
 		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_M/EAC2_ISO7816_M_07.gt");
 		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_M/EAC2_ISO7816_M_08.gt");
 		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_M/EAC2_ISO7816_M_09.gt");
-//		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_M/EAC2_ISO7816_M_10.gt");
-//		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_M/EAC2_ISO7816_M_11.gt");
-//		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_M/EAC2_ISO7816_M_12.gt");
+		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_M/EAC2_ISO7816_M_10.gt");
+		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_M/EAC2_ISO7816_M_11.gt");
+		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_M/EAC2_ISO7816_M_12.gt");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_M/EAC2_ISO7816_M_13.gt");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_M/EAC2_ISO7816_M_14.gt");
 		
