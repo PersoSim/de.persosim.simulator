@@ -110,13 +110,13 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 		newSampleConfig.put("TAv2", "ECDSA", MigrationType.ECDSA.equals(migrationTarget.type));
 		
 		//import certificates from migration
-		Path sourceCertIs = Paths.get(sampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "LINK_CERT_13"));
+		Path sourceCertIs = Paths.get(sampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "LINK_CERT_13a"));
 		Files.copy(sourceCertIs, Paths.get(newSampleConfig.getAbsolutePath(eac2Certs, "IS_CVCA_CERT")), StandardCopyOption.REPLACE_EXISTING);
-		Path sourceKeyIs = Paths.get(sampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "CVCA_KEY_13_PRIV"));
+		Path sourceKeyIs = Paths.get(sampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "CVCA_KEY_13a_PRIV"));
 		Files.copy(sourceKeyIs, Paths.get(newSampleConfig.getAbsolutePath(eac2Certs, "IS_CVCA_KEY")), StandardCopyOption.REPLACE_EXISTING);
-		Path sourceCertAt = Paths.get(sampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "SEC4INF002"));
+		Path sourceCertAt = Paths.get(sampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "LINK_CERT_13b"));
 		Files.copy(sourceCertAt, Paths.get(newSampleConfig.getAbsolutePath(eac2Certs, "AT_CVCA_CERT")), StandardCopyOption.REPLACE_EXISTING);
-		Path sourceKeyAt = Paths.get(sampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "SEC4INF002_KEY_PRIV"));
+		Path sourceKeyAt = Paths.get(sampleConfig.getAbsolutePath(com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics.TR03105ProtocolFactory.PROTOCOL_NAME, "CVCA_KEY_13b_PRIV"));
 		Files.copy(sourceKeyAt, Paths.get(newSampleConfig.getAbsolutePath(eac2Certs, "AT_CVCA_KEY")), StandardCopyOption.REPLACE_EXISTING);
 		Path sourceCertSt = Paths.get(sampleConfig.getAbsolutePath(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "EAC2_CERTS")).resolve("cvca_root_st.cvcert");
 		Files.copy(sourceCertSt, Paths.get(newSampleConfig.getAbsolutePath(eac2Certs, "ST_CVCA_CERT")), StandardCopyOption.REPLACE_EXISTING);
