@@ -177,6 +177,14 @@ public class SecureMessaging extends Layer implements TlvConstants{
 				setDataProvider((SmDataProvider) curDataProvider);
 			}
 		}
+		LinkedList<UpdatePropagation> secStatusPropagations = processingData.getUpdatePropagations(SecStatusEventUpdatePropagation.class);
+		for (UpdatePropagation curSecStatusPropagations : secStatusPropagations) {
+			if (curSecStatusPropagations != null && curSecStatusPropagations instanceof SecStatusEventUpdatePropagation) {
+				if (((SecStatusEventUpdatePropagation)curSecStatusPropagations).getEvent().equals(SecurityEvent.SECURE_MESSAGING_SESSION_ENDED)){
+					dataProvider = null;
+				}
+			}
+		}
 		
 	}
 

@@ -77,7 +77,7 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 								|| ((cmdApdu.getNc() == 2 && Arrays.equals(cmdApdu.getCommandData().toByteArray(),
 										new byte[] { 0x3F, 0x00 })))) {
 							// special file identifier for the master file (absent or 3f00)
-							file = cardState.getMasterFile();
+							file = handleSelectMf();
 						} else {
 							file = getFileForSelection(CurrentFileHandler.getCurrentDedicatedFile(cardState),
 									new FileIdentifier(
@@ -152,6 +152,10 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 				new ProtocolUpdate(true));
 	}
 	
+	protected CardFile handleSelectMf() {
+		return cardState.getMasterFile();
+	}
+
 	/**
 	 * (Recursively) search DF (identifed by DF name)
 	 * 
