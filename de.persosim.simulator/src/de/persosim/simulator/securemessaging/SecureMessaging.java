@@ -176,8 +176,7 @@ public class SecureMessaging extends Layer implements TlvConstants{
 			if (curDataProvider != null && curDataProvider instanceof SmDataProvider) {
 				setDataProvider((SmDataProvider) curDataProvider);
 			}
-		}
-		
+		}		
 	}
 
 	/**

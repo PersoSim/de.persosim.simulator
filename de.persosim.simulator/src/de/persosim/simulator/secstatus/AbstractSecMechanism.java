@@ -11,7 +11,7 @@ public class AbstractSecMechanism implements SecMechanism {
 
 	@Override
 	public boolean needsDeletionInCaseOf(SecurityEvent event) {
-		return true;
+		return !SecurityEvent.EXTENDED_ACCESS_SESSION_ENDED.equals(event);
 	}
 
 	@Override

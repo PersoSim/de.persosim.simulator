@@ -40,6 +40,7 @@ import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.ConfinedAuthorizationMechanism;
@@ -776,6 +777,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		} catch (ProcessingException e) {
 			resp = new ResponseApdu(e.getStatusWord());
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
+		} finally {
+			/* 
+			 * Request removal of this instance from the stack.
+			 * Protocol either successfully completed or failed.
+			 * In either case protocol is completed.
+			 */
+			processingData.addUpdatePropagation(this, "Command External Authenticate successfully processed - Protocol TA completed", new ProtocolUpdate(true));
 		}
 	}
 	
