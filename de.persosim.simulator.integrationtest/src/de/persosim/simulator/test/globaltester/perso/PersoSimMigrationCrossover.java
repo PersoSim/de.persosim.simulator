@@ -94,7 +94,7 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 
 		performChipTest(sampleConfig, testcases);	
 		TestResult chipResults = getChipTestResult();
-		assertEquals("Migration test result", 0, chipResults.overallResult);
+		assertEquals("Migration test result", 2, chipResults.overallResult);
 	}
 
 	private SampleConfig createNewSampleConfigafterMigration(SampleConfig sampleConfig,
