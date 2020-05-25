@@ -151,13 +151,13 @@ public abstract class CryptoSupport {
 			
 			return plainText;
 		} catch (InvalidKeyException e) {
-			throw new IllegalArgumentException("invalid key");
+			throw new IllegalArgumentException("invalid key", e);
 		} catch (InvalidAlgorithmParameterException e) {
-			throw new IllegalArgumentException("invalid iv");
+			throw new IllegalArgumentException("invalid iv", e);
 		} catch (IllegalBlockSizeException e) {
-			throw new IllegalArgumentException("illegal blocksize");
+			throw new IllegalArgumentException("illegal blocksize", e);
 		} catch (BadPaddingException e) {
-			throw new IllegalArgumentException("bad padding");
+			throw new IllegalArgumentException("bad padding", e);
 		}
 	}
 	
