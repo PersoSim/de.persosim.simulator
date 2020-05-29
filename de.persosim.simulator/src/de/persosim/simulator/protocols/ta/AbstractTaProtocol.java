@@ -40,6 +40,7 @@ import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.ProtocolUpdate;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.ConfinedAuthorizationMechanism;
@@ -249,21 +250,21 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					}
 				}
 				
-				if (currentCertificate != null){
-					// a new root certificate was selected
-					authorizationStore = getInitialAuthorizations(currentCertificate);
-					Authorization auth = null;
-					if (authorizationStore != null){
-						auth = authorizationStore.getAuthorization(terminalType.getAsOid());
-					}
-						
-					if(auth == null) {
-						// create and propagate response APDU
-						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-						this.processingData.updateResponseAPDU(this, "Previous protocol did not provide authorization information from chat", resp);
-						return;
-					}
-				}
+//				if (currentCertificate != null){
+//					// a new root certificate was selected
+//					authorizationStore = getInitialAuthorizations(currentCertificate);
+//					Authorization auth = null;
+//					if (authorizationStore != null){
+//						auth = authorizationStore.getAuthorization(terminalType.getAsOid());
+//					}
+//						
+//					if(auth == null) {
+//						// create and propagate response APDU
+//						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+//						this.processingData.updateResponseAPDU(this, "Previous protocol did not provide authorization information from chat", resp);
+//						return;
+//					}
+//				}
 			}
 				
 			if (currentCertificate != null){
@@ -285,39 +286,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 		}
 	}
-	
-	/**
-	 * Get the authorization information that should be used as the initial
-	 * authorization for the terminal authentication process. This method is
-	 * called after choosing a new trust point.
-	 * 
-	 * @param newRootCertificate
-	 *            the newly set trustpoint certificate
-	 * @return the {@link AuthorizationStore} containing the initial access
-	 *         rights
-	 */
-	protected AuthorizationStore getInitialAuthorizations(CardVerifiableCertificate newRootCertificate){
-		//get necessary information stored in an earlier protocol (e.g. PACE)
-		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
-		previousMechanisms.add(ConfinedAuthorizationMechanism.class);
-		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
-		
-		ConfinedAuthorizationMechanism authMechanism = null;
-		
-		if (currentMechanisms.size() == 1){
-			authMechanism = (ConfinedAuthorizationMechanism) currentMechanisms.iterator().next();
-			
-			if (authorizationStore == null) {
-				return authMechanism.getAuthorizationStore();
-			} else {
-				return authorizationStore;
-			}
-		}
-		return null;
-	} 
 
 	public void updateAuthorizations(CardVerifiableCertificate certificate) {
-		authorizationStore.updateAuthorization(getAuthorizationsFromCertificate(certificate));
+		if (isCvcaCertificate(certificate)) {
+			authorizationStore = new AuthorizationStore(getAuthorizationsFromCertificate(certificate));
+		} else {
+			authorizationStore.updateAuthorization(getAuthorizationsFromCertificate(certificate));
+		}
 	}
 	
 	public HashMap<Oid, Authorization> getAuthorizationsFromCertificate(CardVerifiableCertificate certificate) {
@@ -802,6 +777,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		} catch (ProcessingException e) {
 			resp = new ResponseApdu(e.getStatusWord());
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
+		} finally {
+			/* 
+			 * Request removal of this instance from the stack.
+			 * Protocol either successfully completed or failed.
+			 * In either case protocol is completed.
+			 */
+			processingData.addUpdatePropagation(this, "Command External Authenticate successfully processed - Protocol TA completed", new ProtocolUpdate(true));
 		}
 	}
 	
@@ -823,7 +805,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(compressedTerminalEphemeralPublicKey, terminalType, auxiliaryData, firstSectorPublicKeyHash, secondSectorPublicKeyHash, cryptographicMechanismReference.getHashAlgorithmName(), certificateExtensions);
 			processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
 		
-		
+		this.updateAuthorizationStoreWithConfinedAuth();
 		EffectiveAuthorizationMechanism authMechanism = new EffectiveAuthorizationMechanism(authorizationStore);
 		processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanism));
 		
@@ -832,6 +814,21 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		this.processingData.updateResponseAPDU(this,
 				"Command External Authenticate successfully processed", resp);
 	}
+	
+	/**
+	 * Update the AuthorizationStore with the confined authorizations from earlier Protocols (e.g. PACE)
+	 * 
+	 */
+	protected void updateAuthorizationStoreWithConfinedAuth() {
+		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
+		previousMechanisms.add(ConfinedAuthorizationMechanism.class);
+		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+		
+		for (SecMechanism secMechanism : currentMechanisms) {
+			if (!(secMechanism instanceof ConfinedAuthorizationMechanism)) continue;
+			authorizationStore.updateAuthorization(((ConfinedAuthorizationMechanism)secMechanism).getAuthorizationStore());
+		}
+	} 
 
 	/**
 	 * This method handles the internal state changes caused by successfully

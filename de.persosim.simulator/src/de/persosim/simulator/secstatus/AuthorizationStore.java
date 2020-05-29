@@ -18,7 +18,7 @@ import de.persosim.simulator.protocols.ta.Authorization;
  */
 public class AuthorizationStore {
 	
-private HashMap<Oid, Authorization> authorizations;
+	private HashMap<Oid, Authorization> authorizations;
 	
 	public AuthorizationStore() {
 		authorizations = new HashMap<>();
@@ -35,7 +35,7 @@ private HashMap<Oid, Authorization> authorizations;
 	public AuthorizationStore(AuthorizationStore authStore) {
 		this(authStore.authorizations);
 	}
-	
+
 	public Authorization getAuthorization(Oid oid) {
 		return authorizations.get(oid);
 	}
