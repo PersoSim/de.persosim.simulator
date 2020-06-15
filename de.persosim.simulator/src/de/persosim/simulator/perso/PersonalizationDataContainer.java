@@ -20,6 +20,8 @@ public class PersonalizationDataContainer {
 	ArrayList<Integer> caKeyIds, riKeyIds;
 	ArrayList<Boolean> caKeyPrivileges, riKeyAuthorizedOnly;
 	
+	boolean pinEnabled = true;
+	
 	public PersonalizationDataContainer() {
 		this.mrz                  = null;
 		
@@ -402,15 +404,22 @@ public class PersonalizationDataContainer {
 		
 		pdc.setDg1PlainData("ID");
 		pdc.setDg2PlainData("D");
-		pdc.setDg3PlainData("20201031");
+		pdc.setDg3PlainData("20291031");
 		pdc.setDg6PlainData("");
 		pdc.setDg7PlainData("");
-		pdc.setDg10PlainData("D");
 		pdc.setDg13PlainData("");
 		pdc.setDg19PlainData("ResPermit1");
 		pdc.setDg20PlainData("ResPermit2");
 		
 		return pdc;
+	}
+
+	public boolean isPinEnabled() {
+		return pinEnabled;
+	}
+
+	public void setPinEnabled(boolean newValue) {
+		pinEnabled = newValue;
 	}
 	
 }

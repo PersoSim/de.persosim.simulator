@@ -118,7 +118,7 @@ public class DateAuxObject extends AuxDataObject {
 				if (dayString.contains(" ")) {
 					cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
 				} else {
-					cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dayString)-1);
+					cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dayString));
 				}
 			}
 		}

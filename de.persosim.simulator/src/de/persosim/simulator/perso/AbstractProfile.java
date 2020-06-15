@@ -14,6 +14,7 @@ import de.persosim.simulator.cardobjects.DateAuxObject;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
+import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
@@ -143,6 +144,11 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
+	protected boolean isPinEnabled() {
+		initPersonalizationDataContainer();
+		return persoDataContainer.isPinEnabled();
+	}
+	@Override
 	protected void addEpassDatagroup1(DedicatedFile ePassAppl) throws AccessDeniedException {
 		String mrz = persoDataContainer.getEpassDg1PlainData();
 		byte[] mrzPlainBytes;
@@ -184,6 +190,10 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				new PaceWithPasswordSecurityCondition("PUK"),
 				new PaceWithPasswordRunningSecurityCondition("PIN"));
 		mf.addChild(pin);
+		
+		if (!isPinEnabled()) {
+			pin.updateLifeCycleState(Iso7816LifeCycleState.CREATION_OPERATIONAL_DEACTIVATED);
+		}
 
 		PasswordAuthObject puk = new PasswordAuthObject(
 				new AuthObjectIdentifier(4), getPuk().getBytes(StandardCharsets.UTF_8),
@@ -344,13 +354,12 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	protected void addEidDg10(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		String plainData = persoDataContainer.getDg10PlainData();
-		if ((plainData == null) ||
-				(plainData.length() < 3)) {
+		if ((plainData == null)|| (plainData.length() == 0)) {
 			// do not create DG
 			return;
 		}
 				
-		ConstructedTlvDataObject dg10Tlv = Asn1IcaoCountryWrapper.getInstance().encode(new TlvTag((byte) 0x62), persoDataContainer.getDg10PlainData());
+		ConstructedTlvDataObject dg10Tlv = Asn1IcaoCountryWrapper.getInstance().encode(new TlvTag((byte) 0x6A), persoDataContainer.getDg10PlainData());
 		
 		CardFile eidDg10 = new ElementaryFile(new FileIdentifier(0x010A),
 				new ShortFileIdentifier(0x0A),
@@ -457,7 +466,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		
 		if(nullCounter == 5) {
 			generalPlace = new ConstructedTlvDataObject(new TlvTag((byte) 0xA2));
-			PrimitiveTlvDataObject noPlace = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), ("keine Hauptwohnung in Deutschland").getBytes(StandardCharsets.UTF_8));
+			PrimitiveTlvDataObject noPlace = new PrimitiveTlvDataObject(new TlvTag((byte) 0x0C), ("keine Wohnung in Deutschland").getBytes(StandardCharsets.UTF_8));
 			generalPlace.addTlvDataObject(noPlace);
 		} else{
 			if(nullCounter == 4) {
