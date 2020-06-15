@@ -343,14 +343,14 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	@Override
 	protected void addEidDg10(DedicatedFile eIdAppl) throws AccessDeniedException {
 		initPersonalizationDataContainer();
-		String plainData = persoDataContainer.getDg2PlainData();
+		String plainData = persoDataContainer.getDg10PlainData();
 		if ((plainData == null) ||
 				(plainData.length() < 3)) {
 			// do not create DG
 			return;
 		}
 				
-		ConstructedTlvDataObject dg10Tlv = Asn1IcaoCountryWrapper.getInstance().encode(new TlvTag((byte) 0x62), persoDataContainer.getDg2PlainData());
+		ConstructedTlvDataObject dg10Tlv = Asn1IcaoCountryWrapper.getInstance().encode(new TlvTag((byte) 0x62), persoDataContainer.getDg10PlainData());
 		
 		CardFile eidDg10 = new ElementaryFile(new FileIdentifier(0x010A),
 				new ShortFileIdentifier(0x0A),
