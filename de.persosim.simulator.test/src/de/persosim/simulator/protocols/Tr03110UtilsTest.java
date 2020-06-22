@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import de.persosim.simulator.cardobjects.DomainParameterSetCardObject;
 import de.persosim.simulator.cardobjects.DomainParameterSetIdentifier;
-import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
@@ -33,14 +32,8 @@ import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.HexString;
-import mockit.Capturing;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 public class Tr03110UtilsTest extends PersoSimTestCase {
-	@Mocked
-	MasterFile mf;
 	Oid oid1, oid2;
 	OidIdentifier oidIdentifier1, oidIdentifier2;
 	DomainParameterSetCardObject domainParameters12, domainParameters13;
@@ -158,18 +151,11 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 	 * method correctly handles exceptions thrown by providers.
 	 * 
 	 * @param provider
-	 * @throws GeneralSecurityException
 	 */
 	@Test
-	public void testParseCertificatePublicKeyExceptionInProvider(
-			@Capturing final Tr03110UtilsProvider provider) throws GeneralSecurityException{
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				provider.parseCvPublicKey(null);
-				result = new GeneralSecurityException();
-			}
-		};
+	public void testParseCertificatePublicKeyExceptionInProvider() {
+
+		Tr03110Utils.addTr03110UtilsProvider(new TestTr03110UtilsProvider(new RuntimeException()));
 		
 		assertNull(Tr03110Utils.parseCvPublicKey(null));
 	}
@@ -182,8 +168,7 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 	 * @throws GeneralSecurityException
 	 */
 	@Test
-	public void testParseCertificatePublicKeyResultFound(
-			@Capturing final Tr03110UtilsProvider provider) throws GeneralSecurityException{
+	public void testParseCertificatePublicKeyResultFound() throws GeneralSecurityException{
 		// prepare the mock
 		final CvPublicKey key = new CvPublicKey(null, null) {
 
@@ -207,14 +192,10 @@ public class Tr03110UtilsTest extends PersoSimTestCase {
 			@Override
 			public boolean matchesCoreMaterial(CvPublicKey publicKey) {
 				return false;
-			}};
-			
-		new Expectations() {
-			{
-				provider.parseCvPublicKey(null);
-				result =  key;
 			}
 		};
+			
+		Tr03110Utils.addTr03110UtilsProvider(new TestTr03110UtilsProvider(key));
 		
 		assertSame(key, Tr03110Utils.parseCvPublicKey(null));
 	}

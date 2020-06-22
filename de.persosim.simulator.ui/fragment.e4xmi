@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_fyNxQD9FEeS_D-1xKGHHEA">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_jbTUMEIsEeS095NvfbDi9w" featurename="children" parentElementId="de.persosim.rcp.partSashContainer" positionInList="first">
-    <elements xsi:type="basic:Part" xmi:id="_l56EoEIsEeS095NvfbDi9w" elementId="de.persosim.simulator.ui.parts.mainPart" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.parts.PersoSimPart" label="PersoSim"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_jbTUMEIsEeS095NvfbDi9w" featurename="children" parentElementId="de.persosim.rcp.partstack.main" positionInList="last">
+    <elements xsi:type="basic:Part" xmi:id="_l56EoEIsEeS095NvfbDi9w" elementId="de.persosim.simulator.ui.parts.mainPart" contributionURI="bundleclass://de.persosim.simulator.ui/de.persosim.simulator.ui.parts.PersoSimPart" label="Logging"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BjrX4EZdEeSQKqd06nTv0g" featurename="children" parentElementId="de.persosim.rcp.mainMenue" positionInList="after:de.persosim.rcp.mainMenue.file">
     <elements xsi:type="menu:Menu" xmi:id="_JDxsQEZdEeSQKqd06nTv0g" elementId="de.persosim.simulator.ui.menu.selectPersoMenu" label="Personalization">

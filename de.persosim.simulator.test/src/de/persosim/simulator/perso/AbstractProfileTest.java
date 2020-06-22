@@ -55,7 +55,7 @@ public class AbstractProfileTest extends PersoSimTestCase {
 	@Test
 	public void testGetGeneralPlaceDgTlv_Empty() throws UnsupportedEncodingException {
 		ConstructedTlvDataObject received = AbstractProfile.getGeneralPlaceDgTlv(new TlvTag((byte) 0x71), null, null, null, null, null);
-		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("7125A2230C216B65696E65204861757074776F686E756E6720696E20446575747363686C616E64"));
+		ConstructedTlvDataObject expected = new ConstructedTlvDataObject(HexString.toByteArray("7120A21E0C1C6B65696E6520576F686E756E6720696E20446575747363686C616E64"));
 		
 		assertArrayEquals(expected.toByteArray(), received.toByteArray());
 	}

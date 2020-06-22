@@ -26,6 +26,7 @@ import de.persosim.simulator.cardobjects.DomainParameterSetCardObject;
 import de.persosim.simulator.cardobjects.DomainParameterSetIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
+import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
@@ -651,11 +652,19 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new PaceWithPasswordSecurityCondition("PUK"),
 				new PaceWithPasswordRunningSecurityCondition("PIN"));
 		mf.addChild(pin);
+		
+		if (!isPinEnabled()) {
+			pin.updateLifeCycleState(Iso7816LifeCycleState.CREATION_OPERATIONAL_DEACTIVATED);
+		}
 
 		PasswordAuthObject puk = new PasswordAuthObject(
 				new AuthObjectIdentifier(ID_PUK), "9876543210".getBytes(StandardCharsets.UTF_8),
 				"PUK");
 		mf.addChild(puk);
+	}
+
+	protected boolean isPinEnabled() {
+		return true;
 	}
 
 	/**

@@ -9,36 +9,32 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.globaltester.base.util.ReflectionHelper;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
-import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
-import de.persosim.simulator.cardobjects.TrustPointIdentifier;
-import de.persosim.simulator.cardobjects.TypeIdentifier;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
+import de.persosim.simulator.crypto.certificates.CertificateExtension;
 import de.persosim.simulator.crypto.certificates.ExtensionOid;
 import de.persosim.simulator.crypto.certificates.GenericExtension;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
-import de.persosim.simulator.platform.CardStateAccessor;
+import de.persosim.simulator.protocols.Oid;
+import de.persosim.simulator.protocols.pace.TestCardStateAccessor;
+import de.persosim.simulator.protocols.pace.TestMasterFile;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.BitField;
-import mockit.Deencapsulation;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 public class AbstractTaProtocolTest extends PersoSimTestCase {
 
-	@Mocked
-	CardStateAccessor mockedCardStateAccessor;
-	@Mocked
-	MasterFile mockedMf;
+	TestCardStateAccessor testCardState;
+	TestMasterFile testMf;
 	DateTimeCardObject currentDate;
 	Date future;
 	Date past;
@@ -52,15 +48,16 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	PublicKeyReference chr;
 	TrustPointCardObject trustPoint;
 
-	@Mocked
-	CardVerifiableCertificate certificate;
-	@Mocked
-	CardVerifiableCertificate issuingCertificate;
-	@Mocked
-	GenericExtension certificateExtension;
+	
+	TestCardVerifiableCertificate certificate;
+	TestCardVerifiableCertificate issuingCertificate;
 
 	@Before
 	public void setUp() throws CarParameterInvalidException {
+		
+		testMf = new TestMasterFile();
+		testCardState = new TestCardStateAccessor(testMf);
+		
 		Calendar calendar = Calendar.getInstance();
 
 		calendar.set(2014, 4, 5, 0, 0, 0);
@@ -81,7 +78,7 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 		currentDate = new DateTimeCardObject(current);
 
 		taProtocol = new DefaultTaProtocol();
-		taProtocol.setCardStateAccessor(mockedCardStateAccessor);
+		taProtocol.setCardStateAccessor(testCardState);
 		taProtocol.init();
 
 		isCvcaChat = new CertificateHolderAuthorizationTemplate(TerminalType.IS,
@@ -111,39 +108,28 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	 * contains the newly imported certificate.
 	 */
 	@Test
-	public void testImportCertificatePermanent() {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-				mockedMf.findChildren(
-						withInstanceOf(TrustPointIdentifier.class));
-				result = trustPoint;
-				mockedMf.findChildren(
-						withInstanceOf(TypeIdentifier.class));
-				result = currentDate;
-				issuingCertificate.getEffectiveDate();
-				result = past;
-				issuingCertificate.getExpirationDate();
-				result = past;
-				issuingCertificate.getCertificateHolderReference();
-				result = chr;
-				certificate.getEffectiveDate();
-				result = current;
-				certificate.getExpirationDate();
-				result = future;
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isCvcaChat;
-				certificate.getCertificateHolderReference();
-				result = chr;
-			}
-		};
+	public void testImportCertificatePermanent() throws Exception {
+		// prepare the test data
+		testMf.addChild(currentDate);
+		testMf.addChild(trustPoint);
+		
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isCvcaChat;
+		certificate.effectiveDate = current;
+		certificate.expirationDate = future;
+		certificate.chr = chr;
+		
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isCvcaChat;
+		issuingCertificate.effectiveDate= past;
+		issuingCertificate.expirationDate= past;
+		issuingCertificate.chr = chr;
 
-		Deencapsulation.setField(taProtocol, trustPoint);
+		ReflectionHelper.setField(AbstractTaProtocol.class, taProtocol, "trustPoint", trustPoint);
 
 		// call MUT
-		Deencapsulation.invoke(taProtocol, "importCertificate", certificate, issuingCertificate);
+		ReflectionHelper.invoke(AbstractTaProtocol.class, taProtocol, "importCertificate", 
+				new Class<?>[]{CardVerifiableCertificate.class, CardVerifiableCertificate.class}, certificate, issuingCertificate);
 
 		assertEquals(trustPoint.getCurrentCertificate(), certificate);
 	}
@@ -154,59 +140,48 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	 * temporary imported certificate are set.
 	 */
 	@Test
-	public void testImportCertificateTemporary() {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-				mockedMf.findChildren(
-						withInstanceOf(TrustPointIdentifier.class));
-				result = trustPoint;
-				mockedMf.findChildren(
-						withInstanceOf(TypeIdentifier.class));
-				result = currentDate;
-				certificate.getEffectiveDate();
-				result = current;
-				certificate.getExpirationDate();
-				result = future;
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isDvDomesticChat;
-				certificate.getCertificateHolderReference();
-				result = chr;
-			}
-		};
-
+	public void testImportCertificateTemporary() throws Exception {
+		// prepare the test data
+		testMf.addChild(currentDate);
+		testMf.addChild(trustPoint);
+		
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isDvDomesticChat;
+		certificate.effectiveDate = current;
+		certificate.expirationDate = future;
+		certificate.chr = chr;
+		
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isCvcaChat;
+		issuingCertificate.effectiveDate= past;
+		issuingCertificate.expirationDate= future;
+		
 		// call MUT
-		Deencapsulation.invoke(taProtocol, "importCertificate", certificate, issuingCertificate);
+		ReflectionHelper.invoke(AbstractTaProtocol.class, taProtocol, "importCertificate", 
+				new Class<?>[]{CardVerifiableCertificate.class, CardVerifiableCertificate.class}, certificate, issuingCertificate);
 
-		assertEquals(Deencapsulation.getField(taProtocol,
-				"mostRecentTemporaryCertificate"), certificate);
+		assertEquals(certificate, ReflectionHelper.getFieldValue(AbstractTaProtocol.class, taProtocol,
+				"mostRecentTemporaryCertificate"));
 	}
 
 	/**
 	 * Positive test for the date validity checks using domestic dv certificate
 	 */
 	@Test
-	public void testCheckValidityDvDomesticPositive() {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-				mockedMf.findChildren(
-						withInstanceOf(TypeIdentifier.class));
-				result = currentDate;
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isDvDomesticChat;
-				certificate.getExpirationDate();
-				result = future;
-				issuingCertificate.getCertificateHolderAuthorizationTemplate();
-				result = isCvcaChat;
-				issuingCertificate.getExpirationDate();
-				result = future;
-			}
-		};
+	public void testCheckValidityDvDomesticPositive() throws Exception {
+		// prepare the test data
+		testMf.addChild(currentDate);
+		
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isDvDomesticChat;
+		certificate.effectiveDate= past;
+		certificate.expirationDate= future;
+		
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isCvcaChat;
+		issuingCertificate.effectiveDate= past;
+		issuingCertificate.expirationDate= future;
+		
 		// call MUT
 		assertTrue(AbstractTaProtocol.checkValidity(certificate, issuingCertificate, current));
 	}
@@ -215,30 +190,20 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	 * Positive test for the date validity checks using an accurate terminal certificate (signed by domestic DV)
 	 */
 	@Test
-	public void testCheckValidityAccurateTerminalPositive() {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-				mockedMf.findChildren(
-						withInstanceOf(TypeIdentifier.class));
-				result = currentDate;
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isDvDomesticChat;
-				certificate.getExpirationDate();
-				result = future;
-				certificate.getEffectiveDate();
-				result = past;
-				issuingCertificate.getCertificateHolderAuthorizationTemplate();
-				result = isDvDomesticChat;
-				issuingCertificate.getEffectiveDate();
-				result = past;
-				issuingCertificate.getExpirationDate();
-				result = future;
-			}
-		};
-
+	public void testCheckValidityAccurateTerminalPositive() throws Exception {
+		// prepare the test data
+		testMf.addChild(currentDate);
+		
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isDvDomesticChat;
+		certificate.effectiveDate= past;
+		certificate.expirationDate= future;
+		
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isDvDomesticChat;
+		issuingCertificate.effectiveDate= past;
+		issuingCertificate.expirationDate= past;
+		
 		// call MUT
 		assertTrue(AbstractTaProtocol.checkValidity(certificate, issuingCertificate, current));
 	}
@@ -247,23 +212,20 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	 * Negative test for the date validity checks using a non accurate terminal certificate (signed by foreign DV)
 	 */
 	@Test
-	public void testCheckValidityNonAccurateTerminalNegative() {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-				mockedMf.findChildren(
-						withInstanceOf(TypeIdentifier.class));
-				result = currentDate;
-				issuingCertificate.getCertificateHolderAuthorizationTemplate();
-				result = isDvForeignChat;
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isTerminalChat;
-				certificate.getExpirationDate();
-				result = future;
-			}
-		};
+	public void testCheckValidityNonAccurateTerminalNegative() throws Exception {
+		// prepare the test data
+		testMf.addChild(currentDate);
+		
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isTerminalChat;
+		certificate.effectiveDate= past;
+		certificate.expirationDate= future;
+		
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isDvForeignChat;
+		issuingCertificate.effectiveDate= past;
+		issuingCertificate.expirationDate= past;
+		
 
 		// call MUT
 		assertTrue(AbstractTaProtocol.checkValidity(certificate, issuingCertificate, current));
@@ -273,26 +235,20 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	 * Positive test for the date validity checks using a CVCA link certificate
 	 */
 	@Test
-	public void testCheckValidityCvcaLinkIssuingCvcaExpired() {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-				mockedMf.findChildren(
-						withInstanceOf(TypeIdentifier.class));
-				result = currentDate;
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isCvcaChat;
-				certificate.getExpirationDate();
-				result = future;
-				issuingCertificate.getExpirationDate();
-				result = past;
-				issuingCertificate.getCertificateHolderAuthorizationTemplate();
-				result = isCvcaChat;
-			}
-		};
-
+	public void testCheckValidityCvcaLinkIssuingCvcaExpired() throws Exception {
+		// prepare the test data
+		testMf.addChild(currentDate);
+		
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isCvcaChat;
+		certificate.effectiveDate= past;
+		certificate.expirationDate= future;
+		
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isCvcaChat;
+		issuingCertificate.effectiveDate= past;
+		issuingCertificate.expirationDate= past;
+		
 		// call MUT
 		assertTrue(AbstractTaProtocol.checkValidity(certificate, issuingCertificate, current));
 	}
@@ -301,26 +257,20 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	 * Positive test for the date validity checks using a CVCA link certificate
 	 */
 	@Test
-	public void testCheckValidityCvcaLinkIssuingCvcaValid() {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-				mockedMf.findChildren(
-						withInstanceOf(TypeIdentifier.class));
-				result = currentDate;
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isCvcaChat;
-				certificate.getExpirationDate();
-				result = future;
-				issuingCertificate.getExpirationDate();
-				result = future;
-				issuingCertificate.getCertificateHolderAuthorizationTemplate();
-				result = isCvcaChat;
-			}
-		};
-
+	public void testCheckValidityCvcaLinkIssuingCvcaValid() throws Exception {
+		// prepare the test data
+		testMf.addChild(currentDate);
+		
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isCvcaChat;
+		certificate.effectiveDate= past;
+		certificate.expirationDate= future;
+		
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isCvcaChat;
+		issuingCertificate.effectiveDate= past;
+		issuingCertificate.expirationDate= past;
+		
 		// call MUT
 		assertTrue(AbstractTaProtocol.checkValidity(certificate, issuingCertificate, current));
 	}
@@ -329,25 +279,19 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	 * Test for checking the date validity using an expired CVCA certificate 
 	 */
 	@Test
-	public void testCheckValidityDomesticDvIssuingCvcaInvalid(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-				mockedMf.findChildren(
-						withInstanceOf(TypeIdentifier.class));
-				result = currentDate;
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isDvDomesticChat;
-				certificate.getExpirationDate();
-				result = future;
-				issuingCertificate.getExpirationDate();
-				result = past;
-				issuingCertificate.getCertificateHolderAuthorizationTemplate();
-				result = isCvcaChat;
-			}
-		};
+	public void testCheckValidityDomesticDvIssuingCvcaInvalid() throws Exception {
+		// prepare the test data
+		testMf.addChild(currentDate);
+		
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isDvDomesticChat;
+		certificate.effectiveDate= past;
+		certificate.expirationDate= future;
+		
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isCvcaChat;
+		issuingCertificate.effectiveDate= past;
+		issuingCertificate.expirationDate= past;
 
 		// call MUT
 		assertFalse(AbstractTaProtocol.checkValidity(certificate, issuingCertificate, current));
@@ -359,18 +303,20 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	 * terminal certificate (signed by domestic DV)
 	 */
 	@Test
-	public void testUpdateDatePositive() {
-
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isCvcaChat;
-				certificate.getEffectiveDate();
-				result = future;
-			}
-		};
-
+	public void testUpdateDatePositive() throws Exception {
+		// prepare the test data
+		testMf.addChild(currentDate);
+		
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isCvcaChat;
+		certificate.effectiveDate= future;
+		certificate.expirationDate= future;
+		
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isCvcaChat;
+		issuingCertificate.effectiveDate= past;
+		issuingCertificate.expirationDate= past;
+		
 		// call MUT
 		AbstractTaProtocol.updateDate(certificate, issuingCertificate, currentDate);
 		assertEquals(future, currentDate.getDate());
@@ -382,18 +328,12 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testUpdateDateNegative() {
-
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				issuingCertificate.getCertificateHolderAuthorizationTemplate();
-				result = isDvForeignChat;
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isTerminalChat;
-				certificate.getEffectiveDate();
-				result = future;
-			}
-		};
+		
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isTerminalChat;
+		certificate.effectiveDate = future;
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isDvForeignChat;
 
 		// call MUT
 		AbstractTaProtocol.updateDate(certificate, issuingCertificate, currentDate);
@@ -402,87 +342,76 @@ public class AbstractTaProtocolTest extends PersoSimTestCase {
 
 	@Test
 	public void testIsCertificateIssuerValidPositiveDv() throws CertificateNotParseableException {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isDvDomesticChat;
-				issuingCertificate.getCertificateHolderAuthorizationTemplate();
-				result = isCvcaChat;
-			}
-		};
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isDvDomesticChat;
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isCvcaChat;
+		
 		// call MUT
 		assertTrue(AbstractTaProtocol.isCertificateIssuerValid(issuingCertificate, issuingCertificate));
 	}
 
 	@Test
 	public void testIsCertificateIssuerValidPositiveTerminal() throws CertificateNotParseableException {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isTerminalChat;
-				issuingCertificate.getCertificateHolderAuthorizationTemplate();
-				result = isDvDomesticChat;
-			}
-		};
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isTerminalChat;
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isDvDomesticChat;
+
 		// call MUT
 		assertTrue(AbstractTaProtocol.isCertificateIssuerValid(certificate, issuingCertificate));
 	}
 
 	@Test
 	public void testIsCertificateIssuerValidPositiveCvcaLink() throws CertificateNotParseableException {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isCvcaChat;
-				issuingCertificate.getCertificateHolderAuthorizationTemplate();
-				result = isCvcaChat;
-			}
-		};
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isCvcaChat;
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isCvcaChat;
+		
 		// call MUT
 		assertTrue(AbstractTaProtocol.isCertificateIssuerValid(issuingCertificate, issuingCertificate));
 	}
 
 	@Test
 	public void testIsCertificateIssuerValidNegativeCvcaTerminal() throws CertificateNotParseableException {
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				certificate.getCertificateHolderAuthorizationTemplate();
-				result = isTerminalChat;
-				issuingCertificate.getCertificateHolderAuthorizationTemplate();
-				result = isCvcaChat;
-			}
-		};
+		certificate = new TestCardVerifiableCertificate();
+		certificate.chat = isTerminalChat;
+		issuingCertificate = new TestCardVerifiableCertificate();
+		issuingCertificate.chat = isCvcaChat;
+
 		// call MUT
 		assertFalse(AbstractTaProtocol.isCertificateIssuerValid(certificate, issuingCertificate));
 	}
 	
 	@Test
-	public void testExtractTerminalSector(){
-		// prepare the mock
-		final ArrayList<GenericExtension> extensions = new ArrayList<>();
-		extensions.add(certificateExtension);
-
+	public void testExtractTerminalSector() throws Exception {
+		// prepare the test data
 		PrimitiveTlvDataObject firstObject = new PrimitiveTlvDataObject(TlvConstants.TAG_80, new byte [] {1,2,3,4});
 		PrimitiveTlvDataObject secondObject = new PrimitiveTlvDataObject(TlvConstants.TAG_81, new byte [] {5,6,7,8});
 		final TlvDataObjectContainer dataObjects = new TlvDataObjectContainer(firstObject);
 		dataObjects.addTlvDataObject(secondObject);
 		
-		new NonStrictExpectations() {
-			{
-				certificate.getCertificateExtensions();
-				result = extensions;
-				certificateExtension.getObjectIdentifier();
-				result = ExtensionOid.id_Sector;
-				certificateExtension.getDataObjects();
-				result = dataObjects;
+		final ArrayList<CertificateExtension> extensions = new ArrayList<>();
+		extensions.add(new GenericExtension(null, null) {
+			@Override
+			public Oid getObjectIdentifier() {
+				return ExtensionOid.id_Sector;
 			}
-		};
-		Deencapsulation.invoke(taProtocol, "extractTerminalSector", certificate);
-		assertArrayEquals(firstObject.getValueField(), (byte []) Deencapsulation.getField(taProtocol, "firstSectorPublicKeyHash"));
-		assertArrayEquals(secondObject.getValueField(), (byte []) Deencapsulation.getField(taProtocol, "secondSectorPublicKeyHash"));
+			
+			@Override
+			public TlvDataObjectContainer getDataObjects() {
+				return dataObjects;
+			}
+			
+		});
+		
+
+		certificate = new TestCardVerifiableCertificate();
+		certificate.extensions = extensions;
+		
+		ReflectionHelper.invoke(AbstractTaProtocol.class, taProtocol, "extractTerminalSector", new Class<?>[] {CardVerifiableCertificate.class}, certificate);
+		assertArrayEquals(firstObject.getValueField(), (byte []) ReflectionHelper.getFieldValue(AbstractTaProtocol.class, taProtocol, "firstSectorPublicKeyHash"));
+		assertArrayEquals(secondObject.getValueField(), (byte []) ReflectionHelper.getFieldValue(AbstractTaProtocol.class, taProtocol, "secondSectorPublicKeyHash"));
 	}
 }
