@@ -94,7 +94,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 
 		sampleConfig.put("PASSWORDS", "MRZ",
 				"IDD<<0000000011<<<<<<<<<<<<<<<\n"+
-				"6408125F2010315D<<<<<<<<<<<<<8\n"+
+				"6408125F2910312D<<<<<<<<<<<<<8\n"+
 				"MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
 
 		//configure certificat locations
@@ -144,6 +144,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/generate_data/testsuite_Gen_ALL_Certificate_Sets.gtsuite");
 
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_H/EAC2_ISO7816_H_01.gt");
+//		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_H/EAC2_ISO7816_H_04a.gt");
 
 		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_complete_standard_layer6.gtsuite");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_H.gtsuite");
