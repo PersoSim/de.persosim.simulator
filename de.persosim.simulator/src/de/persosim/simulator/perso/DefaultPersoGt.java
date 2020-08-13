@@ -32,35 +32,41 @@ public class DefaultPersoGt extends Profile01 {
 	
 	@Override
 	protected void addTaTrustPoints(MasterFile mf) throws CertificateNotParseableException, AccessDeniedException {
-		String fileNameCvcaIs = "personalization/gtCertificates/CFG.DFLT.EAC.IS/CVCA_Cert_01.cvcert";
-		String fileNameCvcaAt = "personalization/gtCertificates/CFG.DFLT.EAC.AT/CVCA_Cert_01.cvcert";
-		String fileNameCvcaSt = "personalization/gtCertificates/CFG.DFLT.EAC.ST/CVCA_Cert_01.cvcert";
-
-		String id = "de.persosim.simulator";
 		
-		String absolutePathCvcaIs = PersonalizationFileHelper.getFileFromPseudoBundle(id, id, fileNameCvcaIs).getAbsolutePath();
-		String absolutePathCvcaAt = PersonalizationFileHelper.getFileFromPseudoBundle(id, id, fileNameCvcaAt).getAbsolutePath();
-		String absolutePathCvcaSt = PersonalizationFileHelper.getFileFromPseudoBundle(id, id, fileNameCvcaSt).getAbsolutePath();
-
-		byte[] cvcaIsData = PersonalizationFileHelper.readFromFile(absolutePathCvcaIs);
-		byte[] cvcaAtData = PersonalizationFileHelper.readFromFile(absolutePathCvcaAt);
-		byte[] cvcaStData = PersonalizationFileHelper.readFromFile(absolutePathCvcaSt);
-
-		ConstructedTlvDataObject cvcaIsTlv = new ConstructedTlvDataObject(cvcaIsData);
-		ConstructedTlvDataObject cvcaAtTlv = new ConstructedTlvDataObject(cvcaAtData);
-		ConstructedTlvDataObject cvcaStTlv = new ConstructedTlvDataObject(cvcaStData);
-
-		// TA trustpoints
 		TrustPointCardObject trustPointIs = new TrustPointCardObject(new TrustPointIdentifier(TerminalType.IS),
-				new CardVerifiableCertificate(cvcaIsTlv));
+				createRootCertIs());
 		mf.addChild(trustPointIs);
 
 		TrustPointCardObject trustPointAt = new TrustPointCardObject(new TrustPointIdentifier(TerminalType.AT),
-				new CardVerifiableCertificate(cvcaAtTlv));
+				createRootCertAt());
 		mf.addChild(trustPointAt);
 
 		TrustPointCardObject trustPointSt = new TrustPointCardObject(new TrustPointIdentifier(TerminalType.ST),
-				new CardVerifiableCertificate(cvcaStTlv));
+				createRootCertSt());
 		mf.addChild(trustPointSt);
+	}
+
+	protected CardVerifiableCertificate createRootCertIs() throws CertificateNotParseableException {
+			return createCertificate("personalization/gtCertificates/CFG.DFLT.EAC.IS/CVCA_Cert_01.cvcert");
+	}
+
+	protected CardVerifiableCertificate createRootCertAt() throws CertificateNotParseableException {
+			return createCertificate("personalization/gtCertificates/CFG.DFLT.EAC.AT/CVCA_Cert_01.cvcert");
+	}
+
+	protected CardVerifiableCertificate createRootCertSt() throws CertificateNotParseableException {
+			return createCertificate("personalization/gtCertificates/CFG.DFLT.EAC.ST/CVCA_Cert_01.cvcert");
+	}
+	
+	protected static CardVerifiableCertificate createCertificate(String certPath)
+			throws CertificateNotParseableException {
+				String id = "de.persosim.simulator";
+		String absolutePath = PersonalizationFileHelper.getFileFromPseudoBundle(id, id, certPath).getAbsolutePath();
+
+		byte[] certData = PersonalizationFileHelper.readFromFile(absolutePath);
+
+		ConstructedTlvDataObject certTlv = new ConstructedTlvDataObject(certData);
+		
+		return new CardVerifiableCertificate(certTlv);
 	}
 }

@@ -14,7 +14,7 @@ public class PersonalizationDataContainer {
 						dg11PlainData, dg12PlainData, dg13PlainData, dg14PlainData, dg15PlainData,
 						dg16PlainData, dg17StreetPlainData, dg17CityPlainData, dg17StatePlainData,
 						dg17CountryPlainData, dg17ZipPlainData, dg18PlainData, dg19PlainData, dg20PlainData,
-						dg21PlainData, efCardAccess, efChipSecurity, efCardSecurity, epassDg1PlainData, mrz;
+						dg21PlainData, dg22PlainData, efCardAccess, efChipSecurity, efCardSecurity, epassDg1PlainData, mrz;
 	
 	ArrayList<KeyPair> caKeys, riKeys;
 	ArrayList<Integer> caKeyIds, riKeyIds;
@@ -50,6 +50,7 @@ public class PersonalizationDataContainer {
 		this.dg19PlainData        = null;
 		this.dg20PlainData        = null;
 		this.dg21PlainData        = null;
+		this.dg22PlainData        = null;
 		
 		this.efCardAccess		  = null;
 		
@@ -342,6 +343,14 @@ public class PersonalizationDataContainer {
 
 	public void setDg21PlainData(String dg21PlainData) {
 		this.dg21PlainData = dg21PlainData;
+	}
+
+	public String getDg22PlainData() {
+		return dg22PlainData;
+	}
+
+	public void setDg22PlainData(String dg22PlainData) {
+		this.dg22PlainData = dg22PlainData;
 	}
 
 	public String getEpassDg1PlainData() {
