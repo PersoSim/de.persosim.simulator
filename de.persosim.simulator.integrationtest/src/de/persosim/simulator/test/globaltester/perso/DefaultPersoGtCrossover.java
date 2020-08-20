@@ -209,12 +209,8 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 		System.out.println("Test case results:");
 		for (SubTestResult current : chipTestResult.subResults){
 			String curResString = current.resultString;
-			if (curResString != null && curResString.contains("WARNING")) {
-				if (expectedWarningTestcases.contains(current.testCaseId)) {
-					continue;
-				}
-					
-				fail("Testcase "+current.testCaseId+" returned unexpected Warning");
+			if (curResString != null && (curResString.contains("WARNING") != expectedWarningTestcases.contains(current.testCaseId))) {
+				fail("Testcase "+current.testCaseId+" returned unexpected status ( Warning expected: "+expectedWarningTestcases.contains(current.testCaseId)+" )" );
 			}
 			
 		}
