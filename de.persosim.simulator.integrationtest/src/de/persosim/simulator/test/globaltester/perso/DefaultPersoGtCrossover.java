@@ -161,6 +161,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_O.gtsuite");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_P.gtsuite");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_Q.gtsuite");
+//		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_Q/EAC2_ISO7816_Q_20.gt");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_R.gtsuite");
 		
 		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer7/testsuite_complete_standard_layer7.gtsuite");
@@ -194,7 +195,16 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	public TestResult getChipTestResult() throws InterruptedException, ExecutionException{
 		TestResult chipTestResult = super.getChipTestResult();
 
-		List<String> expectedWarningTestcases = Arrays.asList("EAC2_ISO7816_Q_21", "EAC2_ISO7816_Q_22");
+		List<String> expectedWarningTestcases = Arrays.asList(
+				"EAC2_ISO7816_M_9", 
+				"EAC2_ISO7816_M_10", 
+				"EAC2_ISO7816_M_11", 
+				"EAC2_ISO7816_N_1", 
+				"EAC2_ISO7816_N_2", 
+				"EAC2_ISO7816_Q_20", 
+				"EAC2_ISO7816_Q_21", 
+				"EAC2_ISO7816_Q_22"
+				);
 		
 		System.out.println("Test case results:");
 		for (SubTestResult current : chipTestResult.subResults){
