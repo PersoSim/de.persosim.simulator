@@ -103,6 +103,9 @@ public class MrzAuthObject extends PasswordAuthObject {
 	}
 
 	public byte[] getIdPicc() {
+		if (idPicc == null ){
+			idPicc = extractIdPicc(mrz);
+		}
 		return Arrays.copyOf(idPicc, idPicc.length);
 	}
 	
