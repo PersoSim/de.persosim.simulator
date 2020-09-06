@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.globaltester</groupId>
     <artifactId>org.globaltester.parent.test</artifactId>
-    <version>3.6.2-SNAPSHOT</version>
+    <version>3.6.3-SNAPSHOT</version>
     <relativePath>../../org.globaltester.parent/org.globaltester.parent.test/</relativePath>
   </parent>
   <groupId>de.persosim</groupId>
