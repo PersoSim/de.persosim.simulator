@@ -1,13 +1,16 @@
 package de.persosim.simulator.test.globaltester.perso;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -16,6 +19,7 @@ import org.globaltester.sampleconfiguration.SampleConfig;
 import org.junit.Test;
 
 import com.secunet.globaltester.crossover.DefaultScriptIntegrationTest;
+import com.secunet.globaltester.testcontrol.callback.soap.TestControlCallback.SubTestResult;
 import com.secunet.globaltester.testcontrol.callback.soap.TestControlCallback.TestResult;
 
 import de.persosim.simulator.perso.DefaultPersoGt;
@@ -94,7 +98,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 
 		sampleConfig.put("PASSWORDS", "MRZ",
 				"IDD<<0000000011<<<<<<<<<<<<<<<\n"+
-				"6408125F2010315D<<<<<<<<<<<<<8\n"+
+				"6408125F2910312D<<<<<<<<<<<<<8\n"+
 				"MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
 
 		//configure certificat locations
@@ -144,6 +148,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/generate_data/testsuite_Gen_ALL_Certificate_Sets.gtsuite");
 
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_H/EAC2_ISO7816_H_01.gt");
+//		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_H/EAC2_ISO7816_H_04a.gt");
 
 		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_complete_standard_layer6.gtsuite");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_H.gtsuite");
@@ -156,6 +161,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_O.gtsuite");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_P.gtsuite");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_Q.gtsuite");
+//		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_Q/EAC2_ISO7816_Q_20.gt");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_R.gtsuite");
 		
 		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer7/testsuite_complete_standard_layer7.gtsuite");
@@ -179,9 +185,44 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 		
 		disableSimulator();
 		
-		assertEquals("Chip test result", 0, chipResults.overallResult);
+		assertEquals("Chip test result", 2, chipResults.overallResult);
 		
 		cleanupChipTest();
+	}
+	
+
+	@Override
+	public TestResult getChipTestResult() throws InterruptedException, ExecutionException{
+		TestResult chipTestResult = super.getChipTestResult();
+
+		List<String> expectedWarningTestcases = Arrays.asList(
+				"EAC2_ISO7816_M_9", 
+				"EAC2_ISO7816_M_10", 
+				"EAC2_ISO7816_M_11", 
+				"EAC2_ISO7816_N_1", 
+				"EAC2_ISO7816_N_2", 
+				"EAC2_ISO7816_Q_20", 
+				"EAC2_ISO7816_Q_21", 
+				"EAC2_ISO7816_Q_22"
+				);
+		
+		System.out.println("Test case results:");
+		for (SubTestResult current : chipTestResult.subResults){
+			String curResString = current.resultString;
+			if (curResString == null) {
+				continue;
+			}
+			if (curResString.contains("WARNING") && !expectedWarningTestcases.contains(current.testCaseId)) {
+				fail("Testcase "+current.testCaseId+" returned unexpected warning" );
+			}
+			
+			if (curResString.contains("PASSED") && expectedWarningTestcases.contains(current.testCaseId)) {
+				fail("Testcase "+current.testCaseId+" returned unexpected status, WARNING expected but was PASSED" );
+			}
+			
+		}
+		
+		return chipTestResult;
 	}
 
 }

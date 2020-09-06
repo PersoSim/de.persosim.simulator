@@ -2,8 +2,8 @@ package de.persosim.simulator.tlv;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import mockit.Deencapsulation;
 
+import org.globaltester.base.util.ReflectionHelper;
 import org.junit.Test;
 
 import de.persosim.simulator.exception.ISO7816Exception;
@@ -204,7 +204,7 @@ public class ConstructedTlvDataObjectTest {
 	 * T-L-V elements; stored T must not be the same object as provided T
 	 */
 	@Test
-	public void testConstructorTagLengthValueStoredTNotSameAsProvided() {
+	public void testConstructorTagLengthValueStoredTNotSameAsProvided() throws Exception {
 		/* set arbitrary but valid constructed tag */
 		byte[] tagExpected = new byte[] { (byte) 0x21 };
 		/* set arbitrary but valid length matching actual length of value */
@@ -224,7 +224,7 @@ public class ConstructedTlvDataObjectTest {
 		/* set arbitrary but valid constructed tag different from the one defined before */
 		byte[] tagExpected2 = new byte[] { (byte) 0x24 };
 		
-		Deencapsulation.setField(tag, "tagField", tagExpected2);
+		ReflectionHelper.setField(TlvTag.class, tag, "tagField", tagExpected2);
 
 		boolean isEqual = tag.equals(tlvObject.getTlvTag());
 		assertEquals("Provided tag must not be imported directly", isEqual,
@@ -236,7 +236,7 @@ public class ConstructedTlvDataObjectTest {
 	 * Construct constructed TLV data object from basic T-L-V elements; returned T must not be the same object as stored T
 	 */
 	@Test
-	public void testConstructorTagLengthValueReturnedTNotSameAsStored() {	
+	public void testConstructorTagLengthValueReturnedTNotSameAsStored() throws Exception {	
 		/* set arbitrary but valid constructed tag */
 		byte[] tagExpected = new byte[] { (byte) 0x21 };
 		/* set arbitrary but valid length matching actual length of value */
@@ -255,7 +255,7 @@ public class ConstructedTlvDataObjectTest {
 		byte[] tagExpected2 = new byte[] { (byte) 0x24 };
 		
 		TlvTag tagMod = tlvObject.getTlvTag();
-		Deencapsulation.setField(tagMod, "tagField", tagExpected2);
+		ReflectionHelper.setField(TlvTag.class, tagMod, "tagField", tagExpected2);
 		
 		boolean isEqual = tagMod.equals(tlvObject.getTlvTag());
 		assertEquals("Stored tag must not be returned directly", isEqual, false);

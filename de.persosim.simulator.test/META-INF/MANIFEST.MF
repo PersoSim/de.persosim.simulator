@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PersoSim Simulator Test
 Bundle-SymbolicName: de.persosim.simulator.test
-Bundle-Version: 0.14.3.qualifier
+Bundle-Version: 0.15.0.qualifier
 Bundle-Vendor: secunet Security Networks AG
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit,
@@ -10,10 +10,11 @@ Require-Bundle: org.junit,
  de.persosim.simulator;bundle-version="0.6.0",
  org.globaltester.simulator,
  org.globaltester.cryptoprovider,
- org.globaltester.lib.jmockit,
  org.globaltester.logging,
  org.globaltester.lib.xstream,
- org.globaltester.base
+ org.globaltester.base,
+ org.hamcrest.library,
+ org.globaltester.base.test
 Export-Package: de.persosim.simulator,
  de.persosim.simulator.perso,
  de.persosim.simulator.test

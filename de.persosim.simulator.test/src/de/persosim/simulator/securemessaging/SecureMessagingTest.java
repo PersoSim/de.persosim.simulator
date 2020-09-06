@@ -1,19 +1,16 @@
 package de.persosim.simulator.securemessaging;
 
-import static mockit.Deencapsulation.setField;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
+import java.lang.reflect.Field;
 import java.security.GeneralSecurityException;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 import org.globaltester.cryptoprovider.Crypto;
 import org.junit.Test;
@@ -22,6 +19,7 @@ import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.crypto.CryptoUtil;
+import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
@@ -54,8 +52,6 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	private static final String AES256_CASE2_SM_APDU = "0C8200000D9701FF8E083D0A111D900F25A500";
 	private static final String AES256_CASE2_PLAIN_APDU = "00820000FF";
 	
-	@Mocked SmDataProvider dataProviderMock;
-
 	@Test
 	public void processAscending_plainApduUntouched() {
 		SecureMessaging secureMessaging = new SecureMessaging();
@@ -85,22 +81,20 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	@Test
 	public void processAscending_isoCase3() throws GeneralSecurityException {
 		//prepare configuration
-		SecureMessaging secureMessaging = new SecureMessaging();
+		TestSmDataProvider testDataProvider = new TestSmDataProvider();
 		
-		//provide the mocked SmDataProvider
-		setField(secureMessaging, "dataProvider", dataProviderMock);
-		new NonStrictExpectations() {{
+		testDataProvider.cipherIv = new IvParameterSpec(new byte[8]);
+		testDataProvider.cipher = Cipher.getInstance("DESede/CBC/NoPadding", Crypto.getCryptoProvider());
+		testDataProvider.keyEnc = new SecretKeySpec(HexString.toByteArray(ICAO_SK_ENC), "DESede");
 
-			dataProviderMock.getCipherIv(); result = new IvParameterSpec(new byte[8]);
-			dataProviderMock.getCipher(); result = Cipher.getInstance("DESede/CBC/NoPadding", Crypto.getCryptoProvider());
-			dataProviderMock.getKeyEnc(); result = new SecretKeySpec(HexString.toByteArray(ICAO_SK_ENC), "DESede");
+		testDataProvider.mac = Mac.getInstance("ISO9797ALG3", Crypto.getCryptoProvider());
+		testDataProvider.keyMac = new SecretKeySpec(HexString.toByteArray(ICAO_SK_MAC), "DESede");
+		testDataProvider.macAuxiliaryData = HexString.toByteArray(ICAO_SSC_PLUS1);
+		testDataProvider.macLength = 8;
 
-			dataProviderMock.getMac(); result = Mac.getInstance("ISO9797ALG3", Crypto.getCryptoProvider());
-			dataProviderMock.getKeyMac(); result = new SecretKeySpec(HexString.toByteArray(ICAO_SK_MAC), "DESede");
-			dataProviderMock.getMacAuxiliaryData(); result = HexString.toByteArray(ICAO_SSC_PLUS1);
-			dataProviderMock.getMacLength(); result = 8;
-
-		}};
+		// prepare ObjectUnderTest
+		SecureMessaging secureMessaging = new SecureMessaging();
+		secureMessaging.dataProvider = testDataProvider;
 		
 		// provide sample APDU
 		ProcessingData pData = new ProcessingData();
@@ -126,22 +120,20 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	@Test
 	public void processAscending_isoCase2_AES265() throws Exception {
 		//prepare configuration
+		TestSmDataProvider testDataProvider = new TestSmDataProvider();
+		
+		testDataProvider.cipherIv = new IvParameterSpec(HexString.toByteArray(AES256_IV_ENC));
+		testDataProvider.cipher = Cipher.getInstance("AES/CBC/NoPadding", Crypto.getCryptoProvider());
+		testDataProvider.keyEnc = new SecretKeySpec(HexString.toByteArray(AES256_SK_ENC), "AES");
+
+		testDataProvider.mac = Mac.getInstance(AES256_MAC);
+		testDataProvider.keyMac = new SecretKeySpec(HexString.toByteArray(AES256_SK_MAC), "AES");
+		testDataProvider.macAuxiliaryData = HexString.toByteArray(AES256_SK_MAC_AUX_DATA);
+		testDataProvider.macLength = 8;
+
+		// prepare ObjectUnderTest
 		SecureMessaging secureMessaging = new SecureMessaging();
-				
-		//provide the mocked SmDataProvider
-		setField(secureMessaging, "dataProvider", dataProviderMock);
-		new NonStrictExpectations() {{
-
-			dataProviderMock.getCipherIv(); result = new IvParameterSpec(HexString.toByteArray(AES256_IV_ENC));
-			dataProviderMock.getCipher(); result = Cipher.getInstance("AES/CBC/NoPadding", Crypto.getCryptoProvider());
-			dataProviderMock.getKeyEnc(); result = new SecretKeySpec(HexString.toByteArray(AES256_SK_ENC), "AES");
-
-			dataProviderMock.getMac(); result = Mac.getInstance(AES256_MAC);
-			dataProviderMock.getKeyMac(); result = new SecretKeySpec(HexString.toByteArray(AES256_SK_MAC), "AES");
-			dataProviderMock.getMacAuxiliaryData(); result = HexString.toByteArray(AES256_SK_MAC_AUX_DATA);
-			dataProviderMock.getMacLength(); result = 8;
-
-		}};
+		secureMessaging.dataProvider = testDataProvider;
 				
 		// provide sample APDU
 		ProcessingData pData = new ProcessingData();
@@ -205,27 +197,27 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	@Test
 	public void processOutgoingSmApdu_responseDataAbsent() throws Exception {
 		//prepare configuration
+		TestSmDataProvider testDataProvider = new TestSmDataProvider();
+		
+		testDataProvider.cipherIv = new IvParameterSpec(HexString.toByteArray(AES256_IV_ENC));
+		testDataProvider.cipher = Cipher.getInstance("AES/CBC/NoPadding", Crypto.getCryptoProvider());
+		testDataProvider.keyEnc = new SecretKeySpec(HexString.toByteArray(AES256_SK_ENC), "AES");
+
+		testDataProvider.mac = Mac.getInstance(AES256_MAC);
+		testDataProvider.keyMac = new SecretKeySpec(HexString.toByteArray(AES256_SK_MAC), "AES");
+		testDataProvider.macAuxiliaryData = HexString.toByteArray(AES256_SK_MAC_AUX_DATA);
+		testDataProvider.macLength = 8;
+
+		// prepare ObjectUnderTest
 		SecureMessaging secureMessaging = new SecureMessaging();
-				
-		//provide the mocked SmDataProvider
-		setField(secureMessaging, "dataProvider", dataProviderMock);
-		new NonStrictExpectations() {{
-
-			dataProviderMock.getCipherIv(); result = new IvParameterSpec(HexString.toByteArray(AES256_IV_ENC));
-			dataProviderMock.getCipher(); result = Cipher.getInstance("AES/CBC/NoPadding", Crypto.getCryptoProvider());
-			dataProviderMock.getKeyEnc(); result = new SecretKeySpec(HexString.toByteArray(AES256_SK_ENC), "AES");
-
-			dataProviderMock.getMac(); result = Mac.getInstance(AES256_MAC);
-			dataProviderMock.getKeyMac(); result = new SecretKeySpec(HexString.toByteArray(AES256_SK_MAC), "AES");
-			dataProviderMock.getMacAuxiliaryData(); result = HexString.toByteArray(AES256_SK_MAC_AUX_DATA);
-			dataProviderMock.getMacLength(); result = 8;
-
-		}};
+		secureMessaging.dataProvider = testDataProvider;
 				
 		// provide sample APDU
 		ProcessingData pData = new ProcessingData();
 		pData.updateResponseAPDU(this, "test response w/o response data", new ResponseApdu(SW_9000_NO_ERROR));
-		setField(secureMessaging, "processingData", pData);
+		Field f = Layer.class.getDeclaredField("processingData");
+		f.setAccessible(true);
+		f.set(secureMessaging, pData);
 
 		// call mut
 		secureMessaging.processOutgoingSmApdu();
@@ -243,27 +235,27 @@ public class SecureMessagingTest extends PersoSimTestCase {
 	@Test
 	public void processOutgoingSmApdu_responseDataLengthZero() throws Exception {
 		//prepare configuration
+		TestSmDataProvider testDataProvider = new TestSmDataProvider();
+		
+		testDataProvider.cipherIv = new IvParameterSpec(HexString.toByteArray(AES256_IV_ENC));
+		testDataProvider.cipher = Cipher.getInstance("AES/CBC/NoPadding", Crypto.getCryptoProvider());
+		testDataProvider.keyEnc = new SecretKeySpec(HexString.toByteArray(AES256_SK_ENC), "AES");
+	
+		testDataProvider.mac = Mac.getInstance(AES256_MAC);
+		testDataProvider.keyMac = new SecretKeySpec(HexString.toByteArray(AES256_SK_MAC), "AES");
+		testDataProvider.macAuxiliaryData = HexString.toByteArray(AES256_SK_MAC_AUX_DATA);
+		testDataProvider.macLength = 8;
+	
+		// prepare ObjectUnderTest
 		SecureMessaging secureMessaging = new SecureMessaging();
-				
-		//provide the mocked SmDataProvider
-		setField(secureMessaging, "dataProvider", dataProviderMock);
-		new NonStrictExpectations() {{
-
-			dataProviderMock.getCipherIv(); result = new IvParameterSpec(HexString.toByteArray(AES256_IV_ENC));
-			dataProviderMock.getCipher(); result = Cipher.getInstance("AES/CBC/NoPadding", Crypto.getCryptoProvider());
-			dataProviderMock.getKeyEnc(); result = new SecretKeySpec(HexString.toByteArray(AES256_SK_ENC), "AES");
-
-			dataProviderMock.getMac(); result = Mac.getInstance(AES256_MAC);
-			dataProviderMock.getKeyMac(); result = new SecretKeySpec(HexString.toByteArray(AES256_SK_MAC), "AES");
-			dataProviderMock.getMacAuxiliaryData(); result = HexString.toByteArray(AES256_SK_MAC_AUX_DATA);
-			dataProviderMock.getMacLength(); result = 8;
-
-		}};
+		secureMessaging.dataProvider = testDataProvider;
 				
 		// provide sample APDU
 		ProcessingData pData = new ProcessingData();
 		pData.updateResponseAPDU(this, "test response w/o response data", new ResponseApdu(new TlvValuePlain(new byte[0]), SW_9000_NO_ERROR));
-		setField(secureMessaging, "processingData", pData);
+		Field f = Layer.class.getDeclaredField("processingData");
+		f.setAccessible(true);
+		f.set(secureMessaging, pData);
 
 		// call mut
 		secureMessaging.processOutgoingSmApdu();

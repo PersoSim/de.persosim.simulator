@@ -9,16 +9,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import de.persosim.simulator.secstatus.SecStatus;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.HexString;
-import mockit.Mocked;
 
 public class MrzAuthObjectTest extends PersoSimTestCase {
 
 	PasswordAuthObject authObject;
-	@Mocked
-	SecStatus mockedSecurityStatus;
 	AuthObjectIdentifier identifier;
 	
 	@Before

@@ -1,28 +1,26 @@
 package de.persosim.simulator.protocols.pin;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.MasterFile;
-import de.persosim.simulator.cardobjects.PasswordAuthObject;
-import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.LifeCycleChangeException;
-import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.RoleOid;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.protocols.pace.Pace;
+import de.persosim.simulator.protocols.pace.TestCardStateAccessor;
 import de.persosim.simulator.protocols.ta.AuthenticatedAuxiliaryData;
 import de.persosim.simulator.protocols.ta.Authorization;
 import de.persosim.simulator.protocols.ta.CertificateRole;
@@ -42,18 +40,14 @@ import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
 
 public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
-	@Mocked CardStateAccessor mockedCardStateAccessor;
+	TestCardStateAccessor testCardStateAccessor;
 	MasterFile mf;
 	SecStatus secStatus;
 
 	
-	PasswordAuthObject authObject;
-	PasswordAuthObjectWithRetryCounter pinObject;
+	TestAuthObject pinObject;
 	PinProtocol protocol;
 	
 	TerminalAuthenticationMechanism taMechanismIs;
@@ -63,16 +57,15 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	@Before
 	public void setUp() throws Exception {
 		mf = new MasterFile();
+		testCardStateAccessor  = new TestCardStateAccessor(mf);
 		secStatus= new SecStatus();
 		protocol = new PinProtocol();
-		protocol.setCardStateAccessor(mockedCardStateAccessor);
-		
-		authObject = new PasswordAuthObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN");
+		protocol.setCardStateAccessor(testCardStateAccessor);
 		
 		TaSecurityCondition pinManagementCondition = new TaSecurityCondition(TerminalType.AT,
 				new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(5)));
 		
-		pinObject = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN",
+		pinObject = new TestAuthObject(new AuthObjectIdentifier(ID_PIN), "111111".getBytes(), "PIN",
 				6, 6, 3, pinManagementCondition, new OrSecCondition(new PaceWithPasswordSecurityCondition("PIN"), new PaceWithPasswordSecurityCondition("PUK")),
 				new PaceWithPasswordSecurityCondition("PUK"),
 				new PaceWithPasswordRunningSecurityCondition("PIN"));
@@ -96,14 +89,6 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 */
 	@Test
 	public void testProcessCommandVerifyPassword() throws Exception {
-		// prepare the mock
-		new Expectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mf;
-			}
-		};
-		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = HexString.toByteArray("00200003");
@@ -125,14 +110,9 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 */
 	@Test
 	public void testProcessCommandVerifyPassword_PasswordObjectIsNull() {
-		// prepare the mock
+		// prepare the environment
 		mf = new MasterFile(); //use empty MF
-		new Expectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mf;
-			}
-		};
+		testCardStateAccessor.setMf(mf);
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -154,14 +134,8 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 */
 	@Test
 	public void testProcessCommandChangePassword() throws Exception {
-		// prepare the mock
+		// prepare the environment
 		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, new PaceMechanism(Pace.id_PACE_ECDH_GM_AES_CBC_CMAC_128, pinObject, null, null, null, null)));
-		new Expectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mf;
-			}
-		};
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -184,14 +158,6 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 */
 	@Test
 	public void testProcessCommandChangePassword_NoRertyCnt() throws Exception {
-		// prepare the mock
-		new Expectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mf;
-			}
-		};
-		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = HexString.toByteArray("002C020306313432353336");
@@ -204,7 +170,7 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 		// check results
 		assertEquals("Statusword", SW_6982_SECURITY_STATUS_NOT_SATISFIED, processingData
 				.getResponseApdu().getStatusWord());
-		assertArrayEquals("Password", "111111".getBytes(), authObject.getPassword());
+		assertArrayEquals("Password", "111111".getBytes(), pinObject.getPassword());
 	}
 	
 	/** 
@@ -213,14 +179,6 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 */
 	@Test
 	public void testProcessCommandChangePassword_EmptyPassword() throws Exception {
-		// prepare the mock
-		new Expectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mf;
-			}
-		};
-		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = HexString.toByteArray("002C0203");
@@ -241,16 +199,10 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 */
 	@Test
 	public void testProcessCommandUnblockPassword_PasswordBlocked() throws Exception {
-		// prepare the mock
-		Deencapsulation.setField(pinObject, "retryCounterCurrentValue", 0);
+		// prepare the environment
+		pinObject.setRetryCounterCurrentValue(0);
 		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, taMechanismAt));
 		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanismAtPinMgmt));
-		new Expectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mf;
-			}
-		};
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -273,15 +225,9 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 */
 	@Test
 	public void testProcessCommandUnblockPassword_PasswordUnblocked() throws Exception {
-		// prepare the mock
+		// prepare the environment
 		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, taMechanismAt));
 		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanismAtPinMgmt));
-		new Expectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mf;
-			}
-		};
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -305,16 +251,10 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 */
 	@Test
 	public void testProcessCommandActivatePassword() throws Exception {
-		// prepare the mock
-		Deencapsulation.setField(pinObject, "lifeCycleState", Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
+		// prepare the environment
+		pinObject.setLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
 		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, taMechanismAt));
 		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanismAtPinMgmt));
-		new Expectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mf;
-			}
-		};
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -338,16 +278,9 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 */
 	@Test
 	public void testProcessCommandDeactivatePassword() throws Exception {
-		// prepare the mock
+		// prepare the environment
 		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, taMechanismAt));
 		secStatus.updateMechanisms(new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanismAtPinMgmt));
-		new Expectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mf;
-			}
-		};
-		
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -370,14 +303,6 @@ public class PinProtocolTest extends PersoSimTestCase implements Tr03110 {
 	 */
 	@Test
 	public void testProcessCommandDeactivatePassword_SecStatusNotSatisfied() throws Exception {
-		// prepare the mock
-		new Expectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mf;
-			}
-		};
-		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = HexString.toByteArray("00041003");

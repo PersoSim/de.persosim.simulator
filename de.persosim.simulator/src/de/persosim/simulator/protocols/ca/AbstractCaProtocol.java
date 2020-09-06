@@ -8,7 +8,6 @@ import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,6 +19,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.globaltester.cryptoprovider.Crypto;
 import org.globaltester.logging.tags.LogLevel;
+
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
@@ -72,8 +72,6 @@ import de.persosim.simulator.utils.Utils;
  * 
  */
 public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine implements Ca, TlvConstants {
-	protected SecureRandom secureRandom;
-	
 	protected CaOid caOid;
 	
 	protected DomainParameterSet caDomainParameters;
@@ -95,8 +93,6 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	
 	public AbstractCaProtocol() {
 		super("CA");
-		
-		secureRandom = new SecureRandom();
 	}
 	
 	@Override
@@ -211,8 +207,6 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 				processingData.updateResponseAPDU(this, "The domain parameters could not be extracted from the referenced key", resp);
 				return;
 			}
-			
-			caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(staticKeyPairPicc.getPublic());
 			
 			keyReference = keyObject.getPrimaryIdentifier().getInteger();
 			
@@ -335,7 +329,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		//get nonce r_PICC
 		int nonceSizeInBytes = 8;
 		byte[] rPiccNonce = new byte[nonceSizeInBytes];
-		this.secureRandom.nextBytes(rPiccNonce);
+		Crypto.getSecureRandom().nextBytes(rPiccNonce);
 		log(this, "nonce r_PICC of " + nonceSizeInBytes + " bytes length is: " + HexString.encode(rPiccNonce), LogLevel.DEBUG);
 		return rPiccNonce;
 	}

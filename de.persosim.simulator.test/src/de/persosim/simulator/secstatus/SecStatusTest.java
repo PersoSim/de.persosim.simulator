@@ -34,12 +34,10 @@ import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.securemessaging.SmDataProvider;
 import de.persosim.simulator.securemessaging.SmDataProviderGenerator;
 import de.persosim.simulator.test.PersoSimTestCase;
-import mockit.Mocked;
 
 public class SecStatusTest extends PersoSimTestCase{
 	
 	SecStatus securityStatus;
-	@Mocked SecMechanism mechanism;
 	
 	@Before
 	public void setUp(){

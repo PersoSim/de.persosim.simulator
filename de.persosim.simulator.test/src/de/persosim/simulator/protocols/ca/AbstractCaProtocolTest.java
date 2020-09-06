@@ -12,6 +12,8 @@ import java.util.Collection;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import org.globaltester.base.util.ReflectionHelper;
+import org.globaltester.cryptoprovider.Crypto;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,34 +23,29 @@ import de.persosim.simulator.apdu.InterindustryCommandApduImpl;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.KeyIdentifier;
 import de.persosim.simulator.cardobjects.KeyPairObject;
-import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
-import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.ProcessingException;
-import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.protocols.Tr03110Utils;
+import de.persosim.simulator.protocols.pace.TestCardStateAccessor;
+import de.persosim.simulator.protocols.pace.TestMasterFile;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
-import de.persosim.simulator.secstatus.SecStatus;
-import de.persosim.simulator.secstatus.SecStatus.SecContext;
+import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
-import mockit.Deencapsulation;
-import mockit.Delegate;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
+
 
 /**
  * @author slutters
@@ -61,14 +58,8 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	protected static TlvDataObjectContainer TLV_COMMAND_DATA_EXPL_KEY_SELECTION = new TlvDataObjectContainer(COMMAND_DATA_EXPL_KEY_SELECTION);
 	
 	private DefaultCaProtocol caProtocol;
-	@Mocked
-	CardStateAccessor mockedCardStateAccessor;
-	@Mocked
-	SecStatus mockedSecurityStatus;
-	@Mocked
-	SecureRandom secRandom;
-	@Mocked
-	MasterFile mockedMf;
+	TestCardStateAccessor testCardState;
+	TestMasterFile testMf;
 	PasswordAuthObject passwordAuthObject;
 	ConstructedTlvDataObject cvcaIsTlv;
 	TlvDataObject cvcaIsCarTlv;
@@ -80,9 +71,6 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	KeyPair ecdhKeyPairPicc;
 	Collection<CardObject> ecdhKeys, emptyKeySet;
 	KeyPairObject ecdhKeyObject;
-	@Mocked
-	TerminalAuthenticationMechanism taMechanism;
-	Collection<TerminalAuthenticationMechanism> taMechanismCollection;
 	byte[] ecdhPublicKeyPcdCompressed;
 	
 	/**
@@ -92,9 +80,14 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	 */
 	@Before
 	public void setUp() throws ReflectiveOperationException {
+		
+		//create environment
+		testMf = new TestMasterFile();
+		testCardState = new TestCardStateAccessor(testMf);
+		
 		// create and init the object under test
 		caProtocol = new DefaultCaProtocol();
-		caProtocol.setCardStateAccessor(mockedCardStateAccessor);
+		caProtocol.setCardStateAccessor(testCardState);
 		caProtocol.init();
 		
 		// --> ECDH <--
@@ -125,9 +118,10 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		ecdhKeys.add(ecdhKeyObject);
 		
 		emptyKeySet = new ArrayList<CardObject>();
-		
-		taMechanismCollection = new ArrayList<TerminalAuthenticationMechanism>();
-		taMechanismCollection.add(taMechanism);
+
+		//FIXME
+//		taMechanismCollection = new ArrayList<TerminalAuthenticationMechanism>();
+//		taMechanismCollection.add(taMechanism);
 	}
 	
 	/**
@@ -183,20 +177,11 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	
 	/**
 	 * Positive test case: perform Set AT command with data from valid CA test run, explicit key reference (Tag 84 is present).
+
 	 */
 	@Test
-	public void testSetAt_ExplicitKeyReference(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-				
-				mockedMf.findChildren(
-						withInstanceOf(KeyIdentifier.class));
-				result = ecdhKeys;
-			}
-		};
+	public void testSetAt_ExplicitKeyReference() throws Exception{
+		testMf.addChild(ecdhKeyObject);
 		
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 0F 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02");
@@ -213,27 +198,11 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	 * Negative test case: perform Set AT command with data from valid CA test run, explicit key reference (Tag 84 is present) but key is not found.
 	 */
 	@Test
-	public void testSetAt_ExplicitKeyReferenceKeyNotFound(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-
-				mockedMf.findChildren(
-						withInstanceOf(OidIdentifier.class),
-						withInstanceOf(KeyIdentifier.class));
-				result = ecdhKeys;
-
-//				mockedCardStateAccessor.getObject(
-//						withInstanceOf(KeyIdentifier.class),
-//						withInstanceOf(Scope.class));
-//				result = new NullCardObject();
-			}
-		};
+	public void testSetAt_ExplicitKeyReferenceKeyNotFound() throws Exception{
+		testMf.addChild(ecdhKeyObject);
 		
 		ProcessingData processingData = new ProcessingData();
-		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 0F 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02");
+		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 0F 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 03");
 		processingData.updateCommandApdu(this, "setAT APDU", CommandApduFactory.createCommandApdu(apduBytes));
 
 		// call mut
@@ -245,26 +214,14 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	
 	/**
 	 * Positive test case: perform Set AT command with data from valid CA test run, implicit key reference (Tag 84 is missing).
+	 * @throws Exception 
 	 */
 	@Test
-	public void testSetAt_ImplicitKeyReference(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-
-				mockedMf.findChildren(
-						withInstanceOf(KeyIdentifier.class));
-				result = ecdhKeys;
-
-//				mockedCardStateAccessor.getObject(
-//						withInstanceOf(KeyIdentifier.class),
-//						withInstanceOf(Scope.class));
-//				result = ecdhKeyObject;
-			}
-		};
+	public void testSetAt_ImplicitKeyReference() throws Exception{
 		
+		// prepare the MasterFile
+        testMf.addChild(ecdhKeyObject);
+        
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 0C 80 0A 04 00 7F 00 07 02 02 03 02 02");
 		processingData.updateCommandApdu(this, "setAT APDU", CommandApduFactory.createCommandApdu(apduBytes));
@@ -281,22 +238,6 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testSetAt_ImplicitKeyReferenceFail(){
-		// prepare the mock
-		new Expectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-			}
-		};
-		
-		new Expectations() {
-			{
-				mockedMf.findChildren(
-						withInstanceOf(KeyIdentifier.class));
-				result = emptyKeySet;
-			}
-		};
-		
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 0C 80 0A 04 00 7F 00 07 02 02 03 02 02");
 		processingData.updateCommandApdu(this, "setAT APDU", CommandApduFactory.createCommandApdu(apduBytes));
@@ -311,43 +252,24 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	/**
 	 * Positive test case: perform General Authenticate command for EC keys with data from valid CA test run.
 	 */
-	@SuppressWarnings("unchecked")  //jmockit
 	@Test
-	public void testGeneralAuthenticateEcdh(){
-		new NonStrictExpectations(CryptoUtil.class) {
-            {
-            	secRandom.nextBytes(
-            			withInstanceOf(byte[].class));
-            	
-            	// eliminate true randomness by providing fixed "random" values
-                result = new Delegate<Object>() {
-                    @SuppressWarnings("unused") // JMockit
-					void nextBytes(byte[] bytes) {
-                        System.arraycopy(ecdhRPiccNonce, 0, bytes, 0, ecdhRPiccNonce.length);
-                        return;
-                     }
-                };
-            }
-        };
-        
-        new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getCurrentMechanisms(
-						SecContext.APPLICATION,
-						withInstanceOf(Collection.class));
-				result = taMechanismCollection;
+	public void testGeneralAuthenticateEcdh() throws Exception{
+		//setup RNG with known value
+		Crypto.setSecureRandom(new SecureRandom() {
+			private static final long serialVersionUID = -635674537533907790L;
+
+			@Override
+			public void nextBytes(byte[] bytes) {
+				System.arraycopy(ecdhRPiccNonce, 0, bytes, 0, ecdhRPiccNonce.length);
+                return;
 			}
-		};
+		});
 		
-		new NonStrictExpectations() {
-			{
-				taMechanism.getCompressedTerminalEphemeralPublicKey();
-				result = ecdhPublicKeyPcdCompressed;
-			}
-		};
+		testCardState.putSecMechanism(TerminalAuthenticationMechanism.class, new TerminalAuthenticationMechanism(ecdhPublicKeyPcdCompressed, TerminalType.IS, null, null, null, null, null));
+        
 		
 		caProtocol.caOid = Ca.id_CA_ECDH_AES_CBC_CMAC_128;
-		Deencapsulation.setField(caProtocol, "staticKeyPairPicc", ecdhKeyPairPicc);
+		ReflectionHelper.setField(AbstractCaProtocol.class, caProtocol, "staticKeyPairPicc", ecdhKeyPairPicc);
 		caProtocol.caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(caProtocol.staticKeyPairPicc.getPublic());
 		caProtocol.cryptoSupport = caProtocol.caOid.getCryptoSupport();
 		
@@ -357,13 +279,13 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		byte[] apduBytes = Utils.concatByteArrays(apduFront, ecdhPublicKeyDataPcd, apduBack);
 		CommandApdu cApdu = CommandApduFactory.createCommandApdu(apduBytes);
 		processingData.updateCommandApdu(this, "General Authenticate APDU", cApdu);
-		Deencapsulation.setField(caProtocol, processingData);
+		ReflectionHelper.setField(AbstractProtocolStateMachine.class, caProtocol, "processingData", processingData);
 		
 		// call mut
 		caProtocol.processCommandGeneralAuthenticate();
 		
-		SecretKeySpec secretKeySpecMAC = Deencapsulation.getField(caProtocol, "secretKeySpecMAC");
-		SecretKeySpec secretKeySpecENC = Deencapsulation.getField(caProtocol, "secretKeySpecENC");
+		SecretKeySpec secretKeySpecMAC = (SecretKeySpec) ReflectionHelper.getFieldValue(AbstractCaProtocol.class, caProtocol, "secretKeySpecMAC");
+		SecretKeySpec secretKeySpecENC = (SecretKeySpec) ReflectionHelper.getFieldValue(AbstractCaProtocol.class, caProtocol, "secretKeySpecENC");
 		byte[] secretKeySpecMacKeyMaterial = secretKeySpecMAC.getEncoded();
 		byte[] secretKeySpecEncKeyMaterial = secretKeySpecENC.getEncoded();
 		
@@ -396,18 +318,9 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	 * Positive test case: perform Set AT command with attached Tag for storing session context
 	 */
 	@Test
-	public void testSetAt_ExplicitStoreSession(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-				
-				mockedMf.findChildren(
-						withInstanceOf(KeyIdentifier.class));
-				result = ecdhKeys;
-			}
-		};
+	public void testSetAt_ExplicitStoreSession() throws Exception {
+		// prepare the MasterFile
+        testMf.addChild(ecdhKeyObject);
 		
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 14 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02 E0 03 81 01 01");
@@ -426,18 +339,9 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	 * Positive test case: perform Set AT command without attached Tag for storing session context
 	 */
 	@Test
-	public void testSetAt_WihtoutStore(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-				
-				mockedMf.findChildren(
-						withInstanceOf(KeyIdentifier.class));
-				result = ecdhKeys;
-			}
-		};
+	public void testSetAt_WihtoutStore()throws Exception {
+		// prepare the MasterFile
+        testMf.addChild(ecdhKeyObject);
 		
 		ProcessingData processingData = new ProcessingData();
 		byte[] apduBytes = HexString.toByteArray("00 22 41 A4 0F 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02");
@@ -456,18 +360,9 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 	 * Positive test case: perform 2 Set AT commands. The first with attached Tag for storing session context and the second without.
 	 */
 	@Test
-	public void testSetAt_ExplicitStore_WithoutStore(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-				
-				mockedMf.findChildren(
-						withInstanceOf(KeyIdentifier.class));
-				result = ecdhKeys;
-			}
-		};
+	public void testSetAt_ExplicitStore_WithoutStore()throws Exception {
+		// prepare the MasterFile
+        testMf.addChild(ecdhKeyObject);
 		
 		ProcessingData processingData = new ProcessingData();
 		
@@ -479,7 +374,7 @@ public class AbstractCaProtocolTest extends PersoSimTestCase {
 		assertEquals(caProtocol.sessionContextIdentifier, 1);
 				
 		caProtocol = new DefaultCaProtocol();
-		caProtocol.setCardStateAccessor(mockedCardStateAccessor);
+		caProtocol.setCardStateAccessor(testCardState);
 		caProtocol.init();
 		
 		byte[] apduBytesNoStore = HexString.toByteArray("00 22 41 A4 0F 80 0A 04 00 7F 00 07 02 02 03 02 02 84 01 02");

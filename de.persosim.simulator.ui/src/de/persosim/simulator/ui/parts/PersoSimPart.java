@@ -9,11 +9,15 @@ import java.util.Calendar;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.security.auth.callback.TextOutputCallback;
 
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -78,12 +82,20 @@ public class PersoSimPart {
 		
 		//configure the slider
 		slider = createSlider(parent);
-				
+		
+		txtOutput.addListener(SWT.MouseUp, new Listener() {	
+			@Override
+			public void handleEvent (Event e) {
+				lockAutoScroll();
+			}
+		});
+		
 		txtOutput.addMouseWheelListener(new MouseWheelListener() {
 			@Override
 			public void mouseScrolled(MouseEvent e) {
 				int count = e.count;
 				slider.setSelection(slider.getSelection()-count);
+				lockAutoScroll();
 				
 				buildNewConsoleContent();					
 			}
@@ -96,13 +108,35 @@ public class PersoSimPart {
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(e.keyCode == SWT.ARROW_DOWN){
-					slider.setSelection(slider.getSelection()+1);
+				int sliderChange = 0;
+				boolean addLock = false;
+				
+				switch (e.keyCode) {
+
+				case SWT.ARROW_DOWN:
+					sliderChange = 1;
+					break;
+				case SWT.ARROW_UP:
+					sliderChange = -1;
+					addLock = true;
+					break;
+				case SWT.PAGE_DOWN:
+					sliderChange = maxLineCount;
+					break;
+				case SWT.PAGE_UP:
+					sliderChange = -1* maxLineCount;
+					addLock = true;
+					break;
 				}
-				else if(e.keyCode == SWT.ARROW_UP){
-					slider.setSelection(slider.getSelection()-1);
-				}				
-				buildNewConsoleContent();		
+				
+				slider.setSelection(slider.getSelection()+sliderChange);
+				
+				if (addLock) {
+					lockAutoScroll();
+				}
+				
+				buildNewConsoleContent();
+						
 			}
 		});
 		
@@ -127,21 +161,30 @@ public class PersoSimPart {
 		
 		lockScroller = new Button(parent, SWT.TOGGLE);
 		lockScroller.setText(" lock ");
+		lockScroller.setAlignment(SWT.CENTER);
 		lockScroller.addListener(SWT.Selection, new Listener() {	
 			@Override
 			public void handleEvent (Event e) {
 				if(locked){
-					lockScroller.setText(" lock ");
-					locked=false;
+					unlockAutoScroll();
 				}else{
-					lockScroller.setText("unlock");
-					locked=true;
+					lockAutoScroll();
 				}
 			}
 		});
 		updateThread = createUpdateThread();
 		updateThread.setDaemon(true);
 		updateThread.start();
+	}
+
+	private void lockAutoScroll() {
+		lockScroller.setText("unlock");
+		locked=true;
+	}
+
+	private void unlockAutoScroll() {
+		lockScroller.setText("lock");
+		locked=false;
 	}
 	
 	private Thread createUpdateThread() {
@@ -281,6 +324,31 @@ public class PersoSimPart {
 		
 		Menu consoleMenu = new Menu(controlParentFinal);
 		
+		//copy menu
+		MenuItem copyItem = new MenuItem(consoleMenu, SWT.CASCADE);
+		copyItem.setText("Copy");
+		copyItem.setAccelerator(SWT.MOD1+ 'C');
+		
+		copyItem.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) { 
+
+				String selectedText = txtOutput.getSelectionText();
+				
+				Clipboard clipboard = new Clipboard(e.display);
+				TextTransfer tt = TextTransfer.getInstance();
+				
+				clipboard.setContents(new Object[] {selectedText}, new Transfer[]{tt});
+
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		
+		new MenuItem(consoleMenu, SWT.SEPARATOR);
+		
 		//configure log level menu
 		MenuItem changeLogLevelItem = new MenuItem(consoleMenu, SWT.CASCADE);
 		changeLogLevelItem.setText("Configure logLevel");
@@ -416,6 +484,12 @@ public class PersoSimPart {
 				}
 			} catch ( Exception e) {}//IMPL PokémonException
 		}
+		
+		int curLastPosition = slider.getSelection() + slider.getThumb();
+		if (curLastPosition == slider.getMaximum()) {
+			unlockAutoScroll();
+		}
+		
 		
 		// send the StringBuilder data to the console field
 		sync.syncExec(new Runnable() {

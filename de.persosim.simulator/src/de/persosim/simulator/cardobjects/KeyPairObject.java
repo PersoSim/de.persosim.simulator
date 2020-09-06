@@ -2,6 +2,9 @@ package de.persosim.simulator.cardobjects;
 
 import java.security.KeyPair;
 
+import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.secstatus.SecStatus;
+
 /**
  * This object wraps key objects for storing them in the object store.
  * They can be retrieved from there using their key reference id or additionally associated OIDs.
@@ -42,5 +45,13 @@ public class KeyPairObject extends KeyObject {
 	
 	public KeyPair getKeyPair() {
 		return keyPair;
+	}
+
+	public void setKeyPair(KeyPair newKeyPair) throws AccessDeniedException {
+		if (SecStatus.checkAccessConditions(getLifeCycleState())) {
+			keyPair = newKeyPair;
+			return;
+		}
+		throw new AccessDeniedException("Setting a new keyPair forbidden");
 	}
 }

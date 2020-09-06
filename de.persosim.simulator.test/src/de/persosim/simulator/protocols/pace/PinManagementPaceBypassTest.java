@@ -22,7 +22,6 @@ import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.exception.LifeCycleChangeException;
-import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.protocols.ta.CertificateRole;
@@ -34,7 +33,6 @@ import de.persosim.simulator.seccondition.PaceWithPasswordSecurityCondition;
 import de.persosim.simulator.seccondition.TaSecurityCondition;
 import de.persosim.simulator.secstatus.PaceMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
-import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
@@ -42,15 +40,12 @@ import de.persosim.simulator.tlv.TlvValue;
 import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 public class PinManagementPaceBypassTest extends PersoSimTestCase {
 	
-	@Mocked
-	MasterFile mockedMf;
-	@Mocked
-	CardStateAccessor mockedCardStateAccessor;
+	MasterFile testMf;
+	TestCardStateAccessor testCardState;
+	
 	PaceBypassProtocol paceProtocol;
 	Collection<SecMechanism> csmEmpty, csmWithCan, csmWithPin;
 	PasswordAuthObject pwdaoWithCan;
@@ -59,6 +54,8 @@ public class PinManagementPaceBypassTest extends PersoSimTestCase {
 	Collection<CardObject> domainParameterSet0Collection;
 	DomainParameterSetCardObject domainParameters0;
 	OidIdentifier oidIdentifier0;
+	PaceMechanism paceMechanismWithCan;
+	PaceMechanism paceMechanismWithPin;
 	
 	/**
 	 * Create the test environment.
@@ -112,8 +109,8 @@ public class PinManagementPaceBypassTest extends PersoSimTestCase {
 		pwdaoWithPinRc3Deactivated.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_ACTIVATED);
 		pwdaoWithPinRc3Deactivated.updateLifeCycleState(Iso7816LifeCycleState.OPERATIONAL_DEACTIVATED);
 		
-		PaceMechanism paceMechanismWithCan = new PaceMechanism(Pace.id_PACE_ECDH_GM_AES_CBC_CMAC_128, pwdaoWithCan, null, null, null, null);
-		PaceMechanism paceMechanismWithPin = new PaceMechanism(Pace.id_PACE_ECDH_GM_AES_CBC_CMAC_128, pwdaoWithPinRc3Activated, null, null, null, null);
+		paceMechanismWithCan = new PaceMechanism(Pace.id_PACE_ECDH_GM_AES_CBC_CMAC_128, pwdaoWithCan, null, null, null, null);
+		paceMechanismWithPin = new PaceMechanism(Pace.id_PACE_ECDH_GM_AES_CBC_CMAC_128, pwdaoWithPinRc3Activated, null, null, null, null);
 		
 		csmWithCan = new HashSet<SecMechanism>();
 		csmWithCan.add(paceMechanismWithCan);
@@ -123,9 +120,12 @@ public class PinManagementPaceBypassTest extends PersoSimTestCase {
 		
 		csmEmpty = new HashSet<SecMechanism>();
 		
+		testMf = new TestMasterFile();
+		testCardState = new TestCardStateAccessor(testMf);
+		
 		// create and init the object under test
 		paceProtocol = new PaceBypassProtocol();
-		paceProtocol.setCardStateAccessor(mockedCardStateAccessor);
+		paceProtocol.setCardStateAccessor(testCardState);
 		
 		domainParameters0 = new DomainParameterSetCardObject(domainParameterSet0, new DomainParameterSetIdentifier(0));
 		domainParameters0.addOidIdentifier(oidIdentifier0);
@@ -138,31 +138,11 @@ public class PinManagementPaceBypassTest extends PersoSimTestCase {
 	 * Positive test case: perform PACE with PIN. PIN retry counter is 3 (default), PIN activated.
 	 */
 	@Test
-	public void testSetAtPinRc3Act_NoPrevPwd(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getCurrentMechanisms(
-						withInstanceOf(SecContext.class),
-						null);
-				result = csmEmpty;
-				
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-
-				mockedMf.findChildren(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(OidIdentifier.class));
-				result = domainParameters0;
-
-				mockedMf.findChildren(
-						withInstanceOf(DomainParameterSetIdentifier.class));
-				result = domainParameters0;
-				
-				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
-				result = pwdaoWithPinRc3Activated;
-			}
-		};
+	public void testSetAtPinRc3Act_NoPrevPwd() throws Exception {
+		
+		// prepare the MasterFile
+        testMf.addChild(domainParameters0);
+        testMf.addChild(pwdaoWithPinRc3Activated);
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -183,31 +163,11 @@ public class PinManagementPaceBypassTest extends PersoSimTestCase {
 	 * Positive test case: perform PACE with PIN. PIN retry counter is 3 (default), PIN deactivated.
 	 */
 	@Test
-	public void testSetAtPinRc3Deact_NoPrevPwd(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getCurrentMechanisms(
-						withInstanceOf(SecContext.class),
-						null);
-				result = csmEmpty;
-				
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-
-				mockedMf.findChildren(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(OidIdentifier.class));
-				result = domainParameters0;
-
-				mockedMf.findChildren(
-						withInstanceOf(DomainParameterSetIdentifier.class));
-				result = domainParameters0;
-
-				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
-				result = pwdaoWithPinRc3Deactivated;
-			}
-		};
+	public void testSetAtPinRc3Deact_NoPrevPwd() throws Exception {
+		
+		// prepare the MasterFile
+        testMf.addChild(domainParameters0);
+        testMf.addChild(pwdaoWithPinRc3Deactivated);
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -237,33 +197,11 @@ public class PinManagementPaceBypassTest extends PersoSimTestCase {
 	 * Positive test case: perform PACE with PIN. PIN retry counter is 2, PIN activated.
 	 */
 	@Test
-	public void testSetAtPinRc2Act_NoPrevPwd(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getCurrentMechanisms(
-						withInstanceOf(SecContext.class),
-						null);
-				
-				// previously used password
-				result = csmEmpty;
-				
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-
-				mockedMf.findChildren(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(OidIdentifier.class));
-				result = domainParameters0;
-
-				mockedMf.findChildren(
-						withInstanceOf(DomainParameterSetIdentifier.class));
-				result = domainParameters0;
-				
-				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
-				result = pwdaoWithPinRc2Activated;
-			}
-		};
+	public void testSetAtPinRc2Act_NoPrevPwd() throws Exception{
+		
+		// prepare the MasterFile
+        testMf.addChild(domainParameters0);
+        testMf.addChild(pwdaoWithPinRc2Activated);
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -293,31 +231,13 @@ public class PinManagementPaceBypassTest extends PersoSimTestCase {
 	 * Positive test case: perform PACE with PIN. PIN retry counter is 1, PIN activated.
 	 */
 	@Test
-	public void testSetAtPinRc1Act_NoPrevPwd(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getCurrentMechanisms(
-						withInstanceOf(SecContext.class),
-						null);
-				result = csmWithCan;
-
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-
-				mockedMf.findChildren(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(OidIdentifier.class));
-				result = domainParameters0;
-
-				mockedMf.findChildren(
-						withInstanceOf(DomainParameterSetIdentifier.class));
-				result = domainParameters0;
-
-				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
-				result = pwdaoWithPinRc1Activated;
-			}
-		};
+	public void testSetAtPinRc1Act_NoPrevPwd() throws Exception{
+		// prepare the cardState
+		testCardState.putSecMechanism(PaceMechanism.class, paceMechanismWithCan);
+		
+		// prepare the MasterFile
+        testMf.addChild(domainParameters0);
+        testMf.addChild(pwdaoWithPinRc1Activated);
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -346,33 +266,13 @@ public class PinManagementPaceBypassTest extends PersoSimTestCase {
 	 * Positive test case: perform PACE with PIN. PIN retry counter is 1, PIN activated, previous CAN.
 	 */
 	@Test
-	public void testSetAtPinRc1Act_PrevCan(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getCurrentMechanisms(
-						withInstanceOf(SecContext.class),
-						null);
-				
-				// previously used password
-				result = csmWithCan;
-				
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-
-				mockedMf.findChildren(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(OidIdentifier.class));
-				result = domainParameters0;
-
-				mockedMf.findChildren(
-						withInstanceOf(DomainParameterSetIdentifier.class));
-				result = domainParameters0;
-				
-				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
-				result = pwdaoWithPinRc1Activated;
-			}
-		};
+	public void testSetAtPinRc1Act_PrevCan() throws Exception{
+		// prepare the cardState
+		testCardState.putSecMechanism(PaceMechanism.class, paceMechanismWithCan);
+		
+		// prepare the MasterFile
+        testMf.addChild(domainParameters0);
+        testMf.addChild(pwdaoWithPinRc1Activated);
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
@@ -401,33 +301,10 @@ public class PinManagementPaceBypassTest extends PersoSimTestCase {
 	 * Negative testcase: Perform PACE with Pin. Retry counter is 0, PIN activated
 	 */
 	@Test
-	public void testSetAtPinRc0Act_NoPrevPwd(){
-		// prepare the mock
-		new NonStrictExpectations() {
-			{
-				mockedCardStateAccessor.getCurrentMechanisms(
-						withInstanceOf(SecContext.class),
-						null);
-				
-				// previously used password
-				result = csmEmpty;
-				
-				mockedCardStateAccessor.getMasterFile();
-				result = mockedMf;
-
-				mockedMf.findChildren(
-						withInstanceOf(DomainParameterSetIdentifier.class),
-						withInstanceOf(OidIdentifier.class));
-				result = domainParameters0;
-
-				mockedMf.findChildren(
-						withInstanceOf(DomainParameterSetIdentifier.class));
-				result = domainParameters0;
-				
-				mockedMf.findChildren(withInstanceOf(AuthObjectIdentifier.class));
-				result = pwdaoWithPinRc0Activated;
-			}
-		};
+	public void testSetAtPinRc0Act_NoPrevPwd() throws Exception {
+		// prepare the MasterFile
+        testMf.addChild(domainParameters0);
+        testMf.addChild(pwdaoWithPinRc0Activated);
 		
 		// select Apdu
 		ProcessingData processingData = new ProcessingData();
