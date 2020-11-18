@@ -39,6 +39,11 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 	}
 	
 	@Test
+	public void migrate_Ecdsa_Sha512_SECP521r1_Test() throws Exception {
+		testMigration(MigrationTarget.ECDSA_SHA512_SECP521r1);
+	}
+	
+	@Test
 	public void migrate_RsaPss_Sha512_1024_Test() throws Exception {
 		testMigration(MigrationTarget.RSAPSS_SHA512_1024);
 	}
