@@ -39,7 +39,7 @@ public class MrzAuthObject extends PasswordAuthObject {
 		this(identifier, mrz, extractIdPicc(mrz));
 	}
 
-	private static byte[] extractIdPicc(String mrzString) {
+	static byte[] extractIdPicc(String mrzString) {
 		Mrz mrz = MrzFactory.parseMrz(mrzString);
 		String documentNumber = mrz.getDocumentNumber();
 		String documentNumberCheckDigit = mrz.getDocumentNumberCd();
@@ -72,7 +72,7 @@ public class MrzAuthObject extends PasswordAuthObject {
 		return md.digest(digestInput);
 	}
 
-	private static byte[] getDigestInputTd1(String machineReadableZone) throws UnsupportedEncodingException {
+	static byte[] getDigestInputTd1(String machineReadableZone) throws UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder();
 		Mrz mrz = new MrzTD1(machineReadableZone);
 
@@ -94,7 +94,7 @@ public class MrzAuthObject extends PasswordAuthObject {
 		return sb.toString().getBytes("UTF-8");
 	}
 	
-	private static byte[] getDigestInputIdl(String machineReadableZone) throws UnsupportedEncodingException {
+	static byte[] getDigestInputIdl(String machineReadableZone) throws UnsupportedEncodingException {
 		return machineReadableZone.substring(1, 29).getBytes("UTF-8");
 	}
 
