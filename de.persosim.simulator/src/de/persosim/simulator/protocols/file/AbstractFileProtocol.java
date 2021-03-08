@@ -560,72 +560,73 @@ public abstract class AbstractFileProtocol extends AbstractProtocolStateMachine 
 					"binary file not found for selection", resp);
 		}
 		
-
-		if (file instanceof ElementaryFile) {
-			
-			try {
-				ElementaryFile binaryFile = (ElementaryFile) file;
-				byte [] rawFileContents = binaryFile.getContent();
+		if (file != null) {
+			if (file instanceof ElementaryFile) {
 				
-				if (offset < rawFileContents.length) {
+				try {
+					ElementaryFile binaryFile = (ElementaryFile) file;
+					byte [] rawFileContents = binaryFile.getContent();
 					
-					int bytesToBeRead = Math.min(ne, rawFileContents.length - offset);
-					
-					byte [] data = Arrays.copyOfRange(rawFileContents, offset, offset + bytesToBeRead);
-					TlvValue toSend = null;
-	
-					if (isOddInstruction) {
+					if (offset < rawFileContents.length) {
 						
-						int includedDataLegnth = data.length;
+						int bytesToBeRead = Math.min(ne, rawFileContents.length - offset);
+						
+						byte [] data = Arrays.copyOfRange(rawFileContents, offset, offset + bytesToBeRead);
+						TlvValue toSend = null;
+		
+						if (isOddInstruction) {
+							
+							int includedDataLegnth = data.length;
 
-						toSend = new TlvDataObjectContainer(
-								new PrimitiveTlvDataObject(new TlvTag(
-										ODDINS_RESPONSE_TAG), Arrays.copyOf(data, includedDataLegnth)));
-						
-						
-						while (toSend.getLength()> ne) {
-							includedDataLegnth--;
 							toSend = new TlvDataObjectContainer(
 									new PrimitiveTlvDataObject(new TlvTag(
 											ODDINS_RESPONSE_TAG), Arrays.copyOf(data, includedDataLegnth)));
+							
+							
+							while (toSend.getLength()> ne) {
+								includedDataLegnth--;
+								toSend = new TlvDataObjectContainer(
+										new PrimitiveTlvDataObject(new TlvTag(
+												ODDINS_RESPONSE_TAG), Arrays.copyOf(data, includedDataLegnth)));
+							}
+							
+							
+							
+						} else {
+							toSend = new TlvValuePlain(data);
 						}
 						
+						boolean shortRead = !zeroEncoded && toSend.getLength() < ne;
+
 						
-						
+						selectFile((CardFile)file);
+						ResponseApdu resp = new ResponseApdu(toSend,
+								shortRead
+										? Iso7816.SW_6282_END_OF_FILE_REACHED_BEFORE_READING_NE_BYTES
+										: Iso7816.SW_9000_NO_ERROR);
+						this.processingData.updateResponseAPDU(this,
+								"binary file read successfully", resp);
 					} else {
-						toSend = new TlvValuePlain(data);
+						ResponseApdu resp = new ResponseApdu(
+								Iso7816.SW_6B00_WRONG_P1P2);
+						this.processingData.updateResponseAPDU(this,
+								"offset behind end of file", resp);
 					}
-					
-					boolean shortRead = !zeroEncoded && toSend.getLength() < ne;
-
-					
-					selectFile((CardFile)file);
-					ResponseApdu resp = new ResponseApdu(toSend,
-							shortRead
-									? Iso7816.SW_6282_END_OF_FILE_REACHED_BEFORE_READING_NE_BYTES
-									: Iso7816.SW_9000_NO_ERROR);
-					this.processingData.updateResponseAPDU(this,
-							"binary file read successfully", resp);
-				} else {
+				} catch (AccessDeniedException e) {
 					ResponseApdu resp = new ResponseApdu(
-							Iso7816.SW_6B00_WRONG_P1P2);
+							Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
 					this.processingData.updateResponseAPDU(this,
-							"offset behind end of file", resp);
+							"binary file read access denied", resp);
 				}
-			} catch (AccessDeniedException e) {
+				
+			} else {
 				ResponseApdu resp = new ResponseApdu(
-						Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
+						Iso7816.SW_6986_COMMAND_NOT_ALLOWED_NO_EF);
 				this.processingData.updateResponseAPDU(this,
-						"binary file read access denied", resp);
+						"not an elemental file", resp);
 			}
-			
-		} else {
-			ResponseApdu resp = new ResponseApdu(
-					Iso7816.SW_6986_COMMAND_NOT_ALLOWED_NO_EF);
-			this.processingData.updateResponseAPDU(this,
-					"no elemental file", resp);
 		}
-
+		
 		processingData.addUpdatePropagation(this,
 				"FileManagement protocol is not supposed to stay on the stack",
 				new ProtocolUpdate(true));
