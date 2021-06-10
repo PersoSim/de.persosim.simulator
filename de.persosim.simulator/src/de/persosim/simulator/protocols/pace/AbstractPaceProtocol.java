@@ -914,7 +914,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
 			PasswordAuthObject previouslyUsedPwd = paceMechanism.getUsedPassword();
 			int previouslyUsedPasswordIdentifier = previouslyUsedPwd.getPasswordIdentifier();
-			log(AbstractPaceProtocol.class, "last successfull PACE run used " + getPasswordName(previouslyUsedPasswordIdentifier) + " as password with value " + HexString.encode(previouslyUsedPwd.getPassword()), LogLevel.DEBUG);
+			log(AbstractPaceProtocol.class, "last successful PACE run used " + getPasswordName(previouslyUsedPasswordIdentifier) + " as password with value " + HexString.encode(previouslyUsedPwd.getPassword()), LogLevel.DEBUG);
 			return previouslyUsedPasswordIdentifier == Pace.ID_CAN;
 		} else{
 			return false;

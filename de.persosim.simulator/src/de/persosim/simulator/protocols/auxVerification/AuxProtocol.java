@@ -50,7 +50,7 @@ public class AuxProtocol extends AbstractProtocol implements Iso7816, TlvConstan
 					Oid oid = new GenericOid(commandData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
 					processOid(oid);
 
-					msg = "Auxiliary data verification successfull";
+					msg = "Auxiliary data verification successful";
 					resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 				} catch (IllegalArgumentException e){
 					msg = "The given OID is not valid";

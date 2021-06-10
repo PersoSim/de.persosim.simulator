@@ -144,7 +144,7 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 					return;
 				} else{
 					publicPointEncoding = null;
-					log(CvEcPublicKey.class, "key update successfull", LogLevel.DEBUG);
+					log(CvEcPublicKey.class, "key update successful", LogLevel.DEBUG);
 					return;
 				}
 			} else{
