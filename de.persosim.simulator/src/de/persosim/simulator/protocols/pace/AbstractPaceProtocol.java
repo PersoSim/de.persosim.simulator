@@ -152,15 +152,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	public void processCommandSetAT() {
 		
 		try {
-			//check if PACE is allowed at all
-			HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
-			previousMechanisms.add(ChipAuthenticationMechanism.class);
-			Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
-			if (!currentMechanisms.isEmpty()){
-				// PACE not allowed after successful CA
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
-				this.processingData.updateResponseAPDU(this, "no fitting authentication object found", resp);
-				/* there is nothing more to be done here */
+			if (!checkPaceAllowed()){
 				return;
 			}
 			
@@ -318,6 +310,21 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 			return;
 		}
+	}
+
+	protected boolean checkPaceAllowed() {
+		//check if PACE is allowed at all
+		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
+		previousMechanisms.add(ChipAuthenticationMechanism.class);
+		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
+		if (!currentMechanisms.isEmpty()){
+			// PACE not allowed after successful CA
+			ResponseApdu resp = new ResponseApdu(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED);
+			this.processingData.updateResponseAPDU(this, "no fitting authentication object found", resp);
+			/* there is nothing more to be done here */
+			return false;
+		}
+		return true;
 	}
 	
 	public HashMap<Oid, Authorization> getAuthorizationsFromCommandData(TlvDataObjectContainer commandData) {
