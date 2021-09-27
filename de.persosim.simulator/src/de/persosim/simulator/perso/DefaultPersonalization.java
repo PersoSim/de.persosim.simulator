@@ -97,6 +97,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 					new DedicatedFileIdentifier(HexString.toByteArray(AID_MF)));
 
 			addAuthObjects(mf);
+			addAdditionalObjects(mf);
 
 			addDomainParameters(mf);
 			addCaKeys(mf);
@@ -661,6 +662,20 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				new AuthObjectIdentifier(ID_PUK), "9876543210".getBytes(StandardCharsets.UTF_8),
 				"PUK");
 		mf.addChild(puk);
+	}
+
+	/**
+	 * Add all additional card objects to the personalized object tree
+	 * @param mf 
+	 * 
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchProviderException
+	 * @throws IOException
+	 * @throws UnsupportedEncodingException
+	 * @throws AccessDeniedException 
+	 */
+	protected void addAdditionalObjects(MasterFile mf) throws NoSuchAlgorithmException, IOException, AccessDeniedException {
+
 	}
 
 	protected boolean isPinEnabled() {

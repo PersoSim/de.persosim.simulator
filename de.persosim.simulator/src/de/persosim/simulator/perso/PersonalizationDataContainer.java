@@ -2,6 +2,9 @@ package de.persosim.simulator.perso;
 
 import java.security.KeyPair;
 import java.util.ArrayList;
+import java.util.Collection;
+
+import de.persosim.simulator.cardobjects.CardObject;
 
 /**
  * @author slutters
@@ -21,6 +24,8 @@ public class PersonalizationDataContainer {
 	ArrayList<Boolean> caKeyPrivileges, riKeyAuthorizedOnly;
 	
 	boolean pinEnabled = true;
+
+	private Collection<CardObject> additionalObjects;
 	
 	public PersonalizationDataContainer() {
 		this.mrz                  = null;
@@ -63,6 +68,8 @@ public class PersonalizationDataContainer {
 		this.riKeys               = new ArrayList<>();
 		this.riKeyIds             = new ArrayList<>();
 		this.riKeyAuthorizedOnly  = new ArrayList<>();
+		
+		this.additionalObjects = new ArrayList<>();
 	}
 	
 	public void addCaKeyPair(KeyPair keyPair, int keyId, boolean privileged) {
@@ -429,6 +436,14 @@ public class PersonalizationDataContainer {
 
 	public void setPinEnabled(boolean newValue) {
 		pinEnabled = newValue;
+	}
+
+	public Collection<CardObject> getAdditionalObjects() {
+		return additionalObjects;
+	}
+
+	public void addAdditionalObject(CardObject newObject) {
+		additionalObjects.add(newObject);
 	}
 	
 }

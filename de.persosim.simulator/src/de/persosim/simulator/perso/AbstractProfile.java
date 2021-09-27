@@ -10,6 +10,7 @@ import java.util.Date;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ByteDataAuxObject;
 import de.persosim.simulator.cardobjects.CardFile;
+import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DateAuxObject;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.ElementaryFile;
@@ -199,6 +200,14 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 				new AuthObjectIdentifier(4), getPuk().getBytes(StandardCharsets.UTF_8),
 				"PUK");
 		mf.addChild(puk);
+	}
+	
+	@Override
+	protected void addAdditionalObjects(MasterFile mf) throws NoSuchAlgorithmException,
+			IOException, AccessDeniedException {
+		for (CardObject current : persoDataContainer.getAdditionalObjects()) {
+			mf.addChild(current);
+		}
 	}
 	
 	@Override
