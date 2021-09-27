@@ -25,6 +25,14 @@ public interface Tr03110 {
 	public static final Oid id_eIDSecurity                      = new GenericOid(id_BSI, HexString.toByteArray("020207"));
 	public static final Oid id_PT                               = new GenericOid(id_BSI, HexString.toByteArray("020208"));
 	
+	public static final Oid id_eIDType                               = new GenericOid(id_BSI, HexString.toByteArray("030203"));
+	public static final Oid id_cardEIDType                               = new GenericOid(id_eIDType, HexString.toByteArray("01"));
+	public static final Oid id_mobileEIDType                               = new GenericOid(id_eIDType, HexString.toByteArray("02"));
+	public static final Oid id_mobileEIDType_SECertified                              = new GenericOid(id_mobileEIDType, HexString.toByteArray("01")) { public String getIdString() {return "id-mobileEIDType-SECertified";};};
+	public static final Oid id_mobileEIDType_SEEndorsed                              = new GenericOid(id_mobileEIDType, HexString.toByteArray("02")) { public String getIdString() {return "id-mobileEIDType-SEEndorsed";};};
+	public static final Oid id_mobileEIDType_HWKeystore                              = new GenericOid(id_mobileEIDType, HexString.toByteArray("03")) { public String getIdString() {return "id-mobileEIDType-HWKeystore";};};
+	
+	
 	public static final byte ID_MRZ = 1;
 	public static final byte ID_CAN = 2;
 	public static final byte ID_PIN = 3;
