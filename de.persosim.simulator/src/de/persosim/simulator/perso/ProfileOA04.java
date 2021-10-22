@@ -1,10 +1,6 @@
 package de.persosim.simulator.perso;
 
-import java.util.List;
-
 import de.persosim.simulator.crypto.CryptoUtil;
-import de.persosim.simulator.protocols.Protocol;
-import de.persosim.simulator.protocols.SecInfoProtocol;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.HexString;
 
@@ -13,13 +9,6 @@ import de.persosim.simulator.utils.HexString;
  *
  */
 public class ProfileOA04 extends ProfileOA {
-
-	@Override
-	protected List<Protocol> buildProtocolList() {
-		List<Protocol> protocolList = super.buildProtocolList();
-		protocolList.add(new SecInfoProtocol());
-		return protocolList;
-	}
 
 	@Override
 	public void setPersoDataContainer() {
@@ -66,14 +55,16 @@ public class ProfileOA04 extends ProfileOA {
 				HexString.toByteArray("763B6BBF8A7DFC5DAB3205791BA64D211BBC4E8A5C531C77488792C508BD3D1E")), 45, true);
 
 		// individual RI key - 1st sector public/private key pair (Sperrmerkmal)
-		persoDataContainer.addRiKeyPair(CryptoUtil.reconstructKeyPair(13, HexString.toByteArray(
-				"040F6CB0699AC257E58CE95E83DFEAE11DC486F52889885B3F9CB65765921838BB00F776C455D57F4D483C428FB15C887D768D58BAEF599BD192CCAE7F98AF41CA"),
-				HexString.toByteArray("0353859C2EC67780BA39015DE8C682AF2326D43DE9CE1E07737087BD1E17CB22")), 1, false);
+		persoDataContainer.addRiKeyPair(CryptoUtil.reconstructKeyPair(13,
+				HexString.toByteArray("0428737902EA91F5631A78C97B4AAC696D300A817EF4AAAF60B0BF111E2F48F0CF027C30C3C0A3B8589D9285DF23127F24F9A3FE179A528313B7A96D12DFFD44BD"),
+				HexString.toByteArray("78378EB827AE6B5AE525829CDC9866917812B735F2992567AC5ADEB4D273553D")),
+				1, false);
 
 		// individual RI key - 2nd sector public/private key pair (Pseudonym)
-		persoDataContainer.addRiKeyPair(CryptoUtil.reconstructKeyPair(13, HexString.toByteArray(
-				"0483FA15CAE8E4E2BB06D450FDA72A7E341C2E85F80B0F88A901D3A4DFEEC1C80B2B060CC6E4EE8ADF649B78A8BF781F6B03142DF9C44AB1913FF5A53F72A45D97"),
-				HexString.toByteArray("009AD0AD7F4DFAAA06988339FC31D3A111F4C7964AC7F377373A2454327C43E2FF")), 2, true);
+		persoDataContainer.addRiKeyPair(CryptoUtil.reconstructKeyPair(13,
+				HexString.toByteArray("043AA28D2AB214E7D301FED09689B561E0073D26BAAB9B543D60171DA386C6C6348767B4E45561243041C20EB806ACFF82AC7D0865153C6A7C1D7D6ACC3F1A3A5F"),
+				HexString.toByteArray("00863EAF73E61AE3A61A4E4CC016D0C1250D1DAAA367541D137D85B15CA5FA3741")),
+				2, true);
 
 		addMobileOid(Tr03110.id_mobileEIDType_SEEndorsed);
 

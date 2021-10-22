@@ -1,10 +1,6 @@
 package de.persosim.simulator.perso;
 
-import java.util.List;
-
 import de.persosim.simulator.crypto.CryptoUtil;
-import de.persosim.simulator.protocols.Protocol;
-import de.persosim.simulator.protocols.SecInfoProtocol;
 import de.persosim.simulator.protocols.Tr03110;
 import de.persosim.simulator.utils.HexString;
 
@@ -13,13 +9,6 @@ import de.persosim.simulator.utils.HexString;
  *
  */
 public class ProfileOA02 extends ProfileOA {
-
-	@Override
-	protected List<Protocol> buildProtocolList() {
-		List<Protocol> protocolList = super.buildProtocolList();
-		protocolList.add(new SecInfoProtocol());
-		return protocolList;
-	}
 
 	@Override
 	public void setPersoDataContainer() {
@@ -62,16 +51,18 @@ public class ProfileOA02 extends ProfileOA {
 		persoDataContainer.addCaKeyPair(CryptoUtil.reconstructKeyPair(13, HexString.toByteArray(
 				"041AC6CAE884A6C2B8461404150F54CD1150B21E862A4E5F21CE34290C741104BD1BF31ED91E085D7C630E8B4D10A8AE22BBB2898B44B52EA0F4CDADCF57CFBA25"),
 				HexString.toByteArray("763B6BBF8A7DFC5DAB3205791BA64D211BBC4E8A5C531C77488792C508BD3D1E")), 45, true);
-
+		
 		// individual RI key - 1st sector public/private key pair (Sperrmerkmal)
-		persoDataContainer.addRiKeyPair(CryptoUtil.reconstructKeyPair(13, HexString.toByteArray(
-				"040F6CB0699AC257E58CE95E83DFEAE11DC486F52889885B3F9CB65765921838BB00F776C455D57F4D483C428FB15C887D768D58BAEF599BD192CCAE7F98AF41CA"),
-				HexString.toByteArray("0353859C2EC67780BA39015DE8C682AF2326D43DE9CE1E07737087BD1E17CB22")), 1, false);
+		persoDataContainer.addRiKeyPair(CryptoUtil.reconstructKeyPair(13,
+				HexString.toByteArray("044EF3548679667EA4491EC240B4B1AB2694332566264516E58DD7993B1A2548085595285080091E82A9D6A4B5661B4E46EDA60BAD1E1BA3FA928A88E268106BF7"),
+				HexString.toByteArray("2722EB0C7EB7B1A7D2560166B9D60E2E49E7A5825A699D9B62D0E361EA59519B")),
+				1, false);
 
 		// individual RI key - 2nd sector public/private key pair (Pseudonym)
-		persoDataContainer.addRiKeyPair(CryptoUtil.reconstructKeyPair(13, HexString.toByteArray(
-				"0483FA15CAE8E4E2BB06D450FDA72A7E341C2E85F80B0F88A901D3A4DFEEC1C80B2B060CC6E4EE8ADF649B78A8BF781F6B03142DF9C44AB1913FF5A53F72A45D97"),
-				HexString.toByteArray("009AD0AD7F4DFAAA06988339FC31D3A111F4C7964AC7F377373A2454327C43E2FF")), 2, true);
+		persoDataContainer.addRiKeyPair(CryptoUtil.reconstructKeyPair(13,
+				HexString.toByteArray("041BD3442FFD11D8EE40555CE5F930C17A4B57585540C6F1AB3101EF973358FFB39C54045F6A7EC21389A17D99693F7DC7DB8DDB99321D0D7F4F1A9E3E7565B348"),
+				HexString.toByteArray("441256C135C1E0AC90F9DBCE40432D0344DCDDEF13E386916994A4770D609088")),
+				2, true);
 
 		addMobileOid(Tr03110.id_mobileEIDType_SEEndorsed);
 
