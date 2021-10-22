@@ -35,6 +35,8 @@ public abstract class ProfileOA extends AbstractProfile {
 		mobileIdObject.setSecInfoContent(mobileEidTypeInfo);
 		mobileIdObject.addPublicity(SecInfoPublicity.PUBLIC);
 		mobileIdObject.addPublicity(SecInfoPublicity.AUTHENTICATED);
+		mobileIdObject.addPublicity(SecInfoPublicity.PRIVILEGED);
+		mobileEidTypeInfo.addTlvDataObject(new PrimitiveTlvDataObject(new TlvTag(TlvTag.INTEGER), new TlvValuePlain((byte)1)));
 
 		persoDataContainer.addAdditionalObject(mobileIdObject);
 	}
