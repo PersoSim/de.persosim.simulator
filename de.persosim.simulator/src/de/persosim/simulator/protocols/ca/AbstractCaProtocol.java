@@ -736,6 +736,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	protected ConstructedTlvDataObject simplifyAlgorithmIdentifier(ConstructedTlvDataObject algorithmIdentifier) {
+		if (!isAlgorithmIdentifierSimplificationAllowed()) return algorithmIdentifier;
 		return StandardizedDomainParameters.simplifyAlgorithmIdentifier(algorithmIdentifier);
 	}
 	
@@ -755,6 +756,10 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	 */
 	private boolean isKeyIdNeeded() {
 		return numberOfKeyObjects >= 2;
+	}
+	
+	private boolean isAlgorithmIdentifierSimplificationAllowed () {
+		return true;
 	}
 	
 }
