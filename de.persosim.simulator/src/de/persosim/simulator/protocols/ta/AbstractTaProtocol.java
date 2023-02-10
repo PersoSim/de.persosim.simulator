@@ -30,6 +30,8 @@ import de.persosim.simulator.cardobjects.TypeIdentifier;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.crypto.certificates.CertificateExtension;
+import de.persosim.simulator.crypto.certificates.CvEcPublicKey;
+import de.persosim.simulator.crypto.certificates.CvPublicKey;
 import de.persosim.simulator.crypto.certificates.ExtensionOid;
 import de.persosim.simulator.crypto.certificates.PublicKeyReference;
 import de.persosim.simulator.exception.CarParameterInvalidException;
@@ -483,6 +485,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 							"The certificate was issued by an invalid instance", resp);
 					return;
 				}
+				if (!isCertificatePublicKeyDataObjectMinimal(certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F49), certificate.getPublicKey())){
+					// create and propagate response APDU
+					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+					this.processingData.updateResponseAPDU(this,
+							"Public key contains unspecified data objects", resp);
+					return;
+				}
 				if (checkSignature((TaOid) currentCertificate.getBody().getPublicKey().getCvOid(), currentCertificate.getPublicKey(), certificateBodyData.toByteArray(), certificateSignatureData.getValueField())){
 					//differentiate between CVCA link certificates and other types for date validation
 					if (checkValidity(certificate, currentCertificate, getCurrentDate().getDate())){
@@ -592,6 +601,29 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Check the given certificates for compliance to the definitions D.3.
+	 * This expects the publicKey having been parsed int cvPublicKey to ensure key data is valid.
+	 * @param publicKey 
+	 * @param cvPublicKey 
+	 * 
+	 * @return true, iff the conditions are fulfilled
+	 */
+	protected static boolean isCertificatePublicKeyDataObjectMinimal(TlvDataObject publicKey, CvPublicKey cvPublicKey) throws CertificateNotParseableException {
+		if (publicKey != null) {
+			ConstructedTlvDataObject key = (ConstructedTlvDataObject) publicKey;
+			int numberOfElements = key.getNoOfElements();
+			if (cvPublicKey instanceof CvEcPublicKey && (numberOfElements == 2 || numberOfElements == 7 || numberOfElements == 8)) {
+				// 2 mandatory elements, 2+5 in case of domain parameters and 2+5+1 in case of domain paramaters with cofactor
+				return true;
+			} else if (!(cvPublicKey instanceof CvEcPublicKey) && numberOfElements == 3) {
+				// 3 mandatory elements for RSA
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
