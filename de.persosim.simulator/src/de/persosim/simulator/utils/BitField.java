@@ -229,6 +229,17 @@ public class BitField {
 		return result;
 	}
 	
+	/**
+	 * This method creates a new instance with one changed bit.
+	 * @param index the bit to set
+	 * @return
+	 */
+	public BitField forceBit(int index, boolean value){
+		BitField result = new BitField(this.storedBits);
+		result.setBit(index, value);
+		return result;
+	}
+	
 	private void setBit(int index, boolean value) {
 		if (0 <= index && index < storedBits.length) {
 			storedBits[index] = value;
