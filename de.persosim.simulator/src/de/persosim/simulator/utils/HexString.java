@@ -154,8 +154,8 @@ public class HexString {
 	 */
 	
 	public static byte[] toByteArray(String inputString) {
-
 		inputString = inputString.replaceAll("\\s", "");
+		if (inputString.startsWith("0x")) inputString = inputString.substring(2);
 		if (inputString.length() % 2 != 0) {
 			throw new IllegalArgumentException(
 					"hexadecimal string must be of even length");

@@ -80,6 +80,30 @@ public class HexStringTest {
 	}
 	
 	/**
+	 * Positive test case: convert string with leading 0x and a space to byte array
+	 * 
+	 */
+	@Test
+	public void testToByteArray_0x_Value() {
+		byte[] exp = new byte[]{ (byte) 0xff};
+		byte[] recv = HexString.toByteArray(" 0x ff");
+		
+		assertArrayEquals(exp, recv);
+	}
+	
+	/**
+	 * Positive test case: convert string with leading 0x to byte array
+	 * 
+	 */
+	@Test
+	public void testToByteArray_0x_SPACE_Value() {
+		byte[] exp = new byte[]{ (byte) 0xff};
+		byte[] recv = HexString.toByteArray("0x ff");
+		
+		assertArrayEquals(exp, recv);
+	}
+	
+	/**
 	 * Positive test case: converts a very long String into a byte array.
 	 */
 	@Test
