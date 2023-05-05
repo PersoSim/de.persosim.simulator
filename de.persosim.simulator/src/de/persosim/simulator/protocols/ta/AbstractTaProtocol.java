@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
+
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -551,10 +554,19 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @param issuingCertificate
 	 *            the parent certificate in the chain to use for the check
 	 * @param currentDate
-	 *            the date to check agains
+	 *            the date to check against
 	 * @return true, iff the certificate is valid as defined in TR-03110 v2.10
 	 */
 	protected static boolean checkValidity(CardVerifiableCertificate certificate, CardVerifiableCertificate issuingCertificate, Date currentDate) {
+		
+		BasicLogger.log(AbstractTaProtocol.class, "Checking validity for: " + certificate + 
+				"\n\teffective:  " + certificate.getEffectiveDate() + 
+				"\n\texpiration: " + certificate.getExpirationDate() +
+				"\nagainst: " + issuingCertificate + 
+				"\n\teffective:  " + issuingCertificate.getEffectiveDate() + 
+				"\n\texpiration: " + issuingCertificate.getExpirationDate() +
+				"\nCurrent Date is: " + currentDate, LogLevel.DEBUG);
+		
 		//verify that issuingCertificate was valid, when certificate was issued
 		if (certificate.getEffectiveDate().after(issuingCertificate.getExpirationDate())) return false;
 		if (issuingCertificate.getEffectiveDate().after(certificate.getEffectiveDate())) return false; 
