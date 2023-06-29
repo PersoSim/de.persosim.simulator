@@ -804,15 +804,26 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	public static ResponseData getMutualAuthenticatePinManagementResponsePaceFailed(PasswordAuthObjectWithRetryCounter pacePasswordPin) {
 		int pinRetryCounter = pacePasswordPin.getRetryCounterCurrentValue();
 		log(AbstractPaceProtocol.class, "PACE with PIN has failed - PIN retry counter will be decremented, current value is: " + pinRetryCounter, LogLevel.DEBUG);
-		pacePasswordPin.decrementRetryCounter();
-		pinRetryCounter = pacePasswordPin.getRetryCounterCurrentValue();
-		log(AbstractPaceProtocol.class, "PACE with PIN has failed - PIN retry counter has been decremented, current value is: " + pinRetryCounter, LogLevel.DEBUG);
-		
-		short sw = (short) 0x63C0;
-		sw |= ((short) (pinRetryCounter & (short) 0x000F)); 
-		
-		String note = "PACE with PIN has failed - PIN retry counter has been decremented, current value is: " + pinRetryCounter;
-		
+		short sw;
+		String note;
+		if (pinRetryCounter > 0)
+		{
+			pacePasswordPin.decrementRetryCounter();
+			pinRetryCounter = pacePasswordPin.getRetryCounterCurrentValue();
+			
+			sw = (short) 0x63C0;
+			sw |= ((short) (pinRetryCounter & (short) 0x000F)); 
+
+			note = "PACE with PIN has failed - PIN retry counter has been decremented, current value is: " + pinRetryCounter;			
+		}
+		else
+		{
+			sw = (short) 0x6983;
+			
+			note = "PACE with PIN has failed - PIN retry counter could not be decremented; is already 0";
+		}			
+				
+		log(AbstractPaceProtocol.class, note, LogLevel.DEBUG);			
 		return new ResponseData(sw, note);
 	}
 	
