@@ -36,7 +36,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 
 	@Override
 	public IProject getSampleConfigChip() throws Exception {
-		IProject sampleConfigProject = super.createSampleConfigChip();
+		IProject sampleConfigProject = super.getSampleConfigChip();
 		SampleConfig sampleConfig = SampleConfig.getSampleConfigForProject(sampleConfigProject);
 		
 		//remove unsupported profiles
