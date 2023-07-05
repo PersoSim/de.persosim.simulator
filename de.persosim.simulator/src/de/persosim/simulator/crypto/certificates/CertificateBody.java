@@ -77,7 +77,7 @@ public class CertificateBody extends ReducedCertificateBody {
 		}
 		
 		if (certificateExpirationDate.before(certificateEffectiveDate)){
-			throw new CertificateNotParseableException("The certificates expiration date is before the effective date");
+			throw new CertificateNotParseableException("The certificates expiration date (" + certificateExpirationDate + ") is before the effective date (" + certificateEffectiveDate + ")");
 		}
 	}
 	
