@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.persosim.simulator.crypto.CryptoUtil;
-import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.utils.HexString;

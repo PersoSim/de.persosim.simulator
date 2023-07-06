@@ -404,6 +404,21 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
+	protected void addEidDg14(DedicatedFile eIdAppl) throws AccessDeniedException {
+		// do not create DG
+	}
+	
+	@Override
+	protected void addEidDg15(DedicatedFile eIdAppl) throws AccessDeniedException {
+		// do not create DG
+	}
+	
+	@Override
+	protected void addEidDg16(DedicatedFile eIdAppl) throws AccessDeniedException {
+		// do not create DG
+	}
+	
+	@Override
 	protected void addEfCardAccess(MasterFile mf) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 		
