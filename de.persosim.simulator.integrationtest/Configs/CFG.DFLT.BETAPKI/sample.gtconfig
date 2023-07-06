@@ -235,6 +235,8 @@ MUSTERMANN<<ERIKA<<<<<<<<<<<<<]]></Parameter>
     <Parameter paramName="TAv2_AUTH_EXT">false</Parameter>
     <Parameter paramName="AuxData_CMP">false</Parameter>
     <Parameter paramName="ISO7816_ENV">false</Parameter>
+    <Parameter paramName="IEA_IEA">false</Parameter>
+    <Parameter paramName="MOBILEID_MOBILEID">false</Parameter>
   </ConfigurationParams>
 </SampleConfig>
 
