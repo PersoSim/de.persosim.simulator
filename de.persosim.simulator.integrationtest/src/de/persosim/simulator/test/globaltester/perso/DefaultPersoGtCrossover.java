@@ -198,9 +198,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 		List<String> expectedWarningTestcases = Arrays.asList(
 				"EAC2_ISO7816_M_9", 
 				"EAC2_ISO7816_M_10", 
-				"EAC2_ISO7816_M_11", 
-				"EAC2_ISO7816_N_1", 
-				"EAC2_ISO7816_N_2", 
+				"EAC2_ISO7816_M_11",
 				"EAC2_ISO7816_Q_20", 
 				"EAC2_ISO7816_Q_21", 
 				"EAC2_ISO7816_Q_22"
