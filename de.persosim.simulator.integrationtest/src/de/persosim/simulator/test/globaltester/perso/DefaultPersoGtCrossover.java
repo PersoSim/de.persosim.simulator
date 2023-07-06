@@ -58,6 +58,9 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	
 	protected void modifySampleConfigForPerso(SampleConfig sampleConfig)
 			throws IOException {
+		sampleConfig.put("IEA", "IEA", "false");
+		sampleConfig.put("MOBILEID", "MOBILEID", "false");
+		
 		sampleConfig.put("eID", "CS", "false");
 	    sampleConfig.put("eID", "DG16", "false");
 	    sampleConfig.put("eID", "DG15", "false");
