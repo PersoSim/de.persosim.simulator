@@ -95,8 +95,8 @@ public class ReducedCardVerifiableCertificate {
 	@Override
 	public String toString() {
 		return "CardVerifiableCertificate [certificationAuthorityReference="
-				+ body.getCertificationAuthorityReference()
-				+ ", certificateHolderReference=" + body.getCertificateHolderReference()
+				+ (body != null ? body.getCertificationAuthorityReference().toString() : "null")
+				+ ", certificateHolderReference=" + (body != null ? body.getCertificateHolderReference().toString() : "null")
 				+ "]";
 	}
 	
