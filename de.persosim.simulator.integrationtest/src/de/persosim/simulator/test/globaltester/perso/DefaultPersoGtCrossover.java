@@ -188,7 +188,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 		
 		disableSimulator();
 		
-		assertEquals("Chip test result", 2, chipResults.overallResult);
+		assertEquals("Chip test result", 0, chipResults.overallResult);
 		
 		cleanupChipTest();
 	}
