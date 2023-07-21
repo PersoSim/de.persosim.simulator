@@ -185,7 +185,7 @@ public class StandardizedDomainParameterDefaultProvider implements
 	 * @param b coefficient B defining the curve
 	 * @return the corresponding {@link EllipticCurve} object
 	 */
-	private static EllipticCurve generateCurveFrom(BigInteger p, BigInteger a, BigInteger b) {
+	public static EllipticCurve generateCurveFrom(BigInteger p, BigInteger a, BigInteger b) {
 		return new EllipticCurve(new ECFieldFp(p), a, b);
 	}	
 
