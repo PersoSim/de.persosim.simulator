@@ -9,6 +9,8 @@ public class MrzFactory {
 	
 	public static Mrz parseMrz(String mrzString) {
 		
+		mrzString = mrzString.replaceAll("\\s", "");
+		
 		int length = mrzString.length();
 		
 		switch (length) {
