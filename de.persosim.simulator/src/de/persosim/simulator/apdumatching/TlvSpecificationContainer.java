@@ -153,6 +153,7 @@ public class TlvSpecificationContainer extends ArrayList<TlvSpecification> imple
 				}
 				
 				if(currentTlvSpecification.getRequired() == REQ_MATCH) {
+					log(ApduSpecification.class, "tag " + tlvDataObject.getTlvTag() + " not matching");
 					counter++;
 				}
 				

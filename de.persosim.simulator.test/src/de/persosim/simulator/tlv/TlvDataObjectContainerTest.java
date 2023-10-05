@@ -67,4 +67,24 @@ public class TlvDataObjectContainerTest implements TlvConstants {
 
 		assertEquals(child2, container.getTlvDataObject(new TlvPath(new TlvTagIdentifier(TAG_INTEGER, 1))));
 	}
+	
+	@Test
+	public void testBla() {
+		try {
+			TlvDataObject objUTF8String = TlvDataObjectFactory.createTLVDataObject("1206313233343536");
+			// byte[] bla = HexString.toByteArray("2906313233343536");
+			// PrimitiveTlvDataObject tlvObject = new TL(bla);
+			TlvDataObject objNumericString = TlvDataObjectFactory.createTLVDataObject("1806313233343536");
+			//TlvDataObject objIA5String = TlvDataObjectFactory.createTLVDataObject("2206313233343536");
+			TlvDataObject objPRintableString = TlvDataObjectFactory.createTLVDataObject("1906313233343536");
+
+			TlvDataObject objOctetString = TlvDataObjectFactory.createTLVDataObject("0406313233343536");
+
+			System.out.println("end");
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
+	}
+
 }

@@ -134,6 +134,12 @@ public class PinManagementTest extends PersoSimTestCase {
 		domainParameterSet0Collection.add(domainParameters0);
 	}
 	
+	
+	private String getProtocolName() {
+		return "PACE";
+	}
+
+	
 	/**
 	 * Positive test case: check for preceding CAN, CAN preceding.
 	 */
@@ -142,7 +148,7 @@ public class PinManagementTest extends PersoSimTestCase {
 		// prepare the cardState
 		testCardState.putSecMechanism(PaceMechanism.class, paceMechanismWithCan);
 	
-		assertTrue("PIN temporarily resumed", AbstractPaceProtocol.isPinTemporarilyResumed(testCardState));
+		assertTrue("PIN temporarily resumed", AbstractPaceProtocol.isPinTemporarilyResumed(testCardState, getProtocolName()));
 	}
 	
 	/**
@@ -153,7 +159,7 @@ public class PinManagementTest extends PersoSimTestCase {
 		// prepare the cardState
 		testCardState.putSecMechanism(PaceMechanism.class, paceMechanismWithPin);
 		
-		assertFalse("PIN temporarily resumed", AbstractPaceProtocol.isPinTemporarilyResumed(testCardState));
+		assertFalse("PIN temporarily resumed", AbstractPaceProtocol.isPinTemporarilyResumed(testCardState, getProtocolName()));
 	}
 	
 	/**
@@ -161,7 +167,7 @@ public class PinManagementTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testIsPinTemporarilyResumedNoPrecedingPwd() {
-		assertFalse("PIN temporarily resumed", AbstractPaceProtocol.isPinTemporarilyResumed(testCardState));
+		assertFalse("PIN temporarily resumed", AbstractPaceProtocol.isPinTemporarilyResumed(testCardState, getProtocolName()));
 	}
 	
 	/**
@@ -305,7 +311,7 @@ public class PinManagementTest extends PersoSimTestCase {
 		short sw = (short) 0x63C0;
 
 		for(int i = 2; i > 0; i--) {
-			ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceFailed(pwdaoWithPinRc3Activated);
+			ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceFailed(pwdaoWithPinRc3Activated, getProtocolName());
 			
 			short expectedSw = (short) (sw | ((short) (i & (short) 0x000F)));
 			short receivedSw = responseDataReceived.getStatusWord();
@@ -320,7 +326,7 @@ public class PinManagementTest extends PersoSimTestCase {
 	@Test
 	public void testGetMutualAuthenticatePinManagementResponsePaceSuccessful_PinDeactivated(){
 		
-		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc3Deactivated, testCardState);
+		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc3Deactivated, testCardState, getProtocolName());
 		
 		short expectedSw = Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE;
 		short receivedSw = responseDataReceived.getStatusWord();
@@ -333,7 +339,7 @@ public class PinManagementTest extends PersoSimTestCase {
 	@Test
 	public void testIsPasswordUsable_PinActivatedRc1(){
 		
-		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc1Activated, testCardState);
+		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc1Activated, testCardState, getProtocolName());
 		
 		short expectedSw = Iso7816.SW_63C1_COUNTER_IS_1;
 		short receivedSw = responseDataReceived.getStatusWord();
@@ -346,7 +352,7 @@ public class PinManagementTest extends PersoSimTestCase {
 	@Test
 	public void testIsPasswordUsable_PinActivatedRc2(){
 		
-		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc2Activated, testCardState);
+		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc2Activated, testCardState, getProtocolName());
 		
 		short expectedSw = 0x63C2;
 		short receivedSw = responseDataReceived.getStatusWord();
@@ -358,7 +364,7 @@ public class PinManagementTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testIsPasswordUsable_PinActivatedRc3(){
-		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc3Activated, testCardState);
+		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc3Activated, testCardState, getProtocolName());
 		
 		assertEquals(null, responseDataReceived);
 	}
@@ -368,7 +374,7 @@ public class PinManagementTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testIsPasswordUsable_PinDeactivatedRc3(){
-		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc3Deactivated, testCardState);
+		ResponseData responseDataReceived = AbstractPaceProtocol.isPasswordUsable(pwdaoWithPinRc3Deactivated, testCardState, getProtocolName());
 
 		
 		short expectedSw = SW_6283_SELECTED_FILE_DEACTIVATED;
@@ -381,7 +387,7 @@ public class PinManagementTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetMutualAuthenticatePinManagementResponsePaceSuccessful_PinActivatedRc3(){
-		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc3Activated, testCardState);
+		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc3Activated, testCardState, getProtocolName());
 		
 		short expectedSw = Iso7816.SW_9000_NO_ERROR;
 		short receivedSw = responseDataReceived.getStatusWord();
@@ -393,7 +399,7 @@ public class PinManagementTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetMutualAuthenticatePinManagementResponsePaceSuccessful_PinActivatedRc2(){
-		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc2Activated, testCardState);
+		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc2Activated, testCardState, getProtocolName());
 		
 		short expectedSw = Iso7816.SW_9000_NO_ERROR;
 		short receivedSw = responseDataReceived.getStatusWord();
@@ -405,7 +411,7 @@ public class PinManagementTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testGetMutualAuthenticatePinManagementResponsePaceSuccessful_PinActivatedRc1NoPrevPwd(){
-		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc1Activated, testCardState);
+		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc1Activated, testCardState, getProtocolName());
 		
 		short expectedSw = Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED;
 		short receivedSw = responseDataReceived.getStatusWord();
@@ -420,7 +426,7 @@ public class PinManagementTest extends PersoSimTestCase {
 		// prepare the CardState
 		testCardState.putSecMechanism(PaceMechanism.class, paceMechanismWithCan);
 		
-		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc1Activated, testCardState);
+		ResponseData responseDataReceived = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(pwdaoWithPinRc1Activated, testCardState, getProtocolName());
 		
 		short expectedSw = Iso7816.SW_9000_NO_ERROR;
 		short receivedSw = responseDataReceived.getStatusWord();

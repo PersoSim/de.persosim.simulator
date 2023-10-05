@@ -104,6 +104,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	/*--------------------------------------------------------------------------------*/
 	
 	protected PaceOid paceOid;
+	protected Oid prefixOid;
 	protected PasswordAuthObject pacePassword;
 	
 	protected int paceDomainParameterId;
@@ -126,24 +127,23 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	
 	protected AuthorizationStore authorizationStore;
 	
-	TrustPointCardObject trustPoint;
-	CertificateHolderAuthorizationTemplate usedChat;
-	Oid terminalTypeOid;
-	
+	protected TrustPointCardObject trustPoint;
+	protected CertificateHolderAuthorizationTemplate usedChat;
+	protected Oid terminalTypeOid;
 	/*--------------------------------------------------------------------------------*/
 	
 	public AbstractPaceProtocol() {
-		super("PACE");
-		
+		super("PACE"); // Final protocol name has to be set by derived classes
 		secureRandom = new SecureRandom();
+		prefixOid = Pace.id_PACE;
 	}
 	
 	/**
 	 * @param bytes the OID given in the SET AT command
 	 * @return the PaceOid helper class to be used by this protocol
 	 */
-	protected PaceOid getOid(byte [] bytes){
-		return new PaceOid(bytes);
+	protected PaceOid getOid(byte [] bytes) {		
+		return new PaceOid(bytes, prefixOid);
 	}
 	
 	/**
@@ -169,7 +169,13 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			TlvDataObject tlvObject = commandData.getTlvDataObject(TAG_80);
 			
 			try {
-				paceOid = getOid(tlvObject.getValueField());
+				byte[] oidRaw = tlvObject.getValueField();
+				paceOid = getOid(oidRaw);
+				if (paceOid == null) {
+					continueProcessing = false;
+					log(this, "OID " + HexString.encode(oidRaw) + " does not match current protocol with prefix " + prefixOid, LogLevel.DEBUG);
+					return;
+				}
 			} catch (RuntimeException e) {
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A80_WRONG_DATA);
 				this.processingData.updateResponseAPDU(this, e.getMessage(), resp);
@@ -195,7 +201,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			}
 			
 			PaceUsedPasswordMechanism paceUsedPasswordMechanism = new PaceUsedPasswordMechanism(pacePassword);
-			processingData.addUpdatePropagation(this, "PACE started with "+pacePassword.getPasswordName(), new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceUsedPasswordMechanism));
+			processingData.addUpdatePropagation(this, protocolName + " started with "+pacePassword.getPasswordName(), new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceUsedPasswordMechanism));
 			
 			/* PACE domain parameters */
 			/*
@@ -294,7 +300,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			log(this, "computed " + paceOid.getSymmetricCipherAlgorithmName() + " key material: " + HexString.encode(keyMaterialForEncryptionOfNonce), LogLevel.DEBUG);
 			
 			// If PIN is used, check for retry counter.
-			ResponseData isPasswordUsable = isPasswordUsable(pacePassword, cardState);
+			ResponseData isPasswordUsable = isPasswordUsable(pacePassword, cardState, getProtocolName());
 			if (isPasswordUsable != null){
 				//create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(isPasswordUsable.getStatusWord());
@@ -357,7 +363,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 * @return the status word encoding an error or null if the password is
 	 *         usable
 	 */
-	public static ResponseData isPasswordUsable(PasswordAuthObject pacePassword, CardStateAccessor cardState){
+	public static ResponseData isPasswordUsable(PasswordAuthObject pacePassword, CardStateAccessor cardState, String protocolName){
 		if (pacePassword instanceof PasswordAuthObjectWithRetryCounter) {
 			PasswordAuthObjectWithRetryCounter pacePasswordWithRetryCounter = (PasswordAuthObjectWithRetryCounter) pacePassword;
 			
@@ -371,7 +377,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 				if (retryCounter != retryCounterDefault) {
 					if (retryCounter == 1) {
 						sw = Iso7816.SW_63C1_COUNTER_IS_1;
-						if(isPinTemporarilyResumed(cardState)) {
+						if(isPinTemporarilyResumed(cardState, protocolName)) {
 							note = "PIN is temporarily resumed due to preceding CAN";
 						} else{
 							note = "PIN is suspended, use CAN first for temporary resume or unblock PIN";
@@ -387,7 +393,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 						sw = (short) 0x63C0;
 						sw |= ((short) (retryCounter & (short) 0x000F));
 						
-						note = "PACE with PIN has previously failed - current retry counter for PIN is " + retryCounter;
+						note = protocolName + " with PIN has previously failed - current retry counter for PIN is " + retryCounter;
 						return new ResponseData(sw, note);
 					}
 				}
@@ -670,7 +676,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			log(this, "Token received from PCD matches expected one", LogLevel.DEBUG);
 			
 			if(pacePassword instanceof PasswordAuthObjectWithRetryCounter) {
-				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceSuccessful(pacePassword, cardState);
+				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceSuccessful(pacePassword, cardState, protocolName);
 				
 				sw = pinResponse.getStatusWord();
 				note = pinResponse.getResponse();
@@ -687,7 +693,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			paceSuccessful = false;
 			
 			if(pacePassword.getPasswordIdentifier() == Pace.ID_PIN) {
-				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) pacePassword);
+				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) pacePassword, getProtocolName());
 				sw = pinResponse.getStatusWord();
 				note = pinResponse.getResponse();
 			} else{
@@ -701,26 +707,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		if(paceSuccessful) {
 			ConstructedTlvDataObject responseContent = buildMutualAuthenticateResponse(piccToken);
 			if (setSmDataProvider()){
-				KeyPair unmapped = mappingResult instanceof MappingResultGm ? ((MappingResultGm) mappingResult).getKeyPairPiccUnmapped() : null;
-				PaceMechanism paceMechanism = new PaceMechanism(paceOid, pacePassword, unmapped, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), paceDomainParametersMapped.comp(ephemeralPublicKeyPcd), terminalTypeOid);
-				processingData.addUpdatePropagation(this, "Security status updated with PACE mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
-				
-				ConfinedAuthorizationMechanism newAuthMechanism;
-				
-				if(authorizationStore == null) {
-					authorizationStore = new AuthorizationStore();
-				}
-				
-				newAuthMechanism = new ConfinedAuthorizationMechanism(authorizationStore);
-				
-				processingData.addUpdatePropagation(this, "Security status updated with authorization mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, newAuthMechanism));
-				
-				responseApdu = new ResponseApdu(new TlvDataObjectContainer(responseContent), sw);
-				
-				//store the new session context id (0 for default session context)
-				SessionContextIdMechanism scim = new SessionContextIdMechanism(0);
-				processingData.addUpdatePropagation(this, "Security status updated with SessionContextIdMechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, scim));
-				
+				responseApdu = doSmDataProviderHandling(sw, responseContent);				
 			} else {
 				return;
 			}
@@ -734,7 +721,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		 * Protocol either successfully completed or failed.
 		 * In either case protocol is completed.
 		 */
-		processingData.addUpdatePropagation(this, "Command MutualAuthenticate successfully processed - Protocol PACE completed", new ProtocolUpdate(true));
+		processingData.addUpdatePropagation(this, "Command MutualAuthenticate successfully processed - Protocol " + protocolName + " completed", new ProtocolUpdate(true));
 		
 		} catch (ProcessingException e ) {
 			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
@@ -742,6 +729,31 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			return;
 		}
 	}
+
+	protected ResponseApdu doSmDataProviderHandling(short sw, ConstructedTlvDataObject responseContent) {
+		ResponseApdu responseApdu;
+		KeyPair unmapped = mappingResult instanceof MappingResultGm ? ((MappingResultGm) mappingResult).getKeyPairPiccUnmapped() : null;
+		PaceMechanism paceMechanism = new PaceMechanism(paceOid, pacePassword, unmapped, paceDomainParametersMapped.comp(ephemeralKeyPairPicc.getPublic()), paceDomainParametersMapped.comp(ephemeralPublicKeyPcd), terminalTypeOid);
+		processingData.addUpdatePropagation(this, "Security status updated with " + protocolName + " mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, paceMechanism));
+		
+		ConfinedAuthorizationMechanism newAuthMechanism;
+		
+		if(authorizationStore == null) {
+			authorizationStore = new AuthorizationStore();
+		}
+		
+		newAuthMechanism = new ConfinedAuthorizationMechanism(authorizationStore);
+		
+		processingData.addUpdatePropagation(this, "Security status updated with authorization mechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, newAuthMechanism));
+		
+		responseApdu = new ResponseApdu(new TlvDataObjectContainer(responseContent), sw);
+		
+		//store the new session context id (0 for default session context)
+		SessionContextIdMechanism scim = new SessionContextIdMechanism(0);
+		processingData.addUpdatePropagation(this, "Security status updated with SessionContextIdMechanism", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, scim));
+		return responseApdu;
+	}
+	
 	
 	protected void addCars(ConstructedTlvDataObject constructed7c){
 		//add CARs to response data if available
@@ -774,7 +786,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		try {
 			//create and propagate new secure messaging data provider
 			SmDataProviderTr03110 smDataProvider = new SmDataProviderTr03110(this.secretKeySpecENC, this.secretKeySpecMAC);
-			processingData.addUpdatePropagation(this, "init SM after successful PACE", smDataProvider);
+			processingData.addUpdatePropagation(this, "init SM after successful " + protocolName, smDataProvider);
 			
 			return true;
 		} catch (CryptoException e) {
@@ -801,9 +813,9 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 * This method returns data required to send a response APDU for Mutual Authenticate if PACE was performed using PIN as password and failed.
 	 * @return data required to send a response APDU for Mutual Authenticate
 	 */
-	public static ResponseData getMutualAuthenticatePinManagementResponsePaceFailed(PasswordAuthObjectWithRetryCounter pacePasswordPin) {
+	public static ResponseData getMutualAuthenticatePinManagementResponsePaceFailed(PasswordAuthObjectWithRetryCounter pacePasswordPin, String protocolName) {
 		int pinRetryCounter = pacePasswordPin.getRetryCounterCurrentValue();
-		log(AbstractPaceProtocol.class, "PACE with PIN has failed - PIN retry counter will be decremented, current value is: " + pinRetryCounter, LogLevel.DEBUG);
+		log(AbstractPaceProtocol.class, protocolName + " with PIN has failed - PIN retry counter will be decremented, current value is: " + pinRetryCounter, LogLevel.DEBUG);
 		short sw;
 		String note;
 		if (pinRetryCounter > 0)
@@ -814,13 +826,13 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			sw = (short) 0x63C0;
 			sw |= ((short) (pinRetryCounter & (short) 0x000F)); 
 
-			note = "PACE with PIN has failed - PIN retry counter has been decremented, current value is: " + pinRetryCounter;			
+			note = protocolName + " with PIN has failed - PIN retry counter has been decremented, current value is: " + pinRetryCounter;			
 		}
 		else
 		{
 			sw = (short) 0x6983;
 			
-			note = "PACE with PIN has failed - PIN retry counter could not be decremented; is already 0";
+			note = protocolName + " with PIN has failed - PIN retry counter could not be decremented; is already 0";
 		}			
 				
 		log(AbstractPaceProtocol.class, note, LogLevel.DEBUG);			
@@ -832,7 +844,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 * @responseData the response data to be sent with the response APDU
 	 * @return data required to send a response APDU for Mutual Authenticate
 	 */
-	public static ResponseData getMutualAuthenticatePinManagementResponsePaceSuccessful(PasswordAuthObject password, CardStateAccessor cardState) {
+	public static ResponseData getMutualAuthenticatePinManagementResponsePaceSuccessful(PasswordAuthObject password, CardStateAccessor cardState, String protocolName) {
 		short sw;
 		String note;
 		
@@ -843,7 +855,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			
 			if(pinRetryCounter != pinRetryCounterDefault) {
 				if(pinRetryCounter == 1) {
-					if (isPinTemporarilyResumed(cardState)) {
+					if (isPinTemporarilyResumed(cardState, protocolName)) {
 						// everything ok, password is PIN, PIN activated, retry counter is not default value, retry counter == 1, PIN is suspended, PIN is temporarily resumed
 						try {
 							pacePasswordPin.resetRetryCounterToDefault();
@@ -923,7 +935,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 * This method checks whether PACE has previously been run with CAN.
 	 * @return true iff PACE has previously been run with CAN, otherwise false
 	 */
-	public static boolean isPinTemporarilyResumed(CardStateAccessor cardState) {
+	public static boolean isPinTemporarilyResumed(CardStateAccessor cardState, String protocolName) {
 		HashSet<Class<? extends SecMechanism>> paceMechanisms = new HashSet<>();
 		paceMechanisms.add(PaceMechanism.class);
 		
@@ -932,7 +944,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
 			PasswordAuthObject previouslyUsedPwd = paceMechanism.getUsedPassword();
 			int previouslyUsedPasswordIdentifier = previouslyUsedPwd.getPasswordIdentifier();
-			log(AbstractPaceProtocol.class, "last successful PACE run used " + getPasswordName(previouslyUsedPasswordIdentifier) + " as password with value " + HexString.encode(previouslyUsedPwd.getPassword()), LogLevel.DEBUG);
+			log(AbstractPaceProtocol.class, "last successful " + protocolName + " run used " + getPasswordName(previouslyUsedPasswordIdentifier) + " as password with value " + HexString.encode(previouslyUsedPwd.getPassword()), LogLevel.DEBUG);
 			return previouslyUsedPasswordIdentifier == Pace.ID_CAN;
 		} else{
 			return false;
@@ -949,7 +961,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 
 	@Override
 	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
-		OidIdentifier paceOidIdentifier = new OidIdentifier(id_PACE);
+		OidIdentifier paceOidIdentifier = new OidIdentifier(prefixOid);
 		
 		Collection<CardObject> domainParameterCardObjects = mf.findChildren(
 				new DomainParameterSetIdentifier(), paceOidIdentifier);
@@ -993,7 +1005,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		for (CardObjectIdentifier curIdentifier : identifiers) {
 			if (curIdentifier instanceof OidIdentifier) {
 				Oid curOid = ((OidIdentifier) curIdentifier).getOid();
-				if (curOid.startsWithPrefix(id_PACE)) {
+				if (curOid.startsWithPrefix(prefixOid)) {
 					ConstructedTlvDataObject paceInfo = new ConstructedTlvDataObject(TAG_SEQUENCE);
 					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_OID, getOidBytesForPaceInfo(curOid)));
 					paceInfo.addTlvDataObject(new PrimitiveTlvDataObject(TAG_INTEGER, new byte[]{2}));

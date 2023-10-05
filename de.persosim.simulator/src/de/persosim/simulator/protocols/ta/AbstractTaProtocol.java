@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
@@ -51,6 +52,7 @@ import de.persosim.simulator.secstatus.AuthorizationStore;
 import de.persosim.simulator.secstatus.ConfinedAuthorizationMechanism;
 import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
 import de.persosim.simulator.secstatus.PaceMechanism;
+import de.persosim.simulator.secstatus.CAPAMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.secstatus.SecStatus.SecContext;
 import de.persosim.simulator.secstatus.SecStatusMechanismUpdatePropagation;
@@ -169,27 +171,59 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	protected TerminalType getTerminalType() {
-		//get necessary information stored in an earlier protocol (e.g. PACE)
-		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
-		previousMechanisms.add(PaceMechanism.class);
-		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
-		
-		if (currentMechanisms.size() == 1){
-			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.iterator().next();
-			
-			// extract the currently used terminal type
-			try{
-				return TerminalType.getFromOid(paceMechanism.getOidForTa());
-			} catch (IllegalArgumentException e){
-				throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED, "Previous Pace protocol did not provide information about terminal type");
+		// get necessary information stored in an earlier protocol (e.g. PACE or CA+PA)
+		TerminalType type = getTerminalType(PaceMechanism.class);
+		if (type != null)
+			return type;
+		type = getTerminalType(CAPAMechanism.class);
+		if (type != null)
+			return type;
+		else
+			throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED,
+					"Missing previous execution of PACE or CA+PA protocol.");
+	}
+
+	private TerminalType getTerminalType(Class<? extends SecMechanism> secMechanism) {
+		Collection<? extends SecMechanism> currentMechanisms = null;
+		if (PaceMechanism.class.getCanonicalName().equals(secMechanism.getCanonicalName())) {
+			currentMechanisms = getPreviousSecMechanisms(secMechanism);
+
+			if (currentMechanisms.size() == 1) {
+				PaceMechanism ceMechanism = (PaceMechanism) currentMechanisms.iterator().next();
+
+				// extract the currently used terminal type
+				try {
+					return TerminalType.getFromOid(ceMechanism.getOidForTa());
+				} catch (IllegalArgumentException e) {
+					throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED,
+							"Previous PACE protocol did not provide information about terminal type.");
+				}
+			}
+		} else if (CAPAMechanism.class.getCanonicalName().equals(secMechanism.getCanonicalName())) {
+			currentMechanisms = getPreviousSecMechanisms(CAPAMechanism.class);
+
+			if (currentMechanisms.size() == 1) {
+				CAPAMechanism ceMechanism = (CAPAMechanism) currentMechanisms.iterator().next();
+
+				// extract the currently used terminal type
+				try {
+					return TerminalType.getFromOid(ceMechanism.getTerminalTypeOid());
+				} catch (IllegalArgumentException e) {
+					throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED,
+							"Previous CA+PA protocol did not provide information about terminal type.");
+				}
 			}
 		}
-		
-		if(currentMechanisms.isEmpty()) {
-			throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED, "Missing previous execution of PACE protocol");
-		}
-		
-		throw new ProcessingException(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR, "Previous execution of PACE protocol is ambiguous");
+		if (currentMechanisms != null && currentMechanisms.size() > 1)
+			throw new ProcessingException(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR,
+					"Previous execution of PACE or CA+PA protocol is ambiguous.");
+		return null;
+	}
+
+	private Collection<? extends SecMechanism> getPreviousSecMechanisms(Class<? extends SecMechanism> secMechanism) {
+		Set<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
+		previousMechanisms.add(secMechanism);
+		return cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 	}
 	
 	protected void processCommandSetDst() {
@@ -748,15 +782,16 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 
 	protected byte[] getIdIcc() {
-		//get necessary information stored in an earlier protocol (e.g. PACE)
-		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
-		previousMechanisms.add(PaceMechanism.class);
-		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
-		if (!currentMechanisms.isEmpty()){
+		// get necessary information stored in an earlier protocol (e.g. PACE or CA+PA)
+		Collection<? extends SecMechanism> currentMechanisms = getPreviousSecMechanisms(PaceMechanism.class);
+		if (currentMechanisms.isEmpty())
+			currentMechanisms = getPreviousSecMechanisms(CAPAMechanism.class);
+		if (!currentMechanisms.isEmpty()) {
 			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
 			return paceMechanism.getCompressedEphemeralPublicKeyChip();
 		} else {
-			throw new ProcessingException(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED, "No protocol providing data for ID_PICC calculation was run");
+			throw new ProcessingException(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED,
+					"No protocol providing data for ID_PICC calculation was run");
 		}
 	}
 

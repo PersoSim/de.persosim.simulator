@@ -203,7 +203,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 		
 		ResponseData responseData; 
 		if (sw == Iso7816.SW_9000_NO_ERROR){
-			responseData = AbstractPaceProtocol.isPasswordUsable(passwordObject, cardState);
+			responseData = AbstractPaceProtocol.isPasswordUsable(passwordObject, cardState, getProtocolName());
 			if (responseData == null){
 				responseObjects.addTlvDataObject(new PrimitiveTlvDataObject(TAG_80, Utils.toUnsignedByteArray(SW_9000_NO_ERROR)));
 			} else {
@@ -217,7 +217,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 				log(this, "Provided password matches expected one", LogLevel.DEBUG);
 				
 				if(passwordObject instanceof PasswordAuthObjectWithRetryCounter) {
-					ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(passwordObject, cardState);
+					ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceSuccessful(passwordObject, cardState, getProtocolName());
 					
 					sw = pinResponse.getStatusWord();
 					note = pinResponse.getResponse();
@@ -236,7 +236,7 @@ public class PaceBypassProtocol implements Pace, Protocol, Iso7816, ApduSpecific
 				paceSuccessful = false;
 				
 				if(passwordObject instanceof PasswordAuthObjectWithRetryCounter) {
-					ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) passwordObject);
+					ResponseData pinResponse = AbstractPaceProtocol.getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) passwordObject, getProtocolName());
 					sw = pinResponse.getStatusWord();
 					note = pinResponse.getResponse();
 				} else{

@@ -20,14 +20,18 @@ public class PaceOid extends GenericOid implements Pace {
 	 * This constructor constructs a {@link PaceOid} based on a byte array representation of a Pace OID.
 	 * @param oidByteArray the byte array representation of a Pace OID
 	 */
-	public PaceOid(byte[] oidByteArray) {
+	public PaceOid(byte[] oidByteArray, Oid prefixOid) {
 		super(oidByteArray);
 		
-		if(!startsWithPrefix(id_PACE)) {
+		if(!startsWithPrefix(prefixOid)) {
 			throw new IllegalArgumentException("PACE OID " + HexString.encode(oidByteArray) + " is invalid or unknown (not supported)");
 		}
 	}
 	
+	public PaceOid(byte[] oidByteArray) {
+		this(oidByteArray, Pace.id_PACE);
+	}
+
 	public PaceOid(Oid prefix, byte... suffix) {
 		this(Utils.concatByteArrays(prefix.toByteArray(), suffix));
 	}

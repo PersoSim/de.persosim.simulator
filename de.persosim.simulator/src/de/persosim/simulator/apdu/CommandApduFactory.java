@@ -50,6 +50,11 @@ public class CommandApduFactory {
 				return true;
 			}
 			
+			if((command.getIns() == (byte) 0x20) && (command.getP1P2() == (short) 0x0003)) {
+				// PIN Verify command as defined by CA+PA protocol
+				return true;
+			}
+
 			if((command.getIns() == (byte) 0x2A) && (command.getP1P2() == (short) 0xAEAC)) {
 				// PSO CDS as defined by BSI TR 03110 used in PSM and PSC
 				return true;
