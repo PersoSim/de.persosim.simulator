@@ -1,5 +1,7 @@
 package de.persosim.simulator.secstatus;
 
+import java.util.Arrays;
+
 import de.persosim.simulator.protocols.Oid;
 
 /**
@@ -8,13 +10,15 @@ import de.persosim.simulator.protocols.Oid;
  */
 public class CAPAMechanism extends AbstractSecMechanism {
 
-	private Oid terminalTypeOid;
 	private boolean mutualAuthSuccessful = false;
 	private boolean pinVerifySuccessful = false;
+	private byte[] compressedEphemeralPublicKeyChip;
+	private Oid terminalTypeOid;
 
-	public CAPAMechanism(boolean mutualAuthSuccessful, Oid terminalTypeOid) {
+	public CAPAMechanism(boolean mutualAuthSuccessful, byte[] compressedEphemeralPublicKeyChip, Oid terminalTypeOid) {
 		this.mutualAuthSuccessful = mutualAuthSuccessful;
-		this.setTerminalTypeOid(terminalTypeOid);
+		this.compressedEphemeralPublicKeyChip = compressedEphemeralPublicKeyChip;
+		this.terminalTypeOid = terminalTypeOid;
 	}
 
 	public boolean isMutualAuthSuccessful() {
@@ -29,11 +33,14 @@ public class CAPAMechanism extends AbstractSecMechanism {
 		this.pinVerifySuccessful = pinVerifySuccessful;
 	}
 
+	public byte[] getCompressedEphemeralPublicKeyChip() {
+		if (compressedEphemeralPublicKeyChip == null)
+			return null;
+		return Arrays.copyOf(compressedEphemeralPublicKeyChip, compressedEphemeralPublicKeyChip.length);
+	}
+
 	public Oid getTerminalTypeOid() {
 		return terminalTypeOid;
 	}
 
-	public void setTerminalTypeOid(Oid terminalTypeOid) {
-		this.terminalTypeOid = terminalTypeOid;
-	}
 }

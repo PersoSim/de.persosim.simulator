@@ -787,8 +787,14 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		if (currentMechanisms.isEmpty())
 			currentMechanisms = getPreviousSecMechanisms(CAPAMechanism.class);
 		if (!currentMechanisms.isEmpty()) {
-			PaceMechanism paceMechanism = (PaceMechanism) currentMechanisms.toArray()[0];
-			return paceMechanism.getCompressedEphemeralPublicKeyChip();
+			Object curMechFirst = currentMechanisms.toArray()[0];
+			if (curMechFirst instanceof PaceMechanism)
+				return ((PaceMechanism) curMechFirst).getCompressedEphemeralPublicKeyChip();
+			else if (curMechFirst instanceof CAPAMechanism)
+				return ((CAPAMechanism) curMechFirst).getCompressedEphemeralPublicKeyChip();
+			else
+				throw new ProcessingException(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED,
+						"Unknown protocol providing data for ID_PICC calculation was run");
 		} else {
 			throw new ProcessingException(Iso7816.SW_6985_CONDITIONS_OF_USE_NOT_SATISFIED,
 					"No protocol providing data for ID_PICC calculation was run");
