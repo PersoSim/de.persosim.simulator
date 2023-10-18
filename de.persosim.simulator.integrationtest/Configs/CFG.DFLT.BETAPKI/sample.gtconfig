@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SampleConfig originalName="Sample BSI 5.2 CFG.DFLT">
+<SampleConfig originalName="Sample BSI 5.2 CFG.DFLT.BETAPKI">
   <Description>Sample PersoSim Profile01BetaPki</Description>
   <PlatformId>00</PlatformId>
   <SampleId>12345</SampleId>
