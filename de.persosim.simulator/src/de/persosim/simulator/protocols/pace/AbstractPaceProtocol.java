@@ -170,10 +170,12 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			
 			try {
 				byte[] oidRaw = tlvObject.getValueField();
-				paceOid = getOid(oidRaw);
+				paceOid = null;
+				if (oidRaw != null && oidRaw.length > 0)
+					paceOid = getOid(oidRaw);
 				if (paceOid == null) {
 					continueProcessing = false;
-					log(this, "OID " + HexString.encode(oidRaw) + " does not match current protocol with prefix " + prefixOid, LogLevel.DEBUG);
+					log(this, "OID '" + HexString.encode(oidRaw) + "' does not match current protocol with prefix " + prefixOid, LogLevel.DEBUG);
 					return;
 				}
 			} catch (RuntimeException e) {
@@ -188,8 +190,10 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			/* Check for the PACE password itself */
 			tlvObject = commandData.getTlvDataObject(TAG_83);
 	
-			CardObject pwdCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new AuthObjectIdentifier(tlvObject.getValueField()));
-	
+			CardObject pwdCandidate = null;
+			byte[] valueFieldRaw = tlvObject.getValueField();
+			if (valueFieldRaw != null && valueFieldRaw.length > 0)
+				pwdCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new AuthObjectIdentifier(tlvObject.getValueField()));	
 			if (pwdCandidate instanceof PasswordAuthObject){
 				pacePassword = (PasswordAuthObject) pwdCandidate;
 				log(this, "selected password is: " + getPasswordName(), LogLevel.DEBUG);
@@ -206,7 +210,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			/* PACE domain parameters */
 			/*
 			 * {@link #tlvObject} may only be null if the combination of OID and domain parameters
-			 * set is not ambiguous. This is the case iff among all sets of domain
+			 * set is not ambiguous. This is the case if among all sets of domain
 			 * parameters registered for the selected OID exactly one matches the
 			 * key agreement implicitly indicated by the OID.
 			 */
@@ -310,7 +314,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			
 			//create and propagate response APDU
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
-		this.processingData.updateResponseAPDU(this, "Command SetAt successfully processed", resp);
+			this.processingData.updateResponseAPDU(this, "Command SetAt successfully processed", resp);
 		} catch (ProcessingException e) {
 			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
@@ -413,7 +417,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 	 *            Certificate holder authorization template to check
 	 * @param password
 	 *            to check
-	 * @return true, iff the combination used is allowed
+	 * @return true, if the combination used is allowed
 	 */
 	public static boolean checkPasswordAndAccessRights(
 			CertificateHolderAuthorizationTemplate chat,
@@ -668,30 +672,33 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		log(this, "expected pcd token data is: " + HexString.encode(pcdToken), LogLevel.DEBUG);
 		log(this, "received pcd token data is: " + HexString.encode(pcdTokenReceivedFromPCD), LogLevel.DEBUG);
 		
-		boolean paceSuccessful;
+		boolean paceSuccessful = false;
 		short sw;
 		String note;
 		
 		if(Arrays.equals(pcdToken, pcdTokenReceivedFromPCD)) {
 			log(this, "Token received from PCD matches expected one", LogLevel.DEBUG);
 			
-			if(pacePassword instanceof PasswordAuthObjectWithRetryCounter) {
-				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceSuccessful(pacePassword, cardState, protocolName);
-				
-				sw = pinResponse.getStatusWord();
-				note = pinResponse.getResponse();
-				
-				paceSuccessful = !Iso7816Lib.isReportingError(sw);
-			} else{
-				sw = Iso7816.SW_9000_NO_ERROR;
-				note = "MutualAuthenticate processed successfully";
-				paceSuccessful = true;
-			}
-		} else{
-			//PACE failed
+			if (isValidPasswordType()) {
+				if (pacePassword instanceof PasswordAuthObjectWithRetryCounter) {
+					ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceSuccessful(pacePassword, cardState, protocolName);
+					
+					sw = pinResponse.getStatusWord();
+					note = pinResponse.getResponse();
+					
+					paceSuccessful = !Iso7816Lib.isReportingError(sw);
+				} else{
+					sw = Iso7816.SW_9000_NO_ERROR;
+					note = "MutualAuthenticate processed successfully";
+					paceSuccessful = true;
+				}
+			} else {
+				sw = Iso7816.SW_6A80_WRONG_DATA;
+				note = "invalid password type: " + pacePassword.getClass().getSimpleName();			
+			}			
+		} else {
+			// PACE failed
 			log(this, "Token received from PCD does NOT match expected one", LogLevel.DEBUG);
-			paceSuccessful = false;
-			
 			if(pacePassword.getPasswordIdentifier() == Pace.ID_PIN) {
 				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) pacePassword, getProtocolName());
 				sw = pinResponse.getStatusWord();
@@ -704,7 +711,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		
 		ResponseApdu responseApdu;
 		
-		if(paceSuccessful) {
+		if (paceSuccessful) {
 			ConstructedTlvDataObject responseContent = buildMutualAuthenticateResponse(piccToken);
 			if (setSmDataProvider()){
 				responseApdu = doSmDataProviderHandling(sw, responseContent);				
@@ -729,7 +736,12 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			return;
 		}
 	}
-
+	
+	protected boolean isValidPasswordType() {
+		// all known password types are allowed
+		return true;
+	}
+	
 	protected ResponseApdu doSmDataProviderHandling(short sw, ConstructedTlvDataObject responseContent) {
 		ResponseApdu responseApdu;
 		KeyPair unmapped = mappingResult instanceof MappingResultGm ? ((MappingResultGm) mappingResult).getKeyPairPiccUnmapped() : null;
@@ -933,7 +945,7 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 
 	/**
 	 * This method checks whether PACE has previously been run with CAN.
-	 * @return true iff PACE has previously been run with CAN, otherwise false
+	 * @return true if PACE has previously been run with CAN, otherwise false
 	 */
 	public static boolean isPinTemporarilyResumed(CardStateAccessor cardState, String protocolName) {
 		HashSet<Class<? extends SecMechanism>> paceMechanisms = new HashSet<>();

@@ -24,7 +24,7 @@ public class PaceOid extends GenericOid implements Pace {
 		super(oidByteArray);
 		
 		if(!startsWithPrefix(prefixOid)) {
-			throw new IllegalArgumentException("PACE OID " + HexString.encode(oidByteArray) + " is invalid or unknown (not supported)");
+			throw new IllegalArgumentException("OID '" + HexString.encode(oidByteArray) + "' is invalid or unknown (not supported)");
 		}
 	}
 	
