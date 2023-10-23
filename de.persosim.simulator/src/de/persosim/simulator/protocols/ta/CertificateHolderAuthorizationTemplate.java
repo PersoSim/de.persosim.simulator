@@ -7,6 +7,7 @@ import de.persosim.simulator.protocols.Oid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
+import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.utils.BitField;
 
 /**
@@ -26,21 +27,27 @@ public class CertificateHolderAuthorizationTemplate {
 		this.terminalType = terminalType;
 	}
 	
-	public CertificateHolderAuthorizationTemplate(ConstructedTlvDataObject chatData) throws CertificateNotParseableException {
-		Oid objectIdentifier = new GenericOid(chatData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
-		PrimitiveTlvDataObject relativeAuthorizationData = (PrimitiveTlvDataObject) chatData.getTlvDataObject(TlvConstants.TAG_53);
+	public CertificateHolderAuthorizationTemplate(ConstructedTlvDataObject chatData)
+			throws CertificateNotParseableException {
+		TlvDataObject tlvOID = chatData.getTlvDataObject(TlvConstants.TAG_06);
+		TlvDataObject tlvTag53 = chatData.getTlvDataObject(TlvConstants.TAG_53);
+		if (tlvOID == null || tlvTag53 == null)
+			throw new CertificateNotParseableException("invalid CHAT");
+		Oid objectIdentifier = new GenericOid(tlvOID.getValueField());
+		PrimitiveTlvDataObject relativeAuthorizationData = (PrimitiveTlvDataObject) tlvTag53;
 		CertificateRole role = CertificateRole.getFromMostSignificantBits(relativeAuthorizationData.getValueField()[0]);
-		BitField authorization = BitField.buildFromBigEndian(relativeAuthorizationData.getLengthValue() * 8 - 2, relativeAuthorizationData.getValueField());
+		BitField authorization = BitField.buildFromBigEndian(relativeAuthorizationData.getLengthValue() * 8 - 2,
+				relativeAuthorizationData.getValueField());
 		relativeAuthorization = new RelativeAuthorization(role, authorization);
-		
-		//check if oid and relative authorization fit together
+
+		// check if oid and relative authorization fit together
 		terminalType = TerminalType.getFromOid(objectIdentifier);
 		int authBits = getRelativeAuthorization().getAuthorization().getNumberOfBits();
-		
-		if ((terminalType.equals(TerminalType.AT) && authBits != 40) || ((terminalType.equals(TerminalType.IS) || terminalType.equals(TerminalType.ST)) && authBits != 8)){
+
+		if ((terminalType.equals(TerminalType.AT) && authBits != 40)
+				|| ((terminalType.equals(TerminalType.IS) || terminalType.equals(TerminalType.ST)) && authBits != 8)) {
 			throw new CertificateNotParseableException("invalid combination of OID and terminal type");
 		}
-		
 	}
 
 	public RelativeAuthorization getRelativeAuthorization() {
