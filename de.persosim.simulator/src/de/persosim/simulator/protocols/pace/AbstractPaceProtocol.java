@@ -681,7 +681,8 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			
 			if (isValidPasswordType()) {
 				if (pacePassword instanceof PasswordAuthObjectWithRetryCounter) {
-					ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceSuccessful(pacePassword, cardState, protocolName);
+					ResponseData pinResponse = getMutualAuthenticatePinManagementResponseCESuccessful(
+							(PasswordAuthObjectWithRetryCounter)pacePassword, cardState);
 					
 					sw = pinResponse.getStatusWord();
 					note = pinResponse.getResponse();
@@ -700,7 +701,8 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			// PACE failed
 			log(this, "Token received from PCD does NOT match expected one", LogLevel.DEBUG);
 			if(pacePassword.getPasswordIdentifier() == Pace.ID_PIN) {
-				ResponseData pinResponse = getMutualAuthenticatePinManagementResponsePaceFailed((PasswordAuthObjectWithRetryCounter) pacePassword, getProtocolName());
+				ResponseData pinResponse = getMutualAuthenticatePinManagementResponseCEFailed(
+						(PasswordAuthObjectWithRetryCounter) pacePassword);
 				sw = pinResponse.getStatusWord();
 				note = pinResponse.getResponse();
 			} else{
@@ -821,6 +823,12 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		return constructed7C;
 	}
 	
+	
+	protected ResponseData getMutualAuthenticatePinManagementResponseCEFailed(PasswordAuthObjectWithRetryCounter pacePasswordPin) {
+		return getMutualAuthenticatePinManagementResponsePaceFailed(pacePasswordPin, getProtocolName());
+	}
+
+	
 	/**
 	 * This method returns data required to send a response APDU for Mutual Authenticate if PACE was performed using PIN as password and failed.
 	 * @return data required to send a response APDU for Mutual Authenticate
@@ -851,6 +859,11 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 		return new ResponseData(sw, note);
 	}
 	
+
+	protected ResponseData getMutualAuthenticatePinManagementResponseCESuccessful(PasswordAuthObjectWithRetryCounter pacePasswordPin, CardStateAccessor cardState) {
+		return getMutualAuthenticatePinManagementResponsePaceSuccessful(pacePasswordPin, cardState, getProtocolName());
+	}
+
 	/**
 	 * This method returns data required to send a response APDU for Mutual Authenticate if PACE was performed using PIN as password and succeeded.
 	 * @responseData the response data to be sent with the response APDU

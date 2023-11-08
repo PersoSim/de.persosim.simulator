@@ -2,6 +2,7 @@ package de.persosim.simulator.secstatus;
 
 import java.util.Arrays;
 
+import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.protocols.Oid;
 
 /**
@@ -12,17 +13,24 @@ public class CAPAMechanism extends AbstractSecMechanism {
 
 	private boolean mutualAuthSuccessful = false;
 	private boolean pinVerifySuccessful = false;
+	private PasswordAuthObject usedPassword;
 	private byte[] compressedEphemeralPublicKeyChip;
 	private Oid terminalTypeOid;
 
-	public CAPAMechanism(boolean mutualAuthSuccessful, byte[] compressedEphemeralPublicKeyChip, Oid terminalTypeOid) {
+	public CAPAMechanism(boolean mutualAuthSuccessful, PasswordAuthObject usedPassword,
+			byte[] compressedEphemeralPublicKeyChip, Oid terminalTypeOid) {
 		this.mutualAuthSuccessful = mutualAuthSuccessful;
+		this.usedPassword = usedPassword;
 		this.compressedEphemeralPublicKeyChip = compressedEphemeralPublicKeyChip;
 		this.terminalTypeOid = terminalTypeOid;
 	}
 
 	public boolean isMutualAuthSuccessful() {
 		return mutualAuthSuccessful;
+	}
+
+	public PasswordAuthObject getUsedPassword() {
+		return usedPassword;
 	}
 
 	public boolean isPinVerifySuccessful() {
