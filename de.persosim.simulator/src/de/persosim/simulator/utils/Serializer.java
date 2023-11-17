@@ -7,6 +7,7 @@ import org.globaltester.cryptoprovider.Crypto;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.core.util.CompositeClassLoader;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.security.AnyTypePermission;
 
 /**
  * This class contains methods to serialize and deserialize objects. The format
@@ -30,10 +31,14 @@ public class Serializer {
 		for (ClassLoader current:loaders){
 			loader.add(current);
 		}
-		
-		
+				
 		xstream = new XStream(new DomDriver("UTF-8"));
+		xstream.addPermission(AnyTypePermission.ANY); // allow all; no limitations for deserialization
 		xstream.setClassLoader(loader);
+	}
+	
+	private Serializer() {
+		// do nothing
 	}
 	
 	/**
@@ -43,7 +48,7 @@ public class Serializer {
 	 * @return the object copy
 	 */
 	public static <T> T deepCopy(T objectToCopy) {
-		return (T) deserialize(serialize(objectToCopy));
+		return deserialize(serialize(objectToCopy));
 	}
 	
 	private static void updateLoaders(Object object){
@@ -66,7 +71,7 @@ public class Serializer {
 	 */
 	public static <T> Serialized<T> serialize(T toSerialize) {
 		updateLoaders(toSerialize);
-		return new XstreamSerialized<T>(xstream.toXML(toSerialize));
+		return new XstreamSerialized<>(xstream.toXML(toSerialize));
 	}
 
 	/**
