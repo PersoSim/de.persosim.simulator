@@ -33,3 +33,4 @@ Import-Package: org.eclipse.ui.keys,
  org.osgi.framework;version="1.8.0"
 Bundle-Vendor: secunet Security Networks AG
 Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: de.persosim.simulator.integrationtest

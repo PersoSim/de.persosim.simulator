@@ -761,5 +761,13 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 	private boolean isAlgorithmIdentifierSimplificationAllowed () {
 		return true;
 	}
+
+	public SecretKeySpec getSecretKeySpecMAC() {
+		return secretKeySpecMAC;
+	}
+
+	public SecretKeySpec getSecretKeySpecENC() {
+		return secretKeySpecENC;
+	}
 	
 }

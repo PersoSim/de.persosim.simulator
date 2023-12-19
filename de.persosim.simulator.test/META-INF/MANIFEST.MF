@@ -21,3 +21,4 @@ Export-Package: de.persosim.simulator,
 Import-Package: org.eclipse.ui.keys,
  org.osgi.framework;version="1.8.0"
 Bundle-ClassPath: .
+Automatic-Module-Name: de.persosim.simulator.test

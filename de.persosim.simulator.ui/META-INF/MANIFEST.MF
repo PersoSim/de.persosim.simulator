@@ -29,3 +29,4 @@ Export-Package: de.persosim.simulator.ui,
  de.persosim.simulator.ui.utils
 Import-Package: de.persosim.driver.connector.service
 Bundle-Vendor: secunet Security Networks AG
+Automatic-Module-Name: de.persosim.simulator.ui

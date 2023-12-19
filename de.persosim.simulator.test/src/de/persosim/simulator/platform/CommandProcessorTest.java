@@ -2,11 +2,11 @@ package de.persosim.simulator.platform;
 
 import static de.persosim.simulator.platform.TestProtocol.methodsWhereCalledInSequence;
 import static de.persosim.simulator.platform.TestProtocol.wasMethodCalled;
-import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -58,7 +58,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 		commandProcessor.processAscending(pData);
 
 		// make sure reset has been called
-		assertThat(testProtocol, wasMethodCalled("reset"));
+		MatcherAssert.assertThat(testProtocol, wasMethodCalled("reset"));
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 		commandProcessor.processAscending(pData2);
 		
 		// make sure needed methods have been called
-		assertThat(testProtocol, methodsWhereCalledInSequence(true, "reset", "process", "process"));
+		MatcherAssert.assertThat(testProtocol, methodsWhereCalledInSequence(true, "reset", "process", "process"));
 
 	}
 
@@ -111,7 +111,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 		commandProcessor.processAscending(pData2);
 		
 		// make sure needed methods have been called
-		assertThat(testProtocol, methodsWhereCalledInSequence(true, "reset", "process", "reset", "process"));
+		MatcherAssert.assertThat(testProtocol, methodsWhereCalledInSequence(true, "reset", "process", "reset", "process"));
 	}
 
 	/**
@@ -140,7 +140,7 @@ public class CommandProcessorTest extends PersoSimTestCase {
 		commandProcessor.processAscending(pData2);
 		
 		// make sure needed methods have been called
-		assertThat(testProtocol, methodsWhereCalledInSequence(true, "reset", "process", "reset", "process"));
+		MatcherAssert.assertThat(testProtocol, methodsWhereCalledInSequence(true, "reset", "process", "reset", "process"));
 	}
 
 }

@@ -1,5 +1,7 @@
 package de.persosim.simulator.perso.xstream;
 
+import java.lang.reflect.InvocationTargetException;
+
 import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -37,8 +39,8 @@ public class ProtocolConverter implements Converter {
 			if (!Protocol.class.isAssignableFrom(protocol)){
 				throw new XStreamException("Class " + protocol + " is not assignable to " + Protocol.class);
 			}
-			return protocol.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
+			return protocol.getDeclaredConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			throw new XStreamException (protocolName + " is unknown, unmarshaling failed!");
 		}
 	}

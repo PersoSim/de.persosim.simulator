@@ -6,8 +6,6 @@ import java.math.BigInteger;
 
 import org.junit.Test;
 
-import de.persosim.simulator.crypto.Tr03111Utils;
-
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.test.PersoSimTestCase;
 

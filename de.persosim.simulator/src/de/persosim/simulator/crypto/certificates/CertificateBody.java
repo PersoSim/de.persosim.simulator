@@ -12,6 +12,7 @@ import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
+import de.persosim.simulator.tlv.TlvDataObject;
 
 
 /**
@@ -65,13 +66,21 @@ public class CertificateBody extends ReducedCertificateBody {
 		super(certificateBodyData, currentPublicKey);
 		
 		//Certificate Holder Authorization Template (CHAT)
-		certificateHolderAuthorizationTemplate = new CertificateHolderAuthorizationTemplate((ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F4C));
+		ConstructedTlvDataObject chatData = (ConstructedTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F4C);
+		if (chatData != null)
+			certificateHolderAuthorizationTemplate = new CertificateHolderAuthorizationTemplate(chatData);
 		
 		//Certificate Expiration Date
 		//Certificate Effective Date
 		try {
-			certificateExpirationDate = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F24)).getValueField(), false);
-			certificateEffectiveDate = Tr03110Utils.parseDate(((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F25)).getValueField(), false);
+			TlvDataObject tagExpDate = ((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F24));
+			if (tagExpDate == null)
+				throw new NotParseableException("The date could not be parsed: no tag for certificate expiration date");
+			TlvDataObject tagEffDate = ((PrimitiveTlvDataObject) certificateBodyData.getTlvDataObject(TlvConstants.TAG_5F25));
+			if (tagEffDate == null)
+				throw new NotParseableException("The date could not be parsed: no tag for certificate effective date");
+			certificateExpirationDate = Tr03110Utils.parseDate(tagExpDate.getValueField(), false);
+			certificateEffectiveDate = Tr03110Utils.parseDate(tagEffDate.getValueField(), false);
 		} catch (NotParseableException | IllegalArgumentException e) {
 			throw new CertificateNotParseableException("The date could not be parsed: " + e.getMessage());
 		}
@@ -129,6 +138,8 @@ public class CertificateBody extends ReducedCertificateBody {
 	 * @return the role of this certificate
 	 */
 	public CertificateRole getCertificateRole() {
+		if (certificateHolderAuthorizationTemplate == null || certificateHolderAuthorizationTemplate.getRelativeAuthorization() == null)
+			throw new IllegalArgumentException("No CHAT available; cannot determine certificate role");
 		return certificateHolderAuthorizationTemplate.getRelativeAuthorization().getRole();
 	}
 	

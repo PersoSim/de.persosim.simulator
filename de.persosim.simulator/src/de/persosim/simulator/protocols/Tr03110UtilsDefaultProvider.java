@@ -95,7 +95,7 @@ public class Tr03110UtilsDefaultProvider implements Tr03110UtilsProvider {
 
 		if (includeConditionalObjects) {
 			PrimitiveTlvDataObject coFactor = new PrimitiveTlvDataObject(TAG_87,
-					Utils.toUnsignedByteArray(new BigInteger((new Integer(ecParams.getCofactor())).toString())));
+					Utils.toUnsignedByteArray(new BigInteger((Integer.valueOf(ecParams.getCofactor())).toString())));
 
 			publicKeyBody.addTlvDataObject(coFactor);
 		}

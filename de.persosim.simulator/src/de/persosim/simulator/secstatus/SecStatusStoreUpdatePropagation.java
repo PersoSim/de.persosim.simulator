@@ -1,8 +1,6 @@
 package de.persosim.simulator.secstatus;
 
 import de.persosim.simulator.processing.UpdatePropagation;
-import de.persosim.simulator.secstatus.SecStatusEventUpdatePropagation;
-import de.persosim.simulator.secstatus.SecurityEvent;
 
 /**
  * This {@link UpdatePropagation} is used to propagate store and restore session context events

@@ -401,7 +401,7 @@ public class DomainParameterSetEcdhTest extends PersoSimTestCase {
 	 */
 	@Test
 	public void testEquals_nonRelated() {
-		assertFalse(domParamsEcdh.equals(new String("Test")));
+		assertFalse(domParamsEcdh.equals((Object)new String("Test")));
 	}
 	
 	/**

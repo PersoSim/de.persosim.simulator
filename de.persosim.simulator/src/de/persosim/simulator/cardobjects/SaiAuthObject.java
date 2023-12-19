@@ -8,10 +8,6 @@ import java.util.Arrays;
 
 import org.globaltester.cryptoprovider.Crypto;
 
-import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
-import de.persosim.simulator.cardobjects.PasswordAuthObject;
-import de.persosim.simulator.utils.HexString;
-
 public class SaiAuthObject extends PasswordAuthObject {
 
 	private String sai;

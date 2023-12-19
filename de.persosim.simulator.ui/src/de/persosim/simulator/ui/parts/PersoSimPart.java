@@ -9,8 +9,6 @@ import java.util.Calendar;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.security.auth.callback.TextOutputCallback;
-
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.MessageDialog;

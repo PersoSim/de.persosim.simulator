@@ -45,3 +45,4 @@ Require-Bundle: org.globaltester.cryptoprovider,
  org.globaltester.logging,
  org.globaltester.lib.xstream,
  org.globaltester.base
+Automatic-Module-Name: de.persosim.simulator

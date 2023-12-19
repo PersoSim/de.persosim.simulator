@@ -19,6 +19,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.core.util.CompositeClassLoader;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.security.AnyTypePermission;
 
 import de.persosim.simulator.Activator;
 import de.persosim.simulator.perso.xstream.CommandProcessorConverter;
@@ -119,6 +120,7 @@ public class PersonalizationFactory {
 		DomDriver domDriver = new DomDriver("UTF-8");
 		ShouldSerializeMemberImpl ssm = new ShouldSerializeMemberImpl();
 		XStream xstream = XstreamFactory.get(domDriver, ssm, PersonalizationFactory.class.getClassLoader());
+		xstream.addPermission(AnyTypePermission.ANY); // allow all; no limitations for deserialization
 		
 		xstream.ignoreUnknownElements();
 
