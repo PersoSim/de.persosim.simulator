@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.core.resources.IProject;
 import org.globaltester.base.PreferenceHelper;
@@ -79,7 +80,7 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 		disableSimulator();
 	}
 
-	private SampleConfig migrateTo(SampleConfig sampleConfig, MigrationTarget migrationTarget) throws InterruptedException, ExecutionException, IOException {
+	private SampleConfig migrateTo(SampleConfig sampleConfig, MigrationTarget migrationTarget) throws InterruptedException, ExecutionException, IOException, TimeoutException {
 		configureMigration(sampleConfig, migrationTarget);
 		performMigrationTestcases(sampleConfig);
 		return createNewSampleConfigafterMigration(sampleConfig, migrationTarget);
@@ -91,7 +92,7 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 		PreferenceHelper.setPreferenceValue(com.secunet.globaltester.prove.eac2.Activator.PLUGIN_ID, com.secunet.globaltester.prove.eac2.preferences.PreferenceConstants.P_EPA_GENCERTS_MIG_CURVE, migrationTarget.param);
 	}
 
-	private void performMigrationTestcases(SampleConfig sampleConfig) throws InterruptedException, ExecutionException {
+	private void performMigrationTestcases(SampleConfig sampleConfig) throws InterruptedException, ExecutionException, TimeoutException {
 		ArrayList<String> testcases = new ArrayList<>();
 		testcases.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/generate_data/testsuite_Gen_ALL_Certificate_Sets.gtsuite");
 		testcases.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_M.gtsuite");
@@ -132,7 +133,7 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 		return newSampleConfig;
 	}
 
-	private void checkMigrationResult(SampleConfig sampleConfig) throws InterruptedException, ExecutionException {
+	private void checkMigrationResult(SampleConfig sampleConfig) throws InterruptedException, ExecutionException, TimeoutException {
 		ArrayList<String> testcases = new ArrayList<>();
 		testcases.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/generate_data/testsuite_Gen_ALL_Certificate_Sets.gtsuite");
 		testcases.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_K.gtsuite");

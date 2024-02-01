@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -197,7 +198,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	
 
 	@Override
-	public TestResult getChipTestResult() throws InterruptedException, ExecutionException{
+	public TestResult getChipTestResult() throws InterruptedException, ExecutionException, TimeoutException {
 		TestResult chipTestResult = super.getChipTestResult();
 
 		List<String> expectedWarningTestcases = Arrays.asList(
