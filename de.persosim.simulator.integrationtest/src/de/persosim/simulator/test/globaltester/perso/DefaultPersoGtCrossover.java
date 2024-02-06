@@ -38,9 +38,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	@Override
 	public IProject getSampleConfigChip() throws Exception {
 		IProject sampleConfigProject = super.getSampleConfigChip();
-		SampleConfig sampleConfig = SampleConfig.getSampleConfigForProject(sampleConfigProject);
-		sampleConfig.setHaveToSaveToProjectAfterPut(false);
-		
+		SampleConfig sampleConfig = SampleConfig.getSampleConfigForProject(sampleConfigProject);				
 		//remove unsupported profiles
         modifySampleConfigForPerso(sampleConfig);
 		
@@ -60,6 +58,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	
 	protected void modifySampleConfigForPerso(SampleConfig sampleConfig)
 			throws IOException {
+		sampleConfig.setHaveToSaveToProjectAfterPut(false);
 		sampleConfig.put("IEA", "IEA", "false");
 		sampleConfig.put("MOBILEID", "MOBILEID", "false");
 		
@@ -136,7 +135,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 				"personalization/gtCertificates/CFG.DFLT.EAC.AT", Collections.emptyList());
 		GtResourceHelper.copyPluginFilesToWorkspaceProject("de.persosim.simulator", sampleConfig.getProject() .getFolder(stRootFolderName),
 				"personalization/gtCertificates/CFG.DFLT.EAC.ST", Collections.emptyList());
-
+		sampleConfig.setHaveToSaveToProjectAfterPut(true);
 	}
 
 	@Override

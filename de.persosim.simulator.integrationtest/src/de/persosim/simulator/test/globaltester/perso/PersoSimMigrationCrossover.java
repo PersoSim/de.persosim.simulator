@@ -111,7 +111,8 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 		
 		modifySampleConfigForPerso(newSampleConfig);
 		
-		// adjust profiles according to migration target 
+		// adjust profiles according to migration target
+		newSampleConfig.setHaveToSaveToProjectAfterPut(false);
 		newSampleConfig.put("TAv2", "RSA", MigrationType.RSA.equals(migrationTarget.type));
 		newSampleConfig.put("TAv2", "ECDSA", MigrationType.ECDSA.equals(migrationTarget.type));
 		
@@ -130,6 +131,7 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 		Files.copy(sourceKeySt, Paths.get(newSampleConfig.getAbsolutePath(eac2Certs, "ST_CVCA_KEY")), StandardCopyOption.REPLACE_EXISTING);	
 				
 		newSampleConfig.saveToProject();
+		newSampleConfig.setHaveToSaveToProjectAfterPut(true);
 		return newSampleConfig;
 	}
 
