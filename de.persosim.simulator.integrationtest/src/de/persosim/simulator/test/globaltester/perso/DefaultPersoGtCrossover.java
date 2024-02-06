@@ -39,6 +39,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	public IProject getSampleConfigChip() throws Exception {
 		IProject sampleConfigProject = super.getSampleConfigChip();
 		SampleConfig sampleConfig = SampleConfig.getSampleConfigForProject(sampleConfigProject);
+		sampleConfig.setHaveToSaveToProjectAfterPut(false);
 		
 		//remove unsupported profiles
         modifySampleConfigForPerso(sampleConfig);
@@ -107,7 +108,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 				"6408125F2910312D<<<<<<<<<<<<<8\n"+
 				"MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
 
-		//configure certificat locations
+		//configure certificate locations
 		String eac2Certificates = com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME;
 		sampleConfig.put(eac2Certificates, "USE_CERTS", "USE_GENERATED_CERTS");
 		sampleConfig.put(eac2Certificates, "EAC2_CERTS", "certificates/generated");
