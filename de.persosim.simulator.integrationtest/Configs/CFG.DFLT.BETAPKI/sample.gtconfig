@@ -184,6 +184,7 @@
     <Parameter paramName="PACE_domParam" />
     <Parameter paramName="PACE_PACE">true</Parameter>
     <Parameter paramName="PACE_STATIC_BINDING">false</Parameter>
+    <Parameter paramName="CAPA_CAPA">false</Parameter>
     <Parameter paramName="ePassport_CSCA_CERT" />
     <Parameter paramName="ePassport_DG2">true</Parameter>
     <Parameter paramName="ePassport_DG1">true</Parameter>
