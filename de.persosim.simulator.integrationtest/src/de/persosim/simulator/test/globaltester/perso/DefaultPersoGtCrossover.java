@@ -98,6 +98,8 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 		sampleConfig.put("PACE", "DH", "false");
 	    sampleConfig.put("PACE", "IM", "false");
 	    sampleConfig.put("PACE", "STATIC_BINDING", "false");
+	    
+	    sampleConfig.put("CAPA", "CAPA", "false");
 
 		sampleConfig.put("PASSWORDS", "MRZ",
 				"IDD<<0000000011<<<<<<<<<<<<<<<\n"+
