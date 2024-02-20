@@ -102,7 +102,9 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	    
 	    sampleConfig.put("CAPA", "CAPA", "false");
 
-		sampleConfig.put("PASSWORDS", "MRZ",
+	    sampleConfig.put("CAPA", "CAPA", "false");
+	    
+	    sampleConfig.put("PASSWORDS", "MRZ",
 				"IDD<<0000000011<<<<<<<<<<<<<<<\n"+
 				"6408125F2910312D<<<<<<<<<<<<<8\n"+
 				"MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
