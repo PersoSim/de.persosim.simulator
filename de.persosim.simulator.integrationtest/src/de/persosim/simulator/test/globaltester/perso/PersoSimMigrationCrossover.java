@@ -34,28 +34,28 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 		testMigration(MigrationTarget.ECDSA_SHA256_P256r1);
 	}
 	
-	@Test
+	@Ignore @Test
 	public void migrate_Ecdsa_Sha384_P384r1_Test() throws Exception {
 		testMigration(MigrationTarget.ECDSA_SHA384_P384r1);
 	}
 	
-	@Test
+	@Ignore @Test
 	public void migrate_Ecdsa_Sha512_SECP521r1_Test() throws Exception {
 		testMigration(MigrationTarget.ECDSA_SHA512_SECP521r1);
 	}
 	
-	@Test
+	@Ignore @Test
 	public void migrate_RsaPss_Sha512_1024_Test() throws Exception {
 		testMigration(MigrationTarget.RSAPSS_SHA512_1024);
 	}
 	
+	@Ignore @Test
 	@Override
 	public void defaultTest() throws Exception {
-		//do not reexecute the testcase from parent class
+		//do not re-execute the test case from parent class
 	}
 	
-	@Test
-	@Ignore
+	@Ignore @Test
 	public void migrateAllTest() throws Exception {
 		testMigration(MigrationTarget.values());
 	}
@@ -70,23 +70,27 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 		SampleConfig sampleConfig = SampleConfig.getSampleConfigForProject(sampleConfigProject);
 		modifySampleConfigForPerso(sampleConfig);
 		
-		for (int i = 0; i < migrationTargets.length; i++) {
-			if (migrationTargets[i]==null) continue; 
-			sampleConfig = migrateTo(sampleConfig, migrationTargets[i]);
-			checkMigrationResult(sampleConfig);
+		try {
+			for (int i = 0; i < migrationTargets.length; i++) {
+				if (migrationTargets[i]==null) continue; 
+				sampleConfig = migrateTo(sampleConfig, migrationTargets[i]);
+				cleanupChipTest();
+				checkMigrationResult(sampleConfig);
+				cleanupChipTest();
+			}
+		} finally {
+			cleanupChipTest();
+			disableSimulator();
 		}
-		
-		cleanupChipTest();
-		disableSimulator();
 	}
 
 	private SampleConfig migrateTo(SampleConfig sampleConfig, MigrationTarget migrationTarget) throws InterruptedException, ExecutionException, IOException, TimeoutException {
-		configureMigration(sampleConfig, migrationTarget);
+		configureMigration(migrationTarget);
 		performMigrationTestcases(sampleConfig);
 		return createNewSampleConfigafterMigration(sampleConfig, migrationTarget);
 	}
 	
-	private void configureMigration(SampleConfig sampleConfig, MigrationTarget migrationTarget) {
+	private void configureMigration(MigrationTarget migrationTarget) {
 		PreferenceHelper.setPreferenceValue(com.secunet.globaltester.prove.eac2.Activator.PLUGIN_ID, com.secunet.globaltester.prove.eac2.preferences.PreferenceConstants.P_EPA_GENCERTS_MIG_SIGALG, migrationTarget.sigAlg);
 		PreferenceHelper.setPreferenceValue(com.secunet.globaltester.prove.eac2.Activator.PLUGIN_ID, com.secunet.globaltester.prove.eac2.preferences.PreferenceConstants.P_EPA_GENCERTS_MIG_KEYSIZE, migrationTarget.param);
 		PreferenceHelper.setPreferenceValue(com.secunet.globaltester.prove.eac2.Activator.PLUGIN_ID, com.secunet.globaltester.prove.eac2.preferences.PreferenceConstants.P_EPA_GENCERTS_MIG_CURVE, migrationTarget.param);

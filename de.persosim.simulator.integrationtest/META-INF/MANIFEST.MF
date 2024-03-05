@@ -28,7 +28,8 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics;bundle-version="3.3.1",
  com.secunet.globaltester.prove.eac2
 Export-Package: de.persosim.simulator.test.globaltester.perso
-Import-Package: org.eclipse.ui.keys,
+Import-Package: com.secunet.globaltester.epassport.certificates,
+ org.eclipse.ui.keys,
  org.osgi.framework
 Bundle-Vendor: secunet Security Networks AG
 Bundle-ActivationPolicy: lazy
