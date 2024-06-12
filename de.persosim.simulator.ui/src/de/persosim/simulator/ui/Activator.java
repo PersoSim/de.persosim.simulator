@@ -20,7 +20,7 @@ import de.persosim.simulator.ui.utils.LinkedListLogListener;
 /**
  * The activator for this bundle. It tracks the {@link Simulator} service and
  * provides accessor methods.
- * 
+ *
  * @author mboonk
  *
  */
@@ -36,13 +36,13 @@ public class Activator implements BundleActivator {
 	static BundleContext getContext() {
 		return context;
 	}
-	
+
 	public static LinkedListLogListener getListLogListener(){
 		return linkedListLogger;
 	}
-	
+
 	public static void executeUserCommands(String command){
-		
+
 		String[] commands = CommandParser.parseCommand(command);
 		CommandParser.executeUserCommands(commands);
 		if(commands.length == 0) return; //just do nothing.
@@ -53,12 +53,6 @@ public class Activator implements BundleActivator {
 			disconnectFromNativeDriver();
 		}
 	}
-	
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -67,12 +61,12 @@ public class Activator implements BundleActivator {
 	public void start(final BundleContext context) throws Exception {
 		Activator.context = context;
 
-		serviceTrackerDriverConnectorFactory = new ServiceTracker<DriverConnectorFactory, DriverConnectorFactory>(context, DriverConnectorFactory.class.getName(), null);
+		serviceTrackerDriverConnectorFactory = new ServiceTracker<>(context, DriverConnectorFactory.class.getName(), null);
 		serviceTrackerDriverConnectorFactory.open();
 
 		BasicLogger.addLogListener(linkedListLogger);
+		LogHelper.logEnvironmentInfo();
 	}
-	
 
 	/*
 	 * (non-Javadoc)
@@ -97,15 +91,15 @@ public class Activator implements BundleActivator {
 	public static void disconnectFromNativeDriver() {
 		try {
 			connector = serviceTrackerDriverConnectorFactory.getService().getConnector(de.persosim.driver.connector.Activator.PERSOSIM_CONNECTOR_CONTEXT_ID);
-			
-			if (connector != null) {				
+
+			if (connector != null) {
 				serviceTrackerDriverConnectorFactory.getService().returnConnector(connector);
 			}
 		} catch (IOException e) {
 			log(Activator.class, "Exception: " + e.getMessage(), LogLevel.ERROR);
 		}
 	}
-	
+
 	public static IfdConnector getConnector(){
 		return connector;
 	}

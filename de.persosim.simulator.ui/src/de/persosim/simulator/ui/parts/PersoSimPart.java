@@ -46,69 +46,69 @@ import de.persosim.simulator.ui.utils.LinkedListLogListener;
  *
  */
 public class PersoSimPart {
-	
+
 	public static final String PERSO_PATH = "personalization/profiles/";
 	public static final String PERSO_FILE = "Profile01.perso";
-	
+
 	public static final int LOG_LIMIT = 1000;
-	
+
 	// get UISynchronize injected as field
 	@Inject UISynchronize sync;
-	
+
 	private Text txtOutput;
 	private Thread uiThread = null;
 	private Thread updateThread = null;
 	//maximum amount of strings saved in the buffer
 	public static final int MAXIMUM_CACHED_CONSOLE_LINES = 20000;
-	
+
 	//maximum of lines the text field can show
 	int maxLineCount=0;
-	
+
 	Composite parent;
 	private Button lockScroller;
 	Boolean locked = false;
 	Slider slider;
-			
+
 	@PostConstruct
 	public void createComposite(Composite parentComposite) {
 		parent = parentComposite;
 		parent.setLayout(new GridLayout(2, false));
-		
+
 		//add console out
 		txtOutput = createConsoleOut(parent);
 		addConsoleOutMenu(txtOutput);
-		
+
 		//configure the slider
 		slider = createSlider(parent);
-		
-		txtOutput.addListener(SWT.MouseUp, new Listener() {	
+
+		txtOutput.addListener(SWT.MouseUp, new Listener() {
 			@Override
 			public void handleEvent (Event e) {
 				lockAutoScroll();
 			}
 		});
-		
+
 		txtOutput.addMouseWheelListener(new MouseWheelListener() {
 			@Override
 			public void mouseScrolled(MouseEvent e) {
 				int count = e.count;
 				slider.setSelection(slider.getSelection()-count);
 				lockAutoScroll();
-				
-				buildNewConsoleContent();					
+
+				buildNewConsoleContent();
 			}
 		});
-		
+
 		txtOutput.addKeyListener(new KeyListener() {
-			
+
 			@Override
 			public void keyReleased(KeyEvent e) {}
-			
+
 			@Override
 			public void keyPressed(KeyEvent e) {
 				int sliderChange = 0;
 				boolean addLock = false;
-				
+
 				switch (e.keyCode) {
 
 				case SWT.ARROW_DOWN:
@@ -126,18 +126,18 @@ public class PersoSimPart {
 					addLock = true;
 					break;
 				}
-				
+
 				slider.setSelection(slider.getSelection()+sliderChange);
-				
+
 				if (addLock) {
 					lockAutoScroll();
 				}
-				
+
 				buildNewConsoleContent();
-						
+
 			}
 		});
-		
+
 		txtOutput.addListener(SWT.Resize, new Listener() {
 			public void handleEvent(Event e) {
 				//if the size of the text field changes the shown output should be readjusted
@@ -153,14 +153,14 @@ public class PersoSimPart {
 
 			}
 		});
-		parent.setLayout(new GridLayout(2, false));		
-		
+		parent.setLayout(new GridLayout(2, false));
+
 		createConsoleIn(parent);
-		
+
 		lockScroller = new Button(parent, SWT.TOGGLE);
 		lockScroller.setText(" lock ");
 		lockScroller.setAlignment(SWT.CENTER);
-		lockScroller.addListener(SWT.Selection, new Listener() {	
+		lockScroller.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent (Event e) {
 				if(locked){
@@ -184,13 +184,13 @@ public class PersoSimPart {
 		lockScroller.setText("lock");
 		locked=false;
 	}
-	
+
 	private Thread createUpdateThread() {
 		final LinkedListLogListener listener = Activator.getListLogListener();
 		if (listener == null){
 			txtOutput.setText("The OSGi logging service can not be used.\nPlease check the availability and OSGi configuration" + System.lineSeparator());
 		}
-		
+
 		uiThread = Display.getCurrent().getThread();
 		final Thread updateThread = new Thread() {
 			public void run() {
@@ -217,11 +217,11 @@ public class PersoSimPart {
 		};
 		return updateThread;
 	}
-	
-	
+
+
 	/**
 	 * Checks if a refresh of the logging part is necessary.
-	 * 
+	 *
 	 * @return true for refresh and false for no refresh
 	 */
 	private boolean checkForRefresh(LinkedListLogListener listener){
@@ -236,7 +236,7 @@ public class PersoSimPart {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * This method creates the slider to be used in connection with the console output.
 	 * @param parentComposite a composite control which will be the parent of the new instance (cannot be null)
@@ -247,14 +247,14 @@ public class PersoSimPart {
 		slider.setIncrement(1);
 		slider.setPageIncrement(10);
 		if (Activator.getListLogListener() != null){
-			slider.setMaximum(Activator.getListLogListener().getNumberOfCachedLines()+slider.getThumb());	
+			slider.setMaximum(Activator.getListLogListener().getNumberOfCachedLines()+slider.getThumb());
 		}
 		slider.setMinimum(0);
-		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));		
-		
+		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+
 		SelectionListener sliderListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				
+
 				buildNewConsoleContent();
 
 			}
@@ -262,15 +262,15 @@ public class PersoSimPart {
 		slider.addSelectionListener(sliderListener);
 		return slider;
 	}
-	
+
 	/**
-	 * This function adds a new menu entry to the logging part. 
+	 * This function adds a new menu entry to the logging part.
 	 */
 	private void addConsoleOutMenu(Text console) {
 		Menu consoleMenu = createConsoleMenu(console);
 		console.setMenu(consoleMenu);
 	}
-	
+
 	/**
 	 * This method creates the console input.
 	 * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -279,7 +279,7 @@ public class PersoSimPart {
 	private Text createConsoleIn(Composite parent) {
 		final Text txtIn = new Text(parent, SWT.BORDER);
 		txtIn.setMessage("Enter command here");
-		
+
 		txtIn.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -292,26 +292,26 @@ public class PersoSimPart {
 		});
 
 		txtIn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
+
 		return txtIn;
 	}
-	
+
 	/**
 	 * This method creates the console output.
 	 * @param compositeParent a composite control which will be the parent of the new instance (cannot be null)
 	 * @return the console output
 	 */
 	private Text createConsoleOut(Composite compositeParent) {
-		Text txtOut = new Text(compositeParent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);		
+		Text txtOut = new Text(compositeParent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);
 		txtOut.setEditable(false);
 		txtOut.setCursor(null);
 		txtOut.setLayoutData(new GridData(GridData.FILL_BOTH));
 		txtOut.setSelection(txtOut.getText().length());
 		txtOut.setTopIndex(txtOut.getLineCount() - 1);
-		
+
 		return txtOut;
 	}
-	
+
 	/**
 	 * This method creates the console output menu.
 	 * @param controlParent a composite control which will be the parent of the new instance (cannot be null)
@@ -319,23 +319,23 @@ public class PersoSimPart {
 	 */
 	private Menu createConsoleMenu(Control controlParent) {
 		final Control controlParentFinal = controlParent;
-		
+
 		Menu consoleMenu = new Menu(controlParentFinal);
-		
+
 		//copy menu
 		MenuItem copyItem = new MenuItem(consoleMenu, SWT.CASCADE);
 		copyItem.setText("Copy");
 		copyItem.setAccelerator(SWT.MOD1+ 'C');
-		
+
 		copyItem.addSelectionListener(new SelectionListener() {
 			@Override
-			public void widgetSelected(SelectionEvent e) { 
+			public void widgetSelected(SelectionEvent e) {
 
 				String selectedText = txtOutput.getSelectionText();
-				
+
 				Clipboard clipboard = new Clipboard(e.display);
 				TextTransfer tt = TextTransfer.getInstance();
-				
+
 				clipboard.setContents(new Object[] {selectedText}, new Transfer[]{tt});
 
 			}
@@ -344,17 +344,17 @@ public class PersoSimPart {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		
+
 		new MenuItem(consoleMenu, SWT.SEPARATOR);
-		
+
 		//configure log level menu
 		MenuItem changeLogLevelItem = new MenuItem(consoleMenu, SWT.CASCADE);
 		changeLogLevelItem.setText("Configure logLevel");
-		
+
 		changeLogLevelItem.addSelectionListener(new SelectionListener() {
 			@Override
-			public void widgetSelected(SelectionEvent e) { 
-				
+			public void widgetSelected(SelectionEvent e) {
+
 				LogLevelDialog ld = new LogLevelDialog(null);
 				ld.open();
 
@@ -364,18 +364,18 @@ public class PersoSimPart {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		
-		
-		
+
+
+
 		//configure load personalization menu
 		MenuItem selectPersonalization = new MenuItem(consoleMenu, SWT.CASCADE);
 		selectPersonalization.setText("Load Personalization");
-		
+
 		selectPersonalization.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
-			public void widgetSelected(SelectionEvent e) { 
-				
+			public void widgetSelected(SelectionEvent e) {
+
 				SelectPersoFromFileHandler fileHandler = new SelectPersoFromFileHandler();
 				fileHandler.execute(controlParentFinal.getShell());
 			}
@@ -384,21 +384,21 @@ public class PersoSimPart {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		
-		
-		
+
+
+
 		// configure save log menu
 		MenuItem saveLogItem = new MenuItem(consoleMenu, SWT.CASCADE);
 		saveLogItem.setText("Save log to file");
 		saveLogItem.addSelectionListener(new SelectionListener() {
-			
+
 			String logFileName;
 			File file;
 			PrintWriter writer;
-			
+
 			@Override
-			public void widgetSelected(SelectionEvent e) { 
-				
+			public void widgetSelected(SelectionEvent e) {
+
 				try{
 					logFileName = "PersoSim_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".log";
 					file = new File(logFileName);
@@ -407,16 +407,16 @@ public class PersoSimPart {
 							.getNumberOfCachedLines(); i++) {
 						writer.write(Activator.getListLogListener().getLine(i)+"\n");
 					}
-					
+
 					MessageDialog.openInformation(txtOutput.getShell(), "Info", "Logfile written to " + file.getAbsolutePath());
 				}catch(IOException ioe){
-		            ioe.printStackTrace(); 
-		        } finally { 
-		            if (writer != null){ 
-		                writer.flush(); 
-		                writer.close(); 
-		            } 
-		        } 				
+		            ioe.printStackTrace();
+		        } finally {
+		            if (writer != null){
+		                writer.flush();
+		                writer.close();
+		            }
+		        }
 
 			}
 
@@ -424,17 +424,17 @@ public class PersoSimPart {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		
+
 		return consoleMenu;
 	}
-	
+
 	/**
-	 * changes the maximum of the slider and selects the 
+	 * changes the maximum of the slider and selects the
 	 * new Maximum to display the latest log messages
 	 */
 	private void rebuildSlider(){
 		sync.syncExec(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				if (Activator.getListLogListener() != null) {
@@ -446,8 +446,8 @@ public class PersoSimPart {
 			}
 		});
 	}
-	
-	
+
+
 	/**
 	 * takes the selected value from the Slider and prints the fitting messages
 	 * from the LinkedList until the Text field is full
@@ -462,10 +462,10 @@ public class PersoSimPart {
 		final StringBuilder strConsoleStrings = new StringBuilder();
 
 		// calculates how many lines can be shown without cutting
-		
+
 		maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
 
-			
+
 		//synchronized is used to avoid IndexOutOfBoundsExceptions
 		synchronized (Activator.getListLogListener()) {
 			int listSize = Activator.getListLogListener().getNumberOfCachedLines();
@@ -474,21 +474,30 @@ public class PersoSimPart {
 			try {
 				int linesToShow = listSize - slider.getMaximum() + slider.getThumb();
 				int sliderSelection = slider.getSelection();
+				if (listSize > 0 && linesToShow == 0)
+				{
+					// hack
+					linesToShow = listSize;
+					sliderSelection = 0;
+				}
 				// Fill text field with selected data
 				for (int i = 0; i < linesToShow; i++) {
-					
+
 					strConsoleStrings.append(Activator.getListLogListener().getLine(sliderSelection + i));
 					strConsoleStrings.append("\n");
 				}
-			} catch ( Exception e) {}//IMPL PokémonException
+				sliderSelection = slider.getSelection(); // hack back
+			} catch ( Exception e) {
+				e.printStackTrace();
+			}//IMPL PokémonException
 		}
-		
+
 		int curLastPosition = slider.getSelection() + slider.getThumb();
 		if (curLastPosition == slider.getMaximum()) {
 			unlockAutoScroll();
 		}
-		
-		
+
+
 		// send the StringBuilder data to the console field
 		sync.syncExec(new Runnable() {
 
@@ -504,7 +513,7 @@ public class PersoSimPart {
 		});
 
 	}
-		
+
 	/**
 	 * controls slider selection (auto scrolling)
 	 */
@@ -520,7 +529,7 @@ public class PersoSimPart {
 		}
 
 	}
-	
+
 	/**
 	 * This method closes the part and interrupts all threads if needed.
 	 */
@@ -530,15 +539,15 @@ public class PersoSimPart {
 			updateThread.interrupt();
 		}
 	}
-	
+
 	@Focus
 	public void setFocus() {
 		txtOutput.setFocus();
 	}
-	
+
 	@Override
 	public String toString() {
 		return "OutputHandler here!";
 	}
-	
+
 }

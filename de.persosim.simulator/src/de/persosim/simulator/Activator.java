@@ -9,31 +9,35 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
 
+import de.persosim.simulator.preferences.EclipsePreferenceAccessor;
+import de.persosim.simulator.preferences.PersoSimPreferenceManager;
+
 public class Activator implements BundleActivator {
 
 	public static BundleContext context;
-	
+
 	private static Activator plugin;
 	private static PersoSim sim = null;
 	private ServiceRegistration<Simulator> simRegistration;
-	
+
 	@Override
 	public void start(BundleContext context) throws Exception {
 		Activator.context = context;
 		plugin = this;
+		PersoSimPreferenceManager.setPreferenceAccessorIfNotAvailable(new EclipsePreferenceAccessor());
 }
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		Activator.context = null;
 	}
-	
+
 	public static BundleContext getContext() {
 		return context;
 	}
-	
+
 	/**
-	 * This enables the {@link Simulator} for the PersoSim simulator. 
+	 * This enables the {@link Simulator} for the PersoSim simulator.
 	 * @throws InvalidSyntaxException
 	 */
 	public void enableService() {
@@ -46,7 +50,7 @@ public class Activator implements BundleActivator {
 			simRegistration = context.registerService(Simulator.class, sim, null);
 		}
 	}
-	
+
 	/**
 	 * This function checks if other simulators are already running
 	 * @return true if other simulator are running.
@@ -60,12 +64,12 @@ public class Activator implements BundleActivator {
 		};
 		return simulatorCnt > 0;
 	}
-	
+
 	/**
 	 * This disables the {@link Simulator} for the PersoSim simulator.
 	 */
 	public void disableService(){
-		
+
 		if (sim != null && sim.isRunning()){
 			sim.stopSimulator();
 		}
@@ -75,12 +79,12 @@ public class Activator implements BundleActivator {
 			simRegistration = null;
 		}
 	}
-	
+
 	public static Activator getDefault() {
 		return plugin;
-		
+
 	}
-	
+
 	/**
 	 * This function returns the current simulator
 	 * @return Simulator
@@ -88,10 +92,10 @@ public class Activator implements BundleActivator {
 	public PersoSim getSim() {
 		return sim;
 	}
-	
+
 	public Runnable getCleanupHook() {
 		return new Runnable() {
-			
+
 			@Override
 			public void run() {
 				if (plugin != null) {
