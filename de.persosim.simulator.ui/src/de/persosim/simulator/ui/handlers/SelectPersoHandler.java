@@ -2,7 +2,7 @@ package de.persosim.simulator.ui.handlers;
 
 import static org.globaltester.logging.BasicLogger.log;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.globaltester.logging.tags.LogLevel;
