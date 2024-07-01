@@ -4,7 +4,7 @@ Bundle-Name: PersoSim Simulator Integration Test
 Bundle-SymbolicName: de.persosim.simulator.integrationtest
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Require-Bundle: org.junit;bundle-version="4.11.0",
+Require-Bundle: org.junit,
  org.globaltester.cryptoprovider.bc,
  de.persosim.simulator,
  org.globaltester.simulator,
@@ -25,7 +25,7 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  com.secunet.globaltester.protocols.eac2.certificates,
  org.eclipse.core.runtime,
  com.secunet.globaltester.prove.epa,
- com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics;bundle-version="3.3.1",
+ com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics,
  com.secunet.globaltester.prove.eac2
 Export-Package: de.persosim.simulator.test.globaltester.perso
 Import-Package: com.secunet.globaltester.epassport.certificates,
