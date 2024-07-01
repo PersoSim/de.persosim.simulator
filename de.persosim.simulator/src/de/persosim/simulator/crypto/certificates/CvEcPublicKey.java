@@ -21,6 +21,7 @@ import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
+import de.persosim.simulator.tlv.TlvDataObject;
 
 /**
  * This class represents an EC public key to be used in the context of CV certificates.
@@ -41,7 +42,7 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 	public CvEcPublicKey(ConstructedTlvDataObject publicKeyEncoding) throws GeneralSecurityException {
 		super(parseOid(publicKeyEncoding), null);
 		
-		if (cvOid.getKeyType().equals("EC")) {
+		if (cvOid != null && cvOid.getKeyType() != null && cvOid.getKeyType().equals("EC")) {
 			ECParameterSpec paramSpec = null;
 			
 			if (publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_86)) {
@@ -70,7 +71,10 @@ public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
 	}
 	
 	private static CvOid parseOid(ConstructedTlvDataObject publicKeyData) {
-		return new TaOid(publicKeyData.getTlvDataObject(TlvConstants.TAG_06).getValueField());
+		TlvDataObject tagOID = (publicKeyData.getTlvDataObject(TlvConstants.TAG_06));
+		if (tagOID == null)
+			 throw new IllegalArgumentException("No tag for OID");
+		return new TaOid(tagOID.getValueField());
 	}
 
 	@Override

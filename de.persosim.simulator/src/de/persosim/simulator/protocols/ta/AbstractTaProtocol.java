@@ -121,7 +121,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * This method checks if the received APDU is a correct
 	 * {@link IsoSecureMessagingCommandApdu} and was encrypted.
 	 * 
-	 * @return true, iff it is a {@link IsoSecureMessagingCommandApdu} and the
+	 * @return true, if it is a {@link IsoSecureMessagingCommandApdu} and the
 	 *         APDU was encrypted at some point in its history
 	 */
 	protected boolean checkSecureMessagingApdu(){
@@ -338,8 +338,9 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		HashMap<Oid, Authorization> authorizations = new HashMap<>();
 		
 		CertificateHolderAuthorizationTemplate chat = certificate.getCertificateHolderAuthorizationTemplate();
-		RelativeAuthorization authFromChat = chat.getRelativeAuthorization();
-		
+		if (chat == null)
+			throw new IllegalArgumentException("No CHAT available");
+		RelativeAuthorization authFromChat = chat.getRelativeAuthorization();		
 		authorizations.put(chat.getTerminalType().getAsOid(), authFromChat);
 		
 		return authorizations;
@@ -407,6 +408,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					ConstructedTlvDataObject ddo = (ConstructedTlvDataObject) currentObject;
 					TlvDataObject objectIdentifier = ddo.getTlvDataObject(TlvConstants.TAG_06);
 					TlvDataObject discretionaryData = ddo.getTlvDataObject(TlvConstants.TAG_53);
+					if (objectIdentifier == null)
+						throw new IllegalArgumentException("No OID available");
+					if (discretionaryData == null)
+						throw new IllegalArgumentException("No Discretionary Data available");
 					try {
 						foundAuxData.add(new AuthenticatedAuxiliaryData(new GenericOid(objectIdentifier.getValueField()), discretionaryData.getValueField()));
 					} catch (IllegalArgumentException e) {
@@ -466,7 +471,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @param signatureData
 	 *            the signature data, in case of ECDSA the ASN1 signature
 	 *            structure is restored
-	 * @return true, iff the signature can be verified against the given data
+	 * @return true, if the signature can be verified against the given data
 	 * @throws NoSuchAlgorithmException
 	 * @throws InvalidKeyException
 	 * @throws SignatureException
@@ -513,7 +518,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			ConstructedTlvDataObject certificateData = new ConstructedTlvDataObject(TlvConstants.TAG_7F21);
 			certificateData.addTlvDataObject(certificateBodyData, certificateSignatureData);
 			CardVerifiableCertificate certificate = new CardVerifiableCertificate(certificateData);
-			certificate.getPublicKey().addKeyParameters(currentCertificate.getPublicKey());
+			CvPublicKey cvPublicKey = certificate.getPublicKey();
+			if (cvPublicKey == null)
+				throw new IllegalArgumentException("No CV Public Key available");
+			cvPublicKey.addKeyParameters(currentCertificate.getPublicKey());
 			if (certificate.getCertificationAuthorityReference().equals(currentCertificate.getCertificateHolderReference())){
 				if (!isCertificateIssuerValid(certificate, currentCertificate)){
 					// create and propagate response APDU
@@ -522,7 +530,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 							"The certificate was issued by an invalid instance", resp);
 					return;
 				}
-				if (!isCertificatePublicKeyDataObjectMinimal(certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F49), certificate.getPublicKey())){
+				if (!isCertificatePublicKeyDataObjectMinimal(certificateBodyData.getTlvDataObject(TlvConstants.TAG_7F49), cvPublicKey)){
 					// create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
 					this.processingData.updateResponseAPDU(this,
@@ -589,7 +597,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 *            the parent certificate in the chain to use for the check
 	 * @param currentDate
 	 *            the date to check against
-	 * @return true, iff the certificate is valid as defined in TR-03110 v2.10
+	 * @return true, if the certificate is valid as defined in TR-03110 v2.10
 	 */
 	protected static boolean checkValidity(CardVerifiableCertificate certificate, CardVerifiableCertificate issuingCertificate, Date currentDate) {
 		
@@ -634,7 +642,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 *            to check
 	 * @param certificateToCheckAgainst
 	 *            (normally the preceding certificate in the chain)
-	 * @return true, iff the conditions are fulfilled
+	 * @return true, if the conditions are fulfilled
 	 * @throws CertificateNotParseableException
 	 */
 	protected static boolean isCertificateIssuerValid(CardVerifiableCertificate certificate,
@@ -655,7 +663,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @param publicKey 
 	 * @param cvPublicKey 
 	 * 
-	 * @return true, iff the conditions are fulfilled
+	 * @return true, if the conditions are fulfilled
 	 */
 	protected static boolean isCertificatePublicKeyDataObjectMinimal(TlvDataObject publicKey, CvPublicKey cvPublicKey) throws CertificateNotParseableException {
 		if (publicKey != null) {
@@ -704,34 +712,37 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	/**
 	 * This method does not check the certificates validity.
 	 * @param certificate to check
-	 * @return true, iff the certificate is a domestic DV certificate
+	 * @return true, if the certificate is a domestic DV certificate
 	 */
 	private static boolean isDomesticDvCertificate(CardVerifiableCertificate certificate) {
-		return certificate.getCertificateHolderAuthorizationTemplate().getRelativeAuthorization().getRole().equals(CertificateRole.DV_TYPE_1);
+		CertificateHolderAuthorizationTemplate chat = certificate.getCertificateHolderAuthorizationTemplate();
+		if (chat == null || chat.getRelativeAuthorization() == null)
+			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "CHAT is missing");
+		return CertificateRole.DV_TYPE_1.equals(chat.getRelativeAuthorization().getRole());
 	}
 
 	/**
 	 * @param certificate
-	 * @return true, iff the given certificate uses one of the DV {@link CertificateRole}s
+	 * @return true, if the given certificate uses one of the DV {@link CertificateRole}s
 	 */
 	private static boolean isDvCertificate(CardVerifiableCertificate certificate) {
-		return certificate.getCertificateHolderAuthorizationTemplate()
-				.getRelativeAuthorization().getRole()
-				.equals(CertificateRole.DV_TYPE_1)
-				|| certificate.getCertificateHolderAuthorizationTemplate()
-						.getRelativeAuthorization().getRole()
-						.equals(CertificateRole.DV_TYPE_2);
+		CertificateHolderAuthorizationTemplate chat = certificate.getCertificateHolderAuthorizationTemplate();
+		if (chat == null || chat.getRelativeAuthorization() == null)
+			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "CHAT is missing");
+		return CertificateRole.DV_TYPE_1.equals(chat.getRelativeAuthorization().getRole())
+				|| CertificateRole.DV_TYPE_2.equals(chat.getRelativeAuthorization().getRole());
 	}
 
 
 	/**
 	 * @param certificate
-	 * @return true, iff the given certificate uses the {@link CertificateRole#CVCA}
+	 * @return true, if the given certificate uses the {@link CertificateRole#CVCA}
 	 */
 	private static boolean isCvcaCertificate(CardVerifiableCertificate certificate) {
-		return certificate.getCertificateHolderAuthorizationTemplate()
-				.getRelativeAuthorization().getRole()
-				.equals(CertificateRole.CVCA);
+		CertificateHolderAuthorizationTemplate chat = certificate.getCertificateHolderAuthorizationTemplate();
+		if (chat == null || chat.getRelativeAuthorization() == null)
+			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "CHAT is missing");
+		return CertificateRole.CVCA.equals(chat.getRelativeAuthorization().getRole());
 	}
 
 	/**
@@ -764,12 +775,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 
 	/**
 	 * @param certificate
-	 * @return true, iff the given certificate uses the {@link CertificateRole#TERMINAL}
+	 * @return true, if the given certificate uses the {@link CertificateRole#TERMINAL}
 	 */
 	public static boolean isTerminalCertificate(CardVerifiableCertificate certificate) {
-		return certificate.getCertificateHolderAuthorizationTemplate()
-				.getRelativeAuthorization().getRole()
-				.equals(CertificateRole.TERMINAL);
+		CertificateHolderAuthorizationTemplate chat = certificate.getCertificateHolderAuthorizationTemplate();
+		if (chat == null || chat.getRelativeAuthorization() == null)
+			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "CHAT is missing");
+		return CertificateRole.TERMINAL.equals(chat.getRelativeAuthorization().getRole());
 	}
 
 	/**

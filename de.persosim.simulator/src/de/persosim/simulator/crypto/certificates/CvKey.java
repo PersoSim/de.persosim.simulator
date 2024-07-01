@@ -30,7 +30,11 @@ public abstract class CvKey implements Key {
 
 	@Override
 	public String getAlgorithm() {
-		return key.getAlgorithm();
+		if (key != null)
+			return key.getAlgorithm();
+		if (cvOid != null)
+			return cvOid.getKeyType();
+		return null;
 	}
 
 	@Override

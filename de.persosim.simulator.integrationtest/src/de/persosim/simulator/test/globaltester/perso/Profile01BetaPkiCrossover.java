@@ -24,6 +24,7 @@ public class Profile01BetaPkiCrossover extends DefaultScriptIntegrationTest{
 		IProject sampleConfigProject = importSampleConfig("de.persosim.simulator.integrationtest", "Configs/CFG.DFLT.BETAPKI");
 		SampleConfig sampleConfig = SampleConfig.getSampleConfigForProject(sampleConfigProject);
 
+		sampleConfig.setHaveToSaveToProjectAfterPut(false);
 		// Certificate generator needs some file to copy as a root certificate, it is never used in this case
 		sampleConfig.put("TR-03105-3.3", "CVCA_ROOT_AT", "certs/tr03105/3.3/gen/DV_CERT_17.cvcert");
 		// These are pregenerated certificates and the generator should use these instead of generating anything
@@ -33,6 +34,7 @@ public class Profile01BetaPkiCrossover extends DefaultScriptIntegrationTest{
 		sampleConfig.put("TR-03105-3.3", "AT_KEY_17_PRIV", "certs/tr03105/3.3/gen/AT_KEY_17.pkcs8");
 	
 		sampleConfig.saveToProject();
+		sampleConfig.setHaveToSaveToProjectAfterPut(true);
 		
 		return sampleConfigProject;
 	}

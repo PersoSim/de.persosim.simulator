@@ -17,31 +17,31 @@ import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 /**
  * This {@link LogListener} implementation is used to write log entries by line
  * into a given {@link LinkedList} using a maximum number of cached lines.
- * 
+ *
  * @author mboonk
  *
  */
 public class LinkedListLogListener extends AbstractLogListener {
-	private LinkedList<String> list = new LinkedList<String>();
+	private LinkedList<String> list = new LinkedList<>();
 	private int maxLines;
 	private boolean needsUpdate;
-	
+
 	public LinkedListLogListener(int maxLines) {
 		updateConfig();
 		this.maxLines = maxLines;
 	}
-	
+
 	public void updateConfig() {
 		LogListenerConfig lrc = new LogListenerConfig() {
-			
+
 			private LogFormatService format = new GtFileLogFormatter();
 			private LogFilter filter;
-						
+
 			@Override
 			public LogFilter getFilter() {
 				if (filter == null) {
 					String levelsPreference = PersoSimPreferenceManager.getPreference("LOG_LEVELS");
-					
+
 					if (levelsPreference != null) {
 						String [] levels = levelsPreference.split(":");
 						filter = new TagFilter(BasicLogger.LOG_LEVEL_TAG_ID, levels);
@@ -49,7 +49,7 @@ public class LinkedListLogListener extends AbstractLogListener {
 						filter = new NullFilter();
 					}
 				}
-				
+
 				return filter;
 			}
 
@@ -60,16 +60,16 @@ public class LinkedListLogListener extends AbstractLogListener {
 		};
 		setConfig(lrc);
 	}
-	
+
 	/**
 	 * @return the number of lines currently in the cache
 	 */
 	public int getNumberOfCachedLines(){
 		synchronized (this) {
-			return list.size();	
+			return list.size();
 		}
 	}
-	
+
 	/**
 	 * @param index
 	 *            of the line to return
@@ -77,18 +77,21 @@ public class LinkedListLogListener extends AbstractLogListener {
 	 */
 	public String getLine(int index){
 		synchronized (this) {
-			return list.get(index);			
+			return list.get(index);
 		}
 	}
-	
+
+	public void setRefreshState(boolean needsUpdate){
+		this.needsUpdate = needsUpdate;
+	}
+
 	public void resetRefreshState(){
 		needsUpdate = false;
 	}
-	
+
 	public boolean isRefreshNeeded(){
 		return needsUpdate;
 	}
-
 
 	@Override
 	public void displayLogMessage(String msg) {
@@ -113,6 +116,5 @@ public class LinkedListLogListener extends AbstractLogListener {
 				}
 			}
 		}
-		
 	}
 }

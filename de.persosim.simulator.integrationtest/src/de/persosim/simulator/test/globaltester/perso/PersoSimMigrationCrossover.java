@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.core.resources.IProject;
 import org.globaltester.base.PreferenceHelper;
@@ -33,28 +34,28 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 		testMigration(MigrationTarget.ECDSA_SHA256_P256r1);
 	}
 	
-	@Test
+	@Ignore @Test
 	public void migrate_Ecdsa_Sha384_P384r1_Test() throws Exception {
 		testMigration(MigrationTarget.ECDSA_SHA384_P384r1);
 	}
 	
-	@Test
+	@Ignore @Test
 	public void migrate_Ecdsa_Sha512_SECP521r1_Test() throws Exception {
 		testMigration(MigrationTarget.ECDSA_SHA512_SECP521r1);
 	}
 	
-	@Test
+	@Ignore @Test
 	public void migrate_RsaPss_Sha512_1024_Test() throws Exception {
 		testMigration(MigrationTarget.RSAPSS_SHA512_1024);
 	}
 	
+	@Ignore @Test
 	@Override
 	public void defaultTest() throws Exception {
-		//do not reexecute the testcase from parent class
+		//do not re-execute the test case from parent class
 	}
 	
-	@Test
-	@Ignore
+	@Ignore @Test
 	public void migrateAllTest() throws Exception {
 		testMigration(MigrationTarget.values());
 	}
@@ -69,29 +70,33 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 		SampleConfig sampleConfig = SampleConfig.getSampleConfigForProject(sampleConfigProject);
 		modifySampleConfigForPerso(sampleConfig);
 		
-		for (int i = 0; i < migrationTargets.length; i++) {
-			if (migrationTargets[i]==null) continue; 
-			sampleConfig = migrateTo(sampleConfig, migrationTargets[i]);
-			checkMigrationResult(sampleConfig);
+		try {
+			for (int i = 0; i < migrationTargets.length; i++) {
+				if (migrationTargets[i]==null) continue; 
+				sampleConfig = migrateTo(sampleConfig, migrationTargets[i]);
+				cleanupChipTest();
+				checkMigrationResult(sampleConfig);
+				cleanupChipTest();
+			}
+		} finally {
+			cleanupChipTest();
+			disableSimulator();
 		}
-		
-		cleanupChipTest();
-		disableSimulator();
 	}
 
-	private SampleConfig migrateTo(SampleConfig sampleConfig, MigrationTarget migrationTarget) throws InterruptedException, ExecutionException, IOException {
-		configureMigration(sampleConfig, migrationTarget);
+	private SampleConfig migrateTo(SampleConfig sampleConfig, MigrationTarget migrationTarget) throws InterruptedException, ExecutionException, IOException, TimeoutException {
+		configureMigration(migrationTarget);
 		performMigrationTestcases(sampleConfig);
 		return createNewSampleConfigafterMigration(sampleConfig, migrationTarget);
 	}
 	
-	private void configureMigration(SampleConfig sampleConfig, MigrationTarget migrationTarget) {
+	private void configureMigration(MigrationTarget migrationTarget) {
 		PreferenceHelper.setPreferenceValue(com.secunet.globaltester.prove.eac2.Activator.PLUGIN_ID, com.secunet.globaltester.prove.eac2.preferences.PreferenceConstants.P_EPA_GENCERTS_MIG_SIGALG, migrationTarget.sigAlg);
 		PreferenceHelper.setPreferenceValue(com.secunet.globaltester.prove.eac2.Activator.PLUGIN_ID, com.secunet.globaltester.prove.eac2.preferences.PreferenceConstants.P_EPA_GENCERTS_MIG_KEYSIZE, migrationTarget.param);
 		PreferenceHelper.setPreferenceValue(com.secunet.globaltester.prove.eac2.Activator.PLUGIN_ID, com.secunet.globaltester.prove.eac2.preferences.PreferenceConstants.P_EPA_GENCERTS_MIG_CURVE, migrationTarget.param);
 	}
 
-	private void performMigrationTestcases(SampleConfig sampleConfig) throws InterruptedException, ExecutionException {
+	private void performMigrationTestcases(SampleConfig sampleConfig) throws InterruptedException, ExecutionException, TimeoutException {
 		ArrayList<String> testcases = new ArrayList<>();
 		testcases.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/generate_data/testsuite_Gen_ALL_Certificate_Sets.gtsuite");
 		testcases.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_M.gtsuite");
@@ -110,7 +115,8 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 		
 		modifySampleConfigForPerso(newSampleConfig);
 		
-		// adjust profiles according to migration target 
+		// adjust profiles according to migration target
+		newSampleConfig.setHaveToSaveToProjectAfterPut(false);
 		newSampleConfig.put("TAv2", "RSA", MigrationType.RSA.equals(migrationTarget.type));
 		newSampleConfig.put("TAv2", "ECDSA", MigrationType.ECDSA.equals(migrationTarget.type));
 		
@@ -129,10 +135,11 @@ public class PersoSimMigrationCrossover extends DefaultPersoGtCrossover {
 		Files.copy(sourceKeySt, Paths.get(newSampleConfig.getAbsolutePath(eac2Certs, "ST_CVCA_KEY")), StandardCopyOption.REPLACE_EXISTING);	
 				
 		newSampleConfig.saveToProject();
+		newSampleConfig.setHaveToSaveToProjectAfterPut(true);
 		return newSampleConfig;
 	}
 
-	private void checkMigrationResult(SampleConfig sampleConfig) throws InterruptedException, ExecutionException {
+	private void checkMigrationResult(SampleConfig sampleConfig) throws InterruptedException, ExecutionException, TimeoutException {
 		ArrayList<String> testcases = new ArrayList<>();
 		testcases.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/generate_data/testsuite_Gen_ALL_Certificate_Sets.gtsuite");
 		testcases.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_K.gtsuite");

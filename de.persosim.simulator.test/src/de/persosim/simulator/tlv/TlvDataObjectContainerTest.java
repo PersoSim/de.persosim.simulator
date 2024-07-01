@@ -14,7 +14,7 @@ public class TlvDataObjectContainerTest implements TlvConstants {
 	 * same tag.
 	 */
 	@Test
-	public void testGetTlvDataObject_firstOccurence() {
+	public void testGetTlvDataObjectFirstOccurence() {
 		PrimitiveTlvDataObject child1 = new PrimitiveTlvDataObject(HexString.toByteArray("020101"));
 		PrimitiveTlvDataObject child2 = new PrimitiveTlvDataObject(HexString.toByteArray("020102"));
 		
@@ -29,7 +29,7 @@ public class TlvDataObjectContainerTest implements TlvConstants {
 	 * same tag.
 	 */
 	@Test
-	public void testGetTlvDataObject_secondOccurence() {
+	public void testGetTlvDataObjectSecondOccurence() {
 		PrimitiveTlvDataObject child1 = new PrimitiveTlvDataObject(HexString.toByteArray("020101"));
 		PrimitiveTlvDataObject child2 = new PrimitiveTlvDataObject(HexString.toByteArray("020102"));
 		
@@ -44,7 +44,7 @@ public class TlvDataObjectContainerTest implements TlvConstants {
 	 * expected tag.
 	 */
 	@Test
-	public void testGetTlvDataObject_missingThirdOccurence() {
+	public void testGetTlvDataObjectMissingThirdOccurence() {
 		PrimitiveTlvDataObject child1 = new PrimitiveTlvDataObject(HexString.toByteArray("020101"));
 		PrimitiveTlvDataObject child2 = new PrimitiveTlvDataObject(HexString.toByteArray("020102"));
 		
@@ -59,7 +59,7 @@ public class TlvDataObjectContainerTest implements TlvConstants {
 	 * same tag.
 	 */
 	@Test
-	public void testGetTlvDataObject_TlvPath_secondOccurence() {
+	public void testGetTlvDataObjectTlvPathsecondOccurence() {
 		PrimitiveTlvDataObject child1 = new PrimitiveTlvDataObject(HexString.toByteArray("020101"));
 		PrimitiveTlvDataObject child2 = new PrimitiveTlvDataObject(HexString.toByteArray("020102"));
 		
@@ -72,15 +72,16 @@ public class TlvDataObjectContainerTest implements TlvConstants {
 	public void testBla() {
 		try {
 			TlvDataObject objUTF8String = TlvDataObjectFactory.createTLVDataObject("1206313233343536");
+			assertNotNull(objUTF8String);
 			// byte[] bla = HexString.toByteArray("2906313233343536");
 			// PrimitiveTlvDataObject tlvObject = new TL(bla);
 			TlvDataObject objNumericString = TlvDataObjectFactory.createTLVDataObject("1806313233343536");
+			assertNotNull(objNumericString);
 			//TlvDataObject objIA5String = TlvDataObjectFactory.createTLVDataObject("2206313233343536");
 			TlvDataObject objPRintableString = TlvDataObjectFactory.createTLVDataObject("1906313233343536");
-
+			assertNotNull(objPRintableString);
 			TlvDataObject objOctetString = TlvDataObjectFactory.createTLVDataObject("0406313233343536");
-
-			System.out.println("end");
+			assertNotNull(objOctetString);
 		} catch (Exception e) {
 			System.out.println(e);
 		}

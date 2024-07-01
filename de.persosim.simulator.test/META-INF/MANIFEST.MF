@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PersoSim Simulator Test
 Bundle-SymbolicName: de.persosim.simulator.test
-Bundle-Version: 0.19.0.qualifier
+Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: secunet Security Networks AG
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.junit,
  org.globaltester.cryptoprovider.bc,
  de.persosim.simulator;bundle-version="0.6.0",
@@ -19,5 +19,6 @@ Export-Package: de.persosim.simulator,
  de.persosim.simulator.perso,
  de.persosim.simulator.test
 Import-Package: org.eclipse.ui.keys,
- org.osgi.framework;version="1.8.0"
+ org.osgi.framework
 Bundle-ClassPath: .
+Automatic-Module-Name: de.persosim.simulator.test

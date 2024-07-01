@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PersoSim Simulator Integration Test
 Bundle-SymbolicName: de.persosim.simulator.integrationtest
-Bundle-Version: 0.19.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.junit;bundle-version="4.11.0",
  org.globaltester.cryptoprovider.bc,
  de.persosim.simulator,
@@ -16,7 +16,6 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  com.secunet.globaltester.testcontrol.integrationtest,
  org.globaltester.base,
  com.secunet.globaltester.testcontrol.callback.soap.provider,
- com.secunet.globaltester.testscripts.icao.tr_rf_protocol_testing_part3.crossover,
  org.globaltester.logging.legacy,
  com.secunet.globaltester.testscripts.bsi.tr03105_part3_3,
  com.secunet.globaltester.testscripts.basics,
@@ -29,7 +28,9 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics;bundle-version="3.3.1",
  com.secunet.globaltester.prove.eac2
 Export-Package: de.persosim.simulator.test.globaltester.perso
-Import-Package: org.eclipse.ui.keys,
- org.osgi.framework;version="1.8.0"
+Import-Package: com.secunet.globaltester.epassport.certificates,
+ org.eclipse.ui.keys,
+ org.osgi.framework
 Bundle-Vendor: secunet Security Networks AG
 Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: de.persosim.simulator.integrationtest

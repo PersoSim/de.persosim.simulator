@@ -27,7 +27,6 @@ import de.persosim.simulator.protocols.pace.TestMasterFile;
 import de.persosim.simulator.protocols.ta.TerminalAuthenticationMechanism;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.secstatus.EffectiveAuthorizationMechanism;
-import de.persosim.simulator.secstatus.SecMechanism;
 import de.persosim.simulator.test.PersoSimTestCase;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
@@ -163,8 +162,7 @@ public class RiProtocolTest extends PersoSimTestCase {
 	
 	@Test
 	public void testGeneralAuthenticate() throws Exception{
-		// prepare the mock
-		final HashSet<SecMechanism> mechanisms = new HashSet<>();
+		new HashSet<>();
 		
 //		mechanisms.add(taMechanism);
 //		mechanisms.add(authMechanism);

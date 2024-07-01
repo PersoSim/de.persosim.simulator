@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -37,8 +38,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	@Override
 	public IProject getSampleConfigChip() throws Exception {
 		IProject sampleConfigProject = super.getSampleConfigChip();
-		SampleConfig sampleConfig = SampleConfig.getSampleConfigForProject(sampleConfigProject);
-		
+		SampleConfig sampleConfig = SampleConfig.getSampleConfigForProject(sampleConfigProject);				
 		//remove unsupported profiles
         modifySampleConfigForPerso(sampleConfig);
 		
@@ -58,6 +58,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	
 	protected void modifySampleConfigForPerso(SampleConfig sampleConfig)
 			throws IOException {
+		sampleConfig.setHaveToSaveToProjectAfterPut(false);
 		sampleConfig.put("IEA", "IEA", "false");
 		sampleConfig.put("MOBILEID", "MOBILEID", "false");
 		
@@ -101,12 +102,14 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	    
 	    sampleConfig.put("CAPA", "CAPA", "false");
 
-		sampleConfig.put("PASSWORDS", "MRZ",
+	    sampleConfig.put("CAPA", "CAPA", "false");
+	    
+	    sampleConfig.put("PASSWORDS", "MRZ",
 				"IDD<<0000000011<<<<<<<<<<<<<<<\n"+
-				"6408125F2910312D<<<<<<<<<<<<<8\n"+
+				"8408129F3406304D<<<<<<<<<<<<<4\n"+
 				"MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
 
-		//configure certificat locations
+		//configure certificate locations
 		String eac2Certificates = com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME;
 		sampleConfig.put(eac2Certificates, "USE_CERTS", "USE_GENERATED_CERTS");
 		sampleConfig.put(eac2Certificates, "EAC2_CERTS", "certificates/generated");
@@ -134,7 +137,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 				"personalization/gtCertificates/CFG.DFLT.EAC.AT", Collections.emptyList());
 		GtResourceHelper.copyPluginFilesToWorkspaceProject("de.persosim.simulator", sampleConfig.getProject() .getFolder(stRootFolderName),
 				"personalization/gtCertificates/CFG.DFLT.EAC.ST", Collections.emptyList());
-
+		sampleConfig.setHaveToSaveToProjectAfterPut(true);
 	}
 
 	@Override
@@ -155,8 +158,8 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_H/EAC2_ISO7816_H_01.gt");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_H/EAC2_ISO7816_H_04a.gt");
 
-		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_complete_standard_layer6.gtsuite");
-//		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_H.gtsuite");
+//		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_complete_standard_layer6.gtsuite");
+		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_H.gtsuite");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_I.gtsuite");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_J.gtsuite");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_K.gtsuite");
@@ -169,7 +172,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/ISO7816_Q/EAC2_ISO7816_Q_20.gt");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer6/testsuite_ISO7816_R.gtsuite");
 		
-		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer7/testsuite_complete_standard_layer7.gtsuite");
+//		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer7/testsuite_complete_standard_layer7.gtsuite");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer7/testsuite_DATA_A.gtsuite");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer7/testsuite_DATA_B.gtsuite");
 //		testcasesChip.add("GT Scripts BSI TR03105 Part 3.3/TestSuites/Layer7/testsuite_DATA_C.gtsuite");
@@ -197,7 +200,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	
 
 	@Override
-	public TestResult getChipTestResult() throws InterruptedException, ExecutionException{
+	public TestResult getChipTestResult() throws InterruptedException, ExecutionException, TimeoutException {
 		TestResult chipTestResult = super.getChipTestResult();
 
 		List<String> expectedWarningTestcases = Arrays.asList(

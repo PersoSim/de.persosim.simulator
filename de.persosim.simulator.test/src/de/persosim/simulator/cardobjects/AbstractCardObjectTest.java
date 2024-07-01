@@ -119,7 +119,7 @@ public class AbstractCardObjectTest extends PersoSimTestCase {
 			idObjImplId = idObjImpl.getId();
 			
 			assertTrue(expectedCardObjectIds.contains(idObjImplId));
-			expectedCardObjectIds.remove(new Integer(idObjImplId));
+			expectedCardObjectIds.remove(Integer.valueOf(idObjImplId));
 		}
 		
 		assertEquals(0, expectedCardObjectIds.size());
@@ -151,7 +151,7 @@ public class AbstractCardObjectTest extends PersoSimTestCase {
 			idObjImplId = idObjImpl.getId();
 			
 			assertTrue(expectedCardObjectIds.contains(idObjImplId));
-			expectedCardObjectIds.remove(new Integer(idObjImplId));
+			expectedCardObjectIds.remove(Integer.valueOf(idObjImplId));
 		}
 		
 		assertEquals(0, expectedCardObjectIds.size());
