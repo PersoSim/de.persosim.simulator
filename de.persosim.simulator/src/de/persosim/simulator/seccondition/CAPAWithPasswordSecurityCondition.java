@@ -6,7 +6,7 @@ import de.persosim.simulator.secstatus.CAPAMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 
 /**
- * This condition can be used to check for past executions of CA+PA. The used
+ * This condition can be used to check for past executions of CAPA. The used
  * password can be checked as well as the success.
  */
 public class CAPAWithPasswordSecurityCondition extends CAPASecurityCondition {

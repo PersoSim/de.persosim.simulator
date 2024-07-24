@@ -171,7 +171,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 	
 	protected TerminalType getTerminalType() {
-		// get necessary information stored in an earlier protocol (e.g. PACE or CA+PA)
+		// get necessary information stored in an earlier protocol (e.g. PACE or CAPA)
 		TerminalType type = getTerminalType(PaceMechanism.class);
 		if (type != null)
 			return type;
@@ -180,7 +180,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			return type;
 		else
 			throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED,
-					"Missing previous execution of PACE or CA+PA protocol.");
+					"Missing previous execution of PACE or CAPA protocol.");
 	}
 
 	private TerminalType getTerminalType(Class<? extends SecMechanism> secMechanism) {
@@ -210,13 +210,13 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					return TerminalType.getFromOid(ceMechanism.getTerminalTypeOid());
 				} catch (IllegalArgumentException e) {
 					throw new ProcessingException(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED,
-							"Previous CA+PA protocol did not provide information about terminal type.");
+							"Previous CAPA protocol did not provide information about terminal type.");
 				}
 			}
 		}
 		if (currentMechanisms != null && currentMechanisms.size() > 1)
 			throw new ProcessingException(Iso7816.SW_6FFF_IMPLEMENTATION_ERROR,
-					"Previous execution of PACE or CA+PA protocol is ambiguous.");
+					"Previous execution of PACE or CAPA protocol is ambiguous.");
 		return null;
 	}
 
@@ -794,7 +794,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	}
 
 	protected byte[] getIdIcc() {
-		// get necessary information stored in an earlier protocol (e.g. PACE or CA+PA)
+		// get necessary information stored in an earlier protocol (e.g. PACE or CAPA)
 		Collection<? extends SecMechanism> currentMechanisms = getPreviousSecMechanisms(PaceMechanism.class);
 		if (currentMechanisms.isEmpty())
 			currentMechanisms = getPreviousSecMechanisms(CAPAMechanism.class);

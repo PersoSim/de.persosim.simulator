@@ -3,7 +3,7 @@ package de.persosim.simulator.secstatus;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 
 /**
- * This {@link SecMechanism} is used to communicate password used for CA+PA.
+ * This {@link SecMechanism} is used to communicate password used for CAPA.
  */
 public class CAPAUsedPasswordMechanism extends AbstractSecMechanism {
 
@@ -14,7 +14,7 @@ public class CAPAUsedPasswordMechanism extends AbstractSecMechanism {
 	}
 
 	/**
-	 * @return the password, that was used to execute CA+PA
+	 * @return the password, that was used to execute CAPA
 	 */
 	public PasswordAuthObject getUsedPassword() {
 		return usedPassword;

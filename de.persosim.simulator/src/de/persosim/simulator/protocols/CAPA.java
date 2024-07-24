@@ -4,11 +4,11 @@ import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.utils.HexString;
 
 /**
- * This interface provides constants used in the context of the CA+PA protocol.
+ * This interface provides constants used in the context of the CAPA protocol.
  */
 public interface CAPA extends Tr03110 {
 
-	public static final String PROTOCOL_NAME = "CA+PA";
+	public static final String PROTOCOL_NAME = "CAPA";
 
 	public static final Oid id_protocols = new GenericOid(id_BSI, HexString.toByteArray("02"));
 	public static final Oid id_smartcard = new GenericOid(id_protocols, HexString.toByteArray("02"));

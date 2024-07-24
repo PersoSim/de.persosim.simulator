@@ -51,7 +51,7 @@ public class CommandApduFactory {
 			}
 			
 			if((command.getIns() == (byte) 0x20) && (command.getP1P2() == (short) 0x0003)) {
-				// PIN Verify command as defined by CA+PA protocol
+				// PIN Verify command as defined by CAPA protocol
 				return true;
 			}
 

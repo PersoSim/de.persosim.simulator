@@ -7,7 +7,7 @@ import de.persosim.simulator.secstatus.CAPAUsedPasswordMechanism;
 import de.persosim.simulator.secstatus.SecMechanism;
 
 /**
- * This condition can be used to check for the password of CA+PA.
+ * This condition can be used to check for the password of CAPA.
  */
 public class CAPAWithPasswordRunningSecurityCondition implements SecCondition {
 	String neededPassword;
