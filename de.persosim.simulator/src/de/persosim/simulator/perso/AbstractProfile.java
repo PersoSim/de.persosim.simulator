@@ -152,9 +152,9 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	@Override
 	protected void addEpassDatagroup1(DedicatedFile ePassAppl) throws AccessDeniedException {
 		String mrz = persoDataContainer.getEpassDg1PlainData();
-		byte[] mrzPlainBytes;
-		
-		mrzPlainBytes = mrz.getBytes(StandardCharsets.US_ASCII);
+		if (mrz == null)
+			return;
+		byte[] mrzPlainBytes = mrz.getBytes(StandardCharsets.US_ASCII);
 		
 		ConstructedTlvDataObject ePassDg1 = new ConstructedTlvDataObject(new TlvTag((byte) 0x61));
 		PrimitiveTlvDataObject ePassDg1Sub = new PrimitiveTlvDataObject(new TlvTag(new byte[]{(byte) 0x5F, (byte) 0x1F}), mrzPlainBytes);
