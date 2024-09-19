@@ -1,5 +1,7 @@
 package de.persosim.simulator.cardobjects;
 
+import static org.globaltester.logging.BasicLogger.log;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -8,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import org.globaltester.cryptoprovider.Crypto;
+import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.simulator.documents.Mrz;
 import de.persosim.simulator.documents.MrzFactory;
@@ -40,7 +43,13 @@ public class MrzAuthObject extends PasswordAuthObject {
 	}
 
 	static byte[] extractIdPicc(String mrzString) {
-		Mrz mrz = MrzFactory.parseMrz(mrzString);
+		Mrz mrz = null;
+		try {
+			mrz = MrzFactory.parseMrz(mrzString);
+		} catch (IllegalArgumentException e) {
+			log(MrzAuthObject.class, "Failed to parse MRZ", LogLevel.ERROR);
+			throw new IllegalArgumentException("Failed to parse MRZ", e);
+		}
 		String documentNumber = mrz.getDocumentNumber();
 		String documentNumberCheckDigit = mrz.getDocumentNumberCd();
 		String documentNumberWithCheckDigit = documentNumber + documentNumberCheckDigit;
