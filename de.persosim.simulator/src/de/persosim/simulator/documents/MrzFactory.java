@@ -9,6 +9,9 @@ public class MrzFactory {
 	
 	public static Mrz parseMrz(String mrzString) {
 		
+		if (mrzString == null)
+			throw new IllegalArgumentException("No MRZ given");
+		
 		mrzString = mrzString.replaceAll("\\s", "");
 		
 		int length = mrzString.length();

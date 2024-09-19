@@ -43,7 +43,11 @@ public class MrzAuthObject extends PasswordAuthObject {
 	}
 
 	static byte[] extractIdPicc(String mrzString) {
-		Mrz mrz = null;
+		if (mrzString == null) {
+			log(MrzAuthObject.class, "No MRZ given. Cannot extract IdPicc.", LogLevel.ERROR);
+			return null;
+		}
+		Mrz mrz = null;		
 		try {
 			mrz = MrzFactory.parseMrz(mrzString);
 		} catch (IllegalArgumentException e) {
@@ -67,10 +71,13 @@ public class MrzAuthObject extends PasswordAuthObject {
 	 */
 	private static byte[] constructMrzPassword(String machineReadableZone)
 			throws NoSuchAlgorithmException, IOException {
-		
-		
 		byte[] digestInput = null;
 		
+		if (machineReadableZone == null) {
+			log(MrzAuthObject.class, "No MRZ given. Cannot construct MRZ password.", LogLevel.ERROR);
+			return null;
+		}
+
 		if (machineReadableZone.length() == 90) {
 			digestInput = getDigestInputTd1(machineReadableZone);
 		} else {

@@ -174,10 +174,12 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	@Override
 	protected void addAuthObjects(MasterFile mf) throws NoSuchAlgorithmException,
 			IOException, AccessDeniedException {
-		MrzAuthObject mrz = new MrzAuthObject(
-				new AuthObjectIdentifier(1),
-				persoDataContainer.getMrz());
-		mf.addChild(mrz);
+		if (persoDataContainer.getMrz() != null) {
+			MrzAuthObject mrz = new MrzAuthObject(
+					new AuthObjectIdentifier(1),
+					persoDataContainer.getMrz());
+			mf.addChild(mrz);
+		}
 
 		PasswordAuthObject can = new PasswordAuthObject(new AuthObjectIdentifier(2),
 				getCan().getBytes(StandardCharsets.UTF_8), "CAN");
