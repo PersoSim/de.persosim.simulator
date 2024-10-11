@@ -640,8 +640,8 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			KeyAgreement keyAgreement = KeyAgreement.getInstance(paceOid.getKeyAgreementName(), Crypto.getCryptoProvider());
 			keyAgreement.init(this.ephemeralKeyPairPicc.getPrivate());
 			keyAgreement.doPhase(this.ephemeralPublicKeyPcd, true);
-			
-			byte[] sharedSecret = keyAgreement.generateSecret();
+					
+			byte[] sharedSecret = computeSharedSecret(keyAgreement);			
 			
 			log(this, "shared secret of byte length " + sharedSecret.length + " resulting from " + paceOid.getKeyAgreementName() + " key agreement is " + HexString.encode(sharedSecret), LogLevel.DEBUG);
 			
@@ -737,6 +737,10 @@ public abstract class AbstractPaceProtocol extends AbstractProtocolStateMachine 
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 			return;
 		}
+	}
+
+	protected byte[] computeSharedSecret(KeyAgreement keyAgreement) {
+		return keyAgreement.generateSecret();
 	}
 	
 	protected boolean isValidPasswordType() {

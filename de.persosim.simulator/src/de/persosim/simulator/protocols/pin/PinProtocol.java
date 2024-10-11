@@ -65,13 +65,17 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 		byte ins = processingData.getCommandApdu().getIns();
 		byte p1 = processingData.getCommandApdu().getP1();
 		byte p2 = processingData.getCommandApdu().getP2();
-		
 		if(cla == (byte) 0x00) {
 			switch(ins){
-			case 0x20:
+			case INS_20_VERIFY:
+				if (p1 == 0x00 && p2 == 0x03) {
+					// see CAPAProtocolPINVerify
+					log(this, "APDU can not be processed, this protocol is not applicable.", LogLevel.DEBUG);
+					break;
+				}
 				processCommandVerifyPassword();
 				break;
-			case 0x2C:
+			case INS_2C_RESET_RETRY_COUNTER:
 				/* Values for p2 must be less than 0x1F */
 				if (p1 == 0x02 && p2 < 0x1F) {
 					processCommandChangePassword();
@@ -86,7 +90,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 					log(this, "APDU can not be processed, this protocol is not applicable.", LogLevel.DEBUG);
 					break;
 				}
-			case 0x44:
+			case INS_44_ACTIVATE_FILE:
 				if (p1 == 0x10) {
 					processCommandActivatePassword();
 					break;
@@ -94,7 +98,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 					log(this, "APDU can not be processed, this protocol is not applicable.", LogLevel.DEBUG);
 					break;
 				}
-			case 0x04:
+			case INS_04_DEACTIVATE_FILE:
 				if (p1 == 0x10) {
 					processCommandDeactivatePassword();
 					break;
