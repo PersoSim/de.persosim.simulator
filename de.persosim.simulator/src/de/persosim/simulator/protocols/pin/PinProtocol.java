@@ -4,6 +4,8 @@ import static org.globaltester.logging.BasicLogger.log;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 import org.globaltester.logging.InfoSource;
 import org.globaltester.logging.tags.LogLevel;
@@ -24,9 +26,16 @@ import de.persosim.simulator.exception.LifeCycleChangeException;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
+import de.persosim.simulator.processing.UpdatePropagation;
+import de.persosim.simulator.protocols.CAPA;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110;
+import de.persosim.simulator.secstatus.CAPAMechanism;
+import de.persosim.simulator.secstatus.SecMechanism;
+import de.persosim.simulator.secstatus.SecStatus.SecContext;
+import de.persosim.simulator.secstatus.SecStatusEventUpdatePropagation;
+import de.persosim.simulator.secstatus.SecurityEvent;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvValue;
@@ -69,10 +78,38 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 				switch (ins) {
 				case INS_20_VERIFY:
 					if (p1 == 0x00 && p2 == 0x03) {
-						// see CAPAProtocolPINVerify
-						log(this, "APDU can not be processed, this protocol is not applicable.", LogLevel.DEBUG);
-						break;
+						HashSet<Class<? extends SecMechanism>> wantedMechanisms = new HashSet<>();
+						wantedMechanisms.add(CAPAMechanism.class);
+						Collection<SecMechanism> currentMechanisms = cardState
+								.getCurrentMechanisms(SecContext.APPLICATION, wantedMechanisms);
+						for (SecMechanism currentMechanism : currentMechanisms) {
+							if (currentMechanism instanceof CAPAMechanism) {
+								// see CAPAProtocolPINVerify
+								log(this, "APDU can not be processed, this protocol is not applicable while doing "
+										+ CAPA.PROTOCOL_NAME + ".", LogLevel.DEBUG);
+								return;
+							}
+						}
+						// Hack for special CAPA PIN Verify test case: Secure messaging is already
+						// ended; no CAPAMechanism available
+						LinkedList<UpdatePropagation> updatePropagations = processingData.getUpdatePropagations(
+								de.persosim.simulator.secstatus.SecStatusEventUpdatePropagation.class);
+						for (UpdatePropagation updatePropagation : updatePropagations) {
+							if (updatePropagation instanceof SecStatusEventUpdatePropagation) {
+								SecurityEvent securityEvent = ((SecStatusEventUpdatePropagation) updatePropagation)
+										.getEvent();
+								if (SecurityEvent.SECURE_MESSAGING_SESSION_ENDED.equals(securityEvent)) {
+									// see CAPAProtocolPINVerify
+									log(this,
+											"APDU can not be processed, this protocol is not applicable while doing "
+													+ CAPA.PROTOCOL_NAME + " (SECURE_MESSAGING_SESSION_ENDED).",
+											LogLevel.DEBUG);
+									return;
+								}
+							}
+						}
 					}
+					log(this, "Perform " + getProtocolName() + " Verify", LogLevel.TRACE);
 					processCommandVerifyPassword();
 					break;
 				case INS_2C_RESET_RETRY_COUNTER:
@@ -113,7 +150,9 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 					break;
 				}
 			}
-		} else {
+		} else
+
+		{
 			log(this, "APDU can not be processed, this protocol is not applicable.", LogLevel.DEBUG);
 		}
 	}
