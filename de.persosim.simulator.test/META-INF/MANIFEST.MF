@@ -8,13 +8,17 @@ Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.junit,
  org.globaltester.cryptoprovider.bc,
  de.persosim.simulator,
+ de.persosim.editor.ui,
  org.globaltester.simulator,
  org.globaltester.cryptoprovider,
  org.globaltester.logging,
  org.globaltester.lib.xstream,
  org.globaltester.base,
  org.hamcrest.library,
- org.globaltester.base.test
+ org.globaltester.base.test,
+ com.fasterxml.jackson.core.jackson-core,
+ com.fasterxml.jackson.core.jackson-databind,
+ com.fasterxml.jackson.core.jackson-annotations
 Export-Package: de.persosim.simulator,
  de.persosim.simulator.perso,
  de.persosim.simulator.test

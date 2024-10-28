@@ -18,6 +18,7 @@ import org.globaltester.logging.BasicLogger;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ByteDataAuxObject;
 import de.persosim.simulator.cardobjects.CardFile;
+import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.DateAuxObject;
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
 import de.persosim.simulator.cardobjects.DedicatedFile;
@@ -665,8 +666,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 				"P<D<<C11T002JM4<<<<<<<<<<<<<<<9608122F2310314D<<<<<<<<<<<<<4MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
 		mf.addChild(mrz);
 		
-		PasswordAuthObject can = new PasswordAuthObject(new AuthObjectIdentifier(ID_CAN),
-				"500540".getBytes(StandardCharsets.UTF_8), "CAN");
+		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(new AuthObjectIdentifier(ID_CAN),
+				"500540".getBytes(StandardCharsets.UTF_8), "CAN", 5, 6, null, null);
 		mf.addChild(can);
 
 		PasswordAuthObjectWithRetryCounter pin = new PasswordAuthObjectWithRetryCounter(
@@ -682,9 +683,9 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 			pin.updateLifeCycleState(Iso7816LifeCycleState.CREATION_OPERATIONAL_DEACTIVATED);
 		}
 
-		PasswordAuthObject puk = new PasswordAuthObject(
+		ChangeablePasswordAuthObject puk = new ChangeablePasswordAuthObject(
 				new AuthObjectIdentifier(ID_PUK), "9876543210".getBytes(StandardCharsets.UTF_8),
-				"PUK");
+				"PUK", 10, 10, null, null);
 		mf.addChild(puk);
 	}
 
@@ -702,7 +703,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 	}
 
-	protected boolean isPinEnabled() {
+	public boolean isPinEnabled() {
 		return true;
 	}
 

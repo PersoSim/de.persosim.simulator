@@ -11,6 +11,7 @@ import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ByteDataAuxObject;
 import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.DateAuxObject;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.ElementaryFile;
@@ -145,7 +146,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	}
 	
 	@Override
-	protected boolean isPinEnabled() {
+	public boolean isPinEnabled() {
 		initPersonalizationDataContainer();
 		return persoDataContainer.isPinEnabled();
 	}
@@ -181,8 +182,8 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 			mf.addChild(mrz);
 		}
 
-		PasswordAuthObject can = new PasswordAuthObject(new AuthObjectIdentifier(2),
-				getCan().getBytes(StandardCharsets.UTF_8), "CAN");
+		ChangeablePasswordAuthObject can = new ChangeablePasswordAuthObject(new AuthObjectIdentifier(ID_CAN),
+				"500540".getBytes(StandardCharsets.UTF_8), "CAN", 6, 6, null, null);
 		mf.addChild(can);
 
 		PasswordAuthObjectWithRetryCounter pin = new PasswordAuthObjectWithRetryCounter(new AuthObjectIdentifier(3),
@@ -198,9 +199,9 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 			pin.updateLifeCycleState(Iso7816LifeCycleState.CREATION_OPERATIONAL_DEACTIVATED);
 		}
 
-		PasswordAuthObject puk = new PasswordAuthObject(
-				new AuthObjectIdentifier(4), getPuk().getBytes(StandardCharsets.UTF_8),
-				"PUK");
+		ChangeablePasswordAuthObject puk = new ChangeablePasswordAuthObject(
+				new AuthObjectIdentifier(ID_PUK), "9876543210".getBytes(StandardCharsets.UTF_8),
+				"PUK", 10, 10, null, null);
 		mf.addChild(puk);
 	}
 	

@@ -13,6 +13,7 @@ Export-Package: de.persosim.simulator,
  de.persosim.simulator.crypto.certificates,
  de.persosim.simulator.documents,
  de.persosim.simulator.exception,
+ de.persosim.simulator.exportprofile,
  de.persosim.simulator.perso,
  de.persosim.simulator.perso.xstream,
  de.persosim.simulator.platform,
@@ -44,5 +45,8 @@ Require-Bundle: org.globaltester.cryptoprovider,
  org.globaltester.simulator,
  org.globaltester.logging,
  org.globaltester.lib.xstream,
- org.globaltester.base
+ org.globaltester.base,
+ com.fasterxml.jackson.core.jackson-core,
+ com.fasterxml.jackson.core.jackson-databind,
+ com.fasterxml.jackson.core.jackson-annotations
 Automatic-Module-Name: de.persosim.simulator
