@@ -23,6 +23,16 @@ public class ShortFileIdentifier extends AbstractCardObjectIdentifier {
 		}
 	}
 
+	/**
+	 * Constructor using a byte array.
+	 * 
+	 * @param identifier
+	 *            to be matched
+	 */
+	public ShortFileIdentifier(byte [] identifier) {
+		this(Utils.getIntFromUnsignedByteArray(identifier));
+	}
+
 	public int getShortFileIdentifier() {
 		return identifier;
 	}
