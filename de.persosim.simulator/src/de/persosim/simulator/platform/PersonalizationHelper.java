@@ -133,8 +133,9 @@ public final class PersonalizationHelper {
 			parent = mf;
 		}
 		
-		Collection<CardObject> file = parent.findChildren(new FileIdentifier(fileIdentifier));
-		
-		return ((ElementaryFile) file.iterator().next()).getContent();
+		Collection<CardObject> files = parent.findChildren(new FileIdentifier(fileIdentifier));
+		if (files.isEmpty())
+			return null;
+		return ((ElementaryFile) files.iterator().next()).getContent();
 	}
 }
