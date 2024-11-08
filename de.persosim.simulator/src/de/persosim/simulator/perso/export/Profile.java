@@ -1,13 +1,9 @@
-package de.persosim.simulator.exportprofile;
+package de.persosim.simulator.perso.export;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.globaltester.logging.BasicLogger;
-
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonPropertyOrder({ //
 		"files", //
@@ -17,9 +13,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 		"can", //
 		"puk", //
 		"pinEnabled", //
-		"pinRetryCounter", //
-		"pinResetCounter" })
-public class Profile
+		"pinRetryCounter" // , //
+		/* "pinResetCounter" */ })
+public class Profile extends ProfileBase
 {
 
 	// BSI Test-PKI CVCA root certificate
@@ -31,9 +27,10 @@ public class Profile
 	private String pin;
 	private String can;
 	private String puk;
-	private boolean pinEnabled;
+	private Boolean pinEnabled;
+
 	private Integer pinRetryCounter = null;
-	private Integer pinResetCounter = null;
+	// private Integer pinResetCounter = null; // not supported at the moment
 
 
 	public Profile()
@@ -41,7 +38,7 @@ public class Profile
 		// do nothing; default constructor necessary for JSON (de-)serialization
 	}
 
-	public Profile(List<File> files, List<Key> keys, String trustpoint, String pin, String can, String puk, boolean pinEnabled, Integer pinRetryCounter, Integer pinResetCounter)
+	public Profile(List<File> files, List<Key> keys, String trustpoint, String pin, String can, String puk, Boolean pinEnabled, Integer pinRetryCounter, Integer pinResetCounter)
 	{
 		if (files != null)
 			this.files = files;
@@ -53,7 +50,12 @@ public class Profile
 		this.puk = puk;
 		this.pinEnabled = pinEnabled;
 		this.pinRetryCounter = pinRetryCounter;
-		this.pinResetCounter = pinResetCounter;
+		// this.pinResetCounter = pinResetCounter;
+	}
+
+	public Profile(List<File> files, List<Key> keys, String trustpoint, String pin, String can, String puk, Boolean pinEnabled, Integer pinRetryCounter)
+	{
+		this(files, keys, trustpoint, pin, can, puk, pinEnabled, pinRetryCounter, null);
 	}
 
 	public List<File> getFiles()
@@ -116,12 +118,12 @@ public class Profile
 		this.puk = puk;
 	}
 
-	public boolean isPinEnabled()
+	public Boolean getPinEnabled()
 	{
 		return pinEnabled;
 	}
 
-	public void setPinEnabled(boolean pinEnabled)
+	public void setPinEnabled(Boolean pinEnabled)
 	{
 		this.pinEnabled = pinEnabled;
 	}
@@ -136,46 +138,14 @@ public class Profile
 		this.pinRetryCounter = pinRetryCounter;
 	}
 
-	public Integer getPinResetCounter()
-	{
-		return pinResetCounter;
-	}
+	// public Integer getPinResetCounter()
+	// {
+	// return pinResetCounter;
+	// }
+	//
+	// public void setPinResetCounter(Integer pinResetCounter)
+	// {
+	// this.pinResetCounter = pinResetCounter;
+	// }
 
-	public void setPinResetCounter(Integer pinResetCounter)
-	{
-		this.pinResetCounter = pinResetCounter;
-	}
-
-	public String serialize()
-	{
-		String jsonSerialized = null;
-		try
-		{
-			ObjectMapper objectMapper = new ObjectMapper();
-			jsonSerialized = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
-			// String jsonSerialized = objectMapper.writer(new ProfilePrettyPrinter()).writeValueAsString(profile);
-			// System.out.println(jsonSerialized);
-		}
-		catch (JsonProcessingException e)
-		{
-			BasicLogger.logException(this.getClass(), e);
-		}
-		return jsonSerialized;
-	}
-
-	public static Profile deserialize(String jsonSerialized)
-	{
-
-		Profile profileDeserialized = null;
-		try
-		{
-			ObjectMapper objectMapper = new ObjectMapper();
-			profileDeserialized = objectMapper.readValue(jsonSerialized, Profile.class);
-		}
-		catch (JsonProcessingException e)
-		{
-			BasicLogger.logException(Profile.class, e);
-		}
-		return profileDeserialized;
-	}
 }

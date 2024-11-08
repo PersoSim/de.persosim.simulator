@@ -22,7 +22,8 @@ Require-Bundle: org.junit,
 Export-Package: de.persosim.simulator,
  de.persosim.simulator.perso,
  de.persosim.simulator.test
-Import-Package: org.eclipse.ui.keys,
+Import-Package: jakarta.annotation,
+ org.eclipse.ui.keys,
  org.osgi.framework
 Bundle-ClassPath: .
 Automatic-Module-Name: de.persosim.simulator.test

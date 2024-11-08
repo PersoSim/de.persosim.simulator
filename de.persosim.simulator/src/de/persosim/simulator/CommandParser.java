@@ -23,6 +23,7 @@ import com.thoughtworks.xstream.XStreamException;
 
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
+import de.persosim.simulator.perso.export.ProfileHelper;
 import de.persosim.simulator.utils.HexString;
 
 /**
@@ -234,7 +235,7 @@ public class CommandParser {
 	 * @throws IllegalArgumentException iff the identifier does not reference a loadable perso 
 	 */
 	public static Personalization getPerso(String identifier) throws IllegalArgumentException {
-		log(CommandParser.class, "Trying to load personalization for identifier \"" + identifier + "\"", LogLevel.INFO);
+		log(CommandParser.class, "Trying to load personalization for identifier '" + identifier + "'", LogLevel.INFO);
 
 		InputStream stream = null;
 		
@@ -243,10 +244,10 @@ public class CommandParser {
 			try {
 				stream = Files.newInputStream(Paths.get(identifier));
 			} catch (IOException e) {
-				throw new IllegalArgumentException("Unable to load Perso from file", e);
+				throw new IllegalArgumentException("Unable to load personalization from file", e);
 			}
 		} else {
-			//try to parse the given identifier as profile number
+			// try to parse the given identifier as profile number
 			
 			if (Activator.getContext() == null) {
 				throw new IllegalArgumentException("Loading profiles by profile number is supported only when running within an OSGi environment");
@@ -274,17 +275,26 @@ public class CommandParser {
 			try {
 				stream = url.openConnection().getInputStream();
 			} catch (IOException e) {
-				throw new IllegalArgumentException("Unable to load Perso from Bundle content", e);
+				throw new IllegalArgumentException("Unable to load personalization from Bundle content", e);
 			}
 		}
 		
-		//actually load perso from the identified file
+		// load perso from the identified file
+		Personalization perso = null;
 		try {
-			return (Personalization) PersonalizationFactory.unmarshal(stream);
+			perso = (Personalization) PersonalizationFactory.unmarshal(stream);
+			if (perso != null)
+				log(CommandParser.class, "Personalization for identifier '" + identifier + "' loaded.", LogLevel.INFO);
+			else {
+				log(CommandParser.class, "Personalization for identifier '" + identifier + "' could not be loaded.", LogLevel.ERROR);
+				throw new IllegalArgumentException( "Personalization for identifier '" + identifier + "' could not be loaded.");
+			}
 		} catch (XStreamException e) {
-			throw new IllegalArgumentException("Unable to deserialize Perso", e);
+			throw new IllegalArgumentException("Unable to deserialize personalization", e);
 		}
 		
+		ProfileHelper.handleOverlayProfile(perso);
+		return perso;
 	} 
 	
 	public static void executeUserCommands(String... args) {

@@ -1,4 +1,4 @@
-package de.persosim.simulator.exportprofile;
+package de.persosim.simulator.perso.export;
 
 import java.util.Collection;
 
@@ -21,11 +21,14 @@ import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.CommandProcessor;
 import de.persosim.simulator.platform.PersonalizationHelper;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.Tr03110;
+import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.protocols.ri.Ri;
 import de.persosim.simulator.protocols.ri.RiOid;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.utils.HexString;
+import jakarta.annotation.Nullable;
 
 public class ProfileMapper
 {
@@ -62,92 +65,105 @@ public class ProfileMapper
 		orderedFileList.setContentByFileId(OrderedFileList.FID_DG21, encodeEF(perso, OrderedFileList.FID_DG21, dfApplEID));
 		orderedFileList.setContentByFileId(OrderedFileList.FID_DG22, encodeEF(perso, OrderedFileList.FID_DG22, dfApplEID));
 
-		OrderedKeyList orderedKeyList = new OrderedKeyList();
-
 		MasterFile masterFile = PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class).getMasterFile();
 
+		OrderedKeyList orderedKeyList = new OrderedKeyList(false);
 		encodeRIKeys(masterFile, orderedKeyList);
+		encodeCAKey41(masterFile, orderedKeyList);
 
 		String trustpoint = encodeTrustPoint(masterFile);
 		String pin = encodePassword(masterFile, Tr03110.ID_PIN);
 		String can = encodePassword(masterFile, Tr03110.ID_CAN);
 		String puk = encodePassword(masterFile, Tr03110.ID_PUK);
 		boolean pinEnabled = true;
-		if (perso instanceof DefaultPersonalization)
-			pinEnabled = ((DefaultPersonalization) perso).isPinEnabled();
+		if (perso instanceof DefaultPersonalization defaultPerso)
+			pinEnabled = defaultPerso.isPinEnabled();
 		Integer pinRetryCounter = encodePinRetryCounter(masterFile, perso);
-		Integer pinResetCounter = null;
 
-		return new Profile(orderedFileList.getOrderedFiles(), orderedKeyList.getOrderedKeys(), trustpoint, pin, can, puk, pinEnabled, pinRetryCounter, pinResetCounter);
+		return new Profile(orderedFileList.getOrderedFiles(), orderedKeyList.getOrderedKeys(), trustpoint, pin, can, puk, pinEnabled, pinRetryCounter);
 	}
 
 
+	public OverlayProfile mapPersoToOverlayProfile(Personalization perso)
+	{
+		MasterFile masterFile = PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class).getMasterFile();
+
+		OrderedKeyList orderedKeyList = new OrderedKeyList(true);
+		encodeRIKeys(masterFile, orderedKeyList);
+
+		return new OverlayProfile(orderedKeyList.getOrderedKeys());
+	}
+
+
+	@Nullable
 	private String encodeEF(Personalization perso, String fidAsString, CardObjectIdentifier dfParent)
 	{
 		String efContent = null;
-		try
-		{
+		try {
 			byte[] content = PersonalizationHelper.getFileFromPerso(perso, new FileIdentifier(HexString.toByteArray(fidAsString)).getFileIdentifier(), dfParent);
-			if (content == null)
-			{
-				// System.out.println(fidAsString + ": NO_CONTENT");
+			if (content == null) {
+				// BasicLogger.log(fidAsString + ": NO_CONTENT", LogLevel.TRACE);
 				return null;
 			}
 			efContent = HexString.encode(content);
-			// System.out.println(fidAsString + ": " + efContent);
+			// BasicLogger.log(fidAsString + ": " + efContent, LogLevel.TRACE);
 		}
-		catch (AccessDeniedException e)
-		{
+		catch (AccessDeniedException e) {
 			BasicLogger.logException(this.getClass(), e);
 		}
 		return efContent;
 	}
 
+
 	private void encodeRIKeys(MasterFile masterFile, OrderedKeyList orderedKeyList)
 	{
-		for (CardObject curCardObject : masterFile.findChildren(new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256))))
-		{
-			if (curCardObject instanceof KeyPairObject)
-			{
-				KeyPairObject keyPairObject = ((KeyPairObject) curCardObject);
-				int primaryID = keyPairObject.getPrimaryIdentifier().getInteger();
-				if (OrderedKeyList.ID_RI_1_SPERRMERKMAL == primaryID)
-				{
-					// System.out.println(HexString.encode(keyPairObject.getKeyPair().getPrivate().getEncoded()));
-					orderedKeyList.setContentById(OrderedKeyList.ID_RI_1_SPERRMERKMAL, HexString.encode(keyPairObject.getKeyPair().getPrivate().getEncoded()));
-				}
-				else if (OrderedKeyList.ID_RI_2_PSEUDONYM == primaryID)
-				{
-					orderedKeyList.setContentById(OrderedKeyList.ID_RI_2_PSEUDONYM, HexString.encode(keyPairObject.getKeyPair().getPrivate().getEncoded()));
-				}
-			}
+		KeyPairObject foundKeyPairObject = ProfileHelper.findKeyPairObjectExt(masterFile, new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)), Boolean.FALSE,
+				Integer.valueOf(OrderedKeyList.ID_RI_1_SPERRMERKMAL));
+		if (foundKeyPairObject != null) {
+			orderedKeyList.setContent((GenericOid) new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)).getOid(), Boolean.FALSE, foundKeyPairObject.getPrimaryIdentifier().getInteger(),
+					HexString.encode(foundKeyPairObject.getKeyPair().getPrivate().getEncoded()));
+			// BasicLogger.log(HexString.encode(foundKeyPairObject.getKeyPair().getPrivate().getEncoded()), LogLevel.TRACE);
+		}
+
+		foundKeyPairObject = ProfileHelper.findKeyPairObjectExt(masterFile, new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)), Boolean.TRUE, Integer.valueOf(OrderedKeyList.ID_RI_2_PSEUDONYM));
+		if (foundKeyPairObject != null) {
+			orderedKeyList.setContent((GenericOid) new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)).getOid(), Boolean.TRUE, foundKeyPairObject.getPrimaryIdentifier().getInteger(),
+					HexString.encode(foundKeyPairObject.getKeyPair().getPrivate().getEncoded()));
+			// BasicLogger.log(HexString.encode(foundKeyPairObject.getKeyPair().getPrivate().getEncoded()), LogLevel.TRACE);
 		}
 	}
 
+	private void encodeCAKey41(MasterFile masterFile, OrderedKeyList orderedKeyList)
+	{
+		KeyPairObject foundKeyPairObject = ProfileHelper.findKeyPairObjectExt(masterFile, Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128, Boolean.FALSE, Integer.valueOf(OrderedKeyList.ID_CA_41));
+		if (foundKeyPairObject != null) {
+			orderedKeyList.setContent((GenericOid) Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128.getOid(), Boolean.FALSE, foundKeyPairObject.getPrimaryIdentifier().getInteger(),
+					HexString.encode(foundKeyPairObject.getKeyPair().getPrivate().getEncoded()));
+			// BasicLogger.log(HexString.encode(foundKeyPairObject.getKeyPair().getPrivate().getEncoded()), LogLevel.TRACE);
+		}
+	}
+
+	@Nullable
 	private String encodeTrustPoint(MasterFile masterFile)
 	{
 		String trustpoint = null;// Profile.CVCA_ROOT_CERT;
-		for (CardObject curCardObject : masterFile.findChildren(new TrustPointIdentifier(TerminalType.AT)))
-		{
-			if (curCardObject instanceof TrustPointCardObject)
-			{
-				TrustPointCardObject trustPointAt = (TrustPointCardObject) curCardObject;
+		for (CardObject curCardObject : masterFile.findChildren(new TrustPointIdentifier(TerminalType.AT))) {
+			if (curCardObject instanceof TrustPointCardObject trustPointAt) {
 				trustpoint = HexString.encode(trustPointAt.getCurrentCertificate().getEncoded().toByteArray());
+				break;
 			}
 		}
 		return trustpoint;
 	}
 
+	@Nullable
 	private String encodePassword(MasterFile masterFile, byte passwordID)
 	{
 		String password = null;
 		AuthObjectIdentifier passwordOID = new AuthObjectIdentifier(passwordID);
 		Collection<CardObject> cardObjects = masterFile.findChildren(passwordOID);
-		for (CardObject cardObject : cardObjects)
-		{
-			if (cardObject instanceof PasswordAuthObject)
-			{
-				PasswordAuthObject passwordObject = (PasswordAuthObject) cardObject;
+		for (CardObject cardObject : cardObjects) {
+			if (cardObject instanceof PasswordAuthObject passwordObject) {
 				password = new String(passwordObject.getPassword());
 				break;
 			}
@@ -155,17 +171,15 @@ public class ProfileMapper
 		return password;
 	}
 
+	@Nullable
 	private Integer encodePinRetryCounter(MasterFile masterFile, Personalization perso)
 	{
 		Integer counter = null;
 		AuthObjectIdentifier pinOID = new AuthObjectIdentifier(Tr03110.ID_PIN);
 
 		Collection<CardObject> cardObjects = masterFile.findChildren(pinOID);
-		for (CardObject cardObject : cardObjects)
-		{
-			if (cardObject instanceof PasswordAuthObjectWithRetryCounter)
-			{
-				PasswordAuthObjectWithRetryCounter pinObject = (PasswordAuthObjectWithRetryCounter) cardObject;
+		for (CardObject cardObject : cardObjects) {
+			if (cardObject instanceof PasswordAuthObjectWithRetryCounter pinObject) {
 				counter = pinObject.getRetryCounterCurrentValue();
 				break;
 			}

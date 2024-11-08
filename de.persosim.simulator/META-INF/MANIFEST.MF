@@ -13,8 +13,8 @@ Export-Package: de.persosim.simulator,
  de.persosim.simulator.crypto.certificates,
  de.persosim.simulator.documents,
  de.persosim.simulator.exception,
- de.persosim.simulator.exportprofile,
  de.persosim.simulator.perso,
+ de.persosim.simulator.perso.export,
  de.persosim.simulator.perso.xstream,
  de.persosim.simulator.platform,
  de.persosim.simulator.preferences,
@@ -41,6 +41,7 @@ Eclipse-BundleShape: dir
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: de.persosim.simulator.Activator
 Require-Bundle: org.globaltester.cryptoprovider,
+ org.globaltester.cryptoprovider.bc,
  org.eclipse.equinox.registry,
  org.globaltester.simulator,
  org.globaltester.logging,
@@ -48,5 +49,6 @@ Require-Bundle: org.globaltester.cryptoprovider,
  org.globaltester.base,
  com.fasterxml.jackson.core.jackson-core,
  com.fasterxml.jackson.core.jackson-databind,
- com.fasterxml.jackson.core.jackson-annotations
+ com.fasterxml.jackson.core.jackson-annotations,
+ jakarta.annotation-api
 Automatic-Module-Name: de.persosim.simulator

@@ -17,9 +17,26 @@ public class GenericOid implements Oid{
 	protected byte[] oidByteArray;
 	
 	public GenericOid(byte[] byteArrayRepresentation) {
-		if(byteArrayRepresentation == null) {throw new NullPointerException("oid byte array is null but must not be null");}
+		if(byteArrayRepresentation == null) {throw new NullPointerException("oid byte array is null, but must not be null");}
 		
 		oidByteArray = byteArrayRepresentation.clone();
+	}
+	
+	public GenericOid(String dotString)	{
+		if (dotString == null) {
+			throw new NullPointerException("oid dot string is null, but must not be null");
+		}
+
+		String[] split = dotString.split("\\.");
+		StringBuilder hexBuilder = new StringBuilder();
+		for (int i = 0; i < split.length; i++) {
+			// skip first if 0
+			int asInt = Integer.parseInt(split[i]);
+			if (i == 0 && asInt == 0)
+				continue;
+			hexBuilder.append(HexString.hexifyByte(asInt));
+		}
+		oidByteArray = HexString.toByteArray(hexBuilder.toString()).clone();
 	}
 	
 	public GenericOid(Oid prefix, byte... suffix) {
@@ -56,7 +73,7 @@ public class GenericOid implements Oid{
 	}
 	
 	@Override
-	final public int hashCode() {
+	public final int hashCode() {
 		return Arrays.hashCode(oidByteArray);
 	}
 	
@@ -67,6 +84,16 @@ public class GenericOid implements Oid{
 	
 	@Override
 	public String toDotString() {
+		
+//		try {
+//			return new org.ietf.jgss.Oid(oidByteArray).toString();
+//		}
+//		catch (GSSException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return null;
+		
 		StringBuilder builder = new StringBuilder();
 		
 		builder.append(Integer.toString(oidByteArray[0] / 40));
