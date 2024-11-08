@@ -1,4 +1,4 @@
-<de.persosim.simulator.perso.DefaultPersoTestPki id="1">
+<de.persosim.simulator.perso.ProfileOA01 id="1">
   <layers id="2">
     <de.persosim.simulator.platform.IoManager id="3"/>
     <de.persosim.simulator.securemessaging.SecureMessaging id="4"/>
@@ -1688,4 +1688,4 @@
       </protocols>
     </de.persosim.simulator.platform.CommandProcessor>
   </layers>
-</de.persosim.simulator.perso.DefaultPersoTestPki>
+</de.persosim.simulator.perso.ProfileOA01>
