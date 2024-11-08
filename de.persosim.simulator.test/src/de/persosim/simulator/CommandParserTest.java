@@ -90,7 +90,7 @@ public class CommandParserTest {
 		Personalization perso1 = new PersonalizationImpl();
 		PersonalizationFactory.marshal(perso1, DUMMY_PERSONALIZATION_FILE);
 		
-		Personalization perso = CommandParser.getPerso(DUMMY_PERSONALIZATION_FILE);
+		Personalization perso = CommandParser.getPerso(DUMMY_PERSONALIZATION_FILE, false);
 		
 		assertNotNull(perso);
 	}

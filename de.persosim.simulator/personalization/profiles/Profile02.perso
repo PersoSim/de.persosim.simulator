@@ -17,7 +17,7 @@
             <mrz>IDD&lt;&lt;0000000022&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;0106175M3406304null&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;2MUSTERMANN&lt;&lt;ANDRE&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</mrz>
             <idPicc id="12">30303030303030303232</idPicc>
           </de.persosim.simulator.cardobjects.MrzAuthObject>
-          <de.persosim.simulator.cardobjects.PasswordAuthObject id="13">
+          <de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject id="13">
             <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="6"/>
             <children id="14"/>
             <lifeCycleState>CREATION</lifeCycleState>
@@ -26,7 +26,9 @@
             </identifier>
             <password id="16">353030353430</password>
             <passwordName>CAN</passwordName>
-          </de.persosim.simulator.cardobjects.PasswordAuthObject>
+            <minLengthOfPasswordInBytes>6</minLengthOfPasswordInBytes>
+            <maxLengthOfPasswordInBytes>6</maxLengthOfPasswordInBytes>
+          </de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject>
           <de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter id="17">
             <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="6"/>
             <children id="18"/>
@@ -106,7 +108,7 @@
               <neededPassword>PIN</neededPassword>
             </resetPinCondition>
           </de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter>
-          <de.persosim.simulator.cardobjects.PasswordAuthObject id="31">
+          <de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject id="31">
             <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="6"/>
             <children id="32"/>
             <lifeCycleState>CREATION</lifeCycleState>
@@ -115,7 +117,9 @@
             </identifier>
             <password id="34">39383736353433323130</password>
             <passwordName>PUK</passwordName>
-          </de.persosim.simulator.cardobjects.PasswordAuthObject>
+            <minLengthOfPasswordInBytes>10</minLengthOfPasswordInBytes>
+            <maxLengthOfPasswordInBytes>10</maxLengthOfPasswordInBytes>
+          </de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject>
           <de.persosim.simulator.cardobjects.DomainParameterSetCardObject id="35">
             <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="6"/>
             <children id="36"/>

@@ -16,7 +16,6 @@ import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -205,8 +204,8 @@ public class PersoExportTest extends PersoSimTestCase
 			BasicLogger.log(this, "Found *.perso file: '" + path.toAbsolutePath().toString() + "'.", LogLevel.TRACE);
 		}
 		for (Path currentPersoPath : allProfileFilePaths) {
-//			if (!currentPersoPath.endsWith("Profile01.perso"))
-//				continue;
+			// if (!currentPersoPath.endsWith("Profile01.perso"))
+			// continue;
 			String currentAbsFilePathPerso = currentPersoPath.toAbsolutePath().toString();
 			String currentAbsFilePathOverlay = ProfileHelper.getOverlayFilePath(currentPersoPath);
 			if (Files.exists(Path.of(currentAbsFilePathOverlay))) {
@@ -280,97 +279,5 @@ public class PersoExportTest extends PersoSimTestCase
 		assertNotEquals(privateKeyHexOld2, privateKeyHex2);
 		assertNotEquals(publicKeyHexOld2, publicKeyHex2);
 	}
-
-
-	// private void doTestOverlayProfileSerializationForPersoSimEditor()
-	// {
-	// List<Path> allProfileFilePaths = new ArrayList<>();
-	// try {
-	// ProfileHelper.getAllPathsRecursively(pathProfiles, allProfileFilePaths);
-	// }
-	// catch (IOException e) {
-	// BasicLogger.logException(getClass(), e, LogLevel.ERROR);
-	// }
-	// for (Path path : allProfileFilePaths) {
-	// BasicLogger.log(this, "Found *.perso file: '" + path.toString() + "'", LogLevel.TRACE);
-	// }
-	//
-	// for (Path currentPath : allProfileFilePaths) {
-	// String currentAbsFilePath = currentPath.toAbsolutePath().toString();
-	// // if (!"ProfileOA01.perso".equals(currentPath.getFileName().toString()))
-	// // continue;
-	// String currentAbsFilePathOverlay = ProfileHelper.getOverlayFilePath(rootPathOverlays, currentPath);
-	// BasicLogger.log(this, "Overlay file '" + currentAbsFilePathOverlay + "' exists: " + Files.exists(Path.of(currentAbsFilePathOverlay)), LogLevel.TRACE);
-	//
-	// if (Files.exists(Path.of(currentAbsFilePathOverlay))) {
-	//
-	// Personalization perso = null;
-	// try (Reader reader = Files.newBufferedReader(Path.of(currentAbsFilePath))) {
-	// perso = (Personalization) PersonalizationFactory.unmarshal(reader);
-	// }
-	// catch (IOException e) {
-	// BasicLogger.logException(getClass(), "Reading the personalization file failed.", e, LogLevel.ERROR);
-	// }
-	// // Read overlay profile
-	// String overlaySerializedFromPath = null;
-	// try {
-	// overlaySerializedFromPath = Files.readString(Path.of(currentAbsFilePathOverlay));
-	// }
-	// catch (IOException e) {
-	// BasicLogger.logException(getClass(), "Reading the Overlay Profile file failed.", e, LogLevel.ERROR);
-	// }
-	//
-	// // Overlay existing stuff in memory perso with that from file
-	//
-	// String overlayProfileFilePath = ProfileHelper.getOverlayProfileFilePathForPerso(Path.of(rootPathOverlays), perso);
-	// assertEquals(currentAbsFilePathOverlay, overlayProfileFilePath);
-	// if (overlayProfileFilePath != null) {
-	// String overlaySerialized = null;
-	// try {
-	// overlaySerialized = Files.readString(Path.of(overlayProfileFilePath));
-	// }
-	// catch (IOException e) {
-	// BasicLogger.logException(getClass(), e, LogLevel.ERROR);
-	// }
-	// assertEquals(overlaySerializedFromPath, overlaySerialized);
-	// OverlayProfile overlayProfile = (OverlayProfile) ProfileBase.deserialize(overlaySerialized, OverlayProfile.class);
-	//
-	// MasterFile masterFile = PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class).getMasterFile();
-	//
-	// KeyPairObject keyPairObjectRIOld1 = ProfileHelper.findKeyPairObjectExt(masterFile, new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)), Boolean.FALSE,
-	// Integer.valueOf(OrderedKeyList.ID_RI_1_SPERRMERKMAL));
-	// String privateKeyHexOld1 = HexString.encode(keyPairObjectRIOld1.getKeyPair().getPrivate().getEncoded());
-	// String publicKeyHexOld1 = HexString.encode(keyPairObjectRIOld1.getKeyPair().getPublic().getEncoded());
-	//
-	// KeyPairObject keyPairObjectRIOld2 = ProfileHelper.findKeyPairObjectExt(masterFile, new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)), Boolean.TRUE,
-	// Integer.valueOf(OrderedKeyList.ID_RI_2_PSEUDONYM));
-	// String privateKeyHexOld2 = HexString.encode(keyPairObjectRIOld2.getKeyPair().getPrivate().getEncoded());
-	// String publicKeyHexOld2 = HexString.encode(keyPairObjectRIOld2.getKeyPair().getPublic().getEncoded());
-	//
-	// ProfileHelper.updateKeyPairObjectsFromOverlayProfile(masterFile, overlayProfile.getKeys());
-	//
-	// KeyPairObject keyPairObjectRI1 = ProfileHelper.findKeyPairObjectExt(masterFile, new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)), Boolean.FALSE,
-	// Integer.valueOf(OrderedKeyList.ID_RI_1_SPERRMERKMAL));
-	// String privateKeyHex1 = HexString.encode(keyPairObjectRI1.getKeyPair().getPrivate().getEncoded());
-	// String publicKeyHex1 = HexString.encode(keyPairObjectRI1.getKeyPair().getPublic().getEncoded());
-	//
-	// KeyPairObject keyPairObjectRI2 = ProfileHelper.findKeyPairObjectExt(masterFile, new OidIdentifier(new RiOid(Ri.id_RI_ECDH_SHA_256)), Boolean.TRUE,
-	// Integer.valueOf(OrderedKeyList.ID_RI_2_PSEUDONYM));
-	// String privateKeyHex2 = HexString.encode(keyPairObjectRI2.getKeyPair().getPrivate().getEncoded());
-	// String publicKeyHex2 = HexString.encode(keyPairObjectRI2.getKeyPair().getPublic().getEncoded());
-	//
-	// assertNotEquals(privateKeyHexOld1, privateKeyHex1);
-	// assertNotEquals(publicKeyHexOld1, publicKeyHex1);
-	// assertNotEquals(privateKeyHexOld2, privateKeyHex2);
-	// assertNotEquals(publicKeyHexOld2, publicKeyHex2);
-	// }
-	// }
-	// else {
-	// ProfileHelper.createMissingOverlayProfileFile(currentAbsFilePath, currentAbsFilePathOverlay);
-	// }
-	//
-	// }
-	// }
-
 
 }

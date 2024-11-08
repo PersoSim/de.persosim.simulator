@@ -1,9 +1,9 @@
 package de.persosim.simulator.platform;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
-import java.util.NoSuchElementException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -89,9 +89,10 @@ public class PersonalizationHelperTest extends PersoSimTestCase {
 	 * 
 	 * @throws AccessDeniedException
 	 */
-	@Test(expected = NoSuchElementException.class)
+	@Test
 	public void testGetFileFromPersoWrongFid() throws AccessDeniedException {
-		PersonalizationHelper.getFileFromPerso(perso, 273, null);
+		byte[] foundFile = PersonalizationHelper.getFileFromPerso(perso, 273, null);
+		assertEquals(null, foundFile);
 	}
 
 }

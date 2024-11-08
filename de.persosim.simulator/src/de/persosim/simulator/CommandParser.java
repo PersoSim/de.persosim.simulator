@@ -228,13 +228,17 @@ public class CommandParser {
 		return false;
 	}
 
+	public static Personalization getPerso(String identifier) throws IllegalArgumentException {
+		return getPerso(identifier, true);
+	}
+		
 	/**
 	 * This method parses the given identifier and loads the personalization
 	 * @param identifier
 	 * @return a personalization object
 	 * @throws IllegalArgumentException iff the identifier does not reference a loadable perso 
 	 */
-	public static Personalization getPerso(String identifier) throws IllegalArgumentException {
+	public static Personalization getPerso(String identifier, boolean withOverlayProfile) throws IllegalArgumentException {
 		log(CommandParser.class, "Trying to load personalization for identifier '" + identifier + "'", LogLevel.INFO);
 
 		InputStream stream = null;
@@ -293,7 +297,8 @@ public class CommandParser {
 			throw new IllegalArgumentException("Unable to deserialize personalization", e);
 		}
 		
-		ProfileHelper.handleOverlayProfile(perso);
+		if (withOverlayProfile)
+			ProfileHelper.handleOverlayProfile(perso);
 		return perso;
 	} 
 	
