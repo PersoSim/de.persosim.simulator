@@ -3,6 +3,8 @@ package de.persosim.simulator.perso.export;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.annotation.Nullable;
+
 public class OrderedFileList
 {
 
@@ -124,24 +126,19 @@ public class OrderedFileList
 
 	public void setContentByFileId(String fileId, String content)
 	{
-		for (File current : orderedFiles) {
-			if (current.getFileId().equals(fileId)) {
-				current.setContent(content);
-				break;
-			}
-		}
+		File found = getFileByFileId(fileId);
+		if (found != null)
+			found.setContent(content);
 	}
 
 	public void setContentByShortFileId(String shortFileId, String content)
 	{
-		for (File current : orderedFiles) {
-			if (current.getShortFileId().equals(shortFileId)) {
-				current.setContent(content);
-				break;
-			}
-		}
+		File found = getFileByShortFileId(shortFileId);
+		if (found != null)
+			found.setContent(content);
 	}
 
+	@Nullable
 	public File getFileByFileId(String fileId)
 	{
 		File found = null;
@@ -154,6 +151,7 @@ public class OrderedFileList
 		return found;
 	}
 
+	@Nullable
 	public File getFileByShortFileId(String shortFileId)
 	{
 		File found = null;

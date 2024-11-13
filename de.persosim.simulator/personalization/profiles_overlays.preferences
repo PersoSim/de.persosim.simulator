@@ -1,2 +1,24 @@
-#overlay_all=false
+#
+# Root path of profiles overlays files
+# Default: <root path of profiles/perso files>/../profiles_overlays
+# Possible values: Absolute file path. Additionally, $HOME for user's home directory is supported, too.
+#
+# profiles_overlays_root_path=$HOME/persosim/profiles_overlays
+
+#
+# Create all missing profiles overlays files (if not exist)
+# Default: true
+#
+# create_missing_profiles_overlays=false
+
+#
+# Overlay all profile values with that of related profile overlay file
+# Default: true
+#
+# overlay_all=false
+
+#
+# Format *.json profile (overlay/export) files in human-readable format
+# Default: false
+#
 pretty_print=true

@@ -8,6 +8,7 @@ import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.protocols.ri.Ri;
 import de.persosim.simulator.protocols.ri.RiOid;
+import jakarta.annotation.Nullable;
 
 public class OrderedKeyList
 {
@@ -47,19 +48,38 @@ public class OrderedKeyList
 
 	public void setContent(GenericOid oid, Boolean privilegedOnly, Integer id, String content)
 	{
-		for (Key current : orderedKeys) {
-			if (current.getOidInternal().equals(oid) && current.getPrivilegedOnly().equals(privilegedOnly) && current.getId().equals(id)) {
-				current.setContent(content);
-				break;
+		Key found = getKey(oid, privilegedOnly, id);
+		if (found != null) {
+			found.setContent(content);
+		}
+		else {
+			found = getKey(oid, privilegedOnly);
+			if (found != null) {
+				found.setId(id);
+				found.setContent(content);
 			}
 		}
 	}
 
+	@Nullable
 	public Key getKey(GenericOid oid, Boolean privilegedOnly, Integer id)
 	{
 		Key found = null;
 		for (Key current : orderedKeys) {
 			if (current.getOidInternal().equals(oid) && current.getPrivilegedOnly().equals(privilegedOnly) && current.getId().equals(id)) {
+				found = current;
+				break;
+			}
+		}
+		return found;
+	}
+
+	@Nullable
+	public Key getKey(GenericOid oid, Boolean privilegedOnly)
+	{
+		Key found = null;
+		for (Key current : orderedKeys) {
+			if (current.getOidInternal().equals(oid) && current.getPrivilegedOnly().equals(privilegedOnly)) {
 				found = current;
 				break;
 			}

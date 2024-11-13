@@ -47,7 +47,6 @@ public class PersoExportTest extends PersoSimTestCase
 	public static void beforeTests() throws IOException
 	{
 		ProfileHelper.setRootPathPersoFiles(pathProfiles);
-		ProfileHelper.getPreferenceStoreAccessorInstance();
 		ProfileHelper.deleteDirectory(rootPathOverlays);
 	}
 

@@ -54,10 +54,12 @@ public abstract class ProfileHelper
 {
 	public static final String PERSO_FILES_PARENT_DIR = "profiles";
 	public static final String PERSO_FILE_SUFFIX = ".perso";
+	public static final String OVERLAY_PROFILES_FILES_ROOT_PATH = "profiles_overlays_root_path";
 	public static final String OVERLAY_PROFILES_FILES_PARENT_DIR = "profiles_overlays";
 	public static final String OVERLAY_PROFILE_FILE_SUFFIX = ".json";
 	public static final String OVERLAY_PROFILES_PREFS_FILE = OVERLAY_PROFILES_FILES_PARENT_DIR + ".preferences";
 
+	public static final String OVERLAY_PROFILES_PREF_CREATE_MISSING_PROFILES_OVERLAYS = "create_missing_profiles_overlays"; // default: true
 	public static final String OVERLAY_PROFILES_PREF_OVERLAY_ALL = "overlay_all"; // default: true
 	public static final String OVERLAY_PROFILES_PREF_PRETTY_PRINT = "pretty_print"; // default: false
 
@@ -74,11 +76,11 @@ public abstract class ProfileHelper
 	@Nullable
 	public static synchronized IniPreferenceStoreAccessor getPreferenceStoreAccessorInstance()
 	{
-		if (getRootPathProfileOverlays() == null) {
-			BasicLogger.log(ProfileHelper.class, "Root Path of Profile Overlays not set", LogLevel.ERROR);
+		if (getRootPathPersoFiles() == null) {
+			BasicLogger.log(ProfileHelper.class, "Personalization root path not set", LogLevel.ERROR);
 		}
 		if (preferenceStoreAccessor == null) {
-			preferenceStoreAccessor = new IniPreferenceStoreAccessor(Paths.get(getRootPathProfileOverlays().getParent().toAbsolutePath().toString(), OVERLAY_PROFILES_PREFS_FILE));
+			preferenceStoreAccessor = new IniPreferenceStoreAccessor(Paths.get(getRootPathPersoFiles().getParent().toAbsolutePath().toString(), OVERLAY_PROFILES_PREFS_FILE));
 		}
 		return preferenceStoreAccessor;
 	}
@@ -86,9 +88,38 @@ public abstract class ProfileHelper
 	public static synchronized void setRootPathPersoFiles(Path rootPathPersoFilesToSet)
 	{
 		rootPathPersoFiles = rootPathPersoFilesToSet;
+		log(ProfileHelper.class, "Personalization root path is '" + rootPathPersoFiles.toAbsolutePath().toString() + "'.", LogLevel.INFO);
 		String rootAbsPathPersoFilesAsString = rootPathPersoFiles.toAbsolutePath().toString();
+		Path rootPathOverlays = null;
+		String rootPathOverlaysCfg = getPreferenceStoreAccessorInstance().get(ProfileHelper.OVERLAY_PROFILES_FILES_ROOT_PATH);
+		if (rootPathOverlaysCfg != null) {
+			rootPathOverlaysCfg = rootPathOverlaysCfg.trim();
+			if (rootPathOverlaysCfg.contains("$HOME")) {
+				String userHome = System.getProperty("user.home");
+				if (userHome == null)
+					BasicLogger.log(ProfileHelper.class, "$HOME configured, but not set (user.home = null)", LogLevel.ERROR);
+				rootPathOverlaysCfg = rootPathOverlaysCfg.replace("$HOME", userHome);
+			}
+			rootPathOverlays = Path.of(rootPathOverlaysCfg);
+			try {
+				Files.createDirectories(rootPathOverlays);
+			}
+			catch (IOException e) {
+				BasicLogger.logException(ProfileHelper.class, e);
+			}
+
+			if (Files.exists(rootPathOverlays) && Files.isDirectory(rootPathOverlays)) {
+				log(ProfileHelper.class, "Configured Overlays Profiles root path is '" + rootPathOverlays + "'.", LogLevel.INFO);
+				rootPathProfileOverlays = rootPathOverlays;
+				return;
+			}
+			else {
+				log(ProfileHelper.class, "Configured Overlays Profiles root path '" + rootPathOverlays + "' does not exist or is not a directory. Default path will be used.", LogLevel.WARN);
+			}
+		}
 		rootPathProfileOverlays = Path
-				.of(rootAbsPathPersoFilesAsString.substring(0, rootAbsPathPersoFilesAsString.lastIndexOf(ProfileHelper.PERSO_FILES_PARENT_DIR)) + ProfileHelper.PERSO_FILES_PARENT_DIR + "_overlays");
+				.of(rootAbsPathPersoFilesAsString.substring(0, rootAbsPathPersoFilesAsString.lastIndexOf(ProfileHelper.PERSO_FILES_PARENT_DIR)) + ProfileHelper.OVERLAY_PROFILES_FILES_PARENT_DIR);
+		log(ProfileHelper.class, "Overlays Profiles root path is '" + rootPathProfileOverlays + "'.", LogLevel.INFO);
 	}
 
 	@Nullable
@@ -336,6 +367,13 @@ public abstract class ProfileHelper
 
 	public static void createAllMissingOverlayProfileFiles(Path rootPathProfiles)
 	{
+		IniPreferenceStoreAccessor preferenceStoreAccessor = ProfileHelper.getPreferenceStoreAccessorInstance();
+		String createMissing = preferenceStoreAccessor.get(OVERLAY_PROFILES_PREF_CREATE_MISSING_PROFILES_OVERLAYS);
+		if (createMissing != null && ("false".equalsIgnoreCase(createMissing.trim()) || "no".equalsIgnoreCase(createMissing.trim()))) {
+			BasicLogger.log(ProfileHelper.class, "Missing Profiles Overlays files will NOT be created.", LogLevel.INFO);
+			return;
+		}
+
 		log(ProfileHelper.class, "Personalization root path is '" + rootPathProfiles.toString() + "'.", LogLevel.DEBUG);
 		List<Path> allProfileFilePaths = new ArrayList<>();
 		try {
@@ -346,7 +384,7 @@ public abstract class ProfileHelper
 		}
 
 		String rootPathOverlays = rootPathProfileOverlays.toAbsolutePath().toString();
-		log(ProfileHelper.class, "Overlay Profile root path is '" + rootPathOverlays + "'.", LogLevel.DEBUG);
+		log(ProfileHelper.class, "Overlays Profiles root path is '" + rootPathOverlays + "'.", LogLevel.DEBUG);
 		for (Path currentPath : allProfileFilePaths) {
 			String currentAbsFilePath = currentPath.toAbsolutePath().toString();
 			String currentAbsFilePathOverlay = ProfileHelper.getOverlayFilePath(currentPath);
@@ -435,6 +473,12 @@ public abstract class ProfileHelper
 				BasicLogger.log(ProfileHelper.class, "Cannot get Overlay Profile file path for personalization '" + perso.getClass().getSimpleName() + "'.", LogLevel.ERROR);
 			return null;
 		}
+		return getOverlayProfile(overlayProfileFilePath);
+	}
+
+	@Nullable
+	public static OverlayProfile getOverlayProfile(String overlayProfileFilePath)
+	{
 		String overlaySerialized;
 		try {
 			overlaySerialized = ProfileHelper.readOverlayProfileFromFile(overlayProfileFilePath);
