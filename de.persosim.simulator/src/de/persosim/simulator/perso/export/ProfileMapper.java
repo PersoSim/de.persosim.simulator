@@ -39,6 +39,7 @@ public class ProfileMapper
 		orderedFileList.setContentByFileId(OrderedFileList.FID_EF_DIR, encodeEF(perso, OrderedFileList.FID_EF_DIR, null));
 		orderedFileList.setContentByFileId(OrderedFileList.FID_EF_CARD_ACCESS, encodeEF(perso, OrderedFileList.FID_EF_CARD_ACCESS, null));
 		orderedFileList.setContentByFileId(OrderedFileList.FID_EF_CARD_SECURITY, encodeEF(perso, OrderedFileList.FID_EF_CARD_SECURITY, null));
+		orderedFileList.setContentByFileId(OrderedFileList.FID_EF_CHIP_SECURITY, encodeEF(perso, OrderedFileList.FID_EF_CHIP_SECURITY, null));
 
 		DedicatedFileIdentifier dfApplEID = new DedicatedFileIdentifier(HexString.toByteArray(DefaultPersonalization.AID_EID));
 		orderedFileList.setContentByFileId(OrderedFileList.FID_DG1, encodeEF(perso, OrderedFileList.FID_DG1, dfApplEID));
@@ -70,6 +71,7 @@ public class ProfileMapper
 		OrderedKeyList orderedKeyList = new OrderedKeyList(false);
 		encodeRIKeys(masterFile, orderedKeyList);
 		encodeCAKey41(masterFile, orderedKeyList);
+		encodeCAKey45(masterFile, orderedKeyList);
 
 		String trustpoint = encodeTrustPoint(masterFile);
 		String pin = encodePassword(masterFile, Tr03110.ID_PIN);
@@ -138,6 +140,16 @@ public class ProfileMapper
 		KeyPairObject foundKeyPairObject = ProfileHelper.findKeyPairObjectExt(masterFile, Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128, Boolean.FALSE, Integer.valueOf(OrderedKeyList.ID_CA_41));
 		if (foundKeyPairObject != null) {
 			orderedKeyList.setContent((GenericOid) Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128.getOid(), Boolean.FALSE, foundKeyPairObject.getPrimaryIdentifier().getInteger(),
+					HexString.encode(foundKeyPairObject.getKeyPair().getPrivate().getEncoded()));
+			// BasicLogger.log(HexString.encode(foundKeyPairObject.getKeyPair().getPrivate().getEncoded()), LogLevel.TRACE);
+		}
+	}
+
+	private void encodeCAKey45(MasterFile masterFile, OrderedKeyList orderedKeyList)
+	{
+		KeyPairObject foundKeyPairObject = ProfileHelper.findKeyPairObjectExt(masterFile, Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128, Boolean.TRUE, Integer.valueOf(OrderedKeyList.ID_CA_45));
+		if (foundKeyPairObject != null) {
+			orderedKeyList.setContent((GenericOid) Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128.getOid(), Boolean.TRUE, foundKeyPairObject.getPrimaryIdentifier().getInteger(),
 					HexString.encode(foundKeyPairObject.getKeyPair().getPrivate().getEncoded()));
 			// BasicLogger.log(HexString.encode(foundKeyPairObject.getKeyPair().getPrivate().getEncoded()), LogLevel.TRACE);
 		}

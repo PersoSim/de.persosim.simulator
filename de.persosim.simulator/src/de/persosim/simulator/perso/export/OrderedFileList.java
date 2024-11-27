@@ -10,8 +10,8 @@ public class OrderedFileList
 
 	public static final String FID_EF_DIR = "2f00";
 	public static final String SFI_EF_DIR = "1e";
-	// public static final String FID_EF_CHIP_SECURITY = "011b";
-	// public static final String SFI_EF_CHIP_SECURITY = "1b";
+	public static final String FID_EF_CHIP_SECURITY = "011b";
+	public static final String SFI_EF_CHIP_SECURITY = "1b";
 	public static final String FID_EF_CARD_ACCESS = "011c";
 	public static final String SFI_EF_CARD_ACCESS = "1c";
 	public static final String FID_EF_CARD_SECURITY = "011d";
@@ -63,7 +63,7 @@ public class OrderedFileList
 	public static final String SFI_DG22 = "16";
 
 	private File fileEFDir = new File(FID_EF_DIR, SFI_EF_DIR, null);
-	// private File fileEFChipSecurity = new File(FID_EF_CHIP_SECURITY, SFI_EF_CHIP_SECURITY, null);
+	private File fileEFChipSecurity = new File(FID_EF_CHIP_SECURITY, SFI_EF_CHIP_SECURITY, null);
 	private File fileEFCardAccess = new File(FID_EF_CARD_ACCESS, SFI_EF_CARD_ACCESS, null);
 	private File fileEFCardSecurity = new File(FID_EF_CARD_SECURITY, SFI_EF_CARD_SECURITY, null);
 	// BSI TR-03110 Part 4
@@ -95,6 +95,7 @@ public class OrderedFileList
 	public OrderedFileList()
 	{
 		orderedFiles.add(fileEFDir);
+		orderedFiles.add(fileEFChipSecurity);
 		orderedFiles.add(fileEFCardAccess);
 		orderedFiles.add(fileEFCardSecurity);
 		orderedFiles.add(fileDG1);

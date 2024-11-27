@@ -16,6 +16,7 @@ public class OrderedKeyList
 	public static final int ID_RI_1_SPERRMERKMAL = 1;
 	public static final int ID_RI_2_PSEUDONYM = 2;
 	public static final int ID_CA_41 = 41;
+	public static final int ID_CA_45 = 45;
 
 	// Restricted Identification (RI) keys
 	// Individual RI key - 1st sector public/private key pair (Sperrmerkmal)
@@ -25,6 +26,9 @@ public class OrderedKeyList
 
 	// Chip Authentication Key with ID 41
 	private Key keyCA41 = new Key((GenericOid) Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128.getOid(), Boolean.FALSE, Integer.valueOf(ID_CA_41), null);
+
+	// Chip Authentication Key with ID 45
+	private Key keyCA45 = new Key((GenericOid) Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128.getOid(), Boolean.TRUE, Integer.valueOf(ID_CA_45), null);
 
 	private List<Key> orderedKeys = new ArrayList<>();
 
@@ -37,8 +41,10 @@ public class OrderedKeyList
 	public OrderedKeyList(boolean riKeysOnly)
 	{
 		this();
-		if (!riKeysOnly)
+		if (!riKeysOnly) {
 			orderedKeys.add(keyCA41);
+			orderedKeys.add(keyCA45);
+		}
 	}
 
 	public List<Key> getOrderedKeys()
