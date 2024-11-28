@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
@@ -21,6 +23,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.persosim.editor.ui.launcher.Persos;
 import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.OidIdentifier;
@@ -42,18 +45,38 @@ public class PersoExportTest extends PersoSimTestCase
 	private static String rootPathProfiles = pathProfiles.toAbsolutePath().toString();
 	private static String rootPathOverlays = rootPathProfiles.substring(0, rootPathProfiles.lastIndexOf(ProfileHelper.PERSO_FILES_PARENT_DIR)) + ProfileHelper.OVERLAY_PROFILES_FILES_PARENT_DIR;
 
+	private static String rootDestination = "tmp";
+	private static String rootDestinationProfiles = rootDestination + "/profiles/";
+	private static String rootDestinationProfilesOverlays = rootDestination + "/profiles_overlays/";
+	private static String rootDestinationProfilesExport = rootDestination + "/profiles_export/";
 
 	@BeforeClass
 	public static void beforeTests() throws IOException
 	{
-		ProfileHelper.setRootPathPersoFiles(pathProfiles);
-		ProfileHelper.deleteDirectory(rootPathOverlays);
+		try {
+			ProfileHelper.setRootPathPersoFiles(pathProfiles);
+			ProfileHelper.deleteDirectory(rootPathOverlays);
+
+			ProfileHelper.deleteDirectory(rootDestination);
+			Files.createDirectories(Path.of(rootDestination));
+			copyCompleteDirectoryRecursively(pathProfiles.toString(), rootDestinationProfiles);
+		}
+		catch (IOException e) {
+			BasicLogger.logException(PersoExportTest.class, e, LogLevel.ERROR);
+			throw e;
+		}
 	}
 
 	@AfterClass
 	public static void afterTests() throws IOException
 	{
-		ProfileHelper.deleteDirectory(rootPathOverlays);
+		try {
+			ProfileHelper.deleteDirectory(rootPathOverlays);
+		}
+		catch (IOException e) {
+			BasicLogger.logException(PersoExportTest.class, e, LogLevel.ERROR);
+			throw e;
+		}
 	}
 
 	@Test
@@ -92,7 +115,7 @@ public class PersoExportTest extends PersoSimTestCase
 			assertEquals(profile.getPin(), profileDeserialized.getPin());
 		}
 		catch (JsonProcessingException e) {
-			BasicLogger.logException(getClass(), e, LogLevel.ERROR);
+			BasicLogger.logException(this, e, LogLevel.ERROR);
 		}
 	}
 
@@ -104,10 +127,10 @@ public class PersoExportTest extends PersoSimTestCase
 			doTestCreateNonExistentOverlayProfileFiles(pathProfiles);
 		}
 		catch (IOException e) {
-			BasicLogger.logException(getClass(), e, LogLevel.ERROR);
+			BasicLogger.logException(this, e, LogLevel.ERROR);
 			fail(e.getMessage());
 		}
-		for (int i = 0; i <= 19; i++) {
+		for (int i = 0; i <= Persos.NUMBER_OF_PROFILES_ALL; i++) {
 			DefaultPersonalization perso = (DefaultPersonalization) de.persosim.editor.ui.launcher.Persos.getPerso(i);
 			Profile profile = new ProfileMapper().mapPersoToExportProfile(perso);
 			String jsonSerialized = profile.serialize(true);
@@ -119,19 +142,19 @@ public class PersoExportTest extends PersoSimTestCase
 			assertEquals(profile.getPin(), profileDeserialized.getPin());
 
 			try {
-				String path = "tmp/perso_export/";
+				String path = rootDestinationProfilesExport;
 				Files.createDirectories(Path.of(path));
 				Files.write(Path.of(path + perso.getClass().getSimpleName() + ProfileHelper.OVERLAY_PROFILE_FILE_SUFFIX), jsonSerialized.getBytes(StandardCharsets.UTF_8));
 			}
 			catch (IOException e) {
-				BasicLogger.logException(getClass(), e, LogLevel.ERROR);
+				BasicLogger.logException(this, e, LogLevel.ERROR);
 			}
 		}
 		try {
 			ProfileHelper.deleteDirectory(rootPathOverlays);
 		}
 		catch (IOException e) {
-			BasicLogger.logException(getClass(), e, LogLevel.ERROR);
+			BasicLogger.logException(this, e, LogLevel.ERROR);
 			fail(e.getMessage());
 		}
 	}
@@ -144,10 +167,10 @@ public class PersoExportTest extends PersoSimTestCase
 			doTestCreateNonExistentOverlayProfileFiles(pathProfiles);
 		}
 		catch (IOException e) {
-			BasicLogger.logException(getClass(), e, LogLevel.ERROR);
+			BasicLogger.logException(this, e, LogLevel.ERROR);
 			fail(e.getMessage());
 		}
-		for (int i = 0; i <= 19; i++) {
+		for (int i = 0; i <= Persos.NUMBER_OF_PROFILES_ALL; i++) {
 			DefaultPersonalization perso = (DefaultPersonalization) de.persosim.editor.ui.launcher.Persos.getPerso(i);
 			OverlayProfile profile = new ProfileMapper().mapPersoToOverlayProfile(perso);
 			String jsonSerialized = profile.serialize(true);
@@ -159,19 +182,19 @@ public class PersoExportTest extends PersoSimTestCase
 			assertEquals(profile.getKeys().get(0).getContent(), profileDeserialized.getKeys().get(0).getContent());
 
 			try {
-				String path = "tmp/perso_overlay/";
+				String path = rootDestinationProfilesOverlays;
 				Files.createDirectories(Path.of(path));
 				Files.write(Path.of(path + perso.getClass().getSimpleName() + ProfileHelper.OVERLAY_PROFILE_FILE_SUFFIX), jsonSerialized.getBytes(StandardCharsets.UTF_8));
 			}
 			catch (IOException e) {
-				BasicLogger.logException(getClass(), e, LogLevel.ERROR);
+				BasicLogger.logException(this, e, LogLevel.ERROR);
 			}
 		}
 		try {
 			ProfileHelper.deleteDirectory(rootPathOverlays);
 		}
 		catch (IOException e) {
-			BasicLogger.logException(getClass(), e, LogLevel.ERROR);
+			BasicLogger.logException(this, e, LogLevel.ERROR);
 			fail(e.getMessage());
 		}
 	}
@@ -185,7 +208,7 @@ public class PersoExportTest extends PersoSimTestCase
 			doTestCreateNonExistentOverlayProfileFiles(pathProfiles);
 		}
 		catch (IOException e) {
-			BasicLogger.logException(getClass(), e, LogLevel.ERROR);
+			BasicLogger.logException(this, e, LogLevel.ERROR);
 		}
 	}
 
@@ -197,7 +220,7 @@ public class PersoExportTest extends PersoSimTestCase
 			ProfileHelper.getAllPathsRecursively(rootPathProfiles, allProfileFilePaths);
 		}
 		catch (IOException e) {
-			BasicLogger.logException(getClass(), e, LogLevel.ERROR);
+			BasicLogger.logException(this, e, LogLevel.ERROR);
 		}
 		for (Path path : allProfileFilePaths) {
 			BasicLogger.log(this, "Found *.perso file: '" + path.toAbsolutePath().toString() + "'.", LogLevel.TRACE);
@@ -279,4 +302,23 @@ public class PersoExportTest extends PersoSimTestCase
 		assertNotEquals(publicKeyHexOld2, publicKeyHex2);
 	}
 
+
+	private static void copyCompleteDirectoryRecursively(String sourceDirectoryLocation, String destinationDirectoryLocation) throws IOException
+	{
+		try (Stream<Path> walk = Files.walk(Paths.get(sourceDirectoryLocation))) {
+			walk.forEach(source -> {
+				Path destination = Paths.get(destinationDirectoryLocation, source.toString().substring(sourceDirectoryLocation.length()));
+				try {
+					Files.copy(source, destination);
+				}
+				catch (IOException e) {
+					BasicLogger.logException(PersoExportTest.class, e, LogLevel.ERROR);
+					throw new IllegalArgumentException(e);
+				}
+			});
+		}
+		catch (IllegalArgumentException e) {
+			throw (IOException) e.getCause();
+		}
+	}
 }
