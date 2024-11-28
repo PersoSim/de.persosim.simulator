@@ -370,7 +370,7 @@ public abstract class ProfileHelper
 		IniPreferenceStoreAccessor preferenceStoreAccessor = ProfileHelper.getPreferenceStoreAccessorInstance();
 		String createMissing = preferenceStoreAccessor.get(OVERLAY_PROFILES_PREF_CREATE_MISSING_PROFILES_OVERLAYS);
 		if (createMissing != null && ("false".equalsIgnoreCase(createMissing.trim()) || "no".equalsIgnoreCase(createMissing.trim()))) {
-			BasicLogger.log(ProfileHelper.class, "Missing Profiles Overlays files will NOT be created.", LogLevel.INFO);
+			BasicLogger.log(ProfileHelper.class, "Creating of Profiles Overlays is disabled. Missing Profiles Overlays files will NOT be created.", LogLevel.INFO);
 			return;
 		}
 
@@ -448,12 +448,18 @@ public abstract class ProfileHelper
 	public static void handleOverlayProfile(Personalization perso)
 	{
 		IniPreferenceStoreAccessor preferenceStoreAccessor = ProfileHelper.getPreferenceStoreAccessorInstance();
+		String createMissing = preferenceStoreAccessor.get(OVERLAY_PROFILES_PREF_CREATE_MISSING_PROFILES_OVERLAYS);
+		if (createMissing != null && ("false".equalsIgnoreCase(createMissing.trim()) || "no".equalsIgnoreCase(createMissing.trim()))) {
+			BasicLogger.log(ProfileHelper.class, "Creating of Profiles Overlays is disabled. Profile '" + perso.getClass().getSimpleName() + "' will NOT be overlaid.", LogLevel.INFO);
+			return;
+		}
 		// preferenceStoreAccessor.set(OVERLAY_PROFILES_PREF_OVERLAY_ALL, "true");
 		String overlayAll = preferenceStoreAccessor.get(OVERLAY_PROFILES_PREF_OVERLAY_ALL);
 		if (overlayAll != null && ("false".equalsIgnoreCase(overlayAll.trim()) || "no".equalsIgnoreCase(overlayAll.trim()))) {
-			BasicLogger.log(ProfileHelper.class, "Profile '" + perso.getClass().getSimpleName() + "' will NOT be overlaid.", LogLevel.INFO);
+			BasicLogger.log(ProfileHelper.class, "Profiles Overlaying is disabled. Profile '" + perso.getClass().getSimpleName() + "' will NOT be overlaid.", LogLevel.INFO);
 			return;
 		}
+
 		BasicLogger.log(ProfileHelper.class, "Profile '" + perso.getClass().getSimpleName() + "' will be overlaid.", LogLevel.DEBUG);
 
 		OverlayProfile overlayProfile = getOverlayProfileForPerso(perso, false);
