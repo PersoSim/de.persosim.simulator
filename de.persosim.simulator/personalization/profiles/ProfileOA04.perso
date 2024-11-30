@@ -130,8 +130,8 @@
               </oid>
             </primaryIdentifier>
             <publicity id="40">
-              <de.persosim.simulator.protocols.SecInfoPublicity>AUTHENTICATED</de.persosim.simulator.protocols.SecInfoPublicity>
               <de.persosim.simulator.protocols.SecInfoPublicity>PUBLIC</de.persosim.simulator.protocols.SecInfoPublicity>
+              <de.persosim.simulator.protocols.SecInfoPublicity>AUTHENTICATED</de.persosim.simulator.protocols.SecInfoPublicity>
               <de.persosim.simulator.protocols.SecInfoPublicity>PRIVILEGED</de.persosim.simulator.protocols.SecInfoPublicity>
             </publicity>
             <secInfoContent class="de.persosim.simulator.tlv.ConstructedTlvDataObject" id="41">300F060A04007F00070302030202020101</secInfoContent>
