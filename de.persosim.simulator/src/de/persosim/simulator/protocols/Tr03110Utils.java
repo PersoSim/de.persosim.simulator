@@ -27,63 +27,63 @@ import de.persosim.simulator.tlv.TlvDataObjectContainer;
 import de.persosim.simulator.tlv.TlvTag;
 import de.persosim.simulator.utils.HexString;
 
-/** 
- * 
+/**
+ *
  * This class contains methods unique to the TR-03110 specification.
  * @author mboonk
  *
  */
 public class Tr03110Utils implements TlvConstants {
 	public static final int ACCESS_RIGHTS_AT_CAN_ALLOWED_BIT = 4;
-	
+
 	static private List<Tr03110UtilsProvider> providers = new ArrayList<>();
-	
+
 	static private ServiceTracker<Tr03110UtilsProvider, Tr03110UtilsProvider> serviceTracker;
-	
+
 	static {
 		if (Activator.getContext() != null){
 			ServiceTrackerCustomizer<Tr03110UtilsProvider, Tr03110UtilsProvider> customizer = new ServiceTrackerCustomizer<Tr03110UtilsProvider, Tr03110UtilsProvider>() {
-				
+
 				@Override
 				public void removedService(
 						ServiceReference<Tr03110UtilsProvider> reference,
 						Tr03110UtilsProvider service) {
 					providers.remove(service);
 				}
-				
+
 				@Override
 				public void modifiedService(
 						ServiceReference<Tr03110UtilsProvider> reference,
 						Tr03110UtilsProvider service) {
 					//Nothing to be done
 				}
-				
+
 				@Override
 				public Tr03110UtilsProvider addingService(
 						ServiceReference<Tr03110UtilsProvider> reference) {
-					Tr03110UtilsProvider provider = Activator.getContext().getService(reference); 
+					Tr03110UtilsProvider provider = Activator.getContext().getService(reference);
 					providers.add(provider);
 					return provider;
 				}
 			};
-			
+
 			serviceTracker = new ServiceTracker<>(Activator.getContext(), Tr03110UtilsProvider.class, customizer);
 			serviceTracker.open();
-					
+
 		} else {
-			BasicLogger.log(Tr03110Utils.class, "No OSGi context is available, no additional TR03110 functionalities are supported", LogLevel.INFO);
+			BasicLogger.log(Tr03110Utils.class, "No OSGi context is available, no additional functionalities are supported", LogLevel.INFO);
 		}
 		providers.add(new Tr03110UtilsDefaultProvider());
 
 	}
-	
+
 	/*
 	 * This is a utils class only and does not need to be instantiated
 	 */
 	private Tr03110Utils() {}
-	
-	
-	
+
+
+
 	/**
 	 * This method parses a public key encoded within a CV certificate
 	 * @param publicKeyData the encoding of a public key
@@ -103,7 +103,7 @@ public class Tr03110Utils implements TlvConstants {
 		BasicLogger.log(Tr03110Utils.class, "Public Key data could not be parsed.", LogLevel.INFO);
 		return null;
 	}
-	
+
 	/**
 	 * This method encodes a public key as described in TR03110 Part 3 Appendix D.3
 	 * @param oid the {@link Oid} to store in the encoded Key
@@ -125,7 +125,7 @@ public class Tr03110Utils implements TlvConstants {
 		BasicLogger.log(Tr03110Utils.class, "Public Key data could not be encoded.", LogLevel.INFO);
 		return null;
 	}
-	
+
 	/**
 	 * This method constructs the input data used to compute the authentication token needed e.g. by Pace's Mutual Authenticate or CA's General Authenticate.
 	 * @param publicKey the ephemeral public key to be inserted
@@ -135,9 +135,9 @@ public class Tr03110Utils implements TlvConstants {
 	public static TlvDataObjectContainer buildAuthenticationTokenInput(PublicKey publicKey, DomainParameterSet domParamSet, Oid oidInput) {
 		/* construct authentication token object based on OID and public key */
 		byte[] ephemeralPublicKeyByteArray = domParamSet.encodePublicKey(publicKey);
-		
+
 		TlvTag pubKeyTag = domParamSet.getAuthenticationTokenPublicKeyTag();
-		
+
 		PrimitiveTlvDataObject primitive06 = new PrimitiveTlvDataObject(TAG_06, oidInput.toByteArray());
 		PrimitiveTlvDataObject primitive84 = new PrimitiveTlvDataObject(pubKeyTag, ephemeralPublicKeyByteArray);
 		ConstructedTlvDataObject constructed7F49 = new ConstructedTlvDataObject(TAG_7F49);
@@ -145,10 +145,10 @@ public class Tr03110Utils implements TlvConstants {
 		constructed7F49.addTlvDataObject(primitive84);
 		TlvDataObjectContainer authenticationTokenInput = new TlvDataObjectContainer();
 		authenticationTokenInput.addTlvDataObject(constructed7F49);
-		
+
 		return authenticationTokenInput;
 	}
-	
+
 	/**
 	 * This method extracts the domain parameter information from DH and EC public and private keys.
 	 * @param key a DH/EC public/private key
@@ -163,7 +163,7 @@ public class Tr03110Utils implements TlvConstants {
 		}
 		throw new IllegalArgumentException("unexpected key format");
 	}
-	
+
 	/**
 	 * Reads the a date encoded in 6 bytes as described in TR-03110 v2.10 D.2.1.3.
 	 * @param dateData as described in TR-03110 V2.10 part 3, D
@@ -174,12 +174,12 @@ public class Tr03110Utils implements TlvConstants {
 	// IMPL check possible code duplication/overlap with Utils.getDate method
 	public static Date parseDate(byte [] dateData, boolean lenient) throws NotParseableException {
 		Calendar calendar = Calendar.getInstance();
-		
+
 		calendar.setLenient(lenient);
-		
+
 		calendar.set(Calendar.MILLISECOND, 0);
 		calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-		
+
 		if (dateData.length == 6){
 			for(byte currentByte : dateData){
 				if (currentByte < 0 || currentByte > 9){
@@ -203,10 +203,10 @@ public class Tr03110Utils implements TlvConstants {
 	public static Date parseDate(byte [] dateData) throws NotParseableException {
 		return parseDate(dateData, true);
 	}
-	
+
 	/**
 	 * Encodes a date as described in TR-03110 v2.10 D.2.1.3.
-	 * 
+	 *
 	 * @param date
 	 *            the date to encode, only the year, month and day components
 	 *            are used
@@ -236,5 +236,5 @@ public class Tr03110Utils implements TlvConstants {
 	public static void addTr03110UtilsProvider(Tr03110UtilsProvider tr03110UtilsProvider) {
 		providers.add(tr03110UtilsProvider);
 	}
-	
+
 }
