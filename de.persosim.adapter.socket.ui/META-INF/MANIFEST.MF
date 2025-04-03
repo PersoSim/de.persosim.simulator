@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PersoSim Simulator Socket Adapter UI
+Bundle-SymbolicName: de.persosim.simulator.adapter.socket.ui;singleton:=true
+Bundle-Version: 1.1.1.qualifier
+Require-Bundle: org.eclipse.osgi,
+ org.globaltester.logging,
+ de.persosim.simulator,
+ org.eclipse.swt,
+ org.eclipse.e4.ui.workbench,
+ org.eclipse.e4.core.di.annotations,
+ de.persosim.driver.connector.ui,
+ org.eclipse.e4.ui.model.workbench,
+ jakarta.inject.jakarta.inject-api,
+ de.persosim.driver.connector,
+ org.globaltester.simulator
+Bundle-Vendor: secunet Security Networks AG
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: de.persosim.simulator.adapter.socket.ui.Activator
+Automatic-Module-Name: de.persosim.remoteifd.ui
+Export-Package: de.persosim.simulator.adapter.socket.ui.vsmartcard

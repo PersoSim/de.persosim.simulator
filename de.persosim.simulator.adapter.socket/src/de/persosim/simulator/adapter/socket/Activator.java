@@ -7,6 +7,9 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
+import de.persosim.simulator.adapter.socket.protocol.GlobalTesterProtocol;
+import de.persosim.simulator.adapter.socket.protocol.VSmartCardProtocol;
+
 /**
  * This bundle activator tracks the {@link Simulator} service provided via OSGi
  * and manages the lifecycle of the socket.
@@ -17,9 +20,9 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 public class Activator implements BundleActivator, SimulatorProvider {
 
 	private static BundleContext context;
-	private static SocketAdapter simulatorSocket;
+	private static SocketAdapter gtSimulatorSocket;
 	private static ServiceTracker<Simulator, Simulator> serviceTracker;
-	private static final int SIM_PORT = 9876;
+	private static final int GT_SIM_PORT = 9876;
 
 	public static BundleContext getContext() {
 		return context;
@@ -31,12 +34,13 @@ public class Activator implements BundleActivator, SimulatorProvider {
 	 */
 	public void start(final BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		simulatorSocket = new SocketAdapter(this, SIM_PORT);
+		gtSimulatorSocket = new SocketAdapter(GT_SIM_PORT, new GlobalTesterProtocol(this));
+		gtSimulatorSocket = new SocketAdapter(1234, new VSmartCardProtocol(this));
 		serviceTracker = new ServiceTracker<Simulator, Simulator>(bundleContext, Simulator.class.getName(), new ServiceTrackerCustomizer<Simulator, Simulator>() {
 
 			@Override
 			public Simulator addingService(ServiceReference<Simulator> reference) {
-				simulatorSocket.start();
+				gtSimulatorSocket.start();
 				return bundleContext.getService(reference);
 			}
 
@@ -47,7 +51,7 @@ public class Activator implements BundleActivator, SimulatorProvider {
 
 			@Override
 			public void removedService(ServiceReference<Simulator> reference, Simulator service) {
-				simulatorSocket.stop();
+				gtSimulatorSocket.stop();
 				
 			}
 		});

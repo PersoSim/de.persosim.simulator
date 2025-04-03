@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.globaltester</groupId>
+    <artifactId>org.globaltester.parent.test</artifactId>
+    <version>4.0.0-SNAPSHOT</version>
+    <relativePath>../../org.globaltester.parent/org.globaltester.parent.test/</relativePath>
+  </parent>
+  <groupId>de.persosim</groupId>
+  <artifactId>de.persosim.remoteifd.test</artifactId>
+  <version>1.1.1-SNAPSHOT</version>
+  <packaging>eclipse-plugin</packaging>
+</project>
