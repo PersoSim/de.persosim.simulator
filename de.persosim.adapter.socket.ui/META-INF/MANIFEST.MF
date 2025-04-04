@@ -13,7 +13,8 @@ Require-Bundle: org.eclipse.osgi,
  org.eclipse.e4.ui.model.workbench,
  jakarta.inject.jakarta.inject-api,
  de.persosim.driver.connector,
- org.globaltester.simulator
+ org.globaltester.simulator,
+ de.persosim.simulator.adapter.socket
 Bundle-Vendor: secunet Security Networks AG
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy

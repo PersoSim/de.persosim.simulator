@@ -8,6 +8,7 @@ import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.driver.connector.ui.parts.ReaderPart;
 import de.persosim.driver.connector.ui.parts.ReaderPart.ReaderType;
+import de.persosim.simulator.adapter.socket.ui.Activator;
 import jakarta.inject.Inject;
 
 public class VSmartcardHandler {
@@ -28,6 +29,7 @@ public class VSmartcardHandler {
 
 			readerPartObject.switchReaderType(ReaderType.NONE);
 		}
-	}
 		
+		Activator.startVsmartcard();
+	}
 }

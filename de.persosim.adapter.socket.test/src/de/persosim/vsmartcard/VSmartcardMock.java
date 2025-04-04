@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import de.persosim.simulator.adapter.socket.protocol.VSmartcardServer;
+import de.persosim.simulator.adapter.socket.protocol.VSmartCardProtocol;
 import de.persosim.simulator.adapter.socket.ui.vsmartcard.Commands;
 import de.persosim.simulator.utils.HexString;
 
@@ -17,7 +17,7 @@ public class VSmartcardMock {
 	private static OutputStream os;
 	
 	public static void main(String [] args) throws Exception {
-		VSmartcardMock mock = new VSmartcardMock("localhost", VSmartcardServer.DEFAULT_PORT);
+		VSmartcardMock mock = new VSmartcardMock("localhost", VSmartCardProtocol.DEFAULT_PORT);
 		while (true) {
 			mock.connect();
 			while (true) {
@@ -45,11 +45,11 @@ public class VSmartcardMock {
 	}
 	
 	public void handle() throws IOException {
-		VSmartcardServer.send(Commands.POWER_ON.getCommand(), os);
-		VSmartcardServer.send(Commands.RESET.getCommand(), os);
-		VSmartcardServer.send(HexString.toByteArray("00a40000"), os);
+		VSmartCardProtocol.send(Commands.POWER_ON.getCommand(), os);
+		VSmartCardProtocol.send(Commands.RESET.getCommand(), os);
+		VSmartCardProtocol.send(HexString.toByteArray("00a40000"), os);
 		
-		System.out.println("Received: " + HexString.encode(VSmartcardServer.receive(is)));
+		System.out.println("Received: " + HexString.encode(VSmartCardProtocol.receive(is)));
 	};
 	
 	public void disconnect() throws IOException {

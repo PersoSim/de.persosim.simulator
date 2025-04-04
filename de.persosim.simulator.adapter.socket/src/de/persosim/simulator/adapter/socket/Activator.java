@@ -8,7 +8,6 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import de.persosim.simulator.adapter.socket.protocol.GlobalTesterProtocol;
-import de.persosim.simulator.adapter.socket.protocol.VSmartCardProtocol;
 
 /**
  * This bundle activator tracks the {@link Simulator} service provided via OSGi
@@ -35,7 +34,6 @@ public class Activator implements BundleActivator, SimulatorProvider {
 	public void start(final BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		gtSimulatorSocket = new SocketAdapter(GT_SIM_PORT, new GlobalTesterProtocol(this));
-		gtSimulatorSocket = new SocketAdapter(1234, new VSmartCardProtocol(this));
 		serviceTracker = new ServiceTracker<Simulator, Simulator>(bundleContext, Simulator.class.getName(), new ServiceTrackerCustomizer<Simulator, Simulator>() {
 
 			@Override
