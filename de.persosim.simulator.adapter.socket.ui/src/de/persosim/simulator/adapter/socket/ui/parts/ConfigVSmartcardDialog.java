@@ -76,8 +76,13 @@ public class ConfigVSmartcardDialog extends Dialog {
 
 		Composite container = (Composite) super.createDialogArea(parent);
 		container.setLayout(new GridLayout(2, false));
-		
-		final QrViewer qrViewer = new QrViewer(container);
+
+		final QrViewer qrViewer = new QrViewer(container, SWT.NONE);
+		GridData layoutDataQrViewer = new GridData(SWT.CENTER, SWT.CENTER, true, true);
+		layoutDataQrViewer.minimumWidth = 200;
+		layoutDataQrViewer.minimumHeight = 200;
+		layoutDataQrViewer.horizontalSpan = 2;
+		qrViewer.setLayoutData(layoutDataQrViewer);
 		
 		Label portLabel = new Label(container, SWT.NONE);
 		portLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
