@@ -18,13 +18,8 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -33,8 +28,8 @@ import org.eclipse.swt.widgets.Text;
 
 import de.persosim.simulator.adapter.socket.protocol.VSmartCardProtocol;
 import de.persosim.simulator.adapter.socket.ui.PreferenceConstants;
+import de.persosim.simulator.adapter.socket.ui.vsmartcard.QrViewer;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
-import io.nayuki.qrcodegen.QrCode;
 
 public class ConfigVSmartcardDialog extends Dialog {
 
@@ -62,36 +57,9 @@ public class ConfigVSmartcardDialog extends Dialog {
 	protected void buttonPressed(int buttonId) {
 		super.buttonPressed(buttonId);
 	}
-
-	private static QrCode qr = null;
 	
-	private static void setQrCode(NetworkInterface iface, String port){
-		qr = QrCode.encodeText("vicc://" + iface.getInetAddresses().nextElement() + ":" + port, QrCode.Ecc.MEDIUM);
-	} 
-	
-	private static void addQrPaintListener(Canvas canvas) {
-		final Color BLACK = canvas.getDisplay().getSystemColor(SWT.COLOR_BLACK);
-		final Color WHITE = canvas.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-
-		canvas.addPaintListener(new PaintListener() {
-			public void paintControl(PaintEvent e) {
-				Rectangle rect = ((Canvas) e.widget).getBounds();
-
-				int shortestSide = rect.height > rect.width ? rect.width : rect.height;
-				
-				int pixelsPerModule = Math.floorDiv(shortestSide, qr.size);
-
-				e.gc.setBackground(WHITE);
-				e.gc.fillRectangle(rect);
-				e.gc.setBackground(BLACK);
-				for (int y = 0; y < qr.size; y++) {
-					for (int x = 0; x < qr.size; x++) {
-						if (qr.getModule(x, y))
-							e.gc.fillRectangle(x*pixelsPerModule, y*pixelsPerModule, pixelsPerModule, pixelsPerModule);
-					}
-				}
-			}
-		});
+	private static String getQrContent(NetworkInterface iface, String port){
+		return "vicc://" + iface.getInetAddresses().nextElement() + ":" + port;
 	}
 	
 	private static String networkInterfaceToLabel(Object element, String text) {
@@ -108,15 +76,8 @@ public class ConfigVSmartcardDialog extends Dialog {
 
 		Composite container = (Composite) super.createDialogArea(parent);
 		container.setLayout(new GridLayout(2, false));
-
-		final Canvas canvas = new Canvas(container, SWT.NONE);
-		GridData layoutDataCanvas = new GridData(SWT.CENTER, SWT.CENTER, true, true);
-		layoutDataCanvas.minimumWidth = 200;
-		layoutDataCanvas.minimumHeight = 200;
-		layoutDataCanvas.horizontalSpan = 2;
-		canvas.setLayoutData(layoutDataCanvas);
 		
-		addQrPaintListener(canvas);
+		final QrViewer qrViewer = new QrViewer(container);
 		
 		Label portLabel = new Label(container, SWT.NONE);
 		portLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
@@ -136,9 +97,6 @@ public class ConfigVSmartcardDialog extends Dialog {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
-		setQrCode(interfaces.get(0), portFromPrefs);
-
 		
 		Label interfaceLabel = new Label(container, SWT.NONE);
 		interfaceLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
@@ -162,8 +120,7 @@ public class ConfigVSmartcardDialog extends Dialog {
 		        	Object firstElement = selection.getFirstElement();
 					if (firstElement instanceof NetworkInterface) {
 		        		NetworkInterface i = (NetworkInterface) firstElement;
-			    		setQrCode(i, port.getText());
-			    		canvas.redraw();
+		        		qrViewer.update(getQrContent(i, port.getText()));
 		        	}
 		        }
 		    }
@@ -178,8 +135,7 @@ public class ConfigVSmartcardDialog extends Dialog {
 				if (!port.getText().isEmpty()){
 					PersoSimPreferenceManager.storePreference(PreferenceConstants.VSMARTCARD_PORT, port.getText());
 					NetworkInterface iface = (NetworkInterface)viewer.getStructuredSelection().getFirstElement();
-		    		setQrCode(iface, port.getText());
-		    		canvas.redraw();
+	        		qrViewer.update(getQrContent(iface, port.getText()));
 				}
 			}
 		});
