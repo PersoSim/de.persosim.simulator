@@ -2,11 +2,16 @@
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_mIRYkOZNEee50pt6teHFRg">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_JWGzwOZYEee50pt6teHFRg" featurename="commands" parentElementId="de.persosim.rcp.application">
     <elements xsi:type="commands:Command" xmi:id="_GeSGsBBfEfCwROqMkWPjEA" elementId="de.persosim.simulator.adapter.socket.ui.command.useVSmartcard" commandName="Use VSmartcard"/>
+    <elements xsi:type="commands:Command" xmi:id="__adycBkhEfCui9APGEThDQ" elementId="de.persosim.simulator.adapter.socket.ui.command.ConfigureVSmartcardCommand" commandName="Configure VSmartcard"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Q1Z24OZYEee50pt6teHFRg" featurename="handlers" parentElementId="de.persosim.rcp.application">
     <elements xsi:type="commands:Handler" xmi:id="_MIURUBBfEfCwROqMkWPjEA" elementId="de.persosim.simulator.adapter.socket.ui.handler.useVSmartcard" contributionURI="bundleclass://de.persosim.simulator.adapter.socket.ui/de.persosim.simulator.adapter.socket.ui.handlers.VSmartcardHandler" command="_GeSGsBBfEfCwROqMkWPjEA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_Hr9HgBkiEfCui9APGEThDQ" elementId="de.persosim.simulator.adapter.socket.ui..handler.configureVSmartcard" contributionURI="bundleclass://de.persosim.simulator.adapter.socket.ui/de.persosim.simulator.adapter.socket.ui.handlers.ConfigureVSmartcardHandler" command="__adycBkhEfCui9APGEThDQ"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_3hMMMOZNEee50pt6teHFRg" featurename="children" parentElementId="de.persosim.driver.connector.ui.menu.readerType" positionInList="after:de.persosim.driver.connector.ui.handledmenuitem.virtualDriver">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_dZpPMBBfEfCwROqMkWPjEA" elementId="de.persosim.simulator.adapter.socket.ui.VSmartcard" label="Use VSmartcard" type="Check" command="_GeSGsBBfEfCwROqMkWPjEA"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_WV82wBkiEfCui9APGEThDQ" featurename="children" parentElementId="de.persosim.driver.connector.ui.menu.readerType" positionInList="after:de.persosim.driver.connector.ui.menuseparator.configure">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_Z6pskBkiEfCui9APGEThDQ" elementId="de.persosim.simulator.adapter.socket.ui.handledmenuitem.ConfigureVSmartcard" label="Configure VSmartcard" command="__adycBkhEfCui9APGEThDQ"/>
   </fragments>
 </fragment:ModelFragments>

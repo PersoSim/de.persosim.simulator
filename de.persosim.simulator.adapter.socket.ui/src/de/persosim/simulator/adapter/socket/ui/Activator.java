@@ -65,7 +65,7 @@ public class Activator implements BundleActivator , SimulatorProvider{
 	}
 	
 	public static void startVsmartcard() {
-		vscSimulatorSocket = new SocketAdapter(VSC_SIM_PORT, new VSmartCardProtocol(Activator.INSTANCE));
+		vscSimulatorSocket = new SocketAdapter(Integer.parseInt(PersoSimPreferenceManager.getPreference(PreferenceConstants.VSMARTCARD_PORT, VSmartCardProtocol.DEFAULT_PORT+"")), new VSmartCardProtocol(Activator.INSTANCE));
 		vscSimulatorSocket.start();
 	}
 	
