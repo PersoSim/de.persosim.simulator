@@ -20,6 +20,7 @@ import org.globaltester.sampleconfiguration.SampleConfig;
 import org.junit.Test;
 
 import com.secunet.globaltester.crossover.DefaultScriptIntegrationTest;
+import com.secunet.globaltester.cvcerts.authority.certgen.CertGeneratorBase;
 import com.secunet.globaltester.testcontrol.callback.soap.TestControlCallback.SubTestResult;
 import com.secunet.globaltester.testcontrol.callback.soap.TestControlCallback.TestResult;
 
@@ -28,9 +29,9 @@ import de.persosim.simulator.perso.Personalization;
 
 public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 
-	public static final String isRootFolderName = "certificates/cv/is";
-	public static final String atRootFolderName = "certificates/cv/at";
-	public static final String stRootFolderName = "certificates/cv/st";
+	public static final String isRootFolderName = CertGeneratorBase.CERTIFICATES_DIR + "/cv/is";
+	public static final String atRootFolderName = CertGeneratorBase.CERTIFICATES_DIR + "/cv/at";
+	public static final String stRootFolderName = CertGeneratorBase.CERTIFICATES_DIR + "/cv/st";
 
 	protected static final String eac2Certs = com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME;
 
@@ -110,7 +111,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 		//configure certificate locations
 		String eac2Certificates = com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME;
 		sampleConfig.put(eac2Certificates, "USE_CERTS", "USE_GENERATED_CERTS");
-		sampleConfig.put(eac2Certificates, "EAC2_CERTS", "certificates/generated");
+		sampleConfig.put(eac2Certificates, "EAC2_CERTS", CertGeneratorBase.CERTIFICATES_DIR + "/generated");
 		Files.createDirectories(Paths.get(sampleConfig.getAbsolutePath(eac2Certificates, "EAC2_CERTS")));
 
 		IFolder isRootFolder = sampleConfig.getProject() .getFolder(isRootFolderName);

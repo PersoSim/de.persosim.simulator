@@ -26,7 +26,8 @@ Require-Bundle: org.junit,
  org.eclipse.core.runtime,
  com.secunet.globaltester.prove.epa,
  com.secunet.globaltester.testscripts.bsi.tr03105_part3_3.ics,
- com.secunet.globaltester.prove.eac2
+ com.secunet.globaltester.prove.eac2,
+ com.secunet.globaltester.cvcerts.authority
 Export-Package: de.persosim.simulator.test.globaltester.perso
 Import-Package: com.secunet.globaltester.epassport.certificates,
  org.eclipse.ui.keys,
