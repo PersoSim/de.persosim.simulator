@@ -32,13 +32,10 @@ import de.persosim.simulator.adapter.socket.ui.vsmartcard.QrViewer;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 
 public class ConfigVSmartcardDialog extends Dialog {
-
-	private MPart readerPart;
 	private Text port;
 
 	public ConfigVSmartcardDialog(Shell parentShell, MPart readerPart) {
 		super(parentShell);
-		this.readerPart = readerPart;
 	}
 	
 
@@ -59,7 +56,7 @@ public class ConfigVSmartcardDialog extends Dialog {
 	}
 	
 	private static String getQrContent(NetworkInterface iface, String port){
-		return "vicc://" + iface.getInetAddresses().nextElement() + ":" + port;
+		return "vicc://" + iface.getInetAddresses().nextElement().getHostAddress() + ":" + port;
 	}
 	
 	private static String networkInterfaceToLabel(Object element, String text) {

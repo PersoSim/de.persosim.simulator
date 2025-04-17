@@ -2,6 +2,7 @@ package de.persosim.simulator.adapter.socket.ui.handlers;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.menu.MItem;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
@@ -17,19 +18,24 @@ public class VSmartcardHandler {
 	private EPartService partService;
 	
 	@Execute
-	public void execute() {
-		BasicLogger.log(this.getClass(), "Switch to use VSmartcard driver", LogLevel.INFO);
+	public void execute(final MPart mpart, final MItem item) {
+		if (item.isSelected()) {
+			BasicLogger.log(this.getClass(), "Switch to use VSmartcard driver", LogLevel.INFO);
 
-		// ID of part as defined in fragment.e4xmi application model
-		MPart readerPart = partService.findPart("de.persosim.driver.connector.ui.parts.reader");
+			// ID of part as defined in fragment.e4xmi application model
+			MPart readerPart = partService.findPart("de.persosim.driver.connector.ui.parts.reader");
 
-		
-		if (readerPart.getObject() instanceof ReaderPart) {
-			ReaderPart readerPartObject = (ReaderPart) readerPart.getObject();
+			
+			if (readerPart.getObject() instanceof ReaderPart) {
+				ReaderPart readerPartObject = (ReaderPart) readerPart.getObject();
 
-			readerPartObject.switchReaderType(ReaderType.NONE);
+				readerPartObject.switchReaderType(ReaderType.NONE);
+			}
+			
+			Activator.startVsmartcard();
 		}
-		
-		Activator.startVsmartcard();
+		else
+			BasicLogger.log(this.getClass(), "VSmartcard driver already active, do nothing", LogLevel.DEBUG);
+
 	}
 }
