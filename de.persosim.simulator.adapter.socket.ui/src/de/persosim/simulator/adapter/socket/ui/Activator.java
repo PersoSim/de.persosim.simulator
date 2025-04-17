@@ -65,11 +65,14 @@ public class Activator implements BundleActivator , SimulatorProvider{
 	}
 	
 	public static void startVsmartcard() {
-		vscSimulatorSocket = new SocketAdapter(Integer.parseInt(PersoSimPreferenceManager.getPreference(PreferenceConstants.VSMARTCARD_PORT, VSmartCardProtocol.DEFAULT_PORT+"")), new VSmartCardProtocol(Activator.INSTANCE));
-		vscSimulatorSocket.start();
+		if (vscSimulatorSocket == null || !vscSimulatorSocket.isRunning()) {
+			vscSimulatorSocket = new SocketAdapter(Integer.parseInt(PersoSimPreferenceManager.getPreference(PreferenceConstants.VSMARTCARD_PORT, VSmartCardProtocol.DEFAULT_PORT+"")), new VSmartCardProtocol(Activator.INSTANCE));
+			vscSimulatorSocket.start();
+		}
 	}
 	
 	public static void stopVsmartcard() {
-		vscSimulatorSocket.stop();
+		if (vscSimulatorSocket != null && vscSimulatorSocket.isRunning())
+			vscSimulatorSocket.stop();
 	}
 }

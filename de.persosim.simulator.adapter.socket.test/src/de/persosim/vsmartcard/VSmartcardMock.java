@@ -18,19 +18,9 @@ public class VSmartcardMock {
 	
 	public static void main(String [] args) throws Exception {
 		VSmartcardMock mock = new VSmartcardMock("localhost", VSmartCardProtocol.DEFAULT_PORT);
-		while (true) {
-			mock.connect();
-			while (true) {
-				try {
-					mock.handle();
-				} catch (Exception e) {
-					System.err.println("Handler crashed");
-					e.printStackTrace();
-					break;
-				}
-			}
-			mock.disconnect();
-		}	
+		mock.connect();
+		mock.handle();
+		mock.disconnect();
 	}
 
 	public VSmartcardMock(String host, int port) {
@@ -44,12 +34,19 @@ public class VSmartcardMock {
 		os = socket.getOutputStream();
 	}
 	
+	public void exchange(byte [] data) throws IOException {
+		System.out.println("Sending: " + HexString.encode(data));
+		VSmartCardProtocol.send(data, os);
+		System.out.println("Received: " + HexString.encode(VSmartCardProtocol.receive(is)));
+	}
+	
 	public void handle() throws IOException {
 		VSmartCardProtocol.send(Commands.POWER_ON.getCommand(), os);
 		VSmartCardProtocol.send(Commands.RESET.getCommand(), os);
-		VSmartCardProtocol.send(HexString.toByteArray("00a40000"), os);
-		
-		System.out.println("Received: " + HexString.encode(VSmartCardProtocol.receive(is)));
+		exchange(HexString.toByteArray("00a40000"));
+		exchange(HexString.toByteArray("00a40000"));
+		exchange(HexString.toByteArray("00a40000"));
+		VSmartCardProtocol.send(Commands.POWER_OFF.getCommand(), os);
 	};
 	
 	public void disconnect() throws IOException {

@@ -165,7 +165,6 @@ public class SocketAdapter implements Runnable {
 			do {
 				isRunning &= protocol.handleConnectionExchange(clientSocket.getInputStream(), clientSocket.getOutputStream());
 			} while (isRunning);
-
 		} catch (IOException e) {
 			//show the exception only if the server is still running, otherwise it is expected behavior
 			if (isRunning) {
