@@ -30,6 +30,8 @@
             <maxLengthOfPasswordInBytes>6</maxLengthOfPasswordInBytes>
             <pinManagementCondition class="de.persosim.simulator.seccondition.SecCondition$2" id="17"/>
             <changePinCondition class="de.persosim.simulator.seccondition.SecCondition$2" reference="17"/>
+            <resetRetryCounterAvailable>false</resetRetryCounterAvailable>
+            <resetRetryCounterCurrentValue>-1</resetRetryCounterCurrentValue>
           </de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject>
           <de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter id="18">
             <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="6"/>
@@ -101,6 +103,8 @@
                 </de.persosim.simulator.seccondition.PaceWithPasswordSecurityCondition>
               </secConditions>
             </changePinCondition>
+            <resetRetryCounterAvailable>false</resetRetryCounterAvailable>
+            <resetRetryCounterCurrentValue>-1</resetRetryCounterCurrentValue>
             <retryCounterDefaultValue>3</retryCounterDefaultValue>
             <retryCounterCurrentValue>3</retryCounterCurrentValue>
             <unblockPinCondition class="de.persosim.simulator.seccondition.PaceWithPasswordSecurityCondition" id="30">
@@ -123,6 +127,8 @@
             <maxLengthOfPasswordInBytes>10</maxLengthOfPasswordInBytes>
             <pinManagementCondition class="de.persosim.simulator.seccondition.SecCondition$2" reference="17"/>
             <changePinCondition class="de.persosim.simulator.seccondition.SecCondition$2" reference="17"/>
+            <resetRetryCounterAvailable>false</resetRetryCounterAvailable>
+            <resetRetryCounterCurrentValue>-1</resetRetryCounterCurrentValue>
           </de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject>
           <de.persosim.simulator.cardobjects.DomainParameterSetCardObject id="36">
             <parent class="de.persosim.simulator.cardobjects.MasterFile" reference="6"/>
