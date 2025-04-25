@@ -7,13 +7,18 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
+import de.persosim.driver.connector.CommManager;
+import de.persosim.driver.connector.CommProvider;
+import de.persosim.driver.connector.IfdComm;
 import de.persosim.simulator.adapter.socket.SimulatorProvider;
 import de.persosim.simulator.adapter.socket.SocketAdapter;
 import de.persosim.simulator.adapter.socket.protocol.VSmartCardProtocol;
+import de.persosim.simulator.adapter.socket.ui.handlers.VSmartcardHandler;
+import de.persosim.simulator.adapter.socket.ui.vsmartcard.VSmartcardComm;
 import de.persosim.simulator.preferences.EclipsePreferenceAccessor;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 
-public class Activator implements BundleActivator , SimulatorProvider{
+public class Activator implements BundleActivator , SimulatorProvider, CommProvider{
 	public static String PLUGIN_ID = "de.persosim.adapter.socket.ui";
 
 	public static final int VSC_SIM_PORT = 35963;
@@ -52,6 +57,8 @@ public class Activator implements BundleActivator , SimulatorProvider{
 			}
 		});
 		serviceTracker.open();
+		
+		CommManager.addCommProvider(this);
 	}
 
 	@Override
@@ -78,5 +85,15 @@ public class Activator implements BundleActivator , SimulatorProvider{
 	
 	public static boolean isVSmartcardRunning() {
 		return vscSimulatorSocket.isRunning();
+	}
+	
+	private IfdComm comm = new VSmartcardComm();
+
+	@Override
+	public IfdComm get(String type) {
+		if (type.equals(VSmartcardHandler.NAME)) {
+			return comm;
+		}
+		return null;
 	}
 }
