@@ -1,5 +1,7 @@
 package de.persosim.simulator.adapter.socket.ui.parts;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
@@ -25,6 +27,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.globaltester.logging.BasicLogger;
 
 import de.persosim.simulator.adapter.socket.protocol.VSmartCardProtocol;
 import de.persosim.simulator.adapter.socket.ui.PreferenceConstants;
@@ -56,7 +59,11 @@ public class ConfigVSmartcardDialog extends Dialog {
 	}
 	
 	private static String getQrContent(NetworkInterface iface, String port){
-		return "vicc://" + iface.getInetAddresses().nextElement().getHostAddress() + ":" + port;
+		List<InetAddress> inetAddresses = Collections.list(iface.getInetAddresses());
+		
+		inetAddresses.sort((a,b) -> a instanceof Inet4Address ? -1 : 1);
+		
+		return "vicc://" + inetAddresses.get(0).getHostAddress() + ":" + port;
 	}
 	
 	private static String networkInterfaceToLabel(Object element, String text) {
@@ -96,8 +103,7 @@ public class ConfigVSmartcardDialog extends Dialog {
 		try {
 			interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
 		} catch (SocketException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			BasicLogger.logException(getClass(), e1);
 		}
 		
 		Label interfaceLabel = new Label(container, SWT.NONE);
