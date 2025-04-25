@@ -1,41 +1,78 @@
 package de.persosim.simulator.adapter.socket.ui.handlers;
 
+import java.util.List;
+
+import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MItem;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 
+import de.persosim.driver.connector.IfdComm;
+import de.persosim.driver.connector.pcsc.PcscListener;
 import de.persosim.driver.connector.ui.parts.ReaderPart;
 import de.persosim.driver.connector.ui.parts.ReaderPart.ReaderType;
 import de.persosim.simulator.adapter.socket.ui.Activator;
-import jakarta.inject.Inject;
 
 public class VSmartcardHandler {
+	private static final String NAME = "VSMARTCARD";
 
-	@Inject
-	private EPartService partService;
+	@CanExecute
+	public boolean checkState(final MPart mPart, final MItem mItem) {
+		if (mPart.getObject() instanceof ReaderPart) {
+			ReaderPart readerPartObject = (ReaderPart) mPart.getObject();
+			mItem.setSelected(readerPartObject.getCurrentCommType() == NAME);
+		}
+		return true;
+	}
 	
 	@Execute
 	public void execute(final MPart mpart, final MItem item) {
-		if (item.isSelected()) {
-			BasicLogger.log(this.getClass(), "Switch to use VSmartcard driver", LogLevel.INFO);
+		BasicLogger.log(this.getClass(), "Switch to use VSmartcard driver", LogLevel.INFO);
 
-			// ID of part as defined in fragment.e4xmi application model
-			MPart readerPart = partService.findPart("de.persosim.driver.connector.ui.parts.reader");
+		
+		if (mpart.getObject() instanceof ReaderPart) {
+			ReaderPart readerPartObject = (ReaderPart) mpart.getObject();
 
-			
-			if (readerPart.getObject() instanceof ReaderPart) {
-				ReaderPart readerPartObject = (ReaderPart) readerPart.getObject();
-
-				readerPartObject.switchReaderType(ReaderType.NONE);
-			}
-			
-			Activator.startVsmartcard();
+			readerPartObject.switchReaderType(ReaderType.EXTERNAL, new IfdComm() {
+				
+				@Override
+				public void stop() {
+					Activator.stopVsmartcard();
+				}
+				
+				@Override
+				public void start() {
+					Activator.startVsmartcard();
+				}
+				
+				@Override
+				public void setListeners(List<PcscListener> listeners) {
+					// Do nothing, we do not actually simulate a PCSC reader
+				}
+				
+				@Override
+				public void reset() {
+					Activator.stopVsmartcard();
+					Activator.startVsmartcard();
+				}
+				
+				@Override
+				public boolean isRunning() {
+					return Activator.isVSmartcardRunning();
+				}
+				
+				@Override
+				public String getUserString() {
+					return "VSmartcard Adapter";
+				}
+				
+				@Override
+				public String getName() {
+					return NAME;
+				}
+			});
 		}
-		else
-			BasicLogger.log(this.getClass(), "VSmartcard driver already active, do nothing", LogLevel.DEBUG);
-
 	}
 }

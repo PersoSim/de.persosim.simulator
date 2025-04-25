@@ -75,4 +75,8 @@ public class Activator implements BundleActivator , SimulatorProvider{
 		if (vscSimulatorSocket != null && vscSimulatorSocket.isRunning())
 			vscSimulatorSocket.stop();
 	}
+	
+	public static boolean isVSmartcardRunning() {
+		return vscSimulatorSocket.isRunning();
+	}
 }
