@@ -102,6 +102,14 @@ public class ConfigVSmartcardDialog extends Dialog {
 		List<NetworkInterface> interfaces = Collections.emptyList();
 		try {
 			interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+			interfaces = interfaces.stream().filter((n) -> {
+				try {
+					return !n.isLoopback() && n.isUp() && !n.getInterfaceAddresses().isEmpty();
+				} catch (SocketException e) {
+					BasicLogger.logException(getClass(), e);
+					return false;
+				}
+			}).toList();
 		} catch (SocketException e1) {
 			BasicLogger.logException(getClass(), e1);
 		}
