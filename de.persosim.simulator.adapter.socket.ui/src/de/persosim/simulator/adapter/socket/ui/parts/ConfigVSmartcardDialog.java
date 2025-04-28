@@ -136,6 +136,7 @@ public class ConfigVSmartcardDialog extends Dialog {
 					if (firstElement instanceof NetworkInterface) {
 		        		NetworkInterface i = (NetworkInterface) firstElement;
 		        		qrViewer.update(getQrContent(i, port.getText()));
+						PersoSimPreferenceManager.storePreference(PreferenceConstants.VSMARTCARD_LAST_INTERFACE, i.getName());
 		        	}
 		        }
 		    }
@@ -161,7 +162,6 @@ public class ConfigVSmartcardDialog extends Dialog {
 					PersoSimPreferenceManager.storePreference(PreferenceConstants.VSMARTCARD_PORT, port.getText());
 					NetworkInterface iface = (NetworkInterface)viewer.getStructuredSelection().getFirstElement();
 	        		qrViewer.update(getQrContent(iface, port.getText()));
-					PersoSimPreferenceManager.storePreference(PreferenceConstants.VSMARTCARD_LAST_INTERFACE, iface.getName());
 				}
 			}
 		});
