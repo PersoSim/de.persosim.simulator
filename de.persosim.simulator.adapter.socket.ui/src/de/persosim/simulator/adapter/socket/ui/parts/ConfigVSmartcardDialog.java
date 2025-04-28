@@ -29,7 +29,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.globaltester.logging.BasicLogger;
 
-import de.persosim.simulator.adapter.socket.protocol.VSmartCardProtocol;
 import de.persosim.simulator.adapter.socket.ui.PreferenceConstants;
 import de.persosim.simulator.adapter.socket.ui.vsmartcard.QrViewer;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
@@ -93,7 +92,7 @@ public class ConfigVSmartcardDialog extends Dialog {
 		portLabel.setText("Port:");
 		
 		port = new Text(container, SWT.BORDER);
-		final String portFromPrefs = PersoSimPreferenceManager.getPreference(PreferenceConstants.VSMARTCARD_PORT, VSmartCardProtocol.DEFAULT_PORT + "");
+		final String portFromPrefs = PersoSimPreferenceManager.getPreference(PreferenceConstants.VSMARTCARD_PORT, PreferenceConstants.VSMARTCARD_PORT_DEFAULT);
 		
 		port.setText(portFromPrefs);
 		port.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
@@ -143,7 +142,17 @@ public class ConfigVSmartcardDialog extends Dialog {
 		});
 		
 		viewer.setInput(interfaces);
-		viewer.setSelection(new StructuredSelection(interfaces.get(0)));
+		
+
+		String lastSelectedInterfaceName = PersoSimPreferenceManager.getPreference(PreferenceConstants.VSMARTCARD_LAST_INTERFACE);
+		NetworkInterface selected = interfaces.stream().filter((i) -> i.getName().equals(lastSelectedInterfaceName)).findAny().orElse(null);
+		if (selected == null && interfaces.size() > 0)
+			selected = interfaces.get(0);
+		
+		if (selected != null) {
+			viewer.setSelection(new StructuredSelection(selected));
+			PersoSimPreferenceManager.storePreference(PreferenceConstants.VSMARTCARD_LAST_INTERFACE, selected.getName());
+		}
 		
 		port.addModifyListener(new ModifyListener() {
 			@Override
@@ -152,6 +161,7 @@ public class ConfigVSmartcardDialog extends Dialog {
 					PersoSimPreferenceManager.storePreference(PreferenceConstants.VSMARTCARD_PORT, port.getText());
 					NetworkInterface iface = (NetworkInterface)viewer.getStructuredSelection().getFirstElement();
 	        		qrViewer.update(getQrContent(iface, port.getText()));
+					PersoSimPreferenceManager.storePreference(PreferenceConstants.VSMARTCARD_LAST_INTERFACE, iface.getName());
 				}
 			}
 		});
