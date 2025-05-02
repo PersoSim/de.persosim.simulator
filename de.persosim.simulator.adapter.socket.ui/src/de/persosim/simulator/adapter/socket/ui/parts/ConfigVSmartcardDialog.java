@@ -57,18 +57,26 @@ public class ConfigVSmartcardDialog extends Dialog {
 		super.buttonPressed(buttonId);
 	}
 	
+	private static InetAddress getAddress(NetworkInterface iface) {
+		List<InetAddress> inetAddresses = Collections.list(iface.getInetAddresses());
+		
+		inetAddresses.sort((a,b) -> a instanceof Inet4Address ? -1 : 1);
+		
+		return inetAddresses.get(0);
+	}
+	
 	private static String getQrContent(NetworkInterface iface, String port){
 		List<InetAddress> inetAddresses = Collections.list(iface.getInetAddresses());
 		
 		inetAddresses.sort((a,b) -> a instanceof Inet4Address ? -1 : 1);
 		
-		return "vicc://" + inetAddresses.get(0).getHostAddress() + ":" + port;
+		return "vicc://" + getAddress(iface).getHostAddress() + ":" + port;
 	}
 	
 	private static String networkInterfaceToLabel(Object element, String text) {
     	if (element instanceof NetworkInterface) {
     		NetworkInterface i = (NetworkInterface) element;
-    		return i.getDisplayName();
+    		return i.getDisplayName() + " (" + getAddress(i).getHostAddress() + ")";
     	}
     	return text;
 	}
