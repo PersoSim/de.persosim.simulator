@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
+
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.adapter.socket.protocol.SocketProtocol;
 
@@ -36,6 +39,7 @@ public class SocketAdapter implements Runnable {
 	 *            port the server socket should listen on
 	 */
 	public SocketAdapter(int simPort, SocketProtocol protocol) {
+		BasicLogger.log(getClass(), "Initialized SocketAdapter", LogLevel.TRACE);
 		this.port = simPort;
 		this.protocol = protocol;
 	}
@@ -91,6 +95,7 @@ public class SocketAdapter implements Runnable {
 		
 		//stop listening for new connections
 		if (server != null) {
+			BasicLogger.log(getClass(), "Stopping SocketAdapter server socket", LogLevel.TRACE);
 			try {
 				server.close();
 			} catch (IOException e) {
@@ -154,17 +159,22 @@ public class SocketAdapter implements Runnable {
 	 */
 	private void handleConnection(ServerSocket server) {
 		if (server == null) {
+			BasicLogger.log(getClass(), "No server socketavailable", LogLevel.TRACE);
 			// nothing to do without ServerSocket
 			return;
 		}
+		BasicLogger.log(getClass(), "Waiting", LogLevel.TRACE);
 
 		clientSocket = null;
 		try {
 			clientSocket = server.accept();
+			BasicLogger.log(getClass(), "Handling connection from server socket", LogLevel.TRACE);
 
+			boolean isHandlingCommands = true;
 			do {
-				isRunning &= protocol.handleConnectionExchange(clientSocket.getInputStream(), clientSocket.getOutputStream());
-			} while (isRunning);
+				BasicLogger.log(getClass(), "Deferring handling of data to protocol", LogLevel.TRACE);
+				isHandlingCommands &= protocol.handleConnectionExchange(clientSocket.getInputStream(), clientSocket.getOutputStream());
+			} while (isRunning && isHandlingCommands);
 		} catch (IOException e) {
 			//show the exception only if the server is still running, otherwise it is expected behavior
 			if (isRunning) {

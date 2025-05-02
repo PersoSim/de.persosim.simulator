@@ -25,7 +25,7 @@ public class VSmartcardHandler {
 	
 	@Execute
 	public void execute(final MPart mpart, final MItem item) {
-		BasicLogger.log(this.getClass(), "Switch to use VSmartcard driver", LogLevel.INFO);
+		BasicLogger.log(this.getClass(), "VSmartcard menu entry toggled", LogLevel.INFO);
 
 		
 		if (mpart.getObject() instanceof ReaderPart) {

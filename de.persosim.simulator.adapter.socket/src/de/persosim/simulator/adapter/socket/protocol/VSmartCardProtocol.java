@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 
 import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.simulator.Simulator;
 
 import de.persosim.driver.connector.SimulatorManager;
@@ -30,7 +31,7 @@ public class VSmartCardProtocol implements SocketProtocol {
 				var lengthField = new byte[2];
 				var readBytes = is.read(lengthField);
 				if (readBytes == -1) {
-					BasicLogger.log(getClass(), "Stream is EOF while reading length field");
+					BasicLogger.log(getClass(), "Stream is EOF while reading length field", LogLevel.INFO);
 					return false;
 				}
 				
@@ -39,28 +40,28 @@ public class VSmartCardProtocol implements SocketProtocol {
 				readBytes = is.read(data);
 				
 				if (readBytes == -1) {
-					BasicLogger.log(getClass(), "Stream is EOF while reading payload");
+					BasicLogger.log(getClass(), "Stream is EOF while reading payload", LogLevel.INFO);
 					return false;
 				}
 				
 				BasicLogger.log(getClass(), "Received data (" + readBytes + "):" + HexString.encode(data));
 
 				if (data.length > 1) {
-					BasicLogger.log(getClass(), "Got APDU");
+					BasicLogger.log(getClass(), "Got APDU", LogLevel.INFO);
 					byte [] responseApdu = SimulatorManager.getSim().processCommand(data);
 					send(responseApdu, os);
 				} else if (data.length == 1) {
 					switch (data[0]) {
 					case 0:
-						BasicLogger.log(getClass(), "Got power off");
+						BasicLogger.log(getClass(), "Got power off", LogLevel.INFO);
 						SimulatorManager.getSim().cardPowerDown();
 						break;
 					case 1:
-						BasicLogger.log(getClass(), "Got power on");
+						BasicLogger.log(getClass(), "Got power on", LogLevel.INFO);
 						SimulatorManager.getSim().cardPowerUp();
 						break;
 					case 2:
-						BasicLogger.log(getClass(), "Got reset");
+						BasicLogger.log(getClass(), "Got reset", LogLevel.INFO);
 						SimulatorManager.getSim().cardReset();
 						break;
 					}
