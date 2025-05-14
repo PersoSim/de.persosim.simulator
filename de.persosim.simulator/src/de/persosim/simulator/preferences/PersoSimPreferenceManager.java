@@ -20,6 +20,12 @@ public class PersoSimPreferenceManager {
 	}
 
 	public static String getPreference(String key) {
-		return preferenceAccessor.get(key);
+		return getPreference(key, null);
+	}
+
+	public static String getPreference(String key, String defaultValue) {
+		if (preferenceAccessor.get(key) != null)
+			return preferenceAccessor.get(key);
+		return defaultValue;
 	}
 }

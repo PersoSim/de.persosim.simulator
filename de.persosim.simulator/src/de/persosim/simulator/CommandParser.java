@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.simulator.Simulator;
 import org.osgi.framework.Bundle;
@@ -491,6 +492,7 @@ public class CommandParser {
 	
 	public static void showExceptionToUser(Exception e) {
 		log(CommandParser.class, "Exception: " + e.getMessage(), LogLevel.INFO);
+		BasicLogger.logException(CommandParser.class, e, LogLevel.ERROR);
 		e.printStackTrace();
 	}
 	

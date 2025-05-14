@@ -1,20 +1,15 @@
 package de.persosim.simulator.adapter.socket;
 
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 
-import org.globaltester.simulator.Simulator;
+import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.simulator.CommandParser;
-import de.persosim.simulator.platform.Iso7816;
-import de.persosim.simulator.utils.HexString;
-import de.persosim.simulator.utils.Utils;
+import de.persosim.simulator.adapter.socket.protocol.SocketProtocol;
 
 /**
  * This class provides the socket interface to the PersoSim simulator.
@@ -30,15 +25,12 @@ import de.persosim.simulator.utils.Utils;
  */
 public class SocketAdapter implements Runnable {
 
-	private static final byte[] ACK = Utils.toUnsignedByteArray(Iso7816.SW_9000_NO_ERROR);
-	private static final byte[] NACK = Utils.toUnsignedByteArray(Iso7816.SW_6F00_UNKNOWN);
-
 	private int port;
 	private Thread simThread = null;
 	private boolean isRunning;
 	private ServerSocket server;
 	private Socket clientSocket;
-	private SimulatorProvider simProvider;
+	private SocketProtocol protocol;
 
 	/**
 	 * Create new instance.
@@ -46,9 +38,10 @@ public class SocketAdapter implements Runnable {
 	 * @param simPort
 	 *            port the server socket should listen on
 	 */
-	public SocketAdapter(SimulatorProvider simProvider, int simPort) {
-		this.simProvider = simProvider;
+	public SocketAdapter(int simPort, SocketProtocol protocol) {
+		BasicLogger.log(getClass(), "Initialized SocketAdapter", LogLevel.TRACE);
 		this.port = simPort;
+		this.protocol = protocol;
 	}
 
 	/**
@@ -102,6 +95,7 @@ public class SocketAdapter implements Runnable {
 		
 		//stop listening for new connections
 		if (server != null) {
+			BasicLogger.log(getClass(), "Stopping SocketAdapter server socket", LogLevel.TRACE);
 			try {
 				server.close();
 			} catch (IOException e) {
@@ -165,80 +159,22 @@ public class SocketAdapter implements Runnable {
 	 */
 	private void handleConnection(ServerSocket server) {
 		if (server == null) {
+			BasicLogger.log(getClass(), "No server socketavailable", LogLevel.TRACE);
 			// nothing to do without ServerSocket
 			return;
 		}
+		BasicLogger.log(getClass(), "Waiting", LogLevel.TRACE);
 
 		clientSocket = null;
 		try {
 			clientSocket = server.accept();
+			BasicLogger.log(getClass(), "Handling connection from server socket", LogLevel.TRACE);
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			PrintStream out = new PrintStream(clientSocket.getOutputStream());
-
+			boolean isHandlingCommands = true;
 			do {
-				// read APDU from socket
-				String apduLine = null;
-				try {
-					apduLine = in.readLine();
-				} catch (SocketException e){
-					//if the other side closed the the connection, this is expected behavior
-				}
-
-				if (apduLine == null) {
-					// connection closed by peer
-					break;
-				}
-				
-				// parse hex APDU
-				byte[] apdu = null;
-				byte[] response = new byte[] { 0x6F, 0x23 };
-				try {
-					apdu = HexString.toByteArray(apduLine);
-				} catch (RuntimeException e) {
-					CommandParser.showExceptionToUser(e);
-					// nothing else needs to be done, will lead to an empty
-					// apdu==null, thus no processing is done and the default SW
-					// 6F23 is returned
-				}
-
-				// process the APDU, generate response
-				
-				Simulator sim = simProvider.getSimulator();
-				// if there is a simulator available, get the response
-				if (sim != null){
-					int clains = Utils.maskUnsignedShortToInt(Utils.concatenate(apdu[0], apdu[1]));
-					switch (clains) {
-					case 0xFF00:
-						response = sim.cardPowerDown();
-						break;
-					case 0xFF01:
-						response = sim.cardPowerUp();
-						break;
-					case 0xFF6F:
-						response = NACK;
-						break;
-					case 0xFF90:
-						response = ACK;
-						break;
-					case 0xFFFF:
-						response = sim.cardReset();
-						break;
-					default:
-						// all other (unknown) APDUs are forwarded to the
-						// simulator processingl
-						response = sim.processCommand(apdu);
-					}
-					
-				}
-
-				// encode response and return it
-				String respLine = HexString.encode(response);
-				out.println(respLine);
-				out.flush();
-
-			} while (isRunning);
-
+				BasicLogger.log(getClass(), "Deferring handling of data to protocol", LogLevel.TRACE);
+				isHandlingCommands &= protocol.handleConnectionExchange(clientSocket.getInputStream(), clientSocket.getOutputStream());
+			} while (isRunning && isHandlingCommands);
 		} catch (IOException e) {
 			//show the exception only if the server is still running, otherwise it is expected behavior
 			if (isRunning) {
