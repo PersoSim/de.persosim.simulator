@@ -9,6 +9,6 @@
   </parent>
   <groupId>de.persosim</groupId>
   <artifactId>de.persosim.simulator.test</artifactId>
-  <version>1.1.2-SNAPSHOT</version>
+  <version>1.1.3-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
