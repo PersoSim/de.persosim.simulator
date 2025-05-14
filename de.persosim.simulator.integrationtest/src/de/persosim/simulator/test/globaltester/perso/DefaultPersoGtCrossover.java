@@ -33,7 +33,7 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 	public static final String atRootFolderName = CertGeneratorBase.CERTIFICATES_DIR + "/cv/at";
 	public static final String stRootFolderName = CertGeneratorBase.CERTIFICATES_DIR + "/cv/st";
 
-	protected static final String eac2Certs = com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME;
+	protected static final String eac2Certs = com.secunet.globaltester.protocols.eac2.certificates.Eac2CertificatesFactory.PROTOCOL_NAME;
 
 
 	@Override
@@ -109,25 +109,25 @@ public class DefaultPersoGtCrossover extends DefaultScriptIntegrationTest{
 				"MUSTERMANN<<ERIKA<<<<<<<<<<<<<");
 
 		//configure certificate locations
-		String eac2Certificates = com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME;
+		String eac2Certificates = com.secunet.globaltester.protocols.eac2.certificates.Eac2CertificatesFactory.PROTOCOL_NAME;
 		sampleConfig.put(eac2Certificates, "USE_CERTS", "USE_GENERATED_CERTS");
 		sampleConfig.put(eac2Certificates, "EAC2_CERTS", CertGeneratorBase.CERTIFICATES_DIR + "/generated");
 		Files.createDirectories(Paths.get(sampleConfig.getAbsolutePath(eac2Certificates, "EAC2_CERTS")));
 
 		IFolder isRootFolder = sampleConfig.getProject() .getFolder(isRootFolderName);
 		Files.createDirectories(Paths.get(isRootFolder.getRawLocationURI()));
-		sampleConfig.put(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "IS_CVCA_CERT", isRootFolderName + "/CVCA_Cert_01.cvcert");
-		sampleConfig.put(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "IS_CVCA_KEY", isRootFolderName + "/CVCA_KEY_01.pkcs8");
+		sampleConfig.put(com.secunet.globaltester.protocols.eac2.certificates.Eac2CertificatesFactory.PROTOCOL_NAME, "IS_CVCA_CERT", isRootFolderName + "/CVCA_Cert_01.cvcert");
+		sampleConfig.put(com.secunet.globaltester.protocols.eac2.certificates.Eac2CertificatesFactory.PROTOCOL_NAME, "IS_CVCA_KEY", isRootFolderName + "/CVCA_KEY_01.pkcs8");
 
 		IFolder atRootFolder = sampleConfig.getProject().getFolder(atRootFolderName);
 		Files.createDirectories(Paths.get(atRootFolder.getRawLocationURI()));
-		sampleConfig.put(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "AT_CVCA_CERT", atRootFolderName + "/CVCA_Cert_01.cvcert");
-		sampleConfig.put(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "AT_CVCA_KEY", atRootFolderName + "/CVCA_KEY_01.pkcs8");
+		sampleConfig.put(com.secunet.globaltester.protocols.eac2.certificates.Eac2CertificatesFactory.PROTOCOL_NAME, "AT_CVCA_CERT", atRootFolderName + "/CVCA_Cert_01.cvcert");
+		sampleConfig.put(com.secunet.globaltester.protocols.eac2.certificates.Eac2CertificatesFactory.PROTOCOL_NAME, "AT_CVCA_KEY", atRootFolderName + "/CVCA_KEY_01.pkcs8");
 
 		IFolder stRootFolder = sampleConfig.getProject().getFolder(stRootFolderName);
 		Files.createDirectories(Paths.get(stRootFolder.getRawLocationURI()));
-		sampleConfig.put(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "ST_CVCA_CERT", stRootFolderName + "/CVCA_Cert_01.cvcert");
-		sampleConfig.put(com.secunet.globaltester.protocols.eac2.certificates.EacCertificatesFactory.PROTOCOL_NAME, "ST_CVCA_KEY", stRootFolderName + "/CVCA_KEY_01.pkcs8");
+		sampleConfig.put(com.secunet.globaltester.protocols.eac2.certificates.Eac2CertificatesFactory.PROTOCOL_NAME, "ST_CVCA_CERT", stRootFolderName + "/CVCA_Cert_01.cvcert");
+		sampleConfig.put(com.secunet.globaltester.protocols.eac2.certificates.Eac2CertificatesFactory.PROTOCOL_NAME, "ST_CVCA_KEY", stRootFolderName + "/CVCA_KEY_01.pkcs8");
 
 		//copy root certificates/keys
 		GtResourceHelper.copyPluginFilesToWorkspaceProject("de.persosim.simulator", sampleConfig.getProject() .getFolder(isRootFolderName),

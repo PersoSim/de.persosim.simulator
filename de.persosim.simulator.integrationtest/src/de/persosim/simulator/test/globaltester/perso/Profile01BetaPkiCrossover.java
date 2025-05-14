@@ -27,12 +27,12 @@ public class Profile01BetaPkiCrossover extends DefaultScriptIntegrationTest{
 
 		sampleConfig.setHaveToSaveToProjectAfterPut(false);
 		// Certificate generator needs some file to copy as a root certificate, it is never used in this case
-		sampleConfig.put("TR-03105-3.3", "CVCA_ROOT_AT", CertGenerator.getCertGenDirTR03105_3_3() + "/DV_CERT_17.cvcert");
+		sampleConfig.put("TR-03105-3.3", "CVCA_ROOT_AT", CertGenerator.CERTIFICATES_GEN_DIR + "/DV_CERT_17.cvcert");
 		// These are pregenerated certificates and the generator should use these instead of generating anything
-		sampleConfig.put("TR-03105-3.3", "DV_CERT_17", CertGenerator.getCertGenDirTR03105_3_3() + "/DV_CERT_17.cvcert");
-		sampleConfig.put("TR-03105-3.3", "AT_CERT_17f", CertGenerator.getCertGenDirTR03105_3_3() + "/AT_CERT_17f.cvcert");
-		sampleConfig.put("TR-03105-3.3", "AT_KEY_17", CertGenerator.getCertGenDirTR03105_3_3() + "/AT_KEY_17");
-		sampleConfig.put("TR-03105-3.3", "AT_KEY_17_PRIV", CertGenerator.getCertGenDirTR03105_3_3() + "/AT_KEY_17.pkcs8");
+		sampleConfig.put("TR-03105-3.3", "DV_CERT_17", CertGenerator.CERTIFICATES_GEN_DIR + "/DV_CERT_17.cvcert");
+		sampleConfig.put("TR-03105-3.3", "AT_CERT_17f", CertGenerator.CERTIFICATES_GEN_DIR + "/AT_CERT_17f.cvcert");
+		sampleConfig.put("TR-03105-3.3", "AT_KEY_17", CertGenerator.CERTIFICATES_GEN_DIR + "/AT_KEY_17");
+		sampleConfig.put("TR-03105-3.3", "AT_KEY_17_PRIV", CertGenerator.CERTIFICATES_GEN_DIR + "/AT_KEY_17.pkcs8");
 
 		sampleConfig.saveToProject();
 		sampleConfig.setHaveToSaveToProjectAfterPut(true);
