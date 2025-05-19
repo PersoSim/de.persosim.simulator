@@ -1,11 +1,15 @@
 package de.persosim.simulator.perso;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
+import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 
@@ -72,5 +76,11 @@ public class DefaultPersoGt extends Profile01 {
 		ConstructedTlvDataObject certTlv = new ConstructedTlvDataObject(certData);
 
 		return new CardVerifiableCertificate(certTlv);
+	}
+
+	@Override
+	protected Collection<? extends Layer> addLayersBetweenIoManagerAndSecureMessaging() {
+		// Effectively removes the enveloping layer for all inheriting personalizations  
+		return Collections.emptyList();
 	}
 }

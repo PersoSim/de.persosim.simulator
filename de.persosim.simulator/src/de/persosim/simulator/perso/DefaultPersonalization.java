@@ -10,6 +10,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +34,6 @@ import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.MrzAuthObject;
 import de.persosim.simulator.cardobjects.OidIdentifier;
-import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
@@ -42,6 +42,7 @@ import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.platform.CommandProcessor;
 import de.persosim.simulator.platform.IoManager;
+import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.protocols.NpaProtocol;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.Tr03110;
@@ -790,6 +791,8 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 		// load IO manager layer
 		layers.add(new IoManager());
+		
+		layers.addAll(addLayersBetweenIoManagerAndSecureMessaging());
 
 		// load secure messaging layer
 		layers.add(new SecureMessaging());
@@ -804,5 +807,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		commandProcessor.init();
 		layers.add(commandProcessor);
 	}
+
+	protected abstract Collection<? extends Layer> addLayersBetweenIoManagerAndSecureMessaging();
 
 }
