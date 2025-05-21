@@ -22,7 +22,6 @@ import de.persosim.simulator.cardobjects.KeyPairObject;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.MrzAuthObject;
 import de.persosim.simulator.cardobjects.OidIdentifier;
-import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.documents.Mrz;
@@ -53,7 +52,7 @@ import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
-public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn1 {
+public abstract class AbstractProfile extends DefaultPersoTestPki {
 
 	private static final String DEFAULT_PUK = "9876543210";
 	private static final String DEFAULT_CAN = "500540";
@@ -498,7 +497,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 		} else{
 			if(nullCounter == 4) {
 				generalPlace = new ConstructedTlvDataObject(new TlvTag((byte) 0xA1));
-				PrimitiveTlvDataObject freeText = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_UTF8String), place.getBytes(StandardCharsets.UTF_8));
+				PrimitiveTlvDataObject freeText = new PrimitiveTlvDataObject(new TlvTag(Asn1.UNIVERSAL_UTF8String), place.getBytes(StandardCharsets.UTF_8));
 				generalPlace.addTlvDataObject(freeText);
 			} else{
 				generalPlace = new ConstructedTlvDataObject(new TlvTag((byte) 0x30));
@@ -578,7 +577,7 @@ public abstract class AbstractProfile extends DefaultPersoTestPki implements Asn
 	 */
 	public static ConstructedTlvDataObject getCommunityIdDgTlv(TlvTag tlvTag, String content) {
 		ConstructedTlvDataObject communityIdDgTlv = new ConstructedTlvDataObject(tlvTag);
-		PrimitiveTlvDataObject communityIdTlv = new PrimitiveTlvDataObject(new TlvTag(UNIVERSAL_OCTET_STRING), HexString.toByteArray(content));
+		PrimitiveTlvDataObject communityIdTlv = new PrimitiveTlvDataObject(new TlvTag(Asn1.UNIVERSAL_OCTET_STRING), HexString.toByteArray(content));
 		communityIdDgTlv.addTlvDataObject(communityIdTlv);
 
 		return communityIdDgTlv;

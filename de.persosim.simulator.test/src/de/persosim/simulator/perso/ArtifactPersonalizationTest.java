@@ -5,10 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 
 import org.globaltester.base.utils.Utils;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import de.persosim.simulator.exception.AccessDeniedException;
 
@@ -21,6 +24,25 @@ import de.persosim.simulator.exception.AccessDeniedException;
  */
 public abstract class ArtifactPersonalizationTest extends PersonalizationTest {
 
+	/**
+	 * This test can be enabled to update artifacts when the underlying classes have been
+	 * changed. Use this with caution and check the changes manually before committing.
+	 * @throws Exception
+	 */
+	@Test
+	@Ignore
+	public void updateArtifact() throws Exception {
+		String xmlFile = getXmlFilename();
+		super.marshalFile(xmlFile);
+		
+		// compare the result with the previous personalization file
+		File currentlyMarshalledFile = new File(xmlFile);
+		File previousFile = new File(getArtifactXmlFilename());
+		
+		Files.delete(previousFile.toPath());
+		Files.copy(currentlyMarshalledFile.toPath(), previousFile.toPath());
+	}
+	
 	@Override
 	protected void marshalFile(String xmlFile) throws Exception {
 		super.marshalFile(xmlFile);

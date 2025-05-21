@@ -3,7 +3,6 @@ package de.persosim.simulator.perso;
 import java.io.StringReader;
 import java.security.KeyPair;
 
-import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.utils.HexString;
 
