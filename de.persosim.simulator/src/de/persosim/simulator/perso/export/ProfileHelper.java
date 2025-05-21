@@ -427,24 +427,6 @@ public abstract class ProfileHelper
 		return overlayProfileFilePath;
 	}
 
-	private static void handleOverlayProfile(Path pathPerso)
-	{
-		if (!Files.exists(pathPerso)) {
-			throw new IllegalArgumentException("Personalization file '" + pathPerso.toAbsolutePath().toString() + "' does not exist.");
-		}
-		if (!Files.exists(rootPathProfileOverlays)) {
-			throw new IllegalArgumentException("Root path of Overlay Profile files '" + rootPathProfileOverlays.toAbsolutePath().toString() + "' does not exist.");
-		}
-		Personalization perso;
-		try {
-			perso = readPersoFromFile(pathPerso.toAbsolutePath().toString());
-		}
-		catch (IOException e) {
-			return;
-		}
-		handleOverlayProfile(perso);
-	}
-
 	public static void handleOverlayProfile(Personalization perso)
 	{
 		IniPreferenceStoreAccessor preferenceStoreAccessor = ProfileHelper.getPreferenceStoreAccessorInstance();
