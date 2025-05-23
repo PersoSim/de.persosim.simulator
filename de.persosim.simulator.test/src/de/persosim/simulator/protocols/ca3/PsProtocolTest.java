@@ -36,16 +36,16 @@ import de.persosim.simulator.utils.Utils;
 
 public class PsProtocolTest extends PersoSimTestCase implements TlvConstants {
 
-	PsAuthInfoValue ps1AuthInfo;
-	PsAuthInfoValue ps2AuthInfo;
-	DomainParameterSetEcdh domParams13;
-	ECPublicKey pubKey;
-	ECPublicKey pubKeyGroupManager;
-	KeyIdentifier keyIdentifier;
-	KeyObjectIcc keyObjectIcc;
-	MasterFile mf;
-	SecStatus secStatus;
-	CardStateAccessor cardState;
+	protected PsAuthInfoValue ps1AuthInfo;
+	protected PsAuthInfoValue ps2AuthInfo;
+	protected DomainParameterSetEcdh domParams13;
+	protected ECPublicKey pubKey;
+	protected ECPublicKey pubKeyGroupManager;
+	protected KeyIdentifier keyIdentifier;
+	protected KeyObjectIcc keyObjectIcc;
+	protected MasterFile mf;
+	protected SecStatus secStatus;
+	protected CardStateAccessor cardState;
 	
 	@Before
 	public void setUp() throws AccessDeniedException {
