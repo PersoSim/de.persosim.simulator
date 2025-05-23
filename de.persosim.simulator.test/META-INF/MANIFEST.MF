@@ -21,6 +21,7 @@ Require-Bundle: org.junit,
  com.fasterxml.jackson.core.jackson-annotations
 Export-Package: de.persosim.simulator,
  de.persosim.simulator.perso,
+ de.persosim.simulator.protocols.ca3,
  de.persosim.simulator.test
 Import-Package: jakarta.annotation,
  org.eclipse.ui.keys,
