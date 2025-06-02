@@ -1699,10 +1699,12 @@
         <de.persosim.simulator.protocols.ta.TaProtocol id="377"/>
         <de.persosim.simulator.protocols.ri.RiProtocol id="378"/>
         <de.persosim.simulator.protocols.ca.CaProtocol id="379"/>
-        <de.persosim.simulator.protocols.auxVerification.AuxProtocol id="380"/>
-        <de.persosim.simulator.protocols.pin.PinProtocol id="381"/>
-        <de.persosim.simulator.protocols.NpaProtocol id="382"/>
-        <de.persosim.simulator.protocols.SecInfoProtocol id="383"/>
+        <de.persosim.simulator.protocols.ca3.Ca3Protocol id="380"/>
+        <de.persosim.simulator.protocols.ca3.PsaProtocol id="381"/>
+        <de.persosim.simulator.protocols.auxVerification.AuxProtocol id="382"/>
+        <de.persosim.simulator.protocols.pin.PinProtocol id="383"/>
+        <de.persosim.simulator.protocols.NpaProtocol id="384"/>
+        <de.persosim.simulator.protocols.SecInfoProtocol id="385"/>
       </protocols>
     </de.persosim.simulator.platform.CommandProcessor>
   </layers>

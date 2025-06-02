@@ -50,6 +50,8 @@ import de.persosim.simulator.protocols.auxVerification.AuxOid;
 import de.persosim.simulator.protocols.auxVerification.AuxProtocol;
 import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.protocols.ca.CaProtocol;
+import de.persosim.simulator.protocols.ca3.Ca3Protocol;
+import de.persosim.simulator.protocols.ca3.PsaProtocol;
 import de.persosim.simulator.protocols.file.FileProtocol;
 import de.persosim.simulator.protocols.pace.Pace;
 import de.persosim.simulator.protocols.pace.PaceBypassProtocol;
@@ -759,10 +761,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		RiProtocol riProtocol = new RiProtocol();
 		protocols.add(riProtocol);
 
-		/* load CA protocol */
-		CaProtocol caProtocol = new CaProtocol();
-		caProtocol.init();
-		protocols.add(caProtocol);
+		addCaProtocol(protocols);
 
 		/* load AUX protocol */
 		protocols.add(new AuxProtocol());
@@ -775,6 +774,20 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		protocols.add(new NpaProtocol());
 
 		return protocols;
+	}
+
+	protected void addCaProtocol(List<Protocol> protocols) {
+		/* load CA protocol */
+		CaProtocol caProtocol = new CaProtocol();
+		caProtocol.init();
+		protocols.add(caProtocol);
+		
+		caProtocol = new Ca3Protocol();
+		caProtocol.init();
+		protocols.add(caProtocol);
+		
+		var psProtocol = new PsaProtocol();
+		protocols.add(psProtocol);
 	}
 
 	@Override

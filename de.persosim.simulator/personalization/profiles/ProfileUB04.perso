@@ -1683,9 +1683,11 @@
         <de.persosim.simulator.protocols.ta.TaProtocol id="370"/>
         <de.persosim.simulator.protocols.ri.RiProtocol id="371"/>
         <de.persosim.simulator.protocols.ca.CaProtocol id="372"/>
-        <de.persosim.simulator.protocols.auxVerification.AuxProtocol id="373"/>
-        <de.persosim.simulator.protocols.pin.PinProtocol id="374"/>
-        <de.persosim.simulator.protocols.NpaProtocol id="375"/>
+        <de.persosim.simulator.protocols.ca3.Ca3Protocol id="373"/>
+        <de.persosim.simulator.protocols.ca3.PsaProtocol id="374"/>
+        <de.persosim.simulator.protocols.auxVerification.AuxProtocol id="375"/>
+        <de.persosim.simulator.protocols.pin.PinProtocol id="376"/>
+        <de.persosim.simulator.protocols.NpaProtocol id="377"/>
       </protocols>
     </de.persosim.simulator.platform.CommandProcessor>
   </layers>

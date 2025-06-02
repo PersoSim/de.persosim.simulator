@@ -2,6 +2,7 @@ package de.persosim.simulator.perso;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
@@ -10,6 +11,8 @@ import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.platform.Layer;
+import de.persosim.simulator.protocols.Protocol;
+import de.persosim.simulator.protocols.ca.CaProtocol;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 
@@ -82,5 +85,13 @@ public class DefaultPersoGt extends Profile01 {
 	protected Collection<? extends Layer> addLayersBetweenIoManagerAndSecureMessaging() {
 		// Effectively removes the enveloping layer for all inheriting personalizations  
 		return Collections.emptyList();
+	}
+	
+	@Override
+	protected void addCaProtocol(List<Protocol> protocols) {
+		/* load CA protocol */
+		CaProtocol caProtocol = new CaProtocol();
+		caProtocol.init();
+		protocols.add(caProtocol);
 	}
 }
