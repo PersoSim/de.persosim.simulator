@@ -1541,11 +1541,11 @@
         <de.persosim.simulator.protocols.ta.TaProtocol id="346"/>
         <de.persosim.simulator.protocols.ri.RiProtocol id="347"/>
         <de.persosim.simulator.protocols.ca.CaProtocol id="348"/>
-        <de.persosim.simulator.protocols.ca3.Ca3Protocol id="373"/>
-        <de.persosim.simulator.protocols.ca3.PsaProtocol id="374"/>
-        <de.persosim.simulator.protocols.auxVerification.AuxProtocol id="349"/>
-        <de.persosim.simulator.protocols.pin.PinProtocol id="350"/>
-        <de.persosim.simulator.protocols.NpaProtocol id="351"/>
+        <de.persosim.simulator.protocols.ca3.Ca3Protocol id="349"/>
+        <de.persosim.simulator.protocols.ca3.PsaProtocol id="350"/>
+        <de.persosim.simulator.protocols.auxVerification.AuxProtocol id="351"/>
+        <de.persosim.simulator.protocols.pin.PinProtocol id="352"/>
+        <de.persosim.simulator.protocols.NpaProtocol id="353"/>
       </protocols>
     </de.persosim.simulator.platform.CommandProcessor>
   </layers>
