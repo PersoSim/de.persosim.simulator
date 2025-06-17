@@ -15,7 +15,7 @@ import de.persosim.simulator.protocols.file.FileProtocol;
 import de.persosim.simulator.securemessaging.SecureMessaging;
 import de.persosim.simulator.utils.HexString;
 
-public class PersonalizationImpl implements Personalization {
+public abstract class PersonalizationImpl implements Personalization {
 
 	public static final String AID_MF = "A0000002471003";
 
@@ -55,7 +55,7 @@ public class PersonalizationImpl implements Personalization {
 	 * @return new instance
 	 */
 	public static Personalization createDefault() {
-		PersonalizationImpl newPerso = new PersonalizationImpl();
+		PersonalizationImpl newPerso = new PersonalizationImpl() {};
 
 		// load IO and SM layers
 		newPerso.layers.add(new IoManager());

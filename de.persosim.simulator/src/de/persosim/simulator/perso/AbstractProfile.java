@@ -141,7 +141,11 @@ public abstract class AbstractProfile extends DefaultPersoTestPki {
 	@Override
 	public MasterFile buildObjectTree() throws AccessDeniedException {
 		initPersonalizationDataContainer();
-		return super.buildObjectTree();
+		MasterFile objectTree = super.buildObjectTree();
+		addEfCardAccess(objectTree);
+		addEfCardSecurity(objectTree);
+		addEfChipSecurity(objectTree);
+		return objectTree;
 	}
 
 	@Override
@@ -420,7 +424,6 @@ public abstract class AbstractProfile extends DefaultPersoTestPki {
 		// do not create DG
 	}
 
-	@Override
 	protected void addEfCardAccess(MasterFile mf) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 
@@ -435,7 +438,6 @@ public abstract class AbstractProfile extends DefaultPersoTestPki {
 		mf.addChild(eidDgCardAccess);
 	}
 
-	@Override
 	protected void addEfCardSecurity(MasterFile mf) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 
@@ -450,7 +452,6 @@ public abstract class AbstractProfile extends DefaultPersoTestPki {
 		mf.addChild(eidDgCardSecurity);
 	}
 
-	@Override
 	protected void addEfChipSecurity(MasterFile mf) throws AccessDeniedException {
 		initPersonalizationDataContainer();
 

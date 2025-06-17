@@ -19,6 +19,7 @@ import org.globaltester.logging.BasicLogger;
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ByteDataAuxObject;
 import de.persosim.simulator.cardobjects.CardFile;
+import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.DateAuxObject;
 import de.persosim.simulator.cardobjects.DateTimeCardObject;
@@ -37,6 +38,7 @@ import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.crypto.DomainParameterSet;
+import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
@@ -51,7 +53,11 @@ import de.persosim.simulator.protocols.auxVerification.AuxProtocol;
 import de.persosim.simulator.protocols.ca.Ca;
 import de.persosim.simulator.protocols.ca.CaProtocol;
 import de.persosim.simulator.protocols.ca3.Ca3Protocol;
+import de.persosim.simulator.protocols.ca3.KeyObjectIcc;
+import de.persosim.simulator.protocols.ca3.PsAuthInfo;
+import de.persosim.simulator.protocols.ca3.Psa;
 import de.persosim.simulator.protocols.ca3.PsaProtocol;
+import de.persosim.simulator.protocols.ca3.PsAuthInfo.PsAuthInfoValue;
 import de.persosim.simulator.protocols.file.FileProtocol;
 import de.persosim.simulator.protocols.pace.Pace;
 import de.persosim.simulator.protocols.pace.PaceBypassProtocol;
@@ -111,6 +117,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 			addAdditionalObjects(mf);
 
 			addDomainParameters(mf);
+			addPsKeyObject(mf);
 			addCaKeys(mf);
 			addRiKeys(mf);
 
@@ -120,9 +127,6 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 			addAuxData(mf);
 
 			addEfDir(mf);
-			addEfCardAccess(mf);
-			addEfCardSecurity(mf);
-			addEfChipSecurity(mf);
 
 			addEidApplication(mf);
 			addEpassApplication(mf);
@@ -135,6 +139,29 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		return mf;
 	}
 
+
+	protected void addPsKeyObject(MasterFile mf) throws AccessDeniedException {
+		DomainParameterSetEcdh domParams13 = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
+		PrivateKey skIcc1 = domParams13.reconstructPrivateKey(HexString.toByteArray("054B0E36D9C9A28B81CF0EE098D9D5E44A790EAB7C415E3922A603CE55E06DE2"));
+		PrivateKey skIcc2 = domParams13.reconstructPrivateKey(HexString.toByteArray("9536D1270C40D37613E79974583106148075F4F8A09D256E5F4B502D4213D4AF"));
+		
+		PublicKey pkIcc = domParams13.reconstructPublicKey(HexString.toByteArray("046CB478312B534B260CD1FB4D8925284321107E8CD141ACBD6EB771E9AE674E9A4FB157F1B9B0E0082E7B749B2AE38A18A6B7AA7068D2F8A4912DE84A2017BAB2"));
+		
+		PublicKey pkM = domParams13.reconstructPublicKey(HexString.toByteArray("04320B7738C30B2762A52698F75B5DABFE8585907E120B53F8DD5ECA54D6CE8CD9719E05CAB1747BB54364B107B0E51AD392DDA05B94C155B537294367EFB9C212"));
+		
+		KeyObjectIcc keyObject = new KeyObjectIcc(skIcc1, skIcc2, pkIcc, pkM, domParams13, new KeyIdentifier((byte) 42));
+		keyObject.addOidIdentifier(Psa.OID_IDENTIFIER_id_PSA_ECDH_ECSchnorr_SHA_256);
+		keyObject.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128);
+		
+		mf.addChild(keyObject);
+		
+		mf.addChild(getPsAuthInfoForPsa());
+	}
+
+	protected CardObject getPsAuthInfoForPsa() {
+		return new PsAuthInfo(new OidIdentifier(Psa.id_PSA), PsAuthInfoValue.NO_EXPLICIT_AUTHORISATION, PsAuthInfoValue.EXPLICIT_AUTHORISATION);
+	}
+	
 	/**
 	 * Add the eID application to the card and fill it with content
 	 * @throws AccessDeniedException
@@ -250,30 +277,6 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	}
 
 	/**
-	 * Add an EF.ChipSecurity below MF as described by TR03110
-	 * @throws AccessDeniedException
-	 */
-	protected void addEfChipSecurity(MasterFile mf) throws AccessDeniedException {
-		// force auto generation by DefaultNpaUnmarshallerCallback
-	}
-
-	/**
-	 * Add an EF.CardSecurity below MF as described by TR03110
-	 * @throws AccessDeniedException
-	 */
-	protected void addEfCardSecurity(MasterFile mf) throws AccessDeniedException {
-		// force auto generation by DefaultNpaUnmarshallerCallback
-	}
-
-	/**
-	 * Add an EF.CardAccess below MF as described by TR03110
-	 * @throws AccessDeniedException
-	 */
-	protected void addEfCardAccess(MasterFile mf) throws AccessDeniedException {
-		// force auto generation by DefaultNpaUnmarshallerCallback
-	}
-
-	/**
 	 * Add all required keyObjects for RestrictedIdentification to the personalized object tree
 	 * @throws AccessDeniedException
 	 *
@@ -352,6 +355,9 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		// register domain parameters for Pace
 		domainParameterSetCardObject13
 				.addOidIdentifier(Pace.OID_IDENTIFIER_id_PACE_ECDH_GM_AES_CBC_CMAC_128);
+		// register domain parameters for CAv3
+		domainParameterSetCardObject13
+				.addOidIdentifier(Psa.OID_IDENTIFIER_id_PSA_ECDH_ECSchnorr_SHA_256);
 	}
 
 	protected void addEpassDatagroup1(DedicatedFile ePassAppl) throws AccessDeniedException {
@@ -777,17 +783,18 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 	}
 
 	protected void addCaProtocol(List<Protocol> protocols) {
-		/* load CA protocol */
-		CaProtocol caProtocol = new CaProtocol();
-		caProtocol.init();
-		protocols.add(caProtocol);
-		
-		caProtocol = new Ca3Protocol();
+		// CAv3 needs to see SetAT first to be able to yield to CAv2
+		CaProtocol caProtocol = new Ca3Protocol();
 		caProtocol.init();
 		protocols.add(caProtocol);
 		
 		var psProtocol = new PsaProtocol();
 		protocols.add(psProtocol);
+		
+		/* load CA protocol */
+		caProtocol = new CaProtocol();
+		caProtocol.init();
+		protocols.add(caProtocol);
 	}
 
 	@Override

@@ -135,7 +135,7 @@ public class Ca3Protocol extends de.persosim.simulator.protocols.ca.CaProtocol {
 				/* CA domain parameters */
 				caDomainParameters = Tr03110Utils.getDomainParameterSetFromKey(keyObjectIcc.getPublicKeyICC());
 			} else {
-				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6984_REFERENCE_DATA_NOT_USABLE);
+				ResponseApdu resp = new ResponseApdu(PlatformUtil.SW_4984_REFERENCE_DATA_NOT_USABLE);
 				processingData.updateResponseAPDU(this, "The domain parameters could not be extracted from the referenced key", resp);
 				return;
 			}
@@ -148,7 +148,7 @@ public class Ca3Protocol extends de.persosim.simulator.protocols.ca.CaProtocol {
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 			processingData.updateResponseAPDU(this, "Command Set AT successfully processed", resp);
 		} catch (ProcessingException e) {
-			ResponseApdu resp = new ResponseApdu(e.getStatusWord());
+			ResponseApdu resp = new ResponseApdu(PlatformUtil.convertTo4xxxStatusWord(e.getStatusWord()));
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 		}
 	}

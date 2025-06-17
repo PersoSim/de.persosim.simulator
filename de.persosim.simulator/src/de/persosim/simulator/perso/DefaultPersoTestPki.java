@@ -14,7 +14,7 @@ import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 
-public class DefaultPersoTestPki extends DefaultPersonalization
+public abstract class DefaultPersoTestPki extends DefaultPersonalization
 {
 	protected static TrustPointCardObject trustPointAtStatic = null;
 

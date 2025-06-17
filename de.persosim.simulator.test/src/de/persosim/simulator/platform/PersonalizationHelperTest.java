@@ -42,7 +42,7 @@ public class PersonalizationHelperTest extends PersoSimTestCase {
 	@Before
 	public void setUp() throws AccessDeniedException {
 
-		perso = new DefaultPersoTestPki();
+		perso = new DefaultPersoTestPki() {};
 
 		MasterFile mf = PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class)
 				.getObjectTree();
