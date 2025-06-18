@@ -199,6 +199,9 @@ public abstract class PsProtocol implements Protocol, Iso7816, ApduSpecification
 		if (dynamicAuthenticationData instanceof ConstructedTlvDataObject) {
 			
 			TlvDataObject publicKeyReferenceData = ((ConstructedTlvDataObject) dynamicAuthenticationData).getTlvDataObject(TAG_80);
+			if (publicKeyReferenceData == null)
+				throw new ProcessingException(PlatformUtil.SW_4A88_REFERENCE_DATA_NOT_FOUND, "invalid reference data");
+			
 			byte[] pcdPublicKeyMaterial = publicKeyReferenceData.getValueField();
 			ECPublicKey publicKey = psDomainParameters.reconstructPublicKey(pcdPublicKeyMaterial);
 			

@@ -788,13 +788,13 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		caProtocol.init();
 		protocols.add(caProtocol);
 		
-		var psProtocol = new PsaProtocol();
-		protocols.add(psProtocol);
-		
 		/* load CA protocol */
 		caProtocol = new CaProtocol();
 		caProtocol.init();
 		protocols.add(caProtocol);
+		
+		var psProtocol = new PsaProtocol();
+		protocols.add(psProtocol);
 	}
 
 	@Override

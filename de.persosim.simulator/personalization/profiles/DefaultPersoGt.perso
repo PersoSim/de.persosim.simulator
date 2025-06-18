@@ -1852,8 +1852,8 @@
         <de.persosim.simulator.protocols.ta.TaProtocol id="428"/>
         <de.persosim.simulator.protocols.ri.RiProtocol id="429"/>
         <de.persosim.simulator.protocols.ca3.Ca3Protocol id="430"/>
-        <de.persosim.simulator.protocols.ca3.PsaProtocol id="431"/>
-        <de.persosim.simulator.protocols.ca.CaProtocol id="432"/>
+        <de.persosim.simulator.protocols.ca.CaProtocol id="431"/>
+        <de.persosim.simulator.protocols.ca3.PsaProtocol id="432"/>
         <de.persosim.simulator.protocols.auxVerification.AuxProtocol id="433"/>
         <de.persosim.simulator.protocols.pin.PinProtocol id="434"/>
         <de.persosim.simulator.protocols.NpaProtocol id="435"/>
