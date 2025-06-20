@@ -27,7 +27,6 @@ import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.processing.UpdatePropagation;
-import de.persosim.simulator.protocols.CAPA;
 import de.persosim.simulator.protocols.Protocol;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.protocols.Tr03110;
@@ -85,8 +84,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 						for (SecMechanism currentMechanism : currentMechanisms) {
 							if (currentMechanism instanceof CAPAMechanism) {
 								// see CAPAProtocolPINVerify
-								log(this, "APDU can not be processed, this protocol is not applicable while doing "
-										+ CAPA.PROTOCOL_NAME + ".", LogLevel.DEBUG);
+								log(this, "APDU can not be processed, this protocol is not applicable while performing CAPA.", LogLevel.DEBUG);
 								return;
 							}
 						}
@@ -101,8 +99,7 @@ public class PinProtocol implements Protocol, Iso7816, Tr03110, TlvConstants, Ap
 								if (SecurityEvent.SECURE_MESSAGING_SESSION_ENDED.equals(securityEvent)) {
 									// see CAPAProtocolPINVerify
 									log(this,
-											"APDU can not be processed, this protocol is not applicable while doing "
-													+ CAPA.PROTOCOL_NAME + " (SECURE_MESSAGING_SESSION_ENDED).",
+											"APDU can not be processed, this protocol is not applicable while performing CAPA (SECURE_MESSAGING_SESSION_ENDED).",
 											LogLevel.DEBUG);
 									return;
 								}
