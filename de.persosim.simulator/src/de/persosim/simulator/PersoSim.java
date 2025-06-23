@@ -23,41 +23,41 @@ import de.persosim.simulator.platform.PersoSimKernel;
  * commands at runtime. As all parameters vital for the operation of the
  * simulator are implicitly set to default values by fall-through, no explicit
  * configuration is required.
- * 
+ *
  * @author slutters
- * 
+ *
  */
 public class PersoSim implements Simulator {
-	
+
 	public static final String LOG_NO_OPERATION = "nothing to process";
 	public static final String LOG_SIM_EXIT     = "simulator exit";
-	
+
 	private PersoSimKernel kernel = null;
 
 	private HashSet<SimulatorEventListener> simEventListeners = new HashSet<>();
-	
+
 	/**
 	 * This constructor is used by the OSGi-service instantiation
 	 */
 	public PersoSim(){
 	}
-	
+
 	public PersoSim(String... args) {
 		this();
 		try {
-			CommandParser.handleArgs(this, args);
+			CommandParser.handleArgs(args);
 		} catch (IllegalArgumentException e) {
 			logException(this.getClass(), "simulation aborted", e);
 		}
-		
+
 	}
-	
+
 	public void startPersoSim(){
 		log("Welcome to PersoSim", LogLevel.INFO, new LogTag(BasicLogger.UI_TAG_ID));
 
 		startSimulator();
 	}
-	
+
 	@Override
 	public boolean startSimulator() {
 		if (kernel != null) {
@@ -68,9 +68,9 @@ public class PersoSim implements Simulator {
 		//actual starting is lazily done when a perso is loaded, thus always return true here
 		return true;
 	}
-	
+
 	@Override
-	public boolean stopSimulator() {		
+	public boolean stopSimulator() {
 		if (kernel != null) {
 			kernel = null;
 			log("The simulator has been stopped and will no longer respond to incoming APDUs until it is (re-) started", LogLevel.TRACE, new LogTag(BasicLogger.UI_TAG_ID));
@@ -79,16 +79,16 @@ public class PersoSim implements Simulator {
 		log("The simulator is already stopped", LogLevel.TRACE, new LogTag(BasicLogger.UI_TAG_ID));
 		return false;
 	}
-	
+
 	@Override
 	public boolean restartSimulator() {
 		stopSimulator();
 		return startSimulator();
 	}
-	
+
 	/**
 	 * This methods loads the provided personalization.
-	 * 
+	 *
 	 * @param personalization the personalization to load
 	 * @return true, if the profile loading was successful, otherwise false
 	 */
@@ -100,7 +100,7 @@ public class PersoSim implements Simulator {
 			return false;
 		}
 		kernel.init(personalization);
-		
+
 		return true;
 	}
 
@@ -110,7 +110,7 @@ public class PersoSim implements Simulator {
 			log(this.getClass(), "The simulator is not initialized and the APDU was ignored", LogLevel.INFO);
 			return new byte[]{0x6f, 0x78};
 		}
-		
+
 		return kernel.process(apdu);
 	}
 
@@ -149,7 +149,7 @@ public class PersoSim implements Simulator {
 	@Override
 	public void addEventListener(SimulatorEventListener... newListeners) {
 		simEventListeners.addAll(Arrays.asList(newListeners));
-		
+
 		if (kernel != null) {
 			kernel.addEventListener(newListeners);
 		}
@@ -158,7 +158,7 @@ public class PersoSim implements Simulator {
 	@Override
 	public void removeEventListener(SimulatorEventListener oldListener) {
 		simEventListeners.remove(oldListener);
-		
+
 		if (kernel != null) {
 			kernel.removeEventListener(oldListener);
 		}

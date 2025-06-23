@@ -285,7 +285,7 @@ public class PersoSimPart {
 			public void keyReleased(KeyEvent e) {
 				if((e.character == SWT.CR) || (e.character == SWT.LF)) {
 					String line = txtIn.getText();
-					Activator.executeUserCommands(line);
+					Activator.executeUserCommands(line, true);
 					txtIn.setText("");
 				}
 			}

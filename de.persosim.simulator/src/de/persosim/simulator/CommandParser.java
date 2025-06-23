@@ -31,7 +31,7 @@ import de.persosim.simulator.utils.HexString;
  * This class provides methods that parse console commands for the control of
  * the Simulator and calls the corresponding methods of the {@link Simulator}
  * interface.
- * 
+ *
  * @author mboonk
  *
  */
@@ -54,48 +54,52 @@ public class CommandParser {
 
 	public static final String LOG_UNKNOWN_ARG  = "unknown argument";
 	public static final String LOG_NO_OPERATION = "nothing to process";
-	
+
 	private static boolean processingCommandLineArguments = false;
-	
+
 	public static final String PERSO_PATH = "personalization/profiles/";
 	public static final String PERSO_FILE_PREFIX = "Profile";
 	public static final String PERSO_FILE_POSTFIX = ".perso";
-	
+
+	private CommandParser() {
+		// hide implicit public constructor
+	}
+
 	/**
 	 * This method processes the command for starting the simulator.
 	 * @param args arguments that may contain a start command
 	 * @return whether instantiation and starting was successful
 	 */
 	public static boolean cmdStartSimulator(List<String> args) {
-		if((args != null) && (args.size() >= 1)) {
+		if (args != null && !args.isEmpty()) {
 			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_START)) {
+
+			if (cmd.equals(CMD_START)) {
 				args.remove(0);
 				de.persosim.simulator.Activator.getDefault().enableService();
 				if (getPersoSim() == null) {
 					log(CommandParser.class, "Enabling the PersoSimService failed", LogLevel.ERROR);
 				}
-					
+
 				return getPersoSim().startSimulator();
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * This method processes the command for stopping the simulator.
 	 * @param args arguments that may contain a stop command
 	 * @return whether stopping was successful
 	 */
 	public static boolean cmdStopSimulator(List<String> args) {
-		if((args != null) && (args.size() >= 1)) {
+		if (args != null && !args.isEmpty()) {
 			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_STOP)) {
+
+			if (cmd.equals(CMD_STOP)) {
 				args.remove(0);
-				if(getPersoSim() != null) {
+				if (getPersoSim() != null) {
 					de.persosim.simulator.Activator.getDefault().disableService();
 					return true;
 				}
@@ -108,41 +112,41 @@ public class CommandParser {
 		return false;
 	}
 
-	
+
 	/**
 	 * This method processes the command for restarting the simulator.
 	 * @param args arguments that may contain a restart command
 	 * @return whether restarting was successful
 	 */
 	public static boolean cmdRestartSimulator(List<String> args) {
-		if((args != null) && (args.size() >= 1)) {
+		if (args != null && !args.isEmpty()) {
 			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_RESTART)) {
+
+			if (cmd.equals(CMD_RESTART)) {
 				args.remove(0);
-				if(getPersoSim() != null)
+				if (getPersoSim() != null)
 					return getPersoSim().restartSimulator();
 				else
 					log(CommandParser.class, "No running PersoSimService found", LogLevel.WARN);
 			}
 		}
-		
+
 		return false;
 	}
 
-	
+
 	/**
 	 * This method processes the send APDU command according to the provided arguments.
 	 * @param args the arguments provided for processing
 	 * @return whether processing has been successful
 	 */
 	public static String cmdSendApdu(List<String> args) {
-		if((args != null) && (args.size() >= 2)) {
+		if ((args != null) && (args.size() >= 2)) {
 			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_SEND_APDU)) {
+
+			if (cmd.equals(CMD_SEND_APDU)) {
 				String result;
-				if(getPersoSim() != null) {
+				if (getPersoSim() != null) {
 					try{
 						PersoSim sim = getPersoSim();
 		    			result = sendCmdApdu(sim, "sendApdu " + args.get(1));
@@ -165,7 +169,7 @@ public class CommandParser {
 			return "missing parameter for APDU content";
 		}
 	}
-	
+
 	/**
 	 * This method prints the help menu to the command line.
 	 */
@@ -175,7 +179,7 @@ public class CommandParser {
 		log(CommandParser.class, ARG_SET_PORT + " <port number>", LogLevel.INFO);
 		log(CommandParser.class, ARG_HELP, LogLevel.INFO);
 	}
-	
+
 	/**
 	 * This method prints the help menu to the user command line.
 	 */
@@ -188,31 +192,31 @@ public class CommandParser {
 		log(CommandParser.class, CMD_STOP, LogLevel.INFO);
 		log(CommandParser.class, CMD_HELP, LogLevel.INFO);
 	}
-	
+
 	/**
 	 * This method processes the load personalization command according to the provided arguments.
 	 * @param args the arguments provided for processing the load personalization command
 	 * @return whether processing of the load personalization command has been successful
 	 */
-	public static boolean cmdLoadPersonalization(List<String> args) {
-		
-		if((args != null) && (args.size() >= 2)) {
+	public static boolean cmdLoadPersonalization(List<String> args, boolean withOverlayProfile) {
+
+		if ((args != null) && (args.size() >= 2)) {
 			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_LOAD_PERSONALIZATION) || cmd.equals(ARG_LOAD_PERSONALIZATION)) {
-				
+
+			if (cmd.equals(CMD_LOAD_PERSONALIZATION) || cmd.equals(ARG_LOAD_PERSONALIZATION)) {
+
 				String arg = args.get(1);
-				
+
 				args.remove(0);
 				args.remove(0);
-			
+
 				Personalization perso = null;
 				try {
-					perso = getPerso(arg);
+					perso = getPerso(arg, withOverlayProfile);
 				} catch (IllegalArgumentException e) {
 					logException(CommandParser.class, "Unable to load personalization", e, LogLevel.ERROR);
 				}
-				
+
 				if (perso != null) {
 					PersoSim sim = getPersoSim();
 					if (sim != null) {
@@ -225,25 +229,22 @@ public class CommandParser {
     			}
 			}
 		}
-		
+
 		return false;
 	}
 
-	public static Personalization getPerso(String identifier) throws IllegalArgumentException {
-		return getPerso(identifier, true);
-	}
-		
 	/**
 	 * This method parses the given identifier and loads the personalization
 	 * @param identifier
+	 * @param withOverlayProfile
 	 * @return a personalization object
-	 * @throws IllegalArgumentException iff the identifier does not reference a loadable perso 
+	 * @throws IllegalArgumentException iff the identifier does not reference a loadable perso
 	 */
 	public static Personalization getPerso(String identifier, boolean withOverlayProfile) throws IllegalArgumentException {
 		log(CommandParser.class, "Trying to load personalization for identifier '" + identifier + "'", LogLevel.INFO);
 
 		InputStream stream = null;
-		
+
 		int personalizationNumber = 0;
 		if (Files.exists(Paths.get(identifier))) {
 			try {
@@ -253,37 +254,37 @@ public class CommandParser {
 			}
 		} else {
 			// try to parse the given identifier as profile number
-			
+
 			if (Activator.getContext() == null) {
 				throw new IllegalArgumentException("Loading profiles by profile number is supported only when running within an OSGi environment");
 			}
-			
+
 			try {
 			personalizationNumber = Integer.parseInt(identifier);
 			} catch (NumberFormatException e) {
 				throw new IllegalArgumentException("identifier is no valid path or profile number!", e);
 			}
 
-			if(personalizationNumber > 10) {
+			if (personalizationNumber > 10) {
 				throw new IllegalArgumentException("personalization profile no: " + personalizationNumber + " does not exist");
 			}
-			
+
 			log(CommandParser.class, "trying to load personalization profile no: " + personalizationNumber, LogLevel.INFO);
 			Bundle plugin = Activator.getContext().getBundle();
-			
+
 			if (personalizationNumber < 10) {
 				identifier = "0" + personalizationNumber;
 			}
-			
+
 			URL url = plugin.getEntry (PERSO_PATH + File.separator + PERSO_FILE_PREFIX + identifier + PERSO_FILE_POSTFIX);
-			
+
 			try {
 				stream = url.openConnection().getInputStream();
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Unable to load personalization from Bundle content", e);
 			}
 		}
-		
+
 		// load perso from the identified file
 		Personalization perso = null;
 		try {
@@ -297,38 +298,41 @@ public class CommandParser {
 		} catch (XStreamException e) {
 			throw new IllegalArgumentException("Unable to deserialize personalization", e);
 		}
-		
+
 		if (withOverlayProfile)
 			ProfileHelper.handleOverlayProfile(perso);
+		else
+			log(ProfileHelper.class, "Personalization for identifier '" + identifier + "' (Profile: '" + perso.getClass().getSimpleName() + "') will NOT be overlaid.", LogLevel.INFO);
+
 		return perso;
-	} 
-	
-	public static void executeUserCommands(String... args) {
-		if((args == null) || (args.length == 0)) {log(CommandParser.class, LOG_NO_OPERATION, LogLevel.INFO); return;}
-		
-		ArrayList<String> currentArgs = new ArrayList<String>(Arrays.asList(args)); // plain return value of Arrays.asList() does not support required remove operation
-		
+	}
+
+	public static void executeUserCommands(boolean withOverlayProfile, String... args) {
+		if ((args == null) || (args.length == 0)) {log(CommandParser.class, LOG_NO_OPERATION, LogLevel.INFO); return;}
+
+		ArrayList<String> currentArgs = new ArrayList<>(Arrays.asList(args)); // plain return value of Arrays.asList() does not support required remove operation
+
 		for(int i = currentArgs.size() - 1; i >= 0; i--) {
-			if(currentArgs.get(i) == null) {
+			if (currentArgs.get(i) == null) {
 				currentArgs.remove(i);
 			}
 		}
-		
-		if(currentArgs.size() == 0) {log(CommandParser.class, LOG_NO_OPERATION, LogLevel.INFO); return;}
-		
+
+		if (currentArgs.isEmpty()) {log(CommandParser.class, LOG_NO_OPERATION, LogLevel.INFO); return;}
+
 		int noOfArgsWhenCheckedLast;
-		while(currentArgs.size() > 0) {
+		while (!currentArgs.isEmpty()) {
 			noOfArgsWhenCheckedLast = currentArgs.size();
-			
-			cmdLoadPersonalization(currentArgs);
+
+			cmdLoadPersonalization(currentArgs, withOverlayProfile);
 			cmdSendApdu(currentArgs);
 			cmdStartSimulator(currentArgs);
 			cmdRestartSimulator(currentArgs);
 			cmdStopSimulator(currentArgs);
 			cmdHelp(currentArgs);
-			
-			
-			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
+
+
+			if (noOfArgsWhenCheckedLast == currentArgs.size()) {
 				//first command in queue has not been processed
 				String currentArgument = currentArgs.get(0);
 				log(CommandParser.class, LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped", LogLevel.WARN);
@@ -337,46 +341,44 @@ public class CommandParser {
 				break;
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * This method implements the execution of commands initiated by command line arguments.
 	 * @param args the parsed commands and arguments
 	 */
-	public  static void handleArgs(Simulator sim, String... args) {
-		if((args == null) || (args.length == 0)) {log(CommandParser.class, LOG_NO_OPERATION, LogLevel.INFO); return;}
-		
+	public static void handleArgs(String... args) {
+		if ((args == null) || (args.length == 0)) {log(CommandParser.class, LOG_NO_OPERATION, LogLevel.INFO); return;}
+
 		processingCommandLineArguments = true;
-		
+
 		List<String> currentArgs = Arrays.asList(args);
 		// the list returned by Arrays.asList() does not support optional but required remove operation
-		currentArgs = new ArrayList<String>(currentArgs);
-		
+		currentArgs = new ArrayList<>(currentArgs);
+
 		for(int i = currentArgs.size() - 1; i >= 0; i--) {
-			if(currentArgs.get(i) == null) {
+			if (currentArgs.get(i) == null) {
 				currentArgs.remove(i);
 			}
 		}
-		
-		if(currentArgs.size() == 0) {log(CommandParser.class, LOG_NO_OPERATION, LogLevel.INFO); return;}
-		
+
+		if (currentArgs.isEmpty()) {log(CommandParser.class, LOG_NO_OPERATION, LogLevel.INFO); return;}
+
 		int noOfArgsWhenCheckedLast;
-		while(currentArgs.size() > 0) {
+		while (!currentArgs.isEmpty()) {
 			noOfArgsWhenCheckedLast = currentArgs.size();
-			
-			cmdLoadPersonalization(currentArgs);
+
+			cmdLoadPersonalization(currentArgs, true);
 			cmdHelp(currentArgs);
-			
-			if(currentArgs.size() > 0) {
-				if(currentArgs.get(0).equals(CMD_CONSOLE_ONLY)) {
+
+			if (!currentArgs.isEmpty() && currentArgs.get(0).equals(CMD_CONSOLE_ONLY)) {
 					// do no actual processing, i.e. prevent simulator from logging unknown command error as command has already been processed
 		        	// command is passed on as part of unprocessed original command line arguments
 		        	currentArgs.remove(0);
-				}
 			}
-			
-			if(noOfArgsWhenCheckedLast == currentArgs.size()) {
+
+			if (noOfArgsWhenCheckedLast == currentArgs.size()) {
 				//first command in queue has not been processed
 				String currentArgument = currentArgs.get(0);
 				log(CommandParser.class, LOG_UNKNOWN_ARG + " \"" + currentArgument + "\" will be ignored, processing of arguments stopped", LogLevel.ERROR);
@@ -385,19 +387,19 @@ public class CommandParser {
 				break;
 			}
 		}
-		
+
 		processingCommandLineArguments = false;
-		
+
 	}
-	
+
 	public static boolean cmdHelp(List<String> args) {
-		if((args != null) && (args.size() >= 1)) {
+		if (args != null && !args.isEmpty()) {
 			String cmd = args.get(0);
-			
-			if(cmd.equals(CMD_HELP) || cmd.equals(ARG_HELP)) {
+
+			if (cmd.equals(CMD_HELP) || cmd.equals(ARG_HELP)) {
 				args.remove(0);
-				
-				if(processingCommandLineArguments) {
+
+				if (processingCommandLineArguments) {
 					printHelpArgs();
 				} else{
 					printHelpCmd();
@@ -405,13 +407,13 @@ public class CommandParser {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
 	/**
 	 * Transmit an APDU to the card
-	 * 
+	 *
 	 * @param cmd
 	 *            string containing the command
 	 * @return the response
@@ -429,12 +431,12 @@ public class CommandParser {
 		return exchangeApdu(sim, apdu);
 
 	}
-	
+
 	/**
 	 * Transmit the given APDU to the simulator where it will be processed
-	 * and answered by a response. The response APDU is received from the 
+	 * and answered by a response. The response APDU is received from the
 	 * simulator and returned to the caller as HexString.
-	 * 
+	 *
 	 * @param cmdApdu HexString containing the CommandAPDU
 	 * @return the response
 	 */
@@ -457,45 +459,45 @@ public class CommandParser {
 	 * position of the first occurrence will be the first element of the
 	 * returned array. The rest of the String will be trimmed and, if not of
 	 * length 0, form the second array element.
-	 * 
+	 *
 	 * IMPL extend to parse for multiple arguments add recognition of "
 	 * characters as indication of file names allowing white spaces in between.
-	 * 
+	 *
 	 * @param args
 	 *            the argument String to be parsed
 	 * @return the parsed arguments
 	 */
 	public static String[] parseCommand(String args) {
 		String argsInput = args.trim();
-		
+
 		int index = argsInput.indexOf(" ");
-		
-		if(index >= 0) {
+
+		if (index >= 0) {
 			String cmd = argsInput.substring(0, index);
 			String params = argsInput.substring(index).trim();
 			return new String[]{cmd, params};
 		} else{
-			if(argsInput.length() > 0) {
+			if (argsInput.length() > 0) {
 				return new String[]{argsInput};
 			} else{
 				return new String[0];
 			}
 		}
 	}
-	
+
 	public static void executeUserCommands(String cmd) {
 		String trimmedCmd = cmd.trim();
 		String[] args = parseCommand(trimmedCmd);
-		
-		executeUserCommands(args);
+
+		executeUserCommands(true, args);
 	}
-	
+
 	public static void showExceptionToUser(Exception e) {
 		log(CommandParser.class, "Exception: " + e.getMessage(), LogLevel.INFO);
 		BasicLogger.logException(CommandParser.class, e, LogLevel.ERROR);
 		e.printStackTrace();
 	}
-	
+
 	private static PersoSim getPersoSim() {
 		return de.persosim.simulator.Activator.getDefault().getSim();
 	}

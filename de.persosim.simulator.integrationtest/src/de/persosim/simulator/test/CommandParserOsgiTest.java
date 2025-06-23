@@ -14,29 +14,30 @@ import de.persosim.simulator.perso.Personalization;
 
 public class CommandParserOsgiTest extends CommandParserTest {
 
-	
+
 	@Before
 	public void testInitializer() throws Exception {
 		BundleContext bc = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
-		
+
 		PlatformHelper.startBundle(org.globaltester.cryptoprovider.bc.Activator.class.getPackage().getName(), bc);
 	}
 	/**
 	 * Positive test case: parse personalization from a valid perso identifier within an OSGi-Context
 	 * @throws Exception
 	 */
+	@Override
 	@Test
 	public void testGetPerso_ValidIdentifier() throws Exception {
-		Personalization perso = CommandParser.getPerso("01");
+		Personalization perso = CommandParser.getPerso("01", true);
 		assertNotNull(perso);
 	}
-	
+
 	/**
 	 * Negative test case: parse personalization with non-existant perso identifier (too large number
 	 * @throws Exception
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void testGetPerso_IdentifierTooLarge() throws Exception {
-		CommandParser.getPerso("15");
+		CommandParser.getPerso("15", true);
 	}
 }

@@ -319,7 +319,7 @@ public abstract class ProfileHelper
 
 	public static void createMissingOverlayProfileFile(String persoFileAbsFilePath, String overlayFileAbsFilePath)
 	{
-		Personalization perso = CommandParser.getPerso(persoFileAbsFilePath);
+		Personalization perso = CommandParser.getPerso(persoFileAbsFilePath, true);
 		String jsonSerialized = overlayProfileWithNewRIKeys(perso);
 		try {
 			Files.write(Path.of(overlayFileAbsFilePath), jsonSerialized.getBytes(StandardCharsets.UTF_8));
@@ -418,12 +418,12 @@ public abstract class ProfileHelper
 			String currentAsString = current.toString();
 			if (currentAsString.endsWith(persoFileName)) {
 				overlayProfileFilePath = currentAsString;
-				log(ProfileHelper.class, "Found Overlay Profile file for '" + perso.getClass().getSimpleName() + "' : '" + overlayProfileFilePath + "'.", LogLevel.DEBUG);
+				log(ProfileHelper.class, "Found Overlay Profile file for '" + perso.getClass().getSimpleName() + "' : '" + overlayProfileFilePath + "'.", LogLevel.INFO);
 				break;
 			}
 		}
 		if (overlayProfileFilePath == null)
-			log(ProfileHelper.class, "Found no Overlay Profile file for '" + perso.getClass().getSimpleName() + " in root path: '" + getRootPathProfileOverlays().toString() + "'.", LogLevel.DEBUG);
+			log(ProfileHelper.class, "Found no Overlay Profile file for '" + perso.getClass().getSimpleName() + " in root path: '" + getRootPathProfileOverlays().toString() + "'.", LogLevel.INFO);
 		return overlayProfileFilePath;
 	}
 
@@ -442,14 +442,14 @@ public abstract class ProfileHelper
 			return;
 		}
 
-		BasicLogger.log(ProfileHelper.class, "Profile '" + perso.getClass().getSimpleName() + "' will be overlaid.", LogLevel.DEBUG);
+		BasicLogger.log(ProfileHelper.class, "Profile '" + perso.getClass().getSimpleName() + "' will be overlaid.", LogLevel.INFO);
 
 		OverlayProfile overlayProfile = getOverlayProfileForPerso(perso, false);
 		if (overlayProfile == null)
 			return;
 		MasterFile masterFile = PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class).getMasterFile();
 		ProfileHelper.updateKeyPairObjectsFromOverlayProfile(masterFile, overlayProfile.getKeys());
-		BasicLogger.log(ProfileHelper.class, "Profile '" + perso.getClass().getSimpleName() + "' overlaid successfully.", LogLevel.DEBUG);
+		BasicLogger.log(ProfileHelper.class, "Profile '" + perso.getClass().getSimpleName() + "' overlaid successfully.", LogLevel.INFO);
 	}
 
 	@Nullable

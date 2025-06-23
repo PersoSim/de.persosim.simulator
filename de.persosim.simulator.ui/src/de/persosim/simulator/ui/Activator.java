@@ -41,12 +41,16 @@ public class Activator implements BundleActivator {
 		return linkedListLogger;
 	}
 
-	public static void executeUserCommands(String command){
+	public static void executeUserCommands(String command, boolean withOverlayProfile){
 
 		String[] commands = CommandParser.parseCommand(command);
-		CommandParser.executeUserCommands(commands);
-		if(commands.length == 0) return; //just do nothing.
+		boolean cmdLoadPerso = false;
 		if (commands[0].equals(CommandParser.CMD_LOAD_PERSONALIZATION)) {
+			cmdLoadPerso = true;
+		}
+		CommandParser.executeUserCommands(withOverlayProfile, commands);
+		if(commands.length == 0) return; //just do nothing.
+		if (cmdLoadPerso) {
 			resetNativeDriver();
 		}
 		if (commands[0].equals(CommandParser.CMD_STOP)) {

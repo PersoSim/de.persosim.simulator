@@ -6,24 +6,24 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * This class implements the handler for the select personalization from file menu entry.
- * 
+ *
  * @author slutters
  *
  */
 public class SelectPersoFromFileHandler extends SelectPersoHandler {
-	
+
 	@Execute
 	public void execute(Shell shell){
 		FileDialog dialog = new FileDialog(shell);
 		dialog.open();
-		
+
 		String fileName = dialog.getFileName();
-		
+
 		if(fileName.length() > 0) {
 			String pathName = dialog.getFilterPath() + "/" + fileName;
-			
-			loadPersonalization(pathName);
+
+			loadPersonalization(pathName, false);
 		}
-		
+
 	}
 }
