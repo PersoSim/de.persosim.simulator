@@ -385,7 +385,7 @@ public class PersoSimPart
 						String text = switch (col) {
 							case 0 -> entry.getTimeStamp();
 							case 1 -> entry.getLogLevel().name();
-							case 2 -> PersoSimUILogFormatter.format(entry.getLogTags(), PersoSimUILogFormatter.NO_TAGS_AVAILABLE_INFO);
+							case 2 -> PersoSimUILogFormatter.getFormattedLogTags(entry, PersoSimUILogFormatter.NO_TAGS_AVAILABLE_INFO);
 							case 3 -> entry.getLogContent();
 							default -> "";
 						};
@@ -527,7 +527,7 @@ public class PersoSimPart
 						colContent = entry.getLogLevel().name();
 						break;
 					case 2:
-						colContent = PersoSimUILogFormatter.format(entry.getLogTags(), null);
+						colContent = PersoSimUILogFormatter.getFormattedLogTags(entry, null);
 						break;
 					case 3:
 						colContent = entry.getLogContent();

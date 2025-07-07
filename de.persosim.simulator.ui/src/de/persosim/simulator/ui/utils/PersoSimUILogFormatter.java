@@ -47,7 +47,18 @@ public class PersoSimUILogFormatter extends GtFileLogFormatter
 		return PersoSimLogTags.isKnownTag(tagId) || NO_TAGS_AVAILABLE_INFO.equals(tagId);
 	}
 
-	public static String format(List<LogTag> logTags, String noTagsInfo)
+
+	public static String getFormattedLogTags(PersoSimUILogEntry logEntry, String noTagsInfo)
+	{
+		String logTagsFormatted = logEntry.getLogTagsFormatted();
+		if (logTagsFormatted != null)
+			return logTagsFormatted;
+		logTagsFormatted = formatLogTags(logEntry.getLogTags(), noTagsInfo);
+		logEntry.setLogTagsFormatted(logTagsFormatted);
+		return logTagsFormatted;
+	}
+
+	public static String formatLogTags(List<LogTag> logTags, String noTagsInfo)
 	{
 		if (logTags == null || logTags.isEmpty()) {
 			return noTagsInfo != null ? noTagsInfo : "";
@@ -80,7 +91,7 @@ public class PersoSimUILogFormatter extends GtFileLogFormatter
 	public static String format(PersoSimUILogEntry logEntry)
 	{
 		StringBuilder sb = new StringBuilder(200);
-		sb.append(logEntry.getTimeStamp()).append(" - ").append(padRight(logEntry.getLogLevel().name(), 5)).append(" - ").append(format(logEntry.getLogTags(), NO_TAGS_AVAILABLE_INFO)).append(" - ")
+		sb.append(logEntry.getTimeStamp()).append(" - ").append(padRight(logEntry.getLogLevel().name(), 5)).append(" - ").append(getFormattedLogTags(logEntry, NO_TAGS_AVAILABLE_INFO)).append(" - ")
 				.append(logEntry.getLogContent());
 		return sb.toString();
 	}

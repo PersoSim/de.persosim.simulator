@@ -58,12 +58,14 @@ public class PersoSimUILogEntry
 		{
 			return Arrays.stream(PersoSimUILogLevel.values()).filter(value -> value.getLogLevel() == level).findFirst();
 		}
-	}
+	} // PersoSimUILogLevel
 
-	private final String logContent;
+	private String logContent;
 	private final String timeStamp;
-	private LogLevel logLevel;
+	private final LogLevel logLevel;
 	private List<LogTag> logTags = new ArrayList<>();
+	private String logTagsFormatted;
+
 
 	public PersoSimUILogEntry(String logContent, String timeStamp, LogLevel logLevel, List<LogTag> logTags)
 	{
@@ -91,6 +93,12 @@ public class PersoSimUILogEntry
 		else
 			logLevel = LogLevel.TRACE;
 		logTags = msg.getLogTags();
+		LogTag logTagEx = getLogTag(BasicLogger.EXCEPTION_STACK_TAG_ID);
+		if (logTagEx != null) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(logContent).append('\n').append(logTagEx.getAdditionalData()[0]);
+			logContent = sb.toString();
+		}
 	}
 
 	public String getLogContent()
@@ -113,14 +121,14 @@ public class PersoSimUILogEntry
 		return logTags;
 	}
 
-	private boolean haveLogTag(String id, String... additionalData)
+	private LogTag getLogTag(String id, String... additionalData)
 	{
 		for (LogTag current : logTags) {
-			// Check only 1st tag at the moment!
-			if (current.getId().equals(id) && current.getAdditionalData()[0].equals(additionalData[0]))
-				return true;
+			// Check only 1st additional data at the moment!
+			if (current.getId().equals(id) && (additionalData == null || additionalData.length == 0 || current.getAdditionalData()[0].equals(additionalData[0])))
+				return current;
 		}
-		return false;
+		return null;
 	}
 
 	public int getColorId()
@@ -138,9 +146,20 @@ public class PersoSimUILogEntry
 		Optional<PersoSimUILogLevel> levelOptional = PersoSimUILogLevel.getByLogLevel(logLevel);
 		if (levelOptional.isPresent())
 			fontStyle = levelOptional.get().getFontStyle();
-		if (haveLogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.APDU_TAG_ID))
+		if (getLogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.APDU_TAG_ID) != null)
 			fontStyle = SWT.BOLD; // SWT.ITALIC does not work properly
 		return fontStyle;
 	}
+
+	public String getLogTagsFormatted()
+	{
+		return logTagsFormatted;
+	}
+
+	public void setLogTagsFormatted(String logTagsFormatted)
+	{
+		this.logTagsFormatted = logTagsFormatted;
+	}
+
 }
 
