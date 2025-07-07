@@ -1,553 +1,802 @@
 package de.persosim.simulator.ui.parts;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.FontDescriptor;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ILazyContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
+import org.eclipse.jface.viewers.TableLayout;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Slider;
+import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.globaltester.logging.BasicLogger;
 
 import de.persosim.simulator.ui.Activator;
 import de.persosim.simulator.ui.handlers.SelectPersoFromFileHandler;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
+import de.persosim.simulator.ui.utils.PersoSimUILogEntry;
+import de.persosim.simulator.ui.utils.PersoSimUILogFormatter;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 
-/**
- * @author slutters
- *
- */
-public class PersoSimPart {
+public class PersoSimPart
+{
+	private static final String[] COLUMN_TITLES = { "Timestamp", "Log Level", "Log Tags", "Log Message" };
+	private static final int[] COLUMN_WEIGHTS = { 15, 5, 10, 70 };
+	private static final int[] COLUMN_MIN_WIDTHS = { 140, 70, 70, 300 };
 
-	public static final String PERSO_PATH = "personalization/profiles/";
-	public static final String PERSO_FILE = "Profile01.perso";
+	// Remember column width for column visibility toggle
+	private final Map<TableColumn, Integer> columnWidths = new HashMap<>();
+	private final UISynchronize sync;
+	private TableViewer logTableViewer;
+	private Table table;
 
-	public static final int LOG_LIMIT = 1000;
+	private Thread updateThread;
 
-	// get UISynchronize injected as field
-	@Inject UISynchronize sync;
+	private Font defaultFont;
+	private Font boldFont;
 
-	private Text txtOutput;
-	private Thread uiThread = null;
-	private Thread updateThread = null;
-	//maximum amount of strings saved in the buffer
-	public static final int MAXIMUM_CACHED_CONSOLE_LINES = 20000;
+	private boolean isLocked = false;
+	private boolean wasDragging = false;
+	private boolean isProgrammaticSelection = false;
+	private int lastLogCount = 0;
+	private boolean isMultiLineLogEnabled = false;
 
-	//maximum of lines the text field can show
-	int maxLineCount=0;
+	private Composite loggingArea;
+	private Composite tableArea;
+	private Composite consoleArea;
 
-	Composite parent;
-	private Button lockScroller;
-	Boolean locked = false;
-	Slider slider;
+
+	@Inject
+	public PersoSimPart(UISynchronize sync)
+	{
+		this.sync = sync;
+	}
 
 	@PostConstruct
-	public void createComposite(Composite parentComposite) {
-		parent = parentComposite;
-		parent.setLayout(new GridLayout(2, false));
+	public void createComposite(Composite loggingArea)
+	{
+		this.loggingArea = loggingArea;
+		loggingArea.setLayout(new GridLayout(1, false));
 
-		//add console out
-		txtOutput = createConsoleOut(parent);
-		addConsoleOutMenu(txtOutput);
+		tableArea = new Composite(loggingArea, SWT.NONE);
+		tableArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		tableArea.setLayout(new GridLayout(1, false));
 
-		//configure the slider
-		slider = createSlider(parent);
+		createTableViewerAndTable();
 
-		txtOutput.addListener(SWT.MouseUp, new Listener() {
+		consoleArea = new Composite(loggingArea, SWT.NONE);
+		consoleArea.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		consoleArea.setLayout(new GridLayout(1, false));
+
+		createConsoleIn();
+	}
+
+
+	private void createTableViewerAndTable()
+	{
+		// Remove table if exists
+		for (Control childControl : tableArea.getChildren()) {
+			childControl.dispose();
+		}
+
+		// Restore initial values
+		isLocked = false;
+		wasDragging = false;
+		isProgrammaticSelection = false;
+		lastLogCount = 0;
+
+		logTableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI | SWT.VIRTUAL);
+		table = logTableViewer.getTable();
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+		table.setHeaderBackground(loggingArea.getBackground());
+		table.setBackground(loggingArea.getBackground());
+		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		createColumns();
+		addResizeListenerForLastColumn();
+		setLabelProvider();
+		addVerticalBarListener();
+		addContextMenu();
+		addCtrlListener();
+		addDynamicTooltip();
+		changeSelectionColors();
+		addFonts();
+		addContentProvider();
+		addEntrySelectionChangeListener();
+
+		tableArea.layout(true, true);
+		startUpdateThread();
+
+		// Select first entry
+		int itemCount = table.getItemCount();
+		if (itemCount > 0) {
+			table.setSelection(0);
+			table.showSelection();
+		}
+	}
+
+	private void addContentProvider()
+	{
+		// Use ILazyContentProvider for performance
+		logTableViewer.setUseHashlookup(true);
+		logTableViewer.setContentProvider(new ILazyContentProvider() {
 			@Override
-			public void handleEvent (Event e) {
-				lockAutoScroll();
+			public void updateElement(int index)
+			{
+				PersoSimUILogEntry entry = Activator.getListLogListener().getEntry(index);
+				logTableViewer.replace(entry, index);
+			}
+
+			@Override
+			public void dispose()
+			{
+				// nothing to do
+			}
+
+			@Override
+			public void inputChanged(org.eclipse.jface.viewers.Viewer viewer, Object oldInput, Object newInput)
+			{
+				// nothing to do
 			}
 		});
+	}
 
-		txtOutput.addMouseWheelListener(new MouseWheelListener() {
-			@Override
-			public void mouseScrolled(MouseEvent e) {
-				int count = e.count;
-				slider.setSelection(slider.getSelection()-count);
-				lockAutoScroll();
+	private void addFonts()
+	{
+		Label label = new Label(table, SWT.NONE);
+		if (defaultFont == null || defaultFont.isDisposed()) {
+			FontDescriptor fontDescriptorDefault = FontDescriptor.createFrom(label.getFont()).setStyle(PersoSimUILogEntry.DEFAULT_FONT_STYLE);
+			defaultFont = fontDescriptorDefault.createFont(table.getDisplay());
+			loggingArea.addDisposeListener(e -> defaultFont.dispose());
+		}
+		if (boldFont == null || boldFont.isDisposed()) {
+			FontDescriptor fontDescriptorBold = FontDescriptor.createFrom(label.getFont()).setStyle(SWT.BOLD);
+			boldFont = fontDescriptorBold.createFont(table.getDisplay());
+			loggingArea.addDisposeListener(e -> boldFont.dispose());
+		}
+	}
 
-				buildNewConsoleContent();
-			}
-		});
-
-		txtOutput.addKeyListener(new KeyListener() {
-
-			@Override
-			public void keyReleased(KeyEvent e) {}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				int sliderChange = 0;
-				boolean addLock = false;
-
-				switch (e.keyCode) {
-
-				case SWT.ARROW_DOWN:
-					sliderChange = 1;
-					break;
-				case SWT.ARROW_UP:
-					sliderChange = -1;
-					addLock = true;
-					break;
-				case SWT.PAGE_DOWN:
-					sliderChange = maxLineCount;
-					break;
-				case SWT.PAGE_UP:
-					sliderChange = -1* maxLineCount;
-					addLock = true;
-					break;
-				}
-
-				slider.setSelection(slider.getSelection()+sliderChange);
-
-				if (addLock) {
+	private void addEntrySelectionChangeListener()
+	{
+		// Selection listener (with programmatic flag)
+		logTableViewer.addSelectionChangedListener(event -> {
+			if (isProgrammaticSelection)
+				return;
+			IStructuredSelection selection = (IStructuredSelection) logTableViewer.getSelection();
+			PersoSimUILogEntry selectedEntry = (PersoSimUILogEntry) selection.getFirstElement();
+			boolean isVerticalScrollbarVisible = table.getVerticalBar().isVisible();
+			if (isVerticalScrollbarVisible) {
+				if (selectedEntry != null) {
+					// Handle the selected log entry
 					lockAutoScroll();
 				}
-
-				buildNewConsoleContent();
-
-			}
-		});
-
-		txtOutput.addListener(SWT.Resize, new Listener() {
-			public void handleEvent(Event e) {
-				//if the size of the text field changes the shown output should be readjusted
-				final LinkedListLogListener listener = Activator.getListLogListener();
-				if (listener == null) {
-					txtOutput.setText(
-							"The OSGi logging service can not be used.\nPlease check the availability and OSGi configuration"
-									+ System.lineSeparator());
-				} else {
-					buildNewConsoleContent();
-					showNewOutput();
+				else {
+					if (isVerticalBarAtBottom()) {
+						unlockAutoScroll();
+					}
+					else {
+						lockAutoScroll();
+					}
 				}
-
 			}
 		});
-		parent.setLayout(new GridLayout(2, false));
 
-		createConsoleIn(parent);
-
-		lockScroller = new Button(parent, SWT.TOGGLE);
-		lockScroller.setText(" lock ");
-		lockScroller.setAlignment(SWT.CENTER);
-		lockScroller.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent (Event e) {
-				if(locked){
+		table.addListener(SWT.MenuDetect, event -> {
+			Point pt = table.toControl(event.x, event.y);
+			TableItem selectedItem = table.getItem(pt);
+			if (selectedItem != null && table.isSelected(table.indexOf(selectedItem))) {
+				// Right-click on selected item
+				boolean isVerticalScrollbarVisible = table.getVerticalBar().isVisible();
+				if (!isVerticalScrollbarVisible) {
 					unlockAutoScroll();
-				}else{
-					lockAutoScroll();
 				}
 			}
 		});
-		updateThread = createUpdateThread();
-		updateThread.setDaemon(true);
-		updateThread.start();
+
 	}
 
-	private void lockAutoScroll() {
-		lockScroller.setText("unlock");
-		locked=true;
+
+	private boolean isVerticalBarAtBottom()
+	{
+		boolean isVerticalScrollbarVisible = table.getVerticalBar().isVisible();
+		if (!isVerticalScrollbarVisible)
+			return false;
+		int top = table.getTopIndex();
+		int visible = table.getClientArea().height / table.getItemHeight();
+		int last = table.getItemCount() - 1;
+		return (top + visible) >= last;
 	}
 
-	private void unlockAutoScroll() {
-		lockScroller.setText("lock");
-		locked=false;
-	}
-
-	private Thread createUpdateThread() {
-		final LinkedListLogListener listener = Activator.getListLogListener();
-		if (listener == null){
-			txtOutput.setText("The OSGi logging service can not be used.\nPlease check the availability and OSGi configuration" + System.lineSeparator());
-		}
-
-		uiThread = Display.getCurrent().getThread();
-		final Thread updateThread = new Thread() {
-			public void run() {
-				while (!isInterrupted() && uiThread.isAlive()) {
-					sync.syncExec(new Runnable() {
-						@Override
-						public void run() {
-							try {
-								if (checkForRefresh(listener)) {
-									listener.resetRefreshState();
-									buildNewConsoleContent();
-									Thread.sleep(50);
-									showNewOutput();
-								} else {
-									Thread.sleep(50);
-								}
-							} catch (InterruptedException e) {
-								// sleep got interrupted
-							}
-						}
-					});
+	private void addVerticalBarListener()
+	{
+		ScrollBar verticalBar = table.getVerticalBar();
+		verticalBar.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				if (e.detail == SWT.DRAG) {
+					wasDragging = true;
+				}
+				else if (e.detail == SWT.NONE && wasDragging) {
+					wasDragging = false;
+					if (isVerticalBarAtBottom()) {
+						unlockAutoScroll();
+					}
+					else {
+						lockAutoScroll();
+					}
 				}
 			}
-		};
-		return updateThread;
+		});
 	}
 
+	private Text createConsoleIn()
+	{
+		final Text txtIn = new Text(consoleArea, SWT.BORDER);
+		txtIn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		txtIn.setMessage("<Enter command here>");
+		txtIn.setToolTipText("Enter command here. Use array keys for command history.");
 
-	/**
-	 * Checks if a refresh of the logging part is necessary.
-	 *
-	 * @return true for refresh and false for no refresh
-	 */
-	private boolean checkForRefresh(LinkedListLogListener listener){
-
-		if(!txtOutput.isDisposed()){ //it is disposed when view not active
-			if(listener.isRefreshNeeded() && !locked){
-				return true;
-			} else if(txtOutput.getText().isEmpty() && listener.getNumberOfCachedLines()>0){
-				//empty log happens when view was closed and opened again -> force a refresh
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * This method creates the slider to be used in connection with the console output.
-	 * @param parentComposite a composite control which will be the parent of the new instance (cannot be null)
-	 * @return the slider to be used in connection with the console output
-	 */
-	private Slider createSlider(Composite parentComposite) {
-		Slider slider = new Slider(parentComposite, SWT.V_SCROLL);
-		slider.setIncrement(1);
-		slider.setPageIncrement(10);
-		if (Activator.getListLogListener() != null){
-			slider.setMaximum(Activator.getListLogListener().getNumberOfCachedLines()+slider.getThumb());
-		}
-		slider.setMinimum(0);
-		slider.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-
-		SelectionListener sliderListener = new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-
-				buildNewConsoleContent();
-
-			}
-		};
-		slider.addSelectionListener(sliderListener);
-		return slider;
-	}
-
-	/**
-	 * This function adds a new menu entry to the logging part.
-	 */
-	private void addConsoleOutMenu(Text console) {
-		Menu consoleMenu = createConsoleMenu(console);
-		console.setMenu(consoleMenu);
-	}
-
-	/**
-	 * This method creates the console input.
-	 * @param parent a composite control which will be the parent of the new instance (cannot be null)
-	 * @return the console input
-	 */
-	private Text createConsoleIn(Composite parent) {
-		final Text txtIn = new Text(parent, SWT.BORDER);
-		txtIn.setMessage("Enter command here");
+		createConsoleInCommandHistory(txtIn);
 
 		txtIn.addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyReleased(KeyEvent e) {
-				if((e.character == SWT.CR) || (e.character == SWT.LF)) {
+			public void keyReleased(KeyEvent e)
+			{
+				if ((e.character == SWT.CR) || (e.character == SWT.LF)) {
 					String line = txtIn.getText();
-					Activator.executeUserCommands(line, true);
+					Activator.executeUserCommands(line, false); // No overlay
 					txtIn.setText("");
 				}
 			}
 		});
 
-		txtIn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
 		return txtIn;
 	}
 
-	/**
-	 * This method creates the console output.
-	 * @param compositeParent a composite control which will be the parent of the new instance (cannot be null)
-	 * @return the console output
-	 */
-	private Text createConsoleOut(Composite compositeParent) {
-		Text txtOut = new Text(compositeParent, SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.MULTI);
-		txtOut.setEditable(false);
-		txtOut.setCursor(null);
-		txtOut.setLayoutData(new GridData(GridData.FILL_BOTH));
-		txtOut.setSelection(txtOut.getText().length());
-		txtOut.setTopIndex(txtOut.getLineCount() - 1);
+	private void createConsoleInCommandHistory(final Text txtIn)
+	{
+		// Command history buffer
+		java.util.List<String> commandHistory = new java.util.ArrayList<>();
+		int[] historyIndex = { -1 };
 
-		return txtOut;
-	}
-
-	/**
-	 * This method creates the console output menu.
-	 * @param controlParent a composite control which will be the parent of the new instance (cannot be null)
-	 * @return the console output menu
-	 */
-	private Menu createConsoleMenu(Control controlParent) {
-		final Control controlParentFinal = controlParent;
-
-		Menu consoleMenu = new Menu(controlParentFinal);
-
-		//copy menu
-		MenuItem copyItem = new MenuItem(consoleMenu, SWT.CASCADE);
-		copyItem.setText("Copy");
-		copyItem.setAccelerator(SWT.MOD1+ 'C');
-
-		copyItem.addSelectionListener(new SelectionListener() {
+		// Handle key events for history navigation
+		txtIn.addKeyListener(new KeyAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-
-				String selectedText = txtOutput.getSelectionText();
-
-				Clipboard clipboard = new Clipboard(e.display);
-				TextTransfer tt = TextTransfer.getInstance();
-
-				clipboard.setContents(new Object[] {selectedText}, new Transfer[]{tt});
-
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-
-		new MenuItem(consoleMenu, SWT.SEPARATOR);
-
-		//configure log level menu
-		MenuItem changeLogLevelItem = new MenuItem(consoleMenu, SWT.CASCADE);
-		changeLogLevelItem.setText("Configure logLevel");
-
-		changeLogLevelItem.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-
-				LogLevelDialog ld = new LogLevelDialog(null);
-				ld.open();
-
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-
-
-
-		//configure load personalization menu
-		MenuItem selectPersonalization = new MenuItem(consoleMenu, SWT.CASCADE);
-		selectPersonalization.setText("Load Personalization");
-
-		selectPersonalization.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-
-				SelectPersoFromFileHandler fileHandler = new SelectPersoFromFileHandler();
-				fileHandler.execute(controlParentFinal.getShell());
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-
-
-
-		// configure save log menu
-		MenuItem saveLogItem = new MenuItem(consoleMenu, SWT.CASCADE);
-		saveLogItem.setText("Save log to file");
-		saveLogItem.addSelectionListener(new SelectionListener() {
-
-			String logFileName;
-			File file;
-			PrintWriter writer;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-
-				try{
-					logFileName = "PersoSim_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".log";
-					file = new File(logFileName);
-					writer = new PrintWriter(file);
-					for (int i = 0; i < Activator.getListLogListener()
-							.getNumberOfCachedLines(); i++) {
-						writer.write(Activator.getListLogListener().getLine(i)+"\n");
+			public void keyPressed(KeyEvent e)
+			{
+				if (e.keyCode == SWT.ARROW_UP) {
+					if (commandHistory.isEmpty())
+						return;
+					if (historyIndex[0] < 0)
+						historyIndex[0] = commandHistory.size() - 1;
+					else if (historyIndex[0] > 0)
+						historyIndex[0]--;
+					txtIn.setText(commandHistory.get(historyIndex[0]));
+					txtIn.setSelection(txtIn.getText().length());
+				}
+				else if (e.keyCode == SWT.ARROW_DOWN) {
+					if (commandHistory.isEmpty())
+						return;
+					if (historyIndex[0] < commandHistory.size() - 1) {
+						historyIndex[0]++;
+						txtIn.setText(commandHistory.get(historyIndex[0]));
+						txtIn.setSelection(txtIn.getText().length());
 					}
-
-					MessageDialog.openInformation(txtOutput.getShell(), "Info", "Logfile written to " + file.getAbsolutePath());
-				}catch(IOException ioe){
-		            ioe.printStackTrace();
-		        } finally {
-		            if (writer != null){
-		                writer.flush();
-		                writer.close();
-		            }
-		        }
-
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-
-		return consoleMenu;
-	}
-
-	/**
-	 * changes the maximum of the slider and selects the
-	 * new Maximum to display the latest log messages
-	 */
-	private void rebuildSlider(){
-		sync.syncExec(new Runnable() {
-
-			@Override
-			public void run() {
-				if (Activator.getListLogListener() != null) {
-					slider.setMaximum(Activator.getListLogListener()
-							.getNumberOfCachedLines()
-							+ slider.getThumb()
-							- maxLineCount + 1);
+					else {
+						txtIn.setText("");
+						historyIndex[0] = -1;
+					}
+				}
+				else if (e.keyCode == SWT.CR) { // Enter pressed
+					String cmd = txtIn.getText().trim();
+					if (!cmd.isEmpty()) {
+						int commandCount = commandHistory.size();
+						if (commandCount == 0 || !cmd.equals(commandHistory.get(commandCount - 1)))
+							commandHistory.add(cmd);
+						historyIndex[0] = -1;
+					}
 				}
 			}
 		});
 	}
 
-
-	/**
-	 * takes the selected value from the Slider and prints the fitting messages
-	 * from the LinkedList until the Text field is full
-	 */
-	private void buildNewConsoleContent() {
-		if (Activator.getListLogListener() == null){
-			// if there is no log listener there is no content to be printed.
-			return;
+	private void lockAutoScroll()
+	{
+		if (!isLocked) {
+			isLocked = true;
 		}
+	}
 
-		// clean text field before filling it with the requested data
-		final StringBuilder strConsoleStrings = new StringBuilder();
+	private void unlockAutoScroll()
+	{
+		if (isLocked) {
+			isLocked = false;
+		}
+	}
 
-		// calculates how many lines can be shown without cutting
-
-		maxLineCount = ( txtOutput.getBounds().height - txtOutput.getHorizontalBar().getThumbBounds().height ) / txtOutput.getLineHeight();
-
-
-		//synchronized is used to avoid IndexOutOfBoundsExceptions
-		synchronized (Activator.getListLogListener()) {
-			int listSize = Activator.getListLogListener().getNumberOfCachedLines();
-			// value is needed to stop writing in the console when the end in
-			// the list is reached
-			try {
-				int linesToShow = listSize - slider.getMaximum() + slider.getThumb();
-				int sliderSelection = slider.getSelection();
-				if (listSize > 0 && linesToShow == 0)
-				{
-					// hack
-					linesToShow = listSize;
-					sliderSelection = 0;
+	private void addDynamicTooltip()
+	{
+		DefaultToolTip toolTip = new DefaultToolTip(table, org.eclipse.jface.window.ToolTip.RECREATE, false);
+		toolTip.setShift(new Point(10, 10));
+		toolTip.setHideOnMouseDown(false);
+		toolTip.setBackgroundColor(table.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+		table.setToolTipText("");
+		int delayDefault = 300;
+		int delayMax = Integer.MAX_VALUE;
+		toolTip.setPopupDelay(delayDefault);
+		table.addListener(SWT.MouseMove, event -> {
+			TableItem item = table.getItem(new Point(event.x, event.y));
+			if (item != null) {
+				int x = event.x;
+				int col = -1;
+				int cumWidth = 0;
+				for (int i = 0; i < table.getColumnCount(); i++) {
+					cumWidth += table.getColumn(i).getWidth();
+					if (x < cumWidth) {
+						col = i;
+						break;
+					}
 				}
-				// Fill text field with selected data
-				for (int i = 0; i < linesToShow; i++) {
-
-					strConsoleStrings.append(Activator.getListLogListener().getLine(sliderSelection + i));
-					strConsoleStrings.append("\n");
+				if (col >= 0) {
+					Object data = item.getData();
+					if (data instanceof PersoSimUILogEntry entry) {
+						String text = switch (col) {
+							case 0 -> entry.getTimeStamp();
+							case 1 -> entry.getLogLevel().name();
+							case 2 -> PersoSimUILogFormatter.format(entry.getLogTags(), PersoSimUILogFormatter.NO_TAGS_AVAILABLE_INFO);
+							case 3 -> entry.getLogContent();
+							default -> "";
+						};
+						toolTip.setText(text);
+						toolTip.setForegroundColor(table.getDisplay().getSystemColor(entry.getColorId()));
+						toolTip.setPopupDelay(delayDefault);
+						if (entry.getFontStyle() == SWT.BOLD)
+							toolTip.setFont(boldFont);
+						else
+							toolTip.setFont(defaultFont);
+						return;
+					}
 				}
-				sliderSelection = slider.getSelection(); // hack back
-			} catch ( Exception e) {
-				e.printStackTrace();
-			}//IMPL PokémonException
+			}
+			toolTip.setText("");
+			toolTip.setPopupDelay(delayMax); // hide() does not work properly
+		});
+
+		table.addListener(SWT.MouseExit, event -> {
+			toolTip.setText("");
+			toolTip.setPopupDelay(delayMax);
+		});
+	}
+
+	private void changeSelectionColors()
+	{
+		Display display = table.getDisplay();
+		Color selectionBackground = display.getSystemColor(SWT.COLOR_GRAY);
+		Color selectionForeground = display.getSystemColor(SWT.COLOR_WHITE);
+
+		table.addListener(SWT.EraseItem, event -> {
+			TableItem item = (TableItem) event.item;
+			boolean isSelected = false;
+			for (TableItem selected : table.getSelection()) {
+				if (selected == item) {
+					isSelected = true;
+					break;
+				}
+			}
+			if (isSelected) {
+				event.gc.setBackground(selectionBackground);
+				event.gc.setForeground(selectionForeground);
+				event.gc.fillRectangle(event.getBounds());
+				event.detail &= ~SWT.SELECTED;
+			}
+		});
+	}
+
+	private void createColumns()
+	{
+		TableLayout tableLayout = new TableLayout();
+		table.setLayout(tableLayout);
+
+		for (int i = 0; i < COLUMN_TITLES.length; i++) {
+			tableLayout.addColumnData(new ColumnWeightData(COLUMN_WEIGHTS[i], COLUMN_MIN_WIDTHS[i], true));
+			createTableViewerColumn(COLUMN_TITLES[i], SWT.LEFT);
 		}
+	}
 
-		int curLastPosition = slider.getSelection() + slider.getThumb();
-		if (curLastPosition == slider.getMaximum()) {
-			unlockAutoScroll();
-		}
+	private TableViewerColumn createTableViewerColumn(String title, int alignment)
+	{
+		TableViewerColumn viewerColumn = new TableViewerColumn(logTableViewer, alignment);
+		TableColumn column = viewerColumn.getColumn();
+		column.setText(title);
+		column.setResizable(true);
+		column.setMoveable(true);
+		return viewerColumn;
+	}
 
+	private void addResizeListenerForLastColumn()
+	{
+		table.addListener(SWT.Resize, event -> {
+			TableColumn[] columns = table.getColumns();
+			if (columns.length == 0)
+				return;
 
-		// send the StringBuilder data to the console field
-		sync.syncExec(new Runnable() {
+			int totalWidth = table.getClientArea().width;
+			int fixedWidth = 0;
+			for (int i = 0; i < columns.length - 1; i++) {
+				fixedWidth += columns[i].getWidth();
+			}
+			int lastColWidth = Math.max(100, totalWidth - fixedWidth);
+			columns[columns.length - 1].setWidth(lastColWidth);
+		});
+	}
+
+	private static final int MIN_ROW_HEIGHT = 20; // Minimal cell height in table
+
+	private void setLabelProvider()
+	{
+		Display display = table.getDisplay();
+		logTableViewer.setLabelProvider(new OwnerDrawLabelProvider() {
+			@Override
+			protected void measure(Event event, Object element)
+			{
+				if (isMultiLineLogEnabled) {
+					PersoSimUILogEntry entry = (PersoSimUILogEntry) element;
+					int column = event.index;
+					int height = MIN_ROW_HEIGHT;
+					if (column == 3) { // MultiLine only for column with log content
+						String colContent = entry.getLogContent();
+						String[] lines = colContent.split("\\R");
+						int totalHeight = 0;
+						for (String line : lines) {
+							Point extent = event.gc.textExtent(line);
+							totalHeight += extent.y;
+						}
+
+						// Add padding and set row height
+						int padding = 4;
+						height = Math.max(totalHeight + padding, MIN_ROW_HEIGHT);
+					}
+					event.height = Math.max(event.height, height);
+				}
+				else
+					event.height = MIN_ROW_HEIGHT;
+			}
 
 			@Override
-			public void run() {
+			protected void paint(Event event, Object element)
+			{
+				PersoSimUILogEntry entry = (PersoSimUILogEntry) element;
+				Color color = display.getSystemColor(entry.getColorId());
+				event.gc.setForeground(color != null ? color : display.getSystemColor(SWT.COLOR_BLACK));
+				if (entry.getFontStyle() == SWT.BOLD) {
+					event.gc.setFont(boldFont);
+				}
+				else {
+					event.gc.setFont(defaultFont);
+				}
+
+				int column = event.index;
+				String colContent = "";
+				switch (column) {
+					case 0:
+						colContent = entry.getTimeStamp();
+						break;
+					case 1:
+						colContent = entry.getLogLevel().name();
+						break;
+					case 2:
+						colContent = PersoSimUILogFormatter.format(entry.getLogTags(), null);
+						break;
+					case 3:
+						colContent = entry.getLogContent();
+						break;
+					default:
+						// not possible; internal error
+						break;
+				}
+
+				if (!isMultiLineLogEnabled && column == 3) {
+					String[] colContentParts = colContent.split("\\R");
+					int noParts = colContentParts.length;
+					if (noParts > 1) {
+						StringBuilder colContentSingleLine = new StringBuilder();
+						for (int i = 0; i < noParts; i++) {
+							String part = colContentParts[i];
+							colContentSingleLine.append(part);
+							if (i < colContentParts.length - 1)
+								colContentSingleLine.append(" | ");
+						}
+						colContent = colContentSingleLine.toString();
+					}
+					event.gc.drawText(colContent, event.x + 3, event.y + 3, true);
+				}
+				else if (isMultiLineLogEnabled && column == 3) {
+					String[] lines = colContent.split("\\R");
+					int x = event.x + 3;
+					int y = event.y + 3;
+					for (String line : lines) {
+						event.gc.drawText(line, x, y, true);
+						y += event.gc.textExtent(line).y;
+					}
+				}
+				else {
+					event.gc.drawText(colContent, event.x + 3, event.y + 3, true);
+				}
+			}
+		});
+	}
+
+	private void addContextMenu()
+	{
+		Menu contextMenu = new Menu(table);
+		table.setMenu(contextMenu);
+
+		addContextMenuCopy(contextMenu);
+		new MenuItem(contextMenu, SWT.SEPARATOR);
+		addContextMenuLogLevel(contextMenu);
+		addContextMenuLoadPersonalization(contextMenu);
+		addContextMenuSaveLogToFile(contextMenu);
+		new MenuItem(contextMenu, SWT.SEPARATOR);
+		addContextMenuLogMultiLineLog(contextMenu);
+
+		MenuItem submenuItem = new MenuItem(contextMenu, SWT.CASCADE);
+		submenuItem.setText("Columns visibility");
+		Menu submenu = new Menu(contextMenu);
+		submenuItem.setMenu(submenu);
+
+		for (TableColumn tableColumn : table.getColumns()) {
+			createColumnVisibilityItem(submenu, tableColumn);
+		}
+	}
+
+	private void addContextMenuCopy(Menu contextMenu)
+	{
+		MenuItem copyItem = new MenuItem(contextMenu, SWT.CASCADE);
+		copyItem.setText("&Copy selected entries");
+		copyItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				copySelectedRowsToClipboard();
+			}
+		});
+	}
+
+	public void copySelectedRowsToClipboard()
+	{
+		IStructuredSelection selection = (IStructuredSelection) logTableViewer.getSelection();
+		if (!selection.isEmpty()) {
+			StringBuilder selectedText = new StringBuilder();
+			for (Object obj : selection.toArray()) {
+				selectedText.append(PersoSimUILogFormatter.format((PersoSimUILogEntry) obj)).append('\n');
+			}
+			Clipboard clipboard = new Clipboard(table.getDisplay());
+			TextTransfer textTransfer = TextTransfer.getInstance();
+			clipboard.setContents(new Object[] { selectedText.toString() }, new Transfer[] { textTransfer });
+			clipboard.dispose();
+		}
+	}
+
+	public void addCtrlListener()
+	{
+		table.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e)
+			{
+				if ((e.stateMask & SWT.CTRL) != 0 && (e.keyCode == 'c' || e.keyCode == 'C')) {
+					copySelectedRowsToClipboard();
+				}
+				else if ((e.stateMask & SWT.CTRL) != 0 && (e.keyCode == 'a' || e.keyCode == 'A')) {
+					table.selectAll();
+				}
+			}
+		});
+	}
+
+	private void addContextMenuLogLevel(Menu contextMenu)
+	{
+		MenuItem changeLogLevelItem = new MenuItem(contextMenu, SWT.CASCADE);
+		changeLogLevelItem.setText("Configure Log Levels && Tags");
+		changeLogLevelItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				new LogLevelDialog(table.getShell()).open();
+			}
+		});
+	}
+
+	private void addContextMenuLoadPersonalization(Menu contextMenu)
+	{
+		MenuItem selectPersonalization = new MenuItem(contextMenu, SWT.CASCADE);
+		selectPersonalization.setText("Load Personalization");
+		selectPersonalization.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				new SelectPersoFromFileHandler().execute(table.getShell());
+			}
+		});
+	}
+
+
+	private void addContextMenuSaveLogToFile(Menu contextMenu)
+	{
+		MenuItem saveLogItem = new MenuItem(contextMenu, SWT.CASCADE);
+		saveLogItem.setText("Save log to file");
+		saveLogItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
 				try {
-				txtOutput.setText(strConsoleStrings.toString());
-				} catch(Exception e) {
-					//IMPL PokémonException
+					String logFileName = "PersoSim_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".log";
+					File file = new File(logFileName);
+					LinkedListLogListener listener = Activator.getListLogListener();
+					int count = listener.getNumberOfCachedEntries();
+					try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)))) {
+						for (int i = 0; i < count; i++) {
+							writer.write(PersoSimUILogFormatter.format(listener.getEntry(i)));
+							writer.write('\n');
+						}
+					}
+					MessageDialog.openInformation(table.getShell(), "Info", "Logfile written to " + file.getAbsolutePath());
 				}
-
+				catch (IOException ioe) {
+					BasicLogger.logException(getClass(), ioe);
+				}
 			}
 		});
-
 	}
 
-	/**
-	 * controls slider selection (auto scrolling)
-	 */
-	public void showNewOutput() {
-		if (uiThread.isAlive() && !uiThread.isInterrupted()) {
-			sync.syncExec(new Runnable() {
-				@Override
-				public void run() {
-					rebuildSlider();
-					slider.setSelection(slider.getMaximum());
+
+	private void addContextMenuLogMultiLineLog(Menu contextMenu)
+	{
+		MenuItem menuItem = new MenuItem(contextMenu, SWT.CHECK);
+		menuItem.setText("MultiLine log");
+		menuItem.setSelection(isMultiLineLogEnabled);
+		menuItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				isMultiLineLogEnabled = menuItem.getSelection();
+				createTableViewerAndTable();
+			}
+		});
+	}
+
+	private void createColumnVisibilityItem(Menu parent, final TableColumn column)
+	{
+		final MenuItem menuItem = new MenuItem(parent, SWT.CHECK);
+		menuItem.setText(column.getText());
+		menuItem.setSelection(column.getWidth() > 0);
+		menuItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				if (menuItem.getSelection()) {
+					int width = columnWidths.getOrDefault(column, 150);
+					column.setWidth(width);
+					column.setResizable(true);
 				}
-			});
-		}
+				else {
+					columnWidths.put(column, column.getWidth());
+					column.setWidth(0);
+					column.setResizable(false);
+				}
+			}
+		});
+	}
 
+	private void refreshLogTable()
+	{
+		LinkedListLogListener listener = Activator.getListLogListener();
+		if (listener != null && !isLocked) {
+			int count = listener.getNumberOfCachedEntries();
+			if (count == 0)
+				return;
+			if (count != lastLogCount) {
+				logTableViewer.setItemCount(count);
+				lastLogCount = count;
+			}
+			logTableViewer.refresh(false); // Only refresh visible rows
+
+			boolean isVerticalScrollbarVisible = table.getVerticalBar().isVisible();
+			if (isVerticalScrollbarVisible) {
+				scrollToEnd();
+			}
+		}
+	}
+
+
+	private void scrollToEnd()
+	{
+		int itemCount = table.getItemCount();
+		if (itemCount > 0) {
+			isProgrammaticSelection = true;
+			table.setSelection(itemCount - 1);
+			table.showSelection();
+			isProgrammaticSelection = false;
+		}
 	}
 
 	/**
-	 * This method closes the part and interrupts all threads if needed.
+	 * Update Thread for refreshing log view
 	 */
+	private void startUpdateThread()
+	{
+		if (updateThread != null)
+			return;
+		updateThread = new Thread(() -> {
+			while (!Thread.currentThread().isInterrupted()) {
+				sync.syncExec(this::refreshLogTable);
+				try {
+					Thread.sleep(500); // Update interval for log view
+				}
+				catch (InterruptedException e) {
+					System.out.println("ERROR: Logging interrupted: " + e.getMessage()); // NOSONAR
+					BasicLogger.logException(getClass(), "ERROR: Logging interrupted", e);
+					Thread.currentThread().interrupt();
+					break;
+				}
+			}
+		});
+		updateThread.setDaemon(true);
+		updateThread.start();
+	}
+
 	@PreDestroy
-	public void closePersoSimView() {
-		if(updateThread.isAlive()) {
+	public void onDestroy()
+	{
+		if (updateThread != null && updateThread.isAlive()) {
 			updateThread.interrupt();
 		}
 	}
 
 	@Focus
-	public void setFocus() {
-		txtOutput.setFocus();
+	public void setFocus()
+	{
+		logTableViewer.getControl().setFocus();
 	}
-
-	@Override
-	public String toString() {
-		return "OutputHandler here!";
-	}
-
 }

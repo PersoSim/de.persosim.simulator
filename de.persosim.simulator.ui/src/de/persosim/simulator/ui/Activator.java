@@ -14,7 +14,6 @@ import org.osgi.util.tracker.ServiceTracker;
 import de.persosim.driver.connector.DriverConnectorFactory;
 import de.persosim.driver.connector.service.IfdConnector;
 import de.persosim.simulator.CommandParser;
-import de.persosim.simulator.ui.parts.PersoSimPart;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
 
 /**
@@ -24,24 +23,28 @@ import de.persosim.simulator.ui.utils.LinkedListLogListener;
  * @author mboonk
  *
  */
-public class Activator implements BundleActivator {
-
+public class Activator implements BundleActivator
+{
+	private static final int MAXIMUM_CACHED_CONSOLE_LINES = 100000;
+	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(MAXIMUM_CACHED_CONSOLE_LINES);
 	private static BundleContext context;
-	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(PersoSimPart.MAXIMUM_CACHED_CONSOLE_LINES);
 	private static ServiceTracker<DriverConnectorFactory, DriverConnectorFactory> serviceTrackerDriverConnectorFactory;
 	public static final int DEFAULT_PORT = 5678;
 	public static final String DEFAULT_HOST = "localhost";
 	public static IfdConnector connector = null;
 
-	static BundleContext getContext() {
+	static BundleContext getContext()
+	{
 		return context;
 	}
 
-	public static LinkedListLogListener getListLogListener(){
+	public static LinkedListLogListener getListLogListener()
+	{
 		return linkedListLogger;
 	}
 
-	public static void executeUserCommands(String command, boolean withOverlayProfile){
+	public static void executeUserCommands(String command, boolean withOverlayProfile)
+	{
 
 		String[] commands = CommandParser.parseCommand(command);
 		boolean cmdLoadPerso = false;
@@ -49,7 +52,8 @@ public class Activator implements BundleActivator {
 			cmdLoadPerso = true;
 		}
 		CommandParser.executeUserCommands(withOverlayProfile, commands);
-		if(commands.length == 0) return; //just do nothing.
+		if (commands.length == 0)
+			return; // just do nothing.
 		if (cmdLoadPerso) {
 			resetNativeDriver();
 		}
@@ -60,9 +64,11 @@ public class Activator implements BundleActivator {
 
 	/*
 	 * (non-Javadoc)
+	 *
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(final BundleContext context) throws Exception {
+	public void start(final BundleContext context) throws Exception
+	{
 		Activator.context = context;
 
 		serviceTrackerDriverConnectorFactory = new ServiceTracker<>(context, DriverConnectorFactory.class.getName(), null);
@@ -74,37 +80,44 @@ public class Activator implements BundleActivator {
 
 	/*
 	 * (non-Javadoc)
+	 *
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {
-        BasicLogger.removeLogListener(linkedListLogger);
+	public void stop(BundleContext context) throws Exception
+	{
+		BasicLogger.removeLogListener(linkedListLogger);
 
 		Activator.context = null;
 		serviceTrackerDriverConnectorFactory.close();
 	}
 
-	public static void resetNativeDriver() {
+	public static void resetNativeDriver()
+	{
 		try {
 			connector = serviceTrackerDriverConnectorFactory.getService().getConnector(de.persosim.driver.connector.Activator.PERSOSIM_CONNECTOR_CONTEXT_ID);
 			connector.reconnect();
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			log(Activator.class, "Exception: " + e.getMessage(), LogLevel.ERROR);
 		}
 	}
 
-	public static void disconnectFromNativeDriver() {
+	public static void disconnectFromNativeDriver()
+	{
 		try {
 			connector = serviceTrackerDriverConnectorFactory.getService().getConnector(de.persosim.driver.connector.Activator.PERSOSIM_CONNECTOR_CONTEXT_ID);
 
 			if (connector != null) {
 				serviceTrackerDriverConnectorFactory.getService().returnConnector(connector);
 			}
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			log(Activator.class, "Exception: " + e.getMessage(), LogLevel.ERROR);
 		}
 	}
 
-	public static IfdConnector getConnector(){
+	public static IfdConnector getConnector()
+	{
 		return connector;
 	}
 }

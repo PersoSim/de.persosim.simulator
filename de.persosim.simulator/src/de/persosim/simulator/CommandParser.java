@@ -302,7 +302,7 @@ public class CommandParser {
 		if (withOverlayProfile)
 			ProfileHelper.handleOverlayProfile(perso);
 		else
-			log(ProfileHelper.class, "Personalization for identifier '" + identifier + "' (Profile: '" + perso.getClass().getSimpleName() + "') will NOT be overlaid.", LogLevel.INFO);
+			log(CommandParser.class, "Personalization for identifier '" + identifier + "' (Profile: '" + perso.getClass().getSimpleName() + "') will NOT be overlaid.", LogLevel.INFO);
 
 		return perso;
 	}
