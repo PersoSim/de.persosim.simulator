@@ -17,7 +17,7 @@ public class ProfileUB05 extends AbstractProfile {
 		persoDataContainer = PersonalizationDataContainer.getDefaultContainer();
 		persoDataContainer.setDg1PlainData("UB");
 //		persoDataContainer.setDg3PlainData("20291031");
-		persoDataContainer.setDg3PlainData("20340630");
+		persoDataContainer.setDg3PlainData("20350630");
 		persoDataContainer.setDg4PlainData("ÅSA");
 		persoDataContainer.setDg5PlainData("LÆRKE");
 		persoDataContainer.setDg8PlainData("19950612");

@@ -15,7 +15,7 @@ public class Profile03 extends AbstractProfile {
 	@Override
 	public void setPersoDataContainer() {
 		persoDataContainer = PersonalizationDataContainer.getDefaultContainer();
-		persoDataContainer.setDg3PlainData("20340630");
+		persoDataContainer.setDg3PlainData("20350630");
 		persoDataContainer.setDg4PlainData("JOHANNA EDELTRAUT LISBETH");
 		persoDataContainer.setDg5PlainData("MUSTERMANN");
 		persoDataContainer.setDg6PlainData("ORDENSSCHWESTER JOHANNA");
