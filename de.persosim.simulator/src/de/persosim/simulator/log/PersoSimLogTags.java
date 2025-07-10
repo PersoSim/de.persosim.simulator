@@ -10,7 +10,7 @@ public final class PersoSimLogTags
 	public static final String APDU_TAG_ID = "APDU";
 	public static final String PERSO_TAG_ID = "Perso";
 	public static final String VIRTUAL_DRIVER_TAG_ID = "Virtual Driver";
-	public static final String VSMARTCARD_TAG_ID = "VSmartCard";
+	public static final String VSMARTCARD_TAG_ID = "VSmartcard";
 	public static final String REMOTE_IFD_TAG_ID = "Remote IFD";
 	public static final String COMMAND_PROCESSOR_TAG_ID = "Cmd Processor";
 	public static final String PROTOCOL_TAG_ID = "Protocol";
