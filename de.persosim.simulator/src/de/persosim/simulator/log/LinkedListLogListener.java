@@ -1,4 +1,4 @@
-package de.persosim.simulator.ui.utils;
+package de.persosim.simulator.log;
 
 import java.util.LinkedList;
 
@@ -14,7 +14,7 @@ import org.globaltester.logging.format.LogFormatService;
 import org.osgi.service.log.LogListener;
 
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
-import de.persosim.simulator.ui.LogHelper;
+import de.persosim.simulator.preferences.PreferenceConstants;
 
 /**
  * This {@link LogListener} implementation is used to write log entries
@@ -22,7 +22,7 @@ import de.persosim.simulator.ui.LogHelper;
  */
 public class LinkedListLogListener extends AbstractLogListener
 {
-	private LinkedList<PersoSimUILogEntry> list = new LinkedList<>();
+	private LinkedList<PersoSimLogEntry> list = new LinkedList<>();
 	private int maxLines;
 	private boolean haveToRefresh;
 
@@ -37,23 +37,23 @@ public class LinkedListLogListener extends AbstractLogListener
 	{
 		LogListenerConfig lrc = new LogListenerConfig() {
 
-			private LogFormatService formatter = new PersoSimUILogFormatter();
+			private LogFormatService formatter = new PersoSimLogFormatter();
 			private LogFilter filter = null;
 
 			@Override
 			public LogFilter getFilter()
 			{
 				if (filter == null && haveToRefresh) {
-					String preferenceLogLevels = PersoSimPreferenceManager.getPreference(LogHelper.PREF_LOG_LEVELS);
-					String preferenceLogTags = PersoSimPreferenceManager.getPreference(LogHelper.PREF_LOG_TAGS);
+					String preferenceLogLevels = PersoSimPreferenceManager.getPreference(PreferenceConstants.PREF_LOG_LEVELS, false);
+					String preferenceLogTags = PersoSimPreferenceManager.getPreference(PreferenceConstants.PREF_LOG_TAGS, false);
 					LogFilter filterLogLevels = null;
 					if (preferenceLogLevels != null) {
-						String[] levels = preferenceLogLevels.split(LogHelper.PREF_DELIMITER);
+						String[] levels = preferenceLogLevels.split(PreferenceConstants.PREF_DELIMITER);
 						filterLogLevels = new TagFilter(BasicLogger.LOG_LEVEL_TAG_ID, levels);
 					}
 					LogFilter filterLogTags = null;
 					if (preferenceLogTags != null) {
-						String[] tags = preferenceLogTags.split(LogHelper.PREF_DELIMITER);
+						String[] tags = preferenceLogTags.split(PreferenceConstants.PREF_DELIMITER);
 						filterLogTags = new PersoSimTagFilter(BasicLogger.LOG_TAG_TAG_ID, tags);
 					}
 					if (preferenceLogLevels != null && preferenceLogTags == null)
@@ -96,7 +96,7 @@ public class LinkedListLogListener extends AbstractLogListener
 	 * @throws IndexOutOfBoundsException
 	 *             if index is invalid
 	 */
-	public PersoSimUILogEntry getEntry(int index)
+	public PersoSimLogEntry getEntry(int index)
 	{
 		synchronized (this) {
 			return list.get(index);
@@ -122,8 +122,8 @@ public class LinkedListLogListener extends AbstractLogListener
 	@Override
 	public void log(Message msg)
 	{
-		if (config.getFilter().matches(msg)) {
-			PersoSimUILogEntry entry = ((PersoSimUILogFormatter) config.getFormat()).getLogEntry(msg);
+		if (config.getFilter() != null && config.getFilter().matches(msg)) {
+			PersoSimLogEntry entry = ((PersoSimLogFormatter) config.getFormat()).getLogEntry(msg);
 			synchronized (this) {
 				if (list.size() >= maxLines) {
 					list.removeFirst();

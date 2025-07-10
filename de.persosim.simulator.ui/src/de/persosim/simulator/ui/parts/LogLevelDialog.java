@@ -15,11 +15,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.globaltester.logging.tags.LogLevel;
 
-import de.persosim.simulator.PersoSimLogTags;
+import de.persosim.simulator.log.PersoSimLogFormatter;
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
-import de.persosim.simulator.ui.Activator;
-import de.persosim.simulator.ui.LogHelper;
-import de.persosim.simulator.ui.utils.PersoSimUILogFormatter;
+import de.persosim.simulator.preferences.PreferenceConstants;
 
 public class LogLevelDialog extends Dialog
 {
@@ -49,7 +48,7 @@ public class LogLevelDialog extends Dialog
 		Label lblInfo = new Label(logLevelGroup, SWT.NONE);
 		lblInfo.setText("Select the log levels to view:");
 
-		String levels = PersoSimPreferenceManager.getPreference(LogHelper.PREF_LOG_LEVELS);
+		String levels = PersoSimPreferenceManager.getPreference(PreferenceConstants.PREF_LOG_LEVELS);
 		btnLogLevels = new Button[LogLevel.values().length];
 		for (int i = 0; i < LogLevel.values().length; i++) {
 			LogLevel logLevel = LogLevel.values()[i];
@@ -70,7 +69,7 @@ public class LogLevelDialog extends Dialog
 		Label lblTagInfo = new Label(logTagGroup, SWT.NONE);
 		lblTagInfo.setText("Select the log tags to view:");
 		btnLogTags = new Button[allTags.size() + 1];
-		String tagsPref = PersoSimPreferenceManager.getPreference(LogHelper.PREF_LOG_TAGS);
+		String tagsPref = PersoSimPreferenceManager.getPreference(PreferenceConstants.PREF_LOG_TAGS);
 
 		for (int i = 0; i < allTags.size(); i++) {
 			String tag = allTags.get(i);
@@ -84,9 +83,9 @@ public class LogLevelDialog extends Dialog
 		// Handle NO_TAGS_AVAILABLE_INFO
 		int noTagsEntryIndex = allTags.size();
 		btnLogTags[noTagsEntryIndex] = new Button(logTagGroup, SWT.CHECK);
-		btnLogTags[noTagsEntryIndex].setText(PersoSimUILogFormatter.NO_TAGS_AVAILABLE_INFO);
+		btnLogTags[noTagsEntryIndex].setText(PersoSimLogFormatter.NO_TAGS_AVAILABLE_INFO);
 		btnLogTags[noTagsEntryIndex].setToolTipText("Show log entries without any tag");
-		boolean selected = (tagsPref == null) || tagsPref.contains(PersoSimUILogFormatter.NO_TAGS_AVAILABLE_INFO);
+		boolean selected = (tagsPref == null) || tagsPref.contains(PersoSimLogFormatter.NO_TAGS_AVAILABLE_INFO);
 		btnLogTags[noTagsEntryIndex].setSelection(selected);
 
 		return mainComposite;
@@ -103,29 +102,29 @@ public class LogLevelDialog extends Dialog
 	protected void okPressed()
 	{
 		// Save LogLevel
-		StringJoiner levelJoiner = new StringJoiner(LogHelper.PREF_DELIMITER);
+		StringJoiner levelJoiner = new StringJoiner(PreferenceConstants.PREF_DELIMITER);
 		for (int i = 0; i < btnLogLevels.length; i++) {
 			if (btnLogLevels[i].getSelection()) {
 				levelJoiner.add(LogLevel.values()[i].name());
 			}
 		}
-		PersoSimPreferenceManager.storePreference(LogHelper.PREF_LOG_LEVELS, levelJoiner.toString());
+		PersoSimPreferenceManager.storePreference(PreferenceConstants.PREF_LOG_LEVELS, levelJoiner.toString());
 
 		// Save LogTags
-		StringJoiner tagJoiner = new StringJoiner(LogHelper.PREF_DELIMITER);
+		StringJoiner tagJoiner = new StringJoiner(PreferenceConstants.PREF_DELIMITER);
 		for (int i = 0; i < btnLogTags.length; i++) {
 			if (btnLogTags[i].getSelection()) {
 				// Handle NO_TAGS_AVAILABLE_INFO
 				if (i != btnLogTags.length - 1)
 					tagJoiner.add(allTags.get(i));
 				else
-					tagJoiner.add(PersoSimUILogFormatter.NO_TAGS_AVAILABLE_INFO);
+					tagJoiner.add(PersoSimLogFormatter.NO_TAGS_AVAILABLE_INFO);
 			}
 		}
-		PersoSimPreferenceManager.storePreference(LogHelper.PREF_LOG_TAGS, tagJoiner.toString());
+		PersoSimPreferenceManager.storePreference(PreferenceConstants.PREF_LOG_TAGS, tagJoiner.toString());
 
-		Activator.getListLogListener().setRefreshState(true);
-		Activator.getListLogListener().updateConfig();
+		de.persosim.simulator.Activator.getListLogListener().setRefreshState(true);
+		de.persosim.simulator.Activator.getListLogListener().updateConfig();
 
 		super.okPressed();
 	}

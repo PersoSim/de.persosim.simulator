@@ -31,6 +31,7 @@ import org.globaltester.cryptoprovider.Crypto;
 import org.globaltester.cryptoprovider.bc.CryptoProviderUtil;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
 
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -40,6 +41,7 @@ import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
 import de.persosim.simulator.platform.CommandProcessor;
@@ -77,7 +79,7 @@ public abstract class ProfileHelper
 	public static synchronized IniPreferenceStoreAccessor getPreferenceStoreAccessorInstance()
 	{
 		if (getRootPathPersoFiles() == null) {
-			BasicLogger.log(ProfileHelper.class, "Personalization root path not set", LogLevel.ERROR);
+			BasicLogger.log("Personalization root path not set", LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 		if (preferenceStoreAccessor == null) {
 			preferenceStoreAccessor = new IniPreferenceStoreAccessor(Paths.get(getRootPathPersoFiles().getParent().toAbsolutePath().toString(), OVERLAY_PROFILES_PREFS_FILE));
@@ -88,7 +90,7 @@ public abstract class ProfileHelper
 	public static synchronized void setRootPathPersoFiles(Path rootPathPersoFilesToSet)
 	{
 		rootPathPersoFiles = rootPathPersoFilesToSet;
-		log(ProfileHelper.class, "Personalization root path is '" + rootPathPersoFiles.toAbsolutePath().toString() + "'.", LogLevel.INFO);
+		log("Personalization root path is '" + rootPathPersoFiles.toAbsolutePath().toString() + "'.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		String rootAbsPathPersoFilesAsString = rootPathPersoFiles.toAbsolutePath().toString();
 		Path rootPathOverlays = null;
 		String rootPathOverlaysCfg = getPreferenceStoreAccessorInstance().get(ProfileHelper.OVERLAY_PROFILES_FILES_ROOT_PATH);
@@ -97,7 +99,7 @@ public abstract class ProfileHelper
 			if (rootPathOverlaysCfg.contains("$HOME")) {
 				String userHome = System.getProperty("user.home");
 				if (userHome == null)
-					BasicLogger.log(ProfileHelper.class, "$HOME configured, but not set (user.home = null)", LogLevel.ERROR);
+					BasicLogger.log("$HOME configured, but not set (user.home = null)", LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 				rootPathOverlaysCfg = rootPathOverlaysCfg.replace("$HOME", userHome);
 			}
 			rootPathOverlays = Path.of(rootPathOverlaysCfg);
@@ -105,21 +107,22 @@ public abstract class ProfileHelper
 				Files.createDirectories(rootPathOverlays);
 			}
 			catch (IOException e) {
-				BasicLogger.logException(ProfileHelper.class, e);
+				BasicLogger.logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			}
 
 			if (Files.exists(rootPathOverlays) && Files.isDirectory(rootPathOverlays)) {
-				log(ProfileHelper.class, "Configured Overlays Profiles root path is '" + rootPathOverlays + "'.", LogLevel.INFO);
+				log("Configured Overlays Profiles root path is '" + rootPathOverlays + "'.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 				rootPathProfileOverlays = rootPathOverlays;
 				return;
 			}
 			else {
-				log(ProfileHelper.class, "Configured Overlays Profiles root path '" + rootPathOverlays + "' does not exist or is not a directory. Default path will be used.", LogLevel.WARN);
+				log("Configured Overlays Profiles root path '" + rootPathOverlays + "' does not exist or is not a directory. Default path will be used.", LogLevel.WARN,
+						new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			}
 		}
 		rootPathProfileOverlays = Path
 				.of(rootAbsPathPersoFilesAsString.substring(0, rootAbsPathPersoFilesAsString.lastIndexOf(ProfileHelper.PERSO_FILES_PARENT_DIR)) + ProfileHelper.OVERLAY_PROFILES_FILES_PARENT_DIR);
-		log(ProfileHelper.class, "Overlays Profiles root path is '" + rootPathProfileOverlays + "'.", LogLevel.INFO);
+		log("Overlays Profiles root path is '" + rootPathProfileOverlays + "'.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 	}
 
 	@Nullable
@@ -159,7 +162,7 @@ public abstract class ProfileHelper
 		if (keyPairObject == null)
 			keyPairObject = ProfileHelper.findKeyPairObject(masterFile, oid, privilegedOnly, null);
 		if (keyPairObject == null) {
-			BasicLogger.log(ProfileHelper.class, "KeyPairObject not found", LogLevel.WARN);
+			BasicLogger.log("KeyPairObject not found", LogLevel.WARN, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			return null;
 		}
 		return keyPairObject;
@@ -204,14 +207,14 @@ public abstract class ProfileHelper
 			newKeyPair = generateNewECKeyPair();
 		}
 		catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
-			BasicLogger.logException(ProfileHelper.class, e);
+			BasicLogger.logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 		try {
 			if (newKeyPair != null)
 				foundKeyPairObject.setKeyPair(newKeyPair);
 		}
 		catch (AccessDeniedException e) {
-			BasicLogger.logException(ProfileHelper.class, e);
+			BasicLogger.logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 
 		return foundKeyPairObject;
@@ -234,7 +237,7 @@ public abstract class ProfileHelper
 				privateKey = keyFactory.generatePrivate(keySpec);
 			}
 			catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-				BasicLogger.logException(ProfileHelper.class, "Cannot generate new private key.", e, LogLevel.ERROR);
+				BasicLogger.logException("Cannot generate new private key.", e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 				return;
 			}
 
@@ -243,7 +246,7 @@ public abstract class ProfileHelper
 				publicKey = CryptoProviderUtil.convertECPublicKeyFromECPrivateKey(privateKey);
 			}
 			catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-				BasicLogger.logException(ProfileHelper.class, "Cannot generate new public key.", e, LogLevel.ERROR);
+				BasicLogger.logException("Cannot generate new public key.", e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 				return;
 			}
 			KeyPair keyPair = new KeyPair(publicKey, privateKey);
@@ -251,7 +254,7 @@ public abstract class ProfileHelper
 				foundKeyPairObject.setKeyPair(keyPair);
 			}
 			catch (AccessDeniedException e) {
-				BasicLogger.logException(ProfileHelper.class, "Cannot generate new key pair.", e, LogLevel.ERROR);
+				BasicLogger.logException("Cannot generate new key pair.", e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 				return;
 			}
 		}
@@ -274,8 +277,8 @@ public abstract class ProfileHelper
 
 	public static void dumpKeyPairObjectPersoSimEditor(KeyPairObject keyPairObject, String keyPairSuffixToLog)
 	{
-		BasicLogger.log(ProfileHelper.class, "Public Key " + keyPairSuffixToLog + ":\n" + getDumpPublicKey(keyPairObject), LogLevel.DEBUG);
-		BasicLogger.log(ProfileHelper.class, "Private Key " + keyPairSuffixToLog + ":\n" + getDumpPrivateKey(keyPairObject), LogLevel.DEBUG);
+		BasicLogger.log("Public Key " + keyPairSuffixToLog + ":\n" + getDumpPublicKey(keyPairObject), LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		BasicLogger.log("Private Key " + keyPairSuffixToLog + ":\n" + getDumpPrivateKey(keyPairObject), LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 	}
 
 	private static KeyPair generateNewECKeyPair() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException
@@ -286,18 +289,6 @@ public abstract class ProfileHelper
 		return kpg.generateKeyPair();
 	}
 
-	// private static Personalization createPersoFromSimpleClassName(String simpleClassName)
-	// {
-	// try {
-	// Class<? extends Personalization> profileClass = Class.forName("de.persosim.simulator.perso." + simpleClassName).asSubclass(DefaultPersonalization.class);
-	// Constructor<?> constructor = profileClass.getConstructors()[0];
-	// Personalization perso2 = (Personalization) constructor.newInstance();
-	// BasicLogger.log(profileClass.getName(), LogLevel.DEBUG);
-	// }
-	// catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-	// BasicLogger.logException(ProfileHelper.class, e);
-	// }
-	// }
 
 	// Overlay profile with old existing RI keys
 	private static String overlayProfileWithNewRIKeys(Personalization perso)
@@ -325,7 +316,7 @@ public abstract class ProfileHelper
 			Files.write(Path.of(overlayFileAbsFilePath), jsonSerialized.getBytes(StandardCharsets.UTF_8));
 		}
 		catch (IOException e) {
-			BasicLogger.logException(ProfileHelper.class, e);
+			BasicLogger.logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 
 	}
@@ -346,7 +337,7 @@ public abstract class ProfileHelper
 			Files.createDirectories(Path.of(overlayPath + pathAfterRootPathProfilesWithoutFileName));
 		}
 		catch (IOException e) {
-			BasicLogger.logException(ProfileHelper.class, e);
+			BasicLogger.logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 		return pathAfterRootPathProfilesWithoutFileName;
 	}
@@ -370,31 +361,33 @@ public abstract class ProfileHelper
 		IniPreferenceStoreAccessor preferenceStoreAccessor = ProfileHelper.getPreferenceStoreAccessorInstance();
 		String createMissing = preferenceStoreAccessor.get(OVERLAY_PROFILES_PREF_CREATE_MISSING_PROFILES_OVERLAYS);
 		if (createMissing != null && ("false".equalsIgnoreCase(createMissing.trim()) || "no".equalsIgnoreCase(createMissing.trim()))) {
-			BasicLogger.log(ProfileHelper.class, "Creating of Profiles Overlays is disabled. Missing Profiles Overlays files will NOT be created.", LogLevel.INFO);
+			BasicLogger.log("Creating of Profiles Overlays is disabled. Missing Profiles Overlays files will NOT be created.", LogLevel.INFO,
+					new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			return;
 		}
 
-		log(ProfileHelper.class, "Personalization root path is '" + rootPathProfiles.toString() + "'.", LogLevel.DEBUG);
+		log("Personalization root path is '" + rootPathProfiles.toString() + "'.", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		List<Path> allProfileFilePaths = new ArrayList<>();
 		try {
 			ProfileHelper.getAllPathsRecursively(rootPathProfiles, allProfileFilePaths);
 		}
 		catch (IOException e) {
-			BasicLogger.logException(ProfileHelper.class, e);
+			BasicLogger.logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 
 		String rootPathOverlays = rootPathProfileOverlays.toAbsolutePath().toString();
-		log(ProfileHelper.class, "Overlays Profiles root path is '" + rootPathOverlays + "'.", LogLevel.DEBUG);
+		log("Overlays Profiles root path is '" + rootPathOverlays + "'.", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		for (Path currentPath : allProfileFilePaths) {
 			String currentAbsFilePath = currentPath.toAbsolutePath().toString();
 			String currentAbsFilePathOverlay = ProfileHelper.getOverlayFilePath(currentPath);
 			if (!Files.exists(Path.of(currentAbsFilePathOverlay))) {
-				log(ProfileHelper.class, "Overlay Profile file '" + currentAbsFilePathOverlay + "' does not exist and will be created.", LogLevel.INFO);
+				log("Overlay Profile file '" + currentAbsFilePathOverlay + "' does not exist and will be created.", LogLevel.INFO,
+						new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 				ProfileHelper.createMissingOverlayProfileFile(currentAbsFilePath, currentAbsFilePathOverlay);
-				log(ProfileHelper.class, "Overlay Profile file '" + currentAbsFilePathOverlay + "' created successfully.", LogLevel.INFO);
+				log("Overlay Profile file '" + currentAbsFilePathOverlay + "' created successfully.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			}
 			else {
-				log(ProfileHelper.class, "Overlay Profile file '" + currentAbsFilePathOverlay + "' already exists.", LogLevel.DEBUG);
+				log("Overlay Profile file '" + currentAbsFilePathOverlay + "' already exists.", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			}
 		}
 	}
@@ -409,7 +402,7 @@ public abstract class ProfileHelper
 			ProfileHelper.getAllPathsRecursively(rootPathProfileOverlays, allOverlayProfileFilePaths);
 		}
 		catch (IOException e) {
-			BasicLogger.logException(ProfileHelper.class, e);
+			BasicLogger.logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 		String persoFileName = perso.getClass().getSimpleName() + OVERLAY_PROFILE_FILE_SUFFIX;
 		if ("DefaultPerso.json".equals(persoFileName))
@@ -418,12 +411,14 @@ public abstract class ProfileHelper
 			String currentAsString = current.toString();
 			if (currentAsString.endsWith(persoFileName)) {
 				overlayProfileFilePath = currentAsString;
-				log(ProfileHelper.class, "Found Overlay Profile file for '" + perso.getClass().getSimpleName() + "' : '" + overlayProfileFilePath + "'.", LogLevel.INFO);
+				log("Found Overlay Profile file for '" + perso.getClass().getSimpleName() + "' : '" + overlayProfileFilePath + "'.", LogLevel.INFO,
+						new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 				break;
 			}
 		}
 		if (overlayProfileFilePath == null)
-			log(ProfileHelper.class, "Found no Overlay Profile file for '" + perso.getClass().getSimpleName() + " in root path: '" + getRootPathProfileOverlays().toString() + "'.", LogLevel.INFO);
+			log("Found no Overlay Profile file for '" + perso.getClass().getSimpleName() + " in root path: '" + getRootPathProfileOverlays().toString() + "'.", LogLevel.INFO,
+					new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		return overlayProfileFilePath;
 	}
 
@@ -432,24 +427,26 @@ public abstract class ProfileHelper
 		IniPreferenceStoreAccessor preferenceStoreAccessor = ProfileHelper.getPreferenceStoreAccessorInstance();
 		String createMissing = preferenceStoreAccessor.get(OVERLAY_PROFILES_PREF_CREATE_MISSING_PROFILES_OVERLAYS);
 		if (createMissing != null && ("false".equalsIgnoreCase(createMissing.trim()) || "no".equalsIgnoreCase(createMissing.trim()))) {
-			BasicLogger.log(ProfileHelper.class, "Creating of Profiles Overlays is disabled. Profile '" + perso.getClass().getSimpleName() + "' will NOT be overlaid.", LogLevel.INFO);
+			BasicLogger.log("Creating of Profiles Overlays is disabled. Profile '" + perso.getClass().getSimpleName() + "' will NOT be overlaid.", LogLevel.INFO,
+					new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			return;
 		}
 		// preferenceStoreAccessor.set(OVERLAY_PROFILES_PREF_OVERLAY_ALL, "true");
 		String overlayAll = preferenceStoreAccessor.get(OVERLAY_PROFILES_PREF_OVERLAY_ALL);
 		if (overlayAll != null && ("false".equalsIgnoreCase(overlayAll.trim()) || "no".equalsIgnoreCase(overlayAll.trim()))) {
-			BasicLogger.log(ProfileHelper.class, "Profiles Overlaying is disabled. Profile '" + perso.getClass().getSimpleName() + "' will NOT be overlaid.", LogLevel.INFO);
+			BasicLogger.log("Profiles Overlaying is disabled. Profile '" + perso.getClass().getSimpleName() + "' will NOT be overlaid.", LogLevel.INFO,
+					new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			return;
 		}
 
-		BasicLogger.log(ProfileHelper.class, "Profile '" + perso.getClass().getSimpleName() + "' will be overlaid.", LogLevel.INFO);
+		BasicLogger.log("Profile '" + perso.getClass().getSimpleName() + "' will be overlaid.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 
 		OverlayProfile overlayProfile = getOverlayProfileForPerso(perso, false);
 		if (overlayProfile == null)
 			return;
 		MasterFile masterFile = PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class).getMasterFile();
 		ProfileHelper.updateKeyPairObjectsFromOverlayProfile(masterFile, overlayProfile.getKeys());
-		BasicLogger.log(ProfileHelper.class, "Profile '" + perso.getClass().getSimpleName() + "' overlaid successfully.", LogLevel.INFO);
+		BasicLogger.log("Profile '" + perso.getClass().getSimpleName() + "' overlaid successfully.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 	}
 
 	@Nullable
@@ -458,7 +455,8 @@ public abstract class ProfileHelper
 		String overlayProfileFilePath = ProfileHelper.getOverlayProfileFilePathForPerso(perso);
 		if (overlayProfileFilePath == null) {
 			if (hasToExist)
-				BasicLogger.log(ProfileHelper.class, "Cannot get Overlay Profile file path for personalization '" + perso.getClass().getSimpleName() + "'.", LogLevel.ERROR);
+				BasicLogger.log("Cannot get Overlay Profile file path for personalization '" + perso.getClass().getSimpleName() + "'.", LogLevel.ERROR,
+						new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			return null;
 		}
 		return getOverlayProfile(overlayProfileFilePath);
@@ -483,7 +481,7 @@ public abstract class ProfileHelper
 			return (Personalization) PersonalizationFactory.unmarshal(reader);
 		}
 		catch (IOException e) {
-			BasicLogger.logException(ProfileHelper.class, "Reading the personalization file '" + persoFilePath + "' failed.", e, LogLevel.ERROR);
+			BasicLogger.logException("Reading the personalization file '" + persoFilePath + "' failed.", e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			throw e;
 		}
 	}
@@ -494,7 +492,8 @@ public abstract class ProfileHelper
 			return Files.readString(Path.of(overlayProfileFilePath));
 		}
 		catch (IOException e) {
-			BasicLogger.logException(ProfileHelper.class, "Reading the Overlay Profile file '" + overlayProfileFilePath + "' failed.", e, LogLevel.ERROR);
+			BasicLogger.logException("Reading the Overlay Profile file '" + overlayProfileFilePath + "' failed.", e, LogLevel.ERROR,
+					new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			throw e;
 		}
 	}

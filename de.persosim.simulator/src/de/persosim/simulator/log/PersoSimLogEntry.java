@@ -1,38 +1,41 @@
-package de.persosim.simulator.ui.utils;
+package de.persosim.simulator.log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.swt.SWT;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.Message;
 import org.globaltester.logging.format.LogFormat;
 import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.logging.tags.LogTag;
 
-import de.persosim.simulator.PersoSimLogTags;
-
-public class PersoSimUILogEntry
+public class PersoSimLogEntry
 {
-	public static final int DEFAULT_COLOR_ID = SWT.COLOR_BLACK;
-	public static final int DEFAULT_FONT_STYLE = SWT.NORMAL;
+	public static final int DEFAULT_COLOR_ID = 2; // SWT.COLOR_BLACK
+	public static final int INFO_COLOR_ID = 6; // SWT.COLOR_DARK_GREEN
+	public static final int WARN_COLOR_ID = 8; // SWT.COLOR_DARK_YELLOW
+	public static final int ERROR_COLOR_ID = 3; // SWT.COLOR_RED
 
-	public enum PersoSimUILogLevel
+	public static final int DEFAULT_FONT_STYLE = 0; // SWT.NORMAL
+	public static final int BOLD_FONT_STYLE = 1; // SWT.BOLD
+	public static final int ITALIC_FONT_STYLE = 2; // SWT.ITALIC // Does not work properly
+
+	public enum PersoSimLogLevel
 	{
-		FATAL(LogLevel.FATAL, SWT.COLOR_RED, SWT.BOLD), //
-		ERROR(LogLevel.ERROR, SWT.COLOR_RED, SWT.BOLD), //
-		WARN(LogLevel.WARN, SWT.COLOR_DARK_YELLOW, SWT.BOLD), //
-		INFO(LogLevel.INFO, SWT.COLOR_DARK_GREEN, DEFAULT_FONT_STYLE), //
+		FATAL(LogLevel.FATAL, ERROR_COLOR_ID, BOLD_FONT_STYLE), //
+		ERROR(LogLevel.ERROR, ERROR_COLOR_ID, BOLD_FONT_STYLE), //
+		WARN(LogLevel.WARN, WARN_COLOR_ID, BOLD_FONT_STYLE), //
+		INFO(LogLevel.INFO, INFO_COLOR_ID, DEFAULT_FONT_STYLE), //
 		DEBUG(LogLevel.DEBUG, DEFAULT_COLOR_ID, DEFAULT_FONT_STYLE), //
 		TRACE(LogLevel.TRACE, DEFAULT_COLOR_ID, DEFAULT_FONT_STYLE);
 
 		private LogLevel logLevel = LogLevel.DEBUG;
-		private int colorId = SWT.COLOR_BLACK;
-		private int fontStyle = SWT.NORMAL;
+		private int colorId = DEFAULT_COLOR_ID;
+		private int fontStyle = DEFAULT_FONT_STYLE;
 
-		PersoSimUILogLevel(LogLevel logLevel, int colorId, int fontStyle)
+		PersoSimLogLevel(LogLevel logLevel, int colorId, int fontStyle)
 		{
 			this.logLevel = logLevel;
 			this.colorId = colorId;
@@ -54,11 +57,11 @@ public class PersoSimUILogEntry
 			return fontStyle;
 		}
 
-		public static Optional<PersoSimUILogLevel> getByLogLevel(LogLevel level)
+		public static Optional<PersoSimLogLevel> getByLogLevel(LogLevel level)
 		{
-			return Arrays.stream(PersoSimUILogLevel.values()).filter(value -> value.getLogLevel() == level).findFirst();
+			return Arrays.stream(PersoSimLogLevel.values()).filter(value -> value.getLogLevel() == level).findFirst();
 		}
-	} // PersoSimUILogLevel
+	} // PersoSimLogLevel
 
 	private String logContent;
 	private final String timeStamp;
@@ -67,7 +70,7 @@ public class PersoSimUILogEntry
 	private String logTagsFormatted;
 
 
-	public PersoSimUILogEntry(String logContent, String timeStamp, LogLevel logLevel, List<LogTag> logTags)
+	public PersoSimLogEntry(String logContent, String timeStamp, LogLevel logLevel, List<LogTag> logTags)
 	{
 		this.logContent = logContent;
 		this.timeStamp = timeStamp;
@@ -76,17 +79,17 @@ public class PersoSimUILogEntry
 			this.logTags = logTags;
 	}
 
-	public PersoSimUILogEntry(String logContent, String timeStamp, LogLevel logLevel)
+	public PersoSimLogEntry(String logContent, String timeStamp, LogLevel logLevel)
 	{
 		this.logContent = logContent;
 		this.timeStamp = timeStamp;
 		this.logLevel = logLevel;
 	}
 
-	public PersoSimUILogEntry(Message msg)
+	public PersoSimLogEntry(Message msg)
 	{
 		logContent = msg.getMessageContent();
-		timeStamp = PersoSimUILogFormatter.getTimestamp(msg);
+		timeStamp = PersoSimLogFormatter.getTimestamp(msg);
 		String logLevelMsg = LogFormat.getLogLevel(msg);
 		if (!LogFormat.LOG_LEVEL_UNKNOWN.equals(logLevelMsg))
 			logLevel = LogLevel.valueOf(logLevelMsg);
@@ -134,7 +137,7 @@ public class PersoSimUILogEntry
 	public int getColorId()
 	{
 		int colorId = DEFAULT_COLOR_ID;
-		Optional<PersoSimUILogLevel> levelOptional = PersoSimUILogLevel.getByLogLevel(logLevel);
+		Optional<PersoSimLogLevel> levelOptional = PersoSimLogLevel.getByLogLevel(logLevel);
 		if (levelOptional.isPresent())
 			colorId = levelOptional.get().getColorId();
 		return colorId;
@@ -143,11 +146,11 @@ public class PersoSimUILogEntry
 	public int getFontStyle()
 	{
 		int fontStyle = DEFAULT_FONT_STYLE;
-		Optional<PersoSimUILogLevel> levelOptional = PersoSimUILogLevel.getByLogLevel(logLevel);
+		Optional<PersoSimLogLevel> levelOptional = PersoSimLogLevel.getByLogLevel(logLevel);
 		if (levelOptional.isPresent())
 			fontStyle = levelOptional.get().getFontStyle();
 		if (getLogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.APDU_TAG_ID) != null)
-			fontStyle = SWT.BOLD; // SWT.ITALIC does not work properly
+			fontStyle = BOLD_FONT_STYLE; // ITALIC does not work properly
 		return fontStyle;
 	}
 

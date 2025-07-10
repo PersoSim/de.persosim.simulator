@@ -1,6 +1,7 @@
 package de.persosim.simulator.platform;
 
 import static org.globaltester.logging.BasicLogger.log;
+import static org.globaltester.logging.BasicLogger.logException;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,8 +18,8 @@ import org.globaltester.simulator.event.CommandApduEvent;
 import org.globaltester.simulator.event.ResponseApduEvent;
 import org.globaltester.simulator.event.SimulatorEvent;
 
-import de.persosim.simulator.PersoSimLogTags;
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.processing.ProcessingData;
 import de.persosim.simulator.processing.UpdatePropagation;
@@ -57,12 +58,12 @@ public class PersoSimKernel implements InfoSource
 	 */
 	public void init(Personalization perso)
 	{
-		log(this, "init called", LogLevel.TRACE);
+		log("PersoSim Kernel init called", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 
 		perso.initialize();
 		layers = perso.getLayerList();
 
-		log(this, "init finished", LogLevel.TRACE);
+		log("PersoSim Kernel init finished", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 	}
 
 	public byte[] powerOff()
@@ -136,7 +137,7 @@ public class PersoSimKernel implements InfoSource
 			}
 		}
 		catch (Exception e) {
-			BasicLogger.logException(getClass(), e);
+			logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 		}
 
 		// extract prepared response

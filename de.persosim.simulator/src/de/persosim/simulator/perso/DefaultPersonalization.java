@@ -1,5 +1,7 @@
 package de.persosim.simulator.perso;
 
+import static org.globaltester.logging.BasicLogger.logException;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -15,6 +17,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
 
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.ByteDataAuxObject;
@@ -42,6 +46,7 @@ import de.persosim.simulator.crypto.DomainParameterSetEcdh;
 import de.persosim.simulator.crypto.StandardizedDomainParameters;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.platform.CommandProcessor;
 import de.persosim.simulator.platform.IoManager;
 import de.persosim.simulator.platform.Layer;
@@ -133,7 +138,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 		} catch (CertificateNotParseableException | NoSuchAlgorithmException | IOException e) {
 			// don't care for the moment
-			BasicLogger.logException(this.getClass(), e);
+			logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 		}
 
 		return mf;
@@ -144,24 +149,24 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		DomainParameterSetEcdh domParams13 = (DomainParameterSetEcdh) StandardizedDomainParameters.getDomainParameterSetById(13);
 		PrivateKey skIcc1 = domParams13.reconstructPrivateKey(HexString.toByteArray("054B0E36D9C9A28B81CF0EE098D9D5E44A790EAB7C415E3922A603CE55E06DE2"));
 		PrivateKey skIcc2 = domParams13.reconstructPrivateKey(HexString.toByteArray("9536D1270C40D37613E79974583106148075F4F8A09D256E5F4B502D4213D4AF"));
-		
+
 		PublicKey pkIcc = domParams13.reconstructPublicKey(HexString.toByteArray("046CB478312B534B260CD1FB4D8925284321107E8CD141ACBD6EB771E9AE674E9A4FB157F1B9B0E0082E7B749B2AE38A18A6B7AA7068D2F8A4912DE84A2017BAB2"));
-		
+
 		PublicKey pkM = domParams13.reconstructPublicKey(HexString.toByteArray("04320B7738C30B2762A52698F75B5DABFE8585907E120B53F8DD5ECA54D6CE8CD9719E05CAB1747BB54364B107B0E51AD392DDA05B94C155B537294367EFB9C212"));
-		
+
 		KeyObjectIcc keyObject = new KeyObjectIcc(skIcc1, skIcc2, pkIcc, pkM, domParams13, new KeyIdentifier((byte) 42));
 		keyObject.addOidIdentifier(Psa.OID_IDENTIFIER_id_PSA_ECDH_ECSchnorr_SHA_256);
 		keyObject.addOidIdentifier(Ca.OID_IDENTIFIER_id_CA_ECDH_AES_CBC_CMAC_128);
-		
+
 		mf.addChild(keyObject);
-		
+
 		mf.addChild(getPsAuthInfoForPsa());
 	}
 
 	protected CardObject getPsAuthInfoForPsa() {
 		return new PsAuthInfo(new OidIdentifier(Psa.id_PSA), PsAuthInfoValue.NO_EXPLICIT_AUTHORISATION, PsAuthInfoValue.EXPLICIT_AUTHORISATION);
 	}
-	
+
 	/**
 	 * Add the eID application to the card and fill it with content
 	 * @throws AccessDeniedException
@@ -787,12 +792,12 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 		CaProtocol caProtocol = new Ca3Protocol();
 		caProtocol.init();
 		protocols.add(caProtocol);
-		
+
 		/* load CA protocol */
 		caProtocol = new CaProtocol();
 		caProtocol.init();
 		protocols.add(caProtocol);
-		
+
 		var psProtocol = new PsaProtocol();
 		protocols.add(psProtocol);
 	}
@@ -811,7 +816,7 @@ public abstract class DefaultPersonalization extends PersonalizationImpl impleme
 
 		// load IO manager layer
 		layers.add(new IoManager());
-		
+
 		layers.addAll(addLayersBetweenIoManagerAndSecureMessaging());
 
 		// load secure messaging layer

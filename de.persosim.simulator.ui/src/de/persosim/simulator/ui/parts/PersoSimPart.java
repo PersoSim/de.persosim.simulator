@@ -49,11 +49,11 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.globaltester.logging.BasicLogger;
 
+import de.persosim.simulator.log.LinkedListLogListener;
+import de.persosim.simulator.log.PersoSimLogEntry;
+import de.persosim.simulator.log.PersoSimLogFormatter;
 import de.persosim.simulator.ui.Activator;
 import de.persosim.simulator.ui.handlers.SelectPersoFromFileHandler;
-import de.persosim.simulator.ui.utils.LinkedListLogListener;
-import de.persosim.simulator.ui.utils.PersoSimUILogEntry;
-import de.persosim.simulator.ui.utils.PersoSimUILogFormatter;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
@@ -62,7 +62,7 @@ public class PersoSimPart
 {
 	private static final String[] COLUMN_TITLES = { "Timestamp", "Log Level", "Log Tags", "Log Message" };
 	private static final int[] COLUMN_WEIGHTS = { 15, 5, 10, 70 };
-	private static final int[] COLUMN_MIN_WIDTHS = { 140, 70, 70, 300 };
+	private static final int[] COLUMN_MIN_WIDTHS = { 140, 60, 90, 300 };
 
 	// Remember column width for column visibility toggle
 	private final Map<TableColumn, Integer> columnWidths = new HashMap<>();
@@ -164,7 +164,7 @@ public class PersoSimPart
 			@Override
 			public void updateElement(int index)
 			{
-				PersoSimUILogEntry entry = Activator.getListLogListener().getEntry(index);
+				PersoSimLogEntry entry = de.persosim.simulator.Activator.getListLogListener().getEntry(index);
 				logTableViewer.replace(entry, index);
 			}
 
@@ -186,7 +186,7 @@ public class PersoSimPart
 	{
 		Label label = new Label(table, SWT.NONE);
 		if (defaultFont == null || defaultFont.isDisposed()) {
-			FontDescriptor fontDescriptorDefault = FontDescriptor.createFrom(label.getFont()).setStyle(PersoSimUILogEntry.DEFAULT_FONT_STYLE);
+			FontDescriptor fontDescriptorDefault = FontDescriptor.createFrom(label.getFont()).setStyle(PersoSimLogEntry.DEFAULT_FONT_STYLE);
 			defaultFont = fontDescriptorDefault.createFont(table.getDisplay());
 			loggingArea.addDisposeListener(e -> defaultFont.dispose());
 		}
@@ -204,7 +204,7 @@ public class PersoSimPart
 			if (isProgrammaticSelection)
 				return;
 			IStructuredSelection selection = (IStructuredSelection) logTableViewer.getSelection();
-			PersoSimUILogEntry selectedEntry = (PersoSimUILogEntry) selection.getFirstElement();
+			PersoSimLogEntry selectedEntry = (PersoSimLogEntry) selection.getFirstElement();
 			boolean isVerticalScrollbarVisible = table.getVerticalBar().isVisible();
 			if (isVerticalScrollbarVisible) {
 				if (selectedEntry != null) {
@@ -381,11 +381,11 @@ public class PersoSimPart
 				}
 				if (col >= 0) {
 					Object data = item.getData();
-					if (data instanceof PersoSimUILogEntry entry) {
+					if (data instanceof PersoSimLogEntry entry) {
 						String text = switch (col) {
 							case 0 -> entry.getTimeStamp();
 							case 1 -> entry.getLogLevel().name();
-							case 2 -> PersoSimUILogFormatter.getFormattedLogTags(entry, PersoSimUILogFormatter.NO_TAGS_AVAILABLE_INFO);
+							case 2 -> PersoSimLogFormatter.getFormattedLogTags(entry, PersoSimLogFormatter.NO_TAGS_AVAILABLE_INFO);
 							case 3 -> entry.getLogContent();
 							default -> "";
 						};
@@ -482,7 +482,7 @@ public class PersoSimPart
 			protected void measure(Event event, Object element)
 			{
 				if (isMultiLineLogEnabled) {
-					PersoSimUILogEntry entry = (PersoSimUILogEntry) element;
+					PersoSimLogEntry entry = (PersoSimLogEntry) element;
 					int column = event.index;
 					int height = MIN_ROW_HEIGHT;
 					if (column == 3) { // MultiLine only for column with log content
@@ -507,7 +507,7 @@ public class PersoSimPart
 			@Override
 			protected void paint(Event event, Object element)
 			{
-				PersoSimUILogEntry entry = (PersoSimUILogEntry) element;
+				PersoSimLogEntry entry = (PersoSimLogEntry) element;
 				Color color = display.getSystemColor(entry.getColorId());
 				event.gc.setForeground(color != null ? color : display.getSystemColor(SWT.COLOR_BLACK));
 				if (entry.getFontStyle() == SWT.BOLD) {
@@ -527,7 +527,7 @@ public class PersoSimPart
 						colContent = entry.getLogLevel().name();
 						break;
 					case 2:
-						colContent = PersoSimUILogFormatter.getFormattedLogTags(entry, null);
+						colContent = PersoSimLogFormatter.getFormattedLogTags(entry, null);
 						break;
 					case 3:
 						colContent = entry.getLogContent();
@@ -610,7 +610,7 @@ public class PersoSimPart
 		if (!selection.isEmpty()) {
 			StringBuilder selectedText = new StringBuilder();
 			for (Object obj : selection.toArray()) {
-				selectedText.append(PersoSimUILogFormatter.format((PersoSimUILogEntry) obj)).append('\n');
+				selectedText.append(PersoSimLogFormatter.format((PersoSimLogEntry) obj)).append('\n');
 			}
 			Clipboard clipboard = new Clipboard(table.getDisplay());
 			TextTransfer textTransfer = TextTransfer.getInstance();
@@ -673,11 +673,11 @@ public class PersoSimPart
 				try {
 					String logFileName = "PersoSim_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".log";
 					File file = new File(logFileName);
-					LinkedListLogListener listener = Activator.getListLogListener();
+					LinkedListLogListener listener = de.persosim.simulator.Activator.getListLogListener();
 					int count = listener.getNumberOfCachedEntries();
 					try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)))) {
 						for (int i = 0; i < count; i++) {
-							writer.write(PersoSimUILogFormatter.format(listener.getEntry(i)));
+							writer.write(PersoSimLogFormatter.format(listener.getEntry(i)));
 							writer.write('\n');
 						}
 					}
@@ -731,7 +731,7 @@ public class PersoSimPart
 
 	private void refreshLogTable()
 	{
-		LinkedListLogListener listener = Activator.getListLogListener();
+		LinkedListLogListener listener = de.persosim.simulator.Activator.getListLogListener();
 		if (listener != null && !isLocked) {
 			int count = listener.getNumberOfCachedEntries();
 			if (count == 0)

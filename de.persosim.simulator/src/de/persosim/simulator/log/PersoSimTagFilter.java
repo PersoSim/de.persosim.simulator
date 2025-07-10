@@ -1,4 +1,4 @@
-package de.persosim.simulator.ui.utils;
+package de.persosim.simulator.log;
 
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.Message;
@@ -26,7 +26,7 @@ public class PersoSimTagFilter extends TagFilter implements LogFilter
 		// Handle NO_TAGS_AVAILABLE_INFO
 		if (BasicLogger.LOG_TAG_TAG_ID.equals(logTagId)) {
 			for (String current : logTagData) {
-				if (PersoSimUILogFormatter.NO_TAGS_AVAILABLE_INFO.equals(current))
+				if (PersoSimLogFormatter.NO_TAGS_AVAILABLE_INFO.equals(current))
 					return true;
 			}
 		}

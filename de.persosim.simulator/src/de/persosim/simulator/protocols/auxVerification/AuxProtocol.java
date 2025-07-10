@@ -1,5 +1,7 @@
 package de.persosim.simulator.protocols.auxVerification;
 
+import static org.globaltester.logging.BasicLogger.logException;
+
 import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -7,6 +9,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
 
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.cardobjects.AuxDataObject;
@@ -14,6 +18,7 @@ import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.OidIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.VerificationException;
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.PlatformUtil;
 import de.persosim.simulator.processing.ProcessingData;
@@ -41,7 +46,7 @@ public class AuxProtocol extends AbstractProtocol implements Iso7816, TlvConstan
 				/* there is nothing more to be done here */
 				return;
 			}
-			
+
 			ResponseApdu resp;
 			String msg;
 			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
@@ -55,11 +60,11 @@ public class AuxProtocol extends AbstractProtocol implements Iso7816, TlvConstan
 				} catch (IllegalArgumentException e){
 					msg = "The given OID is not valid";
 					resp = new ResponseApdu(PlatformUtil.SW_4A80_WRONG_DATA);
-					BasicLogger.logException(this, msg, e);
+					logException(msg, e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 				} catch (FileNotFoundException e) {
 					msg = "The referenced data could not be found";
 					resp = new ResponseApdu(PlatformUtil.SW_4A88_REFERENCE_DATA_NOT_FOUND);
-					BasicLogger.logException(this, msg, e);
+					logException(msg, e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 				} catch (VerificationException e) {
 					msg = "Auxiliary data verification failed";
 					resp = new ResponseApdu(SW_6FFF_IMPLEMENTATION_ERROR);
@@ -68,11 +73,11 @@ public class AuxProtocol extends AbstractProtocol implements Iso7816, TlvConstan
 					} else if (processingData.getCommandApdu().getIns() == INS_33_COMPARE) {
 						resp = new ResponseApdu(SW_6340_COMPARISON_FAILED);
 					}
-					BasicLogger.logException(this, msg, e);
+					logException(msg, e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 				} catch (AccessDeniedException e) {
 					msg = "Auxiliary data verification failed - Access to data not allowed";
 					resp = new ResponseApdu(SW_6982_SECURITY_STATUS_NOT_SATISFIED);
-					BasicLogger.logException(this, msg, e);
+					logException(msg, e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 				}
 			} else {
 				msg = "Missing an OID";
@@ -83,14 +88,14 @@ public class AuxProtocol extends AbstractProtocol implements Iso7816, TlvConstan
 	}
 
 	private void processOid(Oid oid) throws VerificationException, FileNotFoundException, AccessDeniedException {
-		
+
 		AuthenticatedAuxiliaryData expectedAuxData = getExpectedAuxDataFromTa(oid);
 		AuxDataObject auxDataObject = getAuxDataObjectForOid(oid);
 
 		if (!auxDataObject.verify(expectedAuxData)){
-			throw new VerificationException("Verification of auxiliary data failed!");				
+			throw new VerificationException("Verification of auxiliary data failed!");
 		}
-		
+
 	}
 
 	private AuthenticatedAuxiliaryData getExpectedAuxDataFromTa(Oid oid) throws FileNotFoundException {
@@ -98,32 +103,32 @@ public class AuxProtocol extends AbstractProtocol implements Iso7816, TlvConstan
 		previousMechanisms.add(TerminalAuthenticationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 		if (currentMechanisms.isEmpty()) throw new FileNotFoundException("No TA mechanism available");
-		
+
 		TerminalAuthenticationMechanism taMechanism = (TerminalAuthenticationMechanism) currentMechanisms.toArray()[0];
 		List<AuthenticatedAuxiliaryData> auxDataFromTa = taMechanism.getAuxiliaryData();
 		if ((auxDataFromTa == null)||(auxDataFromTa.isEmpty())) throw new FileNotFoundException("No auxiliary data was stored during TA");
-		
+
 		ListIterator<AuthenticatedAuxiliaryData> auxDataIterator = auxDataFromTa.listIterator(auxDataFromTa.size());
-		
+
 		while(auxDataIterator.hasPrevious()) {
 			AuthenticatedAuxiliaryData curAuthAuxData = auxDataIterator.previous();
 			if(oid.equals(curAuthAuxData.getObjectIdentifier())) {
 				return curAuthAuxData;
-			}			
+			}
 		}
-		
+
 		throw new FileNotFoundException("No auxiliary data was stored during TA matching the provided OID");
 	}
 
 	private AuxDataObject getAuxDataObjectForOid(Oid oid) throws FileNotFoundException {
 		Collection<CardObject> candidates = cardState.getMasterFile().findChildren(new OidIdentifier(oid));
-		
+
 		for (CardObject auxDataCandidate : candidates) {
 			if (auxDataCandidate instanceof AuxDataObject){
 				return (AuxDataObject) auxDataCandidate;
 			}
 		}
-		
+
 		throw new FileNotFoundException("The card object using the OID " + oid.toString() + " is not a AUX data object");
 	}
 

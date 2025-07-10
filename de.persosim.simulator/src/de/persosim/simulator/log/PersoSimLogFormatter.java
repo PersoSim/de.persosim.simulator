@@ -1,4 +1,4 @@
-package de.persosim.simulator.ui.utils;
+package de.persosim.simulator.log;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -11,12 +11,10 @@ import org.globaltester.logging.format.GtFileLogFormatter;
 import org.globaltester.logging.format.LogFormat;
 import org.globaltester.logging.tags.LogTag;
 
-import de.persosim.simulator.PersoSimLogTags;
-
 /**
- * This formats log messages for PersoSim UI output.
+ * This formats log messages for PersoSim output.
  */
-public class PersoSimUILogFormatter extends GtFileLogFormatter
+public class PersoSimLogFormatter extends GtFileLogFormatter
 {
 	public static final String NO_TAGS_AVAILABLE_INFO = "<no_tags>";
 	private static final DateTimeFormatter PERSOSIM_DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT_GT_STRING).withZone(ZoneId.systemDefault());
@@ -37,9 +35,9 @@ public class PersoSimUILogFormatter extends GtFileLogFormatter
 		return "";
 	}
 
-	public PersoSimUILogEntry getLogEntry(Message msg)
+	public PersoSimLogEntry getLogEntry(Message msg)
 	{
-		return new PersoSimUILogEntry(msg);
+		return new PersoSimLogEntry(msg);
 	}
 
 	public static boolean isLogTagIdSupported(String tagId)
@@ -48,7 +46,7 @@ public class PersoSimUILogFormatter extends GtFileLogFormatter
 	}
 
 
-	public static String getFormattedLogTags(PersoSimUILogEntry logEntry, String noTagsInfo)
+	public static String getFormattedLogTags(PersoSimLogEntry logEntry, String noTagsInfo)
 	{
 		String logTagsFormatted = logEntry.getLogTagsFormatted();
 		if (logTagsFormatted != null)
@@ -88,7 +86,7 @@ public class PersoSimUILogFormatter extends GtFileLogFormatter
 		return sb.toString();
 	}
 
-	public static String format(PersoSimUILogEntry logEntry)
+	public static String format(PersoSimLogEntry logEntry)
 	{
 		StringBuilder sb = new StringBuilder(200);
 		sb.append(logEntry.getTimeStamp()).append(" - ").append(padRight(logEntry.getLogLevel().name(), 5)).append(" - ").append(getFormattedLogTags(logEntry, NO_TAGS_AVAILABLE_INFO)).append(" - ")

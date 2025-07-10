@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
 import org.globaltester.simulator.Simulator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -14,7 +15,7 @@ import org.osgi.util.tracker.ServiceTracker;
 import de.persosim.driver.connector.DriverConnectorFactory;
 import de.persosim.driver.connector.service.IfdConnector;
 import de.persosim.simulator.CommandParser;
-import de.persosim.simulator.ui.utils.LinkedListLogListener;
+import de.persosim.simulator.log.PersoSimLogTags;
 
 /**
  * The activator for this bundle. It tracks the {@link Simulator} service and
@@ -25,8 +26,6 @@ import de.persosim.simulator.ui.utils.LinkedListLogListener;
  */
 public class Activator implements BundleActivator
 {
-	private static final int MAXIMUM_CACHED_CONSOLE_LINES = 100000;
-	private static LinkedListLogListener linkedListLogger = new LinkedListLogListener(MAXIMUM_CACHED_CONSOLE_LINES);
 	private static BundleContext context;
 	private static ServiceTracker<DriverConnectorFactory, DriverConnectorFactory> serviceTrackerDriverConnectorFactory;
 	public static final int DEFAULT_PORT = 5678;
@@ -38,14 +37,8 @@ public class Activator implements BundleActivator
 		return context;
 	}
 
-	public static LinkedListLogListener getListLogListener()
-	{
-		return linkedListLogger;
-	}
-
 	public static void executeUserCommands(String command, boolean withOverlayProfile)
 	{
-
 		String[] commands = CommandParser.parseCommand(command);
 		boolean cmdLoadPerso = false;
 		if (commands[0].equals(CommandParser.CMD_LOAD_PERSONALIZATION)) {
@@ -69,13 +62,13 @@ public class Activator implements BundleActivator
 	 */
 	public void start(final BundleContext context) throws Exception
 	{
-		Activator.context = context;
+		BasicLogger.log("START Activator Simulator UI", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 
+		Activator.context = context;
 		serviceTrackerDriverConnectorFactory = new ServiceTracker<>(context, DriverConnectorFactory.class.getName(), null);
 		serviceTrackerDriverConnectorFactory.open();
 
-		BasicLogger.addLogListener(linkedListLogger);
-		LogHelper.logEnvironmentInfo();
+		BasicLogger.log("END Activator Simulator UI", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 	}
 
 	/*
@@ -85,8 +78,6 @@ public class Activator implements BundleActivator
 	 */
 	public void stop(BundleContext context) throws Exception
 	{
-		BasicLogger.removeLogListener(linkedListLogger);
-
 		Activator.context = null;
 		serviceTrackerDriverConnectorFactory.close();
 	}
