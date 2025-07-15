@@ -758,7 +758,7 @@ public abstract class AbstractCaProtocol extends AbstractProtocolStateMachine im
 		return numberOfKeyObjects >= 2;
 	}
 	
-	private boolean isAlgorithmIdentifierSimplificationAllowed () {
+	protected boolean isAlgorithmIdentifierSimplificationAllowed () {
 		return true;
 	}
 
