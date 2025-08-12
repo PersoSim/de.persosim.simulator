@@ -711,6 +711,7 @@ public class PersoSimPart
 		final MenuItem menuItem = new MenuItem(parent, SWT.CHECK);
 		menuItem.setText(column.getText());
 		menuItem.setSelection(column.getWidth() > 0);
+		menuItem.setSelection(true);
 		menuItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e)
