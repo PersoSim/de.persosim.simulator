@@ -14,7 +14,7 @@ import de.persosim.simulator.platform.Layer;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 
-public abstract class DefaultPersoTestPki extends DefaultPersonalization
+public class DefaultPersoTestPki extends DefaultPersonalization
 {
 	protected static TrustPointCardObject trustPointAtStatic = null;
 
@@ -43,7 +43,7 @@ public abstract class DefaultPersoTestPki extends DefaultPersonalization
 		}
 		mf.addChild(trustPointAt);
 	}
-	
+
 	@Override
 	protected Collection<? extends Layer> addLayersBetweenIoManagerAndSecureMessaging() {
 		return Arrays.asList(new Enveloping());
