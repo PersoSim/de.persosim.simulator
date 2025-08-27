@@ -9,6 +9,7 @@ Export-Package: de.persosim.simulator,
  de.persosim.simulator.apdu,
  de.persosim.simulator.apdumatching,
  de.persosim.simulator.cardobjects,
+ de.persosim.simulator.control.soap.service,
  de.persosim.simulator.crypto,
  de.persosim.simulator.crypto.certificates,
  de.persosim.simulator.documents,
@@ -37,7 +38,12 @@ Export-Package: de.persosim.simulator,
  de.persosim.simulator.tlv,
  de.persosim.simulator.utils
 Bundle-ClassPath: .
-Import-Package: org.osgi.framework,
+Import-Package: javax.jws,
+ javax.jws.soap,
+ javax.xml.ws,
+ org.globaltester.control,
+ org.globaltester.control.soap,
+ org.osgi.framework,
  org.osgi.service.log,
  org.osgi.util.tracker
 Eclipse-BundleShape: dir

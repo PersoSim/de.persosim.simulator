@@ -177,7 +177,7 @@ public class CommandParser
 					}
 				}
 				else {
-					log(CommandParser.class, "Please enable the PersoSimService before sending apdus", LogLevel.WARN);
+					log(CommandParser.class, "Please enable the PersoSimService before sending APDUs", LogLevel.WARN);
 					return "";
 				}
 			}
@@ -224,7 +224,6 @@ public class CommandParser
 	 */
 	public static boolean cmdLoadPersonalization(List<String> args, boolean withOverlayProfile)
 	{
-
 		if ((args != null) && (args.size() >= 2)) {
 			String cmd = args.get(0);
 
@@ -267,7 +266,7 @@ public class CommandParser
 	 * @param withOverlayProfile
 	 * @return a personalization object
 	 * @throws IllegalArgumentException
-	 *             iff the identifier does not reference a loadable perso
+	 *             if the identifier does not reference a loadable perso
 	 */
 	public static Personalization getPerso(String identifier, boolean withOverlayProfile) throws IllegalArgumentException
 	{
@@ -298,7 +297,7 @@ public class CommandParser
 				throw new IllegalArgumentException("identifier is no valid path or profile number!", e);
 			}
 
-			if (personalizationNumber > 10) {
+			if (personalizationNumber > 11) {
 				throw new IllegalArgumentException("personalization profile no: " + personalizationNumber + " does not exist");
 			}
 

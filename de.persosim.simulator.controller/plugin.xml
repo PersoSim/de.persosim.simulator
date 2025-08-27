@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+  <extension
+        id="PersoSimControllerExt"
+        point="org.eclipse.core.runtime.applications">
+    <application
+          id="de.persosim.simulator.controller"
+          cardinality="singleton-global"
+          visible="true"
+          thread="main">
+      <run class="de.persosim.simulator.controller.PersoSimController"/>
+    </application>
+  </extension>
+  <extension
+        id="product"
+        point="org.eclipse.core.runtime.products">
+     <product
+           application="de.persosim.simulator.controller.PersoSimControllerExt"
+           name="PersoSimController">
+        <property
+              name="appName"
+              value="PersoSimController">
+        </property>
+     </product>
+  </extension>
+</plugin>
