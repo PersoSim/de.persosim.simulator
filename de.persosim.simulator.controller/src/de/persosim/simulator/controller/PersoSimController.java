@@ -19,12 +19,14 @@ import de.persosim.simulator.log.PersoSimLogTags;
 
 public class PersoSimController implements IApplication
 {
-	private Process process;
+	private static final String SERVICE_NOT_RUNNING = "PersoSim Service is not running. No respone.";
+	private String os;
 	private String params; // full path including binary
+	private String processName;
 
 	public PersoSimController()
 	{
-		// nothing to do; necessary for product
+		os = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 	}
 
 	@Override
@@ -41,10 +43,6 @@ public class PersoSimController implements IApplication
 			controller.doWork(args);
 		}
 
-//		BasicLogger.log("Working ...", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-//		Thread.sleep(2000);
-//		BasicLogger.log("Finished working.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-
 		return IApplication.EXIT_OK;
 	}
 
@@ -54,15 +52,16 @@ public class PersoSimController implements IApplication
 		BasicLogger.log("PersoSimController stopped.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 	}
 
-	public void setParams(String params)
+	private void setParams(String params)
 	{
 		this.params = params;
+		processName = getProcessNameFromPath(params);
 	}
 
 	/**
 	 * Starts the process if not already running.
 	 */
-	public void startProcess()
+	private void startProcess()
 	{
 		startProcess(false);
 	}
@@ -70,103 +69,70 @@ public class PersoSimController implements IApplication
 	/**
 	 * Starts the process if not already running.
 	 */
-	public boolean startProcess(boolean isRestart)
+	private boolean startProcess(boolean isRestart)
 	{
-		if (process != null && process.isAlive()) {
-			BasicLogger.log("Process is already running.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-			return true;
-		}
 		ProcessBuilder builder = new ProcessBuilder(params);
 		try {
-			process = builder.start();
+			builder.start();
 		}
 		catch (IOException e) {
-			BasicLogger.log("Process could not be started: " + params, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+			BasicLogger.log("Process could not be started: " + processName, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			BasicLogger.logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			return false;
 		}
 		if (!isRestart)
-			BasicLogger.log("Process started: " + params, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+			BasicLogger.log("Process started: " + processName, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 
 		return true;
 	}
 
 	/**
-	 * Stops the process if it was started by this program,
-	 * otherwise attempts to kill it by name externally.
+	 * Stops the external process by killing it by name.
 	 */
-	public void stopProcess()
+	private void stopProcess()
 	{
-		if (process == null || !process.isAlive()) {
-			// Process might be externally running, try to kill by name
-			killByName(getProcessNameFromPath(params));
-			return;
-		}
-		process.destroy(); // attempt graceful termination
-		try {
-			if (!process.waitFor(3, java.util.concurrent.TimeUnit.SECONDS)) {
-				process.destroyForcibly(); // force kill if not terminated
-			}
-		}
-		catch (InterruptedException e) {
-			BasicLogger.log("Interruption error while stopping process " + params, LogLevel.WARN, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-			Thread.currentThread().interrupt();
-			BasicLogger.logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-		}
-		BasicLogger.log("Process stopped: " + params, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		boolean killed = killByName(processName);
+		if (killed)
+			BasicLogger.log("Process stopped: " + processName, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 	}
 
 	/**
 	 * Restarts the process.
 	 * If process not running, only starts it.
 	 */
-	public void restartProcess()
+	private void restartProcess()
 	{
-		if (isProcessAvailable()) {
-			stopProcess();
-			startProcess(true);
-			BasicLogger.log("Process restarted: " + params, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-		}
-		else {
-			BasicLogger.log("Process not running yet. Starting it.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-			startProcess();
-		}
+		stopProcess();
+		startProcess(true);
+		BasicLogger.log("Process restarted: " + processName, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 	}
 
 	/**
 	 * Checks if the process is available.
-	 * First checks if locally started process is alive.
-	 * If not, checks OS process list by process name.
 	 *
 	 * @return true if process is running, false otherwise
 	 */
-	public boolean isProcessAvailable()
+	private boolean isProcessAvailable()
 	{
 		try {
-			// Check locally started process state
-			if (process != null && process.isAlive()) {
-				return true;
-			}
-
-			// Check few external processes by name
-			String processName = getProcessNameFromPath(params);
-			String os = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
-
 			Process checkProc;
+			String commandToCheck;
 			if (os.contains("win")) {
 				// Windows: use tasklist and filter by image name
-				String tasklistCmd = "tasklist /FI \"IMAGENAME eq " + processName + "\" /NH";
-				checkProc = Runtime.getRuntime().exec(tasklistCmd);
+				commandToCheck = "tasklist /FI \"IMAGENAME eq " + processName + "\" /NH";
 			}
 			else if (os.contains("mac") || os.contains("nix") || os.contains("nux")) {
-				// Linux/macOS: use pgrep with -f for full match
-				String[] cmd = { "pgrep", "-f", processName };
-				checkProc = Runtime.getRuntime().exec(cmd);
+				// Linux/macOS: use pgrep with -x for exact match and -l to list PID and process name
+				commandToCheck = "pgrep -x -l " + processName;
 			}
 			else {
 				// Unknown OS, assume not running
+				BasicLogger.log("Unknown operating system: '" + os + "'.", LogLevel.WARN, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 				return false;
 			}
+
+			BasicLogger.log("OS-specific ('" + os + "') command to check: " + commandToCheck, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+			checkProc = Runtime.getRuntime().exec(commandToCheck);
 
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(checkProc.getInputStream()))) {
 				String line;
@@ -209,14 +175,13 @@ public class PersoSimController implements IApplication
 	private boolean killByName(String processName)
 	{
 		try {
-			String os = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 			Process killProc = null;
 			if (os.contains("win")) {
 				String killCommand = "taskkill /F /IM " + (processName.endsWith(".exe") ? processName : processName + ".exe");
 				killProc = Runtime.getRuntime().exec(killCommand);
 			}
 			else if (os.contains("mac") || os.contains("nix") || os.contains("nux")) {
-				String killCommand = "killall " + processName;
+				String killCommand = "killall -g " + processName;
 				killProc = Runtime.getRuntime().exec(killCommand);
 			}
 			else {
@@ -226,11 +191,11 @@ public class PersoSimController implements IApplication
 
 			int exitCode = killProc.waitFor();
 			if (exitCode == 0) {
-				BasicLogger.log("External process " + processName + " killed.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+				// Logging in calling method
 				return true;
 			}
 			else {
-				BasicLogger.log("Error while killing process " + processName + ", exit code=" + exitCode, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+				BasicLogger.log("Error while killing process " + processName + ", exit code = " + exitCode, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 				return false;
 			}
 		}
@@ -259,59 +224,62 @@ public class PersoSimController implements IApplication
 		return service;
 	}
 
-	public String loadPerso(String fullPathToPersoFile)
+	private String loadPerso(String fullPathToPersoFile)
 	{
 		BasicLogger.log("Try calling loadPerso from PersoSimRemoteControl...", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		PersoSimRemoteControlService service = getService();
 		if (service == null) {
-			String response = "PersoSim Service is not running. No respone.";
+			String response = SERVICE_NOT_RUNNING;
 			BasicLogger.log(response, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			return response;
 		}
 		PersoSimRemoteControlInterface port = service.getPersoSimRemoteControlPort();
 		String response = port.loadPerso(fullPathToPersoFile);
-		BasicLogger.log("Response: '" + response + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		logServiceResponse(response);
 		return response;
 	}
 
-	public String sendApdu(String apduAsHexString)
+	private String sendApdu(String apduAsHexString)
 	{
 		BasicLogger.log("Try calling sendApdu from PersoSimRemoteControl...", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		PersoSimRemoteControlService service = getService();
 		if (service == null) {
-			String response = "PersoSim Service is not running. No respone.";
+			String response = SERVICE_NOT_RUNNING;
 			BasicLogger.log(response, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			return response;
 		}
 		PersoSimRemoteControlInterface port = service.getPersoSimRemoteControlPort();
 		String response = port.sendApdu(apduAsHexString);
-		BasicLogger.log("Response: '" + response + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		logServiceResponse(response);
 		return response;
 	}
 
-	public String reset()
+	private String reset()
 	{
 		BasicLogger.log("Try calling reset from PersoSimRemoteControl...", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		PersoSimRemoteControlService service = getService();
 		if (service == null) {
-			String response = "PersoSim Service is not running. No respone.";
+			String response = SERVICE_NOT_RUNNING;
 			BasicLogger.log(response, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			return response;
 		}
 		PersoSimRemoteControlInterface port = service.getPersoSimRemoteControlPort();
 		String response = port.reset();
-		BasicLogger.log("Response: '" + response + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		logServiceResponse(response);
 		return response;
 	}
 
+	private void logServiceResponse(String response)
+	{
+		BasicLogger.log("Response: '" + response + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+	}
 
-	public void usage()
+	private void usage()
 	{
 		String nameExePrefix = "PersoSimController";
 		String nameExeSuffix = "";
-		String os = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 		if (os.contains("win")) {
-			nameExeSuffix = ".exe";
+			nameExeSuffix = "c.exe";
 		}
 		String nameExe = nameExePrefix + nameExeSuffix;
 		BasicLogger.log("Usage:", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
