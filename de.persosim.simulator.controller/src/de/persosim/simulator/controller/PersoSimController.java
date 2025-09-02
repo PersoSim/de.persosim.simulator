@@ -55,7 +55,8 @@ public class PersoSimController implements IApplication
 	private void setParams(String params)
 	{
 		this.params = params;
-		processName = getProcessNameFromPath(params);
+		if (params != null)
+			processName = getProcessNameFromPath(params);
 	}
 
 	/**
