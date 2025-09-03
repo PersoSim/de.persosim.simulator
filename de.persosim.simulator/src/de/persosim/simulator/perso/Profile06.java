@@ -45,13 +45,13 @@ public class Profile06 extends AbstractProfile {
 		persoDataContainer.addCaKeyPair(CryptoUtil.reconstructKeyPair(13,
 				HexString.toByteArray("0467DBFBD14C3291267FEFF537062570B96BE2274D7747D734BBDB5BFEAAD0976C3E47B929F42B1FCD583F80FB469225E29FE00AC6C95C24E956CB8E7031C19AC2"),
 				HexString.toByteArray("8910074CF4749A916E5864654C768D57F57B6361F70A226DD1AEBED390BB066D")),
-				42, false);
+				41, false);
 		
 		// privileged CA key
 		persoDataContainer.addCaKeyPair(CryptoUtil.reconstructKeyPair(13,
 				HexString.toByteArray("043DA77A3738157092849CD540172494F28F76C83EE9B866838A7A8424139858D5496550AC5E4BC7C3932E0DFC7B6CB93CC3C10A07EB73F5AC97FBE9C9BDA50D1B"),
 				HexString.toByteArray("935E8C1BA669471F87BEC93CF9671AD1A0504B8BFE5E3FB91A72074F4F6ECF45")),
-				46, true);
+				45, true);
 
 		// individual RI key - 1st sector public/private key pair (Sperrmerkmal)
 		KeyPair riKeyPair1 = (KeyPair)PersonalizationFactory.unmarshal(new StringReader("""
