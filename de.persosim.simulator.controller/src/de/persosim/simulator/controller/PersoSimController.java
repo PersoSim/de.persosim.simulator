@@ -185,7 +185,7 @@ public class PersoSimController implements IApplication
 				String killCommand = "killall -g " + processName;
 				killProc = Runtime.getRuntime().exec(killCommand);
 			}
-			else if (os.contains("mac") {
+			else if (os.contains("mac")) {
 				String killCommand = "killall " + processName;
 				killProc = Runtime.getRuntime().exec(killCommand);
 			}
