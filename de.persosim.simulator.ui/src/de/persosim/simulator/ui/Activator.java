@@ -3,7 +3,10 @@ package de.persosim.simulator.ui;
 import static org.globaltester.logging.BasicLogger.log;
 
 import java.io.IOException;
+import java.util.List;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.simulator.Simulator;
@@ -14,6 +17,7 @@ import org.osgi.util.tracker.ServiceTracker;
 import de.persosim.driver.connector.DriverConnectorFactory;
 import de.persosim.driver.connector.service.IfdConnector;
 import de.persosim.simulator.CommandParser;
+import de.persosim.simulator.CommandParserResult;
 import de.persosim.simulator.ui.parts.PersoSimPart;
 import de.persosim.simulator.ui.utils.LinkedListLogListener;
 
@@ -48,9 +52,23 @@ public class Activator implements BundleActivator {
 		if (commands[0].equals(CommandParser.CMD_LOAD_PERSONALIZATION)) {
 			cmdLoadPerso = true;
 		}
-		CommandParser.executeUserCommands(withOverlayProfile, commands);
-		if(commands.length == 0) return; //just do nothing.
+		List<CommandParserResult> results = CommandParser.executeUserCommands(withOverlayProfile, commands);
+
+		// Show only first error message
+		boolean okComplete = true;
+		for (CommandParserResult result : results) {
+			if (!result.isOk()) {
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", result.getMessage());
+				okComplete = false;
+				break;
+			}
+		}
+
+		if(commands.length == 0) return; // just do nothing.
 		if (cmdLoadPerso) {
+			if (okComplete && commands.length > 1) {
+				MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK", "Perso '" + commands[1] + "' loaded.");
+			}
 			resetNativeDriver();
 		}
 		if (commands[0].equals(CommandParser.CMD_STOP)) {
