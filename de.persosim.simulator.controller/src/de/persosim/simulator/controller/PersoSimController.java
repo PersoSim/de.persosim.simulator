@@ -181,8 +181,12 @@ public class PersoSimController implements IApplication
 				String killCommand = "taskkill /F /IM " + (processName.endsWith(".exe") ? processName : processName + ".exe");
 				killProc = Runtime.getRuntime().exec(killCommand);
 			}
-			else if (os.contains("mac") || os.contains("nix") || os.contains("nux")) {
+			else if (os.contains("nix") || os.contains("nux")) {
 				String killCommand = "killall -g " + processName;
+				killProc = Runtime.getRuntime().exec(killCommand);
+			}
+			else if (os.contains("mac") {
+				String killCommand = "killall " + processName;
 				killProc = Runtime.getRuntime().exec(killCommand);
 			}
 			else {
