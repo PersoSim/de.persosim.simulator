@@ -3,6 +3,7 @@ package de.persosim.simulator.control.soap.service;
 import static org.globaltester.logging.BasicLogger.log;
 import static org.globaltester.logging.BasicLogger.logException;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.PersoSim;
 import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.perso.export.ProfileHelper;
+import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 import de.persosim.simulator.utils.HexString;
 
 
@@ -44,10 +46,26 @@ public class PersoSimRemoteControl extends AbstractRemoteControlHandler implemen
 	{
 		String command = CommandParser.CMD_LOAD_PERSONALIZATION + " " + filePath;
 		log("Executing command: '" + command + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		String[] commands = CommandParser.parseCommand(command);
+
+		PersoSimPreferenceManager.storePreference("PREF_NON_INTERACTIVE", Boolean.TRUE.toString());
+
+		Path rootPathPersoFiles = ProfileHelper.getRootPathPersoFiles();
+		if (rootPathPersoFiles != null)
+			log("Root path Perso files: '" + rootPathPersoFiles.toAbsolutePath().toString() + "'", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+
+		int lastUnixSep = filePath.lastIndexOf('/');
+		int lastWinSep = filePath.lastIndexOf('\\');
+		int lastIndex = Math.max(lastUnixSep, lastWinSep);
+		if (lastIndex == -1 && filePath.startsWith("Profile") && filePath.endsWith(".perso")) {
+			filePath = rootPathPersoFiles + File.separator + filePath;
+			log("Perso template file path: '" + filePath + "'", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+			commands[1] = filePath;
+		}
 
 		String response = null;
-
 		Path pathPerso = null;
+
 		try {
 			pathPerso = Path.of(filePath);
 		}
@@ -71,10 +89,7 @@ public class PersoSimRemoteControl extends AbstractRemoteControlHandler implemen
 
 		boolean withOverlay = false;
 
-		Path rootPathPersoFiles = ProfileHelper.getRootPathPersoFiles();
 		log("Path Perso file: '" + pathPerso.toAbsolutePath().toString() + "'", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-		if (rootPathPersoFiles != null)
-			log("Root path Perso files: '" + rootPathPersoFiles.toAbsolutePath().toString() + "'", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		if ((rootPathPersoFiles != null) && (pathPerso.startsWith(rootPathPersoFiles) || pathPerso.startsWith(rootPathPersoFiles.toAbsolutePath().toString().replace('\\', '/')))) {
 			log("Default profiles root path", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			Path pathPersoOverlay = Path.of(ProfileHelper.getOverlayFilePath(pathPerso));
@@ -92,7 +107,6 @@ public class PersoSimRemoteControl extends AbstractRemoteControlHandler implemen
 			persoSim.startSimulator();
 		}
 
-		String[] commands = CommandParser.parseCommand(command);
 		boolean result = CommandParser.cmdLoadPersonalization(new ArrayList<>(Arrays.asList(commands)), withOverlay);
 		if (result) {
 			response = "OK. Perso '" + filePath + "' loaded " + (withOverlay ? "with" : "without") + " overlay.";
@@ -112,6 +126,8 @@ public class PersoSimRemoteControl extends AbstractRemoteControlHandler implemen
 	{
 		String command = CommandParser.CMD_SEND_APDU + " " + apduAsHexString;
 		log("Executing command: '" + command + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+
+		PersoSimPreferenceManager.storePreference("PREF_NON_INTERACTIVE", Boolean.TRUE.toString());
 
 		PersoSim persoSim = de.persosim.simulator.Activator.getDefault().getSim();
 		if (persoSim != null && !persoSim.isRunning()) {
@@ -138,6 +154,9 @@ public class PersoSimRemoteControl extends AbstractRemoteControlHandler implemen
 	public String reset()
 	{
 		log("Executing reset card", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+
+		PersoSimPreferenceManager.storePreference("PREF_NON_INTERACTIVE", Boolean.TRUE.toString());
+
 		PersoSim persoSim = de.persosim.simulator.Activator.getDefault().getSim();
 		String response = null;
 		if (persoSim != null && persoSim.isRunning()) {
