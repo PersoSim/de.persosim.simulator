@@ -42,8 +42,6 @@ Import-Package:
  javax.jws.soap,
  javax.xml.bind.annotation,
  javax.xml.ws,
- org.globaltester.control,
- org.globaltester.control.soap,
  org.osgi.framework,
  org.osgi.service.log,
  org.osgi.util.tracker
@@ -59,6 +57,8 @@ Require-Bundle:
  org.globaltester.logging,
  org.globaltester.lib.xstream,
  org.globaltester.base,
+ org.globaltester.control,
+ org.globaltester.control.soap,
  com.fasterxml.jackson.core.jackson-core,
  com.fasterxml.jackson.core.jackson-databind,
  com.fasterxml.jackson.core.jackson-annotations,
