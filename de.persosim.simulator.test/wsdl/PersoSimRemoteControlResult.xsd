@@ -1,0 +1,12 @@
+<!--  Published by JAX-WS RI (https://github.com/eclipse-ee4j/metro-jax-ws). RI's version is JAX-WS RI 2.3.4 git-revision#34af6e5.  -->
+<xs:schema xmlns:tns="http://service.soap.control.simulator.persosim.de/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://service.soap.control.simulator.persosim.de/">
+<xs:element name="persoSimRemoteControlResult" type="tns:persoSimRemoteControlResult"/>
+<xs:complexType name="persoSimRemoteControlResult">
+<xs:sequence>
+<xs:element name="resultAsHex" type="xs:string" nillable="true" minOccurs="0"/>
+<xs:element name="resultCode" type="xs:int"/>
+<xs:element name="resultMessage" type="xs:string" minOccurs="0"/>
+<xs:element name="resultPrettyPrint" type="xs:string" nillable="true" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>

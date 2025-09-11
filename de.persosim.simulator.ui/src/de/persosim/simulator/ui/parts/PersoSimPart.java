@@ -83,7 +83,6 @@ public class PersoSimPart
 
 	private Composite loggingArea;
 	private Composite tableArea;
-	private Composite consoleArea;
 
 
 	@Inject
@@ -104,11 +103,7 @@ public class PersoSimPart
 
 		createTableViewerAndTable();
 
-		consoleArea = new Composite(loggingArea, SWT.NONE);
-		consoleArea.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		consoleArea.setLayout(new GridLayout(1, false));
-
-		createConsoleIn();
+		// createConsoleIn();
 	}
 
 
@@ -273,6 +268,10 @@ public class PersoSimPart
 
 	private Text createConsoleIn()
 	{
+		Composite consoleArea = new Composite(loggingArea, SWT.NONE);
+		consoleArea.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		consoleArea.setLayout(new GridLayout(1, false));
+
 		final Text txtIn = new Text(consoleArea, SWT.BORDER);
 		txtIn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		txtIn.setMessage("<Enter command here>");
@@ -776,7 +775,7 @@ public class PersoSimPart
 					Thread.sleep(500); // Update interval for log view
 				}
 				catch (InterruptedException e) {
-					System.out.println("ERROR: Logging interrupted: " + e.getMessage()); // NOSONAR
+					// System.out.println("ERROR: Logging interrupted: " + e.getMessage()); // NOSONAR
 					BasicLogger.logException(getClass(), "ERROR: Logging interrupted", e);
 					Thread.currentThread().interrupt();
 					break;

@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PersoSim Simulator UI
 Bundle-SymbolicName: de.persosim.simulator.ui;singleton:=true
 Bundle-Version: 1.2.0.qualifier
-Require-Bundle: org.eclipse.swt,
+Require-Bundle: 
+ org.eclipse.swt,
  org.eclipse.jface,
  org.eclipse.e4.core.di,
  org.eclipse.e4.ui.workbench,
@@ -15,6 +16,7 @@ Require-Bundle: org.eclipse.swt,
  org.eclipse.e4.ui.services,
  org.eclipse.e4.core.contexts,
  de.persosim.simulator,
+ de.persosim.simulator.basics,
  org.eclipse.e4.core.commands,
  org.eclipse.e4.core.services,
  org.eclipse.osgi,
@@ -25,7 +27,8 @@ Require-Bundle: org.eclipse.swt,
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: de.persosim.simulator.ui.Activator
-Export-Package: de.persosim.simulator.ui,
+Export-Package: 
+ de.persosim.simulator.ui,
  de.persosim.simulator.ui.parts,
  de.persosim.simulator.ui.utils
 Import-Package: de.persosim.driver.connector.service

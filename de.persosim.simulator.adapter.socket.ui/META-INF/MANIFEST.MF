@@ -3,9 +3,11 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PersoSim Simulator Socket Adapter UI
 Bundle-SymbolicName: de.persosim.simulator.adapter.socket.ui;singleton:=true
 Bundle-Version: 1.2.0.qualifier
-Require-Bundle: org.eclipse.osgi,
+Require-Bundle: 
+ org.eclipse.osgi,
  org.globaltester.logging,
  de.persosim.simulator,
+ de.persosim.simulator.basics, 
  org.eclipse.swt,
  org.eclipse.e4.ui.workbench,
  org.eclipse.e4.core.di.annotations,

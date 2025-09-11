@@ -16,6 +16,7 @@ import de.persosim.driver.connector.DriverConnectorFactory;
 import de.persosim.driver.connector.service.IfdConnector;
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.log.PersoSimLogTags;
+import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 
 /**
  * The activator for this bundle. It tracks the {@link Simulator} service and
@@ -44,6 +45,10 @@ public class Activator implements BundleActivator
 		if (commands[0].equals(CommandParser.CMD_LOAD_PERSONALIZATION)) {
 			cmdLoadPerso = true;
 		}
+
+		String isNonInteractive = PersoSimPreferenceManager.getPreference("PREF_NON_INTERACTIVE");
+		BasicLogger.log("Mode is " + ((isNonInteractive != null && Boolean.TRUE.toString().equals(isNonInteractive)) ? "non-" : "") + "interactive", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
+
 		CommandParser.executeUserCommands(withOverlayProfile, commands);
 		if (commands.length == 0)
 			return; // just do nothing.

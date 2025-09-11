@@ -6,13 +6,16 @@ Bundle-Version: 1.2.0.qualifier
 Bundle-Activator: de.persosim.simulator.adapter.socket.Activator
 Bundle-Vendor: secunet Security Networks AG
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: 
+ org.eclipse.core.runtime,
  de.persosim.simulator,
+ de.persosim.simulator.basics,
  org.globaltester.simulator,
  org.globaltester.logging,
  de.persosim.driver.connector
 Bundle-ActivationPolicy: lazy
-Export-Package: de.persosim.simulator.adapter.socket,
+Export-Package: 
+ de.persosim.simulator.adapter.socket,
  de.persosim.simulator.adapter.socket.protocol
 Import-Package: org.osgi.util.tracker
 Automatic-Module-Name: de.persosim.simulator.adapter.socket

@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PersoSim Simulator Controller
+Bundle-SymbolicName: de.persosim.simulator.controller;singleton:=true
+Bundle-Version: 1.2.0.qualifier
+Bundle-Vendor: secunet Security Networks AG
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-ClassPath: .
+Eclipse-BundleShape: dir
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: 
+ de.persosim.simulator.controller.Activator
+Require-Bundle: 
+ de.persosim.simulator.basics,
+ org.eclipse.core.runtime,
+ org.eclipse.equinox.app,
+ org.eclipse.osgi,
+ org.globaltester.logging
+Automatic-Module-Name: de.persosim.simulator.controller
+Export-Package: de.persosim.simulator.controller
