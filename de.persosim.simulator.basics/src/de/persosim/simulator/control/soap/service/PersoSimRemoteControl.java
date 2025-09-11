@@ -6,6 +6,7 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.Action;
 
 
@@ -17,18 +18,21 @@ import javax.xml.ws.Action;
  */
 @WebService(name = "PersoSimRemoteControl", targetNamespace = "http://service.soap.control.simulator.persosim.de/")
 @SOAPBinding(style = SOAPBinding.Style.RPC)
+@XmlSeeAlso({
+    ObjectFactory.class
+})
 public interface PersoSimRemoteControl {
 
 
     /**
      * 
      * @return
-     *     returns java.lang.String
+     *     returns de.persosim.simulator.control.soap.service.PersoSimRemoteControlResult
      */
     @WebMethod
     @WebResult(partName = "return")
     @Action(input = "http://service.soap.control.simulator.persosim.de/PersoSimRemoteControl/resetRequest", output = "http://service.soap.control.simulator.persosim.de/PersoSimRemoteControl/resetResponse")
-    public String reset();
+    public PersoSimRemoteControlResult reset();
 
     /**
      * 
@@ -47,12 +51,12 @@ public interface PersoSimRemoteControl {
      * 
      * @param arg0
      * @return
-     *     returns java.lang.String
+     *     returns de.persosim.simulator.control.soap.service.PersoSimRemoteControlResult
      */
     @WebMethod
     @WebResult(partName = "return")
     @Action(input = "http://service.soap.control.simulator.persosim.de/PersoSimRemoteControl/loadPersoRequest", output = "http://service.soap.control.simulator.persosim.de/PersoSimRemoteControl/loadPersoResponse")
-    public String loadPerso(
+    public PersoSimRemoteControlResult loadPerso(
         @WebParam(name = "arg0", partName = "arg0")
         String arg0);
 
@@ -60,12 +64,12 @@ public interface PersoSimRemoteControl {
      * 
      * @param arg0
      * @return
-     *     returns java.lang.String
+     *     returns de.persosim.simulator.control.soap.service.PersoSimRemoteControlResult
      */
     @WebMethod
     @WebResult(partName = "return")
     @Action(input = "http://service.soap.control.simulator.persosim.de/PersoSimRemoteControl/sendApduRequest", output = "http://service.soap.control.simulator.persosim.de/PersoSimRemoteControl/sendApduResponse")
-    public String sendApdu(
+    public PersoSimRemoteControlResult sendApdu(
         @WebParam(name = "arg0", partName = "arg0")
         String arg0);
 

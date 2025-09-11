@@ -13,7 +13,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
 
-import de.persosim.simulator.control.soap.service.PersoSimRemoteControl;
+import de.persosim.simulator.control.soap.service.PersoSimRemoteControlImpl;
 import de.persosim.simulator.log.LinkedListLogListener;
 import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.preferences.EclipsePreferenceAccessor;
@@ -33,26 +33,32 @@ public class Activator implements BundleActivator
 	private SoapControlEndpointManager endpointManager;
 	private ServiceRegistration<RemoteControlHandler> persoSimControlServiceRegistration;
 
+
 	@Override
 	public void start(BundleContext context) throws Exception
 	{
+		// BasicLogger.log("START Activator Simulator", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
+
 		PersoSimPreferenceManager.setPreferenceAccessorIfNotAvailable(new EclipsePreferenceAccessor());
-		BasicLogger.addLogListener(linkedListLogger);
-		BasicLogger.log("START Activator Simulator", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
+
 		Activator.context = context;
 		plugin = this;
 
+		BasicLogger.addLogListener(linkedListLogger);
 		enablePersoSimRemoteControlService(context);
 
-		BasicLogger.log("END Activator Simulator", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
+		// BasicLogger.log("END Activator Simulator", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 	}
 
 	private void enablePersoSimRemoteControlService(BundleContext context)
 	{
 		endpointManager = new SoapControlEndpointManager("persosim");
 		endpointManager.start();
-		org.globaltester.control.soap.Activator.getDefault().unregisterServices();
-		persoSimControlServiceRegistration = context.registerService(RemoteControlHandler.class, new PersoSimRemoteControl(), null);// , new Hashtable<String, String>());
+		org.globaltester.control.soap.Activator activatorSoap = org.globaltester.control.soap.Activator.getDefault();
+		if (activatorSoap != null) {
+			activatorSoap.unregisterServices();
+		}
+		persoSimControlServiceRegistration = context.registerService(RemoteControlHandler.class, new PersoSimRemoteControlImpl(), null);
 	}
 
 	private void disablePersoSimRemoteControlService()
@@ -65,7 +71,10 @@ public class Activator implements BundleActivator
 			endpointManager.stop();
 			endpointManager = null;
 		}
-		org.globaltester.control.soap.Activator.getDefault().unregisterServices();
+		org.globaltester.control.soap.Activator activatorSoap = org.globaltester.control.soap.Activator.getDefault();
+		if (activatorSoap != null) {
+			activatorSoap.unregisterServices();
+		}
 	}
 
 	@Override
@@ -134,7 +143,6 @@ public class Activator implements BundleActivator
 	public static Activator getDefault()
 	{
 		return plugin;
-
 	}
 
 	/**

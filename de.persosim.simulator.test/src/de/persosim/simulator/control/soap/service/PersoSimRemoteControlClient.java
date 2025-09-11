@@ -33,7 +33,7 @@ public class PersoSimRemoteControlClient
 		callSendApdu(null, apduAsHexString);
 	}
 
-	PersoSimRemoteControlInterface port;
+	PersoSimRemoteControl port;
 
 	public PersoSimRemoteControlClient()
 	{
@@ -47,34 +47,39 @@ public class PersoSimRemoteControlClient
 		port = service.getPersoSimRemoteControlPort();
 	}
 
-	public static String callReset(URL serviceUrl)
+	public static String getPersoSimRemoteControlResult(PersoSimRemoteControlResult result)
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append(result.getResultCode()).append('\n').append(result.getResultMessage()).append('\n').append(result.getResultAsHex()).append('\n').append(result.getResultPrettyPrint()).append('\n');
+		return sb.toString();
+	}
+
+
+	public static void callReset(URL serviceUrl)
 	{
 		BasicLogger.log("Try calling reset from PersoSimRemoteControl...", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		PersoSimRemoteControlService service = serviceUrl == null ? new PersoSimRemoteControlService() : new PersoSimRemoteControlService(serviceUrl);
-		PersoSimRemoteControlInterface port = service.getPersoSimRemoteControlPort();
-		String response = port.reset();
-		BasicLogger.log("Response: '" + response + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-		return response;
+		PersoSimRemoteControl port = service.getPersoSimRemoteControlPort();
+		PersoSimRemoteControlResult result = port.reset();
+		BasicLogger.log("Response: '" + getPersoSimRemoteControlResult(result) + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 	}
 
-	public static String callLoadPerso(URL serviceUrl, String filePathPerso)
+	public static void callLoadPerso(URL serviceUrl, String filePathPerso)
 	{
 		BasicLogger.log("Try calling loadPerso from PersoSimRemoteControl...", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		PersoSimRemoteControlService service = serviceUrl == null ? new PersoSimRemoteControlService() : new PersoSimRemoteControlService(serviceUrl);
-		PersoSimRemoteControlInterface port = service.getPersoSimRemoteControlPort();
-		String response = port.loadPerso(filePathPerso);
-		BasicLogger.log("Response: '" + response + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-		return response;
+		PersoSimRemoteControl port = service.getPersoSimRemoteControlPort();
+		PersoSimRemoteControlResult result = port.loadPerso(filePathPerso);
+		BasicLogger.log("Response: '" + getPersoSimRemoteControlResult(result) + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 	}
 
-	public static String callSendApdu(URL serviceUrl, String apduAsHexString)
+	public static void callSendApdu(URL serviceUrl, String apduAsHexString)
 	{
 		BasicLogger.log("Try calling sendApdu from PersoSimRemoteControl...", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		PersoSimRemoteControlService service = serviceUrl == null ? new PersoSimRemoteControlService() : new PersoSimRemoteControlService(serviceUrl);
-		PersoSimRemoteControlInterface port = service.getPersoSimRemoteControlPort();
-		String response = port.sendApdu(apduAsHexString);
-		BasicLogger.log("Response: '" + response + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-		return response;
+		PersoSimRemoteControl port = service.getPersoSimRemoteControlPort();
+		PersoSimRemoteControlResult result = port.sendApdu(apduAsHexString);
+		BasicLogger.log("Response: '" + getPersoSimRemoteControlResult(result) + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 	}
 
 }

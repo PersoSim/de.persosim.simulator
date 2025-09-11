@@ -5,7 +5,8 @@ Bundle-SymbolicName: de.persosim.simulator;singleton:=true
 Bundle-Version: 1.2.0.qualifier
 Bundle-Vendor: secunet Security Networks AG
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Export-Package: de.persosim.simulator,
+Export-Package: 
+ de.persosim.simulator,
  de.persosim.simulator.apdu,
  de.persosim.simulator.apdumatching,
  de.persosim.simulator.cardobjects,
@@ -14,12 +15,10 @@ Export-Package: de.persosim.simulator,
  de.persosim.simulator.crypto.certificates,
  de.persosim.simulator.documents,
  de.persosim.simulator.exception,
- de.persosim.simulator.log,
  de.persosim.simulator.perso,
  de.persosim.simulator.perso.export,
  de.persosim.simulator.perso.xstream,
  de.persosim.simulator.platform,
- de.persosim.simulator.preferences,
  de.persosim.simulator.processing,
  de.persosim.simulator.protocols,
  de.persosim.simulator.protocols.auxVerification,
@@ -38,8 +37,10 @@ Export-Package: de.persosim.simulator,
  de.persosim.simulator.tlv,
  de.persosim.simulator.utils
 Bundle-ClassPath: .
-Import-Package: javax.jws,
+Import-Package: 
+ javax.jws,
  javax.jws.soap,
+ javax.xml.bind.annotation,
  javax.xml.ws,
  org.globaltester.control,
  org.globaltester.control.soap,
@@ -49,7 +50,9 @@ Import-Package: javax.jws,
 Eclipse-BundleShape: dir
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: de.persosim.simulator.Activator
-Require-Bundle: org.globaltester.cryptoprovider,
+Require-Bundle: 
+ de.persosim.simulator.basics,
+ org.globaltester.cryptoprovider,
  org.globaltester.cryptoprovider.bc,
  org.eclipse.equinox.registry,
  org.globaltester.simulator,

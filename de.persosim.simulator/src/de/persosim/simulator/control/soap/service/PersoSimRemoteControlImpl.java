@@ -29,9 +29,9 @@ import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 import de.persosim.simulator.utils.HexString;
 
 
-@WebService(name = "PersoSimRemoteControl", targetNamespace = "http://service.soap.control.simulator.persosim.de/")
+@WebService(serviceName = "PersoSimRemoteControlService", portName = "PersoSimRemoteControlPort", name = "PersoSimRemoteControl", targetNamespace = "http://service.soap.control.simulator.persosim.de/")
 @SOAPBinding(style = SOAPBinding.Style.RPC)
-public class PersoSimRemoteControl extends AbstractRemoteControlHandler implements JaxWsSoapAdapter
+public class PersoSimRemoteControlImpl extends AbstractRemoteControlHandler implements JaxWsSoapAdapter
 {
 	@Override
 	public String getIdentifier()
@@ -42,7 +42,7 @@ public class PersoSimRemoteControl extends AbstractRemoteControlHandler implemen
 	@WebMethod
 	@WebResult(partName = "return")
 	@Action(input = "http://service.soap.control.simulator.persosim.de/PersoSimRemoteControl/loadPersoRequest", output = "http://service.soap.control.simulator.persosim.de/PersoSimRemoteControl/loadPersoResponse")
-	public String loadPerso(String filePath)
+	public PersoSimRemoteControlResult loadPerso(String filePath)
 	{
 		String command = CommandParser.CMD_LOAD_PERSONALIZATION + " " + filePath;
 		log("Executing command: '" + command + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
@@ -63,7 +63,6 @@ public class PersoSimRemoteControl extends AbstractRemoteControlHandler implemen
 			commands[1] = filePath;
 		}
 
-		String response = null;
 		Path pathPerso = null;
 
 		try {
@@ -71,20 +70,18 @@ public class PersoSimRemoteControl extends AbstractRemoteControlHandler implemen
 		}
 		catch (IllegalArgumentException e) {
 			logException("Invalid file path: '" + filePath + "'", e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-			response = "NOT OK. Perso '" + filePath + "' could not be loaded. Invalid file path: '" + filePath + "'.";
-			log(response, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-			return response;
+			String resultMessage = "NOT OK. Perso '" + filePath + "' could not be loaded. Invalid file path: '" + filePath + "'.";
+			return createResult(1, resultMessage);
 		}
 
 		if (!Files.exists(pathPerso)) {
-			response = "NOT OK. Perso '" + filePath + "' could not be loaded. File does not exist.";
-			log(response, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-			return response;
+			String resultMessage = "NOT OK. Perso '" + filePath + "' could not be loaded. File does not exist.";
+			return createResult(1, resultMessage);
 		}
 		if (Files.isDirectory(pathPerso)) {
-			response = "NOT OK. Perso '" + filePath + "' could not be loaded. Path is a directory.";
-			log(response, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-			return response;
+			String resultMessage = "NOT OK. Perso '" + filePath + "' could not be loaded. Path is a directory.";
+			log(resultMessage, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+			return createResult(1, resultMessage);
 		}
 
 		boolean withOverlay = false;
@@ -108,21 +105,24 @@ public class PersoSimRemoteControl extends AbstractRemoteControlHandler implemen
 		}
 
 		boolean result = CommandParser.cmdLoadPersonalization(new ArrayList<>(Arrays.asList(commands)), withOverlay);
+		int resultCode = 0;
+		String resultMessage;
 		if (result) {
-			response = "OK. Perso '" + filePath + "' loaded " + (withOverlay ? "with" : "without") + " overlay.";
-			log(response, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+			resultMessage = "OK. Perso '" + filePath + "' loaded " + (withOverlay ? "with" : "without") + " overlay.";
+			log(resultMessage, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 		else {
-			response = "NOT OK. Perso '" + filePath + "' could not be loaded.";
-			log(response, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+			resultCode = 1;
+			resultMessage = "NOT OK. Perso '" + filePath + "' could not be loaded.";
+			log(resultMessage, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
-		return response;
+		return createResult(resultCode, resultMessage);
 	}
 
 	@WebMethod
 	@WebResult(partName = "return")
 	@Action(input = "http://service.soap.control.simulator.persosim.de/PersoSimRemoteControl/sendApduRequest", output = "http://service.soap.control.simulator.persosim.de/PersoSimRemoteControl/sendApduResponse")
-	public String sendApdu(String apduAsHexString)
+	public PersoSimRemoteControlResult sendApdu(String apduAsHexString)
 	{
 		String command = CommandParser.CMD_SEND_APDU + " " + apduAsHexString;
 		log("Executing command: '" + command + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
@@ -135,39 +135,48 @@ public class PersoSimRemoteControl extends AbstractRemoteControlHandler implemen
 		}
 
 		String[] commands = CommandParser.parseCommand(command);
-		String result = CommandParser.cmdSendApdu(new ArrayList<>(Arrays.asList(commands))).trim();
-		String response = null;
-		if (result.contains("APDU")) {
-			response = "NOT OK. SendApdu Result: '" + result + "'";
-			log(response, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		String resultPrettyPrint = CommandParser.cmdSendApdu(new ArrayList<>(Arrays.asList(commands))).trim();
+		String resultHex = null;
+		int resultCode = 0;
+		String resultMessage;
+		if (resultPrettyPrint.contains("APDU")) {
+			resultCode = 1;
+			resultMessage = "NOT OK. SendApdu Result: '" + resultPrettyPrint + "'";
+			log(resultMessage, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 		else {
-			response = "OK. SendApdu Result: '" + result + "'";
-			log(response, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+			resultMessage = "OK. SendApdu Result: '" + resultPrettyPrint + "'";
+			log(resultMessage, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
-		return response;
+		return createResult(resultCode, resultMessage, resultHex, resultPrettyPrint); // TODO: Hex; add to CommandParserResult in MS3
 	}
 
 	@WebMethod
 	@WebResult(partName = "return")
 	@Action(input = "http://service.soap.control.simulator.persosim.de/PersoSimRemoteControl/resetRequest", output = "http://service.soap.control.simulator.persosim.de/PersoSimRemoteControl/resetResponse")
-	public String reset()
+	public PersoSimRemoteControlResult reset()
 	{
 		log("Executing reset card", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 
 		PersoSimPreferenceManager.storePreference("PREF_NON_INTERACTIVE", Boolean.TRUE.toString());
 
 		PersoSim persoSim = de.persosim.simulator.Activator.getDefault().getSim();
-		String response = null;
+		int resultCode = 0;
+		String resultMessage = null;
+		String resultPrettyPrint = null;
+		String resultHex = null;
 		if (persoSim != null && persoSim.isRunning()) {
 			byte[] atr = persoSim.cardReset();
-			response = "OK. Card reset done (ATR: '" + HexString.dump(atr).trim() + "').";
+			resultHex = HexString.encode(atr);
+			resultPrettyPrint = HexString.dump(atr).trim();
+			resultMessage = "OK. Card reset done (ATR: '" + resultPrettyPrint + "').";
 		}
 		else {
-			response = "OK. PersoSim is not running. Nothing to reset.";
+			// resultCode = 1;
+			resultMessage = "OK. PersoSim is not running. Nothing to reset.";
 		}
-		log(response, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-		return response;
+		log(resultMessage, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		return createResult(resultCode, resultMessage, resultHex, resultPrettyPrint);
 	}
 
 	@Override
@@ -177,6 +186,30 @@ public class PersoSimRemoteControl extends AbstractRemoteControlHandler implemen
 			return c.cast(this);
 		}
 		return null;
+	}
+
+	/**
+	 * Helper method, cause standard wsimport does not create parameterized constructors.
+	 */
+	public static PersoSimRemoteControlResult createResult(int resultCode, String resultMessage, String resultAsHex, String resultPrettyPrint)
+	{
+		PersoSimRemoteControlResult result = new PersoSimRemoteControlResult();
+		result.setResultCode(resultCode);
+		result.setResultMessage(resultMessage);
+		result.setResultAsHex(resultAsHex);
+		result.setResultPrettyPrint(resultPrettyPrint);
+		return result;
+	}
+
+	/**
+	 * Helper method, cause standard wsimport does not create parameterized constructors.
+	 */
+	public static PersoSimRemoteControlResult createResult(int resultCode, String resultMessage)
+	{
+		PersoSimRemoteControlResult result = new PersoSimRemoteControlResult();
+		result.setResultCode(resultCode);
+		result.setResultMessage(resultMessage);
+		return result;
 	}
 
 }

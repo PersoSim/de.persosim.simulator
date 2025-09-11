@@ -6,19 +6,15 @@ Bundle-Version: 1.2.0.qualifier
 Bundle-Vendor: secunet Security Networks AG
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ClassPath: .
-Import-Package: 
- de.persosim.simulator,
- de.persosim.simulator.control.soap.service,
- de.persosim.simulator.log,
- de.persosim.simulator.preferences,
- de.persosim.simulator.utils,
- org.osgi.framework
 Eclipse-BundleShape: dir
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: 
  de.persosim.simulator.controller.Activator
 Require-Bundle: 
- org.globaltester.logging,
+ de.persosim.simulator.basics,
  org.eclipse.core.runtime,
- org.eclipse.equinox.app
+ org.eclipse.equinox.app,
+ org.eclipse.osgi,
+ org.globaltester.logging
 Automatic-Module-Name: de.persosim.simulator.controller
+Export-Package: de.persosim.simulator.controller

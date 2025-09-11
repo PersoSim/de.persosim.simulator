@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "PersoSimRemoteControlService", targetNamespace = "http://service.soap.control.simulator.persosim.de/", wsdlLocation = "http://localhost:8888/persosim/PersoSimRemoteControl?wsdl")
+@WebServiceClient(name = "PersoSimRemoteControlService", targetNamespace = "http://service.soap.control.simulator.persosim.de/", wsdlLocation = "http://localhost:8888/persosim/PersoSimRemoteControlResult?wsdl")
 public class PersoSimRemoteControlService
     extends Service
 {
@@ -30,7 +30,7 @@ public class PersoSimRemoteControlService
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("http://localhost:8888/persosim/PersoSimRemoteControl?wsdl");
+            url = new URL("http://localhost:8888/persosim/PersoSimRemoteControlResult?wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }
@@ -68,8 +68,8 @@ public class PersoSimRemoteControlService
      *     returns PersoSimRemoteControl
      */
     @WebEndpoint(name = "PersoSimRemoteControlPort")
-    public PersoSimRemoteControlInterface getPersoSimRemoteControlPort() {
-        return super.getPort(new QName("http://service.soap.control.simulator.persosim.de/", "PersoSimRemoteControlPort"), PersoSimRemoteControlInterface.class);
+    public PersoSimRemoteControl getPersoSimRemoteControlPort() {
+        return super.getPort(new QName("http://service.soap.control.simulator.persosim.de/", "PersoSimRemoteControlPort"), PersoSimRemoteControl.class);
     }
 
     /**
@@ -80,8 +80,8 @@ public class PersoSimRemoteControlService
      *     returns PersoSimRemoteControl
      */
     @WebEndpoint(name = "PersoSimRemoteControlPort")
-    public PersoSimRemoteControlInterface getPersoSimRemoteControlPort(WebServiceFeature... features) {
-        return super.getPort(new QName("http://service.soap.control.simulator.persosim.de/", "PersoSimRemoteControlPort"), PersoSimRemoteControlInterface.class, features);
+    public PersoSimRemoteControl getPersoSimRemoteControlPort(WebServiceFeature... features) {
+        return super.getPort(new QName("http://service.soap.control.simulator.persosim.de/", "PersoSimRemoteControlPort"), PersoSimRemoteControl.class, features);
     }
 
     private static URL __getWsdlLocation() {

@@ -13,9 +13,11 @@ import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.logging.tags.LogTag;
 
-import de.persosim.simulator.control.soap.service.PersoSimRemoteControlInterface;
+import de.persosim.simulator.control.soap.service.PersoSimRemoteControl;
+import de.persosim.simulator.control.soap.service.PersoSimRemoteControlResult;
 import de.persosim.simulator.control.soap.service.PersoSimRemoteControlService;
 import de.persosim.simulator.log.PersoSimLogTags;
+
 
 public class PersoSimController implements IApplication
 {
@@ -177,22 +179,23 @@ public class PersoSimController implements IApplication
 	{
 		try {
 			Process killProc = null;
+			String killCommand = null;
 			if (os.contains("win")) {
-				String killCommand = "taskkill /F /IM " + (processName.endsWith(".exe") ? processName : processName + ".exe");
-				killProc = Runtime.getRuntime().exec(killCommand);
+				killCommand = "taskkill /F /IM " + (processName.endsWith(".exe") ? processName : processName + ".exe");
 			}
 			else if (os.contains("nix") || os.contains("nux")) {
-				String killCommand = "killall -g " + processName;
-				killProc = Runtime.getRuntime().exec(killCommand);
+				killCommand = "killall -g " + processName;
 			}
 			else if (os.contains("mac")) {
-				String killCommand = "killall " + processName;
-				killProc = Runtime.getRuntime().exec(killCommand);
+				killCommand = "killall " + processName;
 			}
 			else {
 				BasicLogger.log("Kill by name is not supported on this operating system.", LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 				return false;
 			}
+
+			// BasicLogger.log("OS-specific ('" + os + "') command to kill: " + killCommand, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+			killProc = Runtime.getRuntime().exec(killCommand);
 
 			int exitCode = killProc.waitFor();
 			if (exitCode == 0) {
@@ -229,49 +232,46 @@ public class PersoSimController implements IApplication
 		return service;
 	}
 
-	private String loadPerso(String fullPathToPersoFile)
+	private void loadPerso(String fullPathToPersoFile)
 	{
 		BasicLogger.log("Try calling loadPerso from PersoSimRemoteControl...", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		PersoSimRemoteControlService service = getService();
 		if (service == null) {
 			String response = SERVICE_NOT_RUNNING;
 			BasicLogger.log(response, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-			return response;
+			return;
 		}
-		PersoSimRemoteControlInterface port = service.getPersoSimRemoteControlPort();
-		String response = port.loadPerso(fullPathToPersoFile);
-		logServiceResponse(response);
-		return response;
+		PersoSimRemoteControl port = service.getPersoSimRemoteControlPort();
+		PersoSimRemoteControlResult result = port.loadPerso(fullPathToPersoFile);
+		logServiceResponse(result.getResultMessage());
 	}
 
-	private String sendApdu(String apduAsHexString)
+	private void sendApdu(String apduAsHexString)
 	{
 		BasicLogger.log("Try calling sendApdu from PersoSimRemoteControl...", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		PersoSimRemoteControlService service = getService();
 		if (service == null) {
 			String response = SERVICE_NOT_RUNNING;
 			BasicLogger.log(response, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-			return response;
+			return;
 		}
-		PersoSimRemoteControlInterface port = service.getPersoSimRemoteControlPort();
-		String response = port.sendApdu(apduAsHexString);
-		logServiceResponse(response);
-		return response;
+		PersoSimRemoteControl port = service.getPersoSimRemoteControlPort();
+		PersoSimRemoteControlResult result = port.sendApdu(apduAsHexString);
+		logServiceResponse(result.getResultMessage());
 	}
 
-	private String reset()
+	private void reset()
 	{
 		BasicLogger.log("Try calling reset from PersoSimRemoteControl...", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		PersoSimRemoteControlService service = getService();
 		if (service == null) {
 			String response = SERVICE_NOT_RUNNING;
 			BasicLogger.log(response, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-			return response;
+			return;
 		}
-		PersoSimRemoteControlInterface port = service.getPersoSimRemoteControlPort();
-		String response = port.reset();
-		logServiceResponse(response);
-		return response;
+		PersoSimRemoteControl port = service.getPersoSimRemoteControlPort();
+		PersoSimRemoteControlResult result = port.reset();
+		logServiceResponse(result.getResultMessage());
 	}
 
 	private void logServiceResponse(String response)
@@ -293,7 +293,7 @@ public class PersoSimController implements IApplication
 				new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		BasicLogger.log("\tExample (Linux): " + nameExePrefix + " stop \"/home/someuser/PersoSimDir/PersoSim\"", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		BasicLogger.log("or:", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-		BasicLogger.log(nameExe + " loadperso <fullPathToPersoFile>", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		BasicLogger.log(nameExe + " loadperso <fullPathToPersoFile>|<nameOfPredefinedPersoTemplate>", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		BasicLogger.log("or:", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		BasicLogger.log(nameExe + " sendapdu <apduAsHexString>", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		BasicLogger.log("or:", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
@@ -390,6 +390,7 @@ public class PersoSimController implements IApplication
 
 	public static void main(String[] args)
 	{
+		BasicLogger.log("Start PersoSimController (main)...", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		PersoSimController controller = new PersoSimController();
 		controller.doWork(args);
 	}
