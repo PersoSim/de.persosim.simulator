@@ -1,10 +1,15 @@
 package de.persosim.simulator.perso.export;
 
+import static org.globaltester.logging.BasicLogger.logException;
+
 import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.persosim.simulator.log.PersoSimLogTags;
 import jakarta.annotation.Nullable;
 
 public class ProfileBase
@@ -25,7 +30,7 @@ public class ProfileBase
 			// BasicLogger.log(jsonSerialized, LogLevel.TRACE);
 		}
 		catch (JsonProcessingException e) {
-			BasicLogger.logException(this.getClass(), e);
+			logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 		return jsonSerialized;
 	}
@@ -39,7 +44,7 @@ public class ProfileBase
 			profileDeserialized = objectMapper.readValue(jsonSerialized, clazz);
 		}
 		catch (JsonProcessingException e) {
-			BasicLogger.logException(ProfileBase.class, e);
+			logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 		return profileDeserialized;
 	}

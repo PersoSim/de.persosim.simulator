@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
 
 import de.persosim.simulator.apdu.IsoSecureMessagingCommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
@@ -42,6 +43,7 @@ import de.persosim.simulator.exception.CarParameterInvalidException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.CertificateUpdateException;
 import de.persosim.simulator.exception.ProcessingException;
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.protocols.AbstractProtocolStateMachine;
 import de.persosim.simulator.protocols.GenericOid;
@@ -69,7 +71,7 @@ import de.persosim.simulator.utils.Utils;
 
 /**
  * @author mboonk
- * 
+ *
  */
 public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine implements TlvConstants {
 
@@ -93,7 +95,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	public static final byte APDU_MUTUAL_AUTHENTICATE = 4;
 
 	public static final byte MASK_SFI_BYTE = (byte) 0x80;
-	
+
 	private SecureRandom secureRandom = new SecureRandom();
 	protected CardVerifiableCertificate currentCertificate;
 	private CardVerifiableCertificate mostRecentTemporaryCertificate;
@@ -106,9 +108,9 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	private TerminalType terminalType;
 	private byte[] firstSectorPublicKeyHash;
 	private byte[] secondSectorPublicKeyHash;
-	
+
 	protected AuthorizationStore authorizationStore = null;
-	
+
 	/*--------------------------------------------------------------------------------*/
 
 	public AbstractTaProtocol() {
@@ -120,7 +122,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	/**
 	 * This method checks if the received APDU is a correct
 	 * {@link IsoSecureMessagingCommandApdu} and was encrypted.
-	 * 
+	 *
 	 * @return true, if it is a {@link IsoSecureMessagingCommandApdu} and the
 	 *         APDU was encrypted at some point in its history
 	 */
@@ -145,21 +147,21 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		}
 		return true;
 	}
-	
+
 	protected void processCommandGetChallenge() {
 		if (!checkSecureMessagingApdu()){
 			return;
-		}		
-		
+		}
+
 		challenge = new byte [8];
-		secureRandom.nextBytes(challenge);	
-		
+		secureRandom.nextBytes(challenge);
+
 		// create and propagate response APDU
 		ResponseApdu resp = new ResponseApdu(new TlvValuePlain(challenge), Iso7816.SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this,
 				"Command GetChallenge successfully processed", resp);
 	}
-	
+
 	@Override
 	public void reset(){
 		super.reset();
@@ -169,7 +171,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		auxiliaryData = null;
 		challenge = null;
 	}
-	
+
 	protected TerminalType getTerminalType() {
 		// get necessary information stored in an earlier protocol (e.g. PACE or CAPA)
 		TerminalType type = getTerminalType(PaceMechanism.class);
@@ -225,30 +227,30 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		previousMechanisms.add(secMechanism);
 		return cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
 	}
-	
+
 	protected void processCommandSetDst() {
 		try {
 			if (!checkSecureMessagingApdu()){
 				return;
 			}
-			
+
 			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 			TlvDataObject publicKeyReference = commandData.getTlvDataObject(TlvConstants.TAG_83);
-			
+
 			if(publicKeyReference == null) {
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND);
 				this.processingData.updateResponseAPDU(this,"no public key reference found", resp);
 				return;
 			}
-			
+
 			byte[] nameOfPublicKeyEncoded = publicKeyReference.getValueField();
-			
+
 			terminalType = getTerminalType();
-			
+
 			// reset the currently set key
 			currentCertificate = null;
-			
+
 			// get the next certificate to verify against
 			if (mostRecentTemporaryCertificate != null && mostRecentTemporaryCertificate.getCertificateHolderReference() != null) {
 				// the temporary imported key is to be used
@@ -257,7 +259,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					currentCertificate = mostRecentTemporaryCertificate;
 				}
 			}
-			
+
 			if (currentCertificate != null){
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
@@ -265,30 +267,30 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 						"Command SetDST successfully processed, public key found in temporary imported certificate", resp);
 				return;
 			}
-				
+
 			String anchor = "";
-			
+
 			// get the stored trust points
 			CardObject trustPointCandidate = CardObjectUtils.getSpecificChild(cardState.getMasterFile(), new TrustPointIdentifier(terminalType));
-			
+
 			if (trustPointCandidate instanceof TrustPointCardObject) {
 				trustPoint = (TrustPointCardObject) trustPointCandidate;
-				
-				
+
+
 				if (trustPoint.getCurrentCertificate() != null && trustPoint.getCurrentCertificate().getCertificateHolderReference() != null
 						&& Arrays.equals(trustPoint.getCurrentCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
-					
+
 					currentCertificate = trustPoint.getCurrentCertificate();
 					anchor = "first";
 				} else {
 					if (trustPoint.getPreviousCertificate() != null && trustPoint.getPreviousCertificate().getCertificateHolderReference() != null
 							&& Arrays.equals(trustPoint.getPreviousCertificate().getCertificateHolderReference().getBytes(), nameOfPublicKeyEncoded)) {
-						
+
 						currentCertificate = trustPoint.getPreviousCertificate();
 						anchor = "second";
 					}
 				}
-				
+
 //				if (currentCertificate != null){
 //					// a new root certificate was selected
 //					authorizationStore = getInitialAuthorizations(currentCertificate);
@@ -296,7 +298,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 //					if (authorizationStore != null){
 //						auth = authorizationStore.getAuthorization(terminalType.getAsOid());
 //					}
-//						
+//
 //					if(auth == null) {
 //						// create and propagate response APDU
 //						ResponseApdu resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
@@ -305,10 +307,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 //					}
 //				}
 			}
-				
+
 			if (currentCertificate != null){
 				updateAuthorizations(currentCertificate);
-				
+
 				// create and propagate response APDU
 				ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 				this.processingData.updateResponseAPDU(this, "Command SetDST successfully processed, public key found in " + anchor + " trust anchor", resp);
@@ -333,22 +335,22 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			authorizationStore.updateAuthorization(getAuthorizationsFromCertificate(certificate));
 		}
 	}
-	
+
 	public HashMap<Oid, Authorization> getAuthorizationsFromCertificate(CardVerifiableCertificate certificate) {
 		HashMap<Oid, Authorization> authorizations = new HashMap<>();
-		
+
 		CertificateHolderAuthorizationTemplate chat = certificate.getCertificateHolderAuthorizationTemplate();
 		if (chat == null)
 			throw new IllegalArgumentException("No CHAT available");
-		RelativeAuthorization authFromChat = chat.getRelativeAuthorization();		
+		RelativeAuthorization authFromChat = chat.getRelativeAuthorization();
 		authorizations.put(chat.getTerminalType().getAsOid(), authFromChat);
-		
+
 		return authorizations;
 	}
-	
+
 	/**
 	 * Checks if there are any known previous TA runs in the session.
-	 * 
+	 *
 	 * @return true if TA generally can be executed
 	 */
 	protected boolean isTaAllowed(){
@@ -361,7 +363,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			return true;
 		}
 	}
-	
+
 	protected TaOid getCryptographicMechanismReference(TlvDataObjectContainer commandData) {
 		TlvDataObject cryptographicMechanismReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_80);
 		if (cryptographicMechanismReferenceData != null){
@@ -376,7 +378,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			throw new ProcessingException(Iso7816.SW_6A88_REFERENCE_DATA_NOT_FOUND, "The public key reference data is missing");
 		}
 	}
-	
+
 	protected void assertPublicKeyReferenceDataMatchesCertificate(TlvDataObjectContainer commandData, CardVerifiableCertificate cvCert) {
 		TlvDataObject publicKeyReferenceData = commandData.getTlvDataObject(TlvConstants.TAG_83);
 		if (publicKeyReferenceData != null){
@@ -393,10 +395,10 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			throw new ProcessingException(Iso7816.SW_6A80_WRONG_DATA, "The public key reference data is missing");
 		}
 	}
-	
+
 	protected List<AuthenticatedAuxiliaryData> parseAuxiliaryData(TlvDataObjectContainer commandData) {
 		List<AuthenticatedAuxiliaryData> foundAuxData = new ArrayList<>();
-		
+
 		TlvDataObject auxiliaryAuthenticatedData = commandData.getTlvDataObject(TlvConstants.TAG_67);
 		if (auxiliaryAuthenticatedData != null){
 			if (auxiliaryAuthenticatedData instanceof ConstructedTlvDataObject){
@@ -424,7 +426,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		}
 		return foundAuxData;
 	}
-	
+
 	protected byte[] extractCompressedEphemeralPublicKeyTerminal(TlvDataObjectContainer commandData) {
 		TlvDataObject ephemeralPublicKeyData = commandData.getTlvDataObject(TlvConstants.TAG_91);
 		if (ephemeralPublicKeyData != null){
@@ -439,16 +441,16 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			if (!checkSecureMessagingApdu()){
 				return;
 			}
-			
+
 			TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
-			
+
 			assertPublicKeyReferenceDataMatchesCertificate(commandData, currentCertificate);
 			cryptographicMechanismReference = getCryptographicMechanismReference(commandData);
-			
+
 			auxiliaryData = parseAuxiliaryData(commandData);
-			
+
 			compressedTerminalEphemeralPublicKey = extractCompressedEphemeralPublicKeyTerminal(commandData);
-			
+
 			// create and propagate response APDU
 			ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 			processingData.updateResponseAPDU(this, "Command SetAT successfully processed", resp);
@@ -457,11 +459,11 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 		}
 	}
-	
+
 	/**
 	 * This method checks the given data against the given RSA or ECDSA
 	 * signature using the TA cryptographic mechanism reference OIDs.
-	 * 
+	 *
 	 * @param taOid
 	 *            defining the signature algorithm to be used
 	 * @param publicKey
@@ -478,30 +480,37 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @throws NoSuchProviderException
 	 */
 	private boolean checkSignature(TaOid taOid, PublicKey publicKey, byte [] dataToVerify, byte [] signatureData) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoSuchProviderException{
-		log(this, "Verifying signature:");
+		log(this, "Verifying signature:", LogLevel.DEBUG,
+				new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 		Signature signature = taOid.getSignature();
 		if (signature != null){
 			signature.initVerify(publicKey);
 			signature.update(dataToVerify);
 
-			log(this, "Data to verify:\n" + HexString.dump(dataToVerify));
-			
-			log(this, "Unprocessed signature data:\n" + HexString.dump(signatureData));
-			
+			log(this, "Data to verify:\n" + HexString.dump(dataToVerify), LogLevel.DEBUG,
+					new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
+
+			log(this, "Unprocessed signature data:\n" + HexString.dump(signatureData), LogLevel.DEBUG,
+					new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
+
 			if (publicKey instanceof ECPublicKey){
 				signatureData = CryptoUtil.restoreAsn1SignatureStructure(signatureData).toByteArray();
 			}
-			
-			log(this, "Processed signature data  :\n" + HexString.dump(signatureData));
-			
+
+			log(this, "Processed signature data  :\n" + HexString.dump(signatureData), LogLevel.DEBUG,
+					new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
+
 			if(signature.verify(signatureData)){
-				log(this, "Verification OK");
+				log(this, "Verification OK", LogLevel.DEBUG,
+						new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 				return true;
 			}
 		} else {
-			log(this, "No signature found for OID");
+			log(this, "No signature found for OID", LogLevel.DEBUG,
+					new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 		}
-		log(this, "Verification failed");
+		log(this, "Verification failed", LogLevel.WARN,
+				new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 		return false;
 	}
 
@@ -509,11 +518,11 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		if (!checkSecureMessagingApdu()){
 			return;
 		}
-		
+
 		TlvDataObjectContainer commandData = processingData.getCommandApdu().getCommandDataObjectContainer();
 		ConstructedTlvDataObject certificateBodyData = (ConstructedTlvDataObject) commandData.getTlvDataObject(TlvConstants.TAG_7F4E);
 		PrimitiveTlvDataObject certificateSignatureData = (PrimitiveTlvDataObject) commandData.getTlvDataObject(TlvConstants.TAG_5F37);
-		
+
 		try {
 			ConstructedTlvDataObject certificateData = new ConstructedTlvDataObject(TlvConstants.TAG_7F21);
 			certificateData.addTlvDataObject(certificateBodyData, certificateSignatureData);
@@ -577,20 +586,20 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 					"Could not verify the certificate", resp);
 			return;
 		}
-		
+
 		// create and propagate response APDU
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this,
 				"Command PSO Verify Certificate successfully processed", resp);
 	}
-	
+
 
 	/**
 	 * Checks the validity of a certificate against the current date. Expired
 	 * CVCA link certificates are accepted, not yet effective certificates are
 	 * also accepted. Terminal and DV certificates are checked to be not yet
 	 * expired according to the chips date.
-	 * 
+	 *
 	 * @param certificate
 	 *            the certificate to check
 	 * @param issuingCertificate
@@ -600,20 +609,21 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * @return true, if the certificate is valid as defined in TR-03110 v2.10
 	 */
 	protected static boolean checkValidity(CardVerifiableCertificate certificate, CardVerifiableCertificate issuingCertificate, Date currentDate) {
-		
-		BasicLogger.log(AbstractTaProtocol.class, "Checking validity for: " + certificate + 
-				"\n\teffective:  " + certificate.getEffectiveDate() + 
+
+		BasicLogger.log(AbstractTaProtocol.class, "Checking validity for: " + certificate +
+				"\n\teffective:  " + certificate.getEffectiveDate() +
 				"\n\texpiration: " + certificate.getExpirationDate() +
-				"\nagainst: " + issuingCertificate + 
-				"\n\teffective:  " + issuingCertificate.getEffectiveDate() + 
+				"\nagainst: " + issuingCertificate +
+				"\n\teffective:  " + issuingCertificate.getEffectiveDate() +
 				"\n\texpiration: " + issuingCertificate.getExpirationDate() +
-				"\nCurrent Date is: " + currentDate, LogLevel.DEBUG);
-		
+				"\nCurrent Date is: " + currentDate, LogLevel.DEBUG,
+				new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
+
 		//verify that issuingCertificate was valid, when certificate was issued
 		if (certificate.getEffectiveDate().after(issuingCertificate.getExpirationDate())) return false;
-		if (issuingCertificate.getEffectiveDate().after(certificate.getEffectiveDate())) return false; 
-		
-		
+		if (issuingCertificate.getEffectiveDate().after(certificate.getEffectiveDate())) return false;
+
+
 		//check validity on current date
 		if (isCvcaCertificate(issuingCertificate)){
 			if (isCvcaCertificate(certificate)){
@@ -637,7 +647,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	/**
 	 * Check the given certificates for compliance to the definitions in
 	 * TR-03110 v2.10 2.6.2
-	 * 
+	 *
 	 * @param certificate
 	 *            to check
 	 * @param certificateToCheckAgainst
@@ -650,7 +660,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 		if ((isCvcaCertificate(certificate) || isDvCertificate(certificate)) && !isCvcaCertificate(certificateToCheckAgainst)){
 			return false;
 		}
-		
+
 		if (isTerminalCertificate(certificate) && !isDvCertificate(certificateToCheckAgainst)){
 			return false;
 		}
@@ -660,9 +670,9 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	/**
 	 * Check the given certificates for compliance to the definitions D.3.
 	 * This expects the publicKey having been parsed int cvPublicKey to ensure key data is valid.
-	 * @param publicKey 
-	 * @param cvPublicKey 
-	 * 
+	 * @param publicKey
+	 * @param cvPublicKey
+	 *
 	 * @return true, if the conditions are fulfilled
 	 */
 	protected static boolean isCertificatePublicKeyDataObjectMinimal(TlvDataObject publicKey, CvPublicKey cvPublicKey) throws CertificateNotParseableException {
@@ -683,7 +693,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	/**
 	 * Update a date object using the given certificates as described in
 	 * TR-03110 v2.10 2.6.2
-	 * 
+	 *
 	 * @param certificate
 	 *            to extract the new date from
 	 * @param issuingCertificate
@@ -701,7 +711,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			}
 		}
 	}
-	
+
 	/**
 	 * @return the currently stored date
 	 */
@@ -749,7 +759,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	 * This method imports the given certificate without further checks.
 	 * @param certificate
 	 * @param issuingCertificate
-	 * @throws CertificateUpdateException 
+	 * @throws CertificateUpdateException
 	 */
 	private void importCertificate(CardVerifiableCertificate certificate, CardVerifiableCertificate issuingCertificate) throws CertificateUpdateException {
 		updateDate(certificate, issuingCertificate, getCurrentDate());
@@ -760,11 +770,11 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			temporaryImport(certificate);
 		}
 	}
-	
+
 	/**
 	 * Perform the permanent import of a certificate as described in TR-03110 v2.10 A.6.2.1.
 	 * @param certificate
-	 * @throws CertificateUpdateException 
+	 * @throws CertificateUpdateException
 	 */
 	private void permanentImport(CardVerifiableCertificate certificate) throws CertificateUpdateException {
 		if (trustPoint != null){
@@ -815,7 +825,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 
 	protected void processCommandExternalAuthenticate() {
 		ResponseApdu resp;
-		
+
 		try {
 			if (processingData.getCommandApdu() instanceof IsoSecureMessagingCommandApdu
 					&& !((IsoSecureMessagingCommandApdu) processingData
@@ -833,20 +843,20 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				this.processingData.updateResponseAPDU(this,"No challenge was generated, please call GetChallenge first", resp);
 				return;
 			}
-			
+
 			if (!isTaAllowed()){
 				// create and propagate response APDU
 				resp = new ResponseApdu(Iso7816.SW_6982_SECURITY_STATUS_NOT_SATISFIED);
 				this.processingData.updateResponseAPDU(this, "execution of terminal authentication is not allowed", resp);
 				return;
 			}
-			
+
 			byte [] terminalSignatureData = processingData.getCommandApdu().getCommandData().toByteArray();
-			
+
 			byte [] idIcc = getIdIcc();
-			
+
 			byte [] dataToVerify = Utils.concatByteArrays(idIcc, challenge, compressedTerminalEphemeralPublicKey);
-			
+
 			if (auxiliaryData != null && (!auxiliaryData.isEmpty())){
 				ConstructedTlvDataObject auxiliaryDataTlv = new ConstructedTlvDataObject(TlvConstants.TAG_67);
 				for(AuthenticatedAuxiliaryData current : auxiliaryData){
@@ -854,7 +864,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				}
 				dataToVerify = Utils.concatByteArrays(dataToVerify, auxiliaryDataTlv.toByteArray());
 			}
-			
+
 			try {
 				if (checkSignature(cryptographicMechanismReference, currentCertificate.getPublicKey() , dataToVerify, terminalSignatureData)){
 					handleSuccessfulTerminalAuthentication(currentCertificate);
@@ -875,7 +885,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			resp = new ResponseApdu(e.getStatusWord());
 			processingData.updateResponseAPDU(this, e.getMessage(), resp);
 		} finally {
-			/* 
+			/*
 			 * Request removal of this instance from the stack.
 			 * Protocol either successfully completed or failed.
 			 * In either case protocol is completed.
@@ -883,7 +893,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 			processingData.addUpdatePropagation(this, "Command External Authenticate successfully processed - Protocol TA completed", new ProtocolUpdate(true));
 		}
 	}
-	
+
 	protected List<CertificateExtension> extractExtensions(CardVerifiableCertificate certificate) {
 		return certificate.getCertificateExtensions();
 	}
@@ -891,41 +901,41 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	/**
 	 * This methods handles a successful terminal authentication and sets the
 	 * protocol state accordingly.
-	 * 
+	 *
 	 * @param verifiedTerminalCertificate
 	 */
 	protected void handleSuccessfulTerminalAuthentication(CardVerifiableCertificate verifiedTerminalCertificate) {
 		List<CertificateExtension> certificateExtensions = extractExtensions(currentCertificate);
-		
+
 		extractTerminalSector(verifiedTerminalCertificate);
-					
+
 		TerminalAuthenticationMechanism mechanism = new TerminalAuthenticationMechanism(compressedTerminalEphemeralPublicKey, terminalType, auxiliaryData, firstSectorPublicKeyHash, secondSectorPublicKeyHash, cryptographicMechanismReference.getHashAlgorithmName(), certificateExtensions);
 			processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, mechanism));
-		
+
 		this.updateAuthorizationStoreWithConfinedAuth();
 		EffectiveAuthorizationMechanism authMechanism = new EffectiveAuthorizationMechanism(authorizationStore);
 		processingData.addUpdatePropagation(this, "Updated security status with terminal authentication information", new SecStatusMechanismUpdatePropagation(SecContext.APPLICATION, authMechanism));
-		
+
 		// create and propagate response APDU
 		ResponseApdu resp = new ResponseApdu(Iso7816.SW_9000_NO_ERROR);
 		this.processingData.updateResponseAPDU(this,
 				"Command External Authenticate successfully processed", resp);
 	}
-	
+
 	/**
 	 * Update the AuthorizationStore with the confined authorizations from earlier Protocols (e.g. PACE)
-	 * 
+	 *
 	 */
 	protected void updateAuthorizationStoreWithConfinedAuth() {
 		HashSet<Class<? extends SecMechanism>> previousMechanisms = new HashSet<>();
 		previousMechanisms.add(ConfinedAuthorizationMechanism.class);
 		Collection<SecMechanism> currentMechanisms = cardState.getCurrentMechanisms(SecContext.APPLICATION, previousMechanisms);
-		
+
 		for (SecMechanism secMechanism : currentMechanisms) {
 			if (!(secMechanism instanceof ConfinedAuthorizationMechanism)) continue;
 			authorizationStore.updateAuthorization(((ConfinedAuthorizationMechanism)secMechanism).getAuthorizationStore());
 		}
-	} 
+	}
 
 	/**
 	 * This method handles the internal state changes caused by successfully
@@ -938,7 +948,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 	/**
 	 * Extract the terminal sector information from the current certificate.
 	 * This method should be called on terminal certificates.
-	 * 
+	 *
 	 * @param certificate
 	 */
 	private void extractTerminalSector(CardVerifiableCertificate certificate) {
@@ -952,7 +962,7 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				}
 			}
 		}
-		
+
 	}
 
 	@Override
@@ -969,12 +979,12 @@ public abstract class AbstractTaProtocol extends AbstractProtocolStateMachine im
 				new TlvValuePlain(new byte[] {getProtocolVersion()}));
 		taInfo.addTlvDataObject(protocol);
 		taInfo.addTlvDataObject(version);
-		
+
 		Collection<TlvDataObject> result = new HashSet<>();
 		result.add(taInfo);
 		return result;
 	}
-	
+
 	protected byte getProtocolVersion() {
 		return 2;
 	}

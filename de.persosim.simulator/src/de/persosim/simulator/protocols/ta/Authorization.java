@@ -3,6 +3,7 @@ package de.persosim.simulator.protocols.ta;
 import static org.globaltester.logging.BasicLogger.log;
 
 import org.globaltester.logging.tags.LogLevel;
+
 import de.persosim.simulator.utils.BitField;
 
 /**

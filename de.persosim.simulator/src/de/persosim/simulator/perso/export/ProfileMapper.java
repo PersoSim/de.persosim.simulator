@@ -1,8 +1,12 @@
 package de.persosim.simulator.perso.export;
 
+import static org.globaltester.logging.BasicLogger.logException;
+
 import java.util.Collection;
 
 import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
 
 import de.persosim.simulator.cardobjects.AuthObjectIdentifier;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -17,6 +21,7 @@ import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
 import de.persosim.simulator.cardobjects.TrustPointCardObject;
 import de.persosim.simulator.cardobjects.TrustPointIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.CommandProcessor;
@@ -111,7 +116,7 @@ public class ProfileMapper
 			// BasicLogger.log(fidAsString + ": " + efContent, LogLevel.TRACE);
 		}
 		catch (AccessDeniedException e) {
-			BasicLogger.logException(this.getClass(), e);
+			logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 		return efContent;
 	}

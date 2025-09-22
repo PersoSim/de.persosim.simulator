@@ -2,13 +2,13 @@ package de.persosim.simulator.ui.handlers;
 
 import static org.globaltester.logging.BasicLogger.log;
 
-import jakarta.inject.Inject;
-
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
 
 import de.persosim.driver.connector.SimulatorManager;
 import de.persosim.simulator.CommandParser;
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.ui.Activator;
 
 /**
@@ -18,34 +18,33 @@ import de.persosim.simulator.ui.Activator;
  * @author slutters
  *
  */
-public abstract class SelectPersoHandler {
-
-	@Inject
-	protected EPartService partService;
-
+public abstract class SelectPersoHandler
+{
 	/**
 	 * This method sends the actual load command for a provided personalization
 	 * path or Id to the simulator GUI.
 	 *
 	 * @param personalization
-	 *            the path (incl. file name) of an arbitrary personalization or
+	 *            the path (including file name) of an arbitrary personalization or
 	 *            the Id of a default personalization.
-	 * @param withOverlayProfile Handle overlay profile files or not
+	 * @param withOverlayProfile
+	 *            Handle overlay profile files or not
 	 */
-	protected void loadPersonalization(String personalization, boolean withOverlayProfile) {
-		log(this.getClass(), "Select Perso Handler called with param: " + personalization);
+	protected void loadPersonalization(String personalization, boolean withOverlayProfile)
+	{
+		log("Select Perso Handler called with param: " + personalization, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 
 		String persoCmdString = CommandParser.CMD_LOAD_PERSONALIZATION + " " + personalization;
 
-		log(this.getClass(), "executing command: " + persoCmdString);
+		log("Executing command: " + persoCmdString, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 
-		if (!SimulatorManager.getSim().isRunning()){
+		if (!SimulatorManager.getSim().isRunning()) {
 			SimulatorManager.getSim().startSimulator();
 		}
 
 		Activator.executeUserCommands(persoCmdString, withOverlayProfile);
 
-		log(this.getClass(), "finished setting of personalization", LogLevel.INFO);
+		log("Finished setting of personalization", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 	}
 
 }

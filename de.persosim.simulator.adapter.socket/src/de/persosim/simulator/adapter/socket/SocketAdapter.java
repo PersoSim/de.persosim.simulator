@@ -7,24 +7,26 @@ import java.net.Socket;
 
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
 
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.adapter.socket.protocol.SocketProtocol;
+import de.persosim.simulator.log.PersoSimLogTags;
 
 /**
  * This class provides the socket interface to the PersoSim simulator.
- * 
+ *
  * It instantiates and manages the communication socket as well as the PersoSim
  * kernel and mediates commands/responses between those two. It is also in
  * charge of simulating behavior "outside" the card, like power on/off or reset
  * of the card. Therefore it provides it's own APDU handler that handles some
  * special control APDUs
- * 
+ *
  * @author amay
- * 
+ *
  */
-public class SocketAdapter implements Runnable {
-
+public class SocketAdapter implements Runnable
+{
 	private int port;
 	private Thread simThread = null;
 	private boolean isRunning;
@@ -34,29 +36,31 @@ public class SocketAdapter implements Runnable {
 
 	/**
 	 * Create new instance.
-	 * 
+	 *
 	 * @param simPort
 	 *            port the server socket should listen on
 	 */
-	public SocketAdapter(int simPort, SocketProtocol protocol) {
-		BasicLogger.log(getClass(), "Initialized SocketAdapter", LogLevel.TRACE);
+	public SocketAdapter(int simPort, SocketProtocol protocol)
+	{
+		BasicLogger.log("Initialized Socket Adapter", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 		this.port = simPort;
 		this.protocol = protocol;
 	}
 
 	/**
 	 * Start execution of the simulation (within its own thread).
-	 * 
+	 *
 	 * If this simulation already owns a (running) Thread this method does
 	 * nothing and returns false.
-	 * 
+	 *
 	 * If the newly created Thread does not start execution within a small
 	 * timeout this method also returns false;
-	 * 
+	 *
 	 * @return true iff a new simulation Thread was created and successfully
 	 *         started
 	 */
-	public synchronized boolean start() {
+	public synchronized boolean start()
+	{
 		// check for existing thread
 		if (simThread != null) {
 			// a previous Thread exists, this needs to be stopped before a new
@@ -77,60 +81,68 @@ public class SocketAdapter implements Runnable {
 				if (counter > 4) {
 					break;
 				}
-			} catch (InterruptedException e) {
+			}
+			catch (InterruptedException e) {
 				e.printStackTrace();
 				break;
 			}
-		} ;
+		}
 
 		return isRunning();
 	}
 
-	public boolean isRunning() {
+	public boolean isRunning()
+	{
 		return isRunning;
 	}
 
-	public boolean stop() {
+	public boolean stop()
+	{
 		isRunning = false;
-		
-		//stop listening for new connections
+
+		// stop listening for new connections
 		if (server != null) {
-			BasicLogger.log(getClass(), "Stopping SocketAdapter server socket", LogLevel.TRACE);
+			BasicLogger.log("Stopping Socket Adapter server socket", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 			try {
 				server.close();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				CommandParser.showExceptionToUser(e);
 			}
 		}
-		
+
 		// terminate existing client connection
 		if (clientSocket != null) {
 			try {
 				clientSocket.close();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				CommandParser.showExceptionToUser(e);
 			}
 		}
 
-		//wait for second thread
+		// wait for second thread
 		if (simThread != null) {
 			try {
 				simThread.join();
 				simThread = null;
-			} catch (InterruptedException e) {
+			}
+			catch (InterruptedException e) {
 				CommandParser.showExceptionToUser(e);
 			}
 		}
-		
+
 		return !isRunning();
 	}
 
 	@Override
-	public void run() {
+	public void run()
+	{
 		// open ServerSocket
 		try {
 			server = new ServerSocket(port);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			CommandParser.showExceptionToUser(e);
 			return; // without an open ServerSocket this method is done
 		}
@@ -145,7 +157,8 @@ public class SocketAdapter implements Runnable {
 		if (server != null) {
 			try {
 				server.close();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				CommandParser.showExceptionToUser(e);
 			}
 		}
@@ -154,37 +167,41 @@ public class SocketAdapter implements Runnable {
 
 	/**
 	 * Handles a single connection from ServerSocket.
-	 * 
+	 *
 	 * @param server
 	 */
-	private void handleConnection(ServerSocket server) {
+	private void handleConnection(ServerSocket server)
+	{
 		if (server == null) {
-			BasicLogger.log(getClass(), "No server socketavailable", LogLevel.TRACE);
+			BasicLogger.log("No server socket available", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 			// nothing to do without ServerSocket
 			return;
 		}
-		BasicLogger.log(getClass(), "Waiting", LogLevel.TRACE);
+		BasicLogger.log("Waiting", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 
 		clientSocket = null;
 		try {
 			clientSocket = server.accept();
-			BasicLogger.log(getClass(), "Handling connection from server socket", LogLevel.TRACE);
+			BasicLogger.log("Handling connection from server socket", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 
 			boolean isHandlingCommands = true;
 			do {
-				BasicLogger.log(getClass(), "Deferring handling of data to protocol", LogLevel.TRACE);
+				BasicLogger.log("Deferring handling of data to protocol", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 				isHandlingCommands &= protocol.handleConnectionExchange(clientSocket.getInputStream(), clientSocket.getOutputStream());
 			} while (isRunning && isHandlingCommands);
-		} catch (IOException e) {
-			//show the exception only if the server is still running, otherwise it is expected behavior
+		}
+		catch (IOException e) {
+			// show the exception only if the server is still running, otherwise it is expected behavior
 			if (isRunning) {
 				CommandParser.showExceptionToUser(e);
 			}
-		} finally {
+		}
+		finally {
 			if (clientSocket != null) {
 				try {
 					clientSocket.close();
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					CommandParser.showExceptionToUser(e);
 				}
 			}

@@ -1,5 +1,7 @@
 package de.persosim.simulator.protocols;
 
+import static org.globaltester.logging.BasicLogger.logException;
+
 import java.security.Key;
 import java.security.PublicKey;
 import java.text.DecimalFormat;
@@ -11,6 +13,7 @@ import java.util.TimeZone;
 
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -20,6 +23,7 @@ import de.persosim.simulator.crypto.DomainParameterSet;
 import de.persosim.simulator.crypto.certificates.CvPublicKey;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.exception.NotParseableException;
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -97,7 +101,7 @@ public class Tr03110Utils implements TlvConstants {
 					return key;
 				}
 			} catch (Exception e) {
-				BasicLogger.logException(Tr03110Utils.class, e, LogLevel.WARN);
+				logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 			}
 		}
 		BasicLogger.log(Tr03110Utils.class, "Public Key data could not be parsed.", LogLevel.INFO);
@@ -119,7 +123,7 @@ public class Tr03110Utils implements TlvConstants {
 					return key;
 				}
 			} catch (Exception e) {
-				BasicLogger.logException(Tr03110Utils.class, e, LogLevel.WARN);
+				logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 			}
 		}
 		BasicLogger.log(Tr03110Utils.class, "Public Key data could not be encoded.", LogLevel.INFO);

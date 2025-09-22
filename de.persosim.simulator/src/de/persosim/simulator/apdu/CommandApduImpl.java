@@ -5,6 +5,11 @@ import static org.globaltester.logging.BasicLogger.logException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
+
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
@@ -18,13 +23,13 @@ import de.persosim.simulator.utils.Utils;
  * Container class carrying the information of the command APDU. This class
  * provides simplified access to all the relevant information that can be
  * extracted from the command APDU.
- * 
+ *
  * It also stores the processing history of this CommandApdu. For example if the
  * APDU was SM secured and unwrapped by the SecureMessaging layer the original
  * CommandApdu is preserved in the predecessor field.
- * 
+ *
  * @author amay
- * 
+ *
  */
 public class CommandApduImpl implements CommandApdu {
 	protected final byte [] header;
@@ -43,7 +48,7 @@ public class CommandApduImpl implements CommandApdu {
 	CommandApduImpl(byte[] apdu) {
 		this(apdu, null);
 	}
-	
+
 	/**
 	 * Parses the apdu from the given byte array and sets the provided instance as predecessor.
 	 * @param apdu
@@ -52,15 +57,15 @@ public class CommandApduImpl implements CommandApdu {
 	protected CommandApduImpl(byte[] apdu, CommandApdu previousCommandApdu) {
 		//store history
 		predecessor = previousCommandApdu;
-		
+
 		//copy header
 		header = new byte [4];
 		System.arraycopy(apdu, 0, header, 0, header.length);
-		
+
 		//analyze/store Iso case and length
 		isExtendedLength = Iso7816Lib.isExtendedLengthLCLE(apdu);
 		isoCase = Iso7816Lib.getISOcase(apdu);
-		
+
 		//handle commandData (if present)
 		if ((isoCase == Iso7816.ISO_CASE_3) || (isoCase == Iso7816.ISO_CASE_4)) {
 			nc = Iso7816Lib.getNc(apdu);
@@ -69,7 +74,7 @@ public class CommandApduImpl implements CommandApdu {
 			nc = 0;
 			commandData = new TlvValuePlain(new byte [0]);
 		}
-		
+
 		//store ne (if present)
 		if ((isoCase == Iso7816.ISO_CASE_2) || (isoCase == Iso7816.ISO_CASE_4)) {
 			ne = Iso7816Lib.getNe(apdu);
@@ -134,7 +139,7 @@ public class CommandApduImpl implements CommandApdu {
 	public boolean isExtendedLength() {
 		return isExtendedLength;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.persosim.simulator.apdu.CommandApdu#getNc()
 	 */
@@ -154,7 +159,7 @@ public class CommandApduImpl implements CommandApdu {
 		}
 		return null;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.persosim.simulator.apdu.CommandApdu#getCommandDataObjectContainer()
 	 */
@@ -176,11 +181,11 @@ public class CommandApduImpl implements CommandApdu {
 	public int getNe() {
 		return ne;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		
+
 		sb.append(HexString.encode(getHeader()));
 
 		if (isoCase > 2) {
@@ -194,10 +199,10 @@ public class CommandApduImpl implements CommandApdu {
 			sb.append('|');
 			sb.append(HexString.encode(getLe()));
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.persosim.simulator.apdu.CommandApdu#getP1P2()
 	 */
@@ -230,7 +235,7 @@ public class CommandApduImpl implements CommandApdu {
 			}
 			os.write(getLe());
 		} catch (IOException e) {
-			logException(getClass(), e);
+			logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 		}
 
 	    return os.toByteArray();
@@ -242,7 +247,7 @@ public class CommandApduImpl implements CommandApdu {
 	 * If no data field is present an empty array is returned. If data field is
 	 * present and extended length is used the returned byte array contains the
 	 * required leading zero byte.
-	 * 
+	 *
 	 * @return byte encoding of Lc field
 	 */
 	private byte[] getLc() {
@@ -268,11 +273,11 @@ public class CommandApduImpl implements CommandApdu {
 	 * If extended length is used Le is encoded in two bytes.
 	 * If data field is absent and extended length is used the returned byte array contains the
 	 * required leading zero byte.
-	 * 
+	 *
 	 * @return byte encoding of Le field
 	 */
 	public byte[] getLe() {
-		if (ne > 0) {  
+		if (ne > 0) {
 			if(isExtendedLength) {
 				if (isoCase > 2) {
 					return Utils.toUnsignedByteArray((short)ne);
@@ -283,7 +288,7 @@ public class CommandApduImpl implements CommandApdu {
 					retVal[2] = (byte) (ne & (short) 0x00FF);
 					return retVal;
 				}
-				
+
 			} else {
 				return new byte[] {(byte) ne};
 			}

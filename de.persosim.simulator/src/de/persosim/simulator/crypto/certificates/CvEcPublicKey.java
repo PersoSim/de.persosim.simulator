@@ -13,9 +13,13 @@ import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
 
 import org.globaltester.cryptoprovider.Crypto;
+import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
+
 import de.persosim.simulator.crypto.CryptoUtil;
 import de.persosim.simulator.crypto.DomainParameterSetEcdh;
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.protocols.Tr03110Utils;
 import de.persosim.simulator.protocols.ta.TaOid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -25,145 +29,158 @@ import de.persosim.simulator.tlv.TlvDataObject;
 
 /**
  * This class represents an EC public key to be used in the context of CV certificates.
- * 
+ *
  * @author slutters
  *
  */
-public class CvEcPublicKey extends CvPublicKey implements ECPublicKey {
-	
+public class CvEcPublicKey extends CvPublicKey implements ECPublicKey
+{
+
 	private static final long serialVersionUID = 1L;
-	
+
 	protected byte[] publicPointEncoding;
-	
-	public CvEcPublicKey(CvOid cvOid, ECPublicKey ecPublicKey) {
+
+	public CvEcPublicKey(CvOid cvOid, ECPublicKey ecPublicKey)
+	{
 		super(cvOid, ecPublicKey);
 	}
-	
-	public CvEcPublicKey(ConstructedTlvDataObject publicKeyEncoding) throws GeneralSecurityException {
+
+	public CvEcPublicKey(ConstructedTlvDataObject publicKeyEncoding) throws GeneralSecurityException
+	{
 		super(parseOid(publicKeyEncoding), null);
-		
+
 		if (cvOid != null && cvOid.getKeyType() != null && cvOid.getKeyType().equals("EC")) {
 			ECParameterSpec paramSpec = null;
-			
+
 			if (publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_86)) {
-				if (publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_81)
-						&& publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_82)
-						&& publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_83)
-						&& publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_84)
-						&& publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_85)
-						&& publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_87)) {
+				if (publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_81) && publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_82)
+						&& publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_83) && publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_84)
+						&& publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_85) && publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_87)) {
 					paramSpec = CryptoUtil.parseParameterSpecEc(publicKeyEncoding);
-					
+
 					if (publicKeyEncoding.containsTlvDataObject(TlvConstants.TAG_86)) {
 						key = CryptoUtil.parsePublicKeyEc(publicKeyEncoding, paramSpec);
-					} else{
+					}
+					else {
 						throw new IllegalArgumentException("no public key component found");
 					}
-				} else {
+				}
+				else {
 					publicPointEncoding = publicKeyEncoding.getTlvDataObject(TAG_86).getValueField();
 				}
-			} else{
+			}
+			else {
 				throw new IllegalArgumentException("no public key component found");
 			}
-		} else{
+		}
+		else {
 			throw new IllegalArgumentException("no EC key indicated by OID");
 		}
 	}
-	
-	private static CvOid parseOid(ConstructedTlvDataObject publicKeyData) {
+
+	private static CvOid parseOid(ConstructedTlvDataObject publicKeyData)
+	{
 		TlvDataObject tagOID = (publicKeyData.getTlvDataObject(TlvConstants.TAG_06));
 		if (tagOID == null)
-			 throw new IllegalArgumentException("No tag for OID");
+			throw new IllegalArgumentException("No tag for OID");
 		return new TaOid(tagOID.getValueField());
 	}
 
 	@Override
-	public ConstructedTlvDataObject toTlvDataObject(boolean includeConditionalObjects) {
+	public ConstructedTlvDataObject toTlvDataObject(boolean includeConditionalObjects)
+	{
 		ConstructedTlvDataObject publicKeyBody = new ConstructedTlvDataObject(TAG_7F49);
-		
-		if(isComplete()) {
+
+		if (isComplete()) {
 			publicKeyBody.addAll((Tr03110Utils.encodePublicKey(cvOid, (PublicKey) key, includeConditionalObjects).getTlvObjects()));
-		} else{
-			PrimitiveTlvDataObject objectIdentifier    = new PrimitiveTlvDataObject(TAG_06, cvOid.toByteArray());
+		}
+		else {
+			PrimitiveTlvDataObject objectIdentifier = new PrimitiveTlvDataObject(TAG_06, cvOid.toByteArray());
 			publicKeyBody.addTlvDataObject(objectIdentifier);
-			PrimitiveTlvDataObject publicPoint         = new PrimitiveTlvDataObject(TAG_86, publicPointEncoding);
+			PrimitiveTlvDataObject publicPoint = new PrimitiveTlvDataObject(TAG_86, publicPointEncoding);
 			publicKeyBody.addTlvDataObject(publicPoint);
 		}
-		
+
 		return publicKeyBody;
 	}
 
 	@Override
-	public ECParameterSpec getParams() {
-		if(key != null) {
+	public ECParameterSpec getParams()
+	{
+		if (key != null) {
 			return ((ECPublicKey) key).getParams();
-		} else{
+		}
+		else {
 			return null;
 		}
 	}
 
 	@Override
-	public ECPoint getW() {
-		if(key != null) {
+	public ECPoint getW()
+	{
+		if (key != null) {
 			return ((ECPublicKey) key).getW();
-		} else{
+		}
+		else {
 			return null;
 		}
 	}
 
 	@Override
-	public boolean isComplete() {
+	public boolean isComplete()
+	{
 		return key != null;
 	}
-	
+
 	@Override
-	public KeyPairGenerator getKeyPairGenerator(SecureRandom secRandom) throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+	public KeyPairGenerator getKeyPairGenerator(SecureRandom secRandom) throws NoSuchAlgorithmException, InvalidAlgorithmParameterException
+	{
 		KeyPairGenerator keyPairGenerator;
-		
+
 		keyPairGenerator = KeyPairGenerator.getInstance(getAlgorithm(), Crypto.getCryptoProvider());
 		keyPairGenerator.initialize(getParams(), secRandom);
-		
+
 		return keyPairGenerator;
 	}
 
 	@Override
-	public void addKeyParameters(PublicKey publicKey) {
-		if(key == null) {
-			if(publicKey instanceof ECPublicKey) {
-				ECPublicKey ecPublicKey = (ECPublicKey) publicKey;
-				
+	public void addKeyParameters(PublicKey publicKey)
+	{
+		if (key == null) {
+			if (publicKey instanceof ECPublicKey ecPublicKey) {
 				ECParameterSpec ecParams = ecPublicKey.getParams();
-				
-				if(ecParams == null) {
-					log(CvEcPublicKey.class, "updating key must provide domain parameters", LogLevel.DEBUG);
+
+				if (ecParams == null) {
+					log(CvEcPublicKey.class, "updating key must provide domain parameters", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 					return;
 				}
-				
+
 				DomainParameterSetEcdh domParamsEcdh = new DomainParameterSetEcdh(ecParams);
 				ECPoint publicPoint = DomainParameterSetEcdh.reconstructPoint(publicPointEncoding);
 				key = domParamsEcdh.reconstructPublicKey(publicPoint, Crypto.getCryptoProvider());
 
-				if(key == null) {
-					log(CvEcPublicKey.class, "key update failed", LogLevel.DEBUG);
-					return;
-				} else{
-					publicPointEncoding = null;
-					log(CvEcPublicKey.class, "key update successful", LogLevel.DEBUG);
-					return;
+				if (key == null) {
+					log(CvEcPublicKey.class, "key update failed", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 				}
-			} else{
+				else {
+					publicPointEncoding = null;
+					log(CvEcPublicKey.class, "key update successful", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
+				}
+			}
+			else {
 				throw new IllegalArgumentException("updating key must be of type ECPublicKey");
 			}
-		} else{
-			log(CvEcPublicKey.class, "key update unnecessary", LogLevel.DEBUG);
-			return; // key already complete and fully usable
+		}
+		else {
+			log(CvEcPublicKey.class, "key update unnecessary", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
+			// key already complete and fully usable
 		}
 	}
 
 	@Override
-	public boolean matchesCoreMaterial(CvPublicKey publicKey) {
-		if (publicKey instanceof CvEcPublicKey){
-			CvEcPublicKey cvKey = (CvEcPublicKey) publicKey;
+	public boolean matchesCoreMaterial(CvPublicKey publicKey)
+	{
+		if (publicKey instanceof CvEcPublicKey cvKey) {
 			return cvKey.getW().equals(this.getW());
 		}
 		return false;
