@@ -50,8 +50,8 @@ public class Activator implements BundleActivator
 			cmdLoadPerso = true;
 		}
 
-		String isNonInteractive = PersoSimPreferenceManager.getPreference("PREF_NON_INTERACTIVE");
-		BasicLogger.log("Mode is " + ((isNonInteractive != null && Boolean.TRUE.toString().equals(isNonInteractive)) ? "non-" : "") + "interactive", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
+		Boolean isNonInteractive = Boolean.parseBoolean(PersoSimPreferenceManager.getPreference("PREF_NON_INTERACTIVE"));
+		BasicLogger.log("Mode is " + (isNonInteractive ? "non-" : "") + "interactive", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 
 		List<CommandParserResult> results = CommandParser.executeUserCommands(withOverlayProfile, commands);
 
@@ -59,7 +59,8 @@ public class Activator implements BundleActivator
 		boolean okComplete = true;
 		for (CommandParserResult result : results) {
 			if (!result.isOk()) {
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", result.getMessage());
+				if (!isNonInteractive)
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", result.getMessage());
 				okComplete = false;
 				break;
 			}
@@ -68,7 +69,8 @@ public class Activator implements BundleActivator
 		if(commands.length == 0) return; // just do nothing.
 		if (cmdLoadPerso) {
 			if (okComplete && commands.length > 1) {
-				MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK", "Perso '" + commands[1] + "' loaded.");
+				if (!isNonInteractive)
+					MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK", "Perso '" + commands[1] + "' loaded.");
 			}
 			resetNativeDriver();
 		}
