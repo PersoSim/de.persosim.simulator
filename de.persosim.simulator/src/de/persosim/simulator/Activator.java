@@ -40,6 +40,7 @@ public class Activator implements BundleActivator
 		// BasicLogger.log("START Activator Simulator", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 
 		PersoSimPreferenceManager.setPreferenceAccessorIfNotAvailable(new EclipsePreferenceAccessor());
+		PersoSimPreferenceManager.storePreference("PREF_NON_INTERACTIVE", Boolean.FALSE.toString()); // Reset to default gui-based mode
 
 		Activator.context = context;
 		plugin = this;
