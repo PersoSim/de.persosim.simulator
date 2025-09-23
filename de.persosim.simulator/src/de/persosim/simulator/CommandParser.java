@@ -171,15 +171,17 @@ public class CommandParser
 			String cmd = args.get(0);
 
 			if (cmd.equals(CMD_SEND_APDU)) {
+				String result;
 				if (getPersoSim() != null) {
 					try {
 						PersoSim sim = getPersoSim();
-		    			sendCmdApdu(sim, "sendApdu " + args.get(1));
+						CommandParserResult commandParserResult = sendCmdApdu(sim, "sendApdu " + args.get(1));
 		    			args.remove(0);
 		    			args.remove(0);
-		    			return new CommandParserResult(true, null);
+		    			return commandParserResult; // ok
 		    		} catch(RuntimeException e) {
-		    			String result = "Unable to send APDU! Reason is: " + e.getMessage();
+		    			result = "Unable to send APDU! Reason is: " + e.getMessage();
+						logException(result, e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		    			args.remove(0);
 		    			return new CommandParserResult(false, result, e);
 		    		}
@@ -245,7 +247,7 @@ public class CommandParser
 					perso = getPerso(arg, withOverlayProfile);
 				} catch (IllegalArgumentException e) {
 					String message = "Unable to load personalization!";
-					logException(CommandParser.class, message, e, LogLevel.ERROR);
+					logException(message, e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 					return new CommandParserResult(false, message, e);
 				}
 
@@ -276,7 +278,7 @@ public class CommandParser
 	 * @throws IllegalArgumentException if the identifier does not reference a loadable perso
 	 */
 	public static Personalization getPerso(String identifier, boolean withOverlayProfile) throws IllegalArgumentException {
-		log(CommandParser.class, "Trying to load personalization for identifier '" + identifier + "'.", LogLevel.INFO);
+		log("Trying to load personalization for identifier '" + identifier + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 
 		InputStream stream = null;
 
@@ -305,7 +307,8 @@ public class CommandParser
 				throw new IllegalArgumentException("Personalization profile no: " + personalizationNumber + " does not exist!");
 			}
 
-			log(CommandParser.class, "Trying to load personalization profile no: " + personalizationNumber, LogLevel.INFO);
+			log("trying to load personalization profile no: " + personalizationNumber, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+
 			Bundle plugin = Activator.getContext().getBundle();
 
 			if (personalizationNumber < 10) {
@@ -326,10 +329,10 @@ public class CommandParser
 		try {
 			perso = (Personalization) PersonalizationFactory.unmarshal(stream);
 			if (perso != null)
-				log(CommandParser.class, "Personalization for identifier '" + identifier + "' (Profile: '" + perso.getClass().getSimpleName() + "') loaded.", LogLevel.INFO);
+				log(CommandParser.class, "Personalization for identifier '" + identifier + "' (Profile: '" + perso.getClass().getSimpleName() + "') loaded.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			else {
 				String message = "Personalization for identifier '" + identifier + "' could not be loaded!";
-				log(CommandParser.class, message, LogLevel.ERROR);
+				log(CommandParser.class, message, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 				throw new IllegalArgumentException(message);
 			}
 		} catch (XStreamException e) {
@@ -457,7 +460,6 @@ public class CommandParser
 		}
 
 		processingCommandLineArguments = false;
-
 	}
 
 	public static CommandParserResult cmdHelp(List<String> args) {
@@ -487,7 +489,7 @@ public class CommandParser
 	 *            string containing the command
 	 * @return the response
 	 */
-	private static String sendCmdApdu(Simulator sim, String cmd)
+	private static CommandParserResult sendCmdApdu(Simulator sim, String cmd)
 	{
 		cmd = cmd.trim();
 
@@ -510,13 +512,14 @@ public class CommandParser
 	 *            HexString containing the CommandAPDU
 	 * @return the response
 	 */
-	private static String exchangeApdu(Simulator sim, String cmdApdu)
+	private static CommandParserResult exchangeApdu(Simulator sim, String cmdApdu)
 	{
 		cmdApdu = cmdApdu.replaceAll("\\s", ""); // remove any whitespace
-		String respApdu = HexString.dump(sim.processCommand(HexString.toByteArray(cmdApdu)));
-		log(CommandParser.class, "> " + cmdApdu, LogLevel.INFO);
-		log(CommandParser.class, "< " + respApdu, LogLevel.INFO);
-		return respApdu;
+		byte[] apduResponseRaw = sim.processCommand(HexString.toByteArray(cmdApdu));
+		String respApdu = HexString.dump(apduResponseRaw);
+		log("> " + cmdApdu, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.APDU_TAG_ID));
+		log("< " + respApdu, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.APDU_TAG_ID));
+		return new CommandParserResult(true, respApdu, HexString.encode(apduResponseRaw));
 	}
 
 

@@ -22,6 +22,7 @@ import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.logging.tags.LogTag;
 
 import de.persosim.simulator.CommandParser;
+import de.persosim.simulator.CommandParserResult;
 import de.persosim.simulator.PersoSim;
 import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.perso.export.ProfileHelper;
@@ -46,9 +47,10 @@ public class PersoSimRemoteControlImpl extends AbstractRemoteControlHandler impl
 	{
 		String command = CommandParser.CMD_LOAD_PERSONALIZATION + " " + filePath;
 		log("Executing command: '" + command + "'", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-		String[] commands = CommandParser.parseCommand(command);
 
 		PersoSimPreferenceManager.storePreference("PREF_NON_INTERACTIVE", Boolean.TRUE.toString());
+
+		String[] commands = CommandParser.parseCommand(command);
 
 		Path rootPathPersoFiles = ProfileHelper.getRootPathPersoFiles();
 		if (rootPathPersoFiles != null)
@@ -71,12 +73,14 @@ public class PersoSimRemoteControlImpl extends AbstractRemoteControlHandler impl
 		catch (IllegalArgumentException e) {
 			logException("Invalid file path: '" + filePath + "'", e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			String resultMessage = "NOT OK. Perso '" + filePath + "' could not be loaded. Invalid file path: '" + filePath + "'.";
+			log(resultMessage, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			PersoSimPreferenceManager.storePreference("PREF_NON_INTERACTIVE", Boolean.FALSE.toString());
 			return createResult(1, resultMessage);
 		}
 
 		if (!Files.exists(pathPerso)) {
 			String resultMessage = "NOT OK. Perso '" + filePath + "' could not be loaded. File does not exist.";
+			log(resultMessage, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 			PersoSimPreferenceManager.storePreference("PREF_NON_INTERACTIVE", Boolean.FALSE.toString());
 			return createResult(1, resultMessage);
 		}
@@ -107,18 +111,21 @@ public class PersoSimRemoteControlImpl extends AbstractRemoteControlHandler impl
 			persoSim.startSimulator();
 		}
 
-		boolean result = CommandParser.cmdLoadPersonalization(new ArrayList<>(Arrays.asList(commands)), withOverlay).isOk();
+		CommandParserResult commandParserResult = CommandParser.cmdLoadPersonalization(new ArrayList<>(Arrays.asList(commands)), withOverlay);
+
 		int resultCode = 0;
 		String resultMessage;
-		if (result) {
+		if (commandParserResult.isOk()) {
+			// CommandParserResult contains no message (null)
 			resultMessage = "OK. Perso '" + filePath + "' loaded " + (withOverlay ? "with" : "without") + " overlay.";
 			log(resultMessage, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 		else {
 			resultCode = 1;
-			resultMessage = "NOT OK. Perso '" + filePath + "' could not be loaded.";
+			resultMessage = "NOT OK. Perso '" + filePath + "' could not be loaded. " + commandParserResult.getMessage();
 			log(resultMessage, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
+
 		PersoSimPreferenceManager.storePreference("PREF_NON_INTERACTIVE", Boolean.FALSE.toString());
 		return createResult(resultCode, resultMessage);
 	}
@@ -139,22 +146,27 @@ public class PersoSimRemoteControlImpl extends AbstractRemoteControlHandler impl
 		}
 
 		String[] commands = CommandParser.parseCommand(command);
-		String resultPrettyPrint = CommandParser.cmdSendApdu(new ArrayList<>(Arrays.asList(commands))).getMessage().trim();
-		String resultHex = null;
+
+		CommandParserResult commandParserResult = CommandParser.cmdSendApdu(new ArrayList<>(Arrays.asList(commands)));
+
+		String commandParserResultMessage = commandParserResult.getMessage();
 		int resultCode = 0;
-		String resultMessage;
-		if (resultPrettyPrint.contains("APDU")) {
-			resultCode = 1;
-			resultMessage = "NOT OK. SendApdu Result: '" + resultPrettyPrint + "'";
-			log(resultMessage, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-		}
-		else {
+		String resultMessage = null;
+		String resultAsHex = null;
+		String resultPrettyPrint =null;
+		if (commandParserResult.isOk()) {
+			resultAsHex = commandParserResult.getResultAsHex();
+			resultPrettyPrint = commandParserResultMessage.trim();
 			resultMessage = "OK. SendApdu Result: '" + resultPrettyPrint + "'";
 			log(resultMessage, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		} else {
+			resultCode = 1;
+			resultMessage = "NOT OK. SendApdu Result: '" + commandParserResultMessage + "'";
+			log(resultMessage, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		}
 
 		PersoSimPreferenceManager.storePreference("PREF_NON_INTERACTIVE", Boolean.FALSE.toString());
-		return createResult(resultCode, resultMessage, resultHex, resultPrettyPrint); // TODO: Hex; add to CommandParserResult in MS3
+		return createResult(resultCode, resultMessage, resultAsHex, resultPrettyPrint);
 	}
 
 	@WebMethod
@@ -182,6 +194,7 @@ public class PersoSimRemoteControlImpl extends AbstractRemoteControlHandler impl
 			resultMessage = "OK. PersoSim is not running. Nothing to reset.";
 		}
 		log(resultMessage, LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+
 		PersoSimPreferenceManager.storePreference("PREF_NON_INTERACTIVE", Boolean.FALSE.toString());
 		return createResult(resultCode, resultMessage, resultHex, resultPrettyPrint);
 	}
