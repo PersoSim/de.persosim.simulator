@@ -6,14 +6,18 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.InfoSource;
 import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
+
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.apdumatching.ApduSpecification;
 import de.persosim.simulator.apdumatching.ApduSpecificationConstants;
 import de.persosim.simulator.apdumatching.TlvSpecification;
 import de.persosim.simulator.cardobjects.MasterFile;
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.platform.CardStateAccessor;
 import de.persosim.simulator.platform.Iso7816;
 import de.persosim.simulator.platform.Iso7816Lib;
@@ -26,31 +30,34 @@ import de.persosim.simulator.tlv.TlvTag;
 
 /**
  * Generic super class for {@link Protocol} implementations with state machine code.
- * 
+ *
  * @author amay
- * 
+ *
  */
-public abstract class AbstractProtocolStateMachine extends AbstractStateMachine implements ProtocolStateMachine, Iso7816, ApduSpecificationConstants, InfoSource {
+public abstract class AbstractProtocolStateMachine extends AbstractStateMachine implements ProtocolStateMachine, Iso7816, ApduSpecificationConstants, InfoSource
+{
 
 	protected String protocolName;
 
-	protected ProcessingData processingData; 
+	protected ProcessingData processingData;
 	protected boolean continueProcessing;
-	
-	protected HashMap<String, ApduSpecification> apdus  = new HashMap<>();
+
+	protected HashMap<String, ApduSpecification> apdus = new HashMap<>();
 
 	protected ApduSpecification apduSpecification;
 	protected TlvSpecification tagSpecification;
 	protected TlvPath path;
-	
+
 	protected CardStateAccessor cardState;
-	
-	public AbstractProtocolStateMachine(String protocolName) {
-		this.protocolName = protocolName;		
+
+	protected AbstractProtocolStateMachine(String protocolName)
+	{
+		this.protocolName = protocolName;
 	}
-	
+
 	@Override
-	public String getProtocolName() {
+	public String getProtocolName()
+	{
 		return protocolName;
 	}
 
@@ -59,26 +66,30 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 	// -------------------------------------------------------
 
 	@Override
-	public String getIDString() {
+	public String getIDString()
+	{
 		return protocolName + " protocol";
 	}
-	
+
 	// -------------------------------------------------------
 	// Methods to implement {@link Protocol} functionality
 	// -------------------------------------------------------
 
 	@Override
-	public void setCardStateAccessor(CardStateAccessor cardState){
+	public void setCardStateAccessor(CardStateAccessor cardState)
+	{
 		this.cardState = cardState;
 	}
 
 	@Override
-	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf) {
+	public Collection<TlvDataObject> getSecInfos(SecInfoPublicity publicity, MasterFile mf)
+	{
 		return new HashSet<>();
 	}
-	
+
 	@Override
-	public void process(ProcessingData processingData) {
+	public void process(ProcessingData processingData)
+	{
 		this.processingData = processingData;
 
 		if (processingData.isReportingError()) {
@@ -88,62 +99,72 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 			 * 0xFF instead;
 			 */
 			this.processEvent((byte) 0xFF);
-		} else {
+		}
+		else {
 			this.processEvent(processingData.getCommandApdu().getIns());
 		}
 	}
-	
+
 	// -------------------------------------------------------
 	// Methods to implement {@link ProtocolStateMachine} functionality
 	// -------------------------------------------------------
-	
+
 	@Override
-	public void registerApduSpecification(ApduSpecification apduSpecification) {
+	public void registerApduSpecification(ApduSpecification apduSpecification)
+	{
 		this.apdus.put(apduSpecification.getId(), apduSpecification);
-	}
-	
-	@Override
-	public void logs(String state) {
-		log(this, "State changed to " + state, LogLevel.DEBUG);
 	}
 
 	@Override
-	public void returnResult() {
+	public void logs(String state)
+	{
+		log("State changed to " + state, LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
+	}
+
+	@Override
+	public void returnResult()
+	{
 		this.continueProcessing = false;
 	}
-	
+
 	@Override
-	public boolean apduHasBeenProcessed() {
+	public boolean apduHasBeenProcessed()
+	{
 		return this.processingData.isProcessingFinished();
 	}
-	
+
 	@Override
-	public boolean isStatusWord(short sw) {
+	public boolean isStatusWord(short sw)
+	{
 		ResponseApdu resp = this.processingData.getResponseApdu();
 		if (resp != null) {
 			return resp.getStatusWord() == sw;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
-	
+
 	@Override
-	public boolean isStatusWord_63CX_Counter() {
+	public boolean isStatusWord_63CX_Counter()
+	{
 		ResponseApdu resp = this.processingData.getResponseApdu();
 		if (resp != null) {
 			short swtmp = resp.getStatusWord();
 			swtmp &= (short) 0xFFF0;
 			return swtmp == (short) 0x63C0;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
-	
+
 	@Override
-	public boolean warningOrErrorOccurredDuringProcessing() {
+	public boolean warningOrErrorOccurredDuringProcessing()
+	{
 		if (processingData != null) {
 			ResponseApdu responseApdu = processingData.getResponseApdu();
-			
+
 			if (responseApdu != null) {
 				short sw = responseApdu.getStatusWord();
 				return (Iso7816Lib.isReportingError(sw) || Iso7816Lib.isReportingWarning(sw) || PlatformUtil.is4xxxStatusWord(sw));
@@ -154,45 +175,50 @@ public abstract class AbstractProtocolStateMachine extends AbstractStateMachine 
 	}
 
 	@Override
-	public boolean isAPDU(String apduId) {
+	public boolean isAPDU(String apduId)
+	{
 		CommandApdu apdu;
-		
+
 		ApduSpecification apduSpec = apdus.get(apduId);
-		
-		if(apduSpec == null) {
-			log(this, "APDU matching failed due to command \"" + apduId + "\" being unknown", LogLevel.DEBUG);
+
+		if (apduSpec == null) {
+			log("APDU matching failed due to command \"" + apduId + "\" being unknown", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 			return false;
 		}
-		
-		if(processingData == null) {
-			log(this, "APDU matching failed due to missing processing data", LogLevel.DEBUG);
+
+		if (processingData == null) {
+			log("APDU matching failed due to missing processing data", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 			return false;
 		}
 		apdu = processingData.getCommandApdu();
 		boolean match = apduSpec.matchesFullApdu(apdu);
-		
-		if(match) {
-			log(this, "received APDU matches definition of command \"" + apduId + "\"", LogLevel.DEBUG);
+
+		if (match) {
+			log("Received APDU matches definition of command \"" + apduId + "\"", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 		}
-		
+
 		return match;
 	}
-	
+
 	@Override
-	public boolean isMoveToStackRequested() {
+	public boolean isMoveToStackRequested()
+	{
 		return false;
 	}
-	
-	public void createNewApduSpecification(String id) {
+
+	public void createNewApduSpecification(String id)
+	{
 		this.apduSpecification = new ApduSpecification(id);
 		apduSpecification.getTags().setStrictOrder(ARBITRARY_ORDER);
 	}
-	
-	public void createNewTagSpecification(TlvTag tag) {
+
+	public void createNewTagSpecification(TlvTag tag)
+	{
 		this.tagSpecification = new TlvSpecification(tag);
 	}
-	
-	public void createNewPath() {
+
+	public void createNewPath()
+	{
 		this.path = new TlvPath();
 	}
 }

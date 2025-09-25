@@ -9,7 +9,11 @@ import java.security.NoSuchProviderException;
 import java.util.Arrays;
 
 import org.globaltester.cryptoprovider.Crypto;
+import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
+
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.utils.HexString;
 import de.persosim.simulator.utils.Utils;
 
@@ -20,20 +24,20 @@ import de.persosim.simulator.utils.Utils;
  */
 public class KeyDerivationFunction {
 	public static final String[] DIGEST_ORDER = new String[]{"SHA-1", "SHA-256"};
-	
+
 	public static final byte[] COUNTER_ENC = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01};
 	public static final byte[] COUNTER_MAC = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x02};
 	public static final byte[] COUNTER_PI  = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03};
-	
+
 	/*--------------------------------------------------------------------------------*/
-	
+
 	protected MessageDigest messageDigest;
 	protected int keyLengthInBytes;
-	
+
 	/*--------------------------------------------------------------------------------*/
-	
+
 	/**
-	 * 
+	 *
 	 * @param messageDigest the message digest to be used
 	 * @param keyLengthInBytes key length in byte
 	 */
@@ -41,17 +45,17 @@ public class KeyDerivationFunction {
 		if(messageDigest == null) {throw new NullPointerException();}
 		if(keyLengthInBytes < 0) {throw new IllegalArgumentException("key length must be >= 0");}
 		if(messageDigest.getDigestLength() < keyLengthInBytes) {throw new IllegalArgumentException("key length must be smaller than or equal to digest length");}
-		
+
 		this.messageDigest = messageDigest;
 		this.keyLengthInBytes = keyLengthInBytes;
 	}
-	
+
 	public KeyDerivationFunction(int keyLengthInBytes) {
 		if(keyLengthInBytes < 0) {throw new IllegalArgumentException("key length must be >= 0");}
 		if(keyLengthInBytes > 32) {throw new IllegalArgumentException("key length must be <= 32");}
-		
+
 		this.keyLengthInBytes = keyLengthInBytes;
-		
+
 		try {
 			if(keyLengthInBytes <= 16) {
 				this.messageDigest =  MessageDigest.getInstance(DIGEST_ORDER[0], Crypto.getCryptoProvider());
@@ -63,9 +67,9 @@ public class KeyDerivationFunction {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/*--------------------------------------------------------------------------------*/
-	
+
 	/**
 	 * Returns key material derived derived from SHA1(secret||nonce||counter) stripped to key length
 	 * @param secret the common secret shared by PICC and ICD
@@ -77,99 +81,99 @@ public class KeyDerivationFunction {
 		int inputLength;
 		byte[] input;
 		byte[] digest;
-		
+
 		if(secret == null) {throw new NullPointerException();}
 		if(counter == null) {throw new NullPointerException();}
-		
+
 		inputLength = secret.length + counter.length;
-		
+
 		if(nonce != null) {
 			inputLength += nonce.length;
-			log(KeyDerivationFunction.class, "deriving key from secret \"" + HexString.encode(secret) + "\", nonce \"" + HexString.encode(nonce) + "\" and counter \"" + HexString.encode(counter) +  "\"", LogLevel.DEBUG);
+			log("deriving key from secret \"" + HexString.encode(secret) + "\", nonce \"" + HexString.encode(nonce) + "\" and counter \"" + HexString.encode(counter) +  "\"", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 		} else{
-			log(KeyDerivationFunction.class, "deriving key from secret \"" + HexString.encode(secret) + "\", no nonce and counter \"" + HexString.encode(counter) +  "\"", LogLevel.DEBUG);
+			log("deriving key from secret \"" + HexString.encode(secret) + "\", no nonce and counter \"" + HexString.encode(counter) +  "\"", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 		}
-		
+
 		if(inputLength <= 0) {
 			throw new IllegalArgumentException("KDF input length must be > 0");
 		}
-		
+
 		if(nonce == null) {
 			input = Utils.concatByteArrays(secret, counter);
 		} else{
 			input = Utils.concatByteArrays(secret, nonce, counter);
 		}
-		
-		log(KeyDerivationFunction.class, "message digest input is: " + HexString.encode(input), LogLevel.DEBUG);
-		log(KeyDerivationFunction.class, "message digest algorithm is: " + messageDigest.getAlgorithm() + " of " + keyLengthInBytes + " bytes length", LogLevel.DEBUG);
+
+		log("message digest input is: " + HexString.encode(input), LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
+		log("message digest algorithm is: " + messageDigest.getAlgorithm() + " of " + keyLengthInBytes + " bytes length", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 		digest = this.messageDigest.digest(input);
-		log(KeyDerivationFunction.class, "message digest result is: " + HexString.encode(digest), LogLevel.DEBUG);
-		
+		log("message digest result is: " + HexString.encode(digest), LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
+
 		return Arrays.copyOf(digest, this.keyLengthInBytes);
 	}
-	
+
 	/**
 	 * Returns key material derived derived from SHA1(secret||nonce||COUNTER_ENC) stripped to key length
 	 * @param secret the common secret shared by PICC and ICD
 	 * @param nonce optional nonce, may be null
 	 * @return key material derived derived from SHA1(secret||nonce||COUNTER_ENC) stripped to key length
-	 * @throws IOException 
-	 * @throws NoSuchProviderException 
-	 * @throws NoSuchAlgorithmException 
+	 * @throws IOException
+	 * @throws NoSuchProviderException
+	 * @throws NoSuchAlgorithmException
 	 */
 	public byte[] deriveENC(byte[] secret, byte[] nonce) {
 		return this.deriveKey(secret, nonce, COUNTER_ENC);
 	}
-	
+
 	/**
 	 * Returns key material derived derived from SHA1(secret||COUNTER_ENC) stripped to key length
 	 * @param secret the common secret shared by PICC and ICD
 	 * @return key material derived derived from SHA1(secret||COUNTER_ENC) stripped to key length
-	 * @throws IOException 
-	 * @throws NoSuchProviderException 
-	 * @throws NoSuchAlgorithmException 
+	 * @throws IOException
+	 * @throws NoSuchProviderException
+	 * @throws NoSuchAlgorithmException
 	 */
 	public byte[] deriveENC(byte[] secret) {
 		return this.deriveENC(secret, null);
 	}
-	
+
 	/**
 	 * Returns key material derived derived from SHA1(secret||nonce||COUNTER_MAC) stripped to key length
 	 * @param secret the common secret shared by PICC and ICD
 	 * @param nonce optional nonce, may be null
 	 * @return key material derived derived from SHA1(secret||nonce||COUNTER_MAC) stripped to key length
-	 * @throws IOException 
-	 * @throws NoSuchProviderException 
-	 * @throws NoSuchAlgorithmException 
+	 * @throws IOException
+	 * @throws NoSuchProviderException
+	 * @throws NoSuchAlgorithmException
 	 */
 	public byte[] deriveMAC(byte[] secret, byte[] nonce) {
 		return this.deriveKey(secret, nonce, COUNTER_MAC);
 	}
-	
+
 	/**
 	 * Returns key material derived derived from SHA1(secret||COUNTER_MAC) stripped to key length
 	 * @param secret the common secret shared by PICC and ICD
 	 * @return key material derived derived from SHA1(secret||COUNTER_MAC) stripped to key length
-	 * @throws IOException 
-	 * @throws NoSuchProviderException 
-	 * @throws NoSuchAlgorithmException 
+	 * @throws IOException
+	 * @throws NoSuchProviderException
+	 * @throws NoSuchAlgorithmException
 	 */
 	public byte[] deriveMAC(byte[] secret) {
 		return this.deriveMAC(secret, null);
 	}
-	
+
 	/**
 	 * Returns key material derived derived from SHA1(secret||COUNTER_PI) stripped to key length
 	 * @param secret the common secret shared by PICC and ICD
 	 * @return key material derived derived from SHA1(secret||COUNTER_PI) stripped to key length
-	 * @throws IOException 
-	 * @throws NoSuchProviderException 
-	 * @throws NoSuchAlgorithmException 
+	 * @throws IOException
+	 * @throws NoSuchProviderException
+	 * @throws NoSuchAlgorithmException
 	 */
 	public byte[] derivePI(byte[] secret) {
 		return this.deriveKey(secret, null, COUNTER_PI);
 	}
-	
+
 	/*--------------------------------------------------------------------------------*/
 
 	/**
@@ -186,11 +190,11 @@ public class KeyDerivationFunction {
 		if(digest == null) {
 			throw new NullPointerException();
 		}
-		
+
 		if(digest.getDigestLength() < this.keyLengthInBytes) {
 			throw new IllegalArgumentException("length of computable message digest too small for key length");
 		}
-		
+
 		this.messageDigest = digest;
 	}
 
@@ -208,11 +212,11 @@ public class KeyDerivationFunction {
 		if(keyLengthInBytes < 0) {
 			throw new IllegalArgumentException("key length must be >= 0");
 		}
-		
+
 		if(this.messageDigest.getDigestLength() < keyLengthInBytes) {
 			throw new IllegalArgumentException("key length too big for message digest");
 		}
-		
+
 		this.keyLengthInBytes = keyLengthInBytes;
 	}
 }

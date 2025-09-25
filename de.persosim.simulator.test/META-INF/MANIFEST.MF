@@ -5,9 +5,11 @@ Bundle-SymbolicName: de.persosim.simulator.test
 Bundle-Version: 1.3.0.qualifier
 Bundle-Vendor: secunet Security Networks AG
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Require-Bundle: org.junit,
+Require-Bundle: 
+ org.junit,
  org.globaltester.cryptoprovider.bc,
  de.persosim.simulator,
+ de.persosim.simulator.basics,
  de.persosim.editor.ui,
  org.globaltester.simulator,
  org.globaltester.cryptoprovider,
@@ -19,11 +21,13 @@ Require-Bundle: org.junit,
  com.fasterxml.jackson.core.jackson-core,
  com.fasterxml.jackson.core.jackson-databind,
  com.fasterxml.jackson.core.jackson-annotations
-Export-Package: de.persosim.simulator,
+Export-Package: 
+ de.persosim.simulator,
  de.persosim.simulator.perso,
  de.persosim.simulator.protocols.ca3,
  de.persosim.simulator.test
-Import-Package: jakarta.annotation,
+Import-Package: 
+ jakarta.annotation,
  org.eclipse.ui.keys,
  org.osgi.framework
 Bundle-ClassPath: .

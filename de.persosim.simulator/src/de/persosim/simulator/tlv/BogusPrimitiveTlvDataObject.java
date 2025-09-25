@@ -5,19 +5,23 @@ import static org.globaltester.logging.BasicLogger.logException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
+
+import de.persosim.simulator.log.PersoSimLogTags;
 
 /**
  * This class implements TLV data objects allowing errors. The {@link TlvTag}
  * will not be checked for correctness. Furthermore, it is possible to omit the
  * TLV value when encoding as a byte array.
- * 
+ *
  * @author cstroh
- * 
+ *
  */
 public class BogusPrimitiveTlvDataObject extends PrimitiveTlvDataObject {
 	private boolean omitTlvValue;
-	
+
 	/**
 	 * Constructs an object from pre-fabricated elements. Length field is implicitly set
 	 * according to DER encoding rules by default.
@@ -39,13 +43,13 @@ public class BogusPrimitiveTlvDataObject extends PrimitiveTlvDataObject {
 		super(tlvTagInput, tlvValuePlainInput);
 		this.omitTlvValue = omitTlvValue;
 	}
-	
+
 	@Override
 	public void setTag(TlvTag tlvTagInput, boolean performValidityChecksInput) {
 		if(tlvTagInput == null) {throw new NullPointerException("tag must not be null");}
-		
+
 		performValidityChecks = false;
-		
+
 		/*
 		 * TLV tag must be cloned to eliminate outside access to this object.
 		 * The tag must only be set by methods offered by this class e.g. to
@@ -53,27 +57,27 @@ public class BogusPrimitiveTlvDataObject extends PrimitiveTlvDataObject {
 		 */
 		tlvTag = tlvTagInput.clone();
 	}
-	
+
 	@Override
 	public byte[] toByteArray() {
 		ByteArrayOutputStream outputStream;
-		
+
 		outputStream = new ByteArrayOutputStream();
-		
+
 		try {
 			/* tag can be accessed directly */
 			outputStream.write(tlvTag.toByteArray());
 			/* length must be accessed by getter in case there is a valid override */
 			outputStream.write(getTlvLength().toByteArray());
 			/* value must be accessed by getter as values are only specified by sub classes */
-			if(!omitTlvValue) {	
+			if(!omitTlvValue) {
 				outputStream.write(getTlvValue().toByteArray());
 			}
 		} catch (IOException e) {
-			logException(this.getClass(), e, LogLevel.DEBUG);
+			logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 		}
 
 		return outputStream.toByteArray();
 	}
-	
+
 }

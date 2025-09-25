@@ -1,76 +1,131 @@
 package de.persosim.simulator.ui.parts;
 
+import java.util.List;
 import java.util.StringJoiner;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.globaltester.logging.tags.LogLevel;
 
+import de.persosim.simulator.log.PersoSimLogFormatter;
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
-import de.persosim.simulator.ui.Activator;
+import de.persosim.simulator.preferences.PreferenceConstants;
 
-public class LogLevelDialog extends Dialog {
+public class LogLevelDialog extends Dialog
+{
+	private Button[] btnLogLevels;
+	private Button[] btnLogTags;
+	private List<String> allTags;
 
-	Composite llcomposite;
-	private Button[] btnLogLevels = new Button [LogLevel.values().length];
-
-	public LogLevelDialog(Shell parentShell) {
+	public LogLevelDialog(Shell parentShell)
+	{
 		super(parentShell);
+		allTags = PersoSimLogTags.getAllTags();
 	}
 
 	@Override
-	protected Control createDialogArea(Composite parent) {
-		llcomposite = new Composite(parent, SWT.NONE);
-		
-		llcomposite.setLayout((new GridLayout(1, true)));
-		
-		Label lblInfo = new Label(llcomposite, SWT.NONE);
+	protected Control createDialogArea(Composite parent)
+	{
+		Composite mainComposite = new Composite(parent, SWT.NONE);
+		mainComposite.setLayout(new GridLayout(2, true));
+
+		// --- LogLevel Panel ---
+		Group logLevelGroup = new Group(mainComposite, SWT.NONE);
+		logLevelGroup.setText("Log Levels");
+		logLevelGroup.setLayout(new GridLayout(1, false));
+		logLevelGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		logLevelGroup.setToolTipText("Show all selected log levels");
+
+		Label lblInfo = new Label(logLevelGroup, SWT.NONE);
 		lblInfo.setText("Select the log levels to view:");
-		
-		String levels = PersoSimPreferenceManager.getPreference("LOG_LEVELS");
-		
+
+		String levels = PersoSimPreferenceManager.getPreference(PreferenceConstants.PREF_LOG_LEVELS);
+		btnLogLevels = new Button[LogLevel.values().length];
 		for (int i = 0; i < LogLevel.values().length; i++) {
-			btnLogLevels[i] = new Button(llcomposite, SWT.CHECK);
 			LogLevel logLevel = LogLevel.values()[i];
+			btnLogLevels[i] = new Button(logLevelGroup, SWT.CHECK);
 			btnLogLevels[i].setText(logLevel.toString());
-			if (levels != null && levels.contains(logLevel.name()) || levels == null) {
-				btnLogLevels[i].setSelection(true);
-			}
+			btnLogLevels[i].setToolTipText("Show log entries with level " + logLevel.name());
+			boolean selected = (levels == null) || levels.contains(logLevel.name());
+			btnLogLevels[i].setSelection(selected);
 		}
-		
-		parent.layout();
-		parent.redraw();
-		
-		return llcomposite;
+
+		// --- LogTag Panel ---
+		Group logTagGroup = new Group(mainComposite, SWT.NONE);
+		logTagGroup.setText("Log Tags");
+		logTagGroup.setLayout(new GridLayout(1, false));
+		logTagGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		logTagGroup.setToolTipText("Show all selected log tags");
+
+		Label lblTagInfo = new Label(logTagGroup, SWT.NONE);
+		lblTagInfo.setText("Select the log tags to view:");
+		btnLogTags = new Button[allTags.size() + 1];
+		String tagsPref = PersoSimPreferenceManager.getPreference(PreferenceConstants.PREF_LOG_TAGS);
+
+		for (int i = 0; i < allTags.size(); i++) {
+			String tag = allTags.get(i);
+			btnLogTags[i] = new Button(logTagGroup, SWT.CHECK);
+			btnLogTags[i].setText(tag);
+			btnLogTags[i].setToolTipText("Show log entries with tag " + tag);
+			boolean selected = (tagsPref == null) || tagsPref.contains(tag);
+			btnLogTags[i].setSelection(selected);
+		}
+
+		// Handle NO_TAGS_AVAILABLE_INFO
+		int noTagsEntryIndex = allTags.size();
+		btnLogTags[noTagsEntryIndex] = new Button(logTagGroup, SWT.CHECK);
+		btnLogTags[noTagsEntryIndex].setText(PersoSimLogFormatter.NO_TAGS_AVAILABLE_INFO);
+		btnLogTags[noTagsEntryIndex].setToolTipText("Show log entries without any tag");
+		boolean selected = (tagsPref == null) || tagsPref.contains(PersoSimLogFormatter.NO_TAGS_AVAILABLE_INFO);
+		btnLogTags[noTagsEntryIndex].setSelection(selected);
+
+		return mainComposite;
 	}
 
 	@Override
-	protected void configureShell(Shell newShell) {
+	protected void configureShell(Shell newShell)
+	{
 		super.configureShell(newShell);
-		newShell.setText("Change log level");
+		newShell.setText("Configure visible Log Levels & Log Tags");
 	}
 
 	@Override
-	protected void okPressed() {
-		
-		StringJoiner joiner = new StringJoiner(":");
-		for (int i = 0; i < LogLevel.values().length; i++) {
-			LogLevel current = LogLevel.values()[i];
+	protected void okPressed()
+	{
+		// Save LogLevel
+		StringJoiner levelJoiner = new StringJoiner(PreferenceConstants.PREF_DELIMITER);
+		for (int i = 0; i < btnLogLevels.length; i++) {
 			if (btnLogLevels[i].getSelection()) {
-				joiner.add(current.name());
+				levelJoiner.add(LogLevel.values()[i].name());
 			}
 		}
-		
-		PersoSimPreferenceManager.storePreference("LOG_LEVELS", joiner.toString());
-		
-		Activator.getListLogListener().updateConfig();
-		
+		PersoSimPreferenceManager.storePreference(PreferenceConstants.PREF_LOG_LEVELS, levelJoiner.toString());
+
+		// Save LogTags
+		StringJoiner tagJoiner = new StringJoiner(PreferenceConstants.PREF_DELIMITER);
+		for (int i = 0; i < btnLogTags.length; i++) {
+			if (btnLogTags[i].getSelection()) {
+				// Handle NO_TAGS_AVAILABLE_INFO
+				if (i != btnLogTags.length - 1)
+					tagJoiner.add(allTags.get(i));
+				else
+					tagJoiner.add(PersoSimLogFormatter.NO_TAGS_AVAILABLE_INFO);
+			}
+		}
+		PersoSimPreferenceManager.storePreference(PreferenceConstants.PREF_LOG_TAGS, tagJoiner.toString());
+
+		de.persosim.simulator.Activator.getListLogListener().setRefreshState(true);
+		de.persosim.simulator.Activator.getListLogListener().updateConfig();
+
 		super.okPressed();
 	}
 }

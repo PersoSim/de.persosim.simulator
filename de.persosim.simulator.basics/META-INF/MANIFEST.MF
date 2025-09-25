@@ -1,0 +1,28 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PersoSim Simulator Basics
+Bundle-SymbolicName: de.persosim.simulator.basics;singleton:=true
+Bundle-Version: 1.3.0.qualifier
+Bundle-Vendor: secunet Security Networks AG
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Export-Package: 
+ de.persosim.simulator.control.soap.service,
+ de.persosim.simulator.exception,
+ de.persosim.simulator.log,
+ de.persosim.simulator.preferences,
+ de.persosim.simulator.utils
+Bundle-ClassPath: .
+Import-Package: 
+ javax.jws,
+ javax.jws.soap,
+ javax.xml.ws,
+ org.osgi.framework,
+ org.osgi.service.log
+Bundle-ActivationPolicy: lazy
+Require-Bundle: 
+ org.eclipse.osgi,
+ org.globaltester.base,
+ org.globaltester.lib.xstream,
+ org.globaltester.logging,
+ jakarta.annotation-api
+Automatic-Module-Name: de.persosim.simulator.basics

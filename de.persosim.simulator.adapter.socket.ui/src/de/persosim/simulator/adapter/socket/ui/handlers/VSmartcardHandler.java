@@ -7,10 +7,12 @@ import org.eclipse.e4.ui.model.application.ui.menu.MItem;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
 
 import de.persosim.driver.connector.CommManager;
 import de.persosim.driver.connector.ui.parts.ReaderPart;
 import de.persosim.driver.connector.ui.parts.ReaderPart.ReaderType;
+import de.persosim.simulator.log.PersoSimLogTags;
 import jakarta.inject.Inject;
 
 public class VSmartcardHandler
@@ -39,7 +41,7 @@ public class VSmartcardHandler
 	@Execute
 	public void execute()
 	{
-		BasicLogger.log(this.getClass(), "VSmartcard menu entry toggled", LogLevel.INFO);
+		BasicLogger.log("VSmartcard interface selected", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.VSMARTCARD_TAG_ID));
 		// ID of part as defined in fragment.e4xmi application model
 		MPart readerPart = partService.findPart("de.persosim.driver.connector.ui.parts.reader");
 		if (readerPart.getObject() instanceof ReaderPart mPart) {

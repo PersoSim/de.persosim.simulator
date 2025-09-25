@@ -4,10 +4,15 @@ import static org.globaltester.logging.BasicLogger.logException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.logging.tags.LogTag;
+
 import de.persosim.simulator.apdu.CommandApdu;
 import de.persosim.simulator.apdu.CommandApduFactory;
 import de.persosim.simulator.apdu.ResponseApdu;
 import de.persosim.simulator.exception.GeneralException;
+import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.processing.UpdatePropagation;
 import de.persosim.simulator.utils.HexString;
 
@@ -17,26 +22,26 @@ import de.persosim.simulator.utils.HexString;
  * while it is processed upwards and returning a byte[] apdu to the hardware
  * from a {@link de.persosim.simulator.apdu.ResponseApdu} while it is processed
  * downwards.
- * 
+ *
  * @author amay
- * 
+ *
  */
 public class IoManager extends Layer {
-	
+
 	public static final String IOMANAGER = "IoManager";
-	
+
 	@Override
 	public String getLayerName() {
 		return IOMANAGER;
 	}
-	
+
 	/*--------------------------------------------------------------------------------*/
-	
+
 	@Override
 	public boolean processAscending() {
 		LinkedList<UpdatePropagation> hardwareCommandUpdates = processingData.getUpdatePropagations(HardwareCommandApduPropagation.class);
 		boolean retVal = false;
-		
+
 		//update processingData for every HardwareCommandApduUpdate with a newCommandApdu
 		for (Iterator<UpdatePropagation> iterator = hardwareCommandUpdates.iterator(); iterator
 				.hasNext();) {
@@ -45,22 +50,22 @@ public class IoManager extends Layer {
 			if (updatePropagation != null && updatePropagation instanceof HardwareCommandApduPropagation) {
 				try {
 				CommandApdu commandApdu = CommandApduFactory.createCommandApdu(((HardwareCommandApduPropagation)updatePropagation).getCommandApdu());
-				
+
 				processingData.updateCommandApdu(this, "CommandApduFactory.createCommandApdu from hardware : "+ commandApdu , commandApdu);
 					retVal = true;
 				} catch(GeneralException e) {
-					logException(this, e);
+					logException(e.getMessage(), e, LogLevel.ERROR, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.COMMAND_PROCESSOR_TAG_ID));
 
 					//create and propagate response APDU
 					ResponseApdu resp = new ResponseApdu(e.getStatusWord());
 					processingData.updateResponseAPDU(this, "Unable to handle this HardwareCommandApdu", resp);
 			}
 		}
-		
+
 		}
 		return retVal;
 	}
-	
+
 	@Override
 	public void processDescending() {
 		// convert the ResponseApdu
@@ -74,5 +79,5 @@ public class IoManager extends Layer {
 	public void initializeForUse() {
 		// nothing to do here
 	}
-	
+
 }
