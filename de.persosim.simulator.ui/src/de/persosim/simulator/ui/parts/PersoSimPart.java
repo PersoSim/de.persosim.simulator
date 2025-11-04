@@ -159,7 +159,7 @@ public class PersoSimPart
 			@Override
 			public void updateElement(int index)
 			{
-				PersoSimLogEntry entry = de.persosim.simulator.Activator.getListLogListener().getEntry(index);
+				PersoSimLogEntry entry = de.persosim.simulator.ui.Activator.getListLogListener().getEntry(index);
 				logTableViewer.replace(entry, index);
 			}
 
@@ -672,7 +672,7 @@ public class PersoSimPart
 				try {
 					String logFileName = "PersoSim_" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()) + ".log";
 					File file = new File(logFileName);
-					LinkedListLogListener listener = de.persosim.simulator.Activator.getListLogListener();
+					LinkedListLogListener listener = de.persosim.simulator.ui.Activator.getListLogListener();
 					int count = listener.getNumberOfCachedEntries();
 					try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)))) {
 						for (int i = 0; i < count; i++) {
@@ -731,7 +731,7 @@ public class PersoSimPart
 
 	private void refreshLogTable()
 	{
-		LinkedListLogListener listener = de.persosim.simulator.Activator.getListLogListener();
+		LinkedListLogListener listener = de.persosim.simulator.ui.Activator.getListLogListener();
 		if (listener != null && !isLocked) {
 			int count = listener.getNumberOfCachedEntries();
 			if (count == 0)

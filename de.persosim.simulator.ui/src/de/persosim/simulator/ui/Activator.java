@@ -19,6 +19,7 @@ import de.persosim.driver.connector.DriverConnectorFactory;
 import de.persosim.driver.connector.service.IfdConnector;
 import de.persosim.simulator.CommandParser;
 import de.persosim.simulator.CommandParserResult;
+import de.persosim.simulator.log.LinkedListLogListener;
 import de.persosim.simulator.log.PersoSimLogTags;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 
@@ -31,11 +32,14 @@ import de.persosim.simulator.preferences.PersoSimPreferenceManager;
  */
 public class Activator implements BundleActivator
 {
-	private static BundleContext context;
+	public static BundleContext context;
+	private static Activator plugin;
 	private static ServiceTracker<DriverConnectorFactory, DriverConnectorFactory> serviceTrackerDriverConnectorFactory;
 	public static final int DEFAULT_PORT = 5678;
 	public static final String DEFAULT_HOST = "localhost";
 	public static IfdConnector connector = null;
+	private static LinkedListLogListener linkedListLogger;
+
 
 	static BundleContext getContext()
 	{
@@ -50,7 +54,7 @@ public class Activator implements BundleActivator
 			cmdLoadPerso = true;
 		}
 
-		Boolean isNonInteractive = Boolean.parseBoolean(PersoSimPreferenceManager.getPreference("PREF_NON_INTERACTIVE"));
+		boolean isNonInteractive = Boolean.parseBoolean(PersoSimPreferenceManager.getPreference("PREF_NON_INTERACTIVE"));
 		BasicLogger.log("Mode is " + (isNonInteractive ? "non-" : "") + "interactive", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 
 		List<CommandParserResult> results = CommandParser.executeUserCommands(withOverlayProfile, commands);
@@ -68,9 +72,8 @@ public class Activator implements BundleActivator
 
 		if(commands.length == 0) return; // just do nothing.
 		if (cmdLoadPerso) {
-			if (okComplete && commands.length > 1) {
-				if (!isNonInteractive)
-					MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK", "Perso '" + commands[1] + "' loaded.");
+			if (okComplete && commands.length > 1 && !isNonInteractive) {
+				MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK", "Perso '" + commands[1] + "' loaded.");
 			}
 			resetNativeDriver();
 		}
@@ -89,6 +92,7 @@ public class Activator implements BundleActivator
 		BasicLogger.log("START Activator Simulator UI", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 
 		Activator.context = context;
+		plugin = this;
 		serviceTrackerDriverConnectorFactory = new ServiceTracker<>(context, DriverConnectorFactory.class.getName(), null);
 		serviceTrackerDriverConnectorFactory.open();
 
@@ -104,6 +108,11 @@ public class Activator implements BundleActivator
 	{
 		Activator.context = null;
 		serviceTrackerDriverConnectorFactory.close();
+	}
+
+	public static Activator getDefault()
+	{
+		return plugin;
 	}
 
 	public static void resetNativeDriver()
@@ -135,4 +144,15 @@ public class Activator implements BundleActivator
 	{
 		return connector;
 	}
+
+	public void setListLogListener(LinkedListLogListener linkedListLogListenerExt)
+	{
+		linkedListLogger = linkedListLogListenerExt;
+	}
+
+	public static LinkedListLogListener getListLogListener()
+	{
+		return linkedListLogger;
+	}
+
 }

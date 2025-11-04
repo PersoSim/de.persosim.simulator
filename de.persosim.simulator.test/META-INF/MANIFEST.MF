@@ -10,6 +10,7 @@ Require-Bundle:
  org.globaltester.cryptoprovider.bc,
  de.persosim.simulator,
  de.persosim.simulator.basics,
+ de.persosim.simulator.soap,
  de.persosim.editor.ui,
  org.globaltester.simulator,
  org.globaltester.cryptoprovider,

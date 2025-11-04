@@ -12,6 +12,7 @@ Bundle-Activator:
  de.persosim.simulator.controller.Activator
 Require-Bundle: 
  de.persosim.simulator.basics,
+ de.persosim.simulator.soap,
  org.eclipse.core.runtime,
  org.eclipse.equinox.app,
  org.eclipse.osgi,
