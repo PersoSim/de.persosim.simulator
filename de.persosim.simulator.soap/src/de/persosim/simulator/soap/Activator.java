@@ -8,6 +8,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 import de.persosim.simulator.log.PersoSimLogTags;
+import de.persosim.simulator.preferences.EclipsePreferenceAccessor;
+import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 
 public class Activator implements BundleActivator
 {
@@ -21,23 +23,28 @@ public class Activator implements BundleActivator
 	@Override
 	public void start(BundleContext context) throws Exception
 	{
-		BasicLogger.log("START Activator Simulator SOAP", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
+		// BasicLogger.log("START Activator Simulator SOAP", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
+		PersoSimPreferenceManager.setPreferenceAccessorIfNotAvailable(new EclipsePreferenceAccessor());
 
 		Activator.context = context;
 		plugin = this;
 
 		enablePersoSimRemoteControlService();
 
-		BasicLogger.log("END Activator Simulator SOAP", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
+		// BasicLogger.log("END Activator Simulator SOAP", LogLevel.TRACE, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
 	}
 
 	private void enablePersoSimRemoteControlService()
 	{
-		endpointManager = new SoapControlEndpointManager("persosim");
-		endpointManager.start(PERSOSIM_SOAP_PORT);
+		disablePersoSimRemoteControlService();
 		org.globaltester.control.soap.Activator activatorSoap = org.globaltester.control.soap.Activator.getDefault();
 		if (activatorSoap != null) {
-			activatorSoap.unregisterServices();
+			endpointManager = new SoapControlEndpointManager("persosim");
+			activatorSoap.registerServices();
+
+			boolean isNonInteractive = Boolean.parseBoolean(PersoSimPreferenceManager.getPreference("PREF_NON_INTERACTIVE"));
+			if (!isNonInteractive) // Start only in default gui-based mode; not in controller
+				endpointManager.start(PERSOSIM_SOAP_PORT);
 		}
 	}
 

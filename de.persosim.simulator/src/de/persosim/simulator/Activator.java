@@ -36,7 +36,6 @@ public class Activator implements BundleActivator
 		Activator.context = context;
 		plugin = this;
 
-		PersoSimPreferenceManager.storePreference("PREF_NON_INTERACTIVE", Boolean.FALSE.toString()); // Reset to default gui-based mode
 		enablePersoSimRemoteControlService(context);
 
 		BasicLogger.log("Path of running PersoSim Jar/Executable: " + Activator.class.getProtectionDomain().getCodeSource().getLocation().getPath(), LogLevel.TRACE,

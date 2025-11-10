@@ -5,6 +5,9 @@ package de.persosim.simulator.controller;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import de.persosim.simulator.preferences.EclipsePreferenceAccessor;
+import de.persosim.simulator.preferences.PersoSimPreferenceManager;
+
 public class Activator implements BundleActivator
 {
 
@@ -12,6 +15,8 @@ public class Activator implements BundleActivator
 	public void start(BundleContext context) throws Exception
 	{
 		// BasicLogger.log("START Activator Simulator Controller", LogLevel.TRACE);
+		PersoSimPreferenceManager.setPreferenceAccessorIfNotAvailable(new EclipsePreferenceAccessor());
+		PersoSimPreferenceManager.storePreference("PREF_NON_INTERACTIVE", Boolean.TRUE.toString(), false); // Set to non-gui-based mode
 		// BasicLogger.log("END Activator Simulator Controller", LogLevel.TRACE);
 	}
 
