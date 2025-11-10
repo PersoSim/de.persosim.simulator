@@ -24,8 +24,15 @@ public class PersoSimPreferenceManager
 
 	public static void storePreference(String key, String value)
 	{
+		storePreference(key, value, true);
+	}
+
+	public static void storePreference(String key, String value, boolean doLogging)
+	{
 		preferenceAccessor.set(key, value);
-		BasicLogger.log("Stored in preferences: '" + key + "' : '" + value + "'", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
+		if (doLogging) {
+			BasicLogger.log("Stored in preferences: '" + key + "' : '" + value + "'", LogLevel.DEBUG, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.SYSTEM_TAG_ID));
+		}
 	}
 
 	public static String getPreference(String key)
