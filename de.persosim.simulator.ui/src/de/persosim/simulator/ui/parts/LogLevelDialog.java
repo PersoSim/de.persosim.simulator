@@ -123,8 +123,8 @@ public class LogLevelDialog extends Dialog
 		}
 		PersoSimPreferenceManager.storePreference(PreferenceConstants.PREF_LOG_TAGS, tagJoiner.toString());
 
-		de.persosim.simulator.Activator.getListLogListener().setRefreshState(true);
-		de.persosim.simulator.Activator.getListLogListener().updateConfig();
+		de.persosim.simulator.ui.Activator.getListLogListener().setRefreshState(true);
+		de.persosim.simulator.ui.Activator.getListLogListener().updateConfig();
 
 		super.okPressed();
 	}

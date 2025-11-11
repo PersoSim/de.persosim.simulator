@@ -1,2 +1,2 @@
 export LANG=C
->wsimport -keep -verbose http://localhost:8888/persosim/PersoSimRemoteControlResult?wsdl -d gen
+>wsimport -keep -verbose http://localhost:8890/persosim/PersoSimRemoteControlResult?wsdl -d gen

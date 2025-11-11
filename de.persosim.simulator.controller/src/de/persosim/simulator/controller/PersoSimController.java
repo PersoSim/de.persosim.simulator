@@ -288,18 +288,33 @@ public class PersoSimController implements IApplication
 		}
 		String nameExe = nameExePrefix + nameExeSuffix;
 		BasicLogger.log("Usage:", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+
 		BasicLogger.log(nameExe + " <start|stop|restart> <fullPathToExecutable>", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		BasicLogger.log("\t--> Start, stop or restart PersoSim.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		BasicLogger.log("\tExample (Windows): " + nameExe + " start \"C:\\PersoSimDir\\PersoSim" + nameExeSuffix + "\"", LogLevel.INFO,
 				new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-		BasicLogger.log("\tExample (Linux): " + nameExePrefix + " stop \"/home/someuser/PersoSimDir/PersoSim\"", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		BasicLogger.log("\tExample (Linux)  : " + nameExePrefix + " stop \"/home/someuser/PersoSimDir/PersoSim\"", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		BasicLogger.log("\tExample (MacOS)  : cd /home/someuser/PersoSimDir/PersoSim.app/Contents/Eclipse; ../MacOS/" + nameExePrefix + " restart ../MacOS/PersoSim", LogLevel.INFO,
+				new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+
 		BasicLogger.log("or:", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
-		BasicLogger.log(nameExe + " loadperso <fullPathToPersoFile>|<nameOfPredefinedPersoTemplate>", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		BasicLogger.log(nameExe + " loadperso <absolutePathToPersoFile>|<nameOfPredefinedPersoTemplate>", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		BasicLogger.log("\t--> Load a personalization file into PersoSim.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		BasicLogger.log("\tExample (Absolute Path, Windows): " + nameExe + " loadperso \"C:\\\\PersoSimDir\\profiledir\\Profile02.perso\"", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		BasicLogger.log("\tExample (Perso Template)        : " + nameExe + " loadperso Profile03.perso", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+
 		BasicLogger.log("or:", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		BasicLogger.log(nameExe + " sendapdu <apduAsHexString>", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		BasicLogger.log("\t--> Send an APDU in HEX String format to PersoSim.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		BasicLogger.log("\tExample: " + nameExe + " sendapdu 0084000000", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+
 		BasicLogger.log("or:", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		BasicLogger.log(nameExe + " reset", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		BasicLogger.log("\t--> Reset PersoSim analogous to a Smartcard Reset.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+
 		BasicLogger.log("or:", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 		BasicLogger.log(nameExe + " help", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
+		BasicLogger.log("\t--> Show this usage information.", LogLevel.INFO, new LogTag(BasicLogger.LOG_TAG_TAG_ID, PersoSimLogTags.PERSO_TAG_ID));
 	}
 
 	public void doWork(String[] args)
