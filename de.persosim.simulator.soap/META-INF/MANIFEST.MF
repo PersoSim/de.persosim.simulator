@@ -10,8 +10,6 @@ Export-Package:
  de.persosim.simulator.soap
 Bundle-ClassPath: .
 Import-Package: 
- org.globaltester.control,
- org.globaltester.control.soap,
  javax.jws,
  javax.jws.soap,
  javax.xml.ws,
@@ -25,5 +23,6 @@ Require-Bundle:
  org.globaltester.base,
  org.globaltester.lib.xstream,
  org.globaltester.logging,
- jakarta.annotation-api
+ jakarta.annotation-api,
+ org.globaltester.control.soap
 Automatic-Module-Name: de.persosim.simulator.soap
